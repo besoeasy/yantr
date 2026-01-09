@@ -1,0 +1,24 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    labels:
+     yantra.name: "n8n"
+     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.category: "productivity"
+     yantra.port: "5678"
+     yantra.description: "Workflow automation platform with AI and 400+ integrations"
+     yantra.website: "https://docs.n8n.io"
+     yantra.github: "https://github.com/n8n-io/n8n"
+     yantra.tags: "automation,workflow,integration,ai,nocode"
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      - TZ=${TZ:-UTC}
+      - N8N_PORT=5678
+    restart: unless-stopped
+
+volumes:
+  n8n_data:

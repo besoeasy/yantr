@@ -1,0 +1,24 @@
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    labels:
+     yantra.name: "SearXNG"
+     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.category: "tools"
+     yantra.port: "8083"
+     yantra.description: "Privacy-focused metasearch engine aggregating results"
+     yantra.website: "https://docs.searxng.org"
+     yantra.github: "https://github.com/searxng/searxng"
+     yantra.tags: "search,privacy,metasearch,security"
+    ports:
+      - "8083:8080"
+    volumes:
+      - searxng_data:/etc/searxng
+    environment:
+      - TZ=${TZ:-UTC}
+      - SEARXNG_BASE_URL=http://localhost:8083
+    restart: unless-stopped
+
+volumes:
+  searxng_data:

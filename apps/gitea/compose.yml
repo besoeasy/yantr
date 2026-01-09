@@ -1,0 +1,29 @@
+services:
+  gitea:
+    image: gitea/gitea:latest
+    container_name: gitea
+    labels:
+     yantra.name: "Gitea"
+     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.category: "development"
+     yantra.port: "3000"
+     yantra.description: "Self-hosted Git service with code review and CI/CD"
+     yantra.website: "https://docs.gitea.io"
+     yantra.github: "https://github.com/go-gitea/gitea"
+     yantra.tags: "git,version-control,code-review,ci-cd"
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=sqlite3
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped
+
+volumes:
+  gitea_data:

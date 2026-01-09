@@ -1,0 +1,18 @@
+services:
+  networking-toolbox:
+    image: lissy93/networking-toolbox:latest
+    container_name: networking-toolbox
+    labels:
+     yantra.name: "Networking Toolbox"
+     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.category: "network"
+     yantra.port: "8082"
+     yantra.description: "100+ offline-first networking tools and utilities"
+     yantra.website: "https://networking-toolbox.as93.net"
+     yantra.github: "https://github.com/Lissy93/networking-toolbox"
+     yantra.tags: "networking,tools,diagnostics,utilities"
+    ports:
+      - "8082:3000"
+    environment:
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped

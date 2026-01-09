@@ -1,0 +1,23 @@
+services:
+  rotki:
+    image: rotki/rotki:latest
+    container_name: rotki
+    labels:
+     yantra.name: "Rotki"
+     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.category: "productivity"
+     yantra.port: "8084"
+     yantra.description: "Privacy-focused portfolio tracker and analytics for crypto"
+     yantra.website: "https://rotki.com/"
+     yantra.github: "https://github.com/rotki/rotki"
+     yantra.tags: "portfolio,crypto,finance,analytics,privacy"
+    ports:
+      - "8084:80"
+    volumes:
+      - rotki_data:/data
+    environment:
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped
+
+volumes:
+  rotki_data:
