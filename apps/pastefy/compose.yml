@@ -6,12 +6,12 @@ services:
      yantra.name: "Pastefy"
      yantra.logo: "QmPsB3gpiGkjr5hp2SMiq9PkqjE15QwmHXYJTsg6Yg5sUN"
      yantra.category: "tools,productivity"
-     yantra.port: "8081"
+     yantra.port: "8097"
      yantra.description: "Feature-rich self-hosted pastebin for sharing code"
      yantra.website: "https://docs.pastefy.app"
      yantra.github: "https://github.com/interaapps/pastefy"
     ports:
-      - "8081:80"
+      - "8097:80"
     volumes:
       - pastefy_data:/app/data
     environment:

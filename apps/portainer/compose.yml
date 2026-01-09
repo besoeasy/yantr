@@ -6,12 +6,12 @@ services:
       yantra.name: "Portainer"
       yantra.logo: "QmXyDE7nzzoUS8dez7bWBgeP2X2xkJ6XesJ7QSWUsvdV5F"
       yantra.category: "tools,utility"
-      yantra.port: "${PORTAINER_PORT:-8088}"
+      yantra.port: "8088"
       yantra.description: "Container management UI for Docker environments"
       yantra.website: "https://docs.portainer.io"
       yantra.github: "https://github.com/portainer/portainer"
     ports:
-      - "${PORTAINER_PORT:-8088}:9443"
+      - "8088:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data

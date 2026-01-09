@@ -8,13 +8,13 @@ services:
     volumes:
       - myspeed_data:/myspeed/data
     ports:
-      - "${MYSPEED_PORT:-5216}:5216"
+      - "5216:5216"
     restart: unless-stopped
     labels:
       yantra.name: "MySpeed"
       yantra.logo: "Qma15zxYfVUTVMdxAdnCEwWHemLCEWon2pGUjs8rG56VvZ"
       yantra.category: "network,tools"
-      yantra.port: "${MYSPEED_PORT:-5216}"
+      yantra.port: "5216"
       yantra.description: "Speed test analysis software that tracks your internet speed for 30 days"
       yantra.website: "https://myspeed.dev"
       yantra.github: "https://github.com/gnmyt/myspeed"

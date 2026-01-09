@@ -6,16 +6,16 @@ services:
      yantra.name: "StreamBox"
      yantra.logo: "QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i"
      yantra.category: "media,tools"
-     yantra.port: "${STREAMBOX_PORT_WEB:-6798}"
+     yantra.port: "6798"
      yantra.description: "Media streaming and sharing platform with Telegram integration"
      yantra.website: "https://github.com/besoeasy/streambox"
      yantra.github: "https://github.com/besoeasy/streambox"
     ports:
-      - "${STREAMBOX_PORT_WEB:-6798}:6798"
-      - "${STREAMBOX_PORT_API:-6799}:6799"
-      - "${STREAMBOX_PORT_SMB:-4445}:4445"
-      - "${STREAMBOX_PORT_STREAM:-6888}:6888/tcp"
-      - "${STREAMBOX_PORT_STREAM:-6888}:6888/udp"
+      - "6798:6798"
+      - "6799:6799"
+      - "4445:4445"
+      - "6888:6888/tcp"
+      - "6888:6888/udp"
     environment:
       - TELEGRAMBOT=${STREAMBOX_TELEGRAMBOT}
       - NSEC=${STREAMBOX_NSEC}

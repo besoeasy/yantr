@@ -6,14 +6,14 @@ services:
      yantra.name: "Pi-hole"
      yantra.logo: "QmWk56fGA1itVTPbNtCQw1kZXScPSKJqQeNf5QfqnSVhsc"
      yantra.category: "network,security"
-     yantra.port: "80"
+     yantra.port: "8080"
      yantra.description: "Network-wide ad blocking via DNS sinkhole"
      yantra.website: "https://docs.pi-hole.net"
      yantra.github: "https://github.com/pi-hole/pi-hole"
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "80:80"
+      - "8080:80"
     environment:
       - TZ=${TZ:-UTC}
       - WEBPASSWORD=${WEBPASSWORD:-changeme}

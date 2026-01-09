@@ -9,8 +9,8 @@ services:
     volumes:
       - bitcoin_knots_data:/data
     ports:
-      - "${BITCOIN_P2P_PORT:-8333}:8333"
-      - "${BITCOIN_RPC_PORT:-8332}:8332"
+      - "8333:8333"
+      - "8332:8332"
     restart: unless-stopped
     command: >
       bitcoind
@@ -24,7 +24,7 @@ services:
       yantra.name: "Bitcoin Knots"
       yantra.logo: "QmTttEiisTnt6ivcGQo9W6BCKNpuViU9zAhNYLKd8xK9Lm"
       yantra.category: "utility,development"
-      yantra.port: "${BITCOIN_RPC_PORT:-8332}"
+      yantra.port: "8332"
       yantra.description: "Bitcoin full node with enhanced features and privacy focus."
       yantra.website: "https://bitcoinknots.org"
       yantra.github: "https://github.com/bitcoinknots/bitcoin"

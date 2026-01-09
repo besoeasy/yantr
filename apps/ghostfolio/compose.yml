@@ -6,12 +6,12 @@ services:
      yantra.name: "Ghostfolio"
      yantra.logo: "QmfTpau6SSQzWKdrduo8ghaEhbW9us5utYRGsMbrPro1Ds"
      yantra.category: "productivity,utility"
-     yantra.port: "3333"
+     yantra.port: "8091"
      yantra.description: "Open source wealth management for portfolio tracking"
      yantra.website: "https://ghostfol.io"
      yantra.github: "https://github.com/ghostfolio/ghostfolio"
     ports:
-      - "3333:3333"
+      - "8091:3333"
     volumes:
       - ghostfolio_data:/data
     environment:

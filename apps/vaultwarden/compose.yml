@@ -6,12 +6,12 @@ services:
      yantra.name: "Vaultwarden"
      yantra.logo: "QmeGBekRcV4YqPpwQgKALgW3QUaQjutCoUGzEuACiwg4Wu"
      yantra.category: "productivity,security"
-     yantra.port: "80"
+     yantra.port: "8099"
      yantra.description: "Lightweight Bitwarden server for password management"
      yantra.website: "https://github.com/dani-garcia/vaultwarden/wiki"
      yantra.github: "https://github.com/dani-garcia/vaultwarden"
     ports:
-      - "8000:80"
+      - "8099:80"
     volumes:
       - vaultwarden_data:/data
     environment:

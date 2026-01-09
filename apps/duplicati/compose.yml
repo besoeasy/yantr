@@ -6,12 +6,12 @@ services:
      yantra.name: "Duplicati"
      yantra.logo: "QmX52qWfGH9q5mPvjT3mfmf6ag6BUW8fGwGX1WrbPxfqn8"
      yantra.category: "tools,security,utility"
-     yantra.port: "${DUPLICATI_PORT:-8084}"
+     yantra.port: "8200"
      yantra.description: "Free backup software for encrypted, incremental backups"
      yantra.website: "https://www.duplicati.com"
      yantra.github: "https://github.com/duplicati/duplicati"
     ports:
-      - "${DUPLICATI_PORT:-8084}:8200"
+      - "8200:8200"
     volumes:
       - duplicati_config:/config
       - duplicati_backups:/backups

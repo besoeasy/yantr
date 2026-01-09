@@ -5,13 +5,13 @@ services:
     image: traefik/whoami
     container_name: whoami
     ports:
-      - "${WHOAMI_PORT:-8081}:80"
+      - "8100:80"
     restart: unless-stopped
     labels:
      yantra.name: "Whoami"
      yantra.logo: "QmSMrzHU5og4PgNF1hNRSCcjwBX3LjLopL3p3Fxhk1sJSb"
      yantra.category: "tools,utility"
-     yantra.port: "${WHOAMI_PORT:-8081}"
+     yantra.port: "8100"
      yantra.description: "Tiny HTTP service that prints system information - perfect for testing"
      yantra.website: "https://github.com/traefik/whoami"
      yantra.github: "https://github.com/traefik/whoami"

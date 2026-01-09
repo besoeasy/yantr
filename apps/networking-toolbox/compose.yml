@@ -6,12 +6,12 @@ services:
      yantra.name: "Networking Toolbox"
      yantra.logo: "QmeqFmwTVCvsBghUj1nRWCzcW4d197Gaud4iuTdGuv8KEf"
      yantra.category: "network,tools"
-     yantra.port: "8082"
+     yantra.port: "8096"
      yantra.description: "100+ offline-first networking tools and utilities"
      yantra.website: "https://networking-toolbox.as93.net"
      yantra.github: "https://github.com/Lissy93/networking-toolbox"
     ports:
-      - "8082:3000"
+      - "8096:3000"
     environment:
       - TZ=${TZ:-UTC}
     restart: unless-stopped

@@ -8,15 +8,15 @@ services:
     volumes:
       - libreoffice_config:/config
     ports:
-      - "${LIBREOFFICE_PORT:-3000}:3000"
-      - "${LIBREOFFICE_PORT_HTTPS:-3001}:3001"
+      - "8093:3000"
+      - "8094:3001"
     restart: unless-stopped
     shm_size: "1gb"
     labels:
       yantra.name: "LibreOffice"
       yantra.logo: "QmUCiKb8BvKqA9BssyndDvp9b46uU5LR7fLBpv2bkzdE78"
       yantra.category: "productivity,tools"
-      yantra.port: "${LIBREOFFICE_PORT:-3000}"
+      yantra.port: "8093"
       yantra.description: "Full-featured office suite accessible through web browser."
       yantra.website: "https://www.libreoffice.org"
       yantra.github: "https://github.com/linuxserver/docker-libreoffice"

@@ -6,12 +6,12 @@ services:
      yantra.name: "Invio"
      yantra.logo: "QmWrT1hEniWDQXyBDeRNstNMzVWdo37sV5wisNcAiJDCY5"
      yantra.category: "productivity,utility"
-     yantra.port: "3001"
+     yantra.port: "8092"
      yantra.description: "Self-hosted invoicing without the bloat"
      yantra.website: "https://github.com/kittendevv/Invio/wiki"
      yantra.github: "https://github.com/kittendevv/Invio"
     ports:
-      - "3001:3000"
+      - "8092:3000"
     volumes:
       - invio_data:/app/data
     environment:

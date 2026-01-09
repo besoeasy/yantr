@@ -6,12 +6,12 @@ services:
      yantra.name: "Element"
      yantra.logo: "QmSWZ6WLTd8zKjhgh6625u6RKs7nL8DTtaqTYJ7GhfK5pp"
      yantra.category: "productivity,security"
-     yantra.port: "${ELEMENT_PORT:-8089}"
+     yantra.port: "8089"
      yantra.description: "Secure and decentralized Matrix chat client for communication"
      yantra.website: "https://element.io"
      yantra.github: "https://github.com/element-hq/element-web"
     ports:
-      - "${ELEMENT_PORT:-8089}:80"
+      - "8089:80"
     volumes:
       - element_config:/app/config
     restart: unless-stopped

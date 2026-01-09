@@ -10,8 +10,8 @@ services:
     volumes:
       - wireguard_data:/etc/wireguard
     ports:
-      - "${WIREGUARD_PORT:-51820}:51820/udp"
-      - "${WIREGUARD_UI_PORT:-51821}:51821"
+      - "51820:51820/udp"
+      - "51821:51821"
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -23,7 +23,7 @@ services:
       yantra.name: "WireGuard"
       yantra.logo: "QmfR8xgzQALH24vz23P6hhGM19fTdcDQT3Y79w6MmxTKKc"
       yantra.category: "network,security"
-      yantra.port: "${WIREGUARD_UI_PORT:-51821}"
+      yantra.port: "51821"
       yantra.description: "Fast, modern VPN with state-of-the-art cryptography"
       yantra.website: "https://www.wireguard.com"
       yantra.github: "https://github.com/wg-easy/wg-easy"
