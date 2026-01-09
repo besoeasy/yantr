@@ -6,6 +6,7 @@ Ui is located in /ui/
 2. Use VUEJS framework for all UI components.
 3. Follow mobile-first design principles.
 4. Use FontAwesome for icons & Avoid using image-based icons.
+5. Each tailwindCSS should be mobile compatible by default, a mobile user should be able to access all features.
 
 # Apps
 
