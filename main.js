@@ -166,70 +166,6 @@ async function getImageFromCompose(composePath) {
   }
 }
 
-// Helper function to check if image update is available
-async function checkImageUpdate(imageName, currentDigest) {
-  try {
-    // Skip check for images without tags or with specific digests
-    if (!imageName || imageName.includes('@sha256:') || imageName === '<none>:<none>') {
-      return { updateAvailable: false, reason: 'no-tag' };
-    }
-
-    log('info', `🔍 Checking for updates: ${imageName}`);
-
-    // Try to get the latest digest from registry without pulling
-    const inspectCommand = `docker manifest inspect ${imageName} 2>/dev/null || docker buildx imagetools inspect ${imageName} --raw 2>/dev/null`;
-    
-    try {
-      const { stdout } = await execPromise(inspectCommand, { timeout: 10000 });
-      
-      if (!stdout || !stdout.trim()) {
-        return { updateAvailable: false, reason: 'no-manifest' };
-      }
-
-      // Parse the manifest to get digest
-      let remoteDigest = null;
-      
-      try {
-        const manifest = JSON.parse(stdout);
-        // For manifest lists
-        if (manifest.manifests && manifest.manifests.length > 0) {
-          remoteDigest = manifest.manifests[0].digest;
-        }
-        // For single manifests
-        else if (manifest.config && manifest.config.digest) {
-          remoteDigest = manifest.config.digest;
-        }
-      } catch (parseError) {
-        // If JSON parsing fails, try to extract digest from raw output
-        const digestMatch = stdout.match(/sha256:[a-f0-9]{64}/);
-        if (digestMatch) {
-          remoteDigest = digestMatch[0];
-        }
-      }
-
-      if (!remoteDigest) {
-        return { updateAvailable: false, reason: 'no-digest' };
-      }
-
-      // Compare digests
-      if (currentDigest && currentDigest.includes(remoteDigest)) {
-        log('info', `  ✅ Up to date: ${imageName}`);
-        return { updateAvailable: false, currentDigest, remoteDigest };
-      } else {
-        log('info', `  🆕 Update available: ${imageName}`);
-        return { updateAvailable: true, currentDigest, remoteDigest };
-      }
-    } catch (cmdError) {
-      // If manifest inspection fails, try alternative method
-      log('info', `  ⚠️  Could not check manifest for ${imageName}: ${cmdError.message}`);
-      return { updateAvailable: false, reason: 'check-failed' };
-    }
-  } catch (error) {
-    log('error', '❌ Error checking image update:', error.message);
-    return { updateAvailable: false, reason: 'error' };
-  }
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -358,66 +294,6 @@ app.get('/api/containers', async (req, res) => {
     });
   } catch (error) {
     log('error', '❌ [GET /api/containers] Error:', error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-});
-
-// GET /api/containers/updates - Check for updates on all running containers
-app.get('/api/containers-updates', async (req, res) => {
-  log('info', '🔄 [GET /api/containers-updates] Checking for container updates');
-  try {
-    const containers = await docker.listContainers({ all: false }); // Only running containers
-    const updates = [];
-
-    for (const container of containers) {
-      const imageName = container.Image;
-      const imageId = container.ImageID;
-      
-      // Get image digest
-      try {
-        const image = docker.getImage(imageId);
-        const imageInfo = await image.inspect();
-        const currentDigest = imageInfo.RepoDigests && imageInfo.RepoDigests.length > 0 
-          ? imageInfo.RepoDigests[0] 
-          : imageId;
-
-        const updateCheck = await checkImageUpdate(imageName, currentDigest);
-        
-        updates.push({
-          containerId: container.Id,
-          containerName: container.Names[0]?.replace('/', '') || 'unknown',
-          image: imageName,
-          updateAvailable: updateCheck.updateAvailable,
-          currentDigest: updateCheck.currentDigest,
-          remoteDigest: updateCheck.remoteDigest,
-          reason: updateCheck.reason
-        });
-      } catch (err) {
-        log('error', `  ⚠️  Error checking update for ${container.Names[0]}: ${err.message}`);
-        updates.push({
-          containerId: container.Id,
-          containerName: container.Names[0]?.replace('/', '') || 'unknown',
-          image: imageName,
-          updateAvailable: false,
-          reason: 'error'
-        });
-      }
-    }
-
-    const updatesAvailable = updates.filter(u => u.updateAvailable).length;
-    log('info', `✅ [GET /api/containers-updates] Found ${updatesAvailable} updates available`);
-
-    res.json({
-      success: true,
-      totalContainers: containers.length,
-      updatesAvailable: updatesAvailable,
-      updates: updates
-    });
-  } catch (error) {
-    log('error', '❌ [GET /api/containers-updates] Error:', error.message);
     res.status(500).json({
       success: false,
       error: error.message

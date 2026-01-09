@@ -265,11 +265,6 @@
                                         <div>
                                             <div class="flex items-center gap-2">
                                                 <h3 class="font-bold text-2xl text-gray-900">{{ container.app.name }}</h3>
-                                                <span v-if="hasUpdate(container.id)"
-                                                    class="text-xs px-2 py-1 rounded-full bg-blue-500 text-white font-semibold animate-pulse"
-                                                    title="Update available">
-                                                    🆕 Update
-                                                </span>
                                             </div>
                                             <span
                                                 class="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 font-medium">
@@ -622,7 +617,6 @@
                 return {
                     activeTab: 'containers',
                     containers: [],
-                    containerUpdates: [],
                     apps: [],
                     imagesData: {},
                     logsData: {},
@@ -706,27 +700,10 @@
                         const data = await response.json();
                         if (data.success) {
                             this.containers = data.containers.filter(c => c.state === 'running');
-                            // Fetch updates in background
-                            this.fetchContainerUpdates();
                         }
                     } catch (error) {
                         console.error('Failed to fetch containers:', error);
                     }
-                },
-                async fetchContainerUpdates() {
-                    try {
-                        const response = await fetch(`${this.apiUrl}/api/containers-updates`);
-                        const data = await response.json();
-                        if (data.success) {
-                            this.containerUpdates = data.updates;
-                        }
-                    } catch (error) {
-                        console.error('Failed to fetch container updates:', error);
-                    }
-                },
-                hasUpdate(containerId) {
-                    const update = this.containerUpdates.find(u => u.containerId === containerId);
-                    return update && update.updateAvailable;
                 },
                 async fetchApps() {
                     try {
