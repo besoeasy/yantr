@@ -4,7 +4,7 @@ services:
     container_name: filedrop
     hostname: filedrop
     environment:
-      - STORAGE_MAX=200GB
+      - STORAGE_MAX=${STORAGE_MAX:-200GB}
       - TZ=${TZ:-UTC}
     volumes:
       - filedrop_data:/app/data
