@@ -1,0 +1,19 @@
+
+
+services:
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    ports:
+      - "${WHOAMI_PORT:-8081}:80"
+    restart: unless-stopped
+    labels:
+      app.name: "Whoami"
+      app.logo: "https://raw.githubusercontent.com/traefik/traefik/master/docs/content/assets/img/traefik.logo.png"
+      app.category: "utility"
+      app.port: "${WHOAMI_PORT:-8081}"
+      app.description: "Tiny HTTP service that prints system information - perfect for testing"
+      app.website: "https://github.com/traefik/whoami"
+      app.github: "https://github.com/traefik/whoami"
+      app.tags: "testing, http, utility"
+

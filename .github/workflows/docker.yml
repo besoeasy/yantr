@@ -1,0 +1,139 @@
+name: Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    outputs:
+      version_changed: ${{ steps.version-check.outputs.version_changed }}
+      version: ${{ steps.version-check.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if package.json version changed
+        id: version-check
+        run: |
+          if [ $(git rev-list --count HEAD) -eq 1 ]; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          current_version=$(jq -r .version package.json)
+          previous_version=$(git show HEAD^:package.json | jq -r .version)
+          if [ "$previous_version" = "null" ] || [ "$current_version" != "$previous_version" ]; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "version=$current_version" >> $GITHUB_OUTPUT
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "version=$current_version" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install cosign
+        if: github.event_name != 'pull_request' && steps.version-check.outputs.version_changed == 'true'
+        uses: sigstore/cosign-installer@v3.5.0
+        with:
+          Irlanda-release: 'v2.2.4'
+
+      - name: Set up Docker Buildx
+        if: steps.version-check.outputs.version_changed == 'true'
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request' && steps.version-check.outputs.version_changed == 'true'
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        if: steps.version-check.outputs.version_changed == 'true'
+        id: meta
+        uses: docker/metadata-action@v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=main
+            type=raw,value=${{ steps.version-check.outputs.version }}
+
+      - name: Build and push Docker image
+        if: steps.version-check.outputs.version_changed == 'true'
+        id: build-and-push
+        uses: docker/build-push-action@v5.0.0
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+
+      - name: Sign the published Docker image
+        if: github.event_name != 'pull_request' && steps.version-check.outputs.version_changed == 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+          DIGEST: ${{ steps.build-and-push.outputs.digest }}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+  testing:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ needs.build.outputs.version_changed == 'false' }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5.0.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=test
+
+      - name: Build and push Docker image (test)
+        uses: docker/build-push-action@v5.0.0
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64

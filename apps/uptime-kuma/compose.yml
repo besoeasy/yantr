@@ -1,0 +1,21 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    labels:
+      app.name: "Uptime Kuma"
+      app.logo: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/uptime-kuma.png"
+      app.category: "tools"
+      app.port: "3001"
+      app.description: "Self-hosted uptime monitoring tool"
+      app.website: "https://github.com/louislam/uptime-kuma/wiki"
+      app.github: "https://github.com/louislam/uptime-kuma"
+      app.tags: "monitoring,uptime,alerts,status"
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  uptime_kuma_data:

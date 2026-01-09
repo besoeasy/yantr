@@ -1,0 +1,30 @@
+{
+  "name": "yantra",
+  "version": "0.0.1",
+  "description": "yantra",
+  "homepage": "https://github.com/besoeasy/yantra#readme",
+  "bugs": {
+    "url": "https://github.com/besoeasy/yantra/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/besoeasy/yantra.git"
+  },
+  "license": "ISC",
+  "author": "besoeasy",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start": "clear && node main.js",
+    "dev": "nodemon main.js",
+    "test": "node main.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "dockerode": "^4.0.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

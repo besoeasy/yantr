@@ -1,0 +1,19 @@
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    labels:
+      app.name: "Watchtower"
+      app.logo: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/watchtower.png"
+      app.category: "tools"
+      app.port: "8080"
+      app.description: "Automatically update running Docker containers"
+      app.website: "https://containrrr.dev/watchtower"
+      app.github: "https://github.com/containrrr/watchtower"
+      app.tags: "automation,updates,containers,maintenance"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=86400
+    restart: unless-stopped

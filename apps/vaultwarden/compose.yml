@@ -1,0 +1,23 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    labels:
+      app.name: "Vaultwarden"
+      app.logo: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/vaultwarden.png"
+      app.category: "productivity"
+      app.port: "80"
+      app.description: "Lightweight Bitwarden server for password management"
+      app.website: "https://github.com/dani-garcia/vaultwarden/wiki"
+      app.github: "https://github.com/dani-garcia/vaultwarden"
+      app.tags: "passwords,security,bitwarden,encryption"
+    ports:
+      - "8000:80"
+    volumes:
+      - vaultwarden_data:/data
+    environment:
+      - WEBSOCKET_ENABLED=true
+    restart: unless-stopped
+
+volumes:
+  vaultwarden_data:

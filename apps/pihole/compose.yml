@@ -1,0 +1,31 @@
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    labels:
+      app.name: "Pi-hole"
+      app.logo: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/pi-hole.png"
+      app.category: "network"
+      app.port: "80"
+      app.description: "Network-wide ad blocking via DNS sinkhole"
+      app.website: "https://docs.pi-hole.net"
+      app.github: "https://github.com/pi-hole/pi-hole"
+      app.tags: "dns,adblock,privacy,network"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80"
+    environment:
+      - TZ=${TZ:-UTC}
+      - WEBPASSWORD=${WEBPASSWORD:-changeme}
+    volumes:
+      - pihole_data:/etc/pihole
+      - pihole_dnsmasq:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    restart: unless-stopped
+
+volumes:
+  pihole_data:
+  pihole_dnsmasq:
