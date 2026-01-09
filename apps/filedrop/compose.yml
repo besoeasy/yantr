@@ -5,7 +5,6 @@ services:
     hostname: filedrop
     environment:
       - STORAGE_MAX=${STORAGE_MAX:-200GB}
-      - TZ=${TZ:-UTC}
     volumes:
       - filedrop_data:/app/data
     ports:

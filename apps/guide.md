@@ -5,6 +5,9 @@
 3. ENsure no ports conflict between different apps.
 4. Use volumes for persistent data storage. never mount to host paths directly.
 5. Follow best practices for security, such as using non-root users and limiting container capabilities.
+6. If needed we can ask user to input environment vars for example
+      - STORAGE_MAX=${STORAGE_MAX:-200GB}
+
 
 ## Labels
 
@@ -20,7 +23,7 @@ All apps must include the following labels to ensure proper categorization and d
    - Example: `"QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"`
 
 3. **yantra.category** (Required) - App category for organization
-   - Valid categories: `"network"`, `"tools"`, `"productivity"`, `"utility"`, `"media"`, `"development"`, `"security"`
+   - Try to use already existing categories, you can create new ones if needed.
    - Use lowercase only
    - Can specify up to 3 categories as comma-separated values
    - Example: `"network,security"`, `"tools,utility"`, `"productivity,security,utility"`
@@ -44,5 +47,3 @@ All apps must include the following labels to ensure proper categorization and d
 7. **yantra.github** (Required) - GitHub repository URL
    - Full URL to the main project repository
    - Example: `"https://github.com/pi-hole/pi-hole"`
-
-5. Follow best practices for security, such as using non-root users and limiting container capabilities.

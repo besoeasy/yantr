@@ -1,0 +1,28 @@
+services:
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    hostname: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-UTC}
+      - AUTO_UPDATE=true
+    volumes:
+      - jackett_config:/config
+      - jackett_downloads:/downloads
+    ports:
+      - "${JACKETT_PORT:-9117}:9117"
+    restart: unless-stopped
+    labels:
+      yantra.name: "Jackett"
+      yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+      yantra.category: "media,tools,utility"
+      yantra.port: "${JACKETT_PORT:-9117}"
+      yantra.description: "API proxy for torrent trackers with Sonarr/Radarr support."
+      yantra.website: "https://github.com/Jackett/Jackett"
+      yantra.github: "https://github.com/Jackett/Jackett"
+
+volumes:
+  jackett_config:
+  jackett_downloads:
