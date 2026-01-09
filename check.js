@@ -102,7 +102,7 @@ function extractPublishedPortsFromComposeObject(composeObj) {
 
 async function detectPortConflict() {
     const appsDir = path.join(__dirname, 'apps');
-    const portToApp = new Map();
+    const portToFiles = new Map();
     const conflictingPorts = new Set();
 
     let entries;
@@ -115,6 +115,7 @@ async function detectPortConflict() {
     const apps = entries.filter(e => e.isDirectory()).map(e => e.name).sort();
     for (const appName of apps) {
         const composePath = path.join(appsDir, appName, 'compose.yml');
+        const composePathForOutput = path.relative(__dirname, composePath).replace(/\\/g, '/');
         let composeContent;
         try {
             composeContent = await fs.promises.readFile(composePath, 'utf8');
@@ -131,17 +132,21 @@ async function detectPortConflict() {
 
         const ports = extractPublishedPortsFromComposeObject(composeObj);
         for (const port of ports) {
-            const existing = portToApp.get(port);
-            if (existing && existing !== appName) {
+            const existingFiles = portToFiles.get(port);
+            if (existingFiles) {
+                existingFiles.add(composePathForOutput);
                 conflictingPorts.add(port);
-            } else if (!existing) {
-                portToApp.set(port, appName);
+            } else {
+                portToFiles.set(port, new Set([composePathForOutput]));
             }
         }
     }
 
-    if (conflictingPorts.size === 0) return { conflict: false, port: 0 };
-    return { conflict: true, port: Math.min(...conflictingPorts) };
+    if (conflictingPorts.size === 0) return { conflict: false, port: 0, files: [] };
+
+    const port = Math.min(...conflictingPorts);
+    const files = [...(portToFiles.get(port) || new Set())].sort();
+    return { conflict: true, port, files };
 }
 
 // Run if called directly
