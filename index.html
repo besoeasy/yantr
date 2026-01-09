@@ -1,0 +1,118 @@
+<!-- Containers Section -->
+<div v-if="currentSection === 'containers'" class="space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 class="text-2xl font-bold text-gray-800">Running Containers</h2>
+    </div>
+
+    <!-- Masonry Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-min">
+        <!-- Column 1 Pattern: 2/4, 1/4, 1/4 -->
+        <template v-for="(container, index) in containers" :key="container.Id">
+            <div v-if="index % 9 === 0" class="bg-white rounded-lg shadow-md p-6 row-span-2">
+                <!-- Large Container Card -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <i class="fas fa-cube text-2xl text-blue-500"></i>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-semibold text-gray-800 truncate">{{ container.Names[0].substring(1) }}</h3>
+                            <p class="text-sm text-gray-500 truncate">{{ container.Image }}</p>
+                        </div>
+                    </div>
+                    <span :class="container.State === 'running' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2">
+                        {{ container.State }}
+                    </span>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-network-wired w-4"></i>
+                        <span class="truncate">{{ container.Ports.map(p => p.PublicPort ? `${p.PublicPort}:${p.PrivatePort}` : p.PrivatePort).join(', ') || 'No ports' }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-clock w-4"></i>
+                        <span>{{ new Date(container.Created * 1000).toLocaleDateString() }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-fingerprint w-4"></i>
+                        <span class="font-mono text-xs truncate">{{ container.Id.substring(0, 12) }}</span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200 flex gap-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">
+                        <i class="fas fa-terminal mr-2"></i>Logs
+                    </button>
+                    <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Small Container Cards for positions 1,2,3,4,6,7,8 in each 9-item cycle -->
+            <div v-else-if="[1,2,3,4,6,7,8].includes(index % 9)" class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <i class="fas fa-cube text-lg text-blue-500"></i>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-semibold text-gray-800 text-sm truncate">{{ container.Names[0].substring(1) }}</h3>
+                        </div>
+                    </div>
+                    <span :class="container.State === 'running' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2">
+                        {{ container.State }}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 truncate mb-3">{{ container.Image }}</p>
+                <div class="flex gap-2">
+                    <button class="flex-1 px-3 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs">
+                        <i class="fas fa-terminal"></i>
+                    </button>
+                    <button class="px-3 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Large Container Card for position 5 (Column 2 pattern) -->
+            <div v-else-if="index % 9 === 5" class="bg-white rounded-lg shadow-md p-6 row-span-2">
+                <!-- Large Container Card -->
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3 flex-1 min-w-0">
+                        <i class="fas fa-cube text-2xl text-blue-500"></i>
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-semibold text-gray-800 truncate">{{ container.Names[0].substring(1) }}</h3>
+                            <p class="text-sm text-gray-500 truncate">{{ container.Image }}</p>
+                        </div>
+                    </div>
+                    <span :class="container.State === 'running' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'" class="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ml-2">
+                        {{ container.State }}
+                    </span>
+                </div>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-network-wired w-4"></i>
+                        <span class="truncate">{{ container.Ports.map(p => p.PublicPort ? `${p.PublicPort}:${p.PrivatePort}` : p.PrivatePort).join(', ') || 'No ports' }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-clock w-4"></i>
+                        <span>{{ new Date(container.Created * 1000).toLocaleDateString() }}</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-fingerprint w-4"></i>
+                        <span class="font-mono text-xs truncate">{{ container.Id.substring(0, 12) }}</span>
+                    </div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-200 flex gap-2">
+                    <button class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">
+                        <i class="fas fa-terminal mr-2"></i>Logs
+                    </button>
+                    <button class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <div v-if="containers.length === 0" class="text-center py-12 bg-white rounded-lg shadow-md">
+        <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500">No containers running</p>
+    </div>
+</div>
