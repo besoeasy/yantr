@@ -128,28 +128,16 @@
                     <!-- Status -->
                     <!-- Navigation Tabs -->
                     <nav class="space-y-3 mb-8">
-                        <button @click="activeTab = 'containers'"
-                            :class="activeTab === 'containers' ? 'bg-blue-500 text-white smooth-shadow-lg' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'"
-                            class="w-full px-5 py-4 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
-                            <span class="flex items-center gap-3">
-                                <span class="text-xl">📦</span>
-                                <span class="text-base">Containers</span>
-                            </span>
-                            <span class="text-xs px-2.5 py-1 rounded-full font-semibold"
-                                :class="activeTab === 'containers' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">
-                                {{ containers.length }}
-                            </span>
-                        </button>
                         <button @click="activeTab = 'apps'"
                             :class="activeTab === 'apps' ? 'bg-blue-500 text-white smooth-shadow-lg' : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'"
                             class="w-full px-5 py-4 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
                             <span class="flex items-center gap-3">
-                                <span class="text-xl">🏪</span>
-                                <span class="text-base">App Store</span>
+                                <span class="text-xl">📦</span>
+                                <span class="text-base">Apps</span>
                             </span>
                             <span class="text-xs px-2.5 py-1 rounded-full font-semibold"
                                 :class="activeTab === 'apps' ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600'">
-                                {{ apps.length }}
+                                {{ allAppsCount }}
                             </span>
                         </button>
                         <button @click="activeTab = 'images'; fetchImages()"
@@ -213,97 +201,6 @@
             <!-- Main Content (responsive) -->
             <main class="w-full md:ml-80 lg:ml-96 min-h-screen">
                 <div class="p-6 md:p-10 lg:p-12">
-
-                    <!-- Containers Tab -->
-                    <div v-if="activeTab === 'containers'">
-                        <div class="flex items-center justify-between mb-12">
-                            <h2 class="text-5xl font-bold text-gray-900 tracking-tight">Containers</h2>
-                            <div class="bg-gray-100 rounded-xl p-1 flex gap-1">
-                                <button @click="containerView = 'appstore'"
-                                    :class="containerView === 'appstore' ? 'bg-white shadow-sm' : 'hover:bg-white/50'"
-                                    class="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
-                                    <span class="mr-2">🏪</span>App Store ({{ appStoreContainers.length }})
-                                </button>
-                                <button @click="containerView = 'custom'"
-                                    :class="containerView === 'custom' ? 'bg-white shadow-sm' : 'hover:bg-white/50'"
-                                    class="px-5 py-2.5 rounded-lg text-sm font-semibold transition-all">
-                                    <span class="mr-2">⚙️</span>Custom ({{ customContainers.length }})
-                                </button>
-                            </div>
-                        </div>
-                        <div v-if="loading" class="text-center py-16">
-                            <div class="text-gray-500 font-medium">Loading containers...</div>
-                        </div>
-                        <div v-else-if="activeContainers.length === 0" class="text-center py-16">
-                            <div class="text-5xl mb-4">{{ containerView === 'appstore' ? '🏪' : '⚙️' }}</div>
-                            <div class="text-gray-500 font-medium">No {{ containerView === 'appstore' ? 'app store' : 'custom' }} containers running</div>
-                            <div class="text-sm text-gray-400 mt-2">{{ containerView === 'appstore' ? 'Deploy an app to get started' : 'Custom containers from external sources will appear here' }}</div>
-                        </div>
-                        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div v-for="container in activeContainers" :key="container.id"
-                                class="bg-white rounded-3xl p-8 smooth-shadow-lg card-hover border border-gray-200">
-                                <div class="flex items-start justify-between mb-5">
-                                    <div class="flex items-center gap-5">
-                                        <img v-if="container.app.logo" :src="container.app.logo"
-                                            :alt="container.app.name" class="w-16 h-16 rounded-2xl smooth-shadow">
-                                        <div v-else
-                                            class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center text-3xl smooth-shadow">
-                                            📦
-                                        </div>
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <h3 class="font-bold text-2xl text-gray-900">{{ container.app.name }}</h3>
-                                            </div>
-                                            <div class="flex flex-wrap gap-2">
-                                                <span v-for="cat in container.app.category.split(',')" :key="cat"
-                                                    class="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 font-medium">
-                                                    {{ cat.trim() }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-red-500'"
-                                        class="w-3 h-3 rounded-full status-dot"></span>
-                                </div>
-
-                                <p class="text-base text-gray-600 mb-5 leading-relaxed">{{ container.app.description ||
-                                    'No description' }}</p>
-
-                                <div v-if="container.ports && container.ports.length > 0" class="mb-5">
-                                    <span class="text-sm font-semibold text-gray-700 mb-2 block">Ports:</span>
-                                    <div class="flex flex-wrap gap-2">
-                                        <span v-for="(port, index) in container.ports" :key="index"
-                                            class="text-xs px-3 py-2 bg-green-50 text-green-700 rounded-lg font-mono font-semibold border border-green-200">
-                                            <span v-if="port.PublicPort">{{ port.PublicPort }}</span>
-                                            <span v-if="port.PublicPort && port.PrivatePort"> → {{ port.PrivatePort }}</span>
-                                            <span v-else-if="port.PrivatePort">{{ port.PrivatePort }}</span>
-                                            <span v-if="port.Type">/{{ port.Type }}</span>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-3">
-                                    <a v-if="container.app.port" :href="appUrl(container.app.port)"
-                                        target="_blank"
-                                        class="flex-1 px-6 py-3.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-sm font-semibold text-center transition-all smooth-shadow">
-                                        Open App
-                                    </a>
-                                    <a v-if="container.app.website" :href="container.app.website" target="_blank"
-                                        class="px-4 py-3.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl text-sm font-semibold transition-all"
-                                        title="Visit website">
-                                        <i class="fas fa-globe"></i>
-                                    </a>
-                                    <button @click="deleteContainer(container.id, container.app.name)"
-                                        :disabled="deleting === container.id"
-                                        class="px-4 py-3.5 bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all smooth-shadow"
-                                        title="Delete container and volumes">
-                                        <i v-if="deleting !== container.id" class="fas fa-trash"></i>
-                                        <span v-else>...</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Images Tab -->
                     <div v-if="activeTab === 'images'">
@@ -501,22 +398,28 @@
                                     ✕
                                 </button>
                             </div>
-                            <div v-if="filteredApps.length < apps.length" class="mt-2 text-sm text-gray-500">
-                                Showing {{ filteredApps.length }} of {{ apps.length }} apps
+                            <div v-if="combinedApps.length < allAppsCount" class="mt-2 text-sm text-gray-500">
+                                Showing {{ combinedApps.length }} of {{ allAppsCount }} apps
                             </div>
                         </div>
 
                         <div v-if="loading" class="text-center py-16">
                             <div class="text-gray-500 font-medium">Loading apps...</div>
                         </div>
-                        <div v-else-if="filteredApps.length === 0" class="text-center py-16">
+                        <div v-else-if="combinedApps.length === 0" class="text-center py-16">
                             <div class="text-5xl mb-4">🔍</div>
                             <div class="text-gray-500 font-medium">No apps found</div>
                             <div class="text-sm text-gray-400 mt-2">Try a different search term</div>
                         </div>
                         <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                            <div v-for="app in filteredApps" :key="app.id"
-                                class="group bg-white rounded-2xl p-4 border border-gray-200 hover:border-blue-300 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col">
+                            <div v-for="app in combinedApps" :key="app.id"
+                                class="group bg-white rounded-2xl p-4 border border-gray-200 hover:border-blue-300 transition-all duration-300 ease-out hover:shadow-xl hover:-translate-y-1 cursor-pointer flex flex-col relative">
+                                <!-- Installed Badge -->
+                                <div v-if="app.isInstalled" class="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                                    <span class="w-2 h-2 bg-white rounded-full"></span>
+                                    Installed
+                                </div>
+                                
                                 <div class="flex flex-col items-center mb-3">
                                     <div class="relative mb-3">
                                         <img v-if="app.logo" :src="app.logo" :alt="app.name"
@@ -537,27 +440,62 @@
 
                                 <p class="text-xs text-gray-500 mb-3 leading-relaxed flex-1 line-clamp-2 text-center">{{ app.description || 'No description' }}</p>
 
+                                <!-- Ports (shown on hover for installed apps) -->
+                                <div v-if="app.isInstalled && app.ports && app.ports.length > 0" 
+                                    class="absolute bottom-16 left-0 right-0 mx-2 bg-gray-900/95 text-white text-xs px-2 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                    <div class="flex flex-wrap gap-1 justify-center">
+                                        <span v-for="(port, index) in app.ports" :key="index" class="font-mono">
+                                            <span v-if="port.PublicPort">{{ port.PublicPort }}</span>
+                                            <span v-if="port.PublicPort && port.PrivatePort">→{{ port.PrivatePort }}</span>
+                                            <span v-else-if="port.PrivatePort">{{ port.PrivatePort }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+
                                 <div class="flex gap-1">
-                                    <button @click="deployApp(app.id)" :disabled="deploying === app.id"
-                                        class="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-all duration-200 transform active:scale-95">
-                                        {{ deploying === app.id ? '...' : 'Install' }}
-                                    </button>
-                                    <a v-if="app.website" :href="app.website" target="_blank"
-                                        class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
-                                        title="Website">
-                                        <i class="fas fa-globe text-xs"></i>
-                                    </a>
-                                    <a :href="app.github" target="_blank"
-                                        class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
-                                        title="GitHub">
-                                        <i class="fab fa-github text-xs"></i>
-                                    </a>
-                                    <a :href="`https://github.com/besoeasy/yantra/blob/main/apps/${app.id}/compose.yml`"
-                                        target="_blank"
-                                        class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
-                                        title="Compose File">
-                                        <i class="fas fa-file-code text-xs"></i>
-                                    </a>
+                                    <!-- Installed App Buttons -->
+                                    <template v-if="app.isInstalled">
+                                        <a v-if="app.port" :href="appUrl(app.port)" target="_blank"
+                                            class="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold transition-all duration-200 transform active:scale-95 text-center">
+                                            Open
+                                        </a>
+                                        <a v-if="app.website" :href="app.website" target="_blank"
+                                            class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-green-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="Website">
+                                            <i class="fas fa-globe text-xs"></i>
+                                        </a>
+                                        <button @click="deleteContainer(app.containerId, app.name)"
+                                            :disabled="deleting === app.containerId"
+                                            class="w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="Uninstall">
+                                            <i v-if="deleting !== app.containerId" class="fas fa-trash text-xs"></i>
+                                            <span v-else class="text-xs">...</span>
+                                        </button>
+                                    </template>
+                                    
+                                    <!-- Uninstalled App Buttons -->
+                                    <template v-else>
+                                        <button @click="deployApp(app.id)" :disabled="deploying === app.id"
+                                            class="flex-1 px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg text-xs font-semibold transition-all duration-200 transform active:scale-95">
+                                            {{ deploying === app.id ? '...' : 'Install' }}
+                                        </button>
+                                        <a v-if="app.website" :href="app.website" target="_blank"
+                                            class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="Website">
+                                            <i class="fas fa-globe text-xs"></i>
+                                        </a>
+                                        <a :href="app.github" target="_blank"
+                                            class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="GitHub">
+                                            <i class="fab fa-github text-xs"></i>
+                                        </a>
+                                        <a :href="`https://github.com/besoeasy/yantra/blob/main/apps/${app.id}/compose.yml`"
+                                            target="_blank"
+                                            class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-blue-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="Compose File">
+                                            <i class="fas fa-file-code text-xs"></i>
+                                        </a>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -625,36 +563,52 @@
                     containerView: 'appstore'
                 }
             }, computed: {
-                filteredApps() {
-                    let result = this.apps;
+                allAppsCount() {
+                    return this.apps.length + this.containers.length;
+                },
+                installedAppIds() {
+                    return new Set(this.containers.map(c => c.app.id));
+                },
+                installedApps() {
+                    // Convert containers to app format with installed flag
+                    return this.containers.map(c => ({
+                        ...c.app,
+                        isInstalled: true,
+                        containerId: c.id,
+                        ports: c.ports,
+                        state: c.state
+                    }));
+                },
+                uninstalledApps() {
+                    // Filter out already installed apps and shuffle
+                    const uninstalled = this.apps.filter(app => !this.installedAppIds.has(app.id));
+                    return this.shuffleWithSeed(uninstalled).map(app => ({
+                        ...app,
+                        isInstalled: false
+                    }));
+                },
+                combinedApps() {
+                    // Combine installed apps first, then uninstalled (shuffled)
+                    let combined = [...this.installedApps, ...this.uninstalledApps];
                     
+                    // Apply search filter
                     if (this.appSearch) {
                         const search = this.appSearch.toLowerCase();
-                        result = result.filter(app => {
+                        combined = combined.filter(app => {
                             return app.name.toLowerCase().includes(search) ||
                                 app.category.toLowerCase().includes(search) ||
-                                app.description.toLowerCase().includes(search);
+                                (app.description && app.description.toLowerCase().includes(search));
                         });
                     }
                     
-                    // Randomize order using date-hour seed
-                    return this.shuffleWithSeed(result);
-                },
-                appStoreContainers() {
-                    return this.containers.filter(c => c.app.category !== 'uncategorized');
-                },
-                customContainers() {
-                    return this.containers.filter(c => c.app.category === 'uncategorized');
-                },
-                activeContainers() {
-                    return this.containerView === 'appstore' ? this.appStoreContainers : this.customContainers;
+                    return combined;
                 }
             }, mounted() {
                 this.fetchVersion();
                 this.refreshAll();
                 // Auto-refresh every 10 seconds
                 setInterval(() => {
-                    if (this.activeTab === 'containers') {
+                    if (this.activeTab === 'apps') {
                         this.fetchContainers();
                     }
                 }, 10000);
