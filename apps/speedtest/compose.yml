@@ -1,0 +1,20 @@
+services:
+  speedtest:
+    image: ghcr.io/librespeed/speedtest:latest
+    container_name: speedtest
+    labels:
+     yantra.name: "LibreSpeed"
+     yantra.logo: "QmZjYQm8xT6nVZvHpPzZrJf3h7qEj9H8YHsN7FqKx2vAZa"
+     yantra.category: "network"
+     yantra.port: "${SPEEDTEST_PORT:-8082}"
+     yantra.description: "Self-hosted speed test tool for bandwidth measurement"
+     yantra.website: "https://github.com/librespeed/speedtest"
+     yantra.github: "https://github.com/librespeed/speedtest"
+     yantra.tags: "speedtest,network,bandwidth,testing"
+    ports:
+      - "${SPEEDTEST_PORT:-8082}:80"
+    environment:
+      - MODE=standalone
+      - TELEMETRY=${SPEEDTEST_TELEMETRY:-false}
+      - PASSWORD=${SPEEDTEST_PASSWORD:-}
+    restart: unless-stopped

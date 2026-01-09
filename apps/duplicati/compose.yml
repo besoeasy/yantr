@@ -1,0 +1,29 @@
+services:
+  duplicati:
+    image: linuxserver/duplicati:latest
+    container_name: duplicati
+    labels:
+     yantra.name: "Duplicati"
+     yantra.logo: "QmX5vYzJ8Kh2Wp9Lq3Nm6Rz7FaT4cH8bV1dG9wE5jS2pYx"
+     yantra.category: "tools"
+     yantra.port: "${DUPLICATI_PORT:-8084}"
+     yantra.description: "Free backup software for encrypted, incremental backups"
+     yantra.website: "https://www.duplicati.com"
+     yantra.github: "https://github.com/duplicati/duplicati"
+     yantra.tags: "backup,encryption,storage,security"
+    ports:
+      - "${DUPLICATI_PORT:-8084}:8200"
+    volumes:
+      - duplicati_config:/config
+      - duplicati_backups:/backups
+      - duplicati_source:/source
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped
+
+volumes:
+  duplicati_config:
+  duplicati_backups:
+  duplicati_source:

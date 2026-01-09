@@ -1,0 +1,16 @@
+services:
+  convertx:
+    image: ghcr.io/c4illin/convertx:latest
+    container_name: convertx
+    labels:
+     yantra.name: "ConvertX"
+     yantra.logo: "QmTzQKh9Xv4MxW8cPqL5Yj6Hd2NmZrF8tKx3aVbJp9CuRs"
+     yantra.category: "tools"
+     yantra.port: "${CONVERTX_PORT:-8083}"
+     yantra.description: "Self-hosted file conversion tool supporting multiple formats"
+     yantra.website: "https://github.com/C4illin/ConvertX"
+     yantra.github: "https://github.com/C4illin/ConvertX"
+     yantra.tags: "conversion,files,utility,format"
+    ports:
+      - "${CONVERTX_PORT:-8083}:3000"
+    restart: unless-stopped

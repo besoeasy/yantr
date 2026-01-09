@@ -1,0 +1,43 @@
+services:
+  seafile-db:
+    image: mariadb:10.11
+    container_name: seafile-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${SEAFILE_DB_ROOT_PASSWORD:-seafile_root}
+      - MYSQL_LOG_CONSOLE=true
+      - MARIADB_AUTO_UPGRADE=1
+    volumes:
+      - seafile_db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  seafile:
+    image: seafileltd/seafile-mc:latest
+    container_name: seafile
+    labels:
+     yantra.name: "Seafile"
+     yantra.logo: "QmP9vL2Xk8Wq3Nh6Tz7Fc4Mj5Rb1Gd8Ys2Kp6Qx9Vw3Hz"
+     yantra.category: "productivity"
+     yantra.port: "${SEAFILE_PORT:-8086}"
+     yantra.description: "Open source file sync and share platform with encryption"
+     yantra.website: "https://www.seafile.com/en/home/"
+     yantra.github: "https://github.com/haiwen/seafile"
+     yantra.tags: "files,sync,storage,collaboration,cloud"
+    ports:
+      - "${SEAFILE_PORT:-8086}:80"
+    volumes:
+      - seafile_data:/shared
+    environment:
+      - DB_HOST=seafile-db
+      - DB_ROOT_PASSWD=${SEAFILE_DB_ROOT_PASSWORD:-seafile_root}
+      - TIME_ZONE=${TZ:-UTC}
+      - SEAFILE_ADMIN_EMAIL=${SEAFILE_ADMIN_EMAIL:-admin@example.com}
+      - SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD:-admin123}
+      - SEAFILE_SERVER_LETSENCRYPT=false
+      - SEAFILE_SERVER_HOSTNAME=${SEAFILE_HOSTNAME:-localhost}
+    depends_on:
+      - seafile-db
+    restart: unless-stopped
+
+volumes:
+  seafile_db_data:
+  seafile_data:

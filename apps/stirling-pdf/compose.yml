@@ -1,0 +1,26 @@
+services:
+  stirling-pdf:
+    image: frooodle/s-pdf:latest
+    container_name: stirling-pdf
+    labels:
+     yantra.name: "Stirling-PDF"
+     yantra.logo: "QmY8jHp3vK2Lw9Tx4Zf6Mc5Nb7Rd1Qe8Wg9Hs3Jp2Kx5Vz"
+     yantra.category: "tools"
+     yantra.port: "${STIRLING_PDF_PORT:-8085}"
+     yantra.description: "Powerful locally hosted web-based PDF manipulation tool"
+     yantra.website: "https://github.com/Stirling-Tools/Stirling-PDF"
+     yantra.github: "https://github.com/Stirling-Tools/Stirling-PDF"
+     yantra.tags: "pdf,manipulation,conversion,tools"
+    ports:
+      - "${STIRLING_PDF_PORT:-8085}:8080"
+    volumes:
+      - stirling_pdf_data:/usr/share/tessdata
+      - stirling_pdf_config:/configs
+    environment:
+      - DOCKER_ENABLE_SECURITY=${STIRLING_PDF_SECURITY:-false}
+      - SYSTEM_DEFAULTLOCALE=${STIRLING_PDF_LOCALE:-en-US}
+    restart: unless-stopped
+
+volumes:
+  stirling_pdf_data:
+  stirling_pdf_config:
