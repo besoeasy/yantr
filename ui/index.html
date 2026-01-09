@@ -519,8 +519,7 @@
                                     </div>
                                 </div>
 
-                                <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ app.description || 'No
-                                    description' }}</p>
+                                <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ app.description || 'No description' }}</p>
 
                                 <div class="flex flex-wrap gap-2 mb-5">
                                     <span v-for="tag in app.tags.slice(0, 3)" :key="tag"
@@ -537,6 +536,11 @@
                                     <a v-if="app.website" :href="app.website" target="_blank"
                                         class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
                                         🌐 Website
+                                    </a>
+                                    <a :href="`https://github.com/besoeasy/yantra/blob/main/apps/${app.id}/compose.yml`"
+                                        target="_blank"
+                                        class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
+                                        📄 Compose
                                     </a>
                                 </div>
                             </div>
