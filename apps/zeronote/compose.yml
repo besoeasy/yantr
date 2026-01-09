@@ -3,8 +3,6 @@ services:
     image: ghcr.io/besoeasy/zeronote:main
     container_name: zeronote
     hostname: zeronote
-    environment:
-      - TZ=${TZ:-UTC}
     volumes:
       - zeronote_data:/app/data
     ports:
