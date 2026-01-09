@@ -1,0 +1,23 @@
+services:
+  invio:
+    image: ghcr.io/kittendevv/invio:latest
+    container_name: invio
+    labels:
+     yantra.name: "Invio"
+     yantra.logo: "QmTX3W7JAmw9xVy4G9CtBzk8UmbcxWijAKBqPzVrgUCRo8"
+     yantra.category: "productivity"
+     yantra.port: "3001"
+     yantra.description: "Self-hosted invoicing without the bloat"
+     yantra.website: "https://github.com/kittendevv/Invio/wiki"
+     yantra.github: "https://github.com/kittendevv/Invio"
+     yantra.tags: "invoicing,billing,finance,selfhosted"
+    ports:
+      - "3001:3000"
+    volumes:
+      - invio_data:/app/data
+    environment:
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped
+
+volumes:
+  invio_data:

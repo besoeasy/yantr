@@ -4,7 +4,7 @@ services:
     container_name: gitea
     labels:
      yantra.name: "Gitea"
-     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.logo: "QmTX3W7JAmw9xVy4G9CtBzk8UmbcxWijAKBqPzVrgUCRo8"
      yantra.category: "development"
      yantra.port: "3000"
      yantra.description: "Self-hosted Git service with code review and CI/CD"

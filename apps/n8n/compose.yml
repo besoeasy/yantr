@@ -4,7 +4,7 @@ services:
     container_name: n8n
     labels:
      yantra.name: "n8n"
-     yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+     yantra.logo: "QmQEGWyJCYGJ63DLH4gga8kgWLqzrS4CAHVFghc4s7rWti"
      yantra.category: "productivity"
      yantra.port: "5678"
      yantra.description: "Workflow automation platform with AI and 400+ integrations"
