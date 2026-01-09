@@ -1,0 +1,35 @@
+services:
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ:-UTC}
+      - USER=${TRANSMISSION_USER:-admin}
+      - PASS=${TRANSMISSION_PASS:-admin}
+    volumes:
+      - transmission_config:/config
+      - transmission_downloads:/downloads
+      - transmission_watch:/watch
+    ports:
+      - "${TRANSMISSION_PORT:-9091}:9091"
+      - "${TRANSMISSION_PEER_PORT:-51413}:51413"
+      - "${TRANSMISSION_PEER_PORT:-51413}:51413/udp"
+    restart: unless-stopped
+    labels:
+      - "yantra.name=Transmission"
+      - "yantra.logo=https://dweb.link/ipfs/QmP3w9eEk8YJ4554ZpX3ve4svdVigLNG6GYUY8Kck7Mpc8"
+      - "yantra.category=download,network"
+      - "yantra.port=${TRANSMISSION_PORT:-9091}"
+      - "yantra.description=Fast, easy BitTorrent client with web interface"
+      - "yantra.website=https://transmissionbt.com/"
+      - "yantra.github=https://github.com/transmission/transmission"
+
+volumes:
+  transmission_config:
+    name: transmission_config
+  transmission_downloads:
+    name: transmission_downloads
+  transmission_watch:
+    name: transmission_watch
