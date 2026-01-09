@@ -393,6 +393,8 @@ app.get('/api/apps', async (req, res) => {
             category: labels.category || 'uncategorized',
             port: labels.port || null,
             description: labels.description || '',
+
+            website: labels.website || null, // Map website label
             docs: labels.docs || null,
             github: labels.github || null,
             tags: labels.tags ? labels.tags.split(',').map(t => t.trim()) : [],

@@ -1,0 +1,24 @@
+services:
+  zeronote:
+    image: ghcr.io/besoeasy/zeronote:main
+    container_name: zeronote
+    hostname: zeronote
+    environment:
+      - TZ=${TZ:-UTC}
+    volumes:
+      - zeronote_data:/app/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    labels:
+      - "yantra.name=ZeroNote"
+      - "yantra.logo=https://cdn-icons-png.flaticon.com/512/2965/2965358.png"
+      - "yantra.category=Productivity"
+      - "yantra.port=8000"
+      - "yantra.description=Offline-first encrypted notes application."
+      - "yantra.website=https://github.com/besoeasy/zeronote"
+      - "yantra.github=https://github.com/besoeasy/zeronote"
+      - "yantra.tags=notes,encrypted,productivity"
+
+volumes:
+  zeronote_data:

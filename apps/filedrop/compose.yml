@@ -1,0 +1,27 @@
+services:
+  filedrop:
+    image: ghcr.io/besoeasy/file-drop:main
+    container_name: filedrop
+    hostname: filedrop
+    environment:
+      - STORAGE_MAX=200GB
+      - TZ=${TZ:-UTC}
+    volumes:
+      - filedrop_data:/app/data
+    ports:
+      - "3232:3232"
+      - "4001:4001/tcp"
+      - "4001:4001/udp"
+    restart: unless-stopped
+    labels:
+      - "yantra.name=File Drop"
+      - "yantra.logo=https://cdn-icons-png.flaticon.com/512/2965/2965335.png"
+      - "yantra.category=Sharing"
+      - "yantra.port=3232"
+      - "yantra.description=Decentralized file-sharing solution for Nostr and the web."
+      - "yantra.website=https://github.com/besoeasy/file-drop"
+      - "yantra.github=https://github.com/besoeasy/file-drop"
+      - "yantra.tags=nostr,ipfs,sharing,files"
+
+volumes:
+  filedrop_data:
