@@ -464,6 +464,11 @@
                                             title="Website">
                                             <i class="fas fa-globe text-xs"></i>
                                         </a>
+                                        <a v-if="app.github" :href="app.github" target="_blank"
+                                            class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-green-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
+                                            title="GitHub">
+                                            <i class="fab fa-github text-xs"></i>
+                                        </a>
                                         <button @click="deleteContainer(app.containerId, app.name)"
                                             :disabled="deleting === app.containerId"
                                             class="w-8 h-8 flex items-center justify-center bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white rounded-lg transition-all duration-200 transform active:scale-95"
