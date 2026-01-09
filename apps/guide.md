@@ -44,7 +44,20 @@ All apps must include the following labels to ensure proper categorization and d
    - Full URL to the main project repository
    - Example: `"https://github.com/pi-hole/pi-hole"`
 
-8. **yantra.tags** (Required) - Comma-separated searchable tags
+5. Follow best practices for security, such as using non-root users and limiting container capabilities.
+
+## User Configurable Environment Variables
+
+To ensure users can configure essential settings like Timezone and Passwords, always include the following in your `compose.yml` environment section using the standard variable substitution syntax:
+
+```yaml
+environment:
+  - TZ=${TZ:-UTC}
+  - WEBPASSWORD=${WEBPASSWORD:-changeme}
+```
+
+- **TZ**: Allows the user to set the container's timezone (defaults to UTC).
+- **WEBPASSWORD**: Used for the application's primary admin password or web interface login (defaults to `changeme` or a safe default). **yantra.tags** (Required) - Comma-separated searchable tags
    - Use lowercase keywords related to functionality
    - Separate with commas (no spaces after commas)
    - Include 3-6 relevant tags

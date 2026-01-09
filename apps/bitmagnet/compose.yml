@@ -1,0 +1,60 @@
+services:
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:v0.10
+    container_name: bitmagnet
+    restart: unless-stopped
+    stop_grace_period: 1m
+    ports:
+      # API and WebUI port:
+      - "3333:3333"
+      # BitTorrent ports:
+      - "3334:3334/tcp"
+      - "3334:3334/udp"
+    environment:
+      HOME: /tmp
+      XDG_CONFIG_HOME: /config
+      TZ: ${TZ:-UTC}
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${WEBPASSWORD:-postgres}"
+      POSTGRES_NAME: bitmagnet
+    volumes:
+      - bitmagnet_config:/config/bitmagnet
+    command:
+      - worker
+      - run
+      - --keys=http_server
+      - --keys=queue_server
+      - --keys=dht_crawler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      yantra.name: "Bitmagnet"
+      yantra.logo: "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/bitmagnet.png"
+      yantra.category: "media"
+      yantra.port: "3333"
+      yantra.description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent client."
+      yantra.website: "https://bitmagnet.io"
+      yantra.github: "https://github.com/bitmagnet-io/bitmagnet"
+      yantra.tags: "torrent,dht,crawler,indexer,search"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bitmagnet_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: "${WEBPASSWORD:-postgres}"
+      POSTGRES_DB: bitmagnet
+      POSTGRES_USER: postgres
+    shm_size: 1g
+    volumes:
+      - bitmagnet_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 20s
+      interval: 10s
+
+volumes:
+  bitmagnet_config:
+  bitmagnet_db:

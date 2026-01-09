@@ -10,7 +10,6 @@
     "type": "git",
     "url": "git+https://github.com/besoeasy/yantra.git"
   },
-  "license": "ISC",
   "author": "besoeasy",
   "type": "commonjs",
   "main": "main.js",
