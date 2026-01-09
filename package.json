@@ -14,7 +14,7 @@
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
-    "start": "clear && node main.js",
+    "start": "clear && node check.js && node main.js",
     "dev": "nodemon main.js",
     "test": "node main.js"
   },

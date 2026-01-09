@@ -26,4 +26,4 @@ ENV PORT=5252
 ENV NODE_ENV=production
 
 # Run the application
-CMD ["node", "main.js"]
+CMD ["npm", "start"]

@@ -152,7 +152,18 @@ async function detectPortConflict() {
 // Run if called directly
 if (require.main === module) {
     detectPortConflict().then(result => {
-        process.stdout.write(JSON.stringify(result));
+        if (result.conflict) {
+            console.error('❌ Port conflicts detected!');
+            console.error(`Port ${result.port} is used by multiple apps:`);
+            result.files.forEach(file => console.error(`  - ${file}`));
+            process.exit(1);
+        } else {
+            console.log('✅ No port conflicts found');
+            process.exit(0);
+        }
+    }).catch(error => {
+        console.error('❌ Error running port check:', error.message);
+        process.exit(1);
     });
 }
 
