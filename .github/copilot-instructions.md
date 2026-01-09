@@ -68,31 +68,6 @@ All apps must include the following labels to ensure proper categorization and d
 
 After edits make sure to update index.html if we change anything.
 
-Incase i ask you to add App, make sure to follow the steps below:
-
-## IPFS Upload
-
-To upload images/files to IPFS (for app logos, etc.):
-
-**Example**:
-
-```bash
-curl -X POST https://filedrop.besoeasy.com/remoteupload \
-  -H "Content-Type: application/json" \
-  -d '{"url":"https://example.com/image.png"}'
-```
-
-**Response**:
-
-```json
-{
-  "status": "success",
-  "cid": "QmX..."
-}
-```
-
-Use the returned `cid` value for the `yantra.logo` label in compose files.
-
 ## Check for port conflicts
 
 Check for port conflicts using the provided script:

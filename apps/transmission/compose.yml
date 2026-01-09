@@ -18,13 +18,13 @@ services:
       - "${TRANSMISSION_PEER_PORT:-51413}:51413/udp"
     restart: unless-stopped
     labels:
-      - "yantra.name=Transmission"
-      - "yantra.logo=QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb"
-      - "yantra.category=download,network"
-      - "yantra.port=${TRANSMISSION_PORT:-9091}"
-      - "yantra.description=Fast, easy BitTorrent client with web interface"
-      - "yantra.website=https://transmissionbt.com/"
-      - "yantra.github=https://github.com/transmission/transmission"
+      yantra.name: Transmission
+      yantra.logo: QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb
+      yantra.category: download,network
+      yantra.port: ${TRANSMISSION_PORT:-9091}
+      yantra.description: Fast, easy BitTorrent client with web interface
+      yantra.website: https://transmissionbt.com/
+      yantra.github: https://github.com/transmission/transmission
 
 volumes:
   transmission_config:
