@@ -440,25 +440,26 @@
 
                                 <p class="text-xs text-gray-500 mb-3 leading-relaxed flex-1 line-clamp-2 text-center">{{ app.description || 'No description' }}</p>
 
-                                <!-- Ports (shown on hover for installed apps) -->
-                                <div v-if="app.isInstalled && app.ports && app.ports.length > 0" 
-                                    class="absolute bottom-16 left-0 right-0 mx-2 bg-gray-900/95 text-white text-xs px-2 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                                    <div class="flex flex-wrap gap-1 justify-center">
-                                        <span v-for="(port, index) in app.ports" :key="index" class="font-mono">
-                                            <span v-if="port.PublicPort">{{ port.PublicPort }}</span>
-                                            <span v-if="port.PublicPort && port.PrivatePort">→{{ port.PrivatePort }}</span>
-                                            <span v-else-if="port.PrivatePort">{{ port.PrivatePort }}</span>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-1">
+                                <div class="flex gap-1 relative">
                                     <!-- Installed App Buttons -->
                                     <template v-if="app.isInstalled">
                                         <a v-if="app.port" :href="appUrl(app.port)" target="_blank"
                                             class="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold transition-all duration-200 transform active:scale-95 text-center">
                                             Open
                                         </a>
+                                        
+                                        <!-- Ports (shown on hover below Open button) -->
+                                        <div v-if="app.isInstalled && app.ports && app.ports.length > 0" 
+                                            class="absolute top-full left-0 right-0 mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+                                            <div class="flex flex-wrap gap-1 justify-start">
+                                                <span v-for="(port, index) in app.ports" :key="index" 
+                                                    class="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded font-mono border border-gray-200">
+                                                    <span v-if="port.PublicPort">{{ port.PublicPort }}</span>
+                                                    <span v-if="port.PublicPort && port.PrivatePort" class="text-gray-400">→</span>
+                                                    <span v-if="port.PrivatePort">{{ port.PrivatePort }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
                                         <a v-if="app.website" :href="app.website" target="_blank"
                                             class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-50 hover:border-green-300 text-gray-600 rounded-lg transition-all duration-200 transform active:scale-95"
                                             title="Website">
