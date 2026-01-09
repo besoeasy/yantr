@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,87 +9,97 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        
+
         body {
             background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
         }
-        
+
         .glass {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
-        
+
         .glass-dark {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(30px) saturate(200%);
             -webkit-backdrop-filter: blur(30px) saturate(200%);
             border: 1px solid rgba(255, 255, 255, 0.9);
         }
-        
+
         .card-hover {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
-        
+
         .smooth-shadow {
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
         }
-        
+
         .smooth-shadow-lg {
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         }
-        
-        button, a {
+
+        button,
+        a {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .status-dot {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
         }
-        
-        input:focus, textarea:focus {
+
+        input:focus,
+        textarea:focus {
             outline: none;
             border-color: #007AFF;
             box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
         }
-        
+
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
-        
+
         ::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05);
             border-radius: 10px;
         }
-        
+
         ::-webkit-scrollbar-thumb {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
         }
-        
+
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
+
 <body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900">
     <div id="app">
         <div class="min-h-screen flex">
@@ -97,7 +108,9 @@
                 <div class="p-8">
                     <!-- Header -->
                     <div class="mb-8">
-                        <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Yantra</h1>
+                        <h1
+                            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                            Yantra</h1>
                         <p class="text-sm text-gray-500 font-medium">Docker Dashboard</p>
                         <p class="text-xs text-gray-400 mt-1">v{{ version }}</p>
                     </div>
@@ -106,10 +119,10 @@
                     <div class="mb-6 p-4 glass rounded-2xl smooth-shadow">
                         <div class="flex items-center justify-between">
                             <span class="text-sm font-semibold text-gray-700">System Status</span>
-                            <span v-if="health" 
-                                  :class="health.status === 'healthy' ? 'text-green-600' : 'text-red-600'"
-                                  class="text-sm font-semibold flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full status-dot" :class="health.status === 'healthy' ? 'bg-green-500' : 'bg-red-500'"></span>
+                            <span v-if="health" :class="health.status === 'healthy' ? 'text-green-600' : 'text-red-600'"
+                                class="text-sm font-semibold flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full status-dot"
+                                    :class="health.status === 'healthy' ? 'bg-green-500' : 'bg-red-500'"></span>
                                 {{ health.status === 'healthy' ? 'Connected' : 'Disconnected' }}
                             </span>
                         </div>
@@ -117,55 +130,59 @@
 
                     <!-- Navigation Tabs -->
                     <nav class="space-y-2 mb-6">
-                        <button @click="activeTab = 'containers'" 
-                                :class="activeTab === 'containers' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
-                                class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
+                        <button @click="activeTab = 'containers'"
+                            :class="activeTab === 'containers' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
+                            class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
                             <span class="flex items-center gap-3">
                                 <span class="text-lg">📦</span>
                                 <span>Containers</span>
                             </span>
-                            <span class="text-xs px-2.5 py-1 rounded-full font-bold" :class="activeTab === 'containers' ? 'bg-white/20' : 'bg-gray-100'">
+                            <span class="text-xs px-2.5 py-1 rounded-full font-bold"
+                                :class="activeTab === 'containers' ? 'bg-white/20' : 'bg-gray-100'">
                                 {{ containers.length }}
                             </span>
                         </button>
-                        <button @click="activeTab = 'apps'" 
-                                :class="activeTab === 'apps' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
-                                class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
+                        <button @click="activeTab = 'apps'"
+                            :class="activeTab === 'apps' ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
+                            class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
                             <span class="flex items-center gap-3">
                                 <span class="text-lg">🏪</span>
                                 <span>App Store</span>
                             </span>
-                            <span class="text-xs px-2.5 py-1 rounded-full font-bold" :class="activeTab === 'apps' ? 'bg-white/20' : 'bg-gray-100'">
+                            <span class="text-xs px-2.5 py-1 rounded-full font-bold"
+                                :class="activeTab === 'apps' ? 'bg-white/20' : 'bg-gray-100'">
                                 {{ apps.length }}
                             </span>
                         </button>
-                        <button @click="activeTab = 'images'; fetchImages()" 
-                                :class="activeTab === 'images' ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
-                                class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
+                        <button @click="activeTab = 'images'; fetchImages()"
+                            :class="activeTab === 'images' ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
+                            class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
                             <span class="flex items-center gap-3">
                                 <span class="text-lg">🖼️</span>
                                 <span>Images</span>
                             </span>
-                            <span class="text-xs px-2.5 py-1 rounded-full font-bold" :class="activeTab === 'images' ? 'bg-white/20' : (imagesData.unused > 0 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100')">
+                            <span class="text-xs px-2.5 py-1 rounded-full font-bold"
+                                :class="activeTab === 'images' ? 'bg-white/20' : (imagesData.unused > 0 ? 'bg-orange-100 text-orange-700' : 'bg-gray-100')">
                                 {{ imagesData.unused || 0 }} unused
                             </span>
                         </button>
-                        <button @click="activeTab = 'logs'; fetchLogs()" 
-                                :class="activeTab === 'logs' ? 'bg-gradient-to-r from-gray-700 to-gray-800 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
-                                class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
+                        <button @click="activeTab = 'logs'; fetchLogs()"
+                            :class="activeTab === 'logs' ? 'bg-gradient-to-r from-gray-700 to-gray-800 text-white smooth-shadow-lg scale-[1.02]' : 'glass text-gray-700 hover:bg-white/90'"
+                            class="w-full px-5 py-3.5 rounded-xl font-semibold transition-all text-left flex items-center justify-between">
                             <span class="flex items-center gap-3">
                                 <span class="text-lg">📋</span>
                                 <span>Logs</span>
                             </span>
-                            <span class="text-xs px-2.5 py-1 rounded-full font-bold" :class="activeTab === 'logs' ? 'bg-white/20' : 'bg-gray-100'">
+                            <span class="text-xs px-2.5 py-1 rounded-full font-bold"
+                                :class="activeTab === 'logs' ? 'bg-white/20' : 'bg-gray-100'">
                                 {{ logsData.count || 0 }}
                             </span>
                         </button>
                     </nav>
 
                     <!-- Refresh Button -->
-                    <button @click="refreshAll" 
-                            class="w-full px-5 py-3.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all smooth-shadow-lg hover:scale-[1.02]">
+                    <button @click="refreshAll"
+                        class="w-full px-5 py-3.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all smooth-shadow-lg hover:scale-[1.02]">
                         <span class="flex items-center justify-center gap-2">
                             <span>🔄</span>
                             <span>Refresh All</span>
@@ -174,19 +191,20 @@
 
                     <!-- GitHub Links -->
                     <div class="mt-6 space-y-2">
-                        <a href="https://github.com/besoeasy/Yantra" 
-                           target="_blank"
-                           class="w-full flex items-center justify-center gap-2 px-5 py-3 glass hover:bg-white/90 text-gray-800 rounded-xl font-medium transition-all smooth-shadow">
+                        <a href="https://github.com/besoeasy/Yantra" target="_blank"
+                            class="w-full flex items-center justify-center gap-2 px-5 py-3 glass hover:bg-white/90 text-gray-800 rounded-xl font-medium transition-all smooth-shadow">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd"
+                                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                                    clip-rule="evenodd" />
                             </svg>
                             View on GitHub
                         </a>
-                        <a href="https://github.com/besoeasy/Yantra/issues/new" 
-                           target="_blank"
-                           class="w-full flex items-center justify-center gap-2 px-5 py-3 glass hover:bg-white/90 text-gray-800 rounded-xl font-medium transition-all smooth-shadow">
+                        <a href="https://github.com/besoeasy/Yantra/issues/new" target="_blank"
+                            class="w-full flex items-center justify-center gap-2 px-5 py-3 glass hover:bg-white/90 text-gray-800 rounded-xl font-medium transition-all smooth-shadow">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             Report Issue
                         </a>
@@ -198,371 +216,367 @@
             <main class="w-2/3 ml-auto min-h-screen">
                 <div class="p-8">
 
-                <!-- Containers Tab -->
-                <div v-if="activeTab === 'containers'">
-                    <h2 class="text-3xl font-bold mb-8 text-gray-800">Running Containers</h2>
-                    <div v-if="loading" class="text-center py-16">
-                        <div class="text-gray-500 font-medium">Loading containers...</div>
-                    </div>
-                    <div v-else-if="containers.length === 0" class="text-center py-16">
-                        <div class="text-5xl mb-4">📦</div>
-                        <div class="text-gray-500 font-medium">No containers running</div>
-                        <div class="text-sm text-gray-400 mt-2">Deploy an app to get started</div>
-                    </div>
-                    <div v-else class="grid grid-cols-1 gap-4">
-                        <div v-for="container in containers" 
-                             :key="container.id"
-                             class="glass rounded-2xl p-6 smooth-shadow card-hover">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="flex items-center gap-4">
-                                    <img v-if="container.app.logo" 
-                                         :src="container.app.logo" 
-                                         :alt="container.app.name"
-                                         class="w-14 h-14 rounded-xl smooth-shadow">
-                                    <div v-else class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl smooth-shadow">
-                                        📦
+                    <!-- Containers Tab -->
+                    <div v-if="activeTab === 'containers'">
+                        <h2 class="text-3xl font-bold mb-8 text-gray-800">Running Containers</h2>
+                        <div v-if="loading" class="text-center py-16">
+                            <div class="text-gray-500 font-medium">Loading containers...</div>
+                        </div>
+                        <div v-else-if="containers.length === 0" class="text-center py-16">
+                            <div class="text-5xl mb-4">📦</div>
+                            <div class="text-gray-500 font-medium">No containers running</div>
+                            <div class="text-sm text-gray-400 mt-2">Deploy an app to get started</div>
+                        </div>
+                        <div v-else class="grid grid-cols-1 gap-4">
+                            <div v-for="container in containers" :key="container.id"
+                                class="glass rounded-2xl p-6 smooth-shadow card-hover">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center gap-4">
+                                        <img v-if="container.app.logo" :src="container.app.logo"
+                                            :alt="container.app.name" class="w-14 h-14 rounded-xl smooth-shadow">
+                                        <div v-else
+                                            class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl smooth-shadow">
+                                            📦
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-xl text-gray-900">{{ container.app.name }}</h3>
+                                            <span
+                                                class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">
+                                                {{ container.app.category }}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 class="font-bold text-xl text-gray-900">{{ container.app.name }}</h3>
-                                        <span class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">
-                                            {{ container.app.category }}
-                                        </span>
-                                    </div>
+                                    <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-red-500'"
+                                        class="w-3 h-3 rounded-full status-dot smooth-shadow"></span>
                                 </div>
-                                <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-red-500'"
-                                      class="w-3 h-3 rounded-full status-dot smooth-shadow"></span>
-                            </div>
-                            
-                            <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ container.app.description || 'No description' }}</p>
-                            
-                            <div v-if="container.app.port" class="mb-4 flex items-center gap-2">
-                                <span class="text-sm font-semibold text-gray-700">Port:</span>
-                                <span class="text-sm px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg font-mono font-semibold">
-                                    {{ container.app.port }}
-                                </span>
-                            </div>
-                            
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span v-for="tag in container.app.tags.slice(0, 3)" 
-                                      :key="tag"
-                                      class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg font-medium">
-                                    {{ tag }}
-                                </span>
-                            </div>
 
-                            <div class="flex gap-2">
-                                <a v-if="container.app.port" 
-                                   :href="`http://localhost:${container.app.port}`" 
-                                   target="_blank"
-                                   class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-semibold text-center transition-all smooth-shadow">
-                                    Open App
-                                </a>
-                                <a v-if="container.app.github" 
-                                   :href="container.app.github" 
-                                   target="_blank"
-                                   class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
-                                    GitHub
-                                </a>
-                                <button @click="deleteContainer(container.id, container.app.name)"
+                                <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ container.app.description ||
+                                    'No description' }}</p>
+
+                                <div v-if="container.app.port" class="mb-4 flex items-center gap-2">
+                                    <span class="text-sm font-semibold text-gray-700">Port:</span>
+                                    <span
+                                        class="text-sm px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg font-mono font-semibold">
+                                        {{ container.app.port }}
+                                    </span>
+                                </div>
+
+                                <div class="flex flex-wrap gap-2 mb-5">
+                                    <span v-for="tag in container.app.tags.slice(0, 3)" :key="tag"
+                                        class="text-xs px-3 py-1 bg-blue-50 text-blue-600 rounded-lg font-medium">
+                                        {{ tag }}
+                                    </span>
+                                </div>
+
+                                <div class="flex gap-2">
+                                    <a v-if="container.app.port" :href="`http://localhost:${container.app.port}`"
+                                        target="_blank"
+                                        class="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-sm font-semibold text-center transition-all smooth-shadow">
+                                        Open App
+                                    </a>
+                                    <a v-if="container.app.github" :href="container.app.github" target="_blank"
+                                        class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
+                                        GitHub
+                                    </a>
+                                    <button @click="deleteContainer(container.id, container.app.name)"
                                         :disabled="deleting === container.id"
                                         class="px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all smooth-shadow"
                                         title="Delete container and volumes">
-                                    {{ deleting === container.id ? '...' : '🗑️' }}
-                                </button>
+                                        {{ deleting === container.id ? '...' : '🗑️' }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Images Tab -->
-                <div v-if="activeTab === 'images'">
-                    <h2 class="text-3xl font-bold mb-8 text-gray-800">Docker Images</h2>
-                    <div v-if="loading" class="text-center py-16">
-                        <div class="text-gray-500 font-medium">Loading images...</div>
-                    </div>
-                    <div v-else>
-                        <!-- Summary Stats -->
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                            <div class="glass rounded-2xl p-5 smooth-shadow">
-                                <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Total Images</div>
-                                <div class="text-3xl font-bold text-gray-900">{{ imagesData.total || 0 }}</div>
-                            </div>
-                            <div class="glass rounded-2xl p-5 smooth-shadow">
-                                <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Used Images</div>
-                                <div class="text-3xl font-bold text-green-600">{{ imagesData.used || 0 }}</div>
-                            </div>
-                            <div class="glass rounded-2xl p-5 smooth-shadow">
-                                <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Unused Images</div>
-                                <div class="text-3xl font-bold text-orange-600">{{ imagesData.unused || 0 }}</div>
-                            </div>
-                            <div class="glass rounded-2xl p-5 smooth-shadow">
-                                <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Unused Space</div>
-                                <div class="text-3xl font-bold text-red-600">{{ imagesData.unusedSize || 0 }} <span class="text-lg">MB</span></div>
-                            </div>
+                    <!-- Images Tab -->
+                    <div v-if="activeTab === 'images'">
+                        <h2 class="text-3xl font-bold mb-8 text-gray-800">Docker Images</h2>
+                        <div v-if="loading" class="text-center py-16">
+                            <div class="text-gray-500 font-medium">Loading images...</div>
                         </div>
+                        <div v-else>
+                            <!-- Summary Stats -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                                <div class="glass rounded-2xl p-5 smooth-shadow">
+                                    <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Total
+                                        Images</div>
+                                    <div class="text-3xl font-bold text-gray-900">{{ imagesData.total || 0 }}</div>
+                                </div>
+                                <div class="glass rounded-2xl p-5 smooth-shadow">
+                                    <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Used
+                                        Images</div>
+                                    <div class="text-3xl font-bold text-green-600">{{ imagesData.used || 0 }}</div>
+                                </div>
+                                <div class="glass rounded-2xl p-5 smooth-shadow">
+                                    <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Unused
+                                        Images</div>
+                                    <div class="text-3xl font-bold text-orange-600">{{ imagesData.unused || 0 }}</div>
+                                </div>
+                                <div class="glass rounded-2xl p-5 smooth-shadow">
+                                    <div class="text-gray-500 text-xs font-semibold uppercase tracking-wide mb-2">Unused
+                                        Space</div>
+                                    <div class="text-3xl font-bold text-red-600">{{ imagesData.unusedSize || 0 }} <span
+                                            class="text-lg">MB</span></div>
+                                </div>
+                            </div>
 
-                        <!-- Unused Images Section -->
-                        <div v-if="imagesData.unusedImages && imagesData.unusedImages.length > 0" class="mb-8">
-                            <h3 class="text-xl font-bold mb-4 text-orange-600 flex items-center gap-2">
-                                <span>🗑️</span>
-                                <span>Unused Images</span>
-                            </h3>
-                            <div class="space-y-3">
-                                <div v-for="image in imagesData.unusedImages" 
-                                     :key="image.id"
-                                     class="glass rounded-2xl p-5 card-hover smooth-shadow">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex-1">
-                                            <div class="flex items-center gap-3 mb-2">
-                                                <span class="text-2xl">🖼️</span>
-                                                <div>
-                                                    <div class="font-bold text-gray-900">{{ image.tags.join(', ') }}</div>
-                                                    <div class="text-sm text-gray-500 font-mono">{{ image.shortId }}</div>
+                            <!-- Unused Images Section -->
+                            <div v-if="imagesData.unusedImages && imagesData.unusedImages.length > 0" class="mb-8">
+                                <h3 class="text-xl font-bold mb-4 text-orange-600 flex items-center gap-2">
+                                    <span>🗑️</span>
+                                    <span>Unused Images</span>
+                                </h3>
+                                <div class="space-y-3">
+                                    <div v-for="image in imagesData.unusedImages" :key="image.id"
+                                        class="glass rounded-2xl p-5 card-hover smooth-shadow">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">🖼️</span>
+                                                    <div>
+                                                        <div class="font-bold text-gray-900">{{ image.tags.join(', ') }}
+                                                        </div>
+                                                        <div class="text-sm text-gray-500 font-mono">{{ image.shortId }}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="flex items-center gap-4">
-                                            <div class="text-right">
-                                                <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Size</div>
-                                                <div class="font-bold text-gray-900">{{ image.size }} MB</div>
-                                            </div>
-                                            <button @click="deleteImage(image.id, image.tags[0])"
+                                            <div class="flex items-center gap-4">
+                                                <div class="text-right">
+                                                    <div
+                                                        class="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+                                                        Size</div>
+                                                    <div class="font-bold text-gray-900">{{ image.size }} MB</div>
+                                                </div>
+                                                <button @click="deleteImage(image.id, image.tags[0])"
                                                     :disabled="deletingImage === image.id"
                                                     class="px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all smooth-shadow"
                                                     title="Delete this image">
-                                                {{ deletingImage === image.id ? 'Deleting...' : '🗑️ Delete' }}
-                                            </button>
+                                                    {{ deletingImage === image.id ? 'Deleting...' : '🗑️ Delete' }}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Used Images Section -->
-                        <div v-if="imagesData.usedImages && imagesData.usedImages.length > 0">
-                            <h3 class="text-xl font-bold mb-4 text-green-600 flex items-center gap-2">
-                                <span>✅</span>
-                                <span>Images in Use</span>
-                            </h3>
-                            <div class="space-y-3">
-                                <div v-for="image in imagesData.usedImages" 
-                                     :key="image.id"
-                                     class="glass rounded-2xl p-5 smooth-shadow">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex-1">
-                                            <div class="flex items-center gap-3 mb-2">
-                                                <span class="text-2xl">🖼️</span>
-                                                <div>
-                                                    <div class="font-bold text-gray-900">{{ image.tags.join(', ') }}</div>
-                                                    <div class="text-sm text-gray-500 font-mono">{{ image.shortId }}</div>
+                            <!-- Used Images Section -->
+                            <div v-if="imagesData.usedImages && imagesData.usedImages.length > 0">
+                                <h3 class="text-xl font-bold mb-4 text-green-600 flex items-center gap-2">
+                                    <span>✅</span>
+                                    <span>Images in Use</span>
+                                </h3>
+                                <div class="space-y-3">
+                                    <div v-for="image in imagesData.usedImages" :key="image.id"
+                                        class="glass rounded-2xl p-5 smooth-shadow">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center gap-3 mb-2">
+                                                    <span class="text-2xl">🖼️</span>
+                                                    <div>
+                                                        <div class="font-bold text-gray-900">{{ image.tags.join(', ') }}
+                                                        </div>
+                                                        <div class="text-sm text-gray-500 font-mono">{{ image.shortId }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-4">
+                                                <div class="text-right">
+                                                    <div
+                                                        class="text-xs text-gray-500 font-semibold uppercase tracking-wide">
+                                                        Size</div>
+                                                    <div class="font-bold text-gray-900">{{ image.size }} MB</div>
+                                                </div>
+                                                <div
+                                                    class="px-4 py-2.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-xl text-sm font-semibold">
+                                                    In Use
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-4">
-                                            <div class="text-right">
-                                                <div class="text-xs text-gray-500 font-semibold uppercase tracking-wide">Size</div>
-                                                <div class="font-bold text-gray-900">{{ image.size }} MB</div>
-                                            </div>
-                                            <div class="px-4 py-2.5 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-xl text-sm font-semibold">
-                                                In Use
-                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="!imagesData.unusedImages || (imagesData.unusedImages.length === 0 && imagesData.usedImages.length === 0)"
+                                class="text-center py-16">
+                                <div class="text-5xl mb-4">🖼️</div>
+                                <div class="text-gray-500 font-medium">No images found</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Tab -->
+                    <div v-if="activeTab === 'logs'">
+                        <h2 class="text-3xl font-bold mb-8 text-gray-800">Application Logs</h2>
+                        <div v-if="loading" class="text-center py-16">
+                            <div class="text-gray-500 font-medium">Loading logs...</div>
+                        </div>
+                        <div v-else>
+                            <!-- Controls -->
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex gap-2">
+                                    <button @click="logFilter = 'all'; fetchLogs()"
+                                        :class="logFilter === 'all' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow' : 'glass text-gray-700'"
+                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
+                                        All ({{ logsData.count || 0 }})
+                                    </button>
+                                    <button @click="logFilter = 'info'; fetchLogs()"
+                                        :class="logFilter === 'info' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow' : 'glass text-gray-700'"
+                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
+                                        Info
+                                    </button>
+                                    <button @click="logFilter = 'error'; fetchLogs()"
+                                        :class="logFilter === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white smooth-shadow' : 'glass text-gray-700'"
+                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
+                                        Errors
+                                    </button>
+                                </div>
+                                <button @click="fetchLogs()"
+                                    class="px-4 py-2 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
+                                    🔄 Refresh
+                                </button>
+                            </div>
+
+                            <!-- Logs List -->
+                            <div class="glass rounded-2xl overflow-hidden smooth-shadow">
+                                <div class="max-h-[600px] overflow-y-auto font-mono text-sm">
+                                    <div v-if="!logsData.logs || logsData.logs.length === 0" class="p-12 text-center">
+                                        <div class="text-5xl mb-4">📋</div>
+                                        <div class="text-gray-500 font-medium">No logs available</div>
+                                    </div>
+                                    <div v-for="(logEntry, index) in logsData.logs" :key="index"
+                                        :class="logEntry.level === 'error' ? 'bg-red-50/80 border-l-4 border-red-500' : 'border-b border-gray-100'"
+                                        class="px-5 py-3 hover:bg-white/50 transition-colors">
+                                        <div class="flex items-start gap-3">
+                                            <span class="text-gray-400 text-xs whitespace-nowrap pt-0.5 font-semibold">
+                                                {{ formatTimestamp(logEntry.timestamp) }}
+                                            </span>
+                                            <span :class="logEntry.level === 'error' ? 'text-red-600' : 'text-blue-600'"
+                                                class="text-xs font-bold uppercase whitespace-nowrap pt-0.5">
+                                                {{ logEntry.level }}
+                                            </span>
+                                            <span class="text-gray-800 flex-1 break-all">
+                                                {{ logEntry.message }}
+                                                <span v-if="logEntry.args" class="text-gray-600">
+                                                    {{ logEntry.args.join(' ') }}
+                                                </span>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div v-if="!imagesData.unusedImages || (imagesData.unusedImages.length === 0 && imagesData.usedImages.length === 0)" 
-                             class="text-center py-16">
-                            <div class="text-5xl mb-4">🖼️</div>
-                            <div class="text-gray-500 font-medium">No images found</div>
-                        </div>
                     </div>
-                </div>
 
-                <!-- Logs Tab -->
-                <div v-if="activeTab === 'logs'">
-                    <h2 class="text-3xl font-bold mb-8 text-gray-800">Application Logs</h2>
-                    <div v-if="loading" class="text-center py-16">
-                        <div class="text-gray-500 font-medium">Loading logs...</div>
-                    </div>
-                    <div v-else>
-                        <!-- Controls -->
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex gap-2">
-                                <button @click="logFilter = 'all'; fetchLogs()"
-                                        :class="logFilter === 'all' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow' : 'glass text-gray-700'"
-                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
-                                    All ({{ logsData.count || 0 }})
-                                </button>
-                                <button @click="logFilter = 'info'; fetchLogs()"
-                                        :class="logFilter === 'info' ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white smooth-shadow' : 'glass text-gray-700'"
-                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
-                                    Info
-                                </button>
-                                <button @click="logFilter = 'error'; fetchLogs()"
-                                        :class="logFilter === 'error' ? 'bg-gradient-to-r from-red-500 to-red-600 text-white smooth-shadow' : 'glass text-gray-700'"
-                                        class="px-4 py-2 rounded-xl text-sm font-semibold hover:scale-[1.02] transition-all">
-                                    Errors
+                    <!-- Apps Tab -->
+                    <div v-if="activeTab === 'apps'">
+                        <h2 class="text-3xl font-bold mb-6 text-gray-800">App Store</h2>
+
+                        <!-- Search Bar -->
+                        <div class="mb-6">
+                            <div class="relative">
+                                <input v-model="appSearch" type="text"
+                                    placeholder="Search apps by name, category, or tags..."
+                                    class="w-full px-5 py-3.5 pl-12 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:ring-purple-500/30">
+                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xl">🔍</span>
+                                <button v-if="appSearch" @click="appSearch = ''"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                                    title="Clear search">
+                                    ✕
                                 </button>
                             </div>
-                            <button @click="fetchLogs()" 
-                                    class="px-4 py-2 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
-                                🔄 Refresh
-                            </button>
+                            <div v-if="filteredApps.length < apps.length" class="mt-2 text-sm text-gray-500">
+                                Showing {{ filteredApps.length }} of {{ apps.length }} apps
+                            </div>
                         </div>
 
-                        <!-- Logs List -->
-                        <div class="glass rounded-2xl overflow-hidden smooth-shadow">
-                            <div class="max-h-[600px] overflow-y-auto font-mono text-sm">
-                                <div v-if="!logsData.logs || logsData.logs.length === 0" 
-                                     class="p-12 text-center">
-                                    <div class="text-5xl mb-4">📋</div>
-                                    <div class="text-gray-500 font-medium">No logs available</div>
-                                </div>
-                                <div v-for="(logEntry, index) in logsData.logs" 
-                                     :key="index"
-                                     :class="logEntry.level === 'error' ? 'bg-red-50/80 border-l-4 border-red-500' : 'border-b border-gray-100'"
-                                     class="px-5 py-3 hover:bg-white/50 transition-colors">
-                                    <div class="flex items-start gap-3">
-                                        <span class="text-gray-400 text-xs whitespace-nowrap pt-0.5 font-semibold">
-                                            {{ formatTimestamp(logEntry.timestamp) }}
-                                        </span>
-                                        <span :class="logEntry.level === 'error' ? 'text-red-600' : 'text-blue-600'" 
-                                              class="text-xs font-bold uppercase whitespace-nowrap pt-0.5">
-                                            {{ logEntry.level }}
-                                        </span>
-                                        <span class="text-gray-800 flex-1 break-all">
-                                            {{ logEntry.message }}
-                                            <span v-if="logEntry.args" class="text-gray-600">
-                                                {{ logEntry.args.join(' ') }}
-                                            </span>
+                        <div v-if="loading" class="text-center py-16">
+                            <div class="text-gray-500 font-medium">Loading apps...</div>
+                        </div>
+                        <div v-else-if="filteredApps.length === 0" class="text-center py-16">
+                            <div class="text-5xl mb-4">🔍</div>
+                            <div class="text-gray-500 font-medium">No apps found</div>
+                            <div class="text-sm text-gray-400 mt-2">Try a different search term</div>
+                        </div>
+                        <div v-else class="grid grid-cols-1 gap-4">
+                            <div v-for="app in filteredApps" :key="app.id"
+                                class="glass rounded-2xl p-6 smooth-shadow card-hover">
+                                <div class="flex items-start gap-4 mb-4">
+                                    <img v-if="app.logo" :src="app.logo" :alt="app.name"
+                                        class="w-14 h-14 rounded-xl smooth-shadow">
+                                    <div v-else
+                                        class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl smooth-shadow">
+                                        📦
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="font-bold text-xl text-gray-900">{{ app.name }}</h3>
+                                        <span
+                                            class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">
+                                            {{ app.category }}
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Apps Tab -->
-                <div v-if="activeTab === 'apps'">
-                    <h2 class="text-3xl font-bold mb-6 text-gray-800">App Store</h2>
-                    
-                    <!-- Search Bar -->
-                    <div class="mb-6">
-                        <div class="relative">
-                            <input 
-                                v-model="appSearch"
-                                type="text"
-                                placeholder="Search apps by name, category, or tags..."
-                                class="w-full px-5 py-3.5 pl-12 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:ring-purple-500/30">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-xl">🔍</span>
-                            <button 
-                                v-if="appSearch"
-                                @click="appSearch = ''"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                                title="Clear search">
-                                ✕
-                            </button>
-                        </div>
-                        <div v-if="filteredApps.length < apps.length" class="mt-2 text-sm text-gray-500">
-                            Showing {{ filteredApps.length }} of {{ apps.length }} apps
-                        </div>
-                    </div>
-                    
-                    <div v-if="loading" class="text-center py-16">
-                        <div class="text-gray-500 font-medium">Loading apps...</div>
-                    </div>
-                    <div v-else-if="filteredApps.length === 0" class="text-center py-16">
-                        <div class="text-5xl mb-4">🔍</div>
-                        <div class="text-gray-500 font-medium">No apps found</div>
-                        <div class="text-sm text-gray-400 mt-2">Try a different search term</div>
-                    </div>
-                    <div v-else class="grid grid-cols-1 gap-4">
-                        <div v-for="app in filteredApps" 
-                             :key="app.id"
-                             class="glass rounded-2xl p-6 smooth-shadow card-hover">
-                            <div class="flex items-start gap-4 mb-4">
-                                <img v-if="app.logo" 
-                                     :src="app.logo" 
-                                     :alt="app.name"
-                                     class="w-14 h-14 rounded-xl smooth-shadow">
-                                <div v-else class="w-14 h-14 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl smooth-shadow">
-                                    📦
-                                </div>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-xl text-gray-900">{{ app.name }}</h3>
-                                    <span class="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-600 font-medium">
-                                        {{ app.category }}
+                                <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ app.description || 'No description' }}</p>
+
+                                <div class="flex flex-wrap gap-2 mb-5">
+                                    <span v-for="tag in app.tags.slice(0, 3)" :key="tag"
+                                        class="text-xs px-3 py-1 bg-purple-50 text-purple-600 rounded-lg font-medium">
+                                        {{ tag }}
                                     </span>
                                 </div>
-                            </div>
-                            
-                            <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ app.description || 'No description' }}</p>
-                            
-                            <div class="flex flex-wrap gap-2 mb-5">
-                                <span v-for="tag in app.tags.slice(0, 3)" 
-                                      :key="tag"
-                                      class="text-xs px-3 py-1 bg-purple-50 text-purple-600 rounded-lg font-medium">
-                                    {{ tag }}
-                                </span>
-                            </div>
 
-                            <div class="flex gap-2">
-                                <button @click="deployApp(app.id)" 
-                                        :disabled="deploying === app.id"
+                                <div class="flex gap-2">
+                                    <button @click="deployApp(app.id)" :disabled="deploying === app.id"
                                         class="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all smooth-shadow">
-                                    {{ deploying === app.id ? 'Deploying...' : '⚡ Deploy' }}
-                                </button>
-                                <a v-if="app.website" 
-                                   :href="app.website" 
-                                   target="_blank"
-                                   class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
-                                    📖 Docs
-                                </a>
+                                        {{ deploying === app.id ? 'Deploying...' : '⚡ Deploy' }}
+                                    </button>
+                                    <a v-if="app.website" :href="app.website" target="_blank"
+                                        class="px-4 py-2.5 glass hover:bg-white/90 text-gray-700 rounded-xl text-sm font-medium transition-all">
+                                        🌐 Website
+                                    </a>
+                                </div>
                             </div>
                         </div>
+                    </div>
+            </main>
+        </div>
+
+        <!-- Environment Variables Modal -->
+        <div v-if="showEnvModal"
+            class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+            @click.self="cancelDeploy">
+            <div class="glass-dark rounded-3xl p-8 max-w-md w-full mx-4 smooth-shadow-lg">
+                <h2 class="text-2xl font-bold mb-2 text-gray-900">Configure {{ selectedApp?.name }}</h2>
+                <p class="text-sm text-gray-600 mb-6">Set environment variables for deployment</p>
+
+                <div class="space-y-4 mb-8">
+                    <div v-for="env in selectedApp?.environment" :key="env.envVar" class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">
+                            {{ env.name }}
+                            <span v-if="env.default" class="text-gray-400 text-xs font-normal ml-1">(default: {{
+                                env.default }})</span>
+                        </label>
+                        <input v-model="envValues[env.envVar]" type="text" :placeholder="env.default"
+                            class="w-full px-4 py-3 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all">
                     </div>
                 </div>
-                </main>
-            </div>
 
-            <!-- Environment Variables Modal -->
-            <div v-if="showEnvModal" 
-                 class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
-                 @click.self="cancelDeploy">
-                <div class="glass-dark rounded-3xl p-8 max-w-md w-full mx-4 smooth-shadow-lg">
-                    <h2 class="text-2xl font-bold mb-2 text-gray-900">Configure {{ selectedApp?.name }}</h2>
-                    <p class="text-sm text-gray-600 mb-6">Set environment variables for deployment</p>
-                    
-                    <div class="space-y-4 mb-8">
-                        <div v-for="env in selectedApp?.environment" :key="env.envVar" class="space-y-2">
-                            <label class="block text-sm font-semibold text-gray-700">
-                                {{ env.name }}
-                                <span v-if="env.default" class="text-gray-400 text-xs font-normal ml-1">(default: {{ env.default }})</span>
-                            </label>
-                            <input 
-                                v-model="envValues[env.envVar]"
-                                type="text"
-                                :placeholder="env.default"
-                                class="w-full px-4 py-3 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all">
-                        </div>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button @click="confirmDeploy(selectedApp.id, envValues)"
-                                class="flex-1 px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all smooth-shadow">
-                            Deploy
-                        </button>
-                        <button @click="cancelDeploy"
-                                class="px-5 py-3 glass hover:bg-white/90 text-gray-700 rounded-xl font-medium transition-all">
-                            Cancel
-                        </button>
-                    </div>
+                <div class="flex gap-3">
+                    <button @click="confirmDeploy(selectedApp.id, envValues)"
+                        class="flex-1 px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all smooth-shadow">
+                        Deploy
+                    </button>
+                    <button @click="cancelDeploy"
+                        class="px-5 py-3 glass hover:bg-white/90 text-gray-700 rounded-xl font-medium transition-all">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -589,7 +603,7 @@
                     apiUrl: 'http://localhost:3000',
                     version: 'loading...'
                 }
-            },            computed: {
+            }, computed: {
                 filteredApps() {
                     if (!this.appSearch) {
                         return this.apps;
@@ -597,12 +611,12 @@
                     const search = this.appSearch.toLowerCase();
                     return this.apps.filter(app => {
                         return app.name.toLowerCase().includes(search) ||
-                               app.category.toLowerCase().includes(search) ||
-                               app.description.toLowerCase().includes(search) ||
-                               app.tags.some(tag => tag.toLowerCase().includes(search));
+                            app.category.toLowerCase().includes(search) ||
+                            app.description.toLowerCase().includes(search) ||
+                            app.tags.some(tag => tag.toLowerCase().includes(search));
                     });
                 }
-            },            mounted() {
+            }, mounted() {
                 this.fetchVersion();
                 this.refreshAll();
                 // Auto-refresh every 10 seconds
@@ -694,17 +708,17 @@
                 },
                 formatTimestamp(timestamp) {
                     const date = new Date(timestamp);
-                    return date.toLocaleTimeString('en-US', { 
-                        hour12: false, 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        second: '2-digit' 
+                    return date.toLocaleTimeString('en-US', {
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
                     });
                 },
                 async deployApp(appId) {
                     // Find app to check if it has environment variables
                     const app = this.apps.find(a => a.id === appId);
-                    
+
                     if (app && app.environment && app.environment.length > 0) {
                         // Show modal for environment configuration
                         this.selectedApp = app;
@@ -729,7 +743,7 @@
                             body: JSON.stringify({ appId, environment })
                         });
                         const data = await response.json();
-                        
+
                         if (data.success) {
                             alert(`${appId} deployed successfully!`);
                             await this.fetchContainers();
@@ -751,14 +765,14 @@
                 },
                 async deleteContainer(containerId, containerName) {
                     if (!confirm(`Delete ${containerName}?\n\nThis will remove the container and all its volumes permanently.`)) return;
-                    
+
                     this.deleting = containerId;
                     try {
                         const response = await fetch(`${this.apiUrl}/api/containers/${containerId}`, {
                             method: 'DELETE'
                         });
                         const data = await response.json();
-                        
+
                         if (data.success) {
                             let message = `${containerName} deleted successfully!`;
                             if (data.volumesRemoved.length > 0) {
@@ -780,14 +794,14 @@
                 },
                 async deleteImage(imageId, imageName) {
                     if (!confirm(`Delete image ${imageName}?\n\nThis will permanently remove the image from your system.`)) return;
-                    
+
                     this.deletingImage = imageId;
                     try {
                         const response = await fetch(`${this.apiUrl}/api/images/${imageId}`, {
                             method: 'DELETE'
                         });
                         const data = await response.json();
-                        
+
                         if (data.success) {
                             alert(`Image deleted successfully!`);
                             await this.fetchImages();
@@ -804,4 +818,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>
