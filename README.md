@@ -70,4 +70,7 @@ docker run -d \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantra:main
+
+# Note: The container includes Docker CLI for managing containers.
+# On some systems, you may need to run: docker pull ghcr.io/besoeasy/yantra:main --platform linux/arm64
 ```

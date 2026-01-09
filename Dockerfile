@@ -1,6 +1,9 @@
 # Use Node.js Alpine for smaller image size
 FROM node:20-alpine
 
+# Install Docker CLI
+RUN apk add --no-cache docker-cli docker-cli-compose
+
 # Set working directory
 WORKDIR /app
 
