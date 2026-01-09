@@ -2,6 +2,10 @@
 
 A lightweight, minimal, and open-source alternative to Umbrel for self-hosting enthusiasts.
 
+<img width="1908" height="1207" alt="Screenshot From 2026-01-09 07-48-16" src="https://github.com/user-attachments/assets/4da76a09-f0b1-4fa6-8432-57fbed4fcb7e" />
+<img width="1908" height="1207" alt="Screenshot From 2026-01-09 07-48-07" src="https://github.com/user-attachments/assets/ec9b382f-3c98-450e-ab9d-036d3d859908" />
+
+
 ## Why Yantra?
 
 We created Yantra as a **faster, lighter, and more transparent** alternative to Umbrel. Umbrel's heavy apps, forced proxy architecture, and slow update cycles made self-hosting unnecessarily painful. Yantra takes a different approach:
