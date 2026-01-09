@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     labels:
       - "yantra.name=Transmission"
-      - "yantra.logo=https://dweb.link/ipfs/QmP3w9eEk8YJ4554ZpX3ve4svdVigLNG6GYUY8Kck7Mpc8"
+      - "yantra.logo=QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb"
       - "yantra.category=download,network"
       - "yantra.port=${TRANSMISSION_PORT:-9091}"
       - "yantra.description=Fast, easy BitTorrent client with web interface"
