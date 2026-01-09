@@ -4,8 +4,6 @@ services:
     container_name: jackett
     hostname: jackett
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=${TZ:-UTC}
       - AUTO_UPDATE=true
     volumes:

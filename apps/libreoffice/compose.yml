@@ -1,0 +1,25 @@
+services:
+  libreoffice:
+    image: linuxserver/libreoffice:latest
+    container_name: libreoffice
+    hostname: libreoffice
+    environment:
+      - TZ=${TZ:-UTC}
+    volumes:
+      - libreoffice_config:/config
+    ports:
+      - "${LIBREOFFICE_PORT:-3000}:3000"
+      - "${LIBREOFFICE_PORT_HTTPS:-3001}:3001"
+    restart: unless-stopped
+    shm_size: "1gb"
+    labels:
+      yantra.name: "LibreOffice"
+      yantra.logo: "QmYSoiyanJ26mbB4CVZXGNEk1tfGjNaEnf3hBQyhtgA85w"
+      yantra.category: "productivity,tools"
+      yantra.port: "${LIBREOFFICE_PORT:-3000}"
+      yantra.description: "Full-featured office suite accessible through web browser."
+      yantra.website: "https://www.libreoffice.org"
+      yantra.github: "https://github.com/linuxserver/docker-libreoffice"
+
+volumes:
+  libreoffice_config:
