@@ -4,7 +4,7 @@ services:
     container_name: strfry
     restart: unless-stopped
     ports:
-      - "${STRFRY_PORT:-7777}:7777"
+      - "7777:7777"
     ulimits:
       memlock:
         soft: -1
