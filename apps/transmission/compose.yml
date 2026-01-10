@@ -17,7 +17,7 @@ services:
       yantra.name: "Transmission"
       yantra.logo: "QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb"
       yantra.category: "download,network"
-      yantra.port: "9091, 9092"
+      yantra.port: "9091 (Web Interface), 51413 (P2P), 9092 (Downloads)"
       yantra.description: "Fast, easy BitTorrent client with web interface"
       yantra.website: "https://transmissionbt.com/"
       yantra.github: "https://github.com/transmission/transmission"

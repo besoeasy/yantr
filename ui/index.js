@@ -165,27 +165,44 @@ createApp({
         },
         getPorts(app) {
             // Parse port(s) from yantra.port label
+            // Supports formats:
+            // - "6798" - single port
+            // - "6798, 6799" - multiple ports
+            // - "6798 (Web UI), 6799 (API)" - ports with labels
             if (!app.port) return [];
             
             const portStr = String(app.port).trim();
             
-            // Check if it's a JSON array
+            // Check if it's a JSON array (legacy support)
             if (portStr.startsWith('[')) {
                 try {
                     const parsed = JSON.parse(portStr);
-                    return Array.isArray(parsed) ? parsed : [portStr];
+                    return Array.isArray(parsed) ? parsed.map(p => ({ port: p, label: null })) : [{ port: portStr, label: null }];
                 } catch (e) {
-                    return [portStr];
+                    return [{ port: portStr, label: null }];
                 }
             }
             
             // Check if it's comma-separated
             if (portStr.includes(',')) {
-                return portStr.split(',').map(p => p.trim()).filter(p => p);
+                return portStr.split(',').map(p => {
+                    const trimmed = p.trim();
+                    // Extract port and optional label: "6798 (Web UI)"
+                    const match = trimmed.match(/^(\d+)(?:\s*\(([^)]+)\))?$/);
+                    if (match) {
+                        return { port: match[1], label: match[2] || null };
+                    }
+                    return { port: trimmed, label: null };
+                }).filter(p => p.port);
             }
             
-            // Single port
-            return [portStr];
+            // Single port with optional label
+            const match = portStr.match(/^(\d+)(?:\s*\(([^)]+)\))?$/);
+            if (match) {
+                return [{ port: match[1], label: match[2] || null }];
+            }
+            
+            return [{ port: portStr, label: null }];
         },
         openApp(app) {
             const ports = this.getPorts(app);
@@ -194,7 +211,7 @@ createApp({
             
             if (ports.length === 1) {
                 // Single port - open directly
-                window.open(this.appUrl(ports[0], app.protocol || 'http'), '_blank');
+                window.open(this.appUrl(ports[0].port, app.protocol || 'http'), '_blank');
             } else {
                 // Multiple ports - show modal
                 this.selectedAppForPorts = { ...app, parsedPorts: ports };
