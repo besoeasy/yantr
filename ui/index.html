@@ -228,10 +228,17 @@
 
                             <!-- Unused Images Section -->
                             <div v-if="imagesData.unusedImages && imagesData.unusedImages.length > 0" class="mb-8">
-                                <h3 class="text-xl font-bold mb-4 text-orange-600 flex items-center gap-2">
-                                    <span>🗑️</span>
-                                    <span>Unused Images</span>
-                                </h3>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="text-xl font-bold text-orange-600 flex items-center gap-2">
+                                        <span>🗑️</span>
+                                        <span>Unused Images</span>
+                                    </h3>
+                                    <button @click="deleteAllUnusedImages"
+                                        :disabled="deletingAllImages"
+                                        class="px-4 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all smooth-shadow">
+                                        {{ deletingAllImages ? 'Deleting All...' : '🗑️ Delete All Unused' }}
+                                    </button>
+                                </div>
                                 <div class="space-y-3">
                                     <div v-for="image in imagesData.unusedImages" :key="image.id"
                                         class="glass rounded-2xl p-5 card-hover smooth-shadow">

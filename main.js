@@ -1,19 +1,19 @@
-const express = require('express');
-const Docker = require('dockerode');
-const cors = require('cors');
-const fs = require('fs');
+const express = require("express");
+const Docker = require("dockerode");
+const cors = require("cors");
+const fs = require("fs");
 const fsPromises = fs.promises;
-const path = require('path');
-const packageJson = require('./package.json');
-const { exec } = require('child_process');
-const util = require('util');
+const path = require("path");
+const packageJson = require("./package.json");
+const { exec } = require("child_process");
+const util = require("util");
 
 const execPromise = util.promisify(exec);
 
 const app = express();
 
 // Docker socket path
-const socketPath = process.env.DOCKER_SOCKET || '/var/run/docker.sock';
+const socketPath = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
 
 const docker = new Docker({ socketPath });
 
@@ -31,7 +31,7 @@ function log(level, message, ...args) {
     timestamp,
     level,
     message,
-    args: args.length > 0 ? args : undefined
+    args: args.length > 0 ? args : undefined,
   };
 
   // Add to logs array (circular buffer)
@@ -41,15 +41,15 @@ function log(level, message, ...args) {
   }
 
   // Also log to console
-  const formattedMessage = args.length > 0 ? `${message} ${args.join(' ')}` : message;
-  if (level === 'error') {
+  const formattedMessage = args.length > 0 ? `${message} ${args.join(" ")}` : message;
+  if (level === "error") {
     console.error(formattedMessage);
   } else {
     console.log(formattedMessage);
   }
 }
 
-log('info', '� Using Docker socket:', socketPath);
+log("info", "� Using Docker socket:", socketPath);
 
 // Helper function to get system architecture
 async function getSystemArchitecture() {
@@ -58,26 +58,26 @@ async function getSystemArchitecture() {
   }
 
   try {
-    const { stdout } = await execPromise('uname -m');
+    const { stdout } = await execPromise("uname -m");
     const arch = stdout.trim();
 
     // Map common architecture names to Docker platform names
     const archMap = {
-      'x86_64': 'amd64',
-      'aarch64': 'arm64',
-      'armv7l': 'arm/v7',
-      'armv6l': 'arm/v6',
-      'i386': '386',
-      'i686': '386'
+      x86_64: "amd64",
+      aarch64: "arm64",
+      armv7l: "arm/v7",
+      armv6l: "arm/v6",
+      i386: "386",
+      i686: "386",
     };
 
     systemArchitecture = archMap[arch] || arch;
-    log('info', `🏗️  Detected system architecture: ${arch} (${systemArchitecture})`);
+    log("info", `🏗️  Detected system architecture: ${arch} (${systemArchitecture})`);
     return systemArchitecture;
   } catch (error) {
-    log('error', '❌ Failed to detect system architecture:', error.message);
+    log("error", "❌ Failed to detect system architecture:", error.message);
     // Default to amd64 if detection fails
-    systemArchitecture = 'amd64';
+    systemArchitecture = "amd64";
     return systemArchitecture;
   }
 }
@@ -86,7 +86,7 @@ async function getSystemArchitecture() {
 async function checkImageArchitectureSupport(imageName) {
   try {
     const arch = await getSystemArchitecture();
-    log('info', `🔍 Checking architecture support for ${imageName} on ${arch}`);
+    log("info", `🔍 Checking architecture support for ${imageName} on ${arch}`);
 
     // Try to inspect the image manifest to check supported platforms
     // First, try to pull manifest without actually pulling the image
@@ -97,14 +97,12 @@ async function checkImageArchitectureSupport(imageName) {
       const output = stdout.trim();
 
       // If we get architecture directly
-      if (output && !output.includes('{') && !output.includes('[')) {
+      if (output && !output.includes("{") && !output.includes("[")) {
         const imageArch = output.toLowerCase();
-        log('info', `  Image architecture: ${imageArch}`);
+        log("info", `  Image architecture: ${imageArch}`);
 
         // Check if architectures match
-        if (imageArch === arch ||
-          (imageArch === 'amd64' && arch === 'amd64') ||
-          (imageArch === 'arm64' && arch === 'arm64')) {
+        if (imageArch === arch || (imageArch === "amd64" && arch === "amd64") || (imageArch === "arm64" && arch === "arm64")) {
           return { supported: true, imageArch, systemArch: arch };
         } else {
           return { supported: false, imageArch, systemArch: arch };
@@ -112,56 +110,50 @@ async function checkImageArchitectureSupport(imageName) {
       }
 
       // If we get a manifest (JSON), parse it for supported platforms
-      if (output.includes('{')) {
+      if (output.includes("{")) {
         try {
           const manifest = JSON.parse(output);
           const manifests = manifest.manifests || [];
 
-          const supportedArchs = manifests
-            .map(m => m.platform?.architecture)
-            .filter(a => a);
+          const supportedArchs = manifests.map((m) => m.platform?.architecture).filter((a) => a);
 
-          log('info', `  Supported architectures: ${supportedArchs.join(', ')}`);
+          log("info", `  Supported architectures: ${supportedArchs.join(", ")}`);
 
-          const isSupported = supportedArchs.some(a =>
-            a === arch ||
-            (a === 'amd64' && arch === 'amd64') ||
-            (a === 'arm64' && arch === 'arm64')
-          );
+          const isSupported = supportedArchs.some((a) => a === arch || (a === "amd64" && arch === "amd64") || (a === "arm64" && arch === "arm64"));
 
           return {
             supported: isSupported,
-            imageArch: supportedArchs.join(', '),
-            systemArch: arch
+            imageArch: supportedArchs.join(", "),
+            systemArch: arch,
           };
         } catch (parseError) {
-          log('error', '  Failed to parse manifest:', parseError.message);
+          log("error", "  Failed to parse manifest:", parseError.message);
         }
       }
     } catch (inspectError) {
       // If inspection fails, the image might not be available locally or remotely
-      log('info', `  Could not inspect image ${imageName}, will attempt pull`);
+      log("info", `  Could not inspect image ${imageName}, will attempt pull`);
     }
 
     // If we can't determine from manifest, we'll try to pull and see if it fails
-    return { supported: 'unknown', imageArch: 'unknown', systemArch: arch };
+    return { supported: "unknown", imageArch: "unknown", systemArch: arch };
   } catch (error) {
-    log('error', '❌ Error checking architecture support:', error.message);
-    return { supported: 'unknown', imageArch: 'unknown', systemArch: arch };
+    log("error", "❌ Error checking architecture support:", error.message);
+    return { supported: "unknown", imageArch: "unknown", systemArch: arch };
   }
 }
 
 // Helper function to extract image name from compose file
 async function getImageFromCompose(composePath) {
   try {
-    const content = await fsPromises.readFile(composePath, 'utf8');
+    const content = await fsPromises.readFile(composePath, "utf8");
     const imageMatch = content.match(/image:\s*([^\s\n]+)/);
     if (imageMatch) {
       return imageMatch[1];
     }
     return null;
   } catch (error) {
-    log('error', '❌ Error reading compose file:', error.message);
+    log("error", "❌ Error reading compose file:", error.message);
     return null;
   }
 }
@@ -171,14 +163,14 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static UI files
-app.use(express.static(path.join(__dirname, 'ui')));
+app.use(express.static(path.join(__dirname, "ui")));
 
 // Helper function to parse app labels
 function parseAppLabels(labels) {
   const appLabels = {};
   for (const [key, value] of Object.entries(labels || {})) {
-    if (key.startsWith('yantra.')) {
-      const labelName = key.replace('yantra.', '');
+    if (key.startsWith("yantra.")) {
+      const labelName = key.replace("yantra.", "");
       appLabels[labelName] = value;
     }
   }
@@ -186,45 +178,45 @@ function parseAppLabels(labels) {
 }
 
 // GET /api/version - Get app version
-app.get('/api/version', (req, res) => {
+app.get("/api/version", (req, res) => {
   res.json({
     success: true,
-    version: packageJson.version
+    version: packageJson.version,
   });
 });
 
 // GET /api/logs - Get stored logs
-app.get('/api/logs', (req, res) => {
+app.get("/api/logs", (req, res) => {
   const limit = parseInt(req.query.limit) || MAX_LOGS;
   const level = req.query.level; // Optional filter by level
 
   let filteredLogs = logs;
   if (level) {
-    filteredLogs = logs.filter(log => log.level === level);
+    filteredLogs = logs.filter((log) => log.level === level);
   }
 
   res.json({
     success: true,
     count: filteredLogs.length,
     maxLogs: MAX_LOGS,
-    logs: filteredLogs.slice(-limit).reverse() // Most recent first
+    logs: filteredLogs.slice(-limit).reverse(), // Most recent first
   });
 });
 
 // GET /api/containers - List all containers with their labels
-app.get('/api/containers', async (req, res) => {
+app.get("/api/containers", async (req, res) => {
   // log('info', '📦 [GET /api/containers] Fetching all containers');
   try {
     const containers = await docker.listContainers({ all: true });
     // log('info', `📦 [GET /api/containers] Found ${containers.length} containers`);
 
-    const formattedContainers = containers.map(container => {
+    const formattedContainers = containers.map((container) => {
       const appLabels = parseAppLabels(container.Labels);
-      const composeProject = container.Labels['com.docker.compose.project'];
+      const composeProject = container.Labels["com.docker.compose.project"];
 
       return {
         id: container.Id,
-        name: container.Names[0]?.replace('/', '') || 'unknown',
+        name: container.Names[0]?.replace("/", "") || "unknown",
         image: container.Image,
         imageId: container.ImageID,
         state: container.State,
@@ -235,33 +227,33 @@ app.get('/api/containers', async (req, res) => {
         appLabels: appLabels,
         // Add computed fields for easier UI access
         app: {
-          id: composeProject || container.Names[0]?.replace('/', '') || 'unknown', // Add app ID
-          name: appLabels.name || container.Names[0]?.replace('/', '') || 'unknown',
-          logo: appLabels.logo ? (appLabels.logo.includes('://') ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : null,
-          category: appLabels.category || 'uncategorized',
+          id: composeProject || container.Names[0]?.replace("/", "") || "unknown", // Add app ID
+          name: appLabels.name || container.Names[0]?.replace("/", "") || "unknown",
+          logo: appLabels.logo ? (appLabels.logo.includes("://") ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : null,
+          category: appLabels.category || "uncategorized",
           port: appLabels.port || null,
-          description: appLabels.description || '',
+          description: appLabels.description || "",
           docs: appLabels.docs || null,
-          website: appLabels.website || null
-        }
+          website: appLabels.website || null,
+        },
       };
     });
 
     // Filter out auxiliary containers (sidecars)
     // Identify stacks that have at least one explicit Yantra app
     const yantraProjects = new Set();
-    formattedContainers.forEach(c => {
-      if (c.appLabels.name && c.labels['com.docker.compose.project']) {
-        yantraProjects.add(c.labels['com.docker.compose.project']);
+    formattedContainers.forEach((c) => {
+      if (c.appLabels.name && c.labels["com.docker.compose.project"]) {
+        yantraProjects.add(c.labels["com.docker.compose.project"]);
       }
     });
 
     // Filter: Show container IF:
     // 1. It has a visible Yantra name label
     // 2. OR it does NOT belong to a project that has a Yantra app (unmanaged/external containers)
-    const filteredContainers = formattedContainers.filter(c => {
+    const filteredContainers = formattedContainers.filter((c) => {
       const hasYantraLabel = !!c.appLabels.name;
-      const project = c.labels['com.docker.compose.project'];
+      const project = c.labels["com.docker.compose.project"];
       const isPartOfYantraStack = project && yantraProjects.has(project);
 
       return hasYantraLabel || !isPartOfYantraStack;
@@ -271,19 +263,19 @@ app.get('/api/containers', async (req, res) => {
     res.json({
       success: true,
       count: filteredContainers.length,
-      containers: filteredContainers
+      containers: filteredContainers,
     });
   } catch (error) {
-    log('error', '❌ [GET /api/containers] Error:', error.message);
+    log("error", "❌ [GET /api/containers] Error:", error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // GET /api/containers/:id - Get single container details
-app.get('/api/containers/:id', async (req, res) => {
+app.get("/api/containers/:id", async (req, res) => {
   // log('info', `🔍 [GET /api/containers/:id] Fetching container: ${req.params.id}`);
   try {
     const container = docker.getContainer(req.params.id);
@@ -295,7 +287,7 @@ app.get('/api/containers/:id', async (req, res) => {
       success: true,
       container: {
         id: info.Id,
-        name: info.Name.replace('/', ''),
+        name: info.Name.replace("/", ""),
         image: info.Config.Image,
         state: info.State,
         created: info.Created,
@@ -304,31 +296,35 @@ app.get('/api/containers/:id', async (req, res) => {
         env: info.Config.Env,
         labels: appLabels,
         app: {
-          name: appLabels.name || info.Name.replace('/', ''),
-          logo: appLabels.logo ? (appLabels.logo.includes('://') ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : 'https://dweb.link/ipfs/QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i',
-          category: appLabels.category || 'uncategorized',
+          name: appLabels.name || info.Name.replace("/", ""),
+          logo: appLabels.logo
+            ? appLabels.logo.includes("://")
+              ? appLabels.logo
+              : `https://dweb.link/ipfs/${appLabels.logo}`
+            : "https://dweb.link/ipfs/QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i",
+          category: appLabels.category || "uncategorized",
           port: appLabels.port || null,
-          description: appLabels.description || '',
+          description: appLabels.description || "",
           docs: appLabels.docs || null,
-          website: appLabels.website || null
-        }
-      }
+          website: appLabels.website || null,
+        },
+      },
     });
   } catch (error) {
-    log('error', `❌ [GET /api/containers/:id] Container not found: ${req.params.id}`, error.message);
+    log("error", `❌ [GET /api/containers/:id] Container not found: ${req.params.id}`, error.message);
     res.status(404).json({
       success: false,
-      error: 'Container not found',
-      message: error.message
+      error: "Container not found",
+      message: error.message,
     });
   }
 });
 
 // GET /api/apps - List available apps from /apps directory
-app.get('/api/apps', async (req, res) => {
+app.get("/api/apps", async (req, res) => {
   // log('info', '🏪 [GET /api/apps] Scanning apps directory');
   try {
-    const appsDir = path.join(__dirname, 'apps');
+    const appsDir = path.join(__dirname, "apps");
     const apps = [];
 
     // Read all directories in /apps
@@ -338,15 +334,14 @@ app.get('/api/apps', async (req, res) => {
     for (const entry of entries) {
       if (entry.isDirectory()) {
         const appPath = path.join(appsDir, entry.name);
-        const composePath = path.join(appPath, 'compose.yml');
+        const composePath = path.join(appPath, "compose.yml");
 
         // Check if compose.yml exists
         try {
           await fsPromises.access(composePath);
-          log('info', `  ✓ Found compose.yml for: ${entry.name}`);
 
           // Read and parse compose file to extract labels
-          const composeContent = await fsPromises.readFile(composePath, 'utf8');
+          const composeContent = await fsPromises.readFile(composePath, "utf8");
           const labels = {};
 
           // Simple regex to extract labels (works for both formats)
@@ -370,23 +365,27 @@ app.get('/api/apps', async (req, res) => {
             envVars.push({
               name: match[1],
               envVar: match[2],
-              default: match[3] || ''
+              default: match[3] || "",
             });
           }
 
           apps.push({
             id: entry.name,
             name: labels.name || entry.name,
-            logo: labels.logo ? (labels.logo.includes('://') ? labels.logo : `https://dweb.link/ipfs/${labels.logo}`) : 'https://dweb.link/ipfs/QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i',
-            category: labels.category || 'uncategorized',
+            logo: labels.logo
+              ? labels.logo.includes("://")
+                ? labels.logo
+                : `https://dweb.link/ipfs/${labels.logo}`
+              : "https://dweb.link/ipfs/QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i",
+            category: labels.category || "uncategorized",
             port: labels.port || null,
-            description: labels.description || '',
+            description: labels.description || "",
 
             website: labels.website || null, // Map website label
             docs: labels.docs || null,
             path: appPath,
             composePath: composePath,
-            environment: envVars
+            environment: envVars,
           });
         } catch (err) {
           // Skip if compose.yml doesn't exist
@@ -399,44 +398,44 @@ app.get('/api/apps', async (req, res) => {
     res.json({
       success: true,
       count: apps.length,
-      apps: apps
+      apps: apps,
     });
   } catch (error) {
-    log('error', '❌ [GET /api/apps] Error:', error.message);
+    log("error", "❌ [GET /api/apps] Error:", error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // GET /api/apps/:id/check-arch - Check architecture compatibility for an app
-app.get('/api/apps/:id/check-arch', async (req, res) => {
+app.get("/api/apps/:id/check-arch", async (req, res) => {
   // log('info', `🔍 [GET /api/apps/:id/check-arch] Checking architecture for: ${req.params.id}`);
   try {
     const appId = req.params.id;
-    const appsDir = path.join(__dirname, 'apps');
+    const appsDir = path.join(__dirname, "apps");
     const appPath = path.join(appsDir, appId);
-    const composePath = path.join(appPath, 'compose.yml');
+    const composePath = path.join(appPath, "compose.yml");
 
     // Verify compose file exists
     try {
       await fsPromises.access(composePath);
     } catch (err) {
-      log('error', `❌ [GET /api/apps/:id/check-arch] App not found: ${appId}`);
+      log("error", `❌ [GET /api/apps/:id/check-arch] App not found: ${appId}`);
       return res.status(404).json({
         success: false,
-        error: `App '${appId}' not found`
+        error: `App '${appId}' not found`,
       });
     }
 
     // Get image name from compose file
     const imageName = await getImageFromCompose(composePath);
     if (!imageName) {
-      log('error', `❌ [GET /api/apps/:id/check-arch] Could not extract image name from compose file`);
+      log("error", `❌ [GET /api/apps/:id/check-arch] Could not extract image name from compose file`);
       return res.status(400).json({
         success: false,
-        error: 'Could not extract image name from compose file'
+        error: "Could not extract image name from compose file",
       });
     }
 
@@ -450,142 +449,137 @@ app.get('/api/apps/:id/check-arch', async (req, res) => {
       image: imageName,
       supported: archCheck.supported,
       systemArch: archCheck.systemArch,
-      imageArch: archCheck.imageArch
+      imageArch: archCheck.imageArch,
     });
   } catch (error) {
-    log('error', `❌ [GET /api/apps/:id/check-arch] Error:`, error.message);
+    log("error", `❌ [GET /api/apps/:id/check-arch] Error:`, error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // POST /api/deploy - Deploy a compose file from /apps directory
-app.post('/api/deploy', async (req, res) => {
-  log('info', '🚀 [POST /api/deploy] Deploy request received');
+app.post("/api/deploy", async (req, res) => {
+  log("info", "🚀 [POST /api/deploy] Deploy request received");
   try {
     const { appId, environment } = req.body;
-    log('info', `🚀 [POST /api/deploy] Deploying app: ${appId}`);
+    log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}`);
     if (environment) {
-      log('info', `🚀 [POST /api/deploy] Custom environment:`, environment);
+      log("info", `🚀 [POST /api/deploy] Custom environment:`, environment);
     }
 
     if (!appId) {
-      log('error', '❌ [POST /api/deploy] No appId provided');
+      log("error", "❌ [POST /api/deploy] No appId provided");
       return res.status(400).json({
         success: false,
-        error: 'appId is required'
+        error: "appId is required",
       });
     }
 
-    const appsDir = path.join(__dirname, 'apps');
+    const appsDir = path.join(__dirname, "apps");
     const appPath = path.join(appsDir, appId);
-    const composePath = path.join(appPath, 'compose.yml');
-    log('info', `🚀 [POST /api/deploy] Compose path: ${composePath}`);
+    const composePath = path.join(appPath, "compose.yml");
+    log("info", `🚀 [POST /api/deploy] Compose path: ${composePath}`);
 
     // Verify compose file exists
     try {
       await fsPromises.access(composePath);
-      log('info', `🚀 [POST /api/deploy] Compose file exists, proceeding with deployment`);
+      log("info", `🚀 [POST /api/deploy] Compose file exists, proceeding with deployment`);
     } catch (err) {
-      log('error', `❌ [POST /api/deploy] Compose file not found for ${appId}`);
+      log("error", `❌ [POST /api/deploy] Compose file not found for ${appId}`);
       return res.status(404).json({
         success: false,
-        error: `App '${appId}' not found or has no compose.yml`
+        error: `App '${appId}' not found or has no compose.yml`,
       });
     }
 
     // Check architecture compatibility
     const imageName = await getImageFromCompose(composePath);
     if (imageName) {
-      log('info', `🚀 [POST /api/deploy] Checking architecture support for image: ${imageName}`);
+      log("info", `🚀 [POST /api/deploy] Checking architecture support for image: ${imageName}`);
       const archCheck = await checkImageArchitectureSupport(imageName);
 
       if (archCheck.supported === false) {
-        log('error', `❌ [POST /api/deploy] Architecture not supported for ${appId}`);
+        log("error", `❌ [POST /api/deploy] Architecture not supported for ${appId}`);
         return res.status(400).json({
           success: false,
-          error: 'Architecture not supported',
+          error: "Architecture not supported",
           message: `The image '${imageName}' does not support your system architecture (${archCheck.systemArch}). Image supports: ${archCheck.imageArch}`,
           details: {
             image: imageName,
             systemArch: archCheck.systemArch,
-            imageArch: archCheck.imageArch
-          }
+            imageArch: archCheck.imageArch,
+          },
         });
-      } else if (archCheck.supported === 'unknown') {
-        log('info', `⚠️  [POST /api/deploy] Could not verify architecture, attempting deployment anyway`);
+      } else if (archCheck.supported === "unknown") {
+        log("info", `⚠️  [POST /api/deploy] Could not verify architecture, attempting deployment anyway`);
       } else {
-        log('info', `✅ [POST /api/deploy] Architecture compatible (${archCheck.systemArch})`);
+        log("info", `✅ [POST /api/deploy] Architecture compatible (${archCheck.systemArch})`);
       }
     }
 
     // Write .env file if environment variables provided
     if (environment && Object.keys(environment).length > 0) {
-      const envPath = path.join(appPath, '.env');
+      const envPath = path.join(appPath, ".env");
       const envContent = Object.entries(environment)
         .map(([key, value]) => `${key}=${value}`)
-        .join('\n');
+        .join("\n");
       await fsPromises.writeFile(envPath, envContent);
-      log('info', `🚀 [POST /api/deploy] Created .env file with custom variables`);
+      log("info", `🚀 [POST /api/deploy] Created .env file with custom variables`);
     }
 
     // Deploy using docker compose
     const command = `docker compose -f "${composePath}" up -d`;
-    log('info', `🚀 [POST /api/deploy] Executing: ${command}`);
+    log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
     try {
       const { stdout, stderr } = await execPromise(command, {
         cwd: appPath,
         env: {
           ...process.env,
-          DOCKER_HOST: `unix://${socketPath}`
-        }
+          DOCKER_HOST: `unix://${socketPath}`,
+        },
       });
 
-      log('info', `✅ [POST /api/deploy] Deployment successful for ${appId}`);
-      log('info', `   stdout: ${stdout.trim()}`);
-      if (stderr) log('info', `   stderr: ${stderr.trim()}`);
+      log("info", `✅ [POST /api/deploy] Deployment successful for ${appId}`);
+      log("info", `   stdout: ${stdout.trim()}`);
+      if (stderr) log("info", `   stderr: ${stderr.trim()}`);
 
       res.json({
         success: true,
         message: `App '${appId}' deployed successfully`,
         appId: appId,
         output: stdout,
-        warnings: stderr || null
+        warnings: stderr || null,
       });
     } catch (error) {
-      log('error', `❌ [POST /api/deploy] Deployment failed for ${appId}:`, error.message);
-      log('error', `   stderr: ${error.stderr}`);
+      log("error", `❌ [POST /api/deploy] Deployment failed for ${appId}:`, error.message);
+      log("error", `   stderr: ${error.stderr}`);
 
       // Check if the error is architecture-related
-      const isArchError = error.stderr && (
-        error.stderr.includes('no matching manifest') ||
-        error.stderr.includes('platform') ||
-        error.stderr.includes('architecture')
-      );
+      const isArchError =
+        error.stderr && (error.stderr.includes("no matching manifest") || error.stderr.includes("platform") || error.stderr.includes("architecture"));
 
       res.status(500).json({
         success: false,
-        error: isArchError ? 'Architecture not supported' : 'Deployment failed',
-        message: isArchError
-          ? 'This image does not support your system architecture'
-          : error.message,
-        stderr: error.stderr
+        error: isArchError ? "Architecture not supported" : "Deployment failed",
+        message: isArchError ? "This image does not support your system architecture" : error.message,
+        stderr: error.stderr,
       });
     }
   } catch (error) {
-    log('error', '❌ [POST /api/deploy] Unexpected error:', error.message);
+    log("error", "❌ [POST /api/deploy] Unexpected error:", error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // GET /api/images - List all images with usage status
-app.get('/api/images', async (req, res) => {
+app.get("/api/images", async (req, res) => {
   // log('info', '🖼️  [GET /api/images] Fetching all images');
   try {
     const images = await docker.listImages();
@@ -594,11 +588,11 @@ app.get('/api/images', async (req, res) => {
     // log('info', `🖼️  [GET /api/images] Found ${images.length} images`);
 
     // Create a set of image IDs used by containers
-    const usedImageIds = new Set(containers.map(c => c.ImageID));
+    const usedImageIds = new Set(containers.map((c) => c.ImageID));
 
-    const formattedImages = images.map(image => {
+    const formattedImages = images.map((image) => {
       const isUsed = usedImageIds.has(image.Id);
-      const repoTags = image.RepoTags || ['<none>:<none>'];
+      const repoTags = image.RepoTags || ["<none>:<none>"];
       const size = (image.Size / (1024 * 1024)).toFixed(2); // Convert to MB
 
       return {
@@ -609,13 +603,13 @@ app.get('/api/images', async (req, res) => {
         size: size,
         sizeBytes: image.Size,
         isUsed: isUsed,
-        containers: image.Containers || 0
+        containers: image.Containers || 0,
       };
     });
 
     // Sort by size (largest first) and separate used from unused
-    const usedImages = formattedImages.filter(img => img.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
-    const unusedImages = formattedImages.filter(img => !img.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
+    const usedImages = formattedImages.filter((img) => img.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
+    const unusedImages = formattedImages.filter((img) => !img.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
 
     const totalSize = formattedImages.reduce((sum, img) => sum + img.sizeBytes, 0);
     const unusedSize = unusedImages.reduce((sum, img) => sum + img.sizeBytes, 0);
@@ -630,68 +624,68 @@ app.get('/api/images', async (req, res) => {
       unusedSize: (unusedSize / (1024 * 1024)).toFixed(2),
       images: formattedImages,
       usedImages: usedImages,
-      unusedImages: unusedImages
+      unusedImages: unusedImages,
     });
   } catch (error) {
-    log('error', '❌ [GET /api/images] Error:', error.message);
+    log("error", "❌ [GET /api/images] Error:", error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // DELETE /api/images/:id - Remove an image
-app.delete('/api/images/:id', async (req, res) => {
-  log('info', `🗑️  [DELETE /api/images/:id] Remove request for image: ${req.params.id}`);
+app.delete("/api/images/:id", async (req, res) => {
+  log("info", `🗑️  [DELETE /api/images/:id] Remove request for image: ${req.params.id}`);
   try {
     const image = docker.getImage(req.params.id);
     const info = await image.inspect();
 
-    log('info', `🗑️  [DELETE /api/images/:id] Image tags: ${info.RepoTags}`);
+    log("info", `🗑️  [DELETE /api/images/:id] Image tags: ${info.RepoTags}`);
 
     // Remove image
-    log('info', `🗑️  [DELETE /api/images/:id] Removing image...`);
+    log("info", `🗑️  [DELETE /api/images/:id] Removing image...`);
     await image.remove({ force: false }); // force: false means won't delete if in use
 
-    log('info', `✅ [DELETE /api/images/:id] Successfully removed image`);
+    log("info", `✅ [DELETE /api/images/:id] Successfully removed image`);
     res.json({
       success: true,
-      message: 'Image removed successfully',
+      message: "Image removed successfully",
       imageId: req.params.id,
-      tags: info.RepoTags
+      tags: info.RepoTags,
     });
   } catch (error) {
-    log('error', `❌ [DELETE /api/images/:id] Error:`, error.message);
+    log("error", `❌ [DELETE /api/images/:id] Error:`, error.message);
     res.status(500).json({
       success: false,
-      error: 'Failed to remove image',
-      message: error.message
+      error: "Failed to remove image",
+      message: error.message,
     });
   }
 });
 
 // DELETE /api/containers/:id - Remove container (or stack if part of an app)
-app.delete('/api/containers/:id', async (req, res) => {
-  log('info', `🗑️  [DELETE /api/containers/:id] Remove request for: ${req.params.id}`);
+app.delete("/api/containers/:id", async (req, res) => {
+  log("info", `🗑️  [DELETE /api/containers/:id] Remove request for: ${req.params.id}`);
   try {
     const container = docker.getContainer(req.params.id);
     const info = await container.inspect();
-    const containerName = info.Name.replace('/', '');
+    const containerName = info.Name.replace("/", "");
     const labels = info.Config.Labels || {};
-    const composeProject = labels['com.docker.compose.project'];
+    const composeProject = labels["com.docker.compose.project"];
 
-    log('info', `🗑️  [DELETE /api/containers/:id] Container: ${containerName}, Project: ${composeProject || 'none'}`);
+    log("info", `🗑️  [DELETE /api/containers/:id] Container: ${containerName}, Project: ${composeProject || "none"}`);
 
     // If part of a compose project, check if it's a managed app
     if (composeProject) {
-      const appsDir = path.join(__dirname, 'apps');
+      const appsDir = path.join(__dirname, "apps");
       const appPath = path.join(appsDir, composeProject);
-      const composePath = path.join(appPath, 'compose.yml');
+      const composePath = path.join(appPath, "compose.yml");
 
       try {
         await fsPromises.access(composePath);
-        log('info', `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
+        log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
 
         // Execute docker compose down
         const command = `docker compose down -v`; // -v removes named volumes declared in 'volumes' section
@@ -700,11 +694,11 @@ app.delete('/api/containers/:id', async (req, res) => {
           cwd: appPath,
           env: {
             ...process.env,
-            DOCKER_HOST: `unix://${socketPath}`
-          }
+            DOCKER_HOST: `unix://${socketPath}`,
+          },
         });
 
-        log('info', `✅ [DELETE /api/containers/:id] Stack removal successful`);
+        log("info", `✅ [DELETE /api/containers/:id] Stack removal successful`);
         return res.json({
           success: true,
           message: `App stack '${composeProject}' removed successfully`,
@@ -712,31 +706,28 @@ app.delete('/api/containers/:id', async (req, res) => {
           stackRemoved: true,
           volumesRemoved: [], // Stack deletion handles volumes, return empty to satisfy UI
           volumesFailed: [],
-          output: stdout
+          output: stdout,
         });
-
       } catch (err) {
-        log('info', `⚠️  [DELETE /api/containers/:id] Compose file not found at ${composePath}, falling back to single container deletion`);
+        log("info", `⚠️  [DELETE /api/containers/:id] Compose file not found at ${composePath}, falling back to single container deletion`);
       }
     }
 
     // Fallback: Single container deletion (for unmanaged containers)
 
     // Get volume names from mounts
-    const volumeNames = info.Mounts
-      .filter(mount => mount.Type === 'volume')
-      .map(mount => mount.Name);
+    const volumeNames = info.Mounts.filter((mount) => mount.Type === "volume").map((mount) => mount.Name);
 
-    log('info', `🗑️  [DELETE /api/containers/:id] Found ${volumeNames.length} volumes:`, volumeNames);
+    log("info", `🗑️  [DELETE /api/containers/:id] Found ${volumeNames.length} volumes:`, volumeNames);
 
     // Stop container if running
     if (info.State.Running) {
-      log('info', `🗑️  [DELETE /api/containers/:id] Stopping container...`);
+      log("info", `🗑️  [DELETE /api/containers/:id] Stopping container...`);
       await container.stop();
     }
 
     // Remove container
-    log('info', `🗑️  [DELETE /api/containers/:id] Removing container...`);
+    log("info", `🗑️  [DELETE /api/containers/:id] Removing container...`);
     await container.remove();
 
     // Remove volumes
@@ -745,70 +736,70 @@ app.delete('/api/containers/:id', async (req, res) => {
 
     for (const volumeName of volumeNames) {
       try {
-        log('info', `🗑️  [DELETE /api/containers/:id] Removing volume: ${volumeName}`);
+        log("info", `🗑️  [DELETE /api/containers/:id] Removing volume: ${volumeName}`);
         const volume = docker.getVolume(volumeName);
         await volume.remove();
         removedVolumes.push(volumeName);
       } catch (err) {
-        log('error', `⚠️  [DELETE /api/containers/:id] Failed to remove volume ${volumeName}:`, err.message);
+        log("error", `⚠️  [DELETE /api/containers/:id] Failed to remove volume ${volumeName}:`, err.message);
         failedVolumes.push({ name: volumeName, error: err.message });
       }
     }
 
-    log('info', `✅ [DELETE /api/containers/:id] Successfully removed ${containerName}`);
+    log("info", `✅ [DELETE /api/containers/:id] Successfully removed ${containerName}`);
     res.json({
       success: true,
       message: `Container '${containerName}' removed successfully`,
       container: containerName,
       volumesRemoved: removedVolumes,
-      volumesFailed: failedVolumes
+      volumesFailed: failedVolumes,
     });
   } catch (error) {
-    log('error', `❌ [DELETE /api/containers/:id] Error:`, error.message);
+    log("error", `❌ [DELETE /api/containers/:id] Error:`, error.message);
     res.status(500).json({
       success: false,
-      error: 'Failed to remove container',
-      message: error.message
+      error: "Failed to remove container",
+      message: error.message,
     });
   }
 });
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
   // log('info', '🏠 [GET /] Root endpoint accessed');
   res.json({
-    name: 'Yantra API',
+    name: "Yantra API",
     version: packageJson.version,
-    description: 'Lightweight Docker dashboard for self-hosting',
+    description: "Lightweight Docker dashboard for self-hosting",
     endpoints: {
-      version: '/api/version',
-      containers: '/api/containers',
-      container: '/api/containers/:id',
-      apps: '/api/apps',
-      deploy: 'POST /api/deploy'
-    }
+      version: "/api/version",
+      containers: "/api/containers",
+      container: "/api/containers/:id",
+      apps: "/api/apps",
+      deploy: "POST /api/deploy",
+    },
   });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  log('error', err.stack);
+  log("error", err.stack);
   res.status(500).json({
     success: false,
-    error: 'Internal server error',
-    message: err.message
+    error: "Internal server error",
+    message: err.message,
   });
 });
 
 // Start server
 const PORT = 5252;
-app.listen(PORT, '0.0.0.0', () => {
-  log('info', '\n' + '='.repeat(50));
-  log('info', '🚀 Yantra API Server Started');
-  log('info', '='.repeat(50));
-  log('info', `📡 Port: ${PORT}`);
-  log('info', `� Socket: ${socketPath}`);
-  log('info', `📂 Apps directory: ${path.join(__dirname, 'apps')}`);
-  log('info', `🌐 Access: http://localhost:${PORT}`);
-  log('info', '='.repeat(50) + '\n');
+app.listen(PORT, "0.0.0.0", () => {
+  log("info", "\n" + "=".repeat(50));
+  log("info", "🚀 Yantra API Server Started");
+  log("info", "=".repeat(50));
+  log("info", `📡 Port: ${PORT}`);
+  log("info", `� Socket: ${socketPath}`);
+  log("info", `📂 Apps directory: ${path.join(__dirname, "apps")}`);
+  log("info", `🌐 Access: http://localhost:${PORT}`);
+  log("info", "=".repeat(50) + "\n");
 });

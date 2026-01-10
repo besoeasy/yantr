@@ -13,6 +13,7 @@ createApp({
             deploying: null,
             deleting: null,
             deletingImage: null,
+            deletingAllImages: false,
             showEnvModal: false,
             selectedApp: null,
             envValues: {},
@@ -440,6 +441,46 @@ createApp({
                 this.showNotification(`Deletion failed: ${error.message}`, 'error');
             } finally {
                 this.deletingImage = null;
+            }
+        },
+        async deleteAllUnusedImages() {
+            const count = this.imagesData.unusedImages?.length || 0;
+            if (!count) return;
+            
+            if (!confirm(`Delete all ${count} unused images?\n\nThis will free up ${this.imagesData.unusedSize} MB of disk space.\n\nThis action cannot be undone.`)) return;
+
+            this.deletingAllImages = true;
+            let deleted = 0;
+            let failed = 0;
+
+            try {
+                for (const image of this.imagesData.unusedImages) {
+                    try {
+                        const response = await fetch(`${this.apiUrl}/api/images/${image.id}`, {
+                            method: 'DELETE'
+                        });
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            deleted++;
+                        } else {
+                            failed++;
+                        }
+                    } catch (error) {
+                        failed++;
+                    }
+                }
+
+                if (deleted > 0) {
+                    this.showNotification(`Successfully deleted ${deleted} unused image${deleted > 1 ? 's' : ''}!${failed > 0 ? `\n${failed} failed.` : ''}`, failed > 0 ? 'info' : 'success');
+                    await this.fetchImages();
+                } else {
+                    this.showNotification(`Failed to delete images`, 'error');
+                }
+            } catch (error) {
+                this.showNotification(`Deletion failed: ${error.message}`, 'error');
+            } finally {
+                this.deletingAllImages = false;
             }
         }
     }
