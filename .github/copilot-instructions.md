@@ -57,10 +57,6 @@ All apps must include the following labels to ensure proper categorization and d
    - Prefer documentation over marketing pages
    - Example: `"https://docs.pi-hole.net"`
 
-8. **yantra.github** (Required) - GitHub repository URL
-   - Full URL to the main project repository
-   - Example: `"https://github.com/pi-hole/pi-hole"`
-
 # GitHub Copilot Instructions
 
 After edits make sure to update index.html if we change anything.

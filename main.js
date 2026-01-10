@@ -242,7 +242,6 @@ app.get('/api/containers', async (req, res) => {
           port: appLabels.port || null,
           description: appLabels.description || '',
           docs: appLabels.docs || null,
-          github: appLabels.github || null,
           website: appLabels.website || null
         }
       };
@@ -311,7 +310,7 @@ app.get('/api/containers/:id', async (req, res) => {
           port: appLabels.port || null,
           description: appLabels.description || '',
           docs: appLabels.docs || null,
-          github: appLabels.github || null
+          website: appLabels.website || null
         }
       }
     });
@@ -385,7 +384,6 @@ app.get('/api/apps', async (req, res) => {
 
             website: labels.website || null, // Map website label
             docs: labels.docs || null,
-            github: labels.github || null,
             path: appPath,
             composePath: composePath,
             environment: envVars
