@@ -2,7 +2,7 @@
 
 A lightweight, minimal, and open-source alternative to Umbrel for self-hosting enthusiasts.
 
-<img width="2318" height="1377" alt="image" src="https://github.com/user-attachments/assets/b90d2599-cd9e-424d-bb7c-20499991a7fe" />
+https://github.com/user-attachments/assets/f877c0e2-a5a1-42c9-8ade-d0952549edb4
 
 ## Why Yantra?
 
