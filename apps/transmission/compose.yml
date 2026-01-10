@@ -23,14 +23,15 @@ services:
       yantra.github: "https://github.com/transmission/transmission"
 
   transmission-http:
-    image: nginx:alpine
+    image: python:3-alpine
     container_name: transmission-http
     volumes:
-      - transmission_downloads:/usr/share/nginx/html:ro
+      - transmission_downloads:/downloads:ro
     ports:
-      - "9092:80"
+      - "9092:8000"
     restart: unless-stopped
-    command: /bin/sh -c "rm -f /etc/nginx/conf.d/default.conf && echo 'server { listen 80; root /usr/share/nginx/html; location / { autoindex on; autoindex_exact_size off; autoindex_localtime on; } }' > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+    working_dir: /downloads
+    command: python3 -m http.server 8000
 
 volumes:
   transmission_config:
