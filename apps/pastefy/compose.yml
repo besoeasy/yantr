@@ -9,7 +9,6 @@ services:
      yantra.port: "8097 (HTTP - Web UI)"
      yantra.description: "Feature-rich self-hosted pastebin for sharing code"
      yantra.website: "https://docs.pastefy.app"
-     yantra.github: "https://github.com/interaapps/pastefy"
     ports:
       - "8097:80"
     volumes:

@@ -9,7 +9,6 @@ services:
      yantra.port: "3000 (HTTP - Web UI)"
      yantra.description: "Self-hosted Git service with code review and CI/CD"
      yantra.website: "https://docs.gitea.io"
-     yantra.github: "https://github.com/go-gitea/gitea"
     ports:
       - "3000:3000"
       - "2222:22"

@@ -17,7 +17,6 @@ services:
       yantra.port: "8095 (HTTP - Web UI)"
       yantra.description: "Web GUI for yt-dlp/youtube-dl with playlist support."
       yantra.website: "https://github.com/alexta69/metube"
-      yantra.github: "https://github.com/alexta69/metube"
 
 volumes:
   metube_downloads:

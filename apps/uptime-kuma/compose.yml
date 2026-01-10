@@ -9,7 +9,6 @@ services:
      yantra.port: "3001 (HTTP - Web UI)"
      yantra.description: "Self-hosted uptime monitoring tool"
      yantra.website: "https://github.com/louislam/uptime-kuma/wiki"
-     yantra.github: "https://github.com/louislam/uptime-kuma"
     ports:
       - "3001:3001"
     volumes:

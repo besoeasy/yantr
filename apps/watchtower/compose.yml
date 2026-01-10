@@ -8,7 +8,6 @@ services:
      yantra.category: "tools,utility"
      yantra.description: "Automatically update running Docker containers"
      yantra.website: "https://containrrr.dev/watchtower"
-     yantra.github: "https://github.com/containrrr/watchtower"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

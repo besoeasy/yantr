@@ -16,7 +16,6 @@ services:
       yantra.port: "8082 (HTTP - Web UI)"
       yantra.description: "Web-based file manager with a user-friendly interface"
       yantra.website: "https://filebrowser.org/"
-      yantra.github: "https://github.com/filebrowser/filebrowser"
 
 volumes:
   filebrowser_data:

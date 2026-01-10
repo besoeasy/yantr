@@ -17,7 +17,6 @@ services:
       yantra.port: "5216 (HTTP - Web UI)"
       yantra.description: "Speed test analysis software that tracks your internet speed for 30 days"
       yantra.website: "https://myspeed.dev"
-      yantra.github: "https://github.com/gnmyt/myspeed"
 
 volumes:
   myspeed_data:

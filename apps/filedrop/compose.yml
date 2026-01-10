@@ -20,7 +20,6 @@ services:
       yantra.port: "3232 (HTTP - Web UI)"
       yantra.description: "Decentralized file-sharing solution for Nostr and the web."
       yantra.website: "https://github.com/besoeasy/file-drop"
-      yantra.github: "https://github.com/besoeasy/file-drop"
 
 volumes:
   filedrop_data:

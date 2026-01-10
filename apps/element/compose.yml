@@ -9,7 +9,6 @@ services:
      yantra.port: "8089 (HTTP - Web UI)"
      yantra.description: "Secure and decentralized Matrix chat client for communication"
      yantra.website: "https://element.io"
-     yantra.github: "https://github.com/element-hq/element-web"
     ports:
       - "8089:80"
     volumes:

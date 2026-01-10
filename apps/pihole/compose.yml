@@ -9,7 +9,6 @@ services:
      yantra.port: "8080 (HTTP - Web UI)"
      yantra.description: "Network-wide ad blocking via DNS sinkhole"
      yantra.website: "https://docs.pi-hole.net"
-     yantra.github: "https://github.com/pi-hole/pi-hole"
     ports:
       - "53:53/tcp"
       - "53:53/udp"

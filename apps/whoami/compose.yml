@@ -14,5 +14,4 @@ services:
      yantra.port: "8100 (HTTP - Web UI)"
      yantra.description: "Tiny HTTP service that prints system information - perfect for testing"
      yantra.website: "https://github.com/traefik/whoami"
-     yantra.github: "https://github.com/traefik/whoami"
 

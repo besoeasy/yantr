@@ -9,7 +9,6 @@ services:
      yantra.port: "8099 (HTTP - Web UI)"
      yantra.description: "Lightweight Bitwarden server for password management"
      yantra.website: "https://github.com/dani-garcia/vaultwarden/wiki"
-     yantra.github: "https://github.com/dani-garcia/vaultwarden"
     ports:
       - "8099:80"
     volumes:

@@ -9,7 +9,6 @@ services:
      yantra.port: "8200 (HTTP - Web UI)"
      yantra.description: "Free backup software for encrypted, incremental backups"
      yantra.website: "https://www.duplicati.com"
-     yantra.github: "https://github.com/duplicati/duplicati"
     ports:
       - "8200:8200"
     volumes:

@@ -19,7 +19,6 @@ services:
       yantra.port: "9117 (HTTP - Web UI)"
       yantra.description: "API proxy for torrent trackers with Sonarr/Radarr support."
       yantra.website: "https://github.com/Jackett/Jackett"
-      yantra.github: "https://github.com/Jackett/Jackett"
 
 volumes:
   jackett_config:

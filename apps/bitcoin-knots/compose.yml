@@ -27,7 +27,6 @@ services:
       yantra.port: "8332 (HTTP - RPC API)"
       yantra.description: "Bitcoin full node with enhanced features and privacy focus."
       yantra.website: "https://bitcoinknots.org"
-      yantra.github: "https://github.com/bitcoinknots/bitcoin"
 
 volumes:
   bitcoin_knots_data:

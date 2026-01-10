@@ -20,7 +20,6 @@ services:
      yantra.port: "8086 (HTTP - Web UI)"
      yantra.description: "Open source file sync and share platform with encryption"
      yantra.website: "https://www.seafile.com/en/home/"
-     yantra.github: "https://github.com/haiwen/seafile"
     ports:
       - "8086:80"
     volumes:

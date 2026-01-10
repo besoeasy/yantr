@@ -17,7 +17,6 @@ services:
       yantra.port: "8090 (HTTP - Web UI)"
       yantra.description: "Complete visibility of your domain portfolio with monitoring and alerts"
       yantra.website: "https://domain-locker.com"
-      yantra.github: "https://github.com/Lissy93/domain-locker"
 
 volumes:
   domain_locker_data:

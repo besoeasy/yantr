@@ -9,7 +9,6 @@ services:
      yantra.port: "8092 (HTTP - Web UI)"
      yantra.description: "Self-hosted invoicing without the bloat"
      yantra.website: "https://github.com/kittendevv/Invio/wiki"
-     yantra.github: "https://github.com/kittendevv/Invio"
     ports:
       - "8092:3000"
     volumes:

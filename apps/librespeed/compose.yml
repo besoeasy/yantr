@@ -9,7 +9,6 @@ services:
      yantra.port: "8098 (HTTP - Web UI)"
      yantra.description: "Self-hosted speed test tool for bandwidth measurement"
      yantra.website: "https://github.com/librespeed/speedtest"
-     yantra.github: "https://github.com/librespeed/speedtest"
     ports:
       - "8098:8080"
     restart: unless-stopped

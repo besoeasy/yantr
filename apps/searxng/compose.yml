@@ -9,7 +9,6 @@ services:
      yantra.port: "8083 (HTTP - Web UI)"
      yantra.description: "Privacy-focused metasearch engine aggregating results"
      yantra.website: "https://docs.searxng.org"
-     yantra.github: "https://github.com/searxng/searxng"
     ports:
       - "8083:8080"
     volumes:

@@ -18,7 +18,6 @@ services:
       yantra.port: "8384 (HTTP - Web UI)"
       yantra.description: "Continuous file synchronization program. It synchronizes files between two or more computers."
       yantra.website: "https://syncthing.net/"
-      yantra.github: "https://github.com/syncthing/syncthing"
 
 volumes:
   syncthing_data:

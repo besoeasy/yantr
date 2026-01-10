@@ -9,7 +9,6 @@ services:
      yantra.port: "5678 (HTTP - Web UI)"
      yantra.description: "Workflow automation platform with AI and 400+ integrations"
      yantra.website: "https://docs.n8n.io"
-     yantra.github: "https://github.com/n8n-io/n8n"
     ports:
       - "5678:5678"
     volumes:

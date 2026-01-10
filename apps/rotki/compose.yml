@@ -9,7 +9,6 @@ services:
      yantra.port: "8084 (HTTP - Web UI)"
      yantra.description: "Privacy-focused portfolio tracker and analytics for crypto"
      yantra.website: "https://rotki.com/"
-     yantra.github: "https://github.com/rotki/rotki"
     ports:
       - "8084:80"
     volumes:

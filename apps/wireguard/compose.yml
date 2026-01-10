@@ -26,7 +26,6 @@ services:
       yantra.port: "51821 (HTTP - Admin Panel)"
       yantra.description: "Fast, modern VPN with state-of-the-art cryptography"
       yantra.website: "https://www.wireguard.com"
-      yantra.github: "https://github.com/wg-easy/wg-easy"
 
 volumes:
   wireguard_data:

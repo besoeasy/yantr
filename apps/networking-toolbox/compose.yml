@@ -9,7 +9,6 @@ services:
      yantra.port: "8096 (HTTP - Web UI)"
      yantra.description: "100+ offline-first networking tools and utilities"
      yantra.website: "https://networking-toolbox.as93.net"
-     yantra.github: "https://github.com/Lissy93/networking-toolbox"
     ports:
       - "8096:3000"
     environment:

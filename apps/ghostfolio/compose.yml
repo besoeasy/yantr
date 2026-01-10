@@ -9,7 +9,6 @@ services:
      yantra.port: "8091 (HTTP - Web UI)"
      yantra.description: "Open source wealth management for portfolio tracking"
      yantra.website: "https://ghostfol.io"
-     yantra.github: "https://github.com/ghostfolio/ghostfolio"
     ports:
       - "8091:3333"
     volumes:

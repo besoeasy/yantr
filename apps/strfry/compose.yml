@@ -24,7 +24,6 @@ services:
       yantra.port: "7777 (HTTP - Web UI)"
       yantra.description: "High-performance Nostr relay implementation"
       yantra.website: "https://github.com/hoytech/strfry/blob/master/docs/README.md"
-      yantra.github: "https://github.com/hoytech/strfry"
 
 volumes:
   strfry_data:

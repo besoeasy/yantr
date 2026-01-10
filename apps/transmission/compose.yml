@@ -20,7 +20,6 @@ services:
       yantra.port: "9091 (HTTP - Web Interface), 9092 (HTTP - Downloads)"
       yantra.description: "Fast, easy BitTorrent client with web interface"
       yantra.website: "https://transmissionbt.com/"
-      yantra.github: "https://github.com/transmission/transmission"
 
   transmission-http:
     image: python:3-alpine

@@ -17,7 +17,6 @@ services:
       yantra.port: "8093 (HTTPS - Web UI), 8094 (HTTPS - Admin)"
       yantra.description: "Full-featured office suite accessible through web browser."
       yantra.website: "https://www.libreoffice.org"
-      yantra.github: "https://github.com/linuxserver/docker-libreoffice"
 
 volumes:
   libreoffice_config:
