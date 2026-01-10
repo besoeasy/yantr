@@ -415,10 +415,10 @@
                                 <div class="flex gap-1 relative">
                                     <!-- Installed App Buttons -->
                                     <template v-if="app.isInstalled">
-                                        <a v-if="app.port" :href="appUrl(app.port, app.protocol || 'http')" target="_blank"
+                                        <button v-if="app.port" @click="openApp(app)"
                                             class="flex-1 px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg text-xs font-semibold transition-all duration-200 transform active:scale-95 text-center">
                                             Open
-                                        </a>
+                                        </button>
                                         
                                         <!-- Ports (shown on hover below Open button) -->
                                         <div v-if="app.isInstalled && app.ports && app.ports.length > 0" 
@@ -510,6 +510,42 @@
                         Cancel
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Port Selection Modal -->
+        <div v-if="showPortModal"
+            class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50"
+            @click.self="closePortModal">
+            <div class="glass-dark rounded-3xl p-8 max-w-md w-full mx-4 smooth-shadow-lg">
+                <h2 class="text-2xl font-bold mb-2 text-gray-900">{{ selectedAppForPorts?.name }} - Select Port</h2>
+                <p class="text-sm text-gray-600 mb-6">This app has multiple ports available</p>
+
+                <div class="space-y-3 mb-6">
+                    <a v-for="(port, index) in selectedAppForPorts?.parsedPorts" :key="index" 
+                        :href="appUrl(port, selectedAppForPorts?.protocol || 'http')" 
+                        target="_blank"
+                        @click="closePortModal"
+                        class="block px-5 py-4 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl transition-all cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                                    <i class="fas fa-external-link-alt text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Port {{ port }}</div>
+                                    <div class="text-xs text-gray-500 font-mono">{{ appUrl(port, selectedAppForPorts?.protocol || 'http') }}</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-arrow-right text-gray-400 group-hover:text-blue-600 transition-colors"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <button @click="closePortModal"
+                    class="w-full px-5 py-3 glass hover:bg-white/90 text-gray-700 rounded-xl font-medium transition-all">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>

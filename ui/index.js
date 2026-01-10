@@ -19,7 +19,9 @@ createApp({
             appSearch: '',
             apiUrl: '',
             version: 'loading...',
-            containerView: 'appstore'
+            containerView: 'appstore',
+            showPortModal: false,
+            selectedAppForPorts: null
         }
     }, 
     computed: {
@@ -160,6 +162,48 @@ createApp({
             }
 
             return `${normalizedProtocol}://${host}:${portMatch[0]}`;
+        },
+        getPorts(app) {
+            // Parse port(s) from yantra.port label
+            if (!app.port) return [];
+            
+            const portStr = String(app.port).trim();
+            
+            // Check if it's a JSON array
+            if (portStr.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(portStr);
+                    return Array.isArray(parsed) ? parsed : [portStr];
+                } catch (e) {
+                    return [portStr];
+                }
+            }
+            
+            // Check if it's comma-separated
+            if (portStr.includes(',')) {
+                return portStr.split(',').map(p => p.trim()).filter(p => p);
+            }
+            
+            // Single port
+            return [portStr];
+        },
+        openApp(app) {
+            const ports = this.getPorts(app);
+            
+            if (ports.length === 0) return;
+            
+            if (ports.length === 1) {
+                // Single port - open directly
+                window.open(this.appUrl(ports[0], app.protocol || 'http'), '_blank');
+            } else {
+                // Multiple ports - show modal
+                this.selectedAppForPorts = { ...app, parsedPorts: ports };
+                this.showPortModal = true;
+            }
+        },
+        closePortModal() {
+            this.showPortModal = false;
+            this.selectedAppForPorts = null;
         },
         async fetchVersion() {
             try {

@@ -44,9 +44,12 @@ All apps must include the following labels to ensure proper categorization and d
 4. **yantra.port** (Optional) - Primary access port for the app
 
    - Only required for apps with web UI
-   - Use the exposed/published port number as string
+   - Can be a single port (string) or multiple ports (comma-separated)
    - Support environment variables if port is configurable
-   - Example: `"3001"`, `"${WHOAMI_PORT:-8081}"`
+   - Examples:
+     - Single port: `"3001"`, `"${WHOAMI_PORT:-8081}"`
+     - Multiple ports: `"9091, 51413"`
+   - When multiple ports are specified, UI will show a popup to select which port to open
 
 5. **yantra.protocol** (Optional) - Protocol for accessing the app
 

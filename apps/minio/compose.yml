@@ -17,7 +17,7 @@ services:
       yantra.name: "MinIO"
       yantra.logo: "QmbHbop4JXmJEbg6gSKuRw36UL1mmpo9z832B6KZPtJcxD"
       yantra.category: "utility,tools"
-      yantra.port: "9001"
+      yantra.port: "9001, 9000"
       yantra.description: "High Performance Object Storage compatible with Amazon S3 API"
       yantra.website: "https://min.io"
       yantra.github: "https://github.com/minio/minio"

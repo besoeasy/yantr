@@ -3,15 +3,11 @@ services:
     image: linuxserver/transmission:latest
     container_name: transmission
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ:-UTC}
       - USER=${TRANSMISSION_USER:-admin}
       - PASS=${TRANSMISSION_PASS:-admin}
     volumes:
       - transmission_config:/config
       - transmission_downloads:/downloads
-      - transmission_watch:/watch
     ports:
       - "9091:9091"
       - "51413:51413"
@@ -21,15 +17,22 @@ services:
       yantra.name: "Transmission"
       yantra.logo: "QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb"
       yantra.category: "download,network"
-      yantra.port: "9091"
+      yantra.port: "9091, 9092"
       yantra.description: "Fast, easy BitTorrent client with web interface"
       yantra.website: "https://transmissionbt.com/"
       yantra.github: "https://github.com/transmission/transmission"
+
+  transmission-http:
+    image: nginx:alpine
+    container_name: transmission-http
+    volumes:
+      - transmission_downloads:/usr/share/nginx/html:ro
+    ports:
+      - "9092:80"
+    restart: unless-stopped
 
 volumes:
   transmission_config:
     name: transmission_config
   transmission_downloads:
     name: transmission_downloads
-  transmission_watch:
-    name: transmission_watch
