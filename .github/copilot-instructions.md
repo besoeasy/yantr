@@ -4,9 +4,8 @@ Ui is located in /ui/
 
 1. Use tailwindcss & aviod custom CSS as much as possible.
 2. Use VUEJS framework for all UI components.
-3. Follow mobile-first design principles.
-4. Use FontAwesome for icons & Avoid using image-based icons.
-5. Each tailwindCSS should be mobile compatible by default, a mobile user should be able to access all features.
+3. Use FontAwesome for icons & Avoid using image-based icons.
+4. Each tailwindCSS should be mobile compatible by default, a mobile user should be able to access all features.
 
 # Apps
 
@@ -14,17 +13,15 @@ Apps templates located in /apps/, Apps are docker apps which have templates in /
 
 ## General Rules
 
-1. **Ports**: Avoid rootful ports (80, 443). Use high-numbered ports (5000+). Run `node check.js` to check for conflicts.
-2. **Configuration**: Use environment variables with defaults (e.g., `${VAR_NAME:-default_value}`).
+1. Run `node check.js` to check for conflicts.
+2. **Configuration**: Use environment variables with defaults for configuration values (e.g., `${VAR_NAME:-default_value}`), but NOT for port mappings.
 3. **Storage**: Use named volumes only. Never mount to host paths directly.
-4. **Security**: Follow container best practices - non-root users, limited capabilities.
 
 ## Labels
 
 All apps must include the following labels to ensure proper categorization and display in the UI:
 
 1. **yantra.name** (Required) - Human-readable app name
-
    - Use proper capitalization and spacing
    - Example: `"Pi-hole"`, `"Uptime Kuma"`
 

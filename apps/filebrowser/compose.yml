@@ -1,0 +1,24 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    volumes:
+      - filebrowser_data:/database
+      - filebrowser_config:/config
+      - filebrowser_srv:/srv
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+    labels:
+      yantra.name: "File Browser"
+      yantra.logo: "QmYVd8qstdXtTd1quwv4nJen6XprykxQRLo67Jy7WyiLMB"
+      yantra.category: "tools,utility"
+      yantra.port: "8082 (HTTP - Web UI)"
+      yantra.description: "Web-based file manager with a user-friendly interface"
+      yantra.website: "https://filebrowser.org/"
+      yantra.github: "https://github.com/filebrowser/filebrowser"
+
+volumes:
+  filebrowser_data:
+  filebrowser_config:
+  filebrowser_srv:
