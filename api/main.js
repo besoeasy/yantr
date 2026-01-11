@@ -169,8 +169,13 @@ async function getImageFromCompose(composePath) {
 app.use(cors());
 app.use(express.json());
 
-// Serve static UI files - Not needed in Vue setup, handled by Vite
-// app.use(express.static(path.join(__dirname, "ui")));
+// Serve static files from Vue.js dist folder in production
+if (process.env.NODE_ENV === 'production') {
+  const distPath = path.join(__dirname, '..', 'dist');
+  app.use(express.static(distPath));
+  
+  log('info', `📦 Serving Vue.js app from: ${distPath}`);
+}
 
 // Helper function to parse app labels
 function parseAppLabels(labels) {
@@ -1073,6 +1078,13 @@ app.post("/api/ports/suggest", async (req, res) => {
     });
   }
 });
+
+// Catch-all route to serve Vue.js app for client-side routing (must be last)
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {

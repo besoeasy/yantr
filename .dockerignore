@@ -1,0 +1,37 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Development files
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+# Build artifacts
+dist
+.env
+.env.local
+
+# Documentation
+README.md
+LICENSE
+*.md
+
+# Old UI folder (no longer needed)
+ui
+
+# Test files
+*.test.js
+*.spec.js
+test/
+tests/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
