@@ -691,10 +691,10 @@ app.post("/api/deploy", async (req, res) => {
       log("info", `   stdout: ${stdout.trim()}`);
       if (stderr) log("info", `   stderr: ${stderr.trim()}`);
 
-      // Clean up temporary compose file if it was created
-      if (useComposePath === tempComposePath) {
-        try {
-          await fsPromises.unlink(tempComposePath);
+      res.json({
+        success: true,
+        message: `App '${appId}' deployed successfully`,
+        appId: appId,
         output: stdout,
         warnings: stderr || null,
       });
@@ -702,21 +702,21 @@ app.post("/api/deploy", async (req, res) => {
       log("error", `❌ [POST /api/deploy] Deployment failed for ${appId}:`, error.message);
       log("error", `   stderr: ${error.stderr}`);
 
-      // Clean up temporary compose file if it was created
-      if (useComposePath === tempComposePath) {
-        try {
-          await fsPromises.unlink(tempComposePath);
-        } catch (err) {
-          // Ignore cleanup errors
-        }
-      }
-
       // Check if the error is architecture-related
       const isArchError =
         error.stderr && (error.stderr.includes("no matching manifest") || error.stderr.includes("platform") || error.stderr.includes("architecture"));
 
       res.status(500).json({
-        suess: false,
+        success: false,
+        error: isArchError ? "Architecture not supported" : "Deployment failed",
+        message: isArchError ? "This image does not support your system architecture" : error.message,
+        stderr: error.stderr,
+      });
+    }
+  } catch (error) {
+    log("error", "❌ [POST /api/deploy] Unexpected error:", error.message);
+    res.status(500).json({
+      success: false,
       error: error.message,
     });
   }

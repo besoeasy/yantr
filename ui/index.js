@@ -408,25 +408,24 @@ createApp({
                 const response = await fetch(`${this.apiUrl}/api/deploy`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ appId, environment, ports }),
+                    body: JSON.stringify({ appId, environment }),
                     signal: controller.signal
                 });
-                ) {
-            this.showEnvModal = false;
-            this.deploying = appId;
-            
-            // Show deployment started notification
-            this.showNotification(`Deploying ${appId}... This may take a few minutes.`, 'info');
-            
-            try {
-                // Create AbortController with 5 minute timeout for deployments
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minutes
-                
-                const response = await fetch(`${this.apiUrl}/api/deploy`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ appId, environmentr.message}`, 'error');
+
+                clearTimeout(timeoutId);
+                const data = await response.json();
+
+                if (data.success) {
+                    this.showNotification(`${appId} deployed successfully!`, 'success');
+                    await this.fetchContainers();
+                } else {
+                    this.showNotification(`Deployment failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    this.showNotification(`Deployment timeout - ${appId} is taking longer than expected`, 'error');
+                } else {
+                    this.showNotification(`Deployment failed: ${error.message}`, 'error');
                 }
             } finally {
                 this.deploying = null;
@@ -455,8 +454,7 @@ createApp({
                     if (data.volumesRemoved.length > 0) {
                         message += `\n\nVolumes removed: ${data.volumesRemoved.join(', ')}`;
                     }
-                  electedApp = null;
-            this.envhis.showNotification(message, 'success');
+                    this.showNotification(message, 'success');
                     
                     // Close detail view if we're viewing this container
                     if (this.containerDetailView && this.selectedContainer?.id === containerId) {
