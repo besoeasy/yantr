@@ -639,23 +639,32 @@ createApp({
             const portDescriptions = {};
             
             // Parse yantra.port label to build a map of descriptions
-            if (this.selectedContainer.app && this.selectedContainer.app.port) {
-                const portStr = this.selectedContainer.app.port;
-                // Parse format: "9091 (HTTP - Web Interface), 5000 (HTTP - Downloads)"
-                const regex = /(\d+)\s*\(([^-\)]+)\s*-\s*([^)]+)\)/g;
-                let match;
-                
-                while ((match = regex.exec(portStr)) !== null) {
-                    portDescriptions[match[1]] = {
-                        protocol: match[2].trim().toLowerCase(),
-                        label: match[3].trim()
-                    };
-                }
+            if (!this.selectedContainer.app || !this.selectedContainer.app.port) {
+                return []; // Only show ports if yantra.port is defined
+            }
+            
+            const portStr = this.selectedContainer.app.port;
+            // Parse format: "9091 (HTTP - Web Interface), 5000 (HTTP - Downloads)"
+            const regex = /(\d+)\s*\(([^-\)]+)\s*-\s*([^)]+)\)/g;
+            let match;
+            
+            while ((match = regex.exec(portStr)) !== null) {
+                portDescriptions[match[1]] = {
+                    protocol: match[2].trim().toLowerCase(),
+                    label: match[3].trim()
+                };
+            }
+            
+            // If no port descriptions found, return empty
+            if (Object.keys(portDescriptions).length === 0) {
+                return [];
             }
             
             // Build list from actual container ports (Docker inspect format: {"9091/tcp": [{HostPort: "12345"}]})
             const portKeys = Object.keys(this.selectedContainer.ports);
             
+            // Create a map of private port -> host port for matching
+            const portMap = {};
             portKeys.forEach(key => {
                 const [privatePort, type] = key.split('/');
                 const bindings = this.selectedContainer.ports[key];
@@ -663,33 +672,24 @@ createApp({
                 // Only process TCP ports with public bindings
                 if (type === 'tcp' && bindings && bindings.length > 0) {
                     const hostPort = bindings[0].HostPort;
-                    
                     if (hostPort) {
-                        // Check if we have a description for the private port (the one in yantra.port)
-                        const description = portDescriptions[privatePort];
-                        
-                        if (description) {
-                            ports.push({
-                                port: hostPort,
-                                protocol: description.protocol,
-                                label: description.label
-                            });
-                        } else if (Object.keys(portDescriptions).length > 0) {
-                            // If we have port descriptions but none match, use position-based matching
-                            const portDescArray = Object.entries(portDescriptions);
-                            const matchIndex = ports.length;
-                            if (matchIndex < portDescArray.length) {
-                                const [, desc] = portDescArray[matchIndex];
-                                ports.push({
-                                    port: hostPort,
-                                    protocol: desc.protocol,
-                                    label: desc.label
-                                });
-                            }
-                        }
+                        portMap[privatePort] = hostPort;
                     }
                 }
             });
+            
+            // Only show ports that are explicitly defined in yantra.port
+            for (const [privatePort, description] of Object.entries(portDescriptions)) {
+                const hostPort = portMap[privatePort];
+                
+                if (hostPort) {
+                    ports.push({
+                        port: hostPort,
+                        protocol: description.protocol,
+                        label: description.label
+                    });
+                }
+            }
             
             return ports;
         }
