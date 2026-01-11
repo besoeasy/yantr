@@ -209,15 +209,15 @@ onUnmounted(() => {
       
       <!-- Main Content -->
       <div v-else class="space-y-6 animate-in fade-in duration-500">
+        <!-- Back Button -->
+        <router-link to="/containers"
+          class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all group">
+          <ArrowLeft :size="18" class="group-hover:-translate-x-1 transition-transform" />
+          <span class="font-medium">Back to Containers</span>
+        </router-link>
+        
         <!-- Header Section -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 transition-all hover:shadow-xl">
-          <!-- Back Button -->
-          <router-link to="/containers"
-            class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 mb-6 transition-all group">
-            <ArrowLeft :size="18" class="group-hover:-translate-x-1 transition-transform" />
-            <span class="font-medium">Back to Containers</span>
-          </router-link>
-          
           <!-- Container Header -->
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div class="flex items-center gap-4">
