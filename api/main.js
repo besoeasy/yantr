@@ -1,14 +1,21 @@
-const express = require("express");
-const Docker = require("dockerode");
-const cors = require("cors");
-const fs = require("fs");
-const fsPromises = fs.promises;
-const path = require("path");
-const packageJson = require("./package.json");
-const { exec } = require("child_process");
-const util = require("util");
+import express from "express";
+import Docker from "dockerode";
+import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { exec } from "child_process";
+import util from "util";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { createRequire } from "module";
 
+const require = createRequire(import.meta.url);
+const packageJson = require("../package.json");
+const fsPromises = fs.promises;
 const execPromise = util.promisify(exec);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -162,8 +169,8 @@ async function getImageFromCompose(composePath) {
 app.use(cors());
 app.use(express.json());
 
-// Serve static UI files
-app.use(express.static(path.join(__dirname, "ui")));
+// Serve static UI files - Not needed in Vue setup, handled by Vite
+// app.use(express.static(path.join(__dirname, "ui")));
 
 // Helper function to parse app labels
 function parseAppLabels(labels) {
@@ -472,7 +479,7 @@ app.get("/api/containers/:id/logs", async (req, res) => {
 app.get("/api/apps", async (req, res) => {
   // log('info', '🏪 [GET /api/apps] Scanning apps directory');
   try {
-    const appsDir = path.join(__dirname, "apps");
+    const appsDir = path.join(__dirname, "..", "apps");
     const apps = [];
 
     // Read all directories in /apps
@@ -591,7 +598,7 @@ app.get("/api/apps/:id/check-arch", async (req, res) => {
   // log('info', `🔍 [GET /api/apps/:id/check-arch] Checking architecture for: ${req.params.id}`);
   try {
     const appId = req.params.id;
-    const appsDir = path.join(__dirname, "apps");
+    const appsDir = path.join(__dirname, "..", "apps");
     const appPath = path.join(appsDir, appId);
     const composePath = path.join(appPath, "compose.yml");
 
@@ -655,7 +662,7 @@ app.post("/api/deploy", async (req, res) => {
       });
     }
 
-    const appsDir = path.join(__dirname, "apps");
+    const appsDir = path.join(__dirname, "..", "apps");
     const appPath = path.join(appsDir, appId);
     const composePath = path.join(appPath, "compose.yml");
     log("info", `🚀 [POST /api/deploy] Compose path: ${composePath}`);
@@ -857,7 +864,7 @@ app.delete("/api/containers/:id", async (req, res) => {
 
     // If part of a compose project, check if it's a managed app
     if (composeProject) {
-      const appsDir = path.join(__dirname, "apps");
+      const appsDir = path.join(__dirname, "..", "apps");
       const appPath = path.join(appsDir, composeProject);
       const composePath = path.join(appPath, "compose.yml");
 
@@ -1085,7 +1092,7 @@ app.listen(PORT, "0.0.0.0", () => {
   log("info", "=".repeat(50));
   log("info", `📡 Port: ${PORT}`);
   log("info", `� Socket: ${socketPath}`);
-  log("info", `📂 Apps directory: ${path.join(__dirname, "apps")}`);
+  log("info", `📂 Apps directory: ${path.join(__dirname, "..", "apps")}`);
   log("info", `🌐 Access: http://localhost:${PORT}`);
   log("info", "=".repeat(50) + "\n");
 });

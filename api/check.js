@@ -1,6 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const YAML = require('yaml');
+import fs from 'fs';
+import path from 'path';
+import YAML from 'yaml';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 function extractDefaultPortFromEnvExpression(value) {
     if (typeof value !== 'string') return null;
@@ -196,7 +201,7 @@ async function detectPortConflict() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
     detectPortConflict().then(result => {
         if (result.conflict) {
             console.error('❌ Port conflicts detected!');
@@ -213,4 +218,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { detectPortConflict };
+export { detectPortConflict };

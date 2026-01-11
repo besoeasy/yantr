@@ -1,12 +1,3 @@
-# UI Design Guidelines
-
-Ui is located in /ui/
-
-1. Use tailwindcss & aviod custom CSS as much as possible.
-2. Use VUEJS framework for all UI components.
-3. Use FontAwesome for icons & Avoid using image-based icons.
-4. Each tailwindCSS should be mobile compatible by default, a mobile user should be able to access all features.
-
 # Apps
 
 Apps templates located in /apps/, Apps are docker apps which have templates in /apps/<app-name>/compose.yml
