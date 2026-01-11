@@ -231,29 +231,29 @@ onUnmounted(() => {
 
       <!-- Quick Access Ports (from yantra.port labels) -->
       <div v-if="getLabeledPorts.length > 0" class="mb-6">
-        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <i class="fas fa-rocket text-blue-500"></i>
-          <span>Quick Access</span>
-        </h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h3 class="text-xl font-bold mb-4 text-gray-900">Quick Access</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           <a v-for="(portInfo, index) in getLabeledPorts" :key="index"
             :href="appUrl(portInfo.port, portInfo.protocol)"
             target="_blank"
-            class="bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border-2 border-blue-200 hover:border-blue-400 rounded-xl p-4 transition-all cursor-pointer group">
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-2">
-                <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white">
-                  <i class="fas fa-external-link-alt"></i>
-                </div>
-                <div class="text-2xl font-bold text-blue-600 font-mono">{{ portInfo.port }}</div>
+            class="group flex items-center gap-3 bg-white hover:bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-gray-300 transition-all">
+            
+            <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-100 group-hover:bg-indigo-500 flex items-center justify-center transition-colors">
+              <i class="fas fa-external-link-alt text-gray-600 group-hover:text-white text-sm transition-colors"></i>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-lg font-bold text-gray-900 font-mono">{{ portInfo.port }}</span>
+                <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded font-medium uppercase">
+                  {{ portInfo.protocol }}
+                </span>
               </div>
-              <span class="text-xs px-2 py-1 bg-blue-600 text-white rounded-full font-semibold uppercase">
-                {{ portInfo.protocol }}
-              </span>
+              <div class="text-sm text-gray-600 truncate">{{ portInfo.label }}</div>
             </div>
-            <div class="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-              {{ portInfo.label }}
-            </div>
+            
+            <i class="fas fa-arrow-right text-gray-400 group-hover:text-gray-600 text-sm transition-colors"></i>
           </a>
         </div>
       </div>
@@ -316,11 +316,11 @@ onUnmounted(() => {
             <div v-if="selectedContainer.app.website" class="bg-white rounded-xl p-4 border border-gray-100">
               <div class="flex items-center gap-2 mb-2">
                 <i class="fas fa-globe text-gray-400"></i>
-                <div class="text-xs text-gray-500 font-semibold uppercase">Documentation</div>
+                <div class="text-xs text-gray-500 font-semibold uppercase">Website</div>
               </div>
               <a :href="selectedContainer.app.website" target="_blank"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm">
-                Visit Docs
+                Visit Website
                 <i class="fas fa-external-link-alt text-xs"></i>
               </a>
             </div>
