@@ -170,6 +170,7 @@ createApp({
         appUrl(port, protocol = 'http') {
             // Normalize protocol - ensure it doesn't have :// suffix
             const normalizedProtocol = protocol.replace('://', '').replace(':', '');
+            console.log('[appUrl] Input - port:', port, 'protocol:', protocol, 'normalized:', normalizedProtocol);
             let host = window.location.hostname || 'localhost';
 
             // IPv6 hostnames must be wrapped in brackets when used with an explicit port
@@ -180,10 +181,14 @@ createApp({
             const portString = String(port ?? '').trim();
             const portMatch = portString.match(/\d+/);
             if (!portMatch) {
-                return `${normalizedProtocol}://${host}`;
+                const url = `${normalizedProtocol}://${host}`;
+                console.log('[appUrl] Result (no port):', url);
+                return url;
             }
 
-            return `${normalizedProtocol}://${host}:${portMatch[0]}`;
+            const url = `${normalizedProtocol}://${host}:${portMatch[0]}`;
+            console.log('[appUrl] Result:', url);
+            return url;
         },
         getPorts(app) {
             // Parse port(s) from yantra.port label
@@ -193,10 +198,11 @@ createApp({
             if (!app.port) return [];
             
             const portStr = String(app.port).trim();
+            console.log('[getPorts] Input:', portStr);
             
             // Check if it's comma-separated
             if (portStr.includes(',')) {
-                return portStr.split(',').map(p => {
+                const result = portStr.split(',').map(p => {
                     const trimmed = p.trim();
                     // Extract port, protocol, and label: "6798 (HTTPS - Web UI)"
                     const match = trimmed.match(/^(\d+)(?:\s*\(([^-\)]+)\s*-\s*([^)]+)\))?$/);
@@ -209,16 +215,21 @@ createApp({
                     }
                     return { port: trimmed, protocol: 'http', label: null };
                 }).filter(p => p.port);
+                console.log('[getPorts] Multiple ports result:', result);
+                return result;
             }
             
             // Single port with protocol and label
             const match = portStr.match(/^(\d+)(?:\s*\(([^-\)]+)\s*-\s*([^)]+)\))?$/);
+            console.log('[getPorts] Regex match:', match);
             if (match) {
-                return [{ 
+                const result = [{ 
                     port: match[1], 
                     protocol: match[2] ? match[2].trim().toLowerCase() : 'http',
                     label: match[3] ? match[3].trim() : null 
                 }];
+                console.log('[getPorts] Single port result:', result);
+                return result;
             }
             
             return [{ port: portStr, protocol: 'http', label: null }];
