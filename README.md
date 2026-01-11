@@ -36,3 +36,14 @@ docker run -d \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantra:main
 ```
+### 🔒 Recommended: Tailscale Integration
+
+**We highly recommend installing [Tailscale](https://tailscale.com)** to turn Yantra into your own private cloud. Tailscale creates a secure, private network across all your devices, allowing you to:
+
+- **Access Yantra securely** from anywhere without exposing ports to the internet
+- **No port forwarding** or complex firewall rules needed
+- **End-to-end encryption** for all connections
+- **Zero-trust networking** with device authentication
+- **Access all your self-hosted apps** as if they were on your local network
+
+Simply install Tailscale on your server and devices, and you'll have secure remote access to your Yantra instance and all deployed apps without the security risks of exposing services publicly.
