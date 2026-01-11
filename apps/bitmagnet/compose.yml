@@ -5,9 +5,7 @@ services:
     restart: unless-stopped
     stop_grace_period: 1m
     ports:
-      # API and WebUI port:
-      - "3333:3333"
-      # BitTorrent ports:
+      - "3333"
       - "3334:3334/tcp"
       - "3334:3334/udp"
     environment:

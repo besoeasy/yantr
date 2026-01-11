@@ -5,7 +5,7 @@ services:
     volumes:
       - dufs-data:/data
     ports:
-      - "5000:5000"
+      - "5000"
     restart: unless-stopped
     command: /data --enable-cors --allow-all
     labels:

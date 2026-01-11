@@ -6,11 +6,11 @@ services:
      yantra.name: "Stirling-PDF"
      yantra.logo: "QmNhu7w75WnED5iZSjQfBCbqw1H9cnijkdKFvAUWrbffwi"
      yantra.category: "tools,utility"
-     yantra.port: "8085 (HTTP - Web UI)"
+     yantra.port: "8080 (HTTP - Web UI)"
      yantra.description: "Powerful locally hosted web-based PDF manipulation tool"
      yantra.website: "https://github.com/Stirling-Tools/Stirling-PDF"
     ports:
-      - "8085:8080"
+      - "8080"
     volumes:
       - stirling_pdf_data:/usr/share/tessdata
       - stirling_pdf_config:/configs

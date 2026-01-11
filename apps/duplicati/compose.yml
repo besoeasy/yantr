@@ -10,15 +10,11 @@ services:
      yantra.description: "Free backup software for encrypted, incremental backups"
      yantra.website: "https://www.duplicati.com"
     ports:
-      - "8200:8200"
+      - "8200"
     volumes:
       - duplicati_config:/config
       - duplicati_backups:/backups
       - duplicati_source:/source
-    environment:
-      - PUID=${PUID:-1000}
-      - PGID=${PGID:-1000}
-      - TZ=${TZ:-UTC}
     restart: unless-stopped
 
 volumes:

@@ -10,7 +10,7 @@ services:
      yantra.description: "Workflow automation platform with AI and 400+ integrations"
      yantra.website: "https://docs.n8n.io"
     ports:
-      - "5678:5678"
+      - "5678"
     volumes:
       - n8n_data:/home/node/.n8n
     environment:

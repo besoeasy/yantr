@@ -8,13 +8,13 @@ services:
     volumes:
       - domain_locker_data:/app/data
     ports:
-      - "8090:3000"
+      - "3000"
     restart: unless-stopped
     labels:
       yantra.name: "Domain Locker"
       yantra.logo: "QmU6CgMqEeKyB9x5TFhDqioT1TWXRdoJwTtfXgFm8ps6Qr"
       yantra.category: "security,tools"
-      yantra.port: "8090 (HTTP - Web UI)"
+      yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "Complete visibility of your domain portfolio with monitoring and alerts"
       yantra.website: "https://domain-locker.com"
 

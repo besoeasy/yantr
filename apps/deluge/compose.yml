@@ -6,7 +6,7 @@ services:
       - deluge-config:/config
       - deluge-downloads:/downloads
     ports:
-      - "8112:8112"
+      - "8112"
       - "6881:6881"
       - "6881:6881/udp"
     restart: unless-stopped
@@ -14,7 +14,7 @@ services:
       yantra.name: "Deluge"
       yantra.logo: "Qme73jzxAQSTAGFMx67HAmmPh9ffESVWumBS9tfYTAz1Kj"
       yantra.category: "download,utility"
-      yantra.port: "8112 (HTTP - Web UI), 8113 (HTTP - Downloads)"
+      yantra.port: "8112 (HTTP - Web UI), 5000 (HTTP - Downloads)"
       yantra.description: "Lightweight BitTorrent client with web interface"
       yantra.website: "https://deluge-torrent.org/"
 
@@ -24,7 +24,7 @@ services:
     volumes:
       - deluge-downloads:/data
     ports:
-      - "8113:5000"
+      - "5000"
     restart: unless-stopped
     command: /data --enable-cors --allow-all
 

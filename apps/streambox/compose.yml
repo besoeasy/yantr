@@ -10,8 +10,8 @@ services:
      yantra.description: "Media streaming and sharing platform with Telegram integration"
      yantra.website: "https://github.com/besoeasy/streambox"
     ports:
-      - "6798:6798"
-      - "6799:6799"
+      - "6798"
+      - "6799"
       - "4445:4445"
       - "6888:6888/tcp"
       - "6888:6888/udp"

@@ -6,12 +6,12 @@ services:
     environment:
       - TZ=${TZ:-UTC}
     ports:
-      - "8001:8080"
+      - "8080"
     restart: unless-stopped
     labels:
       yantra.name: "BentoPDF"
       yantra.logo: "QmPUEqmzR4i1YjBaVb6oghgkgg9oMDwss2oGgTXbzgdVTw"
       yantra.category: "tools,productivity"
-      yantra.port: "8001 (HTTP - Web UI)"
+      yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Privacy-first PDF toolkit with 50+ tools for editing, converting, and securing PDFs"
       yantra.website: "https://bentopdf.com"

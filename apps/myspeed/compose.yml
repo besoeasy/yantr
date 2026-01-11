@@ -3,12 +3,10 @@ services:
     image: germannewsmaker/myspeed:latest
     container_name: myspeed
     hostname: myspeed
-    environment:
-      - TZ=${TZ:-UTC}
     volumes:
       - myspeed_data:/myspeed/data
     ports:
-      - "5216:5216"
+      - "5216"
     restart: unless-stopped
     labels:
       yantra.name: "MySpeed"

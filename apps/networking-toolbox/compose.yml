@@ -6,11 +6,11 @@ services:
      yantra.name: "Networking Toolbox"
      yantra.logo: "QmeqFmwTVCvsBghUj1nRWCzcW4d197Gaud4iuTdGuv8KEf"
      yantra.category: "network,tools"
-     yantra.port: "8096 (HTTP - Web UI)"
+     yantra.port: "3000 (HTTP - Web UI)"
      yantra.description: "100+ offline-first networking tools and utilities"
      yantra.website: "https://networking-toolbox.as93.net"
     ports:
-      - "8096:3000"
+      - "3000"
     environment:
       - TZ=${TZ:-UTC}
     restart: unless-stopped

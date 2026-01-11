@@ -6,15 +6,13 @@ services:
      yantra.name: "Rotki"
      yantra.logo: "QmTRLwvRfA3n2Fnj8JoqUcoPXRVeNLYqk7TRqKhAq94SjE"
      yantra.category: "productivity,security,utility"
-     yantra.port: "8084 (HTTP - Web UI)"
+     yantra.port: "80 (HTTP - Web UI)"
      yantra.description: "Privacy-focused portfolio tracker and analytics for crypto"
      yantra.website: "https://rotki.com/"
     ports:
-      - "8084:80"
+      - "80"
     volumes:
       - rotki_data:/data
-    environment:
-      - TZ=${TZ:-UTC}
     restart: unless-stopped
 
 volumes:

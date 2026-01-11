@@ -4,13 +4,12 @@ services:
     container_name: jackett
     hostname: jackett
     environment:
-      - TZ=${TZ:-UTC}
       - AUTO_UPDATE=true
     volumes:
       - jackett_config:/config
       - jackett_downloads:/downloads
     ports:
-      - "9117:9117"
+      - "9117"
     restart: unless-stopped
     labels:
       yantra.name: "Jackett"

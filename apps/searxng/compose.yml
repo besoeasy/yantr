@@ -6,16 +6,16 @@ services:
      yantra.name: "SearXNG"
      yantra.logo: "QmdNaDHV8YPXxMZ8RCVzHGaLn2zSdJaLLbzxLSkPbCzSsX"
      yantra.category: "tools,security"
-     yantra.port: "8083 (HTTP - Web UI)"
+     yantra.port: "8080 (HTTP - Web UI)"
      yantra.description: "Privacy-focused metasearch engine aggregating results"
      yantra.website: "https://docs.searxng.org"
     ports:
-      - "8083:8080"
+      - "8080"
     volumes:
       - searxng_data:/etc/searxng
     environment:
       - TZ=${TZ:-UTC}
-      - SEARXNG_BASE_URL=http://localhost:8083
+      - SEARXNG_BASE_URL=http://localhost:8080
     restart: unless-stopped
 
 volumes:

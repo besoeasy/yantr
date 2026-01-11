@@ -8,13 +8,13 @@ services:
     volumes:
       - metube_downloads:/downloads
     ports:
-      - "8095:8081"
+      - "8081"
     restart: unless-stopped
     labels:
       yantra.name: "MeTube"
       yantra.logo: "QmSSUH23orHXCieMFnzLmRJAG1eDFa8PgdcJ3r2iuBQwUe"
       yantra.category: "media,tools,utility"
-      yantra.port: "8095 (HTTP - Web UI)"
+      yantra.port: "8081 (HTTP - Web UI)"
       yantra.description: "Web GUI for yt-dlp/youtube-dl with playlist support."
       yantra.website: "https://github.com/alexta69/metube"
 

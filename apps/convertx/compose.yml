@@ -6,9 +6,9 @@ services:
      yantra.name: "ConvertX"
      yantra.logo: "QmafozB6D4dw51adzoPyrCwTTCATQv1nbVwZPME6yzDWF7"
      yantra.category: "tools,utility"
-     yantra.port: "8183 (HTTP - Web UI)"
+     yantra.port: "3000 (HTTP - Web UI)"
      yantra.description: "Self-hosted file conversion tool supporting multiple formats"
      yantra.website: "https://github.com/C4illin/ConvertX"
     ports:
-      - "8183:3000"
+      - "3000"
     restart: unless-stopped
