@@ -331,6 +331,109 @@ app.get("/api/containers/:id", async (req, res) => {
   }
 });
 
+// GET /api/containers/:id/stats - Get real-time stats for a container
+app.get("/api/containers/:id/stats", async (req, res) => {
+  try {
+    const container = docker.getContainer(req.params.id);
+    const stats = await container.stats({ stream: false });
+    
+    // Calculate CPU percentage
+    const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
+    const systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
+    const cpuPercent = systemDelta > 0 ? (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100 : 0;
+    
+    // Calculate memory usage
+    const memoryUsage = stats.memory_stats.usage || 0;
+    const memoryLimit = stats.memory_stats.limit || 0;
+    const memoryPercent = memoryLimit > 0 ? (memoryUsage / memoryLimit) * 100 : 0;
+    
+    // Network I/O
+    let networkRx = 0;
+    let networkTx = 0;
+    if (stats.networks) {
+      Object.values(stats.networks).forEach(network => {
+        networkRx += network.rx_bytes || 0;
+        networkTx += network.tx_bytes || 0;
+      });
+    }
+    
+    // Block I/O
+    let blockRead = 0;
+    let blockWrite = 0;
+    if (stats.blkio_stats && stats.blkio_stats.io_service_bytes_recursive) {
+      stats.blkio_stats.io_service_bytes_recursive.forEach(io => {
+        if (io.op === 'Read') blockRead += io.value;
+        if (io.op === 'Write') blockWrite += io.value;
+      });
+    }
+    
+    res.json({
+      success: true,
+      stats: {
+        cpu: {
+          percent: cpuPercent.toFixed(2),
+          usage: stats.cpu_stats.cpu_usage.total_usage
+        },
+        memory: {
+          usage: memoryUsage,
+          limit: memoryLimit,
+          percent: memoryPercent.toFixed(2)
+        },
+        network: {
+          rx: networkRx,
+          tx: networkTx
+        },
+        blockIO: {
+          read: blockRead,
+          write: blockWrite
+        }
+      }
+    });
+  } catch (error) {
+    log("error", `❌ [GET /api/containers/:id/stats] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// GET /api/containers/:id/logs - Get logs from a container
+app.get("/api/containers/:id/logs", async (req, res) => {
+  try {
+    const container = docker.getContainer(req.params.id);
+    const tailLines = req.query.tail || 100;
+    
+    const logs = await container.logs({
+      stdout: true,
+      stderr: true,
+      tail: tailLines,
+      timestamps: true
+    });
+    
+    // Parse logs (Docker logs have a header we need to strip)
+    const logString = logs.toString('utf8');
+    const lines = logString.split('\n')
+      .filter(line => line.trim())
+      .map(line => {
+        // Strip Docker log header (8 bytes)
+        const cleanLine = line.substring(8);
+        return cleanLine;
+      });
+    
+    res.json({
+      success: true,
+      logs: lines
+    });
+  } catch (error) {
+    log("error", `❌ [GET /api/containers/:id/logs] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // GET /api/apps - List available apps from /apps directory
 app.get("/api/apps", async (req, res) => {
   // log('info', '🏪 [GET /api/apps] Scanning apps directory');

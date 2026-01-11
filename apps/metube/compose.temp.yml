@@ -1,0 +1,22 @@
+services:
+  metube:
+    image: ghcr.io/alexta69/metube:latest
+    container_name: metube
+    hostname: metube
+    environment:
+      - TZ=${TZ:-UTC}
+    volumes:
+      - metube_downloads:/downloads
+    ports:
+      - "5256:8081"
+    restart: unless-stopped
+    labels:
+      yantra.name: "MeTube"
+      yantra.logo: "QmSSUH23orHXCieMFnzLmRJAG1eDFa8PgdcJ3r2iuBQwUe"
+      yantra.category: "media,tools,utility"
+      yantra.port: "8095 (HTTP - Web UI)"
+      yantra.description: "Web GUI for yt-dlp/youtube-dl with playlist support."
+      yantra.website: "https://github.com/alexta69/metube"
+
+volumes:
+  metube_downloads:

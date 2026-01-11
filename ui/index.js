@@ -27,13 +27,19 @@ createApp({
             selectedAppForPorts: null,
             notifications: [],
             notificationIdCounter: 0,
-            musthaveapps: ["dufs","watchtower"]
+            musthaveapps: ["dufs","watchtower"],
+            // Container detail view
+            containerDetailView: false,
+            selectedContainer: null,
+            containerStats: null,
+            containerLogs: [],
+            statsInterval: null
         }
     }, 
     computed: {
         allAppsCount() {
-            // Total unique apps: installed + uninstalled only
-            return this.installedApps.length + this.uninstalledApps.length;
+            // Total uninstalled apps (for Apps tab badge)
+            return this.uninstalledApps.length;
         },
         installedAppIds() {
             const ids = new Set(this.containers.map(c => c.app.id));
@@ -82,8 +88,8 @@ createApp({
             }));
         },
         combinedApps() {
-            // Combine installed apps first, then uninstalled (shuffled)
-            let combined = [...this.installedApps, ...this.uninstalledApps];
+            // Only show uninstalled apps in the Apps tab
+            let combined = [...this.uninstalledApps];
             
             // Apply search filter
             if (this.appSearch) {
@@ -555,6 +561,12 @@ createApp({
                         message += `\n\nWarning: Some volumes failed to remove`;
                     }
                     this.showNotification(message, 'success');
+                    
+                    // Close detail view if we're viewing this container
+                    if (this.containerDetailView && this.selectedContainer?.id === containerId) {
+                        this.closeContainerDetail();
+                    }
+                    
                     await this.fetchContainers();
                 } else {
                     this.showNotification(`Deletion failed: ${data.error}`, 'error');
@@ -626,6 +638,111 @@ createApp({
             } finally {
                 this.deletingAllImages = false;
             }
+        },
+        // Container detail methods
+        async viewContainerDetail(container) {
+            this.selectedContainer = container;
+            this.containerDetailView = true;
+            this.containerStats = null;
+            this.containerLogs = [];
+            
+            // Fetch initial stats and logs
+            await Promise.all([
+                this.fetchContainerStats(),
+                this.fetchContainerLogs()
+            ]);
+            
+            // Start polling stats every 2 seconds
+            this.statsInterval = setInterval(() => {
+                this.fetchContainerStats();
+            }, 2000);
+        },
+        closeContainerDetail() {
+            this.containerDetailView = false;
+            this.selectedContainer = null;
+            this.containerStats = null;
+            this.containerLogs = [];
+            
+            // Stop polling stats
+            if (this.statsInterval) {
+                clearInterval(this.statsInterval);
+                this.statsInterval = null;
+            }
+        },
+        async fetchContainerStats() {
+            if (!this.selectedContainer) return;
+            
+            try {
+                const response = await fetch(`${this.apiUrl}/api/containers/${this.selectedContainer.id}/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.containerStats = data.stats;
+                }
+            } catch (error) {
+                console.error('Failed to fetch container stats:', error);
+            }
+        },
+        async fetchContainerLogs() {
+            if (!this.selectedContainer) return;
+            
+            try {
+                const response = await fetch(`${this.apiUrl}/api/containers/${this.selectedContainer.id}/logs?tail=200`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.containerLogs = data.logs;
+                }
+            } catch (error) {
+                console.error('Failed to fetch container logs:', error);
+            }
+        },
+        formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        },
+        getPortLabel(publicPort) {
+            // Get port label from yantra.port label if available
+            if (!this.selectedContainer || !this.selectedContainer.app || !this.selectedContainer.app.port) {
+                return null;
+            }
+            
+            const portStr = this.selectedContainer.app.port;
+            // Parse format: "9091 (HTTP - Web Interface)"
+            const regex = new RegExp(`${publicPort}\\s*\\(([^)]+)\\)`);
+            const match = portStr.match(regex);
+            
+            if (match) {
+                return match[1]; // Returns "HTTP - Web Interface"
+            }
+            
+            return null;
+        },
+        getLabeledPorts() {
+            // Parse yantra.port label to extract all labeled ports for quick access
+            if (!this.selectedContainer || !this.selectedContainer.app || !this.selectedContainer.app.port) {
+                return [];
+            }
+            
+            const portStr = this.selectedContainer.app.port;
+            const ports = [];
+            
+            // Parse format: "9091 (HTTP - Web Interface), 9092 (HTTP - Downloads)"
+            const regex = /(\d+)\s*\(([^-\)]+)\s*-\s*([^)]+)\)/g;
+            let match;
+            
+            while ((match = regex.exec(portStr)) !== null) {
+                ports.push({
+                    port: match[1],
+                    protocol: match[2].trim().toLowerCase(),
+                    label: match[3].trim()
+                });
+            }
+            
+            return ports;
         }
     }
 }).mount('#app');
