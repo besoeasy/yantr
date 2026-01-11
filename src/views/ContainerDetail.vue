@@ -297,8 +297,18 @@ onUnmounted(() => {
                 <Box :size="16" class="text-gray-400" />
                 <div class="text-xs text-gray-500 font-semibold uppercase">Docker Image</div>
               </div>
-              <div class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+              <div class="text-sm font-mono text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 break-all">
                 {{ selectedContainer.image }}
+              </div>
+            </div>
+            
+            <div v-if="selectedContainer.imageId" class="bg-white rounded-xl p-4 border border-gray-100">
+              <div class="flex items-center gap-2 mb-2">
+                <Box :size="16" class="text-gray-400" />
+                <div class="text-xs text-gray-500 font-semibold uppercase">Image SHA256</div>
+              </div>
+              <div class="text-xs font-mono text-gray-700 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200 break-all">
+                {{ selectedContainer.imageId.replace('sha256:', '') }}
               </div>
             </div>
             

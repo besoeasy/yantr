@@ -345,6 +345,7 @@ app.get("/api/containers/:id", async (req, res) => {
         id: info.Id,
         name: info.Name.replace("/", ""),
         image: info.Config.Image,
+        imageId: info.Image, // SHA256 of the image
         state: info.State.Status || (info.State.Running ? 'running' : 'stopped'),
         stateDetails: info.State,
         created: info.Created,
