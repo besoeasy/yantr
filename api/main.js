@@ -747,9 +747,9 @@ app.post("/api/deploy", async (req, res) => {
     // Add expiration label if temporary installation
     let modifiedComposeContent = composeContent;
     if (expiresIn) {
-      const expiresInHours = parseInt(expiresIn, 10);
+      const expiresInHours = parseFloat(expiresIn);
       if (!isNaN(expiresInHours) && expiresInHours > 0) {
-        const expireAtTimestamp = Math.floor(Date.now() / 1000) + (expiresInHours * 3600);
+        const expireAtTimestamp = Math.floor(Date.now() / 1000) + Math.floor(expiresInHours * 3600);
         const expireAtDate = new Date(expireAtTimestamp * 1000).toISOString();
         log("info", `🚀 [POST /api/deploy] App will expire at: ${expireAtDate}`);
         

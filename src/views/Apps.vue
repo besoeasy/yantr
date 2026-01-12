@@ -325,9 +325,10 @@ onMounted(async () => {
             </label>
             
             <div v-if="temporaryInstall" class="mt-3 ml-8 space-y-2 animate-fadeIn">
-              <label class="block text-xs font-medium text-gray-600">Expires in (hours)</label>
+              <label class="block text-xs font-medium text-gray-600">Expires in</label>
               <select v-model.number="expirationHours" 
                 class="w-full px-3 py-2 glass rounded-lg text-sm text-gray-900 transition-all">
+                <option :value="0.0833">5 minutes</option>
                 <option :value="1">1 hour</option>
                 <option :value="6">6 hours</option>
                 <option :value="12">12 hours</option>
