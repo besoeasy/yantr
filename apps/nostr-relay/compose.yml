@@ -1,0 +1,45 @@
+services:
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    container_name: shugur-cockroachdb
+    command: start-single-node --insecure
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+    ports:
+      - "26257"
+      - "9090"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health?ready=1 >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  shugur-relay:
+    image: ghcr.io/shugur-network/relay:latest
+    container_name: shugur-relay
+    restart: unless-stopped
+    ports:
+      - "8080"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+    command: /usr/local/bin/relay start --config /app/config.yaml
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "(command -v wget >/dev/null && wget -q --spider http://localhost:8080/api/info) || (command -v curl >/dev/null && curl -fsI http://localhost:8080/api/info)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      yantra.name: "Shugur Relay"
+      yantra.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
+      yantra.category: "network,social"
+      yantra.port: "8080 (Relay), 9090 (CockroachDB Admin)"
+      yantra.description: "High-performance nostr relay with distributed database"
+      yantra.website: "https://github.com/Shugur-Network/relay"
+
+volumes:
+  cockroach-data:

@@ -1,0 +1,53 @@
+GENERAL: {}
+
+LOGGING:
+  LEVEL: info
+  FILE: ""
+  FORMAT: json
+  MAX_SIZE: 20
+  MAX_BACKUPS: 10
+  MAX_AGE: 14
+
+METRICS:
+  ENABLED: true
+  PORT: 8181
+
+RELAY:
+  NAME: "shugur-relay"
+  DESCRIPTION: "High-performance nostr relay for decentralized communication"
+  CONTACT: ""
+  ICON: "https://github.com/Shugur-Network/relay/raw/main/logo.png"
+  BANNER: "https://github.com/Shugur-Network/relay/raw/main/banner.png"
+  WS_ADDR: ":8080"
+  PUBLIC_URL: ""
+  EVENT_CACHE_SIZE: 10000
+  SEND_BUFFER_SIZE: 8192
+  WRITE_TIMEOUT: 60s
+  IDLE_TIMEOUT: 300s
+  THROTTLING:
+    MAX_CONTENT_LENGTH: 2048
+    MAX_CONNECTIONS: 1000
+    BAN_THRESHOLD: 5
+    BAN_DURATION: 5
+    RATE_LIMIT:
+      ENABLED: true
+      MAX_EVENTS_PER_SECOND: 50
+      MAX_REQUESTS_PER_SECOND: 100
+      BURST_SIZE: 20
+      PROGRESSIVE_BAN: true
+      BAN_DURATION: 5m
+      MAX_BAN_DURATION: 24h
+
+RELAY_POLICY:
+  BLACKLIST:
+    PUBKEYS: []
+  WHITELIST:
+    PUBKEYS: []
+
+CAPSULES:
+  ENABLED: true
+  MAX_WITNESSES: 9
+
+DATABASE:
+  SERVER: "cockroachdb"
+  PORT: 26257
