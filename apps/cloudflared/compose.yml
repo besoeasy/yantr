@@ -5,7 +5,6 @@ services:
     command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
-    network_mode: host
     restart: unless-stopped
     labels:
       yantra.name: "Cloudflared"
