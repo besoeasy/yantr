@@ -52,7 +52,8 @@ async function fetchContainers() {
     const response = await fetch(`${apiUrl.value}/api/containers`)
     const data = await response.json()
     if (data.success) {
-      containers.value = data.containers.filter(c => c.state === 'running')
+      // Show all containers, not just running ones (includes starting, created, restarting states)
+      containers.value = data.containers
     }
   } catch (error) {
     console.error('Failed to fetch containers:', error)

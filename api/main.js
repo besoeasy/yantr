@@ -181,12 +181,19 @@ if (process.env.NODE_ENV === 'production') {
 // Helper function to parse app labels
 function parseAppLabels(labels) {
   const appLabels = {};
-  for (const [key, value] of Object.entries(labels || {})) {
+  
+  // Safety check for labels
+  if (!labels || typeof labels !== 'object') {
+    return appLabels;
+  }
+  
+  for (const [key, value] of Object.entries(labels)) {
     if (key.startsWith("yantra.")) {
       const labelName = key.replace("yantra.", "");
       appLabels[labelName] = value;
     }
   }
+  
   return appLabels;
 }
 
@@ -267,8 +274,9 @@ app.get("/api/containers", async (req, res) => {
     // Identify stacks that have at least one explicit Yantra app
     const yantraProjects = new Set();
     formattedContainers.forEach((c) => {
-      if (c.appLabels.name && c.labels["com.docker.compose.project"]) {
-        yantraProjects.add(c.labels["com.docker.compose.project"]);
+      const project = c.labels ? c.labels["com.docker.compose.project"] : null;
+      if (c.appLabels && c.appLabels.name && project) {
+        yantraProjects.add(project);
       }
     });
 
@@ -276,9 +284,14 @@ app.get("/api/containers", async (req, res) => {
     // 1. It has a visible Yantra name label
     // 2. OR it does NOT belong to a project that has a Yantra app (unmanaged/external containers)
     const filteredContainers = formattedContainers.filter((c) => {
-      const hasYantraLabel = !!c.appLabels.name;
-      const project = c.labels["com.docker.compose.project"];
+      const hasYantraLabel = !!(c.appLabels && c.appLabels.name);
+      const project = c.labels ? c.labels["com.docker.compose.project"] : null;
       const isPartOfYantraStack = project && yantraProjects.has(project);
+
+      // Debug logging for containers that might be filtered out incorrectly
+      if (!hasYantraLabel && isPartOfYantraStack) {
+        log("info", `🔍 Filtering out auxiliary container: ${c.name} (project: ${project})`);
+      }
 
       return hasYantraLabel || !isPartOfYantraStack;
     });
