@@ -3,12 +3,12 @@ services:
     image: interaapps/pastefy:latest
     container_name: pastefy
     labels:
-     yantra.name: "Pastefy"
-     yantra.logo: "QmPsB3gpiGkjr5hp2SMiq9PkqjE15QwmHXYJTsg6Yg5sUN"
-     yantra.category: "tools,productivity"
-     yantra.port: "80 (HTTP - Web UI)"
-     yantra.description: "Feature-rich self-hosted pastebin for sharing code"
-     yantra.website: "https://docs.pastefy.app"
+      yantra.name: "Pastefy"
+      yantra.logo: "QmPsB3gpiGkjr5hp2SMiq9PkqjE15QwmHXYJTsg6Yg5sUN"
+      yantra.category: "tools,productivity"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Feature-rich self-hosted pastebin for sharing code"
+      yantra.website: "https://docs.pastefy.app"
     ports:
       - "80"
     volumes:

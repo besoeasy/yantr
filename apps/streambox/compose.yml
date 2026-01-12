@@ -3,12 +3,12 @@ services:
     image: ghcr.io/besoeasy/streambox:main
     container_name: streambox
     labels:
-     yantra.name: "StreamBox"
-     yantra.logo: "QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i"
-     yantra.category: "media,tools"
-     yantra.port: "6798 (HTTP - Web UI), 6799 (HTTP - DOWNLOADS), 4445 (SMB - API)"
-     yantra.description: "Media streaming and sharing platform with Telegram integration"
-     yantra.website: "https://github.com/besoeasy/streambox"
+      yantra.name: "StreamBox"
+      yantra.logo: "QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i"
+      yantra.category: "media,tools"
+      yantra.port: "6798 (HTTP - Web UI), 6799 (HTTP - DOWNLOADS), 4445 (SMB - API)"
+      yantra.description: "Media streaming and sharing platform with Telegram integration"
+      yantra.website: "https://github.com/besoeasy/streambox"
     ports:
       - "6798"
       - "6799"

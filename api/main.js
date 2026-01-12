@@ -738,7 +738,7 @@ app.post("/api/deploy", async (req, res) => {
         const lines = composeContent.split('\n');
         const result = [];
         let inLabelsSection = false;
-        let indentLevel = 0;
+        let baseIndentLevel = 0;
         
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
@@ -747,15 +747,16 @@ app.post("/api/deploy", async (req, res) => {
           // Detect when we enter a labels section
           if (line.trim().startsWith('labels:')) {
             inLabelsSection = true;
-            indentLevel = line.search(/\S/);
-            // Add expiration labels after 'labels:' line
-            const labelIndent = ' '.repeat(indentLevel + 2);
+            baseIndentLevel = line.search(/\S/);
+            // Add expiration labels after 'labels:' line with proper YAML indentation
+            // Labels should always be indented 2 spaces more than the 'labels:' key
+            const labelIndent = ' '.repeat(baseIndentLevel + 2);
             result.push(`${labelIndent}yantra.expireAt: "${expireAtTimestamp}"`);
             result.push(`${labelIndent}yantra.temporary: "true"`);
           } else if (inLabelsSection) {
             // Check if we've left the labels section
             const currentIndent = line.search(/\S/);
-            if (line.trim() && currentIndent <= indentLevel) {
+            if (line.trim() && currentIndent <= baseIndentLevel) {
               inLabelsSection = false;
             }
           }

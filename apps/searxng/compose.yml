@@ -3,12 +3,12 @@ services:
     image: searxng/searxng:latest
     container_name: searxng
     labels:
-     yantra.name: "SearXNG"
-     yantra.logo: "QmdNaDHV8YPXxMZ8RCVzHGaLn2zSdJaLLbzxLSkPbCzSsX"
-     yantra.category: "tools,security"
-     yantra.port: "8080 (HTTP - Web UI)"
-     yantra.description: "Privacy-focused metasearch engine aggregating results"
-     yantra.website: "https://docs.searxng.org"
+      yantra.name: "SearXNG"
+      yantra.logo: "QmdNaDHV8YPXxMZ8RCVzHGaLn2zSdJaLLbzxLSkPbCzSsX"
+      yantra.category: "tools,security"
+      yantra.port: "8080 (HTTP - Web UI)"
+      yantra.description: "Privacy-focused metasearch engine aggregating results"
+      yantra.website: "https://docs.searxng.org"
     ports:
       - "8080"
     volumes:
