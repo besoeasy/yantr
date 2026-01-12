@@ -16,6 +16,8 @@ const envValues = ref({})
 const appSearch = ref('')
 const apiUrl = ref('')
 const musthaveapps = ['dufs', 'watchtower']
+const temporaryInstall = ref(false)
+const expirationHours = ref(24)
 
 // Computed
 const installedAppIds = computed(() => {
@@ -110,16 +112,15 @@ async function deployApp(appId) {
 
   if (!app) return
 
+  // Always show modal to allow temporary installation option
+  selectedApp.value = app
+  envValues.value = {}
   if (app.environment && app.environment.length > 0) {
-    selectedApp.value = app
-    envValues.value = {}
     app.environment.forEach(env => {
       envValues.value[env.envVar] = env.default
     })
-    showEnvModal.value = true
-  } else {
-    await confirmDeploy(appId, {})
   }
+  showEnvModal.value = true
 }
 
 async function confirmDeploy(appId, environment) {
@@ -132,10 +133,15 @@ async function confirmDeploy(appId, environment) {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 300000)
     
+    const requestBody = { appId, environment }
+    if (temporaryInstall.value) {
+      requestBody.expiresIn = expirationHours.value
+    }
+    
     const response = await fetch(`${apiUrl.value}/api/deploy`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ appId, environment }),
+      body: JSON.stringify(requestBody),
       signal: controller.signal
     })
 
@@ -143,7 +149,11 @@ async function confirmDeploy(appId, environment) {
     const data = await response.json()
 
     if (data.success) {
-      toast.success(`${appId} deployed successfully!`)
+      if (data.temporary) {
+        toast.success(`${appId} deployed as temporary (expires in ${expirationHours.value}h)!`)
+      } else {
+        toast.success(`${appId} deployed successfully!`)
+      }
       await fetchContainers()
     } else {
       toast.error(`Deployment failed: ${data.error}`)
@@ -157,6 +167,8 @@ async function confirmDeploy(appId, environment) {
   } finally {
     deploying.value = null
     selectedApp.value = null
+    temporaryInstall.value = false
+    expirationHours.value = 24
   }
 }
 
@@ -276,30 +288,64 @@ onMounted(async () => {
 
     <!-- Environment Variables Modal -->
     <div v-if="showEnvModal"
-      class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       @click.self="cancelDeploy">
-      <div class="glass-dark rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-md w-full smooth-shadow-lg">
-        <h2 class="text-xl sm:text-2xl font-bold mb-2 text-gray-900">Configure {{ selectedApp?.name }}</h2>
-        <p class="text-sm text-gray-600 mb-6">Set environment variables for deployment</p>
+      <div class="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl">
+        <h2 class="text-xl sm:text-2xl font-bold mb-2 text-gray-900">
+          {{ selectedApp?.environment?.length > 0 ? 'Configure' : 'Deploy' }} {{ selectedApp?.name }}
+        </h2>
+        <p class="text-sm text-gray-600 mb-6">
+          {{ selectedApp?.environment?.length > 0 ? 'Set environment variables for deployment' : 'Choose deployment options' }}
+        </p>
 
         <div class="space-y-4 mb-6 sm:mb-8">
-          <div v-for="env in selectedApp?.environment" :key="env.envVar" class="space-y-2">
-            <label class="block text-sm font-semibold text-gray-700">
-              {{ env.name }}
-              <span v-if="env.default" class="text-gray-400 text-xs font-normal ml-1">(default: {{ env.default }})</span>
+          <!-- Environment Variables Section (only if app has env vars) -->
+          <div v-if="selectedApp?.environment?.length > 0" class="space-y-4 mb-4">
+            <div v-for="env in selectedApp?.environment" :key="env.envVar" class="space-y-2">
+              <label class="block text-sm font-semibold text-gray-700">
+                {{ env.name }}
+                <span v-if="env.default" class="text-gray-400 text-xs font-normal ml-1">(default: {{ env.default }})</span>
+              </label>
+              <input v-model="envValues[env.envVar]" type="text" :placeholder="env.default"
+                class="w-full px-4 py-3 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all text-base">
+            </div>
+          </div>
+          
+          <!-- Temporary Installation Option -->
+          <div :class="selectedApp?.environment?.length > 0 ? 'pt-4 border-t border-gray-200' : ''">
+            <label class="flex items-center gap-3 cursor-pointer group">
+              <input type="checkbox" v-model="temporaryInstall" 
+                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 cursor-pointer">
+              <div class="flex-1">
+                <span class="text-sm font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                  ⏱️ Temporary Installation
+                </span>
+                <p class="text-xs text-gray-500 mt-0.5">Auto-delete after specified time</p>
+              </div>
             </label>
-            <input v-model="envValues[env.envVar]" type="text" :placeholder="env.default"
-              class="w-full px-4 py-3 glass rounded-xl text-gray-900 placeholder-gray-400 transition-all text-base">
+            
+            <div v-if="temporaryInstall" class="mt-3 ml-8 space-y-2 animate-fadeIn">
+              <label class="block text-xs font-medium text-gray-600">Expires in (hours)</label>
+              <select v-model.number="expirationHours" 
+                class="w-full px-3 py-2 glass rounded-lg text-sm text-gray-900 transition-all">
+                <option :value="1">1 hour</option>
+                <option :value="6">6 hours</option>
+                <option :value="12">12 hours</option>
+                <option :value="24">24 hours (1 day)</option>
+                <option :value="72">72 hours (3 days)</option>
+                <option :value="168">168 hours (1 week)</option>
+              </select>
+            </div>
           </div>
         </div>
 
         <div class="flex gap-3">
           <button @click="confirmDeploy(selectedApp.id, envValues)"
-            class="flex-1 px-4 sm:px-5 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-semibold transition-all smooth-shadow active:scale-95 touch-manipulation">
+            class="flex-1 px-4 sm:px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all shadow-md hover:shadow-lg active:scale-95 touch-manipulation">
             Deploy
           </button>
           <button @click="cancelDeploy"
-            class="px-4 sm:px-5 py-3 glass hover:bg-white/90 text-gray-700 rounded-xl font-medium transition-all active:scale-95 touch-manipulation">
+            class="px-4 sm:px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-all active:scale-95 touch-manipulation">
             Cancel
           </button>
         </div>

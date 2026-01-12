@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Store, ArrowRight } from 'lucide-vue-next'
 
@@ -8,6 +8,44 @@ const router = useRouter()
 const containers = ref([])
 const loading = ref(false)
 const apiUrl = ref('')
+const currentTime = ref(Date.now())
+
+// Helper function to format time remaining
+function formatTimeRemaining(expireAt) {
+  const expirationTime = parseInt(expireAt, 10) * 1000 // Convert to milliseconds
+  const remaining = expirationTime - currentTime.value
+  
+  if (remaining <= 0) return 'Expired'
+  
+  const hours = Math.floor(remaining / (1000 * 60 * 60))
+  const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+  
+  if (hours > 24) {
+    const days = Math.floor(hours / 24)
+    return `${days}d ${hours % 24}h`
+  } else if (hours > 0) {
+    return `${hours}h ${minutes}m`
+  } else {
+    return `${minutes}m`
+  }
+}
+
+// Check if container is temporary
+function isTemporary(container) {
+  return container.labels && container.labels['yantra.expireAt']
+}
+
+// Get expiration info
+function getExpirationInfo(container) {
+  if (!isTemporary(container)) return null
+  
+  const expireAt = container.labels['yantra.expireAt']
+  return {
+    expireAt,
+    timeRemaining: formatTimeRemaining(expireAt),
+    isExpiringSoon: (parseInt(expireAt, 10) * 1000 - currentTime.value) < (60 * 60 * 1000) // < 1 hour
+  }
+}
 
 async function fetchContainers() {
   try {
@@ -30,10 +68,15 @@ onMounted(async () => {
   await fetchContainers()
   loading.value = false
   
-  // Auto-refresh every 10 seconds
+  // Auto-refresh containers every 10 seconds
   setInterval(() => {
     fetchContainers()
   }, 10000)
+  
+  // Update current time every minute for countdown
+  setInterval(() => {
+    currentTime.value = Date.now()
+  }, 60000)
 })
 </script>
 
@@ -84,12 +127,20 @@ onMounted(async () => {
           </div>
           
           <!-- Status Badge -->
-          <div class="flex-shrink-0">
+          <div class="flex-shrink-0 flex flex-col gap-1">
             <div :class="container.state === 'running' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
               class="px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-semibold flex items-center gap-1 sm:gap-1.5">
               <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-gray-400'" 
                 class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full animate-pulse"></span>
               <span class="hidden sm:inline">{{ container.state }}</span>
+            </div>
+            
+            <!-- Temporary Badge -->
+            <div v-if="isTemporary(container)" 
+              :class="getExpirationInfo(container).isExpiringSoon ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'"
+              class="px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-semibold flex items-center gap-1"
+              :title="`Expires at ${new Date(parseInt(container.labels['yantra.expireAt']) * 1000).toLocaleString()}`">
+              ⏱️ <span class="hidden sm:inline">{{ getExpirationInfo(container).timeRemaining }}</span>
             </div>
           </div>
         </div>
@@ -103,6 +154,16 @@ onMounted(async () => {
           <div class="flex items-center gap-2">
             <span class="text-[10px] sm:text-xs text-gray-500 font-semibold">Status:</span>
             <span class="text-[10px] sm:text-xs text-gray-700">{{ container.status }}</span>
+          </div>
+          
+          <!-- Temporary Installation Warning -->
+          <div v-if="isTemporary(container)" 
+            :class="getExpirationInfo(container).isExpiringSoon ? 'bg-red-50 border-red-200 text-red-700' : 'bg-orange-50 border-orange-200 text-orange-700'"
+            class="mt-2 px-2 py-1.5 rounded-lg border text-[10px] sm:text-xs">
+            <div class="font-semibold mb-0.5">⏱️ Temporary Installation</div>
+            <div class="opacity-80">
+              Auto-deletes in {{ getExpirationInfo(container).timeRemaining }}
+            </div>
           </div>
         </div>
 

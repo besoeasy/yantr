@@ -8,6 +8,7 @@ import util from "util";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { createRequire } from "module";
+import { startCleanupScheduler, cleanupExpiredApps } from "./cleanup.js";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json");
@@ -654,10 +655,13 @@ app.get("/api/apps/:id/check-arch", async (req, res) => {
 app.post("/api/deploy", async (req, res) => {
   log("info", "🚀 [POST /api/deploy] Deploy request received");
   try {
-    const { appId, environment } = req.body;
+    const { appId, environment, expiresIn } = req.body;
     log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}`);
     if (environment) {
       log("info", `🚀 [POST /api/deploy] Custom environment:`, environment);
+    }
+    if (expiresIn) {
+      log("info", `🚀 [POST /api/deploy] Temporary installation: ${expiresIn} hours`);
     }
 
     if (!appId) {
@@ -721,8 +725,54 @@ app.post("/api/deploy", async (req, res) => {
       log("info", `🚀 [POST /api/deploy] Created .env file with custom variables`);
     }
 
+    // Add expiration label if temporary installation
+    let modifiedComposeContent = composeContent;
+    if (expiresIn) {
+      const expiresInHours = parseInt(expiresIn, 10);
+      if (!isNaN(expiresInHours) && expiresInHours > 0) {
+        const expireAtTimestamp = Math.floor(Date.now() / 1000) + (expiresInHours * 3600);
+        const expireAtDate = new Date(expireAtTimestamp * 1000).toISOString();
+        log("info", `🚀 [POST /api/deploy] App will expire at: ${expireAtDate}`);
+        
+        // Inject expiration labels into all services in compose file
+        const lines = composeContent.split('\n');
+        const result = [];
+        let inLabelsSection = false;
+        let indentLevel = 0;
+        
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          result.push(line);
+          
+          // Detect when we enter a labels section
+          if (line.trim().startsWith('labels:')) {
+            inLabelsSection = true;
+            indentLevel = line.search(/\S/);
+            // Add expiration labels after 'labels:' line
+            const labelIndent = ' '.repeat(indentLevel + 2);
+            result.push(`${labelIndent}yantra.expireAt: "${expireAtTimestamp}"`);
+            result.push(`${labelIndent}yantra.temporary: "true"`);
+          } else if (inLabelsSection) {
+            // Check if we've left the labels section
+            const currentIndent = line.search(/\S/);
+            if (line.trim() && currentIndent <= indentLevel) {
+              inLabelsSection = false;
+            }
+          }
+        }
+        
+        modifiedComposeContent = result.join('\n');
+        
+        // Write modified compose to a temporary file
+        const tempComposePath = path.join(appPath, '.compose.tmp.yml');
+        await fsPromises.writeFile(tempComposePath, modifiedComposeContent);
+        log("info", `🚀 [POST /api/deploy] Created temporary compose file with expiration labels`);
+      }
+    }
+
     // Deploy using docker compose (Docker will auto-assign ports)
-    const command = `docker compose -f "${composePath}" up -d`;
+    const composeFile = expiresIn ? '.compose.tmp.yml' : 'compose.yml';
+    const command = `docker compose -f "${composeFile}" up -d`;
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
     try {
@@ -738,12 +788,24 @@ app.post("/api/deploy", async (req, res) => {
       log("info", `   stdout: ${stdout.trim()}`);
       if (stderr) log("info", `   stderr: ${stderr.trim()}`);
 
+      // Cleanup temporary compose file if it exists
+      if (expiresIn) {
+        try {
+          const tempComposePath = path.join(appPath, '.compose.tmp.yml');
+          await fsPromises.unlink(tempComposePath);
+          log("info", `🚀 [POST /api/deploy] Cleaned up temporary compose file`);
+        } catch (err) {
+          log("warn", `⚠️  [POST /api/deploy] Failed to cleanup temp file: ${err.message}`);
+        }
+      }
+
       res.json({
         success: true,
         message: `App '${appId}' deployed successfully`,
         appId: appId,
         output: stdout,
         warnings: stderr || null,
+        temporary: !!expiresIn,
       });
     } catch (error) {
       log("error", `❌ [POST /api/deploy] Deployment failed for ${appId}:`, error.message);
@@ -1080,6 +1142,24 @@ app.post("/api/ports/suggest", async (req, res) => {
   }
 });
 
+// GET /api/cleanup - Manually trigger cleanup of expired apps
+app.get("/api/cleanup", async (req, res) => {
+  log("info", "🧹 [GET /api/cleanup] Manual cleanup triggered");
+  try {
+    const results = await cleanupExpiredApps();
+    res.json({
+      success: true,
+      results,
+    });
+  } catch (error) {
+    log("error", "❌ [GET /api/cleanup] Error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // Catch-all route to serve Vue.js app for client-side routing (must be last)
 if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
@@ -1104,8 +1184,12 @@ app.listen(PORT, "0.0.0.0", () => {
   log("info", "🚀 Yantra API Server Started");
   log("info", "=".repeat(50));
   log("info", `📡 Port: ${PORT}`);
-  log("info", `� Socket: ${socketPath}`);
+  log("info", `🔌 Socket: ${socketPath}`);
   log("info", `📂 Apps directory: ${path.join(__dirname, "..", "apps")}`);
   log("info", `🌐 Access: http://localhost:${PORT}`);
   log("info", "=".repeat(50) + "\n");
+  
+  // Start cleanup scheduler (runs every 60 minutes by default)
+  log("info", "🧹 Starting automatic cleanup scheduler");
+  startCleanupScheduler(60);
 });
