@@ -171,29 +171,29 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from Vue.js dist folder in production
-if (process.env.NODE_ENV === 'production') {
-  const distPath = path.join(__dirname, '..', 'dist');
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.join(__dirname, "..", "dist");
   app.use(express.static(distPath));
-  
-  log('info', `📦 Serving Vue.js app from: ${distPath}`);
+
+  log("info", `📦 Serving Vue.js app from: ${distPath}`);
 }
 
 // Helper function to parse app labels
 function parseAppLabels(labels) {
   const appLabels = {};
-  
+
   // Safety check for labels
-  if (!labels || typeof labels !== 'object') {
+  if (!labels || typeof labels !== "object") {
     return appLabels;
   }
-  
+
   for (const [key, value] of Object.entries(labels)) {
     if (key.startsWith("yantra.")) {
       const labelName = key.replace("yantra.", "");
       appLabels[labelName] = value;
     }
   }
-  
+
   return appLabels;
 }
 
@@ -230,45 +230,47 @@ app.get("/api/containers", async (req, res) => {
     const containers = await docker.listContainers({ all: true });
     // log('info', `📦 [GET /api/containers] Found ${containers.length} containers`);
 
-    const formattedContainers = await Promise.all(containers.map(async (container) => {
-      const appLabels = parseAppLabels(container.Labels);
-      const composeProject = container.Labels["com.docker.compose.project"];
-      
-      // Fetch full container details to get environment variables
-      let envVars = [];
-      try {
-        const containerObj = docker.getContainer(container.Id);
-        const info = await containerObj.inspect();
-        envVars = info.Config.Env || [];
-      } catch (error) {
-        log("error", `Failed to get env for container ${container.Id}:`, error.message);
-      }
+    const formattedContainers = await Promise.all(
+      containers.map(async (container) => {
+        const appLabels = parseAppLabels(container.Labels);
+        const composeProject = container.Labels["com.docker.compose.project"];
 
-      return {
-        id: container.Id,
-        name: container.Names[0]?.replace("/", "") || "unknown",
-        image: container.Image,
-        imageId: container.ImageID,
-        state: container.State,
-        status: container.Status,
-        created: container.Created,
-        ports: container.Ports,
-        labels: container.Labels, // Keep original labels for filtering
-        appLabels: appLabels,
-        env: envVars,
-        // Add computed fields for easier UI access
-        app: {
-          id: composeProject || container.Names[0]?.replace("/", "") || "unknown", // Add app ID
-          name: appLabels.name || container.Names[0]?.replace("/", "") || "unknown",
-          logo: appLabels.logo ? (appLabels.logo.includes("://") ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : null,
-          category: appLabels.category || "uncategorized",
-          port: appLabels.port || null,
-          description: appLabels.description || "",
-          docs: appLabels.docs || null,
-          website: appLabels.website || null,
-        },
-      };
-    }));
+        // Fetch full container details to get environment variables
+        let envVars = [];
+        try {
+          const containerObj = docker.getContainer(container.Id);
+          const info = await containerObj.inspect();
+          envVars = info.Config.Env || [];
+        } catch (error) {
+          log("error", `Failed to get env for container ${container.Id}:`, error.message);
+        }
+
+        return {
+          id: container.Id,
+          name: container.Names[0]?.replace("/", "") || "unknown",
+          image: container.Image,
+          imageId: container.ImageID,
+          state: container.State,
+          status: container.Status,
+          created: container.Created,
+          ports: container.Ports,
+          labels: container.Labels, // Keep original labels for filtering
+          appLabels: appLabels,
+          env: envVars,
+          // Add computed fields for easier UI access
+          app: {
+            id: composeProject || container.Names[0]?.replace("/", "") || "unknown", // Add app ID
+            name: appLabels.name || container.Names[0]?.replace("/", "") || "unknown",
+            logo: appLabels.logo ? (appLabels.logo.includes("://") ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : null,
+            category: appLabels.category || "uncategorized",
+            port: appLabels.port || null,
+            description: appLabels.description || "",
+            docs: appLabels.docs || null,
+            website: appLabels.website || null,
+          },
+        };
+      })
+    );
 
     // Filter out auxiliary containers (sidecars)
     // Identify stacks that have at least one explicit Yantra app
@@ -287,11 +289,6 @@ app.get("/api/containers", async (req, res) => {
       const hasYantraLabel = !!(c.appLabels && c.appLabels.name);
       const project = c.labels ? c.labels["com.docker.compose.project"] : null;
       const isPartOfYantraStack = project && yantraProjects.has(project);
-
-      // Debug logging for containers that might be filtered out incorrectly
-      if (!hasYantraLabel && isPartOfYantraStack) {
-        log("info", `🔍 Filtering out auxiliary container: ${c.name} (project: ${project})`);
-      }
 
       return hasYantraLabel || !isPartOfYantraStack;
     });
@@ -326,22 +323,22 @@ app.get("/api/containers/:id", async (req, res) => {
     if (composeProject) {
       try {
         const allContainers = await docker.listContainers({ all: false });
-        const projectContainers = allContainers.filter(c => 
-          c.Labels["com.docker.compose.project"] === composeProject
-        );
-        
+        const projectContainers = allContainers.filter((c) => c.Labels["com.docker.compose.project"] === composeProject);
+
         // Aggregate all ports from the stack
         const portMap = {};
         for (const pc of projectContainers) {
           if (pc.Ports) {
-            pc.Ports.forEach(port => {
+            pc.Ports.forEach((port) => {
               if (port.PublicPort && port.PrivatePort) {
                 const key = `${port.PrivatePort}/${port.Type}`;
                 if (!portMap[key]) {
-                  portMap[key] = [{
-                    HostIp: port.IP || "0.0.0.0",
-                    HostPort: String(port.PublicPort)
-                  }];
+                  portMap[key] = [
+                    {
+                      HostIp: port.IP || "0.0.0.0",
+                      HostPort: String(port.PublicPort),
+                    },
+                  ];
                 }
               }
             });
@@ -360,7 +357,7 @@ app.get("/api/containers/:id", async (req, res) => {
         name: info.Name.replace("/", ""),
         image: info.Config.Image,
         imageId: info.Image, // SHA256 of the image
-        state: info.State.Status || (info.State.Running ? 'running' : 'stopped'),
+        state: info.State.Status || (info.State.Running ? "running" : "stopped"),
         stateDetails: info.State,
         created: info.Created,
         ports: allPorts,
@@ -397,64 +394,64 @@ app.get("/api/containers/:id/stats", async (req, res) => {
   try {
     const container = docker.getContainer(req.params.id);
     const stats = await container.stats({ stream: false });
-    
+
     // Calculate CPU percentage
     const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
     const systemDelta = stats.cpu_stats.system_cpu_usage - stats.precpu_stats.system_cpu_usage;
     const cpuPercent = systemDelta > 0 ? (cpuDelta / systemDelta) * stats.cpu_stats.online_cpus * 100 : 0;
-    
+
     // Calculate memory usage
     const memoryUsage = stats.memory_stats.usage || 0;
     const memoryLimit = stats.memory_stats.limit || 0;
     const memoryPercent = memoryLimit > 0 ? (memoryUsage / memoryLimit) * 100 : 0;
-    
+
     // Network I/O
     let networkRx = 0;
     let networkTx = 0;
     if (stats.networks) {
-      Object.values(stats.networks).forEach(network => {
+      Object.values(stats.networks).forEach((network) => {
         networkRx += network.rx_bytes || 0;
         networkTx += network.tx_bytes || 0;
       });
     }
-    
+
     // Block I/O
     let blockRead = 0;
     let blockWrite = 0;
     if (stats.blkio_stats && stats.blkio_stats.io_service_bytes_recursive) {
-      stats.blkio_stats.io_service_bytes_recursive.forEach(io => {
-        if (io.op === 'Read') blockRead += io.value;
-        if (io.op === 'Write') blockWrite += io.value;
+      stats.blkio_stats.io_service_bytes_recursive.forEach((io) => {
+        if (io.op === "Read") blockRead += io.value;
+        if (io.op === "Write") blockWrite += io.value;
       });
     }
-    
+
     res.json({
       success: true,
       stats: {
         cpu: {
           percent: cpuPercent.toFixed(2),
-          usage: stats.cpu_stats.cpu_usage.total_usage
+          usage: stats.cpu_stats.cpu_usage.total_usage,
         },
         memory: {
           usage: memoryUsage,
           limit: memoryLimit,
-          percent: memoryPercent.toFixed(2)
+          percent: memoryPercent.toFixed(2),
         },
         network: {
           rx: networkRx,
-          tx: networkTx
+          tx: networkTx,
         },
         blockIO: {
           read: blockRead,
-          write: blockWrite
-        }
-      }
+          write: blockWrite,
+        },
+      },
     });
   } catch (error) {
     log("error", `❌ [GET /api/containers/:id/stats] Error:`, error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -464,33 +461,34 @@ app.get("/api/containers/:id/logs", async (req, res) => {
   try {
     const container = docker.getContainer(req.params.id);
     const tailLines = req.query.tail || 100;
-    
+
     const logs = await container.logs({
       stdout: true,
       stderr: true,
       tail: tailLines,
-      timestamps: true
+      timestamps: true,
     });
-    
+
     // Parse logs (Docker logs have a header we need to strip)
-    const logString = logs.toString('utf8');
-    const lines = logString.split('\n')
-      .filter(line => line.trim())
-      .map(line => {
+    const logString = logs.toString("utf8");
+    const lines = logString
+      .split("\n")
+      .filter((line) => line.trim())
+      .map((line) => {
         // Strip Docker log header (8 bytes)
         const cleanLine = line.substring(8);
         return cleanLine;
       });
-    
+
     res.json({
       success: true,
-      logs: lines
+      logs: lines,
     });
   } catch (error) {
     log("error", `❌ [GET /api/containers/:id/logs] Error:`, error.message);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -550,10 +548,10 @@ app.get("/api/apps", async (req, res) => {
           const portRegex = /-\s*["']?(?:\$\{([A-Z_]+):-)?(\d+)(?:\})?:(\d+)(?:\/(tcp|udp))?["']?/g;
           while ((match = portRegex.exec(composeContent)) !== null) {
             portMappings.push({
-              hostPort: match[2],  // The host port (left side)
-              containerPort: match[3],  // The container port (right side)
-              protocol: match[4] || 'tcp',  // tcp/udp, defaults to tcp
-              envVar: match[1] || null  // Environment variable if used
+              hostPort: match[2], // The host port (left side)
+              containerPort: match[3], // The container port (right side)
+              protocol: match[4] || "tcp", // tcp/udp, defaults to tcp
+              envVar: match[1] || null, // Environment variable if used
             });
           }
 
@@ -733,10 +731,10 @@ app.post("/api/deploy", async (req, res) => {
       const envPath = path.join(appPath, ".env");
       // Filter out empty values - don't write vars with empty/whitespace-only values
       const envContent = Object.entries(environment)
-        .filter(([key, value]) => value !== null && value !== undefined && String(value).trim() !== '')
+        .filter(([key, value]) => value !== null && value !== undefined && String(value).trim() !== "")
         .map(([key, value]) => `${key}=${value}`)
         .join("\n");
-      
+
       // Only create .env file if there are non-empty variables
       if (envContent.length > 0) {
         await fsPromises.writeFile(envPath, envContent);
@@ -752,24 +750,24 @@ app.post("/api/deploy", async (req, res) => {
         const expireAtTimestamp = Math.floor(Date.now() / 1000) + Math.floor(expiresInHours * 3600);
         const expireAtDate = new Date(expireAtTimestamp * 1000).toISOString();
         log("info", `🚀 [POST /api/deploy] App will expire at: ${expireAtDate}`);
-        
+
         // Inject expiration labels into all services in compose file
-        const lines = composeContent.split('\n');
+        const lines = composeContent.split("\n");
         const result = [];
         let inLabelsSection = false;
         let baseIndentLevel = 0;
-        
+
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
           result.push(line);
-          
+
           // Detect when we enter a labels section
-          if (line.trim().startsWith('labels:')) {
+          if (line.trim().startsWith("labels:")) {
             inLabelsSection = true;
             baseIndentLevel = line.search(/\S/);
             // Add expiration labels after 'labels:' line with proper YAML indentation
             // Labels should always be indented 2 spaces more than the 'labels:' key
-            const labelIndent = ' '.repeat(baseIndentLevel + 2);
+            const labelIndent = " ".repeat(baseIndentLevel + 2);
             result.push(`${labelIndent}yantra.expireAt: "${expireAtTimestamp}"`);
             result.push(`${labelIndent}yantra.temporary: "true"`);
           } else if (inLabelsSection) {
@@ -780,18 +778,18 @@ app.post("/api/deploy", async (req, res) => {
             }
           }
         }
-        
-        modifiedComposeContent = result.join('\n');
-        
+
+        modifiedComposeContent = result.join("\n");
+
         // Write modified compose to a temporary file
-        const tempComposePath = path.join(appPath, '.compose.tmp.yml');
+        const tempComposePath = path.join(appPath, ".compose.tmp.yml");
         await fsPromises.writeFile(tempComposePath, modifiedComposeContent);
         log("info", `🚀 [POST /api/deploy] Created temporary compose file with expiration labels`);
       }
     }
 
     // Deploy using docker compose (Docker will auto-assign ports)
-    const composeFile = expiresIn ? '.compose.tmp.yml' : 'compose.yml';
+    const composeFile = expiresIn ? ".compose.tmp.yml" : "compose.yml";
     const command = `docker compose -f "${composeFile}" up -d`;
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
@@ -811,7 +809,7 @@ app.post("/api/deploy", async (req, res) => {
       // Cleanup temporary compose file if it exists
       if (expiresIn) {
         try {
-          const tempComposePath = path.join(appPath, '.compose.tmp.yml');
+          const tempComposePath = path.join(appPath, ".compose.tmp.yml");
           await fsPromises.unlink(tempComposePath);
           log("info", `🚀 [POST /api/deploy] Cleaned up temporary compose file`);
         } catch (err) {
@@ -1181,9 +1179,9 @@ app.get("/api/cleanup", async (req, res) => {
 });
 
 // Catch-all route to serve Vue.js app for client-side routing (must be last)
-if (process.env.NODE_ENV === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
+if (process.env.NODE_ENV === "production") {
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
   });
 }
 
@@ -1208,7 +1206,7 @@ app.listen(PORT, "0.0.0.0", () => {
   log("info", `📂 Apps directory: ${path.join(__dirname, "..", "apps")}`);
   log("info", `🌐 Access: http://localhost:${PORT}`);
   log("info", "=".repeat(50) + "\n");
-  
+
   // Start cleanup scheduler (runs every 15 minutes to handle temporary installations)
   log("info", "🧹 Starting automatic cleanup scheduler");
   startCleanupScheduler(15);
