@@ -1,0 +1,19 @@
+services:
+  bitwatch:
+    image: ghcr.io/zapomatic/bitwatch:latest
+    container_name: bitwatch
+    restart: unless-stopped
+    ports:
+      - "3117"
+    volumes:
+      - bitwatch-data:/app/server/data
+    labels:
+      yantra.name: "Bitwatch"
+      yantra.logo: "QmX4wcMVLo1mvb38iyH9xQfmXyB9DAdLesDqvsFjhU7iP8"
+      yantra.category: "tools,blockchain"
+      yantra.port: "3117 (HTTP - Web UI)"
+      yantra.description: "Monitor Bitcoin addresses in mempool and on-chain with notifications"
+      yantra.website: "https://github.com/zapomatic/bitwatch"
+
+volumes:
+  bitwatch-data:
