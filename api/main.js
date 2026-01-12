@@ -207,67 +207,6 @@ app.get("/api/version", (req, res) => {
   });
 });
 
-// GET /api/updates/pending - Check for pending updates
-app.get("/api/updates/pending", async (req, res) => {
-  try {
-    const images = await docker.listImages({
-      filters: { reference: ['ghcr.io/besoeasy/yantra'] }
-    });
-
-    if (images.length < 2) {
-      return res.json({
-        success: true,
-        hasPendingUpdate: false,
-        imageCount: images.length,
-        message: 'You are running the latest version'
-      });
-    }
-
-    // Sort images by creation date (newest first)
-    images.sort((a, b) => b.Created - a.Created);
-    const newestImageId = images[0].Id;
-
-    // Get the running yantra container
-    const containers = await docker.listContainers({ 
-      all: false,
-      filters: { name: ['yantra'] }
-    });
-
-    if (containers.length === 0) {
-      // No running yantra container found
-      return res.json({
-        success: true,
-        hasPendingUpdate: false,
-        imageCount: images.length,
-        message: 'Yantra container not found'
-      });
-    }
-
-    const yantraContainer = containers[0];
-    const currentImageId = yantraContainer.ImageID;
-
-    // Check if container is using the newest image
-    const hasPendingUpdate = currentImageId !== newestImageId;
-
-    res.json({
-      success: true,
-      hasPendingUpdate,
-      imageCount: images.length,
-      currentImage: currentImageId.substring(0, 12),
-      newestImage: newestImageId.substring(0, 12),
-      message: hasPendingUpdate 
-        ? 'A new Yantra update is ready. Please reboot your device to apply it, or install the Watchtower app for automatic updates.'
-        : 'You are running the latest version'
-    });
-  } catch (error) {
-    log('error', 'Failed to check for pending updates:', error.message);
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check for pending updates'
-    });
-  }
-});
-
 // GET /api/logs - Get stored logs
 app.get("/api/logs", (req, res) => {
   const limit = parseInt(req.query.limit) || MAX_LOGS;
