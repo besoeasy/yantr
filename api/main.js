@@ -8,7 +8,9 @@ import util from "util";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { createRequire } from "module";
+
 import { startCleanupScheduler, cleanupExpiredApps } from "./cleanup.js";
+import "./updater.js";
 
 const require = createRequire(import.meta.url);
 const packageJson = require("../package.json");
@@ -203,6 +205,32 @@ app.get("/api/version", (req, res) => {
     success: true,
     version: packageJson.version,
   });
+});
+
+// GET /api/updates/pending - Check for pending updates
+app.get("/api/updates/pending", async (req, res) => {
+  try {
+    const images = await docker.listImages({
+      filters: { reference: ['ghcr.io/besoeasy/yantra'] }
+    });
+
+    const hasPendingUpdate = images.length > 1;
+
+    res.json({
+      success: true,
+      hasPendingUpdate,
+      imageCount: images.length,
+      message: hasPendingUpdate 
+        ? 'A new Yantra update is ready. Please reboot your device to apply it, or install the Watchtower app for automatic updates.'
+        : 'You are running the latest version'
+    });
+  } catch (error) {
+    log('error', 'Failed to check for pending updates:', error.message);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to check for pending updates'
+    });
+  }
 });
 
 // GET /api/logs - Get stored logs

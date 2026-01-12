@@ -1,14 +1,79 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { Box, Boxes, Images, ClipboardList, AlertTriangle, Github, Heart } from 'lucide-vue-next'
+import { Box, Boxes, Images, ClipboardList, AlertTriangle, Github, Heart, X, RefreshCw } from 'lucide-vue-next'
+import { useApi } from './composables/useApi.js'
 
 const route = useRoute()
+const { get } = useApi()
 
 const isActive = (name) => route.name === name
+
+// Update notification state
+const showUpdateBanner = ref(false)
+const updateMessage = ref('')
+
+// Check for pending updates
+const checkForUpdates = async () => {
+  try {
+    const response = await get('/api/updates/pending', { skipCache: true, showError: false })
+    if (response.success && response.hasPendingUpdate) {
+      showUpdateBanner.value = true
+      updateMessage.value = response.message
+    }
+  } catch (err) {
+    // Silently fail - don't disturb user experience
+    console.log('Update check skipped:', err.message)
+  }
+}
+
+const dismissUpdate = () => {
+  showUpdateBanner.value = false
+  // Store dismissal in localStorage to avoid showing again this session
+  localStorage.setItem('updateDismissed', Date.now().toString())
+}
+
+onMounted(() => {
+  // Check if user dismissed update in this session (within last 24 hours)
+  const dismissed = localStorage.getItem('updateDismissed')
+  const shouldCheck = !dismissed || (Date.now() - parseInt(dismissed)) > 24 * 60 * 60 * 1000
+  
+  if (shouldCheck) {
+    checkForUpdates()
+  }
+})
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col md:flex-row bg-white text-gray-900">
+    <!-- Update Notification Banner -->
+    <transition 
+      enter-active-class="transition-all duration-300 ease-out"
+      enter-from-class="transform -translate-y-full opacity-0"
+      enter-to-class="transform translate-y-0 opacity-100"
+      leave-active-class="transition-all duration-200 ease-in"
+      leave-from-class="transform translate-y-0 opacity-100"
+      leave-to-class="transform -translate-y-full opacity-0">
+      <div 
+        v-if="showUpdateBanner"
+        class="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg md:ml-20">
+        <div class="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3 flex-1">
+            <RefreshCw :size="20" class="flex-shrink-0 animate-spin" style="animation-duration: 3s;" />
+            <p class="text-sm md:text-base font-medium">
+              {{ updateMessage }}
+            </p>
+          </div>
+          <button
+            @click="dismissUpdate"
+            class="flex-shrink-0 p-2 hover:bg-white/20 rounded-lg transition-colors active:scale-95"
+            aria-label="Dismiss">
+            <X :size="18" />
+          </button>
+        </div>
+      </div>
+    </transition>
+
     <!-- Desktop Sidebar -->
     <aside class="hidden md:flex bg-white flex-col items-center border-r border-gray-200 w-20 py-6 px-2 fixed h-screen z-50">
       <!-- Logo -->
@@ -128,7 +193,9 @@ const isActive = (name) => route.name === name
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 min-h-screen md:ml-20 pb-20 md:pb-0">
+    <main 
+      class="flex-1 min-h-screen md:ml-20 pb-20 md:pb-0 transition-all duration-300"
+      :class="{ 'pt-16': showUpdateBanner }">
       <router-view />
     </main>
   </div>
