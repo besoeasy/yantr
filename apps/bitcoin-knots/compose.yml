@@ -4,7 +4,9 @@ services:
     container_name: bitcoin-knots
     hostname: bitcoin-knots
     environment:
-      - BITCOIN_NETWORK=${BITCOIN_NETWORK:-mainnet}
+      - BITCOIN_NETWORK=mainnet
+      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER:-bitcoin}
+      - BITCOIN_RPC_PASSWORD=${BITCOIN_RPC_PASSWORD:-changeme}
     volumes:
       - bitcoin_knots_data:/data
     ports:
@@ -17,8 +19,8 @@ services:
       -printtoconsole
       -rpcallowip=0.0.0.0/0
       -rpcbind=0.0.0.0
-      -rpcuser=${BITCOIN_RPC_USER:-bitcoin}
-      -rpcpassword=${BITCOIN_RPC_PASSWORD:-changeme}
+      -rpcuser=$BITCOIN_RPC_USER
+      -rpcpassword=$BITCOIN_RPC_PASSWORD
     labels:
       yantra.name: "Bitcoin Knots"
       yantra.logo: "QmTttEiisTnt6ivcGQo9W6BCKNpuViU9zAhNYLKd8xK9Lm"
