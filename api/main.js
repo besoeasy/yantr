@@ -1109,6 +1109,198 @@ app.get("/api/ports/used", async (req, res) => {
   }
 });
 
+// GET /api/volumes - List all Docker volumes
+app.get("/api/volumes", async (req, res) => {
+  log("info", "📦 [GET /api/volumes] Fetching all volumes");
+  try {
+    const volumes = await docker.listVolumes();
+    const volumeList = volumes.Volumes || [];
+
+    // Check if any volume has an active dufs browser container
+    const containers = await docker.listContainers({ all: true });
+    const browsedVolumes = new Set();
+    
+    containers.forEach((container) => {
+      if (container.Labels && container.Labels["yantra.volume-browser"]) {
+        browsedVolumes.add(container.Labels["yantra.volume-browser"]);
+      }
+    });
+
+    const enrichedVolumes = volumeList.map((vol) => ({
+      name: vol.Name,
+      driver: vol.Driver,
+      mountpoint: vol.Mountpoint,
+      createdAt: vol.CreatedAt,
+      labels: vol.Labels || {},
+      isBrowsing: browsedVolumes.has(vol.Name),
+    }));
+
+    log("info", `✅ [GET /api/volumes] Found ${enrichedVolumes.length} volumes`);
+    res.json({
+      success: true,
+      volumes: enrichedVolumes,
+    });
+  } catch (error) {
+    log("error", "❌ [GET /api/volumes] Error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// POST /api/volumes/:name/browse - Start a dufs container to browse a volume
+app.post("/api/volumes/:name/browse", async (req, res) => {
+  const volumeName = req.params.name;
+  log("info", `🔍 [POST /api/volumes/${volumeName}/browse] Starting volume browser`);
+
+  try {
+    // Check if volume exists
+    const volumes = await docker.listVolumes();
+    const volume = volumes.Volumes?.find((v) => v.Name === volumeName);
+    
+    if (!volume) {
+      return res.status(404).json({
+        success: false,
+        error: "Volume not found",
+      });
+    }
+
+    // Check if a browser container already exists for this volume
+    const containers = await docker.listContainers({ all: true });
+    const existingBrowser = containers.find(
+      (c) => c.Labels && c.Labels["yantra.volume-browser"] === volumeName
+    );
+
+    if (existingBrowser) {
+      const container = docker.getContainer(existingBrowser.Id);
+      const inspect = await container.inspect();
+      
+      // If stopped, start it
+      if (inspect.State.Status !== "running") {
+        await container.start();
+        log("info", `▶️ [POST /api/volumes/${volumeName}/browse] Started existing browser`);
+      }
+
+      const port = inspect.NetworkSettings.Ports["5000/tcp"]?.[0]?.HostPort;
+      return res.json({
+        success: true,
+        port: port ? parseInt(port) : null,
+        containerId: existingBrowser.Id,
+        message: "Browser container already exists and is now running",
+      });
+    }
+
+    // Pull the dufs image if not already present
+    const imageName = "sigoden/dufs:latest";
+    log("info", `📥 [POST /api/volumes/${volumeName}/browse] Pulling ${imageName} if needed`);
+    
+    try {
+      await docker.getImage(imageName).inspect();
+    } catch (error) {
+      // Image doesn't exist locally, pull it
+      log("info", `📥 [POST /api/volumes/${volumeName}/browse] Image not found, pulling...`);
+      await new Promise((resolve, reject) => {
+        docker.pull(imageName, (err, stream) => {
+          if (err) return reject(err);
+          docker.modem.followProgress(stream, (err, output) => {
+            if (err) return reject(err);
+            resolve(output);
+          });
+        });
+      });
+      log("info", `✅ [POST /api/volumes/${volumeName}/browse] Image pulled successfully`);
+    }
+
+    // Create new browser container
+    const containerName = `yantra-volume-browser-${volumeName}`;
+    
+    const container = await docker.createContainer({
+      Image: imageName,
+      name: containerName,
+      Cmd: ["/data", "--enable-cors", "--allow-all"],
+      Labels: {
+        "yantra.volume-browser": volumeName,
+        "yantra.managed": "true",
+      },
+      HostConfig: {
+        Binds: [`${volumeName}:/data`],
+        PortBindings: {
+          "5000/tcp": [{ HostPort: "" }], // Random port
+        },
+        RestartPolicy: {
+          Name: "no",
+        },
+      },
+      ExposedPorts: {
+        "5000/tcp": {},
+      },
+    });
+
+    await container.start();
+    const inspect = await container.inspect();
+    const port = inspect.NetworkSettings.Ports["5000/tcp"]?.[0]?.HostPort;
+
+    log("info", `✅ [POST /api/volumes/${volumeName}/browse] Browser started on port ${port}`);
+    res.json({
+      success: true,
+      port: port ? parseInt(port) : null,
+      containerId: container.id,
+      message: "Volume browser started successfully",
+    });
+  } catch (error) {
+    log("error", `❌ [POST /api/volumes/${volumeName}/browse] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
+// DELETE /api/volumes/:name/browse - Stop and remove the dufs browser container
+app.delete("/api/volumes/:name/browse", async (req, res) => {
+  const volumeName = req.params.name;
+  log("info", `🛑 [DELETE /api/volumes/${volumeName}/browse] Stopping volume browser`);
+
+  try {
+    const containers = await docker.listContainers({ all: true });
+    const browserContainer = containers.find(
+      (c) => c.Labels && c.Labels["yantra.volume-browser"] === volumeName
+    );
+
+    if (!browserContainer) {
+      return res.status(404).json({
+        success: false,
+        error: "No browser container found for this volume",
+      });
+    }
+
+    const container = docker.getContainer(browserContainer.Id);
+    const inspect = await container.inspect();
+
+    // Stop if running
+    if (inspect.State.Running) {
+      await container.stop();
+      log("info", `⏸️ [DELETE /api/volumes/${volumeName}/browse] Container stopped`);
+    }
+
+    // Remove container
+    await container.remove();
+    log("info", `✅ [DELETE /api/volumes/${volumeName}/browse] Browser removed`);
+
+    res.json({
+      success: true,
+      message: "Volume browser stopped and removed successfully",
+    });
+  } catch (error) {
+    log("error", `❌ [DELETE /api/volumes/${volumeName}/browse] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
+
 // POST /api/ports/suggest - Suggest available ports for an app
 app.post("/api/ports/suggest", async (req, res) => {
   log("info", "💡 [POST /api/ports/suggest] Suggesting ports for app");

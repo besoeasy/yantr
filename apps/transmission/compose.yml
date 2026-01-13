@@ -17,19 +17,9 @@ services:
       yantra.name: "Transmission"
       yantra.logo: "QmdV4D5GK3rSbCRaz5RCN7ebDVnhSnTb9SNuvbJnZKVxDb"
       yantra.category: "download,network"
-      yantra.port: "9091 (HTTP - Web Interface), 5000 (HTTP - Downloads)"
+      yantra.port: "9091 (HTTP - Web Interface)"
       yantra.description: "Fast, easy BitTorrent client with web interface"
       yantra.website: "https://transmissionbt.com/"
-
-  transmission-http:
-    image: sigoden/dufs:latest
-    container_name: transmission-http
-    volumes:
-      - transmission_downloads:/data
-    ports:
-      - "5000"
-    restart: unless-stopped
-    command: /data --enable-cors --allow-all
 
 volumes:
   transmission_config:

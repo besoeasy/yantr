@@ -33,6 +33,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "images" */ './views/Images.vue')
     },
     {
+      path: '/volumes',
+      name: 'volumes',
+      component: () => import(/* webpackChunkName: "volumes" */ './views/Volumes.vue')
+    },
+    {
       path: '/logs',
       name: 'logs',
       component: () => import(/* webpackChunkName: "logs" */ './views/Logs.vue')

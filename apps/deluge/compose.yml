@@ -14,19 +14,9 @@ services:
       yantra.name: "Deluge"
       yantra.logo: "Qme73jzxAQSTAGFMx67HAmmPh9ffESVWumBS9tfYTAz1Kj"
       yantra.category: "download,utility"
-      yantra.port: "8112 (HTTP - Web UI), 5000 (HTTP - Downloads)"
+      yantra.port: "8112 (HTTP - Web UI)"
       yantra.description: "Lightweight BitTorrent client with web interface"
       yantra.website: "https://deluge-torrent.org/"
-
-  deluge-http:
-    image: sigoden/dufs:latest
-    container_name: deluge-http
-    volumes:
-      - deluge-downloads:/data
-    ports:
-      - "5000"
-    restart: unless-stopped
-    command: /data --enable-cors --allow-all
 
 volumes:
   deluge-config:

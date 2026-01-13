@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from 'vue-router'
-import { Box, Boxes, Images, ClipboardList, AlertTriangle, Github, Heart } from 'lucide-vue-next'
+import { Box, Boxes, Images, HardDrive, ClipboardList, AlertTriangle, Github, Heart } from 'lucide-vue-next'
 
 const route = useRoute()
 
@@ -43,6 +43,15 @@ const isActive = (name) => route.name === name
           class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
           title="Images">
           <Images :size="20" />
+        </router-link>
+
+        <!-- Volumes Tab -->
+        <router-link 
+          to="/volumes"
+          :class="isActive('volumes') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
+          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          title="Volumes">
+          <HardDrive :size="20" />
         </router-link>
 
         <!-- Logs Tab -->
@@ -114,6 +123,15 @@ const isActive = (name) => route.name === name
           title="Images">
           <Images :size="20" />
           <span class="text-xs font-medium">Images</span>
+        </router-link>
+
+        <router-link 
+          to="/volumes"
+          :class="isActive('volumes') ? 'bg-gray-900 text-white' : 'text-gray-600'"
+          class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
+          title="Volumes">
+          <HardDrive :size="20" />
+          <span class="text-xs font-medium">Volumes</span>
         </router-link>
 
         <router-link 
