@@ -24,4 +24,4 @@ services:
       yantra.website: "https://bitcoinknots.org"
 
 volumes:
-  bitcoin_knots_config:
+  bitcoin_knots_data:
