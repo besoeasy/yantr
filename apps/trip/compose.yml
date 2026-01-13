@@ -7,7 +7,7 @@ services:
       yantra.logo: "QmcxepcQDfmK7gcGSdWPNuyFR1oqR4qeG5jvetn2qYHg8z"
       yantra.category: "productivity,tools"
       yantra.port: "8000 (HTTP - Web UI)"
-      yantra.description: "TRIP is a self-hostable minimalist Map tracker and Trip planner to visualize your points of interest (POI) and organize your next adventure details."
+      yantra.description: "Self-hostable map tracker and trip planner to visualize POIs and organize your next adventure"
       yantra.website: "https://github.com/itskovacs/trip"
     ports:
       - "8000"
