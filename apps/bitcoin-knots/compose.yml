@@ -1,0 +1,24 @@
+services:
+  bitcoin-knots:
+    image: bitcoinknots/bitcoin:latest
+    container_name: bitcoin-knots
+    hostname: bitcoin-knots
+    environment:
+      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER:-bitcoin}
+      - BITCOIN_RPC_PASSWORD=${BITCOIN_RPC_PASSWORD:-changeme}
+    volumes:
+      - bitcoin_knots_config:/config
+    ports:
+      - "8332"
+      - "8333"
+    restart: unless-stopped
+    labels:
+      yantra.name: "Bitcoin Knots"
+      yantra.logo: "QmTttEiisTnt6ivcGQo9W6BCKNpuViU9zAhNYLKd8xK9Lm"
+      yantra.category: "utility,development"
+      yantra.port: "8332 (HTTP - Web UI)"
+      yantra.description: "Bitcoin full node with enhanced features and privacy focus."
+      yantra.website: "https://bitcoinknots.org"
+
+volumes:
+  bitcoin_knots_config:
