@@ -1,13 +1,8 @@
 import Docker from "dockerode";
-import { exec } from "child_process";
-import util from "util";
-import fs from "fs";
+import { $ } from "bun";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-
-const execPromise = util.promisify(exec);
-const fsPromises = fs.promises;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -85,29 +80,36 @@ export async function cleanupExpiredApps() {
             const composePath = path.join(appPath, "compose.yml");
 
             try {
-              await fsPromises.access(composePath);
-              log("info", `Removing compose stack: ${composeProject}`);
+              const composeFile = Bun.file(composePath);
+              if (await composeFile.exists()) {
+                log("info", `Removing compose stack: ${composeProject}`);
 
-              // Execute docker compose down with volume removal
-              const command = `docker compose down -v`;
-              const { stdout, stderr } = await execPromise(command, {
-                cwd: appPath,
-                env: {
-                  ...process.env,
-                  DOCKER_HOST: `unix://${socketPath}`,
-                },
-              });
+                // Execute docker compose down with volume removal
+                const proc = Bun.spawn(["docker", "compose", "down", "-v"], {
+                  cwd: appPath,
+                  env: {
+                    ...process.env,
+                    DOCKER_HOST: `unix://${socketPath}`,
+                  },
+                  stdout: "pipe",
+                  stderr: "pipe",
+                });
 
-              log("info", `Successfully removed stack: ${composeProject}`);
-              results.removed.push({
-                name: composeProject,
-                type: "stack",
-                containers: [containerName],
-                expiredAt: new Date(expirationTime * 1000).toISOString(),
-              });
-              
-              // Skip individual container processing since stack was removed
-              continue;
+                const stdout = await new Response(proc.stdout).text();
+                const stderr = await new Response(proc.stderr).text();
+                await proc.exited;
+
+                log("info", `Successfully removed stack: ${composeProject}`);
+                results.removed.push({
+                  name: composeProject,
+                  type: "stack",
+                  containers: [containerName],
+                  expiredAt: new Date(expirationTime * 1000).toISOString(),
+                });
+                
+                // Skip individual container processing since stack was removed
+                continue;
+              }
             } catch (err) {
               log("warn", `Compose file not found for ${composeProject}, falling back to individual removal`);
             }

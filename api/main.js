@@ -1,20 +1,15 @@
 import express from "express";
 import Docker from "dockerode";
 import cors from "cors";
-import fs from "fs";
 import path from "path";
-import { exec } from "child_process";
-import util from "util";
+import { $ } from "bun";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { createRequire } from "module";
 
 import { startCleanupScheduler, cleanupExpiredApps } from "./cleanup.js";
 
-const require = createRequire(import.meta.url);
-const packageJson = require("../package.json");
-const fsPromises = fs.promises;
-const execPromise = util.promisify(exec);
+// Import package.json using Bun's native JSON import
+const packageJson = await Bun.file(new URL("../package.json", import.meta.url)).json();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -68,8 +63,8 @@ async function getSystemArchitecture() {
   }
 
   try {
-    const { stdout } = await execPromise("uname -m");
-    const arch = stdout.trim();
+    // Use Bun's native shell execution
+    const arch = (await $`uname -m`.text()).trim();
 
     // Map common architecture names to Docker platform names
     const archMap = {
@@ -103,7 +98,7 @@ async function checkImageArchitectureSupport(imageName) {
     const command = `docker image inspect ${imageName} --format='{{.Architecture}}' 2>/dev/null || docker manifest inspect ${imageName} 2>/dev/null`;
 
     try {
-      const { stdout } = await execPromise(command);
+      const stdout = await $`sh -c ${command}`.text();
       const output = stdout.trim();
 
       // If we get architecture directly
@@ -156,7 +151,7 @@ async function checkImageArchitectureSupport(imageName) {
 // Helper function to extract image name from compose file
 async function getImageFromCompose(composePath) {
   try {
-    const content = await fsPromises.readFile(composePath, "utf8");
+    const content = await Bun.file(composePath).text();
     const imageMatch = content.match(/image:\s*([^\s\n]+)/);
     if (imageMatch) {
       return imageMatch[1];
@@ -502,8 +497,9 @@ app.get("/api/apps", async (req, res) => {
     const appsDir = path.join(__dirname, "..", "apps");
     const apps = [];
 
-    // Read all directories in /apps
-    const entries = await fsPromises.readdir(appsDir, { withFileTypes: true });
+    // Read all directories in /apps using Bun's native readdir
+    const fs = await import("fs/promises");
+    const entries = await fs.readdir(appsDir, { withFileTypes: true });
     // log('info', `🏪 [GET /api/apps] Found ${entries.length} entries in apps directory`);
 
     for (const entry of entries) {
@@ -513,10 +509,11 @@ app.get("/api/apps", async (req, res) => {
 
         // Check if compose.yml exists
         try {
-          await fsPromises.access(composePath);
+          const composeFile = Bun.file(composePath);
+          if (!(await composeFile.exists())) continue;
 
           // Read and parse compose file to extract labels
-          const composeContent = await fsPromises.readFile(composePath, "utf8");
+          const composeContent = await composeFile.text();
           const labels = {};
 
           // Simple regex to extract labels (works for both formats)
@@ -693,7 +690,7 @@ app.post("/api/deploy", async (req, res) => {
     // Verify compose file exists
     let composeContent;
     try {
-      composeContent = await fsPromises.readFile(composePath, "utf8");
+      composeContent = await Bun.file(composePath).text();
       log("info", `🚀 [POST /api/deploy] Compose file exists, proceeding with deployment`);
     } catch (err) {
       log("error", `❌ [POST /api/deploy] Compose file not found for ${appId}`);
@@ -739,7 +736,7 @@ app.post("/api/deploy", async (req, res) => {
 
       // Only create .env file if there are non-empty variables
       if (envContent.length > 0) {
-        await fsPromises.writeFile(envPath, envContent);
+        await Bun.write(envPath, envContent);
         log("info", `🚀 [POST /api/deploy] Created .env file with custom variables`);
       }
     }
@@ -785,7 +782,7 @@ app.post("/api/deploy", async (req, res) => {
 
         // Write modified compose to a temporary file
         const tempComposePath = path.join(appPath, ".compose.tmp.yml");
-        await fsPromises.writeFile(tempComposePath, modifiedComposeContent);
+        await Bun.write(tempComposePath, modifiedComposeContent);
         log("info", `🚀 [POST /api/deploy] Created temporary compose file with expiration labels`);
       }
     }
@@ -796,13 +793,19 @@ app.post("/api/deploy", async (req, res) => {
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
     try {
-      const { stdout, stderr } = await execPromise(command, {
+      const proc = Bun.spawn(["docker", "compose", "-f", composeFile, "up", "-d"], {
         cwd: appPath,
         env: {
           ...process.env,
           DOCKER_HOST: `unix://${socketPath}`,
         },
+        stdout: "pipe",
+        stderr: "pipe",
       });
+
+      const stdout = await new Response(proc.stdout).text();
+      const stderr = await new Response(proc.stderr).text();
+      await proc.exited;
 
       log("info", `✅ [POST /api/deploy] Deployment successful for ${appId}`);
       log("info", `   stdout: ${stdout.trim()}`);
@@ -812,7 +815,7 @@ app.post("/api/deploy", async (req, res) => {
       if (expiresIn) {
         try {
           const tempComposePath = path.join(appPath, ".compose.tmp.yml");
-          await fsPromises.unlink(tempComposePath);
+          await Bun.file(tempComposePath).unlink();
           log("info", `🚀 [POST /api/deploy] Cleaned up temporary compose file`);
         } catch (err) {
           log("warn", `⚠️  [POST /api/deploy] Failed to cleanup temp file: ${err.message}`);
@@ -957,30 +960,36 @@ app.delete("/api/containers/:id", async (req, res) => {
       const composePath = path.join(appPath, "compose.yml");
 
       try {
-        await fsPromises.access(composePath);
-        log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
+        const composeFile = Bun.file(composePath);
+        if (await composeFile.exists()) {
+          log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
 
-        // Execute docker compose down
-        const command = `docker compose down -v`; // -v removes named volumes declared in 'volumes' section
+          // Execute docker compose down
+          const proc = Bun.spawn(["docker", "compose", "down", "-v"], {
+            cwd: appPath,
+            env: {
+              ...process.env,
+              DOCKER_HOST: `unix://${socketPath}`,
+            },
+            stdout: "pipe",
+            stderr: "pipe",
+          });
 
-        const { stdout, stderr } = await execPromise(command, {
-          cwd: appPath,
-          env: {
-            ...process.env,
-            DOCKER_HOST: `unix://${socketPath}`,
-          },
-        });
+          const stdout = await new Response(proc.stdout).text();
+          const stderr = await new Response(proc.stderr).text();
+          await proc.exited;
 
-        log("info", `✅ [DELETE /api/containers/:id] Stack removal successful`);
-        return res.json({
-          success: true,
-          message: `App stack '${composeProject}' removed successfully`,
-          container: containerName,
-          stackRemoved: true,
-          volumesRemoved: [], // Stack deletion handles volumes, return empty to satisfy UI
-          volumesFailed: [],
-          output: stdout,
-        });
+          log("info", `✅ [DELETE /api/containers/:id] Stack removal successful`);
+          return res.json({
+            success: true,
+            message: `App stack '${composeProject}' removed successfully`,
+            container: containerName,
+            stackRemoved: true,
+            volumesRemoved: [], // Stack deletion handles volumes, return empty to satisfy UI
+            volumesFailed: [],
+            output: stdout,
+          });
+        }
       } catch (err) {
         log("info", `⚠️  [DELETE /api/containers/:id] Compose file not found at ${composePath}, falling back to single container deletion`);
       }

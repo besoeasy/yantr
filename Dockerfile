@@ -6,7 +6,7 @@ FROM oven/bun:latest AS builder
 WORKDIR /app
 
 # Copy dependency files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Install ALL deps (including dev)
 RUN bun install
@@ -29,7 +29,7 @@ RUN apk add --no-cache docker-cli docker-cli-compose
 WORKDIR /app
 
 # Copy dependency files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Install only production deps
 RUN bun install --production

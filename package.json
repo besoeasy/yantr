@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "server": "node api/main.js",
+    "server": "bun api/main.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
@@ -13,7 +13,6 @@
     "@tailwindcss/vite": "^4.1.3",
     "cors": "^2.8.5",
     "dockerode": "^4.0.2",
-    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "lucide-vue-next": "^0.487.0",
     "tailwindcss": "^4.1.3",

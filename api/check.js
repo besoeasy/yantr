@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 import { fileURLToPath } from 'url';
@@ -286,7 +285,8 @@ async function detectPortConflict() {
 
     let entries;
     try {
-        entries = await fs.promises.readdir(appsDir, { withFileTypes: true });
+        const fs = await import('fs/promises');
+        entries = await fs.readdir(appsDir, { withFileTypes: true });
     } catch {
         return { conflict: false, port: 0 };
     }
@@ -297,7 +297,7 @@ async function detectPortConflict() {
         const composePathForOutput = path.relative(__dirname, composePath).replace(/\\/g, '/');
         let composeContent;
         try {
-            composeContent = await fs.promises.readFile(composePath, 'utf8');
+            composeContent = await Bun.file(composePath).text();
         } catch {
             continue;
         }
@@ -335,7 +335,8 @@ async function validateAllApps() {
 
     let entries;
     try {
-        entries = await fs.promises.readdir(appsDir, { withFileTypes: true });
+        const fs = await import('fs/promises');
+        entries = await fs.readdir(appsDir, { withFileTypes: true });
     } catch {
         return { hasErrors: true, results: [{ app: 'system', path: 'N/A', errors: ['Failed to read apps directory'], warnings: [] }] };
     }
@@ -347,7 +348,7 @@ async function validateAllApps() {
         
         let composeContent;
         try {
-            composeContent = await fs.promises.readFile(composePath, 'utf8');
+            composeContent = await Bun.file(composePath).text();
         } catch {
             validationResults.push({
                 app: appName,
