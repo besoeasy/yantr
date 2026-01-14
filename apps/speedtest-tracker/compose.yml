@@ -12,7 +12,7 @@ services:
     ports:
       - "80"
     environment:
-      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+      - DB_CONNECTION=sqlite
     volumes:
       - speedtest_tracker_config:/config
     restart: unless-stopped
