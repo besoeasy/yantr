@@ -65,7 +65,7 @@ async function checkForUpdates() {
     console.log(`[UPDATER] Found ${images.length} Yantra image(s)`);
 
     // If we have 2+ images (old + new), a new version was pulled
-    if (images.length >= 2) {
+    if (images.length > 1) {
       console.log("[UPDATER] 🎉 New version detected! Restarting to apply update...");
       // Exit the process - Docker will restart with the new image
       // and the startup cleanup will remove old images
