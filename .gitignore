@@ -4,3 +4,4 @@ dist
 apps/*/.env
 apps/*/compose.temp.yml
 apps/*/.compose.temp.yml
+apps/*/.compose.tmp.yml
