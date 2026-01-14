@@ -100,35 +100,37 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- Watchtower Warning Banner - Sticky Full Width -->
+  <div v-if="!loading && !watchtowerInstalled" 
+    @click="router.push('/apps/watchtower')"
+    class="sticky top-0 z-40 w-full bg-gradient-to-r from-orange-50 to-amber-50 border-b-2 border-orange-500 cursor-pointer hover:shadow-lg transition-all duration-300 group">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-12 py-3 sm:py-4">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <div class="flex-shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
+            <AlertTriangle :size="18" class="sm:w-5 sm:h-5 text-white" />
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-sm sm:text-base font-bold text-gray-900 mb-0.5 group-hover:text-orange-600 transition-colors">
+            Watchtower Not Installed
+          </h3>
+          <p class="text-xs sm:text-sm text-gray-700">
+            Auto-updates are disabled. Click to install Watchtower and keep Yantra up to date automatically.
+          </p>
+        </div>
+        <div class="flex-shrink-0 hidden sm:flex items-center gap-2 text-orange-600 font-semibold text-sm group-hover:gap-3 transition-all">
+          <span>Install Now</span>
+          <ArrowRight :size="16" class="group-hover:translate-x-1 transition-transform" />
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="p-4 sm:p-6 md:p-10 lg:p-12">
     <div class="mb-6 md:mb-8">
       <h2 class="text-3xl sm:text-4xl font-bold mb-2 text-gray-900">Running Containers</h2>
       <p class="text-sm sm:text-base text-gray-600">Manage your active Docker containers</p>
-    </div>
-
-    <!-- Watchtower Warning Banner -->
-    <div v-if="!loading && !watchtowerInstalled" 
-      @click="router.push('/apps/watchtower')"
-      class="mb-6 bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-500 rounded-xl p-4 sm:p-5 cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] group">
-      <div class="flex items-start gap-3 sm:gap-4">
-        <div class="flex-shrink-0">
-          <div class="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-            <AlertTriangle :size="20" class="sm:w-6 sm:h-6 text-white" />
-          </div>
-        </div>
-        <div class="flex-1 min-w-0">
-          <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">
-            Watchtower Not Installed
-          </h3>
-          <p class="text-sm sm:text-base text-gray-700 mb-2">
-            Auto-updates are currently disabled. Install Watchtower to keep your Yantra installation up to date automatically.
-          </p>
-          <div class="flex items-center gap-2 text-orange-600 font-semibold text-sm group-hover:gap-3 transition-all">
-            <span>Install Watchtower</span>
-            <ArrowRight :size="16" class="group-hover:translate-x-1 transition-transform" />
-          </div>
-        </div>
-      </div>
     </div>
     
     <div v-if="loading" class="text-center py-16">
