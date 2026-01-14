@@ -6,7 +6,7 @@ import { $ } from "bun";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import { startCleanupScheduler, cleanupExpiredApps } from "./cleanup.js";
+import { startCleanupScheduler, cleanupExpiredApps, cleanupOldUnusedImages } from "./cleanup.js";
 
 // Import package.json using Bun's native JSON import
 const packageJson = await Bun.file(new URL("../package.json", import.meta.url)).json();
@@ -550,7 +550,7 @@ app.get("/api/apps", async (req, res) => {
 
           // Extract port mappings
           const portMappings = [];
-          
+
           // Match fixed port mappings: - "8080:80", "53:53/tcp", "53:53/udp"
           const fixedPortRegex = /-\s*["']?(\d+):(\d+)(?:\/(tcp|udp))?["']?/g;
           while ((match = fixedPortRegex.exec(composeContent)) !== null) {
@@ -561,7 +561,7 @@ app.get("/api/apps", async (req, res) => {
               envVar: null,
             });
           }
-          
+
           // Match auto-assigned ports: - "9091", - "8080"
           const autoPortRegex = /-\s*["'](\d+)["'](?:\s|$)/g;
           while ((match = autoPortRegex.exec(composeContent)) !== null) {
@@ -819,15 +819,15 @@ app.post("/api/deploy", async (req, res) => {
     // Apply instance-specific naming (container names and volumes)
     if (instanceId && instanceId > 1) {
       log("info", `🚀 [POST /api/deploy] Applying instance-specific naming for instance #${instanceId}`);
-      
+
       const lines = modifiedComposeContent.split("\n");
       const result = [];
       let inVolumesSection = false;
       let inServiceVolumesSection = false;
-      
+
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
-        
+
         // Track if we're in the main volumes section (at root level)
         if (line.match(/^volumes:\s*$/)) {
           inVolumesSection = true;
@@ -836,7 +836,7 @@ app.post("/api/deploy", async (req, res) => {
           // Hit another root-level section, exit volumes section
           inVolumesSection = false;
         }
-        
+
         // Track if we're in a service's volumes subsection
         if (line.match(/^\s+volumes:\s*$/)) {
           inServiceVolumesSection = true;
@@ -844,7 +844,7 @@ app.post("/api/deploy", async (req, res) => {
           // Hit another service property, exit service volumes section
           inServiceVolumesSection = false;
         }
-        
+
         // Match container_name: appname
         const containerNameMatch = line.match(/^(\s*container_name:\s*)(.+)$/);
         if (containerNameMatch) {
@@ -853,7 +853,7 @@ app.post("/api/deploy", async (req, res) => {
           line = `${indent}${containerName}-${instanceId}`;
           log("info", `🚀 [POST /api/deploy] Renamed container: ${containerName} → ${containerName}-${instanceId}`);
         }
-        
+
         // Match volume definitions ONLY in the volumes section
         const volumeDefMatch = line.match(/^(\s+)([a-zA-Z0-9_-]+):(\s*)$/);
         if (volumeDefMatch && inVolumesSection) {
@@ -863,7 +863,7 @@ app.post("/api/deploy", async (req, res) => {
           line = `${indent}${volumeName}_${instanceId}:${suffix}`;
           log("info", `🚀 [POST /api/deploy] Renamed volume: ${volumeName} → ${volumeName}_${instanceId}`);
         }
-        
+
         // Match volume name property: name: volumename
         const volumeNameMatch = line.match(/^(\s+name:\s+)(.+)$/);
         if (volumeNameMatch && inVolumesSection) {
@@ -872,7 +872,7 @@ app.post("/api/deploy", async (req, res) => {
           line = `${indent}${volumeName}_${instanceId}`;
           log("info", `🚀 [POST /api/deploy] Renamed volume name property: ${volumeName} → ${volumeName}_${instanceId}`);
         }
-        
+
         // Match volume references in service volumes: - volumename:/path
         const volumeRefMatch = line.match(/^(\s*-\s+)([a-zA-Z0-9_-]+)(:.+)$/);
         if (volumeRefMatch && inServiceVolumesSection) {
@@ -882,12 +882,12 @@ app.post("/api/deploy", async (req, res) => {
           line = `${indent}${volumeName}_${instanceId}${path}`;
           log("info", `🚀 [POST /api/deploy] Renamed volume reference: ${volumeName} → ${volumeName}_${instanceId}`);
         }
-        
+
         result.push(line);
       }
-      
+
       modifiedComposeContent = result.join("\n");
-      
+
       // Write to temporary file
       const tempComposePath = path.join(appPath, ".compose.tmp.yml");
       await Bun.write(tempComposePath, modifiedComposeContent);
@@ -897,17 +897,17 @@ app.post("/api/deploy", async (req, res) => {
     // Apply custom port mappings if provided
     if (customPortMappings && Object.keys(customPortMappings).length > 0) {
       log("info", `🚀 [POST /api/deploy] Applying custom port mappings`);
-      
+
       // Replace port mappings in compose content
       const lines = modifiedComposeContent.split("\n");
       const result = [];
-      
+
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
-        
+
         // Match fixed port mappings: - "8080:80", "53:53/tcp", etc.
         const fixedPortMatch = line.match(/^(\s*-\s*)(["']?)(\d+):(\d+)(\/(?:tcp|udp))?(["']?)$/);
-        
+
         if (fixedPortMatch) {
           const indent = fixedPortMatch[1];
           const openQuote = fixedPortMatch[2];
@@ -916,7 +916,7 @@ app.post("/api/deploy", async (req, res) => {
           const protocol = fixedPortMatch[5] || '';
           const closeQuote = fixedPortMatch[6];
           const protocolName = protocol.replace('/', '') || 'tcp';
-          
+
           // Check if this port has a custom mapping
           const mappingKey = `${hostPort}/${protocolName}`;
           if (customPortMappings[mappingKey]) {
@@ -925,16 +925,16 @@ app.post("/api/deploy", async (req, res) => {
             log("info", `🚀 [POST /api/deploy] Replaced fixed port ${hostPort} with ${newHostPort}`);
           }
         }
-        
+
         // Match auto-assigned ports: - "9091"
         const autoPortMatch = line.match(/^(\s*-\s*)(["'])(\d+)["']$/);
-        
+
         if (autoPortMatch) {
           const indent = autoPortMatch[1];
           const quote = autoPortMatch[2];
           const port = autoPortMatch[3];
           const protocolName = 'tcp'; // Auto-assigned ports default to tcp
-          
+
           // Check if this port has a custom mapping
           const mappingKey = `${port}/${protocolName}`;
           if (customPortMappings[mappingKey]) {
@@ -943,12 +943,12 @@ app.post("/api/deploy", async (req, res) => {
             log("info", `🚀 [POST /api/deploy] Replaced auto-assigned port ${port} with ${newHostPort}`);
           }
         }
-        
+
         result.push(line);
       }
-      
+
       modifiedComposeContent = result.join("\n");
-      
+
       // Write to temporary file
       const tempComposePath = path.join(appPath, ".compose.tmp.yml");
       await Bun.write(tempComposePath, modifiedComposeContent);
@@ -957,10 +957,10 @@ app.post("/api/deploy", async (req, res) => {
 
     // Deploy using docker compose (Docker will auto-assign ports or use custom mappings)
     const composeFile = (expiresIn || customPortMappings || (instanceId && instanceId > 1)) ? ".compose.tmp.yml" : "compose.yml";
-    
+
     // Set unique project name for multi-instance deployments
     const projectName = (instanceId && instanceId > 1) ? `${appId}-${instanceId}` : appId;
-    
+
     const command = `docker compose -p "${projectName}" -f "${composeFile}" up -d`;
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
@@ -1124,6 +1124,53 @@ app.delete("/api/images/:id", async (req, res) => {
   }
 });
 
+// POST /api/cleanup/images - Manually trigger cleanup of old unused images
+app.post("/api/cleanup/images", async (req, res) => {
+  const daysOld = parseInt(req.body?.daysOld) || 10;
+  log("info", `🧹 [POST /api/cleanup/images] Manual image cleanup triggered (older than ${daysOld} days)`);
+
+  try {
+    const results = await cleanupOldUnusedImages(daysOld);
+
+    log("info", `✅ [POST /api/cleanup/images] Cleanup complete: ${results.removed.length} images removed`);
+    res.json({
+      success: true,
+      message: `Image cleanup completed successfully`,
+      results: results,
+    });
+  } catch (error) {
+    log("error", `❌ [POST /api/cleanup/images] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: "Failed to cleanup images",
+      message: error.message,
+    });
+  }
+});
+
+// POST /api/cleanup/apps - Manually trigger cleanup of expired apps
+app.post("/api/cleanup/apps", async (req, res) => {
+  log("info", `🧹 [POST /api/cleanup/apps] Manual app cleanup triggered`);
+
+  try {
+    const results = await cleanupExpiredApps();
+
+    log("info", `✅ [POST /api/cleanup/apps] Cleanup complete: ${results.removed.length} apps removed`);
+    res.json({
+      success: true,
+      message: `App cleanup completed successfully`,
+      results: results,
+    });
+  } catch (error) {
+    log("error", `❌ [POST /api/cleanup/apps] Error:`, error.message);
+    res.status(500).json({
+      success: false,
+      error: "Failed to cleanup apps",
+      message: error.message,
+    });
+  }
+});
+
 // DELETE /api/containers/:id - Remove container (or stack if part of an app)
 app.delete("/api/containers/:id", async (req, res) => {
   log("info", `🗑️  [DELETE /api/containers/:id] Remove request for: ${req.params.id}`);
@@ -1139,13 +1186,13 @@ app.delete("/api/containers/:id", async (req, res) => {
     // If part of a compose project, check if it's a managed app
     if (composeProject) {
       const appsDir = path.join(__dirname, "..", "apps");
-      
+
       // Extract base app ID from project (remove -2, -3 suffix for instances)
       let baseAppId = composeProject;
       if (composeProject.match(/-\d+$/)) {
         baseAppId = composeProject.replace(/-\d+$/, '');
       }
-      
+
       const appPath = path.join(appsDir, baseAppId); // Use base app ID for folder lookup
       const composePath = path.join(appPath, "compose.yml");
 
@@ -1297,7 +1344,7 @@ app.get("/api/volumes", async (req, res) => {
     // Check if any volume has an active dufs browser container
     const containers = await docker.listContainers({ all: true });
     const browsedVolumes = new Set();
-    
+
     containers.forEach((container) => {
       if (container.Labels && container.Labels["yantra.volume-browser"]) {
         browsedVolumes.add(container.Labels["yantra.volume-browser"]);
@@ -1336,7 +1383,7 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
     // Check if volume exists
     const volumes = await docker.listVolumes();
     const volume = volumes.Volumes?.find((v) => v.Name === volumeName);
-    
+
     if (!volume) {
       return res.status(404).json({
         success: false,
@@ -1353,7 +1400,7 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
     if (existingBrowser) {
       const container = docker.getContainer(existingBrowser.Id);
       const inspect = await container.inspect();
-      
+
       // If stopped, start it
       if (inspect.State.Status !== "running") {
         await container.start();
@@ -1372,7 +1419,7 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
     // Pull the dufs image if not already present
     const imageName = "sigoden/dufs:latest";
     log("info", `📥 [POST /api/volumes/${volumeName}/browse] Pulling ${imageName} if needed`);
-    
+
     try {
       await docker.getImage(imageName).inspect();
     } catch (error) {
@@ -1392,7 +1439,7 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
 
     // Create new browser container
     const containerName = `yantra-v-${volumeName}`;
-    
+
     const container = await docker.createContainer({
       Image: imageName,
       name: containerName,

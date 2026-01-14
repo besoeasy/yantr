@@ -97,6 +97,7 @@ Apps run in complete isolation - no leftovers, no system clutter, no permanent i
 - ⏱️ **Temporary installations** - Set expiration time, apps auto-delete when done
 - 🔄 **Multiple instances** - Run the same app multiple times with different configurations
 - 📂 **Direct volume access** - Browse and manage app data files directly (unique to Yantra)
+- 🧹 **Automatic cleanup** - Removes old unused Docker images (10+ days) to free disk space
 - 🎨 Clean Vue.js interface
 - 🏪 Built-in app store with popular self-hosted apps
 - 🐳 Docker-based (reliable, boot-persistent)
