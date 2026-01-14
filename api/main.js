@@ -242,6 +242,12 @@ app.get("/api/containers", async (req, res) => {
           log("error", `Failed to get env for container ${container.Id}:`, error.message);
         }
 
+        // Extract base app ID from compose project (remove -2, -3 suffix for instances)
+        let baseAppId = composeProject || container.Names[0]?.replace("/", "") || "unknown";
+        if (composeProject && composeProject.match(/-\d+$/)) {
+          baseAppId = composeProject.replace(/-\d+$/, '');
+        }
+
         return {
           id: container.Id,
           name: container.Names[0]?.replace("/", "") || "unknown",
@@ -256,7 +262,8 @@ app.get("/api/containers", async (req, res) => {
           env: envVars,
           // Add computed fields for easier UI access
           app: {
-            id: composeProject || container.Names[0]?.replace("/", "") || "unknown", // Add app ID
+            id: baseAppId, // Base app ID without instance suffix
+            projectId: composeProject || container.Names[0]?.replace("/", "") || "unknown", // Full project ID with instance suffix
             name: appLabels.name || container.Names[0]?.replace("/", "") || "unknown",
             logo: appLabels.logo ? (appLabels.logo.includes("://") ? appLabels.logo : `https://dweb.link/ipfs/${appLabels.logo}`) : null,
             category: appLabels.category || "uncategorized",
@@ -681,8 +688,8 @@ app.get("/api/apps/:id/check-arch", async (req, res) => {
 app.post("/api/deploy", async (req, res) => {
   log("info", "🚀 [POST /api/deploy] Deploy request received");
   try {
-    const { appId, environment, expiresIn, customPortMappings } = req.body;
-    log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}`);
+    const { appId, environment, expiresIn, customPortMappings, instanceId } = req.body;
+    log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}${instanceId > 1 ? ` (Instance #${instanceId})` : ''}`);
     if (environment) {
       log("info", `🚀 [POST /api/deploy] Custom environment:`, environment);
     }
@@ -691,6 +698,9 @@ app.post("/api/deploy", async (req, res) => {
     }
     if (customPortMappings) {
       log("info", `🚀 [POST /api/deploy] Custom port mappings:`, customPortMappings);
+    }
+    if (instanceId) {
+      log("info", `🚀 [POST /api/deploy] Instance ID: ${instanceId}`);
     }
 
     if (!appId) {
@@ -806,6 +816,84 @@ app.post("/api/deploy", async (req, res) => {
       }
     }
 
+    // Apply instance-specific naming (container names and volumes)
+    if (instanceId && instanceId > 1) {
+      log("info", `🚀 [POST /api/deploy] Applying instance-specific naming for instance #${instanceId}`);
+      
+      const lines = modifiedComposeContent.split("\n");
+      const result = [];
+      let inVolumesSection = false;
+      let inServiceVolumesSection = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        
+        // Track if we're in the main volumes section (at root level)
+        if (line.match(/^volumes:\s*$/)) {
+          inVolumesSection = true;
+          inServiceVolumesSection = false;
+        } else if (line.match(/^[a-z]+:\s*$/) && !line.startsWith(' ')) {
+          // Hit another root-level section, exit volumes section
+          inVolumesSection = false;
+        }
+        
+        // Track if we're in a service's volumes subsection
+        if (line.match(/^\s+volumes:\s*$/)) {
+          inServiceVolumesSection = true;
+        } else if (line.match(/^\s+[a-z_]+:\s*$/) && !line.match(/^\s+volumes:/)) {
+          // Hit another service property, exit service volumes section
+          inServiceVolumesSection = false;
+        }
+        
+        // Match container_name: appname
+        const containerNameMatch = line.match(/^(\s*container_name:\s*)(.+)$/);
+        if (containerNameMatch) {
+          const indent = containerNameMatch[1];
+          const containerName = containerNameMatch[2].trim();
+          line = `${indent}${containerName}-${instanceId}`;
+          log("info", `🚀 [POST /api/deploy] Renamed container: ${containerName} → ${containerName}-${instanceId}`);
+        }
+        
+        // Match volume definitions ONLY in the volumes section
+        const volumeDefMatch = line.match(/^(\s+)([a-zA-Z0-9_-]+):(\s*)$/);
+        if (volumeDefMatch && inVolumesSection) {
+          const indent = volumeDefMatch[1];
+          const volumeName = volumeDefMatch[2];
+          const suffix = volumeDefMatch[3];
+          line = `${indent}${volumeName}_${instanceId}:${suffix}`;
+          log("info", `🚀 [POST /api/deploy] Renamed volume: ${volumeName} → ${volumeName}_${instanceId}`);
+        }
+        
+        // Match volume name property: name: volumename
+        const volumeNameMatch = line.match(/^(\s+name:\s+)(.+)$/);
+        if (volumeNameMatch && inVolumesSection) {
+          const indent = volumeNameMatch[1];
+          const volumeName = volumeNameMatch[2].trim();
+          line = `${indent}${volumeName}_${instanceId}`;
+          log("info", `🚀 [POST /api/deploy] Renamed volume name property: ${volumeName} → ${volumeName}_${instanceId}`);
+        }
+        
+        // Match volume references in service volumes: - volumename:/path
+        const volumeRefMatch = line.match(/^(\s*-\s+)([a-zA-Z0-9_-]+)(:.+)$/);
+        if (volumeRefMatch && inServiceVolumesSection) {
+          const indent = volumeRefMatch[1];
+          const volumeName = volumeRefMatch[2];
+          const path = volumeRefMatch[3];
+          line = `${indent}${volumeName}_${instanceId}${path}`;
+          log("info", `🚀 [POST /api/deploy] Renamed volume reference: ${volumeName} → ${volumeName}_${instanceId}`);
+        }
+        
+        result.push(line);
+      }
+      
+      modifiedComposeContent = result.join("\n");
+      
+      // Write to temporary file
+      const tempComposePath = path.join(appPath, ".compose.tmp.yml");
+      await Bun.write(tempComposePath, modifiedComposeContent);
+      log("info", `🚀 [POST /api/deploy] Created temporary compose file with instance naming`);
+    }
+
     // Apply custom port mappings if provided
     if (customPortMappings && Object.keys(customPortMappings).length > 0) {
       log("info", `🚀 [POST /api/deploy] Applying custom port mappings`);
@@ -818,37 +906,40 @@ app.post("/api/deploy", async (req, res) => {
         let line = lines[i];
         
         // Match fixed port mappings: - "8080:80", "53:53/tcp", etc.
-        const fixedPortMatch = line.match(/^(\s*-\s*["']?)(\d+):(\d+)(\/(?:tcp|udp))?["']?$/);
+        const fixedPortMatch = line.match(/^(\s*-\s*)(["']?)(\d+):(\d+)(\/(?:tcp|udp))?(["']?)$/);
         
         if (fixedPortMatch) {
           const indent = fixedPortMatch[1];
-          const hostPort = fixedPortMatch[2];
-          const containerPort = fixedPortMatch[3];
-          const protocol = fixedPortMatch[4] || '';
+          const openQuote = fixedPortMatch[2];
+          const hostPort = fixedPortMatch[3];
+          const containerPort = fixedPortMatch[4];
+          const protocol = fixedPortMatch[5] || '';
+          const closeQuote = fixedPortMatch[6];
           const protocolName = protocol.replace('/', '') || 'tcp';
           
           // Check if this port has a custom mapping
           const mappingKey = `${hostPort}/${protocolName}`;
           if (customPortMappings[mappingKey]) {
             const newHostPort = customPortMappings[mappingKey];
-            line = `${indent}${newHostPort}:${containerPort}${protocol}`;
+            line = `${indent}${openQuote}${newHostPort}:${containerPort}${protocol}${closeQuote}`;
             log("info", `🚀 [POST /api/deploy] Replaced fixed port ${hostPort} with ${newHostPort}`);
           }
         }
         
         // Match auto-assigned ports: - "9091"
-        const autoPortMatch = line.match(/^(\s*-\s*["'])(\d+)["']$/);
+        const autoPortMatch = line.match(/^(\s*-\s*)(["'])(\d+)["']$/);
         
         if (autoPortMatch) {
           const indent = autoPortMatch[1];
-          const port = autoPortMatch[2];
+          const quote = autoPortMatch[2];
+          const port = autoPortMatch[3];
           const protocolName = 'tcp'; // Auto-assigned ports default to tcp
           
           // Check if this port has a custom mapping
           const mappingKey = `${port}/${protocolName}`;
           if (customPortMappings[mappingKey]) {
             const newHostPort = customPortMappings[mappingKey];
-            line = `${indent}${newHostPort}:${port}"`;
+            line = `${indent}${quote}${newHostPort}:${port}${quote}`;
             log("info", `🚀 [POST /api/deploy] Replaced auto-assigned port ${port} with ${newHostPort}`);
           }
         }
@@ -865,12 +956,16 @@ app.post("/api/deploy", async (req, res) => {
     }
 
     // Deploy using docker compose (Docker will auto-assign ports or use custom mappings)
-    const composeFile = (expiresIn || customPortMappings) ? ".compose.tmp.yml" : "compose.yml";
-    const command = `docker compose -f "${composeFile}" up -d`;
+    const composeFile = (expiresIn || customPortMappings || (instanceId && instanceId > 1)) ? ".compose.tmp.yml" : "compose.yml";
+    
+    // Set unique project name for multi-instance deployments
+    const projectName = (instanceId && instanceId > 1) ? `${appId}-${instanceId}` : appId;
+    
+    const command = `docker compose -p "${projectName}" -f "${composeFile}" up -d`;
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
     try {
-      const proc = Bun.spawn(["docker", "compose", "-f", composeFile, "up", "-d"], {
+      const proc = Bun.spawn(["docker", "compose", "-p", projectName, "-f", composeFile, "up", "-d"], {
         cwd: appPath,
         env: {
           ...process.env,
@@ -889,7 +984,7 @@ app.post("/api/deploy", async (req, res) => {
       if (stderr) log("info", `   stderr: ${stderr.trim()}`);
 
       // Cleanup temporary compose file if it exists
-      if (expiresIn || customPortMappings) {
+      if (expiresIn || customPortMappings || (instanceId && instanceId > 1)) {
         try {
           const tempComposePath = path.join(appPath, ".compose.tmp.yml");
           await Bun.file(tempComposePath).unlink();
@@ -1033,7 +1128,14 @@ app.delete("/api/containers/:id", async (req, res) => {
     // If part of a compose project, check if it's a managed app
     if (composeProject) {
       const appsDir = path.join(__dirname, "..", "apps");
-      const appPath = path.join(appsDir, composeProject);
+      
+      // Extract base app ID from project (remove -2, -3 suffix for instances)
+      let baseAppId = composeProject;
+      if (composeProject.match(/-\d+$/)) {
+        baseAppId = composeProject.replace(/-\d+$/, '');
+      }
+      
+      const appPath = path.join(appsDir, baseAppId); // Use base app ID for folder lookup
       const composePath = path.join(appPath, "compose.yml");
 
       try {
@@ -1041,8 +1143,8 @@ app.delete("/api/containers/:id", async (req, res) => {
         if (await composeFile.exists()) {
           log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
 
-          // Execute docker compose down
-          const proc = Bun.spawn(["docker", "compose", "down", "-v"], {
+          // Execute docker compose down with project name to target specific instance
+          const proc = Bun.spawn(["docker", "compose", "-p", composeProject, "down", "-v"], {
             cwd: appPath,
             env: {
               ...process.env,

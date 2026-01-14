@@ -21,15 +21,25 @@ const installedAppIds = computed(() => {
   return ids;
 });
 
-const uninstalledApps = computed(() => {
-  const uninstalled = apps.value.filter((app) => !installedAppIds.value.has(app.id));
-  return shuffleWithSeed(uninstalled).map((app) => ({
+const appInstanceCounts = computed(() => {
+  const counts = {};
+  containers.value.forEach((c) => {
+    if (c.app.id) {
+      counts[c.app.id] = (counts[c.app.id] || 0) + 1;
+    }
+  });
+  return counts;
+});
+
+const allAppsShuffled = computed(() => {
+  // Show ALL apps (both installed and uninstalled), shuffled
+  return shuffleWithSeed(apps.value).map((app) => ({
     ...app,
-    isInstalled: false,
+    isInstalled: installedAppIds.value.has(app.id),
   }));
 });
 
-const allAppsCount = computed(() => uninstalledApps.value.length);
+const allAppsCount = computed(() => apps.value.length);
 
 const categories = computed(() => {
   const categorySet = new Set();
@@ -46,7 +56,7 @@ const categories = computed(() => {
   // Calculate count for each category and filter out categories with less than 2 apps
   return categoriesArray
     .map((cat) => {
-      const count = uninstalledApps.value.filter((app) =>
+      const count = apps.value.filter((app) =>
         app.category
           .split(",")
           .map((c) => c.trim())
@@ -58,7 +68,7 @@ const categories = computed(() => {
 });
 
 const combinedApps = computed(() => {
-  let combined = [...uninstalledApps.value];
+  let combined = [...allAppsShuffled.value];
 
   if (selectedCategory.value) {
     combined = combined.filter((app) =>
@@ -219,9 +229,14 @@ onMounted(async () => {
             </div>
 
             <div class="flex-1 min-w-0">
-              <h3 class="font-bold text-base sm:text-lg text-gray-900 truncate mb-1 group-hover:text-blue-600 transition-colors">
-                {{ app.name }}
-              </h3>
+              <div class="flex items-center gap-2 mb-1">
+                <h3 class="font-bold text-base sm:text-lg text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                  {{ app.name }}
+                </h3>
+                <span v-if="appInstanceCounts[app.id] > 1" class="flex-shrink-0 text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">
+                  {{ appInstanceCounts[app.id] }}
+                </span>
+              </div>
               <div class="flex flex-wrap gap-1">
                 <span
                   v-for="(cat, idx) in app.category.split(',').slice(0, 3)"

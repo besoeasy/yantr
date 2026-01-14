@@ -25,6 +25,14 @@ const isInstalled = computed(() => {
   return containers.value.some((c) => c.app.id === route.params.appname);
 });
 
+const instanceCount = computed(() => {
+  return containers.value.filter((c) => c.app.id === route.params.appname).length;
+});
+
+const nextInstanceNumber = computed(() => {
+  return instanceCount.value + 1;
+});
+
 const ports = computed(() => {
   if (!app.value?.port) return [];
   return app.value.port.split(",").map((p) => p.trim());
@@ -147,12 +155,15 @@ async function deployApp() {
   }
 
   deploying.value = true;
-  toast.info(`Deploying ${app.value.name}... This may take a few minutes.`);
+  const instanceNum = nextInstanceNumber.value;
+  const instanceSuffix = instanceNum > 1 ? ` #${instanceNum}` : '';
+  toast.info(`Deploying ${app.value.name}${instanceSuffix}... This may take a few minutes.`);
 
   try {
     const requestBody = { 
       appId: app.value.id, 
-      environment: envValues.value 
+      environment: envValues.value,
+      instanceId: instanceNum // Pass instance number to backend
     };
     
     if (temporaryInstall.value) {
@@ -321,8 +332,10 @@ onMounted(async () => {
         </div>
 
         <!-- Installation Form -->
-        <div v-if="!isInstalled" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
-          <h2 class="text-xl font-bold text-gray-900 mb-6">Installation</h2>
+        <div class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-gray-100">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            {{ instanceCount > 0 ? 'Install Another Instance' : 'Installation' }}
+          </h2>
 
           <div class="space-y-6">
             <!-- Environment Variables -->
@@ -438,33 +451,15 @@ onMounted(async () => {
               >
                 <span v-if="deploying" class="inline-flex items-center gap-3 justify-center">
                   <span class="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span>Installing {{ app.name }}...</span>
+                  <span>Installing {{ app.name }}{{ instanceCount > 0 ? ` #${nextInstanceNumber}` : '' }}...</span>
                 </span>
-                <span v-else>Install {{ app.name }}</span>
+                <span v-else>
+                  {{ instanceCount > 0 ? `Install Another Instance (#${nextInstanceNumber})` : `Install ${app.name}` }}
+                </span>
               </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Already Installed Message -->
-        <div v-else class="bg-green-50 border border-green-200 rounded-2xl p-6 sm:p-8">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                <Package :size="24" class="text-green-600" />
-              </div>
-            </div>
-            <div class="flex-1">
-              <h3 class="text-lg font-bold text-green-900 mb-2">Already Installed</h3>
-              <p class="text-green-700 mb-4">
-                This app is already running on your system. You can manage it from the Containers page.
+              <p v-if="instanceCount > 0" class="text-sm text-gray-500 mt-2 text-center">
+                {{ instanceCount }} instance{{ instanceCount > 1 ? 's' : '' }} currently installed
               </p>
-              <button
-                @click="router.push('/containers')"
-                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all"
-              >
-                <span>View Containers</span>
-              </button>
             </div>
           </div>
         </div>
