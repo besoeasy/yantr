@@ -6,8 +6,8 @@ services:
     stop_grace_period: 1m
     ports:
       - "3333"
-      - "3334:3334/tcp"
-      - "3334:3334/udp"
+      - "3334/tcp"
+      - "3334/udp"
     environment:
       HOME: /tmp
       XDG_CONFIG_HOME: /config
