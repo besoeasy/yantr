@@ -12,7 +12,7 @@ services:
     ports:
       - "80"
     environment:
-      - PORT=${PORT:-80}
+      - PORT=80
     volumes:
       - netalertx_config:/app/config
       - netalertx_db:/app/db

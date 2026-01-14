@@ -12,7 +12,7 @@ services:
     ports:
       - "80"
       - "51413"
-      - "6881:6881/udp"
+      - "6881/udp"
     volumes:
       - rutorrent_config:/config
       - rutorrent_downloads:/downloads

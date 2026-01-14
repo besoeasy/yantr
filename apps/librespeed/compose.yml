@@ -1,7 +1,7 @@
 services:
   speedtest:
     image: ghcr.io/librespeed/speedtest:latest
-    container_name: speedtest
+    container_name: librespeed
     labels:
       yantra.name: "LibreSpeed"
       yantra.logo: "QmR4dXKau4JxsY94BRLupk32nemq1nxqwJHCsmhGvsdKye"

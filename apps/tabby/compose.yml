@@ -19,10 +19,10 @@ services:
     image: linuxserver/mariadb:latest
     container_name: tabby_database
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-tabby}
-      - MYSQL_USER=${MYSQL_USER:-tabby}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-tabby}
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=tabby
+      - MYSQL_USER=tabby
+      - MYSQL_PASSWORD=tabby
     volumes:
       - tabby_db:/config
     restart: unless-stopped

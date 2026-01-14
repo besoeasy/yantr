@@ -12,7 +12,7 @@ services:
     ports:
       - "8080"
     environment:
-      - NC_DB=${NC_DB:-mysql2://root:password@root_db:3306/noco}
+      - NC_DB=mysql2://root:passwordnoconoco@root_db:3306/noco
     volumes:
       - nocodb_data:/usr/app/data
     depends_on:
@@ -23,8 +23,8 @@ services:
     image: mysql:5.7
     container_name: nocodb_database
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-password}
-      - MYSQL_DATABASE=${MYSQL_DATABASE:-noco}
+      - MYSQL_ROOT_PASSWORD=passwordnoconoco
+      - MYSQL_DATABASE=noco
     volumes:
       - nocodb_db_data:/var/lib/mysql
     restart: unless-stopped

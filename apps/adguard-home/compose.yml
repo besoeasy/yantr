@@ -19,8 +19,6 @@ services:
       - "443"
       - "853:853/tcp"
       - "3000"
-    environment:
-      - CONTEXT_PATH=${CONTEXT_PATH:-}
     volumes:
       - adguard_work:/opt/adguardhome/work
       - adguard_conf:/opt/adguardhome/conf

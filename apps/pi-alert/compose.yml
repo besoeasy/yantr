@@ -10,7 +10,7 @@ services:
       yantra.description: "Network monitoring tool for detecting new devices and security alerts"
       yantra.website: "https://github.com/jokobsk/pi.alert"
     ports:
-      - "20211:20211/udp"
+      - "20211/udp"
     volumes:
       - pi_alert_config:/config
     restart: unless-stopped

@@ -15,7 +15,6 @@ services:
       - "53:53/udp"
       - "80"
     environment:
-      - TZ=${TZ:-UTC}
       - WEBPASSWORD=${WEBPASSWORD:-yantra}
     volumes:
       - ./entrypoint.sh:/app/entrypoint.sh:ro
