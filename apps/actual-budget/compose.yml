@@ -4,6 +4,7 @@ services:
     container_name: actual-budget
     labels:
       yantra.name: "Actual Budget"
+      yantra.logo: "QmYhzJQFC7KG7RenmubaBZi1f8F2XkagEamPvJxQqmyqGR"
       yantra.category: "finance,productivity"
       yantra.port: "5006 (HTTP - Web UI)"
       yantra.description: "Self-hosted personal finance app with powerful budgeting and tracking features"

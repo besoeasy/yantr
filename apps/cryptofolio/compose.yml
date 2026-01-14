@@ -4,6 +4,7 @@ services:
     container_name: cryptofolio
     labels:
       yantra.name: "Cryptofolio"
+      yantra.logo: "QmRSzoSr1npNczcYt5sFBauWCmYFdqyCytwoj3vtXtrs89"
       yantra.category: "finance,cryptocurrency"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Self-hosted cryptocurrency portfolio tracker with real-time price updates"
