@@ -1,0 +1,20 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    labels:
+      yantra.name: "MariaDB"
+      yantra.category: "database,storage"
+      yantra.port: "3306 (TCP - Database)"
+      yantra.description: "Open-source relational database compatible with MySQL"
+      yantra.website: "https://github.com/MariaDB/server"
+    ports:
+      - "3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mariadb_data:

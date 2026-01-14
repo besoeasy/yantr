@@ -1,0 +1,23 @@
+services:
+  scality-s3:
+    image: scality/s3server:latest
+    container_name: scality-s3
+    labels:
+      yantra.name: "Scality S3"
+      yantra.category: "storage,s3"
+      yantra.port: "8000 (HTTP - S3 API)"
+      yantra.description: "S3-compatible object storage server for self-hosted cloud storage"
+      yantra.website: "https://github.com/scality/s3"
+    ports:
+      - "8000"
+    environment:
+      - SCALITY_ACCESS_KEY=${SCALITY_ACCESS_KEY:-accessKey1}
+      - SCALITY_SECRET_KEY=${SCALITY_SECRET_KEY:-verySecretKey1}
+    volumes:
+      - scality_data:/usr/src/app/localData
+      - scality_metadata:/usr/src/app/localMetadata
+    restart: unless-stopped
+
+volumes:
+  scality_data:
+  scality_metadata:

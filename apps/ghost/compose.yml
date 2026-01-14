@@ -1,0 +1,18 @@
+services:
+  ghost:
+    image: ghost:latest
+    container_name: ghost
+    labels:
+      yantra.name: "Ghost"
+      yantra.category: "cms,blog"
+      yantra.port: "2368 (HTTP - Web UI)"
+      yantra.description: "Professional blogging platform with powerful content management features"
+      yantra.website: "https://github.com/TryGhost/Ghost"
+    ports:
+      - "2368"
+    volumes:
+      - ghost_content:/var/lib/ghost/content
+    restart: unless-stopped
+
+volumes:
+  ghost_content:

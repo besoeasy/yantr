@@ -1,0 +1,21 @@
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    labels:
+      yantra.name: "PostgreSQL"
+      yantra.category: "database,storage"
+      yantra.port: "5432 (TCP - Database)"
+      yantra.description: "Powerful open-source relational database with advanced features"
+      yantra.website: "https://github.com/postgres/postgres"
+    ports:
+      - "5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgresql_data:
