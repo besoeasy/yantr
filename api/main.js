@@ -61,6 +61,7 @@ function log(level, message, ...args) {
 
 log("info", "� Using Docker socket:", socketPath);
 
+
 // Helper function to get system architecture
 async function getSystemArchitecture() {
   if (systemArchitecture) {
@@ -171,27 +172,6 @@ async function getImageFromCompose(composePath) {
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// Track last activity for auto-restart during idle periods
-let lastActivityTime = Date.now();
-
-// Middleware to track activity on every request
-app.use((req, res, next) => {
-  lastActivityTime = Date.now();
-  next();
-});
-
-// Auto-restart checker: exits process if idle for 6+ hours (Docker will restart with new image)
-const IDLE_TIMEOUT = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
-const CHECK_INTERVAL = 30 * 60 * 1000; // Check every 30 minutes
-
-setInterval(() => {
-  const idleTime = Date.now() - lastActivityTime;
-  if (idleTime >= IDLE_TIMEOUT) {
-    log('info', `⏰ Yantra has been idle for ${Math.floor(idleTime / 3600000)} hours. Restarting to apply updates...`);
-    process.exit(0); // Docker will restart the container automatically
-  }
-}, CHECK_INTERVAL);
 
 // Serve static files from Vue.js dist folder in production
 if (process.env.NODE_ENV === "production") {
