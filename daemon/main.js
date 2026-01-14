@@ -6,7 +6,7 @@ import { $ } from "bun";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-import { startCleanupScheduler, cleanupExpiredApps, cleanupOldUnusedImages } from "./cleanup.js";
+import { startCleanupScheduler } from "./cleanup.js";
 
 // Import package.json using Bun's native JSON import
 const packageJson = await Bun.file(new URL("../package.json", import.meta.url)).json();
@@ -1124,52 +1124,7 @@ app.delete("/api/images/:id", async (req, res) => {
   }
 });
 
-// POST /api/cleanup/images - Manually trigger cleanup of old unused images
-app.post("/api/cleanup/images", async (req, res) => {
-  const daysOld = parseInt(req.body?.daysOld) || 10;
-  log("info", `🧹 [POST /api/cleanup/images] Manual image cleanup triggered (older than ${daysOld} days)`);
 
-  try {
-    const results = await cleanupOldUnusedImages(daysOld);
-
-    log("info", `✅ [POST /api/cleanup/images] Cleanup complete: ${results.removed.length} images removed`);
-    res.json({
-      success: true,
-      message: `Image cleanup completed successfully`,
-      results: results,
-    });
-  } catch (error) {
-    log("error", `❌ [POST /api/cleanup/images] Error:`, error.message);
-    res.status(500).json({
-      success: false,
-      error: "Failed to cleanup images",
-      message: error.message,
-    });
-  }
-});
-
-// POST /api/cleanup/apps - Manually trigger cleanup of expired apps
-app.post("/api/cleanup/apps", async (req, res) => {
-  log("info", `🧹 [POST /api/cleanup/apps] Manual app cleanup triggered`);
-
-  try {
-    const results = await cleanupExpiredApps();
-
-    log("info", `✅ [POST /api/cleanup/apps] Cleanup complete: ${results.removed.length} apps removed`);
-    res.json({
-      success: true,
-      message: `App cleanup completed successfully`,
-      results: results,
-    });
-  } catch (error) {
-    log("error", `❌ [POST /api/cleanup/apps] Error:`, error.message);
-    res.status(500).json({
-      success: false,
-      error: "Failed to cleanup apps",
-      message: error.message,
-    });
-  }
-});
 
 // DELETE /api/containers/:id - Remove container (or stack if part of an app)
 app.delete("/api/containers/:id", async (req, res) => {
@@ -1633,5 +1588,5 @@ app.listen(PORT, "0.0.0.0", () => {
 
   // Start cleanup scheduler (runs every 15 minutes to handle temporary installations)
   log("info", "🧹 Starting automatic cleanup scheduler");
-  startCleanupScheduler(15);
+  startCleanupScheduler(30);
 });

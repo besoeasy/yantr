@@ -274,27 +274,14 @@ export function startCleanupScheduler(intervalMinutes = 60) {
 
   // Then run on interval
   setInterval(() => {
-    cleanupExpiredApps().catch((err) => {
-      log("error", `Scheduled cleanup failed: ${err.message}`);
-    });
-
-    cleanupOldUnusedImages().catch((err) => {
-      log("error", `Scheduled image cleanup failed: ${err.message}`);
-    });
+    if (Math.random() > 0.5) {
+      cleanupExpiredApps().catch((err) => {
+        log("error", `Scheduled cleanup failed: ${err.message}`);
+      });
+    } else {
+      cleanupOldUnusedImages().catch((err) => {
+        log("error", `Scheduled image cleanup failed: ${err.message}`);
+      });
+    }
   }, intervalMs);
-}
-
-// Allow direct execution for testing
-if (import.meta.url === `file://${process.argv[1]}`) {
-  log("info", "Running cleanup manually");
-  cleanupExpiredApps()
-    .then((results) => {
-      console.log("\nCleanup Results:");
-      console.log(JSON.stringify(results, null, 2));
-      process.exit(0);
-    })
-    .catch((err) => {
-      console.error("Cleanup failed:", err);
-      process.exit(1);
-    });
 }
