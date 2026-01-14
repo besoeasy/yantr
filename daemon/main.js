@@ -1588,5 +1588,5 @@ app.listen(PORT, "0.0.0.0", () => {
 
   // Start cleanup scheduler (runs every 15 minutes to handle temporary installations)
   log("info", "🧹 Starting automatic cleanup scheduler");
-  startCleanupScheduler(30);
+  startCleanupScheduler(11);
 });

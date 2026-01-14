@@ -274,7 +274,7 @@ export function startCleanupScheduler(intervalMinutes = 60) {
 
   // Then run on interval
   setInterval(() => {
-    if (Math.random() > 0.5) {
+    if (Math.random() > 0.2) {
       cleanupExpiredApps().catch((err) => {
         log("error", `Scheduled cleanup failed: ${err.message}`);
       });
