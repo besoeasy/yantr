@@ -1,0 +1,20 @@
+services:
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest-tracker
+    labels:
+      yantra.name: "Speedtest Tracker"
+      yantra.category: "network,monitoring"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Self-hosted speedtest tracker to monitor internet speed over time"
+      yantra.website: "https://github.com/linuxserver/docker-speedtest-tracker"
+    ports:
+      - "80"
+    environment:
+      - DB_CONNECTION=${DB_CONNECTION:-sqlite}
+    volumes:
+      - speedtest_tracker_config:/config
+    restart: unless-stopped
+
+volumes:
+  speedtest_tracker_config:

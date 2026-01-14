@@ -1,0 +1,23 @@
+services:
+  dockge:
+    image: louislam/dockge:1
+    container_name: dockge
+    labels:
+      yantra.name: "Dockge"
+      yantra.category: "docker,management"
+      yantra.port: "5001 (HTTP - Web UI)"
+      yantra.description: "Self-hosted Docker Compose stack manager with GUI for easy deployment"
+      yantra.website: "https://github.com/louislam/dockge"
+    ports:
+      - "5001"
+    environment:
+      - DOCKGE_STACKS_DIR=${DOCKGE_STACKS_DIR:-/opt/stacks}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockge_data:/app/data
+      - dockge_stacks:/opt/stacks
+    restart: unless-stopped
+
+volumes:
+  dockge_data:
+  dockge_stacks:

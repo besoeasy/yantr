@@ -1,0 +1,18 @@
+services:
+  opnform:
+    image: jhumanj/opnform:latest
+    container_name: opnform
+    labels:
+      yantra.name: "OpnForm"
+      yantra.category: "productivity,forms"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Open source form builder with advanced customization and workflow options"
+      yantra.website: "https://github.com/JhumanJ/opnform"
+    ports:
+      - "80"
+    volumes:
+      - opnform_persist:/persist
+    restart: unless-stopped
+
+volumes:
+  opnform_persist:
