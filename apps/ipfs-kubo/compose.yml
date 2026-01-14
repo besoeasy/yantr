@@ -1,0 +1,28 @@
+services:
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: ipfs-kubo
+    environment:
+      - IPFS_PROFILE=server
+    volumes:
+      - ipfs_data:/data/ipfs
+      - ipfs_staging:/export
+    ports:
+      - "4001" # Swarm TCP
+      - "4001/udp" # Swarm UDP
+      - "5001" # API
+      - "8080" # Gateway
+    restart: unless-stopped
+    labels:
+      yantra.name: "IPFS Kubo"
+      yantra.logo: "QmTF7KDZ14Phu9G7bTXGx6sEBsz8J3BikKzyfq82qbqXrt"
+      yantra.category: "network,storage,blockchain"
+      yantra.port: "8080 (HTTP - IPFS Gateway), 5001 (HTTP - API)"
+      yantra.description: "IPFS implementation in Go - content-addressed, peer-to-peer file system"
+      yantra.website: "https://ipfs.tech/"
+
+volumes:
+  ipfs_data:
+    name: ipfs_data
+  ipfs_staging:
+    name: ipfs_staging

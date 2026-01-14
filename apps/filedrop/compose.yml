@@ -10,8 +10,8 @@ services:
       - filedrop_data:/app/data
     ports:
       - "3232"
-      - "4001:4001/tcp"
-      - "4001:4001/udp"
+      - "4001" # Swarm TCP
+      - "4001/udp" # Swarm UDP
     restart: unless-stopped
     labels:
       yantra.name: "File Drop"
