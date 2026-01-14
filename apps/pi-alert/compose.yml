@@ -1,0 +1,18 @@
+services:
+  pi-alert:
+    image: jokobsk/pi.alert:latest
+    container_name: pi-alert
+    labels:
+      yantra.name: "Pi.Alert"
+      yantra.category: "network,monitoring,security"
+      yantra.port: "20211 (UDP - Monitoring)"
+      yantra.description: "Network monitoring tool for detecting new devices and security alerts"
+      yantra.website: "https://github.com/jokobsk/pi.alert"
+    ports:
+      - "20211:20211/udp"
+    volumes:
+      - pi_alert_config:/config
+    restart: unless-stopped
+
+volumes:
+  pi_alert_config:

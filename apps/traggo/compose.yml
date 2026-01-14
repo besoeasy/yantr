@@ -1,0 +1,21 @@
+services:
+  traggo:
+    image: traggo/server:latest
+    container_name: traggo
+    labels:
+      yantra.name: "Traggo"
+      yantra.category: "productivity,time-tracking"
+      yantra.port: "3030 (HTTP - Web UI)"
+      yantra.description: "Simple and lightweight time tracking application for personal productivity"
+      yantra.website: "https://github.com/traggo/server"
+    ports:
+      - "3030"
+    environment:
+      - admin=${admin:-admin}
+      - mynewpassword=${mynewpassword:-changeme}
+    volumes:
+      - traggo_data:/opt/traggo/data
+    restart: unless-stopped
+
+volumes:
+  traggo_data:

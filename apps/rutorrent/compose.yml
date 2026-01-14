@@ -1,0 +1,22 @@
+services:
+  rutorrent:
+    image: linuxserver/rutorrent:latest
+    container_name: rutorrent
+    labels:
+      yantra.name: "ruTorrent"
+      yantra.category: "torrent,download"
+      yantra.port: "80 (HTTP - Web UI), 51413 (TCP - Torrent)"
+      yantra.description: "Lightweight torrent client with web interface for managing downloads"
+      yantra.website: "https://github.com/linuxserver/docker-rutorrent"
+    ports:
+      - "80"
+      - "51413"
+      - "6881:6881/udp"
+    volumes:
+      - rutorrent_config:/config
+      - rutorrent_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  rutorrent_config:
+  rutorrent_downloads:

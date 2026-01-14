@@ -1,0 +1,18 @@
+services:
+  freshrss:
+    image: linuxserver/freshrss:latest
+    container_name: freshrss
+    labels:
+      yantra.name: "FreshRSS"
+      yantra.category: "feed,productivity"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Self-hosted RSS feed aggregator for reading news and updates from multiple sources"
+      yantra.website: "https://github.com/FreshRSS/FreshRSS"
+    ports:
+      - "80"
+    volumes:
+      - freshrss_config:/config
+    restart: unless-stopped
+
+volumes:
+  freshrss_config:

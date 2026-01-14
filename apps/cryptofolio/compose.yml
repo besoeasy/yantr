@@ -1,0 +1,13 @@
+services:
+  cryptofolio:
+    image: xtrendence/cryptofolio:latest
+    container_name: cryptofolio
+    labels:
+      yantra.name: "Cryptofolio"
+      yantra.category: "finance,cryptocurrency"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Self-hosted cryptocurrency portfolio tracker with real-time price updates"
+      yantra.website: "https://github.com/xtrendence/cryptofolio"
+    ports:
+      - "80"
+    restart: unless-stopped

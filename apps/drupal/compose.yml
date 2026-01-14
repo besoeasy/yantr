@@ -1,0 +1,18 @@
+services:
+  drupal:
+    image: drupal:latest
+    container_name: drupal
+    labels:
+      yantra.name: "Drupal"
+      yantra.category: "cms,productivity"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Powerful open-source content management system for building websites"
+      yantra.website: "https://github.com/drupal/drupal"
+    ports:
+      - "80"
+    volumes:
+      - drupal_html:/var/www/html
+    restart: unless-stopped
+
+volumes:
+  drupal_html:

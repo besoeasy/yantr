@@ -1,0 +1,20 @@
+services:
+  smokeping:
+    image: linuxserver/smokeping:latest
+    container_name: smokeping
+    labels:
+      yantra.name: "Smokeping"
+      yantra.category: "network,monitoring"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Latency and packet loss monitoring tool with graphing capabilities"
+      yantra.website: "https://github.com/linuxserver/docker-smokeping"
+    ports:
+      - "80"
+    volumes:
+      - smokeping_config:/config
+      - smokeping_data:/data
+    restart: unless-stopped
+
+volumes:
+  smokeping_config:
+  smokeping_data:

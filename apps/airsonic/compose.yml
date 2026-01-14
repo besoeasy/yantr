@@ -1,0 +1,26 @@
+services:
+  airsonic:
+    image: lscr.io/linuxserver/airsonic:latest
+    container_name: airsonic
+    labels:
+      yantra.name: "Airsonic"
+      yantra.category: "media,music"
+      yantra.port: "4040 (HTTP - Web UI)"
+      yantra.description: "Self-hosted music streaming server with web interface and mobile apps"
+      yantra.website: "https://github.com/airsonic/airsonic"
+    ports:
+      - "4040"
+    volumes:
+      - airsonic_config:/config
+      - airsonic_music:/music
+      - airsonic_playlists:/playlists
+      - airsonic_podcasts:/podcasts
+      - airsonic_media:/media
+    restart: unless-stopped
+
+volumes:
+  airsonic_config:
+  airsonic_music:
+  airsonic_playlists:
+  airsonic_podcasts:
+  airsonic_media:

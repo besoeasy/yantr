@@ -1,0 +1,20 @@
+services:
+  wiki-js:
+    image: linuxserver/wikijs:latest
+    container_name: wiki-js
+    labels:
+      yantra.name: "Wiki.js"
+      yantra.category: "documentation,wiki"
+      yantra.port: "3000 (HTTP - Web UI)"
+      yantra.description: "Modern, lightweight wiki platform for creating and organizing knowledge bases"
+      yantra.website: "https://github.com/requarks/wiki"
+    ports:
+      - "3000"
+    volumes:
+      - wikijs_config:/config
+      - wikijs_data:/data
+    restart: unless-stopped
+
+volumes:
+  wikijs_config:
+  wikijs_data:

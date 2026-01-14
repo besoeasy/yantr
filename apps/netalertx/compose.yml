@@ -1,0 +1,22 @@
+services:
+  netalertx:
+    image: jokobsk/netalertx:latest
+    container_name: netalertx
+    labels:
+      yantra.name: "NetAlertX"
+      yantra.category: "network,monitoring"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Network device monitoring and alerting tool for home networks"
+      yantra.website: "https://github.com/jokob-sk/NetAlertX"
+    ports:
+      - "80"
+    environment:
+      - PORT=${PORT:-80}
+    volumes:
+      - netalertx_config:/app/config
+      - netalertx_db:/app/db
+    restart: unless-stopped
+
+volumes:
+  netalertx_config:
+  netalertx_db:

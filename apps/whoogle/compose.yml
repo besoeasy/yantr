@@ -1,0 +1,18 @@
+services:
+  whoogle:
+    image: benbusby/whoogle-search:latest
+    container_name: whoogle
+    labels:
+      yantra.name: "Whoogle"
+      yantra.category: "search,privacy"
+      yantra.port: "5000 (HTTP - Web UI)"
+      yantra.description: "Privacy-focused metasearch engine - fast, clean Google-like search results"
+      yantra.website: "https://github.com/benbusby/whoogle"
+    ports:
+      - "5000"
+    volumes:
+      - whoogle_config:/config
+    restart: unless-stopped
+
+volumes:
+  whoogle_config:
