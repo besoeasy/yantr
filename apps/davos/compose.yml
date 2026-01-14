@@ -4,6 +4,7 @@ services:
     container_name: davos
     labels:
       yantra.name: "Davos"
+      yantra.logo: "QmXZYMvhxK3VY8aXdKN2wKujFLGDrnXxUmVpH7vYthnPgT"
       yantra.category: "download,file-management"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Lightweight download manager for managing files with web interface"

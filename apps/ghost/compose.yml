@@ -4,6 +4,7 @@ services:
     container_name: ghost
     labels:
       yantra.name: "Ghost"
+      yantra.logo: "Qmch893vYVGgHJYJuGrRLtnAQVZCHDtenEEwt2WWEmkJes"
       yantra.category: "cms,blog"
       yantra.port: "2368 (HTTP - Web UI)"
       yantra.description: "Professional blogging platform with powerful content management features"

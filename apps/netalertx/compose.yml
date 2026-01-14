@@ -4,6 +4,7 @@ services:
     container_name: netalertx
     labels:
       yantra.name: "NetAlertX"
+      yantra.logo: "QmTM56w939nmCF12tuFfRKEFUNH7yiP8iXSRq3YVhAi2ss"
       yantra.category: "network,monitoring"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Network device monitoring and alerting tool for home networks"
