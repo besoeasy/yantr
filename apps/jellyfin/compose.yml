@@ -4,8 +4,7 @@ services:
     container_name: jellyfin
     volumes:
       - jellyfin-config:/config
-      - jellyfin-tvshows:/data/tvshows
-      - jellyfin-movies:/data/movies
+      - jellyfin-media:/data
     ports:
       - "8096"
     restart: unless-stopped
@@ -20,7 +19,5 @@ services:
 volumes:
   jellyfin-config:
     name: jellyfin-config
-  jellyfin-tvshows:
-    name: jellyfin-tvshows
-  jellyfin-movies:
-    name: jellyfin-movies
+  jellyfin-media:
+    name: jellyfin-media

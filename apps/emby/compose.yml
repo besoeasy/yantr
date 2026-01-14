@@ -4,8 +4,7 @@ services:
     container_name: emby
     volumes:
       - emby-config:/config
-      - emby-tvshows:/data/tvshows
-      - emby-movies:/data/movies
+      - emby-media:/data
     ports:
       - "8096"
     restart: unless-stopped
@@ -20,7 +19,5 @@ services:
 volumes:
   emby-config:
     name: emby-config
-  emby-tvshows:
-    name: emby-tvshows
-  emby-movies:
-    name: emby-movies
+  emby-media:
+    name: emby-media
