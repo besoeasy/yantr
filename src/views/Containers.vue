@@ -70,8 +70,6 @@ async function fetchContainers() {
         c.name?.toLowerCase().includes('watchtower') || 
         c.Names?.some(name => name.toLowerCase().includes('watchtower'))
       )
-      
-      console.log('Watchtower installed:', watchtowerInstalled.value)
     }
   } catch (error) {
     console.error('Failed to fetch containers:', error)

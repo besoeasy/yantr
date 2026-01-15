@@ -222,10 +222,8 @@ app.get("/api/logs", (req, res) => {
 
 // GET /api/containers - List all containers with their labels
 app.get("/api/containers", async (req, res) => {
-  // log('info', '📦 [GET /api/containers] Fetching all containers');
   try {
     const containers = await docker.listContainers({ all: true });
-    // log('info', `📦 [GET /api/containers] Found ${containers.length} containers`);
 
     const formattedContainers = await Promise.all(
       containers.map(async (container) => {
@@ -297,7 +295,6 @@ app.get("/api/containers", async (req, res) => {
       return hasYantraLabel || !isPartOfYantraStack;
     });
 
-    // log('info', `✅ [GET /api/containers] Returning ${filteredContainers.length} formatted containers (filtered from ${containers.length})`);
     res.json({
       success: true,
       count: filteredContainers.length,
@@ -314,11 +311,9 @@ app.get("/api/containers", async (req, res) => {
 
 // GET /api/containers/:id - Get single container details
 app.get("/api/containers/:id", async (req, res) => {
-  // log('info', `🔍 [GET /api/containers/:id] Fetching container: ${req.params.id}`);
   try {
     const container = docker.getContainer(req.params.id);
     const info = await container.inspect();
-    // log('info', `✅ [GET /api/containers/:id] Found container: ${info.Name}`);
     const appLabels = parseAppLabels(info.Config.Labels);
     const composeProject = info.Config.Labels["com.docker.compose.project"];
 
@@ -499,7 +494,6 @@ app.get("/api/containers/:id/logs", async (req, res) => {
 
 // GET /api/apps - List available apps from /apps directory
 app.get("/api/apps", async (req, res) => {
-  // log('info', '🏪 [GET /api/apps] Scanning apps directory');
   try {
     const appsDir = path.join(__dirname, "..", "apps");
     const apps = [];
@@ -507,7 +501,6 @@ app.get("/api/apps", async (req, res) => {
     // Read all directories in /apps using Bun's native readdir
     const fs = await import("fs/promises");
     const entries = await fs.readdir(appsDir, { withFileTypes: true });
-    // log('info', `🏪 [GET /api/apps] Found ${entries.length} entries in apps directory`);
 
     for (const entry of entries) {
       if (entry.isDirectory()) {
@@ -613,12 +606,10 @@ app.get("/api/apps", async (req, res) => {
           });
         } catch (err) {
           // Skip if compose.yml doesn't exist
-          console.warn(`  ⚠ No compose.yml found for ${entry.name}`);
         }
       }
     }
 
-    // log('info', `✅ [GET /api/apps] Returning ${apps.length} apps`);
     res.json({
       success: true,
       count: apps.length,
@@ -635,7 +626,6 @@ app.get("/api/apps", async (req, res) => {
 
 // GET /api/apps/:id/check-arch - Check architecture compatibility for an app
 app.get("/api/apps/:id/check-arch", async (req, res) => {
-  // log('info', `🔍 [GET /api/apps/:id/check-arch] Checking architecture for: ${req.params.id}`);
   try {
     const appId = req.params.id;
     const appsDir = path.join(__dirname, "..", "apps");
@@ -666,7 +656,6 @@ app.get("/api/apps/:id/check-arch", async (req, res) => {
     // Check architecture support
     const archCheck = await checkImageArchitectureSupport(imageName);
 
-    // log('info', `✅ [GET /api/apps/:id/check-arch] Architecture check complete`);
     res.json({
       success: true,
       appId: appId,
@@ -1039,12 +1028,9 @@ app.post("/api/deploy", async (req, res) => {
 
 // GET /api/images - List all images with usage status
 app.get("/api/images", async (req, res) => {
-  // log('info', '🖼️  [GET /api/images] Fetching all images');
   try {
     const images = await docker.listImages();
     const containers = await docker.listContainers({ all: true });
-
-    // log('info', `🖼️  [GET /api/images] Found ${images.length} images`);
 
     // Create a set of image IDs used by containers
     const usedImageIds = new Set(containers.map((c) => c.ImageID));
@@ -1073,7 +1059,6 @@ app.get("/api/images", async (req, res) => {
     const totalSize = formattedImages.reduce((sum, img) => sum + img.sizeBytes, 0);
     const unusedSize = unusedImages.reduce((sum, img) => sum + img.sizeBytes, 0);
 
-    // log('info', `✅ [GET /api/images] Returning ${formattedImages.length} images (${unusedImages.length} unused)`);
     res.json({
       success: true,
       total: formattedImages.length,
@@ -1240,7 +1225,6 @@ app.delete("/api/containers/:id", async (req, res) => {
 
 // Root endpoint
 app.get("/", (req, res) => {
-  // log('info', '🏠 [GET /] Root endpoint accessed');
   res.json({
     name: "Yantra API",
     version: packageJson.version,
