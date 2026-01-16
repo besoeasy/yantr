@@ -24,6 +24,53 @@ const docker = new Docker({ socketPath });
 // System architecture cache
 let systemArchitecture = null;
 
+// Container env cache (avoid N+1 inspect on polling-heavy endpoints)
+const CONTAINER_ENV_CACHE_TTL_MS = 60_000;
+const containerEnvCache = new Map(); // id -> { env: string[], expiresAt: number }
+
+// Image architecture support cache
+const IMAGE_ARCH_CACHE_TTL_MS = 60 * 60_000;
+const imageArchCache = new Map(); // imageName -> { value: any, expiresAt: number }
+
+function nowMs() {
+  return Date.now();
+}
+
+async function mapWithConcurrency(items, limit, mapper) {
+  const results = new Array(items.length);
+  let nextIndex = 0;
+
+  const workers = Array.from({ length: Math.max(1, limit) }, async () => {
+    while (true) {
+      const index = nextIndex++;
+      if (index >= items.length) return;
+      results[index] = await mapper(items[index], index);
+    }
+  });
+
+  await Promise.all(workers);
+  return results;
+}
+
+async function getContainerEnv(containerId) {
+  const cached = containerEnvCache.get(containerId);
+  if (cached && cached.expiresAt > nowMs()) {
+    return cached.env;
+  }
+
+  try {
+    const containerObj = docker.getContainer(containerId);
+    const info = await containerObj.inspect();
+    const envVars = info?.Config?.Env || [];
+    containerEnvCache.set(containerId, { env: envVars, expiresAt: nowMs() + CONTAINER_ENV_CACHE_TTL_MS });
+    return envVars;
+  } catch (error) {
+    // Negative-cache briefly to avoid hammering Docker on repeated failures.
+    containerEnvCache.set(containerId, { env: [], expiresAt: nowMs() + 10_000 });
+    throw error;
+  }
+}
+
 // Logs storage - circular buffer for last 1000 logs
 const MAX_LOGS = 1000;
 const logs = [];
@@ -90,6 +137,11 @@ async function getSystemArchitecture() {
 // Helper function to check if image supports current architecture
 async function checkImageArchitectureSupport(imageName) {
   try {
+    const cached = imageArchCache.get(imageName);
+    if (cached && cached.expiresAt > nowMs()) {
+      return cached.value;
+    }
+
     const arch = await getSystemArchitecture();
     log("info", `🔍 Checking architecture support for ${imageName} on ${arch}`);
 
@@ -108,9 +160,13 @@ async function checkImageArchitectureSupport(imageName) {
 
         // Check if architectures match
         if (imageArch === arch || (imageArch === "amd64" && arch === "amd64") || (imageArch === "arm64" && arch === "arm64")) {
-          return { supported: true, imageArch, systemArch: arch };
+          const value = { supported: true, imageArch, systemArch: arch };
+          imageArchCache.set(imageName, { value, expiresAt: nowMs() + IMAGE_ARCH_CACHE_TTL_MS });
+          return value;
         } else {
-          return { supported: false, imageArch, systemArch: arch };
+          const value = { supported: false, imageArch, systemArch: arch };
+          imageArchCache.set(imageName, { value, expiresAt: nowMs() + IMAGE_ARCH_CACHE_TTL_MS });
+          return value;
         }
       }
 
@@ -126,11 +182,13 @@ async function checkImageArchitectureSupport(imageName) {
 
           const isSupported = supportedArchs.some((a) => a === arch || (a === "amd64" && arch === "amd64") || (a === "arm64" && arch === "arm64"));
 
-          return {
+          const value = {
             supported: isSupported,
             imageArch: supportedArchs.join(", "),
             systemArch: arch,
           };
+          imageArchCache.set(imageName, { value, expiresAt: nowMs() + IMAGE_ARCH_CACHE_TTL_MS });
+          return value;
         } catch (parseError) {
           log("error", "  Failed to parse manifest:", parseError.message);
         }
@@ -141,7 +199,9 @@ async function checkImageArchitectureSupport(imageName) {
     }
 
     // If we can't determine from manifest, we'll try to pull and see if it fails
-    return { supported: "unknown", imageArch: "unknown", systemArch: arch };
+    const value = { supported: "unknown", imageArch: "unknown", systemArch: arch };
+    imageArchCache.set(imageName, { value, expiresAt: nowMs() + 10 * 60_000 });
+    return value;
   } catch (error) {
     log("error", "❌ Error checking architecture support:", error.message);
     return { supported: "unknown", imageArch: "unknown", systemArch: arch };
@@ -225,17 +285,14 @@ app.get("/api/containers", async (req, res) => {
   try {
     const containers = await docker.listContainers({ all: true });
 
-    const formattedContainers = await Promise.all(
-      containers.map(async (container) => {
+    const formattedContainers = await mapWithConcurrency(containers, 8, async (container) => {
         const appLabels = parseAppLabels(container.Labels);
         const composeProject = container.Labels["com.docker.compose.project"];
 
         // Fetch full container details to get environment variables
         let envVars = [];
         try {
-          const containerObj = docker.getContainer(container.Id);
-          const info = await containerObj.inspect();
-          envVars = info.Config.Env || [];
+          envVars = await getContainerEnv(container.Id);
         } catch (error) {
           log("error", `Failed to get env for container ${container.Id}:`, error.message);
         }
@@ -271,8 +328,7 @@ app.get("/api/containers", async (req, res) => {
             website: appLabels.website || null,
           },
         };
-      })
-    );
+    });
 
     // Filter out auxiliary containers (sidecars)
     // Identify stacks that have at least one explicit Yantra app
