@@ -86,23 +86,20 @@ const allPortMappings = computed(() => {
     }
   })
   
-  // Sort by: 1) labeled ports first, 2) host port, 3) container port
+  // Sort by host port, then by container port
   return mappings.sort((a, b) => {
-    // Prioritize labeled ports
-    if (a.label && !b.label) return -1
-    if (!a.label && b.label) return 1
-    
-    // Then sort by host port
     if (a.hostPort && b.hostPort) {
       return parseInt(a.hostPort) - parseInt(b.hostPort)
     }
     if (a.hostPort && !b.hostPort) return -1
     if (!a.hostPort && b.hostPort) return 1
-    
-    // Finally by container port
     return parseInt(a.containerPort) - parseInt(b.containerPort)
   })
 })
+
+// Separate labeled and unlabeled ports
+const labeledPorts = computed(() => allPortMappings.value.filter(m => m.label))
+const unlabeledPorts = computed(() => allPortMappings.value.filter(m => !m.label))
 
 const getLabeledPorts = computed(() => {
   if (!selectedContainer.value || !selectedContainer.value.ports) {
@@ -412,9 +409,9 @@ onUnmounted(() => {
             <span class="text-xs sm:text-sm text-gray-500 font-medium">({{ allPortMappings.length }})</span>
           </div>
           
-          <!-- Grid Layout -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-            <a v-for="(mapping, index) in allPortMappings" :key="index"
+          <!-- Labeled Ports Grid -->
+          <div v-if="labeledPorts.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+            <a v-for="(mapping, index) in labeledPorts" :key="'labeled-' + index"
               :href="mapping.hostPort && mapping.protocol === 'tcp' ? appUrl(mapping.hostPort, mapping.labeledProtocol || 'http') : undefined"
               :target="mapping.hostPort && mapping.protocol === 'tcp' ? '_blank' : undefined"
               class="group relative overflow-hidden rounded-xl bg-white border transition-all duration-200 animate-in"
@@ -473,6 +470,52 @@ onUnmounted(() => {
                 <div v-if="mapping.hostPort && mapping.protocol === 'tcp'"
                   class="absolute inset-0 bg-linear-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 pointer-events-none">
                 </div>
+              </div>
+            </a>
+          </div>
+          
+          <!-- Unlabeled Ports Grid -->
+          <div v-if="unlabeledPorts.length > 0" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2">
+            <a v-for="(mapping, index) in unlabeledPorts" :key="'unlabeled-' + index"
+              :href="mapping.hostPort && mapping.protocol === 'tcp' ? appUrl(mapping.hostPort, mapping.labeledProtocol || 'http') : undefined"
+              :target="mapping.hostPort && mapping.protocol === 'tcp' ? '_blank' : undefined"
+              class="group relative overflow-hidden rounded-xl bg-white border transition-all duration-200 animate-in border-gray-200 hover:border-gray-300"
+              :class="[
+                mapping.hostPort && mapping.protocol === 'tcp'
+                  ? 'cursor-pointer hover:shadow-md'
+                  : 'cursor-not-allowed opacity-60'
+              ]"
+              :style="{ animationDelay: `${Math.min((labeledPorts.length + index) * 30, 400)}ms` }">
+              
+              <div class="h-1 bg-gray-200"></div>
+              
+              <div class="p-3">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                  <component
+                    :is="getProtocolInfo(mapping.protocol, mapping.labeledProtocol).icon"
+                    :size="16"
+                    :class="[getProtocolInfo(mapping.protocol, mapping.labeledProtocol).color, 'transition-transform group-hover:scale-110']"
+                  />
+                  <span class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
+                    :class="[getProtocolInfo(mapping.protocol, mapping.labeledProtocol).bg, getProtocolInfo(mapping.protocol, mapping.labeledProtocol).color]">
+                    {{ getProtocolInfo(mapping.protocol, mapping.labeledProtocol).label }}
+                  </span>
+                </div>
+                
+                <div class="mb-1">
+                  <span v-if="mapping.hostPort" class="text-2xl font-black text-gray-900 font-mono leading-none tracking-tighter">
+                    {{ mapping.hostPort }}
+                  </span>
+                  <span v-else class="text-sm text-gray-400 font-medium">Not bound</span>
+                </div>
+                
+                <div class="text-[10px] text-gray-500 font-mono">
+                  <span class="text-gray-400">→</span> :{{ mapping.containerPort }}
+                </div>
+              </div>
+              
+              <div v-if="mapping.hostPort && mapping.protocol === 'tcp'"
+                class="absolute inset-0 bg-linear-to-br from-indigo-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-indigo-500/5 group-hover:via-purple-500/5 group-hover:to-pink-500/5 transition-all duration-300 pointer-events-none">
               </div>
             </a>
           </div>
