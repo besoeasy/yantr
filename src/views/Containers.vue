@@ -154,19 +154,54 @@ onUnmounted(() => {
         <!-- Total Apps / Watchtower Card -->
         <div v-if="!watchtowerInstalled" 
              @click="router.push('/apps/watchtower')"
-             class="col-span-2 bg-orange-50 rounded-2xl p-6 shadow-sm border border-orange-200 hover:shadow-md transition-shadow cursor-pointer group">
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <AlertTriangle :size="24" class="text-orange-600" />
-            </div>
-            <span class="text-xs font-medium text-orange-600 uppercase tracking-wide">Action Required</span>
+             class="col-span-2 relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group border-2 border-orange-300">
+          <!-- Animated background pattern -->
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
           </div>
-          <div class="space-y-1">
-            <div class="text-2xl font-black text-gray-900 tracking-tight">
-              Watchtower
+          
+          <div class="relative">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <AlertTriangle :size="28" class="text-white animate-pulse" />
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-orange-100 uppercase tracking-wider mb-1">Action Required</div>
+                  <div class="text-3xl font-black text-white tracking-tight">
+                    Watchtower
+                  </div>
+                </div>
+              </div>
+              <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                <ArrowRight :size="20" class="text-white" />
+              </div>
             </div>
-            <div class="text-sm text-orange-700 font-medium group-hover:underline">
-              Not Installed →
+            
+            <div class="space-y-3">
+              <p class="text-white/90 text-sm leading-relaxed">
+                Install Watchtower to enable <span class="font-bold text-white">automatic updates</span> for Yantra and all your installed apps. Keep everything secure and up-to-date effortlessly.
+              </p>
+              
+              <div class="flex items-center gap-2 pt-2">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <span class="text-white/90 text-xs">🔄</span>
+                  <span class="text-white text-xs font-semibold">Auto-updates</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <span class="text-white/90 text-xs">🛡️</span>
+                  <span class="text-white text-xs font-semibold">Security</span>
+                </div>
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg">
+                  <span class="text-white/90 text-xs">⚡</span>
+                  <span class="text-white text-xs font-semibold">Zero effort</span>
+                </div>
+              </div>
+              
+              <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-orange-600 rounded-xl font-bold text-sm transition-all group-hover:gap-3 group-hover:bg-orange-50 shadow-lg">
+                <span>Install Now</span>
+                <ArrowRight :size="16" class="group-hover:translate-x-1 transition-transform" />
+              </div>
             </div>
           </div>
         </div>
