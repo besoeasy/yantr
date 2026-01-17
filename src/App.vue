@@ -21,46 +21,51 @@ const isActive = (name) => route.name === name
         <!-- Apps Tab -->
         <router-link 
           to="/apps"
-          :class="isActive('apps') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
-          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          :class="isActive('apps') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
+          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
           title="Apps">
-          <Box :size="20" />
+          <Box :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Apps</span>
         </router-link>
 
         <!-- Containers Tab -->
         <router-link 
           to="/containers"
-          :class="isActive('containers') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
-          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          :class="isActive('containers') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
+          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
           title="Containers">
-          <Boxes :size="20" />
+          <Boxes :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Containers</span>
         </router-link>
 
         <!-- Images Tab -->
         <router-link 
           to="/images"
-          :class="isActive('images') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
-          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          :class="isActive('images') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
+          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
           title="Images">
-          <Layers :size="20" />
+          <Layers :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Images</span>
         </router-link>
 
         <!-- Volumes Tab -->
         <router-link 
           to="/volumes"
-          :class="isActive('volumes') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
-          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          :class="isActive('volumes') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
+          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
           title="Volumes">
-          <HardDrive :size="20" />
+          <HardDrive :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Volumes</span>
         </router-link>
 
         <!-- Logs Tab -->
         <router-link 
           to="/logs"
-          :class="isActive('logs') ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100'"
-          class="relative w-12 h-12 rounded-full flex items-center justify-center transition-all smooth-shadow"
+          :class="isActive('logs') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
+          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
           title="Logs">
-          <ClipboardList :size="20" />
+          <ClipboardList :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Logs</span>
         </router-link>
       </nav>
 
@@ -70,27 +75,30 @@ const isActive = (name) => route.name === name
         <a 
           href="https://sponsor.besoeasy.com/" 
           target="_blank"
-          class="w-12 h-12 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 transition-all"
+          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-md hover:shadow-red-500/20 transition-all duration-300 ease-out"
           title="Support this project">
-          <Heart :size="20" />
+          <Heart :size="20" class="group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Sponsor</span>
         </a>
 
         <!-- GitHub -->
         <a 
           href="https://github.com/besoeasy/Yantra" 
           target="_blank"
-          class="w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-all"
+          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 transition-all duration-300 ease-out"
           title="View on GitHub">
-          <Github :size="20" />
+          <Github :size="20" class="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">GitHub</span>
         </a>
 
         <!-- Telegram Group -->
         <a 
           href="https://t.me/+Qu06yCZHBAU3NTk1" 
           target="_blank"
-          class="w-12 h-12 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 transition-all"
+          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 hover:shadow-md hover:shadow-blue-500/20 transition-all duration-300 ease-out"
           title="Join Telegram Group">
-          <Send :size="20" />
+          <Send :size="20" class="group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Telegram</span>
         </a>
       </div>
     </aside>
@@ -151,3 +159,98 @@ const isActive = (name) => route.name === name
     </main>
   </div>
 </template>
+
+<style scoped>
+/* Navigation item hover animations */
+.nav-item {
+  position: relative;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.nav-item:hover::before {
+  opacity: 1;
+}
+
+/* Action button animations */
+.action-btn {
+  position: relative;
+}
+
+.action-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  pointer-events: none;
+  z-index: -1;
+  filter: brightness(0.9);
+}
+
+.action-btn:hover::before {
+  opacity: 0.05;
+}
+
+/* Tooltip animations */
+.nav-item span,
+.action-btn span {
+  animation: tooltipSlideIn 300ms ease-out forwards;
+}
+
+@keyframes tooltipSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Optional: Add ripple effect on click */
+.nav-item,
+.action-btn {
+  overflow: hidden;
+}
+
+.nav-item::after,
+.action-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.nav-item:active::after,
+.action-btn:active::after {
+  animation: ripple 600ms ease-out;
+}
+
+@keyframes ripple {
+  from {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+</style>
