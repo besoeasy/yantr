@@ -129,33 +129,6 @@ onUnmounted(() => {
 
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Watchtower Warning Card -->
-    <div v-if="!loading && !watchtowerInstalled" 
-      @click="router.push('/apps/watchtower')"
-      class="group bg-gradient-to-br from-orange-50 to-amber-50 p-6 border-b-2 border-orange-300 hover:border-orange-400 hover:shadow-xl transition-all duration-300 cursor-pointer">
-      <div class="max-w-7xl mx-auto">
-        <div class="flex items-start gap-4">
-          <div class="flex-shrink-0">
-            <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-300">
-              <AlertTriangle :size="24" class="text-white" />
-            </div>
-          </div>
-          <div class="flex-1 min-w-0">
-            <h3 class="text-lg font-bold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">
-              Watchtower Not Installed
-            </h3>
-            <p class="text-sm text-gray-700 mb-4">
-              Install Watchtower to enable automatic updates for Yantra & Installed Apps.
-            </p>
-            <div class="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-semibold text-sm transition-all group-hover:gap-3">
-              <span>Install Now</span>
-              <ArrowRight :size="16" class="group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="p-4 sm:p-6 lg:p-8">
       <div class="max-w-7xl mx-auto space-y-6">
         <!-- Loading State -->
@@ -177,9 +150,28 @@ onUnmounted(() => {
       </div>
 
       <!-- Metrics Grid -->
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Total Apps Card -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+      <div v-else class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); grid-auto-rows: auto;">
+        <!-- Total Apps / Watchtower Card -->
+        <div v-if="!watchtowerInstalled" 
+             @click="router.push('/apps/watchtower')"
+             class="col-span-2 bg-orange-50 rounded-2xl p-6 shadow-sm border border-orange-200 hover:shadow-md transition-shadow cursor-pointer group">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <AlertTriangle :size="24" class="text-orange-600" />
+            </div>
+            <span class="text-xs font-medium text-orange-600 uppercase tracking-wide">Action Required</span>
+          </div>
+          <div class="space-y-1">
+            <div class="text-2xl font-black text-gray-900 tracking-tight">
+              Watchtower
+            </div>
+            <div class="text-sm text-orange-700 font-medium group-hover:underline">
+              Not Installed →
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
           <div class="flex items-center justify-between mb-4">
             <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
               <Package :size="24" class="text-gray-900" />
@@ -258,7 +250,7 @@ onUnmounted(() => {
           <span class="text-sm text-gray-500 font-medium">{{ regularContainers.length }} installed</span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); grid-auto-rows: auto;">
           <div v-for="(container, index) in regularContainers" :key="container.id"
             :style="{ animationDelay: `${index * 50}ms` }"
             @click="viewContainerDetail(container)"
@@ -329,7 +321,7 @@ onUnmounted(() => {
           </p>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); grid-auto-rows: auto;">
           <div v-for="(container, index) in volumeBrowsers" :key="container.id"
             :style="{ animationDelay: `${index * 50}ms` }"
             @click="viewContainerDetail(container)"
