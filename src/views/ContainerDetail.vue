@@ -383,42 +383,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Quick Access Section -->
-        <div v-if="getLabeledPorts.length > 0" 
-          class="space-y-3 sm:space-y-4">
-          <div class="flex items-center gap-2.5 sm:gap-3">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100">
-              <ExternalLink :size="16" class="sm:w-5 sm:h-5 text-indigo-600" />
-            </div>
-            <h2 class="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Quick Access</h2>
-          </div>
-          
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
-            <a v-for="(portInfo, index) in getLabeledPorts" :key="index"
-              :href="appUrl(portInfo.port, portInfo.protocol)"
-              target="_blank"
-              class="group relative flex items-center gap-2.5 sm:gap-3 bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 hover:border-indigo-200 hover:bg-indigo-50/30 transition-all shadow-sm motion-safe:hover:-translate-y-0.5 active:scale-95 touch-manipulation animate-in"
-              :style="{ animationDelay: `${Math.min(index * 70, 420)}ms` }">
-              
-              <div class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-indigo-50 group-hover:bg-indigo-600 flex items-center justify-center transition-colors">
-                <Globe :size="16" class="sm:w-5 sm:h-5 text-indigo-600 group-hover:text-white transition-colors" />
-              </div>
-              
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1">
-                  <span class="text-base sm:text-lg font-bold text-gray-900 font-mono">{{ portInfo.port }}</span>
-                  <span class="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-white text-gray-600 rounded font-medium uppercase border border-gray-200">
-                    {{ portInfo.protocol }}
-                  </span>
-                </div>
-                <div class="text-xs sm:text-sm text-gray-600 truncate">{{ portInfo.label }}</div>
-              </div>
-              
-              <ArrowRight :size="14" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-indigo-600 transition-all group-hover:translate-x-1" />
-            </a>
-          </div>
-        </div>
-
         <!-- Ports & Access Section -->
         <div v-if="allPortMappings.length > 0" 
           class="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 transition-shadow hover:shadow-md">
