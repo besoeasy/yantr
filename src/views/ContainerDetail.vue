@@ -430,10 +430,11 @@ onUnmounted(() => {
                 <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
               </div>
               
-              <!-- Protocol Icon -->
-              <div class="mb-3">
+              <!-- Content -->
+              <div class="flex gap-3">
+                <!-- Protocol Icon -->
                 <div
-                  class="inline-flex w-9 h-9 rounded-lg items-center justify-center"
+                  class="shrink-0 w-9 h-9 rounded-lg flex items-center justify-center"
                   :class="getProtocolInfo(mapping.protocol, mapping.labeledProtocol).bg"
                 >
                   <component
@@ -442,29 +443,31 @@ onUnmounted(() => {
                     :class="getProtocolInfo(mapping.protocol, mapping.labeledProtocol).color"
                   />
                 </div>
-              </div>
-              
-              <!-- Port Number -->
-              <div class="mb-2">
-                <div v-if="mapping.hostPort" class="text-3xl font-bold text-gray-900 font-mono leading-none tracking-tight">
-                  {{ mapping.hostPort }}
-                </div>
-                <div v-else class="text-sm text-gray-400">Not bound</div>
-              </div>
-              
-              <!-- Details -->
-              <div class="space-y-1">
-                <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                  <span>→</span>
-                  <span class="font-mono">{{ mapping.containerPort }}</span>
-                  <span class="px-1.5 py-0.5 rounded text-[10px] font-medium"
-                    :class="[getProtocolInfo(mapping.protocol, mapping.labeledProtocol).bg, getProtocolInfo(mapping.protocol, mapping.labeledProtocol).color]">
-                    {{ getProtocolInfo(mapping.protocol, mapping.labeledProtocol).label }}
-                  </span>
-                </div>
                 
-                <div v-if="mapping.label" class="text-xs text-gray-600 line-clamp-2">
-                  {{ mapping.label }}
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <!-- Port Number -->
+                  <div class="mb-1">
+                    <div v-if="mapping.hostPort" class="text-2xl font-bold text-gray-900 font-mono leading-none">
+                      {{ mapping.hostPort }}
+                    </div>
+                    <div v-else class="text-sm text-gray-400">Not bound</div>
+                  </div>
+                  
+                  <!-- Details -->
+                  <div class="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+                    <span>→</span>
+                    <span class="font-mono">{{ mapping.containerPort }}</span>
+                    <span class="px-1.5 py-0.5 rounded text-[10px] font-medium"
+                      :class="[getProtocolInfo(mapping.protocol, mapping.labeledProtocol).bg, getProtocolInfo(mapping.protocol, mapping.labeledProtocol).color]">
+                      {{ getProtocolInfo(mapping.protocol, mapping.labeledProtocol).label }}
+                    </span>
+                  </div>
+                  
+                  <!-- Description -->
+                  <div v-if="mapping.label" class="text-xs text-gray-600 line-clamp-2">
+                    {{ mapping.label }}
+                  </div>
                 </div>
               </div>
             </a>
