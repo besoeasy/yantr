@@ -23,6 +23,8 @@ docker run -d \
   ghcr.io/besoeasy/yantra
 ```
 
+Auto-updates are enabled by default. Disable with `-e YANTRA_AUTO_UPDATE=false`.
+
 _[New to Docker? Learn how to install it here.](https://chatgpt.com/?prompt=how+to+install+docker+on+my+system+%3F)_
 
 ---

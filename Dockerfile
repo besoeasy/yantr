@@ -40,6 +40,8 @@ COPY --from=builder /app/dist ./dist
 COPY daemon/ ./daemon/
 COPY apps/ ./apps/
 
+RUN chmod +x ./daemon/entrypoint.sh ./daemon/updater.sh
+
 # Expose port
 EXPOSE 5252
 
@@ -47,5 +49,5 @@ EXPOSE 5252
 ENV PORT=5252
 ENV NODE_ENV=production
 
-# Start server
-CMD ["bun", "run", "server"]
+# Start server + optional auto-updater
+CMD ["./daemon/entrypoint.sh"]
