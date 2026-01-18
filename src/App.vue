@@ -38,15 +38,7 @@ const isActive = (name) => route.name === name
           <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Apps</span>
         </router-link>
 
-        <!-- Containers Tab -->
-        <router-link 
-          to="/containers"
-          :class="isActive('containers') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10'"
-          class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Containers">
-          <Boxes :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">Containers</span>
-        </router-link>
+     
 
         <!-- Images Tab -->
         <router-link 

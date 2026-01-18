@@ -22,11 +22,7 @@ const router = createRouter({
       name: 'app-detail',
       component: () => import(/* webpackChunkName: "app-detail" */ './views/AppDetail.vue')
     },
-    {
-      path: '/containers',
-      name: 'containers',
-      component: () => import(/* webpackChunkName: "containers" */ './views/Containers.vue')
-    },
+  
     {
       path: '/containers/:id',
       name: 'container-detail',
