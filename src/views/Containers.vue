@@ -15,20 +15,10 @@ const watchtowerInstalled = ref(false)
 let containersRefreshInterval = null
 let timeRefreshInterval = null
 
-// Computed properties to separate volume browsers from regular containers
-const volumeBrowsers = computed(() => 
-  containers.value.filter(c => c.labels && c.labels['yantra.volume-browser'])
-)
-
-const regularContainers = computed(() => 
-  containers.value.filter(c => !c.labels || !c.labels['yantra.volume-browser'])
-)
-
 // Metrics computed properties
-const totalApps = computed(() => regularContainers.value.length)
-const runningApps = computed(() => regularContainers.value.filter(c => c.state === 'running').length)
+const totalApps = computed(() => containers.value.length)
+const runningApps = computed(() => containers.value.filter(c => c.state === 'running').length)
 const totalVolumes = computed(() => volumes.value.length)
-const activeVolumeBrowsers = computed(() => volumeBrowsers.value.length)
 
 // Helper function to format time remaining
 function formatTimeRemaining(expireAt) {
@@ -172,7 +162,7 @@ onUnmounted(() => {
       </div>
 
       <!-- All Containers Section -->
-      <div v-if="regularContainers.length > 0 || volumeBrowsers.length > 0" class="space-y-4">
+      <div v-if="containers.length > 0" class="space-y-4">
         <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); grid-auto-rows: auto;">
           <!-- Watchtower Not Installed Card -->
           <div v-if="!watchtowerInstalled"
@@ -218,8 +208,8 @@ onUnmounted(() => {
             </div>
           </div>
 
-          <!-- Regular Application Containers -->
-          <div v-for="(container, index) in regularContainers" :key="container.id"
+          <!-- All Containers (including volume browsers) -->
+          <div v-for="(container, index) in containers" :key="container.id"
             :style="{ animationDelay: `${index * 50}ms` }"
             @click="viewContainerDetail(container)"
             class="group bg-white rounded-xl p-5 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 cursor-pointer animate-fadeIn">
@@ -233,7 +223,7 @@ onUnmounted(() => {
               
               <div class="flex-1 min-w-0">
                 <h3 class="font-bold text-lg text-gray-900 truncate mb-1">
-                  {{ container.name }}
+                  {{ container.labels?.['yantra.volume-browser'] || container.name }}
                 </h3>
                 <div class="flex items-center gap-2 flex-wrap">
                   <div :class="container.state === 'running' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
@@ -276,93 +266,6 @@ onUnmounted(() => {
                 View Details
               </span>
               <ArrowRight :size="16" class="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" />
-            </div>
-          </div>
-
-          <!-- Divider Card -->
-          <div v-if="volumeBrowsers.length > 0" 
-               class="col-span-full relative overflow-hidden rounded-3xl p-px">
-            <!-- Gradient border -->
-            <div class="absolute inset-0 bg-gradient-to-r from-purple-400 via-indigo-400 to-blue-400 rounded-3xl"></div>
-            
-            <!-- Inner content with glassmorphism -->
-            <div class="relative bg-white/95 backdrop-blur-xl rounded-3xl p-6">
-              <!-- Subtle gradient overlay -->
-              <div class="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-blue-50/50 rounded-3xl"></div>
-              
-              <div class="relative flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                  
-                  <div>
-                    <h3 class="text-2xl font-bold text-gray-900 tracking-tight mb-1">Open Volumes</h3>
-                    <p class="text-sm text-gray-600 font-medium flex items-center gap-1.5">
-                      <span class="text-base">💡</span>
-                      <span>Temporary file browsers • Safe to close anytime</span>
-                    </p>
-                  </div>
-                </div>
-                
-                <!-- Badge with subtle animation -->
-                <div class="relative">
-                  <div class="absolute inset-0 bg-purple-400 rounded-2xl blur-md opacity-20"></div>
-                  <div class="relative px-4 py-2 bg-gradient-to-br from-purple-100 to-indigo-100 border border-purple-200/50 text-purple-700 rounded-2xl font-bold tracking-tight shadow-sm">
-                    {{ volumeBrowsers.length }} <span class="font-normal">active</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Volume Browser Containers -->
-          <div v-for="(container, index) in volumeBrowsers" :key="container.id"
-            :style="{ animationDelay: `${(regularContainers.length + index) * 50}ms` }"
-            @click="viewContainerDetail(container)"
-            class="group relative overflow-hidden rounded-2xl cursor-pointer animate-fadeIn hover-lift">
-            
-            <!-- Glassmorphic background -->
-            <div class="absolute inset-0 bg-gradient-to-br from-white via-purple-50/50 to-indigo-50/50 backdrop-blur-sm"></div>
-            
-            <!-- Border gradient -->
-            <div class="absolute inset-0 bg-gradient-to-br from-purple-200/60 via-indigo-200/40 to-blue-200/60 rounded-2xl opacity-100 group-hover:opacity-0 transition-opacity duration-300"></div>
-            <div class="absolute inset-0 bg-gradient-to-br from-purple-400 via-indigo-400 to-blue-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
-            <!-- Content -->
-            <div class="relative m-px bg-white/90 backdrop-blur-xl rounded-2xl p-5">
-              <div class="flex items-start gap-4 mb-4">
-                
-                <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-lg text-gray-900 truncate mb-2 group-hover:text-purple-900 transition-colors">
-                    {{ container.labels['yantra.volume-browser'] }}
-                  </h3>
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <!-- Status badge -->
-                    <div :class="container.state === 'running' ? 'bg-green-500/10 text-green-700 border-green-500/20' : 'bg-gray-500/10 text-gray-600 border-gray-500/20'"
-                      class="px-2.5 py-1 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 border backdrop-blur-sm">
-                      <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-gray-400'" 
-                        class="w-1.5 h-1.5 rounded-full shadow-sm"
-                        :style="container.state === 'running' ? 'box-shadow: 0 0 4px rgba(34, 197, 94, 0.6)' : ''"></span>
-                      {{ container.state }}
-                    </div>
-                    
-                    <!-- Uptime badge -->
-                    <div v-if="container.state === 'running' && formatUptime(container)"
-                      class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-500/10 text-blue-700 border border-blue-500/20 inline-flex items-center gap-1.5 backdrop-blur-sm">
-                      <Activity :size="12" />
-                      {{ formatUptime(container) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Footer with smooth hover effect -->
-              <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                <span class="text-sm text-gray-600 group-hover:text-purple-700 font-semibold transition-colors">
-                  View Details
-                </span>
-                <div class="w-8 h-8 rounded-full bg-purple-100/50 group-hover:bg-purple-500 flex items-center justify-center transition-all duration-300">
-                  <ArrowRight :size="16" class="text-purple-600 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-                </div>
-              </div>
             </div>
           </div>
         </div>
