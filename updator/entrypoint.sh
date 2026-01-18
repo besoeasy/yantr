@@ -21,7 +21,7 @@ SERVER_PID=$!
 if [ "${YANTRA_AUTO_UPDATE:-true}" != "" ] && echo "${YANTRA_AUTO_UPDATE:-true}" | grep -Eiq '^(0|false|no|off)$'; then
   : "auto-update disabled"
 else
-  ./daemon/updater.sh &
+  ./updator/updater.sh &
   UPDATER_PID=$!
 fi
 

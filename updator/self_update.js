@@ -135,7 +135,9 @@ async function main() {
     createOptions.NetworkingConfig = { EndpointsConfig: endpointConfigs };
   }
 
-  process.stdout.write(`Update available (${currentImageId.slice(0, 19)} → ${newImageId.slice(0, 19)}). Recreating container...\n`);
+  process.stdout.write(
+    `Update available (${currentImageId.slice(0, 19)} → ${newImageId.slice(0, 19)}). Recreating container...\n`
+  );
 
   let tmpContainer;
   try {
@@ -146,20 +148,11 @@ async function main() {
     return;
   }
 
-  // Atomic swap with rollback:
-  // 1) stop old
-  // 2) rename old -> backup
-  // 3) start new
-  // 4) rename new -> old name
-  // 5) remove backup
-
   try {
     process.stdout.write(`Stopping '${oldName}'...\n`);
     try {
       await target.stop({ t: 15 });
-    } catch {
-      // ignore (already stopped)
-    }
+    } catch {}
 
     process.stdout.write(`Renaming '${oldName}' → '${backupName}'...\n`);
     await target.rename({ name: backupName });
@@ -180,7 +173,6 @@ async function main() {
   } catch (e) {
     process.stderr.write(`Update failed; attempting rollback: ${e?.message || e}\n`);
 
-    // Rollback best-effort
     try {
       await tmpContainer.stop({ t: 5 });
     } catch {}
@@ -189,7 +181,6 @@ async function main() {
     } catch {}
 
     try {
-      // if backup exists, restore original name and restart
       const backup = docker.getContainer(backupName);
       await backup.inspect();
       await backup.rename({ name: oldName });

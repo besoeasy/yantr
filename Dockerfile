@@ -38,9 +38,10 @@ COPY --from=builder /app/dist ./dist
 
 # Copy backend / app files
 COPY daemon/ ./daemon/
+COPY updator/ ./updator/
 COPY apps/ ./apps/
 
-RUN chmod +x ./daemon/entrypoint.sh ./daemon/updater.sh
+RUN chmod +x ./updator/entrypoint.sh ./updator/updater.sh
 
 # Expose port
 EXPOSE 5252
@@ -54,4 +55,4 @@ ENV PORT=5252
 ENV NODE_ENV=production
 
 # Start server + optional auto-updater
-CMD ["./daemon/entrypoint.sh"]
+CMD ["./updator/entrypoint.sh"]

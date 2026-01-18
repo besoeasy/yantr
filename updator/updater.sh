@@ -16,5 +16,5 @@ log "Yantra Auto-Updater loop started (interval: ${UPDATE_INTERVAL_SECONDS}s)"
 while true; do
   sleep "$UPDATE_INTERVAL_SECONDS"
   log "Checking for updates..."
-  bun daemon/self_update.js
+  bun updator/self_update.js
 done
