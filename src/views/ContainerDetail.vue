@@ -350,10 +350,10 @@ onUnmounted(() => {
       <!-- Main Content -->
       <div v-else class="space-y-4 sm:space-y-6 animate-in fade-in duration-500">
         <!-- Back Button -->
-        <router-link to="/containers"
+        <router-link to="/apps"
           class="inline-flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-all group touch-manipulation active:scale-95">
           <ArrowLeft :size="16" class="w-4 h-4 sm:w-5 sm:h-5 group-hover:-translate-x-1 transition-transform" />
-          <span class="font-medium text-sm sm:text-base">Back to Containers</span>
+          <span class="font-medium text-sm sm:text-base">Back to Apps</span>
         </router-link>
         
         <!-- Header Section -->
