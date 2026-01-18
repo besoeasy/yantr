@@ -1479,7 +1479,6 @@ app.get("/api/ports/used", async (req, res) => {
 
 // GET /api/volumes - List all Docker volumes
 app.get("/api/volumes", async (req, res) => {
-  log("info", "📦 [GET /api/volumes] Fetching all volumes");
   try {
     const volumes = await docker.listVolumes();
     const volumeList = volumes.Volumes || [];
@@ -1550,7 +1549,6 @@ app.get("/api/volumes", async (req, res) => {
     const totalSize = enrichedVolumes.reduce((sum, vol) => sum + vol.sizeBytes, 0);
     const unusedSize = unusedVolumes.reduce((sum, vol) => sum + vol.sizeBytes, 0);
 
-    log("info", `✅ [GET /api/volumes] Found ${enrichedVolumes.length} volumes (${usedVolumes.length} used, ${unusedVolumes.length} unused)`);
     res.json({
       success: true,
       total: enrichedVolumes.length,
