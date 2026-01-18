@@ -244,6 +244,7 @@ onUnmounted(() => {
                 <h3 class="text-lg sm:text-xl font-bold text-orange-900">Unused Volumes</h3>
               </div>
               <p class="text-xs sm:text-sm text-orange-700">These volumes are not mounted by any containers and can be safely deleted</p>
+              <div v-if="volumesData.unusedSize && volumesData.unusedSize > 0" class="text-xs sm:text-sm text-orange-600 font-semibold mt-1">Free up {{ volumesData.unusedSize }} MB</div>
             </div>
             <button @click="deleteAllUnusedVolumes"
               :disabled="deletingAllVolumes"
@@ -264,7 +265,7 @@ onUnmounted(() => {
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="font-bold text-gray-900 text-sm sm:text-base break-all">{{ volume.name }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }} • {{ volume.size }} MB</div>
                   </div>
                 </div>
               </div>
@@ -309,7 +310,7 @@ onUnmounted(() => {
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="font-bold text-gray-900 text-sm sm:text-base break-all">{{ volume.name }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }} • {{ volume.size }} MB</div>
                   </div>
                 </div>
               </div>
@@ -355,7 +356,7 @@ onUnmounted(() => {
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="font-bold text-gray-900 text-sm sm:text-base break-all">{{ volume.name }}</div>
-                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }}</div>
+                    <div class="text-xs text-gray-500 mt-0.5">{{ volume.driver }} • {{ formatDate(volume.createdAt) }} • {{ volume.size }} MB</div>
                   </div>
                 </div>
               </div>

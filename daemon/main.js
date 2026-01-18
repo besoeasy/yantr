@@ -1474,6 +1474,52 @@ app.get("/api/volumes", async (req, res) => {
     const volumes = await docker.listVolumes();
     const volumeList = volumes.Volumes || [];
 
+    // Get volume sizes using docker system df -v
+    let volumeSizes = {};
+    try {
+      const dfProc = Bun.spawn(["docker", "system", "df", "-v", "--format", "{{json .}}"], {
+        env: {
+          ...process.env,
+          DOCKER_HOST: `unix://${socketPath}`,
+        },
+        stdout: "pipe",
+        stderr: "pipe",
+      });
+
+      const dfOutput = await new Response(dfProc.stdout).text();
+      await dfProc.exited;
+
+      // Parse the JSON output - single large JSON object with Volumes array
+      if (dfOutput.trim()) {
+        const data = JSON.parse(dfOutput.trim());
+        
+        // Extract volumes with their sizes from the Volumes array
+        if (data.Volumes && Array.isArray(data.Volumes)) {
+          data.Volumes.forEach(vol => {
+            if (vol.Name && vol.Size) {
+              // Parse size string (e.g., "1.721GB", "2.713kB", "105MB")
+              const sizeStr = vol.Size;
+              let sizeBytes = 0;
+              
+              if (sizeStr.includes('GB')) {
+                sizeBytes = parseFloat(sizeStr) * 1024 * 1024 * 1024;
+              } else if (sizeStr.includes('MB')) {
+                sizeBytes = parseFloat(sizeStr) * 1024 * 1024;
+              } else if (sizeStr.includes('kB') || sizeStr.includes('KB')) {
+                sizeBytes = parseFloat(sizeStr) * 1024;
+              } else if (sizeStr.includes('B')) {
+                sizeBytes = parseFloat(sizeStr);
+              }
+              
+              volumeSizes[vol.Name] = sizeBytes;
+            }
+          });
+        }
+      }
+    } catch (dfError) {
+      log("warn", "⚠️  [GET /api/volumes] Could not get volume sizes:", dfError.message);
+    }
+
     // Get all containers to check which volumes are in use
     const containers = await docker.listContainers({ all: true });
     
@@ -1497,19 +1543,30 @@ app.get("/api/volumes", async (req, res) => {
       }
     });
 
-    const enrichedVolumes = volumeList.map((vol) => ({
-      name: vol.Name,
-      driver: vol.Driver,
-      mountpoint: vol.Mountpoint,
-      createdAt: vol.CreatedAt,
-      labels: vol.Labels || {},
-      isBrowsing: browsedVolumes.has(vol.Name),
-      isUsed: usedVolumeNames.has(vol.Name),
-    }));
+    const enrichedVolumes = volumeList.map((vol) => {
+      const sizeBytes = volumeSizes[vol.Name] || 0;
+      const sizeMB = (sizeBytes / (1024 * 1024)).toFixed(2);
+      
+      return {
+        name: vol.Name,
+        driver: vol.Driver,
+        mountpoint: vol.Mountpoint,
+        createdAt: vol.CreatedAt,
+        labels: vol.Labels || {},
+        isBrowsing: browsedVolumes.has(vol.Name),
+        isUsed: usedVolumeNames.has(vol.Name),
+        size: sizeMB,
+        sizeBytes: sizeBytes,
+      };
+    });
 
-    // Separate used and unused volumes
-    const usedVolumes = enrichedVolumes.filter(v => v.isUsed).sort((a, b) => a.name.localeCompare(b.name));
-    const unusedVolumes = enrichedVolumes.filter(v => !v.isUsed).sort((a, b) => a.name.localeCompare(b.name));
+    // Separate used and unused volumes (sort by size)
+    const usedVolumes = enrichedVolumes.filter(v => v.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
+    const unusedVolumes = enrichedVolumes.filter(v => !v.isUsed).sort((a, b) => b.sizeBytes - a.sizeBytes);
+
+    // Calculate total sizes
+    const totalSize = enrichedVolumes.reduce((sum, vol) => sum + vol.sizeBytes, 0);
+    const unusedSize = unusedVolumes.reduce((sum, vol) => sum + vol.sizeBytes, 0);
 
     log("info", `✅ [GET /api/volumes] Found ${enrichedVolumes.length} volumes (${usedVolumes.length} used, ${unusedVolumes.length} unused)`);
     res.json({
@@ -1517,6 +1574,8 @@ app.get("/api/volumes", async (req, res) => {
       total: enrichedVolumes.length,
       used: usedVolumes.length,
       unused: unusedVolumes.length,
+      totalSize: (totalSize / (1024 * 1024)).toFixed(2),
+      unusedSize: (unusedSize / (1024 * 1024)).toFixed(2),
       volumes: enrichedVolumes,
       usedVolumes: usedVolumes,
       unusedVolumes: unusedVolumes,
