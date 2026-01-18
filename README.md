@@ -25,7 +25,8 @@ docker run -d \
 
 Auto-updates are enabled by default. Disable with `-e YANTRA_AUTO_UPDATE=false`.
 
-_[New to Docker? Learn how to install it here.](https://chatgpt.com/?prompt=how+to+install+docker+on+my+system+%3F)_
+_[New to Docker? Learn how to install it here.](https://chatgpt.com/?prompt=how%20to%20install%20docker%20on%20my%20system%20%3F%0A%0Ai%20want%20to%20install%20yantra%20https%3A%2F%2Fgithub.com%2Fbesoeasy%2Fyantra%0A%0Ahere%20is%20the%20docker%20command%2C%20in%20cli%20mode%0Adocker%20run%20-d%20%5C%0A%20%20--name%20yantra%20%5C%0A%20%20-p%2080%3A5252%20%5C%0A%20%20-p%20443%3A5252%20%5C%0A%20%20-v%20%2Fvar%2Frun%2Fdocker.sock%3A%2Fvar%2Frun%2Fdocker.sock%20%5C%0A%20%20--restart%20unless-stopped%20%5C%0A%20%20ghcr.io%2Fbesoeasy%2Fyantra%0A%0Aas%20ai%20agent%2C%20your%20aim%20is%20to%20help%20me%20install%20this%20software
+)_
 
 ---
 
