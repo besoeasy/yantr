@@ -1,10 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { Store, ArrowRight, AlertTriangle, Package, HardDrive, Activity, TrendingUp } from "lucide-vue-next";
+import { Store, ArrowRight, Package, HardDrive } from "lucide-vue-next";
 import SystemCleaner from "../components/SystemCleaner.vue";
 import WatchtowerAlert from "../components/WatchtowerAlert.vue";
-import QuickMetrics from "../components/QuickMetrics.vue";
+import AppCategoriesCard from "../components/quick-metrics/AppCategoriesCard.vue";
+import BiggestStorageCard from "../components/quick-metrics/BiggestStorageCard.vue";
+import DiskUsageCard from "../components/quick-metrics/DiskUsageCard.vue";
+import AverageUptimeCard from "../components/quick-metrics/AverageUptimeCard.vue";
+import ExpiringContainersCard from "../components/quick-metrics/ExpiringContainersCard.vue";
 
 const router = useRouter();
 
@@ -54,12 +58,6 @@ const reclaimableStats = computed(() => {
 
 // Watchtower Visibility
 const showWatchtowerAlert = computed(() => !watchtowerInstalled.value);
-
-// Grid Layout Class
-const alertGridClass = computed(() => {
-  const items = (reclaimableStats.value.show ? 1 : 0) + (showWatchtowerAlert.value ? 1 : 0);
-  return items === 2 ? "grid grid-cols-1 md:grid-cols-2" : "grid grid-cols-1";
-});
 
 // Container Grouping
 const volumeContainers = computed(() => {
@@ -226,27 +224,6 @@ onUnmounted(() => {
     <!-- Main Content -->
     <div class="p-6 sm:p-10 lg:p-14">
       <div class="space-y-10">
-        <!-- Header & Stats -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div>
-            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight mb-2">
-              {{ greeting }}
-            </h1>
-            <p class="text-lg text-gray-500 font-medium">Here's what's happening with your system today.</p>
-          </div>
-
-          <div class="flex items-center gap-4">
-            <div class="flex flex-col items-end px-6 py-3 bg-white rounded-2xl shadow-sm border border-gray-100/50">
-              <span class="text-3xl font-bold text-gray-900 leading-none">{{ runningApps }}</span>
-              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Running Apps</span>
-            </div>
-            <div class="flex flex-col items-end px-6 py-3 bg-white rounded-2xl shadow-sm border border-gray-100/50">
-              <span class="text-3xl font-bold text-gray-900 leading-none">{{ totalVolumes }}</span>
-              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Volumes</span>
-            </div>
-          </div>
-        </div>
-
         <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-32">
           <div class="w-10 h-10 border-3 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
@@ -255,9 +232,34 @@ onUnmounted(() => {
 
         <!-- Content -->
         <div v-else class="space-y-12 animate-fadeIn">
-          <!-- Alerts Grid -->
-          <div :class="[alertGridClass, 'gap-6 mb-8']" v-if="reclaimableStats.show || showWatchtowerAlert">
-            <div class="h-full" v-if="reclaimableStats.show">
+          <!-- Dashboard Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div class="lg:col-span-2 xl:col-span-2">
+              <div class="group relative rounded-2xl border border-gray-100 bg-white p-5 transition-all duration-300 hover:shadow-xl hover:shadow-gray-900/5">
+                <div
+                  class="absolute inset-0 rounded-2xl bg-linear-to-br from-blue-50/0 to-purple-50/0 group-hover:from-blue-50/70 group-hover:to-purple-50/30 transition-all duration-300 pointer-events-none"
+                ></div>
+                <div class="relative z-10">
+                  <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
+                    {{ greeting }}
+                  </h1>
+                  <p class="text-sm sm:text-base text-gray-500 font-medium mt-1">Here's what's happening with your system today.</p>
+
+                  <div class="mt-5 grid grid-cols-2 gap-3">
+                    <div class="rounded-2xl border border-gray-100 bg-white/70 px-4 py-3">
+                      <div class="text-3xl font-extrabold text-gray-900 leading-none tabular-nums">{{ runningApps }}</div>
+                      <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Running Apps</div>
+                    </div>
+                    <div class="rounded-2xl border border-gray-100 bg-white/70 px-4 py-3">
+                      <div class="text-3xl font-extrabold text-gray-900 leading-none tabular-nums">{{ totalVolumes }}</div>
+                      <div class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mt-1">Volumes</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="reclaimableStats.show" class="h-full">
               <SystemCleaner
                 :api-url="apiUrl"
                 :initial-image-stats="reclaimableStats.imageStats"
@@ -265,7 +267,8 @@ onUnmounted(() => {
                 @cleaned="refreshAll"
               />
             </div>
-            <div class="h-full" v-if="showWatchtowerAlert">
+
+            <div v-if="showWatchtowerAlert" class="h-full">
               <WatchtowerAlert />
             </div>
           </div>
@@ -451,7 +454,7 @@ onUnmounted(() => {
 
               <div class="mt-auto pt-4 border-t border-gray-100">
                 <div class="flex items-center justify-between text-xs text-gray-500">
-                  <span class="font-mono truncate max-w-[150px]">{{ container.image.split(":")[0] }}</span>
+                  <span class="font-mono truncate max-w-37.5">{{ container.image.split(":")[0] }}</span>
                   <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
@@ -459,8 +462,37 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Quick Metrics Dashboard -->
-        <QuickMetrics :containers="containers" :volumes="volumes" :images="images" :current-time="currentTime" />
+        <!-- Quick Metrics (Cards) -->
+        <div v-if="containers.length > 0 || volumes.length > 0 || images.length > 0" class="space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+              <div class="font-bold text-lg px-1">✦</div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Quick Metrics</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            <div class="lg:col-span-2 xl:col-span-2">
+              <AppCategoriesCard :containers="containers" />
+            </div>
+
+            <div class="lg:col-span-2 xl:col-span-2">
+              <BiggestStorageCard :images="images" />
+            </div>
+
+            <div>
+              <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
+            </div>
+
+            <div class="lg:col-span-2 xl:col-span-2">
+              <DiskUsageCard :images="images" :volumes="volumes" />
+            </div>
+
+            <div>
+              <AverageUptimeCard :containers="containers" :current-time="currentTime" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
