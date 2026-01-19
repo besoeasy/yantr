@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { Activity, Package, HardDrive, Clock } from 'lucide-vue-next'
+import { Activity, Package, HardDrive, Clock, Timer, Layers } from 'lucide-vue-next'
 
 const props = defineProps({
   containers: {
@@ -128,6 +128,83 @@ const averageUptime = computed(() => {
   }
 })
 
+// Expiring Containers Metrics
+const expiringContainers = computed(() => {
+  const tempContainers = props.containers.filter(c => 
+    c.labels && c.labels['yantra.expireAt']
+  )
+  
+  if (tempContainers.length === 0) {
+    return { count: 0, nextExpiry: null, nextExpiryFormatted: null, containerName: null }
+  }
+  
+  // Find the container expiring soonest
+  let soonest = null
+  let soonestContainer = null
+  
+  tempContainers.forEach(container => {
+    const expireAt = parseInt(container.labels['yantra.expireAt'], 10) * 1000
+    if (!soonest || expireAt < soonest) {
+      soonest = expireAt
+      soonestContainer = container
+    }
+  })
+  
+  const remaining = soonest - props.currentTime
+  
+  // Format time remaining
+  let formatted = 'Expired'
+  if (remaining > 0) {
+    const hours = Math.floor(remaining / (1000 * 60 * 60))
+    const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
+    
+    if (hours > 24) {
+      const days = Math.floor(hours / 24)
+      formatted = `${days}d ${hours % 24}h`
+    } else if (hours > 0) {
+      formatted = `${hours}h ${minutes}m`
+    } else if (minutes > 0) {
+      formatted = `${minutes}m ${seconds}s`
+    } else {
+      formatted = `${seconds}s`
+    }
+  }
+  
+  return {
+    count: tempContainers.length,
+    nextExpiry: soonest,
+    nextExpiryFormatted: formatted,
+    containerName: soonestContainer?.app?.name || soonestContainer?.name || 'Unknown',
+    isExpiringSoon: remaining > 0 && remaining < (60 * 60 * 1000) // < 1 hour
+  }
+})
+
+// Category Usage Statistics
+const categoryStats = computed(() => {
+  const categoryCounts = {}
+  
+  props.containers.forEach(container => {
+    const category = container.app?.category || 'uncategorized'
+    categoryCounts[category] = (categoryCounts[category] || 0) + 1
+  })
+  
+  if (Object.keys(categoryCounts).length === 0) {
+    return { mostUsed: null, leastUsed: null, total: 0 }
+  }
+  
+  // Sort categories by usage
+  const sorted = Object.entries(categoryCounts)
+    .sort((a, b) => b[1] - a[1])
+  
+  return {
+    mostUsed: sorted[0] ? { category: sorted[0][0], count: sorted[0][1] } : null,
+    leastUsed: sorted[sorted.length - 1] ? { category: sorted[sorted.length - 1][0], count: sorted[sorted.length - 1][1] } : null,
+    total: Object.keys(categoryCounts).length,
+    all: sorted
+  }
+})
+
 // Helper function to format bytes
 function formatBytes(bytes) {
   if (bytes === 0) return '0 B'
@@ -135,6 +212,15 @@ function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`
+}
+
+// Helper function to capitalize category names
+function formatCategory(category) {
+  if (!category) return 'Unknown'
+  return category
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 </script>
 
@@ -301,6 +387,71 @@ function formatBytes(bytes) {
                  :class="i <= 5 ? 'animate-pulse' : ''">
             </div>
             <span v-if="averageUptime.count > 10" class="text-xs text-gray-400 ml-1">+{{ averageUptime.count - 10 }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Second Row: Expiring Containers & Category Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6" v-if="expiringContainers.count > 0 || categoryStats.mostUsed">
+      
+      <!-- Expiring Containers -->
+      <div class="space-y-3" v-if="expiringContainers.count > 0">
+        <div class="flex items-center gap-2 mb-3">
+          <Timer :size="18" class="text-gray-400" />
+          <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">Expiring Containers</h3>
+        </div>
+        
+        <div class="space-y-3">
+          <!-- Count -->
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600 font-medium">Total Expiring</span>
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-lg font-bold text-sm">{{ expiringContainers.count }}</span>
+          </div>
+          
+          <!-- Next Expiry Countdown -->
+          <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-4 border border-orange-100">
+            <div class="text-xs text-gray-500 font-medium mb-1">Next to Expire</div>
+            <div class="text-2xl font-bold mb-1"
+                 :class="expiringContainers.isExpiringSoon ? 'text-red-600 animate-pulse' : 'text-orange-600'">
+              {{ expiringContainers.nextExpiryFormatted }}
+            </div>
+            <div class="text-xs text-gray-600 truncate" :title="expiringContainers.containerName">
+              {{ expiringContainers.containerName }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Statistics -->
+      <div class="space-y-3" v-if="categoryStats.mostUsed">
+        <div class="flex items-center gap-2 mb-3">
+          <Layers :size="18" class="text-gray-400" />
+          <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">App Categories</h3>
+        </div>
+        
+        <div class="space-y-3">
+          <!-- Most Used -->
+          <div>
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="text-gray-600 font-medium">Most Used</span>
+              <span class="font-bold text-gray-900">{{ categoryStats.mostUsed.count }} {{ categoryStats.mostUsed.count === 1 ? 'app' : 'apps' }}</span>
+            </div>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl px-4 py-2 border border-green-100">
+              <div class="text-sm font-bold text-green-700">🏆 {{ formatCategory(categoryStats.mostUsed.category) }}</div>
+            </div>
+          </div>
+          
+          <!-- Least Used (only show if more than 1 category) -->
+          <div v-if="categoryStats.total > 1 && categoryStats.leastUsed.category !== categoryStats.mostUsed.category">
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="text-gray-600 font-medium">Least Used</span>
+              <span class="font-bold text-gray-900">{{ categoryStats.leastUsed.count }} {{ categoryStats.leastUsed.count === 1 ? 'app' : 'apps' }}</span>
+            </div>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl px-4 py-2 border border-blue-100">
+              <div class="text-sm font-bold text-blue-700">{{ formatCategory(categoryStats.leastUsed.category) }}</div>
+            </div>
           </div>
         </div>
       </div>
