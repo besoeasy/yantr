@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Trash2, HardDrive, AlertTriangle, RefreshCw, CheckCircle2, Package, Database } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
 
@@ -10,17 +10,27 @@ const props = defineProps({
   apiUrl: {
     type: String,
     required: true
+  },
+  initialImageStats: {
+    type: Object,
+    default: () => ({ unusedCount: 0, unusedSize: 0, totalSize: 0 })
+  },
+  initialVolumeStats: {
+    type: Object,
+    default: () => ({ unusedCount: 0, unusedSize: 0, totalSize: 0 })
   }
 })
 
+const emit = defineEmits(['cleaned'])
+
 // State
-const loading = ref(true)
+const loading = ref(false)
 const cleaning = ref(false)
 const cleaned = ref(false)
 const error = ref(null)
 
-const imageStats = ref({ unusedCount: 0, unusedSize: 0, totalSize: 0 })
-const volumeStats = ref({ unusedCount: 0, unusedSize: 0, totalSize: 0 })
+const imageStats = ref(props.initialImageStats)
+const volumeStats = ref(props.initialVolumeStats)
 const lastCleanResult = ref(null)
 
 // Computed
@@ -36,6 +46,16 @@ const hasReclaimable = computed(() => {
   return totalReclaimableBytes.value > 0
 })
 
+// Watch for prop changes
+watch(() => props.initialImageStats, (newStats) => {
+  imageStats.value = newStats
+}, { deep: true })
+
+watch(() => props.initialVolumeStats, (newStats) => {
+  volumeStats.value = newStats
+}, { deep: true })
+
+
 // Methods
 function formatBytes(bytes) {
   if (bytes === 0) return '0 B'
@@ -43,45 +63,6 @@ function formatBytes(bytes) {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-async function fetchStats() {
-  loading.value = true
-  cleaned.value = false
-  error.value = null
-  
-  try {
-    // parallel fetch
-    const [imagesRes, volumesRes] = await Promise.all([
-      fetch(`${props.apiUrl}/api/images`),
-      fetch(`${props.apiUrl}/api/volumes`)
-    ])
-
-    const imagesData = await imagesRes.json()
-    const volumesData = await volumesRes.json()
-
-    if (imagesData.success) {
-      imageStats.value = {
-        unusedCount: imagesData.unused,
-        unusedSize: parseFloat(imagesData.unusedSize) * 1024 * 1024, // API returns MB
-        totalSize: parseFloat(imagesData.totalSize) * 1024 * 1024
-      }
-    }
-
-    if (volumesData.success) {
-      volumeStats.value = {
-        unusedCount: volumesData.unused,
-        unusedSize: parseFloat(volumesData.unusedSize) * 1024 * 1024,
-        totalSize: parseFloat(volumesData.totalSize) * 1024 * 1024
-      }
-    }
-
-  } catch (err) {
-    console.error('Failed to fetch system stats:', err)
-    error.value = 'Failed to load system stats'
-  } finally {
-    loading.value = false
-  }
 }
 
 async function cleanSystem() {
@@ -111,10 +92,9 @@ async function cleanSystem() {
       cleaned.value = true
       toast.success(`System cleaned! Reclaimed ${formatBytes(data.results.images.spaceReclaimed + data.results.volumes.spaceReclaimed)}`)
       
-      // Refresh stats to show 0
-      await fetchStats()
-      // Keep cleaned state true so we can show summary
-      cleaned.value = true 
+      // Emit event so parent can refresh stats
+      emit('cleaned')
+      
     } else {
       throw new Error(data.error || 'Clean failed')
     }
@@ -127,9 +107,6 @@ async function cleanSystem() {
   }
 }
 
-onMounted(() => {
-  fetchStats()
-})
 </script>
 
 <template>

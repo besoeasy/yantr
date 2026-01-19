@@ -9,6 +9,7 @@ const router = useRouter()
 
 const containers = ref([])
 const volumes = ref([])
+const images = ref([])
 const loading = ref(false)
 const apiUrl = ref('')
 const currentTime = ref(Date.now())
@@ -21,6 +22,43 @@ let timeRefreshInterval = null
 const totalApps = computed(() => containers.value.length)
 const runningApps = computed(() => containers.value.filter(c => c.state === 'running').length)
 const totalVolumes = computed(() => volumes.value.length)
+
+// System Cleaner Visibility
+const reclaimableStats = computed(() => {
+  if (!images.value || !volumes.value) return { show: false, stats: null }
+  
+  const unusedImages = images.value.filter(i => !i.isUsed)
+  const unusedVolumes = volumes.value.filter(v => !v.isUsed)
+  
+  const imageSize = unusedImages.reduce((sum, img) => sum + (img.sizeBytes || 0), 0)
+  const volumeSize = unusedVolumes.reduce((sum, vol) => sum + (vol.sizeBytes || 0), 0)
+  
+  const totalReclaimable = imageSize + volumeSize
+  const threshold = 100 * 1024 * 1024 // 100 MB
+  
+  return {
+    show: totalReclaimable > threshold,
+    imageStats: {
+      unusedCount: unusedImages.length,
+      unusedSize: imageSize,
+      totalSize: images.value.reduce((sum, img) => sum + (img.sizeBytes || 0), 0)
+    },
+    volumeStats: {
+      unusedCount: unusedVolumes.length,
+      unusedSize: volumeSize,
+      totalSize: volumes.value.reduce((sum, vol) => sum + (vol.sizeBytes || 0), 0)
+    }
+  }
+})
+
+// Watchtower Visibility
+const showWatchtowerAlert = computed(() => !watchtowerInstalled.value && containers.value.length > 0)
+
+// Grid Layout Class
+const alertGridClass = computed(() => {
+  const items = (reclaimableStats.value.show ? 1 : 0) + (showWatchtowerAlert.value ? 1 : 0)
+  return items === 2 ? 'grid grid-cols-1 md:grid-cols-2' : 'grid grid-cols-1'
+})
 
 // Container Grouping
 const volumeContainers = computed(() => {
@@ -139,19 +177,32 @@ async function fetchVolumes() {
   }
 }
 
+async function fetchImages() {
+  try {
+    const response = await fetch(`${apiUrl.value}/api/images`)
+    const data = await response.json()
+    if (data.success) {
+      images.value = data.images || []
+    }
+  } catch (error) {
+    console.error('Failed to fetch images:', error)
+  }
+}
+
+async function refreshAll() {
+  await Promise.all([fetchContainers(), fetchVolumes(), fetchImages()])
+}
+
 function viewContainerDetail(container) {
   router.push(`/containers/${container.id}`)
 }
 
 onMounted(async () => {
   loading.value = true
-  await Promise.all([fetchContainers(), fetchVolumes()])
+  await refreshAll()
   loading.value = false
   
-  containersRefreshInterval = setInterval(() => {
-    fetchContainers()
-    fetchVolumes()
-  }, 10000)
+  containersRefreshInterval = setInterval(refreshAll, 10000)
   
   timeRefreshInterval = setInterval(() => {
     currentTime.value = Date.now()
@@ -209,11 +260,16 @@ onUnmounted(() => {
         <div v-else class="space-y-12 animate-fadeIn">
           
           <!-- Alerts Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" v-if="!loading">
-            <div class="h-full">
-              <SystemCleaner :api-url="apiUrl" />
+          <div :class="[alertGridClass, 'gap-6 mb-8']" v-if="reclaimableStats.show || showWatchtowerAlert">
+            <div class="h-full" v-if="reclaimableStats.show">
+              <SystemCleaner 
+                :api-url="apiUrl" 
+                :initial-image-stats="reclaimableStats.imageStats"
+                :initial-volume-stats="reclaimableStats.volumeStats"
+                @cleaned="refreshAll"
+              />
             </div>
-            <div class="h-full" v-if="!watchtowerInstalled && containers.length > 0">
+            <div class="h-full" v-if="showWatchtowerAlert">
               <WatchtowerAlert />
             </div>
           </div>
