@@ -273,6 +273,16 @@ onUnmounted(() => {
                     </span>
                   </div>
                 </div>
+
+                <!-- Expiration Timer -->
+                <div v-if="isTemporary(container)" class="mb-4 px-1">
+                   <div class="flex items-center justify-between text-xs py-1.5 px-3 bg-orange-50 text-orange-800 rounded-lg border border-orange-100">
+                    <span class="font-medium">Expires in</span>
+                    <span :class="getExpirationInfo(container).isExpiringSoon ? 'text-red-600 animate-pulse font-bold' : 'font-semibold'">
+                      {{ getExpirationInfo(container).timeRemaining }}
+                    </span>
+                  </div>
+                </div>
                 
                  <div class="mt-auto pt-3 flex items-center justify-between text-sm border-t border-gray-50">
                   <span class="text-gray-400 font-medium group-hover:text-indigo-600 transition-colors">Manage Files</span>
