@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { Store, ArrowRight, AlertTriangle, Package, HardDrive, Activity, TrendingUp } from 'lucide-vue-next'
 import SystemCleaner from '../components/SystemCleaner.vue'
 import WatchtowerAlert from '../components/WatchtowerAlert.vue'
+import QuickMetrics from '../components/QuickMetrics.vue'
 
 const router = useRouter()
 
@@ -258,6 +259,14 @@ onUnmounted(() => {
 
         <!-- Content -->
         <div v-else class="space-y-12 animate-fadeIn">
+          
+          <!-- Quick Metrics Dashboard -->
+          <QuickMetrics 
+            :containers="containers"
+            :volumes="volumes"
+            :images="images"
+            :current-time="currentTime"
+          />
           
           <!-- Alerts Grid -->
           <div :class="[alertGridClass, 'gap-6 mb-8']" v-if="reclaimableStats.show || showWatchtowerAlert">
