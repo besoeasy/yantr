@@ -225,55 +225,6 @@ onUnmounted(() => {
 
         <!-- Content -->
         <div v-else class="space-y-12 animate-fadeIn">
-          <!-- Quick Metrics (Cards) -->
-          <div class="space-y-6">
-            <div class="flex items-center gap-3">
-              <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
-                <div class="font-bold text-lg px-1">✦</div>
-              </div>
-              <h2 class="text-2xl font-bold text-gray-900">Quick Metrics</h2>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-              <div v-if="showWatchtowerAlert" class="h-full">
-                <WatchtowerAlert />
-              </div>
-
-              <div class="lg:col-span-2 xl:col-span-2">
-                <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
-              </div>
-
-              <div v-if="reclaimableStats.show" class="h-full">
-                <SystemCleaner
-                  :api-url="apiUrl"
-                  :initial-image-stats="reclaimableStats.imageStats"
-                  :initial-volume-stats="reclaimableStats.volumeStats"
-                  @cleaned="refreshAll"
-                />
-              </div>
-
-              <div>
-                <AverageUptimeCard :containers="containers" :current-time="currentTime" />
-              </div>
-
-              <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
-                <AppCategoriesCard :containers="containers" />
-              </div>
-
-              <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
-                <BiggestStorageCard :images="images" />
-              </div>
-
-              <div>
-                <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
-              </div>
-
-              <div v-if="images.length > 0 || volumes.length > 0" class="lg:col-span-2 xl:col-span-2">
-                <DiskUsageCard :images="images" :volumes="volumes" />
-              </div>
-            </div>
-          </div>
-
           <!-- Empty State -->
           <div v-if="containers.length === 0" class="text-center py-24 bg-white rounded-3xl shadow-sm">
             <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -288,52 +239,6 @@ onUnmounted(() => {
               <Store :size="20" />
               <span>Browse App Store</span>
             </router-link>
-          </div>
-
-          <!-- Volume Browsers Section -->
-          <div v-if="volumeContainers.length > 0">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
-                <HardDrive :size="24" />
-              </div>
-              <h2 class="text-2xl font-bold text-gray-900">Volume Managers</h2>
-              <span class="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{{ volumeContainers.length }}</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-              <div
-                v-for="(container, index) in volumeContainers"
-                :key="container.id"
-                :style="{ animationDelay: `${index * 50}ms` }"
-                @click="viewContainerDetail(container)"
-                class="group bg-white rounded-3xl p-6 shadow-[0_2px_15px_rgb(0,0,0,0.03)] border border-indigo-50 hover:border-indigo-100 hover:shadow-[0_8px_30px_rgb(79,70,229,0.06)] transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1"
-              >
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">📂</div>
-                  <div>
-                    <h3 class="font-bold text-lg text-gray-900 line-clamp-1 mb-1">
-                      {{ container.labels?.["yantra.volume-browser"] || container.name }}
-                    </h3>
-                    <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-50 text-green-700"> Active </span>
-                  </div>
-                </div>
-
-                <!-- Expiration Timer -->
-                <div v-if="isTemporary(container)" class="mb-4 px-1">
-                  <div class="flex items-center justify-between text-xs py-1.5 px-3 bg-orange-50 text-orange-800 rounded-lg border border-orange-100">
-                    <span class="font-medium">Expires in</span>
-                    <span :class="getExpirationInfo(container).isExpiringSoon ? 'text-red-600 animate-pulse font-bold' : 'font-semibold'">
-                      {{ getExpirationInfo(container).timeRemaining }}
-                    </span>
-                  </div>
-                </div>
-
-                <div class="mt-auto pt-3 flex items-center justify-between text-sm border-t border-gray-50">
-                  <span class="text-gray-400 font-medium group-hover:text-indigo-600 transition-colors">Manage Files</span>
-                  <ArrowRight :size="16" class="text-gray-300 group-hover:text-indigo-600 transform group-hover:translate-x-0.5 transition-all" />
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Yantra Apps Section -->
@@ -415,6 +320,101 @@ onUnmounted(() => {
                     <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Volume Browsers Section -->
+          <div v-if="volumeContainers.length > 0">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
+                <HardDrive :size="24" />
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Volume Managers</h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{{ volumeContainers.length }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              <div
+                v-for="(container, index) in volumeContainers"
+                :key="container.id"
+                :style="{ animationDelay: `${index * 50}ms` }"
+                @click="viewContainerDetail(container)"
+                class="group bg-white rounded-3xl p-6 shadow-[0_2px_15px_rgb(0,0,0,0.03)] border border-indigo-50 hover:border-indigo-100 hover:shadow-[0_8px_30px_rgb(79,70,229,0.06)] transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1"
+              >
+                <div class="flex items-center gap-4 mb-4">
+                  <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">📂</div>
+                  <div>
+                    <h3 class="font-bold text-lg text-gray-900 line-clamp-1 mb-1">
+                      {{ container.labels?.["yantra.volume-browser"] || container.name }}
+                    </h3>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-50 text-green-700"> Active </span>
+                  </div>
+                </div>
+
+                <!-- Expiration Timer -->
+                <div v-if="isTemporary(container)" class="mb-4 px-1">
+                  <div class="flex items-center justify-between text-xs py-1.5 px-3 bg-orange-50 text-orange-800 rounded-lg border border-orange-100">
+                    <span class="font-medium">Expires in</span>
+                    <span :class="getExpirationInfo(container).isExpiringSoon ? 'text-red-600 animate-pulse font-bold' : 'font-semibold'">
+                      {{ getExpirationInfo(container).timeRemaining }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mt-auto pt-3 flex items-center justify-between text-sm border-t border-gray-50">
+                  <span class="text-gray-400 font-medium group-hover:text-indigo-600 transition-colors">Manage Files</span>
+                  <ArrowRight :size="16" class="text-gray-300 group-hover:text-indigo-600 transform group-hover:translate-x-0.5 transition-all" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics (Cards) -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+                <div class="font-bold text-lg px-1">✦</div>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Quick Metrics</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              <div v-if="showWatchtowerAlert" class="h-full">
+                <WatchtowerAlert />
+              </div>
+
+              <div class="lg:col-span-2 xl:col-span-2">
+                <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
+              </div>
+
+              <div v-if="reclaimableStats.show" class="h-full">
+                <SystemCleaner
+                  :api-url="apiUrl"
+                  :initial-image-stats="reclaimableStats.imageStats"
+                  :initial-volume-stats="reclaimableStats.volumeStats"
+                  @cleaned="refreshAll"
+                />
+              </div>
+
+              <div>
+                <AverageUptimeCard :containers="containers" :current-time="currentTime" />
+              </div>
+
+              <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <AppCategoriesCard :containers="containers" />
+              </div>
+
+              <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <BiggestStorageCard :images="images" />
+              </div>
+
+              <div>
+                <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
+              </div>
+
+              <div v-if="images.length > 0 || volumes.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <DiskUsageCard :images="images" :volumes="volumes" />
               </div>
             </div>
           </div>
