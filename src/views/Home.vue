@@ -52,7 +52,7 @@ const reclaimableStats = computed(() => {
 })
 
 // Watchtower Visibility
-const showWatchtowerAlert = computed(() => !watchtowerInstalled.value && containers.value.length > 0)
+const showWatchtowerAlert = computed(() => !watchtowerInstalled.value)
 
 // Grid Layout Class
 const alertGridClass = computed(() => {

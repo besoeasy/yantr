@@ -3,17 +3,10 @@ import { useRouter } from 'vue-router'
 import { AlertTriangle } from 'lucide-vue-next'
 
 const router = useRouter()
-
-defineProps({
-  visible: {
-    type: Boolean,
-    default: true
-  }
-})
 </script>
 
 <template>
-  <div v-if="visible"
+  <div
        @click="router.push('/apps/watchtower')"
        class="relative overflow-hidden group bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-sm border border-orange-100 p-1 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 h-full">
     <div class="bg-white/10 h-full w-full rounded-xl p-6 relative overflow-hidden backdrop-blur-sm flex flex-col justify-center">
