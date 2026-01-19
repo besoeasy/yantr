@@ -226,23 +226,52 @@ onUnmounted(() => {
 
         <!-- Content -->
         <div v-else class="space-y-12 animate-fadeIn">
-          <!-- Dashboard Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            <div class="lg:col-span-2 xl:col-span-2">
-              <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
+          <!-- Quick Metrics (Cards) -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+                <div class="font-bold text-lg px-1">✦</div>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Quick Metrics</h2>
             </div>
 
-            <div v-if="reclaimableStats.show" class="h-full">
-              <SystemCleaner
-                :api-url="apiUrl"
-                :initial-image-stats="reclaimableStats.imageStats"
-                :initial-volume-stats="reclaimableStats.volumeStats"
-                @cleaned="refreshAll"
-              />
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              <div class="lg:col-span-2 xl:col-span-2">
+                <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
+              </div>
 
-            <div v-if="showWatchtowerAlert" class="h-full">
-              <WatchtowerAlert />
+              <div v-if="reclaimableStats.show" class="h-full">
+                <SystemCleaner
+                  :api-url="apiUrl"
+                  :initial-image-stats="reclaimableStats.imageStats"
+                  :initial-volume-stats="reclaimableStats.volumeStats"
+                  @cleaned="refreshAll"
+                />
+              </div>
+
+              <div v-if="showWatchtowerAlert" class="h-full">
+                <WatchtowerAlert />
+              </div>
+
+              <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <AppCategoriesCard :containers="containers" />
+              </div>
+
+              <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <BiggestStorageCard :images="images" />
+              </div>
+
+              <div>
+                <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
+              </div>
+
+              <div v-if="images.length > 0 || volumes.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <DiskUsageCard :images="images" :volumes="volumes" />
+              </div>
+
+              <div>
+                <AverageUptimeCard :containers="containers" :current-time="currentTime" />
+              </div>
             </div>
           </div>
 
@@ -435,37 +464,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- Quick Metrics (Cards) -->
-        <div v-if="containers.length > 0 || volumes.length > 0 || images.length > 0" class="space-y-6">
-          <div class="flex items-center gap-3">
-            <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
-              <div class="font-bold text-lg px-1">✦</div>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-900">Quick Metrics</h2>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            <div class="lg:col-span-2 xl:col-span-2">
-              <AppCategoriesCard :containers="containers" />
-            </div>
-
-            <div class="lg:col-span-2 xl:col-span-2">
-              <BiggestStorageCard :images="images" />
-            </div>
-
-            <div>
-              <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
-            </div>
-
-            <div class="lg:col-span-2 xl:col-span-2">
-              <DiskUsageCard :images="images" :volumes="volumes" />
-            </div>
-
-            <div>
-              <AverageUptimeCard :containers="containers" :current-time="currentTime" />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
