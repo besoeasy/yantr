@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Activity, Package, HardDrive, Clock, Timer, Layers, Trophy } from 'lucide-vue-next'
+import DonutChart from './charts/DonutChart.vue'
 
 const props = defineProps({
   containers: {
@@ -274,6 +275,60 @@ const categoryStats = computed(() => {
   }
 })
 
+const diskDonuts = computed(() => {
+  const images = diskMetrics.value.images
+  const volumes = diskMetrics.value.volumes
+
+  return {
+    images: {
+      total: images.total,
+      used: images.used,
+      unused: images.unused,
+      series: [images.used, images.unused],
+      labels: ['Used', 'Unused'],
+      colors: ['#3b82f6', '#fdba74']
+    },
+    volumes: {
+      total: volumes.total,
+      used: volumes.used,
+      unused: volumes.unused,
+      series: [volumes.used, volumes.unused],
+      labels: ['Used', 'Unused'],
+      colors: ['#6366f1', '#fdba74']
+    }
+  }
+})
+
+const categoryDonut = computed(() => {
+  const rows = Array.isArray(categoryStats.value.all) ? categoryStats.value.all : []
+  if (rows.length === 0) {
+    return { series: [], labels: [], colors: [], legend: [] }
+  }
+
+  const sorted = [...rows].sort((a, b) => (b?.[1] || 0) - (a?.[1] || 0))
+  const topN = 6
+  const top = sorted.slice(0, topN)
+  const rest = sorted.slice(topN)
+  const otherCount = rest.reduce((sum, r) => sum + (Number(r?.[1]) || 0), 0)
+
+  const labels = top.map((r) => formatCategory(r[0]))
+  const series = top.map((r) => Number(r[1]) || 0)
+
+  if (otherCount > 0) {
+    labels.push('Other')
+    series.push(otherCount)
+  }
+
+  const colors = ['#22c55e', '#10b981', '#0ea5e9', '#6366f1', '#a855f7', '#f59e0b', '#94a3b8']
+
+  return {
+    labels,
+    series,
+    colors: colors.slice(0, labels.length),
+    legend: labels.map((label, idx) => ({ label, value: series[idx], color: colors[idx] }))
+  }
+})
+
 // Helper function to format bytes
 function formatBytes(bytes) {
   if (bytes === 0) return '0 B'
@@ -400,72 +455,74 @@ function formatCategory(category) {
             </div>
           </div>
 
-          <div class="space-y-4">
-            <!-- Images -->
-            <div class="rounded-xl border border-gray-100 bg-white/60 p-3">
-              <div class="flex items-center justify-between gap-3 text-sm mb-2">
-                <span class="text-gray-700 font-semibold">Images</span>
-                <span class="font-bold text-gray-900 tabular-nums">{{ formatBytes(diskMetrics.images.total) }}</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="rounded-2xl border border-gray-100 bg-white/60 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-sm font-semibold text-gray-700">Images</div>
+                <div class="text-xs font-bold text-gray-900 tabular-nums">{{ formatBytes(diskDonuts.images.total) }}</div>
               </div>
 
-              <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <div class="flex h-full">
-                  <div
-                    class="bg-linear-to-r from-blue-500 to-blue-400 transition-all duration-500"
-                    :style="{ width: `${diskMetrics.images.usedPercent}%` }"
-                    :title="`Used: ${formatBytes(diskMetrics.images.used)}`"
-                  ></div>
-                  <div
-                    class="bg-linear-to-r from-orange-300 to-orange-200 transition-all duration-500"
-                    :style="{ width: `${diskMetrics.images.unusedPercent}%` }"
-                    :title="`Unused: ${formatBytes(diskMetrics.images.unused)}`"
-                  ></div>
+              <div v-if="diskDonuts.images.total === 0" class="mt-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-4 py-6 text-center">
+                <div class="text-sm font-semibold text-gray-700">No image data</div>
+                <div class="text-xs text-gray-500 mt-1">Nothing to visualize yet.</div>
+              </div>
+
+              <div v-else class="mt-2">
+                <DonutChart
+                  :series="diskDonuts.images.series"
+                  :labels="diskDonuts.images.labels"
+                  :colors="diskDonuts.images.colors"
+                  :height="185"
+                  donut-label="Images"
+                  :value-formatter="formatBytes"
+                  :total-formatter="() => formatBytes(diskDonuts.images.total)"
+                />
+
+                <div class="mt-2 flex items-center justify-between text-xs text-gray-600">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: diskDonuts.images.colors[0] }"></span>
+                    Used <span class="font-semibold tabular-nums">{{ formatBytes(diskDonuts.images.used) }}</span>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: diskDonuts.images.colors[1] }"></span>
+                    Unused <span class="font-semibold tabular-nums">{{ formatBytes(diskDonuts.images.unused) }}</span>
+                  </span>
                 </div>
-              </div>
-
-              <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
-                <span class="inline-flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                  Used: <span class="font-semibold tabular-nums">{{ formatBytes(diskMetrics.images.used) }}</span>
-                </span>
-                <span class="inline-flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-orange-300"></span>
-                  Unused: <span class="font-semibold tabular-nums">{{ formatBytes(diskMetrics.images.unused) }}</span>
-                </span>
               </div>
             </div>
 
-            <!-- Volumes -->
-            <div class="rounded-xl border border-gray-100 bg-white/60 p-3">
-              <div class="flex items-center justify-between gap-3 text-sm mb-2">
-                <span class="text-gray-700 font-semibold">Volumes</span>
-                <span class="font-bold text-gray-900 tabular-nums">{{ formatBytes(diskMetrics.volumes.total) }}</span>
+            <div class="rounded-2xl border border-gray-100 bg-white/60 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-sm font-semibold text-gray-700">Volumes</div>
+                <div class="text-xs font-bold text-gray-900 tabular-nums">{{ formatBytes(diskDonuts.volumes.total) }}</div>
               </div>
 
-              <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                <div class="flex h-full">
-                  <div
-                    class="bg-linear-to-r from-indigo-500 to-indigo-400 transition-all duration-500"
-                    :style="{ width: `${diskMetrics.volumes.usedPercent}%` }"
-                    :title="`Used: ${formatBytes(diskMetrics.volumes.used)}`"
-                  ></div>
-                  <div
-                    class="bg-linear-to-r from-orange-300 to-orange-200 transition-all duration-500"
-                    :style="{ width: `${diskMetrics.volumes.unusedPercent}%` }"
-                    :title="`Unused: ${formatBytes(diskMetrics.volumes.unused)}`"
-                  ></div>
+              <div v-if="diskDonuts.volumes.total === 0" class="mt-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-4 py-6 text-center">
+                <div class="text-sm font-semibold text-gray-700">No volume data</div>
+                <div class="text-xs text-gray-500 mt-1">Nothing to visualize yet.</div>
+              </div>
+
+              <div v-else class="mt-2">
+                <DonutChart
+                  :series="diskDonuts.volumes.series"
+                  :labels="diskDonuts.volumes.labels"
+                  :colors="diskDonuts.volumes.colors"
+                  :height="185"
+                  donut-label="Volumes"
+                  :value-formatter="formatBytes"
+                  :total-formatter="() => formatBytes(diskDonuts.volumes.total)"
+                />
+
+                <div class="mt-2 flex items-center justify-between text-xs text-gray-600">
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: diskDonuts.volumes.colors[0] }"></span>
+                    Used <span class="font-semibold tabular-nums">{{ formatBytes(diskDonuts.volumes.used) }}</span>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: diskDonuts.volumes.colors[1] }"></span>
+                    Unused <span class="font-semibold tabular-nums">{{ formatBytes(diskDonuts.volumes.unused) }}</span>
+                  </span>
                 </div>
-              </div>
-
-              <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
-                <span class="inline-flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-                  Used: <span class="font-semibold tabular-nums">{{ formatBytes(diskMetrics.volumes.used) }}</span>
-                </span>
-                <span class="inline-flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-orange-300"></span>
-                  Unused: <span class="font-semibold tabular-nums">{{ formatBytes(diskMetrics.volumes.unused) }}</span>
-                </span>
               </div>
             </div>
           </div>
@@ -581,6 +638,40 @@ function formatCategory(category) {
           </div>
 
           <div class="space-y-4">
+            <div class="rounded-2xl border border-gray-100 bg-white/60 p-3">
+              <div class="flex items-center justify-between gap-3">
+                <div class="text-sm font-semibold text-gray-700">Distribution</div>
+                <div class="text-xs font-bold text-gray-900 tabular-nums">{{ categoryStats.appsCount }} apps</div>
+              </div>
+
+              <div v-if="categoryDonut.series.length === 0" class="mt-3 rounded-xl border border-dashed border-gray-200 bg-gray-50/50 px-4 py-6 text-center">
+                <div class="text-sm font-semibold text-gray-700">No category data</div>
+                <div class="text-xs text-gray-500 mt-1">Apps need categories to chart.</div>
+              </div>
+
+              <div v-else class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
+                <DonutChart
+                  :series="categoryDonut.series"
+                  :labels="categoryDonut.labels"
+                  :colors="categoryDonut.colors"
+                  :height="190"
+                  donut-label="Apps"
+                  :total-formatter="() => `${categoryStats.appsCount}`"
+                />
+
+                <div class="space-y-2">
+                  <div v-for="row in categoryDonut.legend" :key="row.label" class="flex items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-2.5 h-2.5 rounded-full" :style="{ backgroundColor: row.color }"></span>
+                      <span class="text-gray-700 font-medium truncate" :title="row.label">{{ row.label }}</span>
+                    </div>
+                    <span class="text-gray-900 font-bold tabular-nums">{{ row.value }}</span>
+                  </div>
+                  <div class="text-[11px] text-gray-400">Top {{ Math.min(6, categoryStats.total) }} categories</div>
+                </div>
+              </div>
+            </div>
+
             <div class="rounded-2xl border border-green-100 bg-white/70 p-4">
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-2 min-w-0">
