@@ -20,6 +20,35 @@ const totalApps = computed(() => containers.value.length)
 const runningApps = computed(() => containers.value.filter(c => c.state === 'running').length)
 const totalVolumes = computed(() => volumes.value.length)
 
+// Container Grouping
+const volumeContainers = computed(() => {
+  return containers.value.filter(c => c.labels && c.labels['yantra.volume-browser'])
+})
+
+const yantraContainers = computed(() => {
+  return containers.value.filter(c => {
+    const isVolume = c.labels && c.labels['yantra.volume-browser']
+    const isYantraApp = c.app || (c.labels && c.labels['yantra.app.id'])
+    return !isVolume && isYantraApp
+  })
+})
+
+const otherContainers = computed(() => {
+  return containers.value.filter(c => {
+    const isVolume = c.labels && c.labels['yantra.volume-browser']
+    const isYantraApp = c.app || (c.labels && c.labels['yantra.app.id'])
+    return !isVolume && !isYantraApp
+  })
+})
+
+// Greeting
+const greeting = computed(() => {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+})
+
 // Helper function to format time remaining
 function formatTimeRemaining(expireAt) {
   const expirationTime = parseInt(expireAt, 10) * 1000 // Convert to milliseconds
@@ -140,137 +169,244 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="p-4 sm:p-6 lg:p-8">
-      <div class="mx-auto space-y-6">
-        <!-- Loading State -->
-        <div v-if="loading" class="text-center py-20">
-          <div class="w-12 h-12 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin mx-auto mb-4"></div>
-          <div class="text-gray-600 font-medium">Loading...</div>
+  <div class="min-h-screen bg-gray-50/50">
+    <!-- Main Content -->
+    <div class="lg:mr-64 xl:mr-72 p-6 sm:p-10 lg:p-14">
+      <div class="max-w-7xl mx-auto space-y-10">
+        
+        <!-- Header & Stats -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 tracking-tight mb-2">
+              {{ greeting }}
+            </h1>
+            <p class="text-lg text-gray-500 font-medium">
+              Here's what's happening with your system today.
+            </p>
+          </div>
+          
+          <div class="flex items-center gap-4">
+            <div class="flex flex-col items-end px-6 py-3 bg-white rounded-2xl shadow-sm border border-gray-100/50">
+              <span class="text-3xl font-bold text-gray-900 leading-none">{{ runningApps }}</span>
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Running Apps</span>
+            </div>
+            <div class="flex flex-col items-end px-6 py-3 bg-white rounded-2xl shadow-sm border border-gray-100/50">
+              <span class="text-3xl font-bold text-gray-900 leading-none">{{ totalVolumes }}</span>
+              <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider mt-1">Volumes</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Empty State -->
-        <div v-else-if="containers.length === 0" class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-200">
-        <div class="text-6xl mb-4">🎯</div>
-        <div class="text-gray-900 font-bold text-2xl mb-2">Welcome to Yantra!</div>
-        <div class="text-gray-600 mb-6">No containers running yet. Get started by installing apps.</div>
-        <router-link to="/apps"
-          class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl">
-          <Store :size="20" />
-          <span>Browse App Store</span>
-        </router-link>
-      </div>
+        <!-- Loading State -->
+        <div v-if="loading" class="flex flex-col items-center justify-center py-32">
+          <div class="w-10 h-10 border-3 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+          <div class="text-gray-400 font-medium animate-pulse">Syncing containers...</div>
+        </div>
 
-      <!-- All Containers Section -->
-      <div v-if="containers.length > 0" class="space-y-4">
-        <div class="grid gap-4" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); grid-auto-rows: auto;">
-          <!-- Watchtower Not Installed Card -->
-          <div v-if="!watchtowerInstalled"
+        <!-- Content -->
+        <div v-else class="space-y-12 animate-fadeIn">
+          
+          <!-- Watchtower Alert -->
+          <div v-if="!watchtowerInstalled && containers.length > 0" 
                @click="router.push('/apps/watchtower')"
-               class="relative overflow-hidden bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer group border-2 border-orange-300">
-            <!-- Animated background pattern -->
-            <div class="absolute inset-0 opacity-10">
-              <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
-            </div>
-            
-            <div class="relative">
-              <div class="flex items-start justify-between mb-3">
-                <div class="flex items-center gap-2">
-                  <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                    <AlertTriangle :size="24" class="text-white animate-pulse" />
+               class="relative overflow-hidden group bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-1 shadow-xl shadow-orange-500/20 cursor-pointer hover:shadow-2xl hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300">
+            <div class="bg-white/10 h-full w-full rounded-[20px] p-6 relative overflow-hidden backdrop-blur-sm">
+              <div class="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              
+              <div class="flex items-center justify-between relative z-10">
+                <div class="flex items-center gap-5">
+                  <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
+                    <AlertTriangle :size="28" class="text-white" />
                   </div>
                   <div>
-                    <div class="text-xs font-bold text-orange-100 uppercase tracking-wider">Action Required</div>
-                    <div class="text-2xl font-black text-white tracking-tight">
-                      Watchtower
+                    <h3 class="text-xl font-bold text-white mb-1">Watchtower Missing</h3>
+                    <p class="text-white/80 font-medium">Enable automatic updates to keep your apps secure.</p>
+                  </div>
+                </div>
+                <div class="px-5 py-2.5 bg-white text-orange-600 rounded-xl font-bold text-sm shadow-lg group-hover:scale-105 transition-transform">
+                  Enable Now
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-if="containers.length === 0" class="text-center py-24 bg-white rounded-3xl shadow-sm">
+            <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Store :size="40" class="text-gray-300" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">No Apps Running</h3>
+            <p class="text-gray-500 max-w-md mx-auto mb-8">Your dashboard is looking a bit empty. Visit the App Store to get started.</p>
+            <router-link to="/apps"
+              class="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold transition-all hover:scale-105 shadow-xl shadow-gray-900/20">
+              <Store :size="20" />
+              <span>Browse App Store</span>
+            </router-link>
+          </div>
+
+          <!-- Volume Browsers Section -->
+          <div v-if="volumeContainers.length > 0">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-indigo-100 text-indigo-600 rounded-xl">
+                <HardDrive :size="24" />
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Volume Managers</h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{{ volumeContainers.length }}</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div v-for="(container, index) in volumeContainers" :key="container.id"
+                :style="{ animationDelay: `${index * 50}ms` }"
+                @click="viewContainerDetail(container)"
+                class="group bg-white rounded-3xl p-6 shadow-[0_2px_15px_rgb(0,0,0,0.03)] border border-indigo-50 hover:border-indigo-100 hover:shadow-[0_8px_30px_rgb(79,70,229,0.06)] transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1">
+                
+                <div class="flex items-center gap-4 mb-4">
+                  <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-105 transition-transform">
+                    📂
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-lg text-gray-900 line-clamp-1 mb-1">
+                      {{ container.labels?.['yantra.volume-browser'] || container.name }}
+                    </h3>
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-green-50 text-green-700">
+                      Active
+                    </span>
+                  </div>
+                </div>
+                
+                 <div class="mt-auto pt-3 flex items-center justify-between text-sm border-t border-gray-50">
+                  <span class="text-gray-400 font-medium group-hover:text-indigo-600 transition-colors">Manage Files</span>
+                  <ArrowRight :size="16" class="text-gray-300 group-hover:text-indigo-600 transform group-hover:translate-x-0.5 transition-all" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Yantra Apps Section -->
+          <div v-if="yantraContainers.length > 0">
+             <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-blue-100 text-blue-600 rounded-xl">
+                <Package :size="24" />
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">Installed Apps</h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{{ yantraContainers.length }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div v-for="(container, index) in yantraContainers" :key="container.id"
+                :style="{ animationDelay: `${index * 50}ms` }"
+                @click="viewContainerDetail(container)"
+                 class="group bg-white rounded-3xl p-6 shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1">
+                
+                <!-- Card Header -->
+                <div class="flex items-start justify-between mb-6">
+                  <div class="flex items-center gap-4">
+                    <div class="relative">
+                      <img v-if="container.app && container.app.logo" :src="container.app.logo" :alt="container.name"
+                        class="w-16 h-16 object-contain filter group-hover:brightness-105 transition-all">
+                      <div v-else class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-3xl">
+                        🐳
+                      </div>
+                      <!-- Status Indicator Dot -->
+                      <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
+                        <div :class="container.state === 'running' ? 'bg-green-500' : 'bg-gray-400'" 
+                             class="w-3 h-3 rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h3 class="font-bold text-xl text-gray-900 line-clamp-1 mb-1">
+                        {{ container.app ? container.app.name : (container.name.replace(/^\//, '')) }}
+                      </h3>
+                      <div class="flex items-center gap-2">
+                         <span class="text-xs font-semibold px-2.5 py-1 rounded-lg"
+                               :class="container.state === 'running' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'">
+                           {{ container.state }}
+                         </span>
+                         <span v-if="isTemporary(container)" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700">
+                           Temp
+                         </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="w-6 h-6 bg-white/20 rounded-lg flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                  <ArrowRight :size="16" class="text-white" />
-                </div>
-              </div>
-              
-              <p class="text-white/90 text-sm leading-relaxed mb-3">
-                Enable <span class="font-bold text-white">automatic updates</span> for all your apps every 3 hours.
-              </p>
-              
-              <div class="flex items-center gap-2">
-                <div class="flex items-center gap-1 px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg">
-                  <span class="text-white/90 text-xs">🔄</span>
-                  <span class="text-white text-xs font-semibold">Auto-updates</span>
-                </div>
-                <div class="flex items-center gap-1 px-2 py-1 bg-white/20 backdrop-blur-sm rounded-lg">
-                  <span class="text-white/90 text-xs">🛡️</span>
-                  <span class="text-white text-xs font-semibold">Security</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- All Containers (including volume browsers) -->
-          <div v-for="(container, index) in containers" :key="container.id"
-            :style="{ animationDelay: `${index * 50}ms` }"
-            @click="viewContainerDetail(container)"
-            class="group bg-white rounded-xl p-5 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-200 cursor-pointer animate-fadeIn">
-            
-            <div class="flex items-start gap-4 mb-4">
-              <div class="shrink-0">
-                <img v-if="container.app.logo" :src="container.app.logo" :alt="container.name"
-                  class="w-14 h-14 object-contain rounded-lg">
-                <span v-else class="text-4xl">🐳</span>
-              </div>
-              
-              <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-lg text-gray-900 truncate mb-1">
-                  {{ container.labels?.['yantra.volume-browser'] || container.name }}
-                </h3>
-                <div class="flex items-center gap-2 flex-wrap">
-                  <div :class="container.state === 'running' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'"
-                    class="px-2 py-0.5 rounded-md text-xs font-semibold inline-flex items-center gap-1">
-                    <span :class="container.state === 'running' ? 'bg-green-500' : 'bg-gray-400'" 
-                      class="w-1.5 h-1.5 rounded-full"></span>
-                    {{ container.state }}
+                <!-- Metrics -->
+                <div class="space-y-3 mb-6 flex-1">
+                  <div v-if="container.state === 'running' && formatUptime(container)" 
+                       class="flex items-center justify-between text-sm py-2 border-b border-gray-50 last:border-0 border-dashed">
+                    <span class="text-gray-400 font-medium">Uptime</span>
+                    <span class="text-gray-700 font-semibold font-mono">{{ formatUptime(container) }}</span>
                   </div>
-                  <div v-if="container.state === 'running' && formatUptime(container)"
-                    class="px-2 py-0.5 rounded-md text-xs font-semibold bg-blue-100 text-blue-700 inline-flex items-center gap-1">
-                    <Activity :size="12" />
-                    {{ formatUptime(container) }}
-                  </div>
+                  
                   <div v-if="isTemporary(container)" 
-                    :class="getExpirationInfo(container).isExpiringSoon ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'"
-                    class="px-2 py-0.5 rounded-md text-xs font-semibold">
-                    ⏱️ {{ getExpirationInfo(container).timeRemaining }}
+                       class="flex items-center justify-between text-sm py-2 border-b border-gray-50 last:border-0 border-dashed">
+                    <span class="text-gray-400 font-medium">Expires</span>
+                    <span :class="getExpirationInfo(container).isExpiringSoon ? 'text-red-600 animate-pulse' : 'text-orange-600'" 
+                          class="font-bold font-mono">
+                      {{ getExpirationInfo(container).timeRemaining }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-auto pt-4 flex items-center justify-between text-sm border-t border-gray-50">
+                  <span class="text-gray-400 font-medium group-hover:text-blue-600 transition-colors">Manage App</span>
+                  <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                    <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
               </div>
             </div>
+          </div>
+          </div>
 
-            <div class="space-y-2 text-xs text-gray-600">
-              <div class="flex items-start gap-2">
-                <span class="font-semibold shrink-0">Image:</span>
-                <span class="font-mono break-all">{{ container.image }}</span>
+          <!-- Other Containers Section -->
+          <div v-if="otherContainers.length > 0">
+             <div class="flex items-center gap-3 mb-6">
+              <div class="p-2 bg-gray-200 text-gray-600 rounded-xl">
+                <div class="font-bold text-lg px-1">#</div>
               </div>
-              <div v-if="isTemporary(container)" 
-                :class="getExpirationInfo(container).isExpiringSoon ? 'bg-red-50 border-red-200 text-red-700' : 'bg-orange-50 border-orange-200 text-orange-700'"
-                class="px-2 py-1.5 rounded-lg border">
-                <div class="font-semibold mb-0.5">⏱️ Temporary Installation</div>
-                <div class="opacity-80 text-[10px]">
-                  Auto-deletes in {{ getExpirationInfo(container).timeRemaining }}
+              <h2 class="text-2xl font-bold text-gray-900">Other Containers</h2>
+              <span class="px-2.5 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">{{ otherContainers.length }}</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+              <div v-for="(container, index) in otherContainers" :key="container.id"
+                :style="{ animationDelay: `${index * 50}ms` }"
+                @click="viewContainerDetail(container)"
+                 class="group bg-white rounded-3xl p-6 shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1">
+                
+                <div class="flex items-start gap-4 mb-4">
+                  <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl grayscale opacity-70">
+                    🐳
+                  </div>
+                  <div class="overflow-hidden">
+                    <h3 class="font-bold text-lg text-gray-700 truncate mb-1" :title="container.name">
+                      {{ container.name.replace(/^\//, '') }}
+                    </h3>
+                     <span class="text-xs font-semibold px-2 py-0.5 rounded-md"
+                           :class="container.state === 'running' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'">
+                       {{ container.state }}
+                     </span>
+                  </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <span class="font-mono truncate max-w-[150px]">{{ container.image.split(':')[0] }}</span>
+                        <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform" />
+                    </div>
                 </div>
               </div>
             </div>
-
-            <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-              <span class="text-sm text-gray-600 group-hover:text-gray-900 font-medium transition-colors">
-                View Details
-              </span>
-              <ArrowRight :size="16" class="text-gray-400 group-hover:text-gray-900 group-hover:translate-x-1 transition-all" />
-            </div>
           </div>
+
         </div>
-      </div>
-      </div>
+      
+      <!-- Right Sidebar Area (optional future use or padding) -->
+      <div class="hidden xl:block fixed top-0 right-0 w-72 h-screen border-l border-gray-100 bg-white/50 backdrop-blur-xl p-8 z-[-1]"></div>
+      
     </div>
   </div>
 </template>
