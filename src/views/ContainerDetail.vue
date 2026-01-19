@@ -270,7 +270,7 @@ async function deleteContainer() {
         message += `\n\nVolumes removed: ${data.volumesRemoved.join(', ')}`
       }
       toast.success(message)
-      router.push('/containers')
+      router.push('/home')
     } else {
       toast.error(`Deletion failed: ${data.error}`)
     }
