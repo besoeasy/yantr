@@ -99,24 +99,7 @@ const expiringTop = computed(() => {
         </div>
       </div>
 
-      <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <div class="text-xs text-gray-400 font-medium">Next to expire</div>
-            <div
-              class="text-2xl font-extrabold mt-1 tabular-nums"
-              :class="expiringContainers.isExpiringSoon ? 'text-red-300 animate-pulse' : 'text-orange-200'"
-            >
-              {{ expiringContainers.nextExpiryFormatted }}
-            </div>
-          </div>
-        </div>
-        <div class="text-xs text-gray-300 mt-2 truncate" :title="expiringContainers.containerName">
-          {{ expiringContainers.containerName }}
-        </div>
-      </div>
-
-      <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4" v-if="expiringTop.items.length > 0">
+      <div class="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4" v-if="expiringTop.items.length > 0">
         <div class="flex items-center justify-between gap-3 mb-3">
           <div>
             <div class="text-sm font-bold text-white">Next 4 expiring</div>

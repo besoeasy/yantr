@@ -81,7 +81,6 @@ const otherContainers = computed(() => {
   });
 });
 
-
 // Helper function to format time remaining
 function formatTimeRemaining(expireAt) {
   const expirationTime = parseInt(expireAt, 10) * 1000; // Convert to milliseconds
@@ -236,6 +235,10 @@ onUnmounted(() => {
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              <div v-if="showWatchtowerAlert" class="h-full">
+                <WatchtowerAlert />
+              </div>
+
               <div class="lg:col-span-2 xl:col-span-2">
                 <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
               </div>
@@ -249,8 +252,8 @@ onUnmounted(() => {
                 />
               </div>
 
-              <div v-if="showWatchtowerAlert" class="h-full">
-                <WatchtowerAlert />
+              <div>
+                <AverageUptimeCard :containers="containers" :current-time="currentTime" />
               </div>
 
               <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
@@ -267,10 +270,6 @@ onUnmounted(() => {
 
               <div v-if="images.length > 0 || volumes.length > 0" class="lg:col-span-2 xl:col-span-2">
                 <DiskUsageCard :images="images" :volumes="volumes" />
-              </div>
-
-              <div>
-                <AverageUptimeCard :containers="containers" :current-time="currentTime" />
               </div>
             </div>
           </div>
@@ -463,7 +462,6 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
