@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Store, ArrowRight, AlertTriangle, Package, HardDrive, Activity, TrendingUp } from 'lucide-vue-next'
+import SystemCleaner from '../components/SystemCleaner.vue'
+import WatchtowerAlert from '../components/WatchtowerAlert.vue'
 
 const router = useRouter()
 
@@ -206,27 +208,13 @@ onUnmounted(() => {
         <!-- Content -->
         <div v-else class="space-y-12 animate-fadeIn">
           
-          <!-- Watchtower Alert -->
-          <div v-if="!watchtowerInstalled && containers.length > 0" 
-               @click="router.push('/apps/watchtower')"
-               class="relative overflow-hidden group bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl p-1 shadow-xl shadow-orange-500/20 cursor-pointer hover:shadow-2xl hover:shadow-orange-500/30 hover:-translate-y-0.5 transition-all duration-300">
-            <div class="bg-white/10 h-full w-full rounded-[20px] p-6 relative overflow-hidden backdrop-blur-sm">
-              <div class="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              
-              <div class="flex items-center justify-between relative z-10">
-                <div class="flex items-center gap-5">
-                  <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
-                    <AlertTriangle :size="28" class="text-white" />
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold text-white mb-1">Watchtower Missing</h3>
-                    <p class="text-white/80 font-medium">Enable automatic updates to keep your apps secure.</p>
-                  </div>
-                </div>
-                <div class="px-5 py-2.5 bg-white text-orange-600 rounded-xl font-bold text-sm shadow-lg group-hover:scale-105 transition-transform">
-                  Enable Now
-                </div>
-              </div>
+          <!-- Alerts Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" v-if="!loading">
+            <div class="h-full">
+              <SystemCleaner :api-url="apiUrl" />
+            </div>
+            <div class="h-full" v-if="!watchtowerInstalled && containers.length > 0">
+              <WatchtowerAlert />
             </div>
           </div>
 

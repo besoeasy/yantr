@@ -1427,6 +1427,56 @@ app.delete("/api/containers/:id", async (req, res) => {
   }
 });
 
+// POST /api/system/prune - Prune unused resources
+app.post("/api/system/prune", async (req, res) => {
+  log("info", "🧹 [POST /api/system/prune] Prune request received");
+  try {
+    const { images, volumes } = req.body;
+    const results = {
+      images: { count: 0, spaceReclaimed: 0 },
+      volumes: { count: 0, spaceReclaimed: 0 }
+    };
+
+    // Prune images if requested
+    if (images) {
+      log("info", "🧹 [POST /api/system/prune] Pruning images...");
+      try {
+        // Prune all unused images (dangling=false means all unused)
+        const pruned = await docker.pruneImages({ filters: { dangling: { "false": true } } });
+        results.images.count = pruned.ImagesDeleted?.length || 0;
+        results.images.spaceReclaimed = pruned.SpaceReclaimed || 0;
+        log("info", `✅ [POST /api/system/prune] Pruned ${results.images.count} images, reclaimed ${results.images.spaceReclaimed} bytes`);
+      } catch (err) {
+        log("error", "❌ [POST /api/system/prune] Failed to prune images:", err.message);
+      }
+    }
+
+    // Prune volumes if requested
+    if (volumes) {
+      log("info", "🧹 [POST /api/system/prune] Pruning volumes...");
+      try {
+        const pruned = await docker.pruneVolumes();
+        results.volumes.count = pruned.VolumesDeleted?.length || 0;
+        results.volumes.spaceReclaimed = pruned.SpaceReclaimed || 0;
+        log("info", `✅ [POST /api/system/prune] Pruned ${results.volumes.count} volumes, reclaimed ${results.volumes.spaceReclaimed} bytes`);
+      } catch (err) {
+        log("error", "❌ [POST /api/system/prune] Failed to prune volumes:", err.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      results
+    });
+  } catch (error) {
+    log("error", "❌ [POST /api/system/prune] Error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Root endpoint
 app.get("/", (req, res) => {
   res.json({
