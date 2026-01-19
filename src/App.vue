@@ -126,14 +126,6 @@ const isActive = (name) => route.name === name
           <span class="text-xs font-medium">Apps</span>
         </router-link>
 
-        <router-link 
-          to="/containers"
-          :class="isActive('containers') ? 'bg-gray-900 text-white' : 'text-gray-600'"
-          class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Containers">
-          <Boxes :size="20" />
-          <span class="text-xs font-medium">Containers</span>
-        </router-link>
 
         <router-link 
           to="/images"

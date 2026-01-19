@@ -211,7 +211,7 @@ async function deployApp() {
       
       // Wait a moment then redirect to containers
       setTimeout(() => {
-        router.push("/containers");
+        router.push("/");
       }, 1500);
     } else {
       throw new Error(result.error || "Deployment failed");

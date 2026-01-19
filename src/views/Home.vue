@@ -171,8 +171,8 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-gray-50/50">
     <!-- Main Content -->
-    <div class="lg:mr-64 xl:mr-72 p-6 sm:p-10 lg:p-14">
-      <div class="max-w-7xl mx-auto space-y-10">
+    <div class="p-6 sm:p-10 lg:p-14">
+      <div class="space-y-10">
         
         <!-- Header & Stats -->
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -404,8 +404,7 @@ onUnmounted(() => {
 
         </div>
       
-      <!-- Right Sidebar Area (optional future use or padding) -->
-      <div class="hidden xl:block fixed top-0 right-0 w-72 h-screen border-l border-gray-100 bg-white/50 backdrop-blur-xl p-8 z-[-1]"></div>
+      <!-- Right Sidebar Area Removed -->
       
     </div>
   </div>

@@ -211,7 +211,7 @@ async function fetchContainerDetail() {
       selectedContainer.value = data.container
     } else {
       toast.error('Container not found')
-      router.push('/containers')
+      router.push('/')
     }
   } catch (error) {
     console.error('Failed to fetch container details:', error)
