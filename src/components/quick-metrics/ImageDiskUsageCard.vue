@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { Layers } from 'lucide-vue-next'
+import { Boxes } from 'lucide-vue-next'
 import DonutChart from '../charts/DonutChart.vue'
 import { formatBytes } from '../../utils/metrics.js'
 
@@ -28,6 +28,20 @@ const donut = computed(() => {
     colors: ['#3b82f6', '#fdba74']
   }
 })
+
+const usedPercent = computed(() => {
+  const total = Number(donut.value.total) || 0
+  const used = Number(donut.value.used) || 0
+  if (!total) return 0
+  return Math.max(0, Math.min(100, Math.round((used / total) * 100)))
+})
+
+const unusedPercent = computed(() => {
+  const total = Number(donut.value.total) || 0
+  const unused = Number(donut.value.unused) || 0
+  if (!total) return 0
+  return Math.max(0, Math.min(100, Math.round((unused / total) * 100)))
+})
 </script>
 
 <template>
@@ -52,19 +66,19 @@ const donut = computed(() => {
             <div
               class="relative w-12 h-12 bg-linear-to-br from-blue-500 to-slate-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500"
             >
-              <Layers class="w-6 h-6 text-white" />
+              <Boxes class="w-6 h-6 text-white" />
             </div>
           </div>
 
           <div>
             <h3 class="text-lg font-bold text-white mb-1 group-hover:text-blue-200 transition-colors">Image Usage</h3>
-            <p class="text-sm font-medium text-gray-400 group-hover:text-gray-300 transition-colors">Used vs unused</p>
+            <p class="text-sm font-medium text-gray-400 group-hover:text-gray-300 transition-colors">Used vs unused storage</p>
           </div>
         </div>
 
-        <div class="text-right">
-          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</div>
-          <div class="text-lg font-extrabold text-white tabular-nums">{{ formatBytes(donut.total) }}</div>
+        <div class="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-1.5">
+          <span class="text-xs font-semibold text-gray-300">Total</span>
+          <span class="text-xs font-extrabold text-white tabular-nums">{{ formatBytes(donut.total) }}</span>
         </div>
       </div>
 
@@ -74,27 +88,62 @@ const donut = computed(() => {
           <div class="text-xs text-gray-400 mt-1">Nothing to visualize yet.</div>
         </div>
 
-        <div v-else>
-          <DonutChart
-            :series="donut.series"
-            :labels="donut.labels"
-            :colors="donut.colors"
-            :height="200"
-            donut-label="Images"
-            theme="dark"
-            :value-formatter="formatBytes"
-            :total-formatter="() => formatBytes(donut.total)"
-          />
+        <div v-else class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <div class="text-sm font-bold text-white">Breakdown</div>
+              <div class="text-xs text-gray-400">Storage used by images</div>
+            </div>
+            <div class="text-xs font-semibold text-gray-400">Includes unused layers</div>
+          </div>
 
-          <div class="mt-2 flex items-center justify-between text-xs text-gray-300">
-            <span class="inline-flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: donut.colors[0] }"></span>
-              Used <span class="font-semibold tabular-nums">{{ formatBytes(donut.used) }}</span>
-            </span>
-            <span class="inline-flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: donut.colors[1] }"></span>
-              Unused <span class="font-semibold tabular-nums">{{ formatBytes(donut.unused) }}</span>
-            </span>
+          <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 items-center">
+            <div class="sm:col-span-2">
+              <DonutChart
+                :series="donut.series"
+                :labels="donut.labels"
+                :colors="donut.colors"
+                :height="180"
+                donut-label="Images"
+                theme="dark"
+                :value-formatter="formatBytes"
+                :total-formatter="() => formatBytes(donut.total)"
+              />
+            </div>
+
+            <div class="sm:col-span-3 space-y-3">
+              <div class="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <div class="flex items-center justify-between gap-3 text-xs">
+                  <div class="inline-flex items-center gap-2 min-w-0">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: donut.colors[0] }"></span>
+                    <span class="text-gray-300 font-semibold">Used</span>
+                  </div>
+                  <div class="shrink-0 text-gray-200 font-bold tabular-nums">
+                    {{ formatBytes(donut.used) }}
+                    <span class="text-gray-400 font-semibold">({{ usedPercent }}%)</span>
+                  </div>
+                </div>
+                <div class="mt-2 h-2 rounded-full bg-black/20 overflow-hidden">
+                  <div class="h-full rounded-full" :style="{ width: `${usedPercent}%`, backgroundColor: donut.colors[0] }"></div>
+                </div>
+              </div>
+
+              <div class="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+                <div class="flex items-center justify-between gap-3 text-xs">
+                  <div class="inline-flex items-center gap-2 min-w-0">
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: donut.colors[1] }"></span>
+                    <span class="text-gray-300 font-semibold">Unused</span>
+                  </div>
+                  <div class="shrink-0 text-gray-200 font-bold tabular-nums">
+                    {{ formatBytes(donut.unused) }}
+                    <span class="text-gray-400 font-semibold">({{ unusedPercent }}%)</span>
+                  </div>
+                </div>
+                <div class="mt-2 h-2 rounded-full bg-black/20 overflow-hidden">
+                  <div class="h-full rounded-full" :style="{ width: `${unusedPercent}%`, backgroundColor: donut.colors[1] }"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

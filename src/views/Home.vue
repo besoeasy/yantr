@@ -439,23 +439,23 @@ onUnmounted(() => {
                 <AverageUptimeCard :containers="containers" :current-time="currentTime" />
               </div>
 
-              <div class="lg:col-span-3 xl:col-span-3">
+              <div class="lg:col-span-2 xl:col-span-2">
                 <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
               </div>
               
-              <div v-if="images.length > 0">
+              <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0">
                 <ImageDiskUsageCard :images="images" />
               </div>
 
-              <div v-if="volumes.length > 0">
+              <div class="lg:col-span-2 xl:col-span-2" v-if="volumes.length > 0">
                 <VolumeDiskUsageCard :volumes="volumes" />
               </div>
 
-              <div v-if="containers.length > 0" class="lg:col-span-3 xl:col-span-3">
+              <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
                 <AppCategoriesCard :containers="containers" />
               </div>
 
-              <div v-if="images.length > 0" class="lg:col-span-3 xl:col-span-3">
+              <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
                 <BiggestStorageCard :images="images" />
               </div>
             </div>
