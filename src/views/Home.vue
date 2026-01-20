@@ -442,6 +442,7 @@ onUnmounted(() => {
               <div class="lg:col-span-3 xl:col-span-3">
                 <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
               </div>
+              
               <div v-if="images.length > 0">
                 <ImageDiskUsageCard :images="images" />
               </div>

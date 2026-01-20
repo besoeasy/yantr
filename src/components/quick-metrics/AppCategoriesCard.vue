@@ -26,6 +26,17 @@ const categoryTreemap = computed(() => {
 
   return { data };
 });
+
+const topCategories = computed(() => {
+  const rows = Array.isArray(categoryStats.value.all) ? categoryStats.value.all : [];
+  if (rows.length === 0) return [];
+
+  return [...rows]
+    .sort((a, b) => (Number(b?.[1]) || 0) - (Number(a?.[1]) || 0))
+    .slice(0, 4)
+    .map((r) => ({ name: formatCategory(r?.[0]), count: Number(r?.[1]) || 0 }))
+    .filter((r) => r.count > 0);
+});
 </script>
 
 <template>
@@ -60,17 +71,20 @@ const categoryTreemap = computed(() => {
           </div>
         </div>
 
-        <div class="text-right">
-          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Apps</div>
-          <div class="text-xl font-extrabold text-white tabular-nums">{{ categoryStats.appsCount }}</div>
+        <div class="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-1.5">
+          <span class="text-xs font-semibold text-gray-300">Apps</span>
+          <span class="text-xs font-extrabold text-white tabular-nums">{{ categoryStats.appsCount }}</span>
         </div>
       </div>
 
       <div class="mt-5 space-y-4">
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-bold text-white">Distribution</div>
-            <div class="text-xs font-semibold text-gray-300">Top categories</div>
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <div>
+              <div class="text-sm font-bold text-white">Category distribution</div>
+              <div class="text-xs text-gray-400">Treemap by app count</div>
+            </div>
+            <div class="text-xs font-semibold text-gray-400">Hover tiles for exact</div>
           </div>
 
           <div v-if="categoryTreemap.data.length === 0" class="mt-3 rounded-xl border border-dashed border-white/10 bg-white/5 px-4 py-6 text-center">
@@ -78,9 +92,27 @@ const categoryTreemap = computed(() => {
             <div class="text-xs text-gray-400 mt-1">Apps need categories to chart.</div>
           </div>
 
-          <div v-else class="mt-3">
+          <div v-else>
             <TreemapChart :data="categoryTreemap.data" :height="220" theme="dark" :value-formatter="(v) => `${v} app${v === 1 ? '' : 's'}`" />
-            <div class="mt-2 text-[11px] text-gray-400">Top {{ Math.min(10, categoryStats.total) }} categories (plus “Other”)</div>
+
+            <div class="mt-3 flex items-center justify-between gap-3 text-[11px] text-gray-400">
+              <span>Top {{ Math.min(10, categoryStats.total) }} categories (plus “Other”)</span>
+              <span v-if="categoryStats.total" class="inline-flex items-center gap-1.5">
+                <Trophy class="w-3.5 h-3.5 text-emerald-300" />
+                <span class="text-gray-300 font-semibold">{{ categoryStats.total }} total</span>
+              </span>
+            </div>
+
+            <div v-if="topCategories.length > 0" class="mt-3 space-y-2">
+              <div v-for="row in topCategories" :key="row.name" class="flex items-center justify-between gap-3 text-xs">
+                <div class="min-w-0">
+                  <div class="text-gray-200 font-semibold truncate" :title="row.name">{{ row.name }}</div>
+                </div>
+                <div class="shrink-0 font-bold tabular-nums text-emerald-200">
+                  {{ row.count }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
