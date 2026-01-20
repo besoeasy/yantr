@@ -83,6 +83,8 @@ const otherContainers = computed(() => {
   });
 });
 
+const temporaryContainersCount = computed(() => containers.value.filter((c) => c?.labels?.["yantra.expireAt"]).length);
+
 // Helper function to format time remaining
 function formatTimeRemaining(expireAt) {
   const expirationTime = parseInt(expireAt, 10) * 1000; // Convert to milliseconds
@@ -439,7 +441,7 @@ onUnmounted(() => {
                 <AverageUptimeCard :containers="containers" :current-time="currentTime" />
               </div>
 
-              <div class="lg:col-span-2 xl:col-span-2">
+              <div v-if="temporaryContainersCount > 0" class="lg:col-span-2 xl:col-span-2">
                 <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
               </div>
 
