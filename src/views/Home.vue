@@ -7,8 +7,7 @@ import WatchtowerAlert from "../components/WatchtowerAlert.vue";
 import GreetingCard from "../components/home/GreetingCard.vue";
 import AppCategoriesCard from "../components/quick-metrics/AppCategoriesCard.vue";
 import BiggestStorageCard from "../components/quick-metrics/BiggestStorageCard.vue";
-import ImageDiskUsageCard from "../components/quick-metrics/ImageDiskUsageCard.vue";
-import VolumeDiskUsageCard from "../components/quick-metrics/VolumeDiskUsageCard.vue";
+import RotatingDiskUsageCard from "../components/quick-metrics/RotatingDiskUsageCard.vue";
 import AverageUptimeCard from "../components/quick-metrics/AverageUptimeCard.vue";
 import ExpiringContainersCard from "../components/quick-metrics/ExpiringContainersCard.vue";
 import WatchtowerNextCheckCard from "../components/quick-metrics/WatchtowerNextCheckCard.vue";
@@ -443,21 +442,17 @@ onUnmounted(() => {
                 <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
               </div>
               
-              <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0">
-                <ImageDiskUsageCard :images="images" />
+              <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0 || volumes.length > 0">
+                <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
               </div>
-
-              <div class="lg:col-span-2 xl:col-span-2" v-if="volumes.length > 0">
-                <VolumeDiskUsageCard :volumes="volumes" />
+    <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
+                <BiggestStorageCard :images="images" />
               </div>
-
               <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
                 <AppCategoriesCard :containers="containers" />
               </div>
 
-              <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
-                <BiggestStorageCard :images="images" />
-              </div>
+          
             </div>
           </div>
         </div>
