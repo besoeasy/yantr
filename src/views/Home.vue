@@ -247,7 +247,7 @@ onUnmounted(() => {
 
           <!-- Quick Metrics (Cards) -->
           <div class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
               <div class="lg:col-span-2 xl:col-span-2">
                 <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
               </div>
