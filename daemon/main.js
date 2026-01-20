@@ -40,6 +40,174 @@ let appsCatalogCache = {
   inFlight: null,
 };
 
+// Public IP/geo cache (avoid hammering external services)
+const IP_IDENTITY_CACHE_TTL_MS = 5 * 60_000;
+let ipIdentityCache = {
+  value: null,
+  expiresAt: 0,
+  inFlight: null,
+};
+
+async function fetchJsonWithTimeout(url, timeoutMs = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      headers: { "user-agent": "yantra-daemon" },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new Error(`Request failed: ${res.status} ${res.statusText}`);
+    }
+    return await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function getPublicIpIdentityCached({ forceRefresh } = { forceRefresh: false }) {
+  const cacheIsValid = ipIdentityCache.value && ipIdentityCache.expiresAt > nowMs();
+  if (!forceRefresh && cacheIsValid) {
+    return ipIdentityCache.value;
+  }
+
+  if (!forceRefresh && ipIdentityCache.inFlight) {
+    return await ipIdentityCache.inFlight;
+  }
+
+  const loadPromise = (async () => {
+    const fetchedAt = new Date().toISOString();
+
+    const normalize = (source, raw) => {
+      if (!raw || typeof raw !== "object") return null;
+
+      // Provider: ipwho.is
+      if (source === "ipwho.is") {
+        if (raw.success === false) return null;
+        const connection = raw.connection || {};
+        return {
+          ip: raw.ip || null,
+          city: raw.city || null,
+          region: raw.region || null,
+          country: raw.country || null,
+          countryCode: raw.country_code || null,
+          isp: connection.isp || null,
+          org: connection.org || null,
+          asn: connection.asn || null,
+          timezone: raw.timezone?.id || null,
+          latitude: typeof raw.latitude === "number" ? raw.latitude : null,
+          longitude: typeof raw.longitude === "number" ? raw.longitude : null,
+        };
+      }
+
+      // Provider: ipapi.co/json
+      if (source === "ipapi.co") {
+        // ipapi.co can return { error: true, reason: '...' }
+        if (raw.error) return null;
+        return {
+          ip: raw.ip || null,
+          city: raw.city || null,
+          region: raw.region || null,
+          country: raw.country_name || null,
+          countryCode: raw.country_code || null,
+          isp: raw.org || raw.isp || null,
+          org: raw.org || null,
+          asn: raw.asn || null,
+          timezone: raw.timezone || null,
+          latitude: typeof raw.latitude === "number" ? raw.latitude : null,
+          longitude: typeof raw.longitude === "number" ? raw.longitude : null,
+        };
+      }
+
+      // Provider: ipinfo.io/json (no key required but rate-limited)
+      if (source === "ipinfo.io") {
+        // ipinfo can return { error: { title, message } }
+        if (raw.error) return null;
+        const loc = typeof raw.loc === "string" ? raw.loc.split(",") : [];
+        const lat = loc.length === 2 ? Number(loc[0]) : null;
+        const lon = loc.length === 2 ? Number(loc[1]) : null;
+        return {
+          ip: raw.ip || null,
+          city: raw.city || null,
+          region: raw.region || null,
+          country: raw.country || null,
+          countryCode: raw.country || null,
+          isp: raw.org || null,
+          org: raw.org || null,
+          asn: null,
+          timezone: raw.timezone || null,
+          latitude: Number.isFinite(lat) ? lat : null,
+          longitude: Number.isFinite(lon) ? lon : null,
+        };
+      }
+
+      // Provider: ifconfig.co/json
+      if (source === "ifconfig.co") {
+        // ifconfig.co may include fields like: ip, city, region_name, country, country_iso
+        return {
+          ip: raw.ip || null,
+          city: raw.city || null,
+          region: raw.region_name || raw.region || null,
+          country: raw.country || null,
+          countryCode: raw.country_iso || raw.country_code || null,
+          isp: raw.asn_org || raw.organization || null,
+          org: raw.asn_org || raw.organization || null,
+          asn: raw.asn || null,
+          timezone: raw.time_zone || raw.timezone || null,
+          latitude: typeof raw.latitude === "number" ? raw.latitude : null,
+          longitude: typeof raw.longitude === "number" ? raw.longitude : null,
+        };
+      }
+
+      return null;
+    };
+
+    const providers = [
+      { source: "ipwho.is", url: "https://ipwho.is/" },
+      { source: "ipapi.co", url: "https://ipapi.co/json/" },
+      { source: "ipinfo.io", url: "https://ipinfo.io/json" },
+      { source: "ifconfig.co", url: "https://ifconfig.co/json" },
+    ];
+
+    const errors = [];
+    for (const provider of providers) {
+      try {
+        const raw = await fetchJsonWithTimeout(provider.url, 6000);
+        const normalized = normalize(provider.source, raw);
+        if (normalized?.ip) {
+          return {
+            ...normalized,
+            source: provider.source,
+            fetchedAt,
+            cacheTtlMs: IP_IDENTITY_CACHE_TTL_MS,
+          };
+        }
+        errors.push(`${provider.source}: invalid response`);
+      } catch (e) {
+        errors.push(`${provider.source}: ${e?.message || String(e)}`);
+      }
+    }
+
+    throw new Error(`Failed to resolve public IP (${errors.join("; ")})`);
+  })();
+
+  if (!forceRefresh) {
+    ipIdentityCache.inFlight = loadPromise;
+  }
+
+  try {
+    const value = await loadPromise;
+    ipIdentityCache.value = value;
+    ipIdentityCache.expiresAt = nowMs() + IP_IDENTITY_CACHE_TTL_MS;
+    return value;
+  } finally {
+    if (ipIdentityCache.inFlight === loadPromise) {
+      ipIdentityCache.inFlight = null;
+    }
+  }
+}
+
 function nowMs() {
   return Date.now();
 }
@@ -417,6 +585,24 @@ app.get("/api/health", (req, res) => {
     timestamp: new Date().toISOString(),
     version: packageJson.version,
   });
+});
+
+// GET /api/network/identity - Public IP + geo/ISP resolved by daemon (machine IP)
+app.get("/api/network/identity", async (req, res) => {
+  try {
+    const force = String(req.query.force || "").toLowerCase() === "true";
+    const identity = await getPublicIpIdentityCached({ forceRefresh: force });
+    res.json({
+      success: true,
+      identity,
+    });
+  } catch (error) {
+    log("error", "❌ [GET /api/network/identity] Error:", error.message);
+    res.status(502).json({
+      success: false,
+      error: error.message || "Failed to resolve public IP",
+    });
+  }
 });
 
 // GET /api/logs - Get stored logs
