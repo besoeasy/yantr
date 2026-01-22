@@ -1,10 +1,13 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { Store, ArrowRight, Package, HardDrive } from "lucide-vue-next";
+import { Store } from "lucide-vue-next";
+import YantraContainersGrid from "../components/home/YantraContainersGrid.vue";
+import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
+import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
 import SystemCleaner from "../components/SystemCleaner.vue";
 import WatchtowerAlert from "../components/WatchtowerAlert.vue";
-import GreetingCard from "../components/home/GreetingCard.vue";
+import OverviewPulseCard from "../components/home/OverviewPulseCard.vue";
 import AppCategoriesCard from "../components/quick-metrics/AppCategoriesCard.vue";
 import BiggestStorageCard from "../components/quick-metrics/BiggestStorageCard.vue";
 import MachineIdentityCard from "../components/quick-metrics/MachineIdentityCard.vue";
@@ -247,255 +250,42 @@ onUnmounted(() => {
 
           <!-- Unified Dashboard Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3">
-            <!-- Quick Metrics Cards -->
-            <div class="lg:col-span-2 xl:col-span-2">
-              <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
+            <!-- Combined Greeting + Operations Pulse -->
+            <div class="lg:col-span-3 xl:col-span-3">
+              <OverviewPulseCard
+                :running-apps="runningApps"
+                :total-volumes="totalVolumes"
+                :temporary-count="temporaryContainersCount"
+                :images-count="images.length"
+                :show-watchtower-alert="showWatchtowerAlert"
+              />
             </div>
 
             <div v-if="showWatchtowerAlert" class="h-full">
               <WatchtowerAlert />
             </div>
 
+            <YantraContainersGrid
+              v-if="yantraContainers.length > 0"
+              :containers="yantraContainers"
+              :format-uptime="formatUptime"
+              :is-temporary="isTemporary"
+              :get-expiration-info="getExpirationInfo"
+              @select="viewContainerDetail"
+            />
+
+            <VolumeContainersGrid
+              v-if="volumeContainers.length > 0"
+              :containers="volumeContainers"
+              :is-temporary="isTemporary"
+              :get-expiration-info="getExpirationInfo"
+              @select="viewContainerDetail"
+            />
+
+            <OtherContainersGrid v-if="otherContainers.length > 0" :containers="otherContainers" @select="viewContainerDetail" />
+
             <div v-else class="h-full">
               <WatchtowerNextCheckCard :containers="containers" :current-time="currentTime" :interval-hours="3" />
-            </div>
-
-            <!-- Yantra Containers -->
-            <div
-              v-for="(container, index) in yantraContainers"
-              :key="container.id"
-              :style="{ animationDelay: `${index * 50}ms` }"
-              @click="viewContainerDetail(container)"
-              class="relative h-full overflow-hidden group cursor-pointer transition-colors duration-300 animate-fadeIn"
-            >
-              <div class="absolute inset-0 bg-white dark:bg-gray-900">
-                <div
-                  class="absolute inset-0 bg-linear-to-br from-slate-200/70 via-blue-200/25 to-white/80 dark:from-slate-600/25 dark:via-blue-600/10 dark:to-gray-900 z-10"
-                ></div>
-                <div
-                  class="absolute top-0 right-0 w-64 h-64 bg-blue-300/35 dark:bg-blue-500/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-400/45 dark:group-hover:bg-blue-500/25 transition-colors duration-700"
-                ></div>
-                <div
-                  class="absolute bottom-0 left-0 w-48 h-48 bg-slate-300/30 dark:bg-slate-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-slate-400/40 dark:group-hover:bg-slate-500/30 transition-colors duration-700"
-                ></div>
-              </div>
-
-              <div
-                class="relative z-20 h-full p-5 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-blue-300/70 dark:group-hover:border-blue-500/30 transition-none"
-              >
-                <!-- Card Header -->
-                <div class="flex items-start justify-between mb-4">
-                  <div class="flex items-center gap-4 min-w-0">
-                    <div class="relative shrink-0">
-                      <div
-                        class="absolute inset-0 bg-blue-400/25 dark:bg-blue-500/15 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"
-                      ></div>
-
-                      <div
-                        class="relative w-14 h-14 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-center overflow-hidden"
-                      >
-                        <img
-                          v-if="container.app && container.app.logo"
-                          :src="container.app.logo"
-                          :alt="container.name"
-                          class="w-12 h-12 object-contain filter group-hover:brightness-110 transition-all"
-                        />
-                        <div v-else class="text-2xl">🐳</div>
-                      </div>
-
-                      <!-- Status Indicator Dot -->
-                      <div
-                        class="absolute -bottom-1 -right-1 w-5 h-5 bg-white/80 dark:bg-gray-900/90 border border-slate-200/70 dark:border-slate-700/60 rounded-full flex items-center justify-center"
-                      >
-                        <div :class="container.state === 'running' ? 'bg-emerald-500' : 'bg-slate-400'" class="w-3 h-3 rounded-full animate-pulse"></div>
-                      </div>
-                    </div>
-
-                    <div class="min-w-0">
-                      <h3
-                        class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors"
-                      >
-                        {{ container.app ? container.app.name : container.name.replace(/^\//, "") }}
-                      </h3>
-                      <div class="flex items-center gap-2 flex-wrap">
-                        <span
-                          class="text-xs font-semibold px-2.5 py-1 rounded-lg border"
-                          :class="
-                            container.state === 'running'
-                              ? 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-500/20'
-                              : 'bg-white/70 text-slate-600 border-slate-200 dark:bg-white/5 dark:text-gray-300 dark:border-slate-700/60'
-                          "
-                        >
-                          {{ container.state }}
-                        </span>
-                        <span
-                          v-if="isTemporary(container)"
-                          class="text-xs font-semibold px-2.5 py-1 rounded-lg border bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-200 dark:border-orange-500/20"
-                        >
-                          Temp
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Metrics -->
-                <div class="space-y-3 mb-5 flex-1">
-                  <div
-                    v-if="container.state === 'running' && formatUptime(container)"
-                    class="flex items-center justify-between text-sm py-2 border-b border-slate-200/70 dark:border-slate-700/60 last:border-0 border-dashed"
-                  >
-                    <span class="text-slate-500 dark:text-gray-400 font-medium">Uptime</span>
-                    <span class="text-slate-700 dark:text-gray-200 font-semibold font-mono tabular-nums">{{ formatUptime(container) }}</span>
-                  </div>
-
-                  <div
-                    v-if="isTemporary(container)"
-                    class="flex items-center justify-between text-sm py-2 border-b border-slate-200/70 dark:border-slate-700/60 last:border-0 border-dashed"
-                  >
-                    <span class="text-slate-500 dark:text-gray-400 font-medium">Expires</span>
-                    <span
-                      :class="
-                        getExpirationInfo(container).isExpiringSoon ? 'text-red-500 dark:text-red-300 animate-pulse' : 'text-orange-600 dark:text-orange-200'
-                      "
-                      class="font-bold font-mono tabular-nums"
-                    >
-                      {{ getExpirationInfo(container).timeRemaining }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Footer -->
-                <div
-                  class="mt-auto pt-4 flex items-center justify-between text-sm border-t border-slate-200/70 dark:border-slate-700/60 group-hover:border-blue-200/70 dark:group-hover:border-slate-600/70 transition-colors"
-                >
-                  <span class="text-slate-500 dark:text-gray-400 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-200 transition-colors"
-                    >Manage App</span
-                  >
-                  <div
-                    class="w-9 h-9 rounded-full bg-white/70 dark:bg-white/5 border border-slate-200/70 dark:border-slate-700/60 flex items-center justify-center text-slate-700 dark:text-white group-hover:border-blue-300/70 dark:group-hover:border-blue-500/30 group-hover:bg-blue-100 dark:group-hover:bg-blue-500/10 transition-colors"
-                  >
-                    <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Volume Containers -->
-            <div
-              v-for="(container, index) in volumeContainers"
-              :key="container.id"
-              :style="{ animationDelay: `${index * 50}ms` }"
-              @click="viewContainerDetail(container)"
-              class="relative h-full overflow-hidden group rounded-2xl cursor-pointer transition-all duration-500 hover:-translate-y-1 animate-fadeIn"
-            >
-              <div class="absolute inset-0 bg-white dark:bg-gray-900">
-                <div
-                  class="absolute inset-0 bg-linear-to-br from-indigo-200/60 via-purple-200/30 to-white/80 dark:from-indigo-600/25 dark:via-purple-600/10 dark:to-gray-900 z-10"
-                ></div>
-                <div
-                  class="absolute top-0 right-0 w-64 h-64 bg-indigo-300/35 dark:bg-indigo-500/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-indigo-400/45 dark:group-hover:bg-indigo-500/25 transition-colors duration-700"
-                ></div>
-                <div
-                  class="absolute bottom-0 left-0 w-48 h-48 bg-purple-300/30 dark:bg-purple-600/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-purple-400/40 dark:group-hover:bg-purple-600/25 transition-colors duration-700"
-                ></div>
-              </div>
-
-              <div
-                class="relative z-20 h-full p-5 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-indigo-300/70 dark:group-hover:border-indigo-500/30 transition-none"
-              >
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="relative shrink-0">
-                    <div
-                      class="absolute inset-0 bg-indigo-400/25 dark:bg-indigo-500/20 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"
-                    ></div>
-                    <div
-                      class="relative w-14 h-14 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500"
-                    >
-                      <span class="text-2xl">📂</span>
-                    </div>
-                  </div>
-
-                  <div class="min-w-0">
-                    <h3
-                      class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-indigo-700 dark:group-hover:text-indigo-200 transition-colors"
-                    >
-                      {{ container.labels?.["yantra.volume-browser"] || container.name }}
-                    </h3>
-                    <span
-                      class="text-xs font-semibold px-2.5 py-1 rounded-lg border bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-500/20"
-                    >
-                      Active
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Expiration Timer -->
-                <div v-if="isTemporary(container)" class="mb-4 px-1">
-                  <div
-                    class="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg border border-orange-200 bg-orange-100 dark:border-orange-500/20 dark:bg-orange-500/10"
-                  >
-                    <span class="font-medium text-orange-700 dark:text-orange-200">Expires in</span>
-                    <span
-                      :class="
-                        getExpirationInfo(container).isExpiringSoon
-                          ? 'text-red-500 dark:text-red-300 animate-pulse font-bold'
-                          : 'text-orange-600 dark:text-orange-200 font-semibold'
-                      "
-                      class="font-mono tabular-nums"
-                    >
-                      {{ getExpirationInfo(container).timeRemaining }}
-                    </span>
-                  </div>
-                </div>
-
-                <div
-                  class="mt-auto pt-3 flex items-center justify-between text-sm border-t border-slate-200/70 dark:border-slate-700/60 group-hover:border-indigo-200/70 dark:group-hover:border-slate-600/70 transition-colors"
-                >
-                  <span class="text-slate-500 dark:text-gray-400 font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-200 transition-colors"
-                    >Manage Files</span
-                  >
-                  <ArrowRight
-                    :size="16"
-                    class="text-slate-600 dark:text-white/70 group-hover:text-indigo-600 dark:group-hover:text-indigo-200 transform group-hover:translate-x-0.5 transition-all"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Other Containers -->
-            <div
-              v-for="(container, index) in otherContainers"
-              :key="'other-' + container.id"
-              :style="{ animationDelay: `${index * 50}ms` }"
-              @click="viewContainerDetail(container)"
-              class="group bg-white dark:bg-slate-900/70 rounded-3xl p-6 shadow-sm border border-gray-200 dark:border-slate-800 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fadeIn relative overflow-hidden flex flex-col h-full hover:-translate-y-1"
-            >
-              <div class="flex items-start gap-4 mb-4">
-                <div class="w-12 h-12 bg-gray-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-2xl grayscale opacity-70">🐳</div>
-                <div class="overflow-hidden">
-                  <h3 class="font-bold text-lg text-gray-700 dark:text-slate-200 truncate mb-1" :title="container.name">
-                    {{ container.name.replace(/^\//, "") }}
-                  </h3>
-                  <span
-                    class="text-xs font-semibold px-2 py-0.5 rounded-md"
-                    :class="
-                      container.state === 'running'
-                        ? 'bg-green-100 text-green-800 dark:bg-emerald-500/15 dark:text-emerald-200'
-                        : 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-300'
-                    "
-                  >
-                    {{ container.state }}
-                  </span>
-                </div>
-              </div>
-
-              <div class="mt-auto pt-4 border-t border-gray-100 dark:border-slate-800">
-                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400">
-                  <span class="font-mono truncate max-w-37.5">{{ container.image.split(":")[0] }}</span>
-                  <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
             </div>
 
             <div v-if="reclaimableStats.show" class="h-full lg:col-span-2 xl:col-span-2">
@@ -529,48 +319,6 @@ onUnmounted(() => {
 
             <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
               <AppCategoriesCard :containers="containers" />
-            </div>
-
-            <div v-if="containers.length > 0" class="h-full">
-              <div class="relative h-full overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 p-6">
-                <div
-                  class="absolute inset-0 bg-linear-to-br from-amber-100/70 via-orange-100/30 to-white/80 dark:from-amber-500/10 dark:via-orange-500/10 dark:to-slate-900/60"
-                ></div>
-                <div class="relative z-10 flex h-full flex-col justify-between gap-6">
-                  <div>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Operations Pulse</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Signals to keep your stack healthy</p>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Running apps</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ runningApps }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Temporary installs</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ temporaryContainersCount }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Images cached</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ images.length }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Updates status</div>
-                      <div
-                        class="text-sm font-semibold"
-                        :class="showWatchtowerAlert ? 'text-orange-600 dark:text-orange-300' : 'text-emerald-600 dark:text-emerald-300'"
-                      >
-                        {{ showWatchtowerAlert ? "Watchtower missing" : "Auto-checks active" }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ runningApps === 0 ? "Install an app to start tracking health signals." : "Keep an eye on temporary installs and update checks." }}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
