@@ -247,6 +247,9 @@ onUnmounted(() => {
 
           <!-- Unified Dashboard Grid -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3">
+
+
+
             <!-- Quick Metrics Cards -->
             <div class="lg:col-span-2 xl:col-span-2">
               <GreetingCard :running-apps="runningApps" :total-volumes="totalVolumes" />
@@ -260,77 +263,9 @@ onUnmounted(() => {
               <WatchtowerNextCheckCard :containers="containers" :current-time="currentTime" :interval-hours="3" />
             </div>
 
-            <div v-if="reclaimableStats.show" class="h-full lg:col-span-2 xl:col-span-2">
-              <SystemCleaner
-                :api-url="apiUrl"
-                :initial-image-stats="reclaimableStats.imageStats"
-                :initial-volume-stats="reclaimableStats.volumeStats"
-                @cleaned="refreshAll"
-              />
-            </div>
 
-            <div>
-              <AverageUptimeCard :containers="containers" :current-time="currentTime" />
-            </div>
 
-            <div v-if="temporaryContainersCount > 0" class="lg:col-span-2 xl:col-span-2">
-              <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
-            </div>
-
-            <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0 || volumes.length > 0">
-              <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
-            </div>
-
-            <div class="lg:col-span-2 xl:col-span-2">
-              <MachineIdentityCard />
-            </div>
-
-            <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
-              <BiggestStorageCard :images="images" />
-            </div>
-
-            <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
-              <AppCategoriesCard :containers="containers" />
-            </div>
-
-            <div v-if="containers.length > 0" class="h-full">
-              <div class="relative h-full overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 p-6">
-                <div class="absolute inset-0 bg-linear-to-br from-amber-100/70 via-orange-100/30 to-white/80 dark:from-amber-500/10 dark:via-orange-500/10 dark:to-slate-900/60"></div>
-                <div class="relative z-10 flex h-full flex-col justify-between gap-6">
-                  <div>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Operations Pulse</h3>
-                    <p class="text-sm text-slate-600 dark:text-slate-400">Signals to keep your stack healthy</p>
-                  </div>
-
-                  <div class="grid grid-cols-2 gap-4">
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Running apps</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ runningApps }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Temporary installs</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ temporaryContainersCount }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Images cached</div>
-                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ images.length }}</div>
-                    </div>
-                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
-                      <div class="text-xs text-slate-500 dark:text-slate-400">Updates status</div>
-                      <div class="text-sm font-semibold" :class="showWatchtowerAlert ? 'text-orange-600 dark:text-orange-300' : 'text-emerald-600 dark:text-emerald-300'">
-                        {{ showWatchtowerAlert ? 'Watchtower missing' : 'Auto-checks active' }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ runningApps === 0 ? 'Install an app to start tracking health signals.' : 'Keep an eye on temporary installs and update checks.' }}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Yantra Containers -->
+       <!-- Yantra Containers -->
             <div
               v-for="(container, index) in yantraContainers"
               :key="container.id"
@@ -526,6 +461,93 @@ onUnmounted(() => {
                 </div>
               </div>
             </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div v-if="reclaimableStats.show" class="h-full lg:col-span-2 xl:col-span-2">
+              <SystemCleaner
+                :api-url="apiUrl"
+                :initial-image-stats="reclaimableStats.imageStats"
+                :initial-volume-stats="reclaimableStats.volumeStats"
+                @cleaned="refreshAll"
+              />
+            </div>
+
+            <div>
+              <AverageUptimeCard :containers="containers" :current-time="currentTime" />
+            </div>
+
+            <div v-if="temporaryContainersCount > 0" class="lg:col-span-2 xl:col-span-2">
+              <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
+            </div>
+
+            <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0 || volumes.length > 0">
+              <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
+            </div>
+
+            <div class="lg:col-span-2 xl:col-span-2">
+              <MachineIdentityCard />
+            </div>
+
+            <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
+              <BiggestStorageCard :images="images" />
+            </div>
+
+            <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
+              <AppCategoriesCard :containers="containers" />
+            </div>
+
+            <div v-if="containers.length > 0" class="h-full">
+              <div class="relative h-full overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 p-6">
+                <div class="absolute inset-0 bg-linear-to-br from-amber-100/70 via-orange-100/30 to-white/80 dark:from-amber-500/10 dark:via-orange-500/10 dark:to-slate-900/60"></div>
+                <div class="relative z-10 flex h-full flex-col justify-between gap-6">
+                  <div>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Operations Pulse</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Signals to keep your stack healthy</p>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-4">
+                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Running apps</div>
+                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ runningApps }}</div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Temporary installs</div>
+                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ temporaryContainersCount }}</div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Images cached</div>
+                      <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ images.length }}</div>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white/80 dark:bg-slate-900/70 px-4 py-3">
+                      <div class="text-xs text-slate-500 dark:text-slate-400">Updates status</div>
+                      <div class="text-sm font-semibold" :class="showWatchtowerAlert ? 'text-orange-600 dark:text-orange-300' : 'text-emerald-600 dark:text-emerald-300'">
+                        {{ showWatchtowerAlert ? 'Watchtower missing' : 'Auto-checks active' }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="text-xs text-slate-500 dark:text-slate-400">
+                    {{ runningApps === 0 ? 'Install an app to start tracking health signals.' : 'Keep an eye on temporary installs and update checks.' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+     
           </div>
         </div>
       </div>
