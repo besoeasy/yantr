@@ -1,0 +1,25 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    volumes:
+      - qbittorrent-config:/config
+      - qbittorrent-downloads:/downloads
+    ports:
+      - "8080"
+      - "6881"
+      - "6881/udp"
+    restart: unless-stopped
+    labels:
+      yantra.name: "qBittorrent"
+      yantra.logo: "QmQrvtzDkzSPMaNTbpZME2knNXWB1GGMSKrEnaM1vcVPGm"
+      yantra.category: "download,network"
+      yantra.port: "8080 (HTTP - Web UI), 6881 (TCP/UDP - Torrent)"
+      yantra.description: "Feature-rich BitTorrent client with integrated search engine and web interface"
+      yantra.website: "https://github.com/linuxserver/docker-qbittorrent"
+
+volumes:
+  qbittorrent-config:
+    name: qbittorrent-config
+  qbittorrent-downloads:
+    name: qbittorrent-downloads
