@@ -249,7 +249,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Unified Dashboard Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3">
+          <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 xl:gap-3">
             <!-- Combined Greeting + Operations Pulse -->
             <div class="lg:col-span-3 xl:col-span-3">
               <OverviewPulseCard
