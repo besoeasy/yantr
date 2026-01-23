@@ -303,7 +303,7 @@ onUnmounted(() => {
               <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
             </div>
 
-            <div class="lg:col-span-2 xl:col-span-2" v-if="images.length > 0 || volumes.length > 0">
+            <div v-if="images.length > 0 || volumes.length > 0">
               <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
             </div>
 
