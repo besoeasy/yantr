@@ -1,0 +1,20 @@
+services:
+  heimdall:
+    image: linuxserver/heimdall:latest
+    container_name: heimdall
+    volumes:
+      - heimdall-config:/config
+    ports:
+      - "80"
+    restart: unless-stopped
+    labels:
+      yantra.name: "Heimdall"
+      yantra.logo: "QmUAFgodP1LGccSwBxrzWkDYbog44e6vVjdHeMpQiHrUGJ"
+      yantra.category: "dashboard,organization"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Application dashboard and launcher with simple icon-based interface"
+      yantra.website: "https://github.com/linuxserver/Heimdall"
+
+volumes:
+  heimdall-config:
+    name: heimdall-config
