@@ -249,7 +249,7 @@ onUnmounted(() => {
           <!-- Unified Dashboard Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 xl:gap-3">
             <!-- Combined Greeting + Operations Pulse -->
-            <div class="lg:col-span-3 xl:col-span-3">
+            <div class="lg:col-span-2 xl:col-span-2">
               <OverviewPulseCard
                 :running-apps="runningApps"
                 :total-volumes="totalVolumes"
@@ -261,6 +261,10 @@ onUnmounted(() => {
 
             <div v-if="showWatchtowerAlert" class="h-full">
               <WatchtowerAlert />
+            </div>
+
+            <div v-else class="h-full">
+              <WatchtowerNextCheckCard :containers="containers" :current-time="currentTime" :interval-hours="3" />
             </div>
 
             <YantraContainersGrid
@@ -281,10 +285,6 @@ onUnmounted(() => {
             />
 
             <OtherContainersGrid v-if="otherContainers.length > 0" :containers="otherContainers" @select="viewContainerDetail" />
-
-            <div v-else class="h-full">
-              <WatchtowerNextCheckCard :containers="containers" :current-time="currentTime" :interval-hours="3" />
-            </div>
 
             <div v-if="reclaimableStats.show" class="h-full lg:col-span-2 xl:col-span-2">
               <SystemCleaner
