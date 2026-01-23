@@ -8,8 +8,6 @@ import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
 import SystemCleaner from "../components/SystemCleaner.vue";
 import WatchtowerAlert from "../components/WatchtowerAlert.vue";
 import OverviewPulseCard from "../components/home/OverviewPulseCard.vue";
-import AppCategoriesCard from "../components/quick-metrics/AppCategoriesCard.vue";
-import BiggestStorageCard from "../components/quick-metrics/BiggestStorageCard.vue";
 import MachineIdentityCard from "../components/quick-metrics/MachineIdentityCard.vue";
 import RotatingDiskUsageCard from "../components/quick-metrics/RotatingDiskUsageCard.vue";
 import AverageUptimeCard from "../components/quick-metrics/AverageUptimeCard.vue";
@@ -301,7 +299,7 @@ onUnmounted(() => {
               <AverageUptimeCard :containers="containers" :current-time="currentTime" />
             </div>
 
-            <div v-if="temporaryContainersCount > 0" class="lg:col-span-2 xl:col-span-2">
+            <div v-if="temporaryContainersCount > 0">
               <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
             </div>
 
@@ -309,16 +307,8 @@ onUnmounted(() => {
               <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
             </div>
 
-            <div class="lg:col-span-2 xl:col-span-2">
+            <div>
               <MachineIdentityCard />
-            </div>
-
-            <div v-if="images.length > 0" class="lg:col-span-2 xl:col-span-2">
-              <BiggestStorageCard :images="images" />
-            </div>
-
-            <div v-if="containers.length > 0" class="lg:col-span-2 xl:col-span-2">
-              <AppCategoriesCard :containers="containers" />
             </div>
           </div>
         </div>
