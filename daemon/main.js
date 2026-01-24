@@ -2198,7 +2198,7 @@ app.get("/api/system/info", async (req, res) => {
       os: {
         type: info.OSType || 'unknown',
         name: info.OperatingSystem || 'unknown',
-        architecture: info.Architecture || 'unknown',
+        arch: info.Architecture || 'unknown',
         kernel: info.KernelVersion || 'unknown',
       },
       name: info.Name || 'unknown',

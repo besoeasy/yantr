@@ -65,7 +65,9 @@ const osInfo = computed(() => {
   if (!systemInfo.value?.os) return null
   return {
     name: systemInfo.value.os.name.replace('Debian GNU/Linux', 'Debian').replace('Ubuntu', 'Ubuntu'),
-    type: systemInfo.value.os.type
+    type: systemInfo.value.os.type,
+    arch: systemInfo.value.os.arch || systemInfo.value.os.architecture, // Fallback for safety
+    kernel: systemInfo.value.os.kernel
   }
 })
 
@@ -167,8 +169,24 @@ onUnmounted(() => {
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">System Resources</h3>
         </div>
         
-        <div v-if="osInfo" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 truncate max-w-[100px]">
-          {{ osInfo.name }}
+        <div v-if="osInfo" class="flex flex-col items-end gap-1 min-w-0">
+          <div class="flex items-center gap-2 min-w-0">
+            <div class="text-[11px] font-extrabold text-slate-700 dark:text-slate-200 truncate max-w-[180px]" :title="osInfo.name">
+              {{ osInfo.name }}
+            </div>
+            <div v-if="osInfo.arch && osInfo.arch !== 'unknown'" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800 uppercase whitespace-nowrap" :title="`Architecture: ${osInfo.arch}`">
+              {{ osInfo.arch }}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 flex-wrap justify-end">
+            <div v-if="osInfo.type && osInfo.type !== 'unknown'" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 uppercase" :title="`OS type: ${osInfo.type}`">
+              {{ osInfo.type }}
+            </div>
+            <div v-if="osInfo.kernel && osInfo.kernel !== 'unknown'" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900 tabular-nums" :title="`Kernel: ${osInfo.kernel}`">
+              {{ osInfo.kernel }}
+            </div>
+          </div>
         </div>
       </div>
 
