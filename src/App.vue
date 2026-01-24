@@ -1,106 +1,152 @@
 <script setup>
-import { useRoute } from 'vue-router'
-import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass } from 'lucide-vue-next'
-import { onMounted, ref } from 'vue'
+import { useRoute } from "vue-router";
+import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass } from "lucide-vue-next";
+import { onMounted, ref } from "vue";
 
-const route = useRoute()
-const theme = ref('light')
+const route = useRoute();
+const theme = ref("light");
 
-const isActive = (name) => route.name === name
+const isActive = (name) => route.name === name;
 
 const setTheme = (nextTheme) => {
-  theme.value = nextTheme
-  if (nextTheme === 'dark') {
-    document.documentElement.classList.add('dark')
+  theme.value = nextTheme;
+  if (nextTheme === "dark") {
+    document.documentElement.classList.add("dark");
   } else {
-    document.documentElement.classList.remove('dark')
+    document.documentElement.classList.remove("dark");
   }
-  document.documentElement.style.colorScheme = nextTheme
-  localStorage.setItem('yantra-theme', nextTheme)
-}
+  document.documentElement.style.colorScheme = nextTheme;
+  localStorage.setItem("yantra-theme", nextTheme);
+};
 
 const toggleTheme = () => {
-  setTheme(theme.value === 'dark' ? 'light' : 'dark')
-}
+  setTheme(theme.value === "dark" ? "light" : "dark");
+};
 
 onMounted(() => {
-  const stored = localStorage.getItem('yantra-theme')
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-  setTheme(stored || (prefersDark ? 'dark' : 'light'))
-})
+  const stored = localStorage.getItem("yantra-theme");
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  setTheme(stored || (prefersDark ? "dark" : "light"));
+});
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col md:flex-row bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
     <!-- Desktop Sidebar -->
-    <aside class="hidden md:flex bg-white dark:bg-slate-950 flex-col items-center border-r border-gray-200 dark:border-slate-800 w-20 py-6 px-2 fixed h-screen z-50">
+    <aside
+      class="hidden md:flex bg-white dark:bg-slate-950 flex-col items-center border-r border-gray-200 dark:border-slate-800 w-20 py-6 px-2 fixed h-screen z-50"
+    >
       <!-- Logo -->
-      <h1 class="text-lg font-bold text-gray-900 dark:text-white mb-8 uppercase leading-tight text-center">
-        Yan<br/>tra
-      </h1>
+      <h1 class="text-lg font-bold text-gray-900 dark:text-white mb-8 uppercase leading-tight text-center">Yan<br />tra</h1>
 
       <!-- Navigation -->
       <nav class="flex flex-col items-center gap-3 mb-auto">
         <!-- Home Tab -->
-        <router-link 
+        <router-link
           to="/home"
-          :class="isActive('home') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('home')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Home">
+          title="Home"
+        >
           <Home :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Home</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Home</span
+          >
         </router-link>
 
         <!-- Apps Tab -->
-        <router-link 
+        <router-link
           to="/apps"
-          :class="isActive('apps') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('apps')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Apps">
+          title="Apps"
+        >
           <Box :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Apps</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Apps</span
+          >
         </router-link>
 
-     
-
         <!-- Images Tab -->
-        <router-link 
+        <router-link
           to="/images"
-          :class="isActive('images') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('images')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Images">
+          title="Images"
+        >
           <Layers :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Images</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Images</span
+          >
         </router-link>
 
         <!-- Volumes Tab -->
-        <router-link 
+        <router-link
           to="/volumes"
-          :class="isActive('volumes') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('volumes')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Volumes">
+          title="Volumes"
+        >
           <HardDrive :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Volumes</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Volumes</span
+          >
         </router-link>
 
         <!-- Logs Tab -->
-        <router-link 
+        <router-link
           to="/logs"
-          :class="isActive('logs') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('logs')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Logs">
+          title="Logs"
+        >
           <ClipboardList :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Logs</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Logs</span
+          >
         </router-link>
 
         <!-- Extra Tab -->
-        <router-link 
+        <router-link
           to="/extra"
-          :class="isActive('extra') ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20' : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'"
+          :class="
+            isActive('extra')
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/20 dark:bg-slate-100 dark:text-slate-900 dark:shadow-slate-900/20'
+              : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40'
+          "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Extra">
+          title="Extra"
+        >
           <Compass :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Extra</span>
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+            >Extra</span
+          >
         </router-link>
       </nav>
 
@@ -114,97 +160,74 @@ onMounted(() => {
           :title="`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`"
         >
           <component :is="theme === 'dark' ? Sun : Moon" :size="20" class="group-hover:scale-110 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">
-            {{ theme === 'dark' ? 'Light mode' : 'Dark mode' }}
+          <span
+            class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
+          >
+            {{ theme === "dark" ? "Light mode" : "Dark mode" }}
           </span>
         </button>
-
-        <!-- Donate -->
-        <a 
-          href="https://sponsor.besoeasy.com/" 
-          target="_blank"
-          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 hover:text-red-600 hover:shadow-md hover:shadow-red-500/20 dark:text-red-400 dark:hover:bg-red-500/10 transition-all duration-300 ease-out"
-          title="Support this project">
-          <Heart :size="20" class="group-hover:scale-110 group-hover:-rotate-12 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Sponsor</span>
-        </a>
-
-        <!-- GitHub -->
-        <a 
-          href="https://github.com/besoeasy/Yantra" 
-          target="_blank"
-          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40 transition-all duration-300 ease-out"
-          title="View on GitHub">
-          <Github :size="20" class="group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">GitHub</span>
-        </a>
-
-        <!-- Telegram Group -->
-        <a 
-          href="https://t.me/+Qu06yCZHBAU3NTk1" 
-          target="_blank"
-          class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-blue-500 hover:bg-blue-50 hover:shadow-md hover:shadow-blue-500/20 dark:text-blue-400 dark:hover:bg-blue-500/10 transition-all duration-300 ease-out"
-          title="Join Telegram Group">
-          <Send :size="20" class="group-hover:scale-110 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900">Telegram</span>
-        </a>
       </div>
     </aside>
 
     <!-- Mobile Bottom Navigation -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 dark:bg-slate-950 dark:border-slate-800 z-50 safe-area-inset-bottom">
       <div class="flex items-center justify-around px-2 py-3">
-        <router-link 
+        <router-link
           to="/home"
           :class="isActive('home') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Home">
+          title="Home"
+        >
           <Home :size="20" />
           <span class="text-xs font-medium">Home</span>
         </router-link>
 
-        <router-link 
+        <router-link
           to="/apps"
           :class="isActive('apps') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Apps">
+          title="Apps"
+        >
           <Box :size="20" />
           <span class="text-xs font-medium">Apps</span>
         </router-link>
 
-
-        <router-link 
+        <router-link
           to="/images"
           :class="isActive('images') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Images">
+          title="Images"
+        >
           <Layers :size="20" />
           <span class="text-xs font-medium">Images</span>
         </router-link>
 
-        <router-link 
+        <router-link
           to="/volumes"
           :class="isActive('volumes') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Volumes">
+          title="Volumes"
+        >
           <HardDrive :size="20" />
           <span class="text-xs font-medium">Volumes</span>
         </router-link>
 
-        <router-link 
+        <router-link
           to="/logs"
           :class="isActive('logs') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Logs">
+          title="Logs"
+        >
           <ClipboardList :size="20" />
           <span class="text-xs font-medium">Logs</span>
         </router-link>
 
-        <router-link 
+        <router-link
           to="/extra"
           :class="isActive('extra') ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 dark:text-slate-400'"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95"
-          title="Extra">
+          title="Extra"
+        >
           <Compass :size="20" />
           <span class="text-xs font-medium">Extra</span>
         </router-link>
@@ -235,7 +258,7 @@ onMounted(() => {
 }
 
 .nav-item::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -2px;
   border-radius: 9999px;
@@ -256,7 +279,7 @@ onMounted(() => {
 }
 
 .action-btn::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -2px;
   border-radius: 9999px;
@@ -297,7 +320,7 @@ onMounted(() => {
 
 .nav-item::after,
 .action-btn::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 9999px;
