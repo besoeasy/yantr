@@ -36,11 +36,8 @@ onMounted(() => {
     <aside
       class="hidden md:flex bg-white dark:bg-slate-950 flex-col items-center border-r border-gray-200 dark:border-slate-800 w-20 py-6 px-2 fixed h-screen z-50"
     >
-      <!-- Logo -->
-      <h1 class="text-lg font-bold text-gray-900 dark:text-white mb-8 uppercase leading-tight text-center">Yan<br />tra</h1>
-
-      <!-- Navigation -->
-      <nav class="flex flex-col items-center gap-3 mb-auto">
+      <!-- Navigation (Top) -->
+      <nav class="flex flex-col items-center gap-3 mt-1">
         <!-- Home Tab -->
         <router-link
           to="/home"
@@ -95,6 +92,28 @@ onMounted(() => {
           >
         </router-link>
       </nav>
+
+        <!-- Logo (Centered) -->
+        <div class="flex-1 flex items-center justify-center">
+          <router-link
+            to="/home"
+            class="group flex flex-col items-center justify-center text-center select-none rounded-xl px-2 py-2 transition-transform duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 dark:focus-visible:ring-slate-100/20"
+            aria-label="Yantra home"
+            title="Yantra"
+          >
+            <span
+              aria-hidden="true"
+              class="flex flex-col items-center text-[11px] font-black uppercase leading-[1.05] text-gray-900 dark:text-white"
+            >
+              <span>Y</span>
+              <span>A</span>
+              <span>N</span>
+              <span>T</span>
+              <span>R</span>
+              <span>A</span>
+            </span>
+          </router-link>
+        </div>
 
       <!-- Bottom Actions -->
       <div class="flex flex-col items-center gap-3 mt-4">
