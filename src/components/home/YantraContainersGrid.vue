@@ -18,20 +18,23 @@ const emit = defineEmits(["select"]);
       :key="container.id"
       :style="{ animationDelay: `${index * 50}ms` }"
       @click="emit('select', container)"
-      class="relative h-full overflow-hidden group cursor-pointer transition-colors duration-300 animate-fadeIn"
+      @keydown.enter.prevent="emit('select', container)"
+      @keydown.space.prevent="emit('select', container)"
+      role="button"
+      tabindex="0"
+      class="group relative h-full overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer animate-fadeIn focus:outline-none focus:ring-4 focus:ring-blue-500"
     >
-      <div class="absolute inset-0 bg-white dark:bg-black"></div>
-
+      <!-- Gradient Glow (Extra.vue card theme) -->
       <div
-        class="relative z-20 h-full p-5 flex flex-col justify-between border border-black/10 dark:border-white/10 rounded-2xl backdrop-blur-sm group-hover:border-black/20 dark:group-hover:border-white/20 transition-none"
-      >
+        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500 bg-blue-200 dark:bg-blue-500/20"
+      ></div>
+
+      <div class="relative z-10 h-full flex flex-col justify-between">
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-4 min-w-0">
             <div class="relative shrink-0">
-              <div class="absolute inset-0 bg-black/10 dark:bg-white/5 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-
               <div
-                class="relative w-14 h-14 rounded-2xl bg-white/80 dark:bg-black/40 border border-black/10 dark:border-white/10 flex items-center justify-center overflow-hidden"
+                class="relative w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-110 bg-blue-900/10 dark:bg-blue-900/30"
               >
                 <img
                   v-if="container.app && container.app.logo"
@@ -42,16 +45,16 @@ const emit = defineEmits(["select"]);
                 <div v-else class="text-2xl">🐳</div>
               </div>
 
-              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-white/90 dark:bg-black/90 border border-black/10 dark:border-white/10 rounded-full flex items-center justify-center">
+              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-700 rounded-full flex items-center justify-center">
                 <div
-                  :class="container.state === 'running' ? 'bg-black dark:bg-white' : 'bg-black/30 dark:bg-white/30'"
+                  :class="container.state === 'running' ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'"
                   class="w-3 h-3 rounded-full"
                 ></div>
               </div>
             </div>
 
             <div class="min-w-0">
-              <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-blue-700 dark:group-hover:text-blue-200 transition-colors">
+              <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                 {{ container.app ? container.app.name : container.name.replace(/^\//, "") }}
               </h3>
               <div class="flex items-center gap-2 flex-wrap">
@@ -59,15 +62,15 @@ const emit = defineEmits(["select"]);
                   class="text-xs font-semibold px-2.5 py-1 rounded-lg border"
                   :class="
                     container.state === 'running'
-                      ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                      : 'bg-white/70 text-black/70 border-black/10 dark:bg-white/5 dark:text-white/70 dark:border-white/10'
+                      ? 'bg-slate-900 text-white border-slate-900 dark:bg-white dark:text-slate-900 dark:border-white'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-gray-800/40 dark:text-slate-300 dark:border-gray-700'
                   "
                 >
                   {{ container.state }}
                 </span>
                 <span
                   v-if="isTemporary(container)"
-                  class="text-xs font-semibold px-2.5 py-1 rounded-lg border border-dashed bg-white/70 text-black/70 border-black/15 dark:bg-white/5 dark:text-white/70 dark:border-white/15"
+                  class="text-xs font-semibold px-2.5 py-1 rounded-lg border border-dashed bg-slate-50 text-slate-600 border-slate-200 dark:bg-gray-800/40 dark:text-slate-300 dark:border-gray-700"
                 >
                   Temp
                 </span>
@@ -91,18 +94,24 @@ const emit = defineEmits(["select"]);
           >
             <span class="text-slate-500 dark:text-gray-400 font-medium">Expires</span>
             <span
-              :class="getExpirationInfo(container).isExpiringSoon ? 'animate-pulse underline underline-offset-2' : ''"
-              class="font-bold font-mono tabular-nums text-black dark:text-white"
+              :class="[
+                getExpirationInfo(container).timeRemaining === 'Expired'
+                  ? 'text-rose-600 dark:text-rose-400'
+                  : getExpirationInfo(container).isExpiringSoon
+                    ? 'text-amber-600 dark:text-amber-400 animate-pulse underline underline-offset-2'
+                    : 'text-slate-900 dark:text-white',
+              ]"
+              class="font-bold font-mono tabular-nums"
             >
               {{ getExpirationInfo(container).timeRemaining }}
             </span>
           </div>
         </div>
 
-        <div class="mt-auto pt-4 flex items-center justify-between text-sm border-t border-slate-200/70 dark:border-slate-700/60 group-hover:border-black/15 dark:group-hover:border-white/15 transition-colors">
-          <span class="text-slate-500 dark:text-gray-400 font-medium group-hover:text-black dark:group-hover:text-white transition-colors">Manage App</span>
+        <div class="mt-auto pt-4 flex items-center justify-between text-sm border-t border-slate-200 dark:border-gray-700">
+          <span class="text-slate-500 dark:text-gray-400 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Manage App</span>
           <div
-            class="w-9 h-9 rounded-full bg-white/70 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-black/80 dark:text-white group-hover:border-black/20 dark:group-hover:border-white/20 group-hover:bg-black/5 dark:group-hover:bg-white/10 transition-colors"
+            class="w-10 h-10 rounded-full bg-slate-50 dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700 flex items-center justify-center text-slate-700 dark:text-slate-200 group-hover:bg-slate-100 dark:group-hover:bg-gray-800/70 transition-colors"
           >
             <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform" />
           </div>
