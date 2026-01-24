@@ -28,20 +28,37 @@ const memoryInfo = computed(() => {
 })
 
 const storageInfo = computed(() => {
-  if (!systemInfo.value?.storage) return { used: 0, total: 0, percent: 0, usedFormatted: '0 B', totalFormatted: '0 B' }
+  if (!systemInfo.value?.storage) return { used: 0, total: 0, percent: 0, usedFormatted: '0 B', totalFormatted: '0 B', hasData: false }
   
   const { used, total } = systemInfo.value.storage
-  if (!used || !total) return { used: 0, total: 0, percent: 0, usedFormatted: '0 B', totalFormatted: '0 B' }
   
-  const percent = Math.round((used / total) * 100)
-  
-  return {
-    used,
-    total,
-    percent,
-    usedFormatted: formatBytes(used),
-    totalFormatted: formatBytes(total)
+  // Show storage even if we only have 'used' data
+  if (used && used > 0) {
+    if (total && total > 0) {
+      // We have both used and total
+      const percent = Math.round((used / total) * 100)
+      return {
+        used,
+        total,
+        percent,
+        usedFormatted: formatBytes(used),
+        totalFormatted: formatBytes(total),
+        hasData: true
+      }
+    } else {
+      // We only have used, show it without percentage
+      return {
+        used,
+        total: 0,
+        percent: 0,
+        usedFormatted: formatBytes(used),
+        totalFormatted: null,
+        hasData: true
+      }
+    }
   }
+  
+  return { used: 0, total: 0, percent: 0, usedFormatted: '0 B', totalFormatted: '0 B', hasData: false }
 })
 
 const storageTheme = computed(() => {
@@ -155,22 +172,27 @@ onUnmounted(() => {
         </div>
 
         <!-- Storage -->
-        <div v-if="storageInfo.total > 0">
+        <div v-if="storageInfo.hasData">
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
               <HardDrive class="w-4 h-4 text-slate-500 dark:text-slate-400" />
               <span class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">Docker Storage</span>
             </div>
-            <span class="text-sm font-bold tabular-nums" :class="storageTheme.text">
+            <span v-if="storageInfo.total > 0" class="text-sm font-bold tabular-nums" :class="storageTheme.text">
               {{ storageInfo.percent }}%
             </span>
           </div>
           
           <div class="text-xs text-slate-600 dark:text-slate-400 mb-2 font-medium">
-            {{ storageInfo.usedFormatted }} / {{ storageInfo.totalFormatted }}
+            <span v-if="storageInfo.totalFormatted">
+              {{ storageInfo.usedFormatted }} / {{ storageInfo.totalFormatted }}
+            </span>
+            <span v-else>
+              {{ storageInfo.usedFormatted }} used
+            </span>
           </div>
           
-          <div class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
+          <div v-if="storageInfo.total > 0" class="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
             <div 
               class="h-full rounded-full transition-all duration-700 ease-out" 
               :class="storageTheme.progress"

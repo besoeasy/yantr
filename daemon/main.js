@@ -2146,6 +2146,35 @@ app.get("/api/system/info", async (req, res) => {
   log("info", "💻 [GET /api/system/info] Fetching host system information");
   try {
     const info = await docker.info();
+    
+    // Get disk usage via df() for accurate storage metrics
+    let storageInfo = {
+      driver: info.Driver || 'unknown',
+      total: null,
+      used: null,
+      available: null,
+    };
+    
+    try {
+      const df = await docker.df();
+      
+      // Calculate total storage from images, containers, and volumes
+      const imagesSize = df.Images?.reduce((sum, img) => sum + (img.Size || 0), 0) || 0;
+      const containersSize = df.Containers?.reduce((sum, c) => sum + (c.SizeRw || 0), 0) || 0;
+      const volumesSize = df.Volumes?.reduce((sum, v) => sum + (v.UsageData?.Size || 0), 0) || 0;
+      
+      storageInfo.used = imagesSize + containersSize + volumesSize;
+      
+      // If we have filesystem info from DriverStatus, use it for total
+      if (info.DriverStatus) {
+        storageInfo.total = extractStorageInfo(info.DriverStatus, 'Data Space Total');
+        const driverUsed = extractStorageInfo(info.DriverStatus, 'Data Space Used');
+        if (driverUsed) storageInfo.used = driverUsed;
+        storageInfo.available = extractStorageInfo(info.DriverStatus, 'Data Space Available');
+      }
+    } catch (dfError) {
+      log("warn", `⚠️ [GET /api/system/info] Could not fetch df data: ${dfError.message}`);
+    }
 
     // Extract relevant system information
     const systemInfo = {
@@ -2155,12 +2184,7 @@ app.get("/api/system/info", async (req, res) => {
       memory: {
         total: info.MemTotal || 0,
       },
-      storage: {
-        driver: info.Driver || 'unknown',
-        total: info.DriverStatus ? extractStorageInfo(info.DriverStatus, 'Data Space Total') : null,
-        used: info.DriverStatus ? extractStorageInfo(info.DriverStatus, 'Data Space Used') : null,
-        available: info.DriverStatus ? extractStorageInfo(info.DriverStatus, 'Data Space Available') : null,
-      },
+      storage: storageInfo,
       docker: {
         version: info.ServerVersion || 'unknown',
         containers: {
@@ -2180,7 +2204,8 @@ app.get("/api/system/info", async (req, res) => {
       name: info.Name || 'unknown',
     };
 
-    log("info", `✅ [GET /api/system/info] System info retrieved: ${systemInfo.cpu.cores} cores, ${formatBytes(systemInfo.memory.total)} RAM`);
+    const storageMsg = storageInfo.used ? `, ${formatBytes(storageInfo.used)} storage used` : '';
+    log("info", `✅ [GET /api/system/info] System info retrieved: ${systemInfo.cpu.cores} cores, ${formatBytes(systemInfo.memory.total)} RAM${storageMsg}`);
 
     res.json({
       success: true,
