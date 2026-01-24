@@ -18,7 +18,7 @@ const greeting = computed(() => {
 </script>
 
 <template>
-  <div class="relative h-full overflow-hidden group rounded-3xl transition-all duration-500 hover:-translate-y-1">
+  <div class="relative h-full overflow-hidden group rounded-3xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
     <div class="absolute inset-0 bg-white dark:bg-black"></div>
 
     <div class="relative z-20 h-full p-6 flex flex-col gap-6 border border-black/10 dark:border-white/10 rounded-3xl backdrop-blur-sm group-hover:border-black/20 dark:group-hover:border-white/20 transition-none">
@@ -26,7 +26,7 @@ const greeting = computed(() => {
         <div class="flex items-center gap-4">
           <div class="relative">
             <div
-              class="relative w-14 h-14 rounded-2xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500"
+              class="relative w-14 h-14 rounded-2xl bg-black text-white dark:bg-white dark:text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
             >
               <Sparkles class="w-7 h-7" />
             </div>
@@ -62,7 +62,7 @@ const greeting = computed(() => {
         </div>
       </div>
 
-      <div class="flex items-center justify-between border-t border-slate-200/70 dark:border-slate-700/60 pt-4 group-hover:border-black/15 dark:group-hover:border-white/15 transition-colors">
+      <div class="flex items-center justify-between border-t border-slate-200/70 dark:border-slate-700/60 pt-4 group-hover:border-black/15 dark:group-hover:border-white/15 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
         <div class="flex items-center gap-2 text-xs font-bold text-black/70 dark:text-white/70 uppercase tracking-wider">
           <Activity class="w-3.5 h-3.5" />
           <span>Stack Signal</span>

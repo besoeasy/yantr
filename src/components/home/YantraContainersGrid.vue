@@ -22,11 +22,11 @@ const emit = defineEmits(["select"]);
       @keydown.space.prevent="emit('select', container)"
       role="button"
       tabindex="0"
-      class="group relative h-full overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer animate-fadeIn focus:outline-none focus:ring-4 focus:ring-blue-500"
+      class="group relative h-full overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer animate-fadeIn focus:outline-none focus:ring-4 focus:ring-blue-500"
     >
       <!-- Gradient Glow (Extra.vue card theme) -->
       <div
-        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500 bg-blue-200 dark:bg-blue-500/20"
+        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-blue-200 dark:bg-blue-500/20"
       ></div>
 
       <div class="relative z-10 h-full flex flex-col justify-between">
@@ -34,13 +34,13 @@ const emit = defineEmits(["select"]);
           <div class="flex items-center gap-4 min-w-0">
             <div class="relative shrink-0">
               <div
-                class="relative w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-110 bg-blue-900/10 dark:bg-blue-900/30"
+                class="relative w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110 bg-blue-900/10 dark:bg-blue-900/30"
               >
                 <img
                   v-if="container.app && container.app.logo"
                   :src="container.app.logo"
                   :alt="container.name"
-                  class="w-12 h-12 object-contain filter group-hover:brightness-110 transition-all"
+                  class="w-12 h-12 object-contain filter group-hover:brightness-110 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 />
                 <div v-else class="text-2xl">🐳</div>
               </div>
@@ -113,7 +113,7 @@ const emit = defineEmits(["select"]);
           <div
             class="w-10 h-10 rounded-full bg-slate-50 dark:bg-gray-800/40 border border-slate-200 dark:border-gray-700 flex items-center justify-center text-slate-700 dark:text-slate-200 group-hover:bg-slate-100 dark:group-hover:bg-gray-800/70 transition-colors"
           >
-            <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight :size="16" class="transform group-hover:translate-x-0.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" />
           </div>
         </div>
       </div>

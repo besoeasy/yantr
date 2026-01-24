@@ -60,14 +60,14 @@ const ispText = computed(() => {
 </script>
 
 <template>
-  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-500 hover:-translate-y-1">
+  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
     <div class="absolute inset-0 bg-white dark:bg-gray-900">
       <div class="absolute inset-0 bg-linear-to-br from-emerald-200/60 via-slate-200/30 to-white/80 dark:from-emerald-600/20 dark:via-slate-600/10 dark:to-gray-900 z-10"></div>
       <div
-        class="absolute top-0 right-0 w-64 h-64 bg-emerald-300/35 dark:bg-emerald-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/45 dark:group-hover:bg-emerald-500/30 transition-colors duration-700"
+        class="absolute top-0 right-0 w-64 h-64 bg-emerald-300/35 dark:bg-emerald-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/45 dark:group-hover:bg-emerald-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       ></div>
       <div
-        class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-500/25 transition-colors duration-700"
+        class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-500/15 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-500/25 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       ></div>
     </div>
 
@@ -77,9 +77,9 @@ const ispText = computed(() => {
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="relative">
-            <div class="absolute inset-0 bg-emerald-400/25 dark:bg-emerald-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
+            <div class="absolute inset-0 bg-emerald-400/25 dark:bg-emerald-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
             <div
-              class="relative w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500"
+              class="relative w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
             >
               <Globe class="w-6 h-6 text-white" />
             </div>

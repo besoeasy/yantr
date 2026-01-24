@@ -183,18 +183,18 @@ const ui = computed(() => {
 
 <template>
   <div
-    class="relative h-full overflow-hidden group rounded-2xl transition-all duration-500 hover:-translate-y-1"
+    class="relative h-full overflow-hidden group rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
     @mouseenter="onEnter"
     @mouseleave="onLeave"
   >
     <div class="absolute inset-0 bg-white dark:bg-gray-900">
       <div class="absolute inset-0 bg-linear-to-br z-10" :class="ui.gradient"></div>
       <div
-        class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 transition-colors duration-700"
+        class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         :class="ui.orbA"
       ></div>
       <div
-        class="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 transition-colors duration-700"
+        class="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         :class="ui.orbB"
       ></div>
     </div>
@@ -206,9 +206,9 @@ const ui = computed(() => {
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="relative">
-            <div class="absolute inset-0 rounded-xl blur-lg group-hover:blur-xl transition-all duration-500" :class="ui.iconGlow"></div>
+            <div class="absolute inset-0 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="ui.iconGlow"></div>
             <div
-              class="relative w-12 h-12 bg-linear-to-br rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500"
+              class="relative w-12 h-12 bg-linear-to-br rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
               :class="ui.iconBg"
             >
               <component :is="ui.icon" class="w-6 h-6 text-white" />

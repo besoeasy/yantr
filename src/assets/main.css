@@ -2,6 +2,11 @@
 @import "tailwindcss";
 
 :root {
+    --yantra-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --yantra-dur-fast: 200ms;
+    --yantra-dur: 280ms;
+    --yantra-dur-enter: 300ms;
+
     --bg-body: #f8fafc;
     --bg-glass: rgba(255, 255, 255, 0.78);
     --border-glass: rgba(15, 23, 42, 0.08);
@@ -32,7 +37,7 @@
 body {
     background: var(--bg-body);
     color: var(--text-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color var(--yantra-dur) var(--yantra-ease), color var(--yantra-dur) var(--yantra-ease);
     /* Prevent overscroll on mobile */
     overscroll-behavior: none;
 }
@@ -65,7 +70,7 @@ body {
 }
 
 .card-hover {
-    transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: all var(--yantra-dur) var(--yantra-ease);
 }
 
 .card-hover:hover {
@@ -83,7 +88,7 @@ body {
 
 button,
 a {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--yantra-dur-fast) var(--yantra-ease);
 }
 
 .status-dot {
@@ -162,7 +167,7 @@ textarea:focus {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(12px);
     }
     to {
         opacity: 1;
@@ -171,5 +176,5 @@ textarea:focus {
 }
 
 .animate-fadeIn {
-    animation: fadeIn 0.5s ease-out forwards;
+    animation: fadeIn var(--yantra-dur-enter) var(--yantra-ease) forwards;
 }

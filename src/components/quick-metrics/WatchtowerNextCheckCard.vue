@@ -71,19 +71,19 @@ const status = computed(() => {
 </script>
 
 <template>
-  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-500 hover:-translate-y-1">
+  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
     <div class="absolute inset-0 bg-white dark:bg-gray-900">
       <div class="absolute inset-0 bg-linear-to-br from-emerald-200/60 via-cyan-200/30 to-white/80 dark:from-emerald-600/25 dark:via-cyan-600/10 dark:to-gray-900 z-10"></div>
-      <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-300/35 dark:bg-emerald-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/45 dark:group-hover:bg-emerald-500/30 transition-colors duration-700"></div>
-      <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-600/30 transition-colors duration-700"></div>
+      <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-300/35 dark:bg-emerald-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-emerald-400/45 dark:group-hover:bg-emerald-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-600/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
     </div>
 
-    <div class="relative z-20 h-full p-6 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-emerald-300/60 dark:group-hover:border-emerald-500/30 transition-colors duration-500">
+    <div class="relative z-20 h-full p-6 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-emerald-300/60 dark:group-hover:border-emerald-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="relative">
-            <div class="absolute inset-0 bg-emerald-400/25 dark:bg-emerald-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-            <div class="relative w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+            <div class="absolute inset-0 bg-emerald-400/25 dark:bg-emerald-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+            <div class="relative w-12 h-12 bg-linear-to-br from-emerald-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
               <RefreshCw class="w-6 h-6 text-white" />
             </div>
           </div>
@@ -115,7 +115,7 @@ const status = computed(() => {
           <div class="mt-5 w-full">
             <div class="h-2 rounded-full bg-slate-200/70 dark:bg-white/5 border border-slate-200/80 dark:border-slate-700/60 overflow-hidden">
               <div
-                class="h-full bg-linear-to-r from-emerald-500/80 to-cyan-500/80 transition-all duration-700"
+                class="h-full bg-linear-to-r from-emerald-500/80 to-cyan-500/80 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 :style="{ width: `${progressPct}%` }"
               ></div>
             </div>

@@ -21,18 +21,18 @@ const emit = defineEmits(["select"]);
       @keydown.space.prevent="emit('select', container)"
       role="button"
       tabindex="0"
-      class="group relative h-full overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer animate-fadeIn focus:outline-none focus:ring-4 focus:ring-amber-500"
+      class="group relative h-full overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer animate-fadeIn focus:outline-none focus:ring-4 focus:ring-amber-500"
     >
       <!-- Gradient Glow (Extra.vue card theme) -->
       <div
-        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500 bg-amber-200 dark:bg-amber-500/20"
+        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-amber-200 dark:bg-amber-500/20"
       ></div>
 
       <div class="relative z-10 h-full flex flex-col justify-between">
         <div class="flex items-center gap-4 mb-4">
           <div class="relative shrink-0">
             <div
-              class="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300 bg-amber-900/10 dark:bg-amber-900/30"
+              class="relative w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-amber-900/10 dark:bg-amber-900/30"
             >
               <span class="text-2xl">📂</span>
             </div>
@@ -72,7 +72,7 @@ const emit = defineEmits(["select"]);
           <span class="text-slate-500 dark:text-gray-400 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Manage Files</span>
           <ArrowRight
             :size="16"
-            class="text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transform group-hover:translate-x-0.5 transition-all"
+            class="text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white transform group-hover:translate-x-0.5 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
           />
         </div>
       </div>

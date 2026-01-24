@@ -19,11 +19,11 @@ const emit = defineEmits(["select"]);
       @keydown.space.prevent="emit('select', container)"
       role="button"
       tabindex="0"
-      class="group relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer animate-fadeIn flex flex-col h-full focus:outline-none focus:ring-4 focus:ring-slate-400"
+      class="group relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer animate-fadeIn flex flex-col h-full focus:outline-none focus:ring-4 focus:ring-slate-400"
     >
       <!-- Gradient Glow (Extra.vue card theme) -->
       <div
-        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500 bg-slate-200 dark:bg-slate-500/20"
+        class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-slate-200 dark:bg-slate-500/20"
       ></div>
 
       <div class="relative z-10 flex flex-col h-full">
@@ -49,7 +49,7 @@ const emit = defineEmits(["select"]);
       <div class="mt-auto pt-4 border-t border-slate-200 dark:border-gray-700">
         <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
           <span class="font-mono truncate max-w-37.5">{{ container.image.split(":")[0] }}</span>
-          <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform" />
+          <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" />
         </div>
       </div>
       </div>

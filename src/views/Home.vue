@@ -317,39 +317,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  opacity: 0;
-  animation: fadeIn 0.5s ease-out forwards;
-}
-
-/* Apple-like hover lift effect */
-.hover-lift {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow:
-    0 20px 40px -12px rgba(0, 0, 0, 0.15),
-    0 8px 16px -8px rgba(124, 58, 237, 0.2);
-}
-
-.hover-lift:active {
-  transform: translateY(-2px) scale(1);
-  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Smooth backdrop blur support */
 @supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
   .backdrop-blur-xl {

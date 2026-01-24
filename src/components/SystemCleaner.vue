@@ -109,14 +109,14 @@ async function cleanSystem() {
 </script>
 
 <template>
-  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-500 hover:-translate-y-1">
+  <div class="relative h-full overflow-hidden group rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
     <!-- Animated Background Mesh -->
     <div class="absolute inset-0 bg-white dark:bg-gray-900">
       <div class="absolute inset-0 bg-gradient-to-br from-blue-200/60 via-cyan-200/30 to-white/80 dark:from-blue-600/20 dark:via-cyan-600/10 dark:to-gray-900 z-10"></div>
       
       <!-- Animated Orbs -->
-      <div class="absolute top-0 right-0 w-64 h-64 bg-blue-300/35 dark:bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-400/45 dark:group-hover:bg-blue-500/30 transition-colors duration-700"></div>
-      <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-600/30 transition-colors duration-700"></div>
+      <div class="absolute top-0 right-0 w-64 h-64 bg-blue-300/35 dark:bg-blue-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-blue-400/45 dark:group-hover:bg-blue-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-300/30 dark:bg-cyan-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-cyan-400/40 dark:group-hover:bg-cyan-600/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
     </div>
 
     <!-- Content Container -->
@@ -127,8 +127,8 @@ async function cleanSystem() {
         <div class="flex items-center gap-4">
           <!-- Icon Container -->
           <div class="relative">
-            <div class="absolute inset-0 bg-blue-400/25 dark:bg-blue-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-            <div class="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+            <div class="absolute inset-0 bg-blue-400/25 dark:bg-blue-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+            <div class="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
               <Trash2 class="w-6 h-6 text-white" />
             </div>
           </div>

@@ -94,19 +94,19 @@ const expiringTop = computed(() => {
 </script>
 
 <template>
-  <div v-if="expiringContainers.count > 0" class="relative h-full overflow-hidden group rounded-2xl transition-all duration-500 hover:-translate-y-1">
+  <div v-if="expiringContainers.count > 0" class="relative h-full overflow-hidden group rounded-2xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1">
     <div class="absolute inset-0 bg-white dark:bg-gray-900">
       <div class="absolute inset-0 bg-linear-to-br from-orange-200/60 via-red-200/30 to-white/80 dark:from-orange-600/25 dark:via-red-600/10 dark:to-gray-900 z-10"></div>
-      <div class="absolute top-0 right-0 w-64 h-64 bg-orange-300/35 dark:bg-orange-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-400/45 dark:group-hover:bg-orange-500/30 transition-colors duration-700"></div>
-      <div class="absolute bottom-0 left-0 w-48 h-48 bg-red-300/30 dark:bg-red-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-red-400/40 dark:group-hover:bg-red-600/30 transition-colors duration-700"></div>
+      <div class="absolute top-0 right-0 w-64 h-64 bg-orange-300/35 dark:bg-orange-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:bg-orange-400/45 dark:group-hover:bg-orange-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+      <div class="absolute bottom-0 left-0 w-48 h-48 bg-red-300/30 dark:bg-red-600/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 group-hover:bg-red-400/40 dark:group-hover:bg-red-600/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
     </div>
 
-    <div class="relative z-20 h-full p-6 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-orange-300/60 dark:group-hover:border-orange-500/30 transition-colors duration-500">
+    <div class="relative z-20 h-full p-6 flex flex-col justify-between border border-slate-200/80 dark:border-slate-700/60 rounded-2xl backdrop-blur-sm group-hover:border-orange-300/60 dark:group-hover:border-orange-500/30 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
       <div class="flex items-start justify-between gap-4">
         <div class="flex items-center gap-4">
           <div class="relative">
-            <div class="absolute inset-0 bg-orange-400/25 dark:bg-orange-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-500"></div>
-            <div class="relative w-12 h-12 bg-linear-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-500">
+            <div class="absolute inset-0 bg-orange-400/25 dark:bg-orange-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"></div>
+            <div class="relative w-12 h-12 bg-linear-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]">
               <Timer class="w-6 h-6 text-white" />
             </div>
           </div>
