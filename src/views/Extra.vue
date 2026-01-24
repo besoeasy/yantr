@@ -164,12 +164,6 @@ const externalItems = [
                 {{ feature }}
               </li>
             </ul>
-
-            <!-- Arrow -->
-            <div class="mt-6 flex items-center font-semibold text-sm group-hover:translate-x-2 transition-transform" :class="item.accent.arrow">
-              Open
-              <ChevronRight :size="16" class="ml-1" />
-            </div>
           </div>
         </router-link>
 
@@ -214,12 +208,6 @@ const externalItems = [
                 {{ feature }}
               </li>
             </ul>
-
-            <!-- Arrow -->
-            <div class="mt-6 flex items-center font-semibold text-sm group-hover:translate-x-2 transition-transform" :class="item.accent.arrow">
-              Visit
-              <ChevronRight :size="16" class="ml-1" />
-            </div>
           </div>
         </a>
       </section>

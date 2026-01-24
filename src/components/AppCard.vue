@@ -1,6 +1,6 @@
 <script setup>
 import { computed, toRefs } from "vue";
-import { Check, ChevronRight } from "lucide-vue-next";
+import { Bot, Check, ChevronRight } from "lucide-vue-next";
 
 const props = defineProps({
   app: {
@@ -15,16 +15,48 @@ const props = defineProps({
 
 const { app, instanceCount } = toRefs(props);
 
+const chatGptUrl = computed(() => {
+  if (!app.value) return "";
+
+  const composeUrl = `https://github.com/besoeasy/yantra/blob/main/apps/${app.value.id}/compose.yml`;
+  const query = `Understand this Yantra Docker stack:\n${composeUrl}\n(Yantra handles deployment, so skip Docker/installation commands)\nTell me:\n1. What does this app do?\n2. 5 main features of this app\n\n3. What are some alternatives?\n\nNote: Yantra App List is available at https://github.com/besoeasy/yantra - when suggesting alternatives, prefer apps from this list as they're easy to install in Yantra.\n\nMake this a well-informed list, keep it short and minimal, and ask if I want to know more.`;
+  return `https://chatgpt.com/?q=${encodeURIComponent(query)}`;
+});
+
+function hashStringToUint32(value) {
+  // FNV-1a 32-bit
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
+
 const categories = computed(() => {
   const raw = app.value?.category ?? "";
   const parts = raw
     .split(",")
     .map((c) => c.trim())
     .filter(Boolean);
-  return {
-    shown: parts.slice(0, 2),
-    remaining: Math.max(0, parts.length - 2),
-  };
+
+  if (parts.length <= 2) {
+    return { shown: parts };
+  }
+
+  const seedSource = String(app.value?.id ?? app.value?.name ?? raw);
+  const h1 = hashStringToUint32(seedSource);
+  const h2 = hashStringToUint32(`${seedSource}::2`);
+
+  const firstIndex = h1 % parts.length;
+  const remainingIndices = [];
+  for (let i = 0; i < parts.length; i++) {
+    if (i !== firstIndex) remainingIndices.push(i);
+  }
+  const secondIndex = remainingIndices[h2 % remainingIndices.length];
+
+  const shown = [parts[firstIndex], parts[secondIndex]];
+  return { shown };
 });
 
 const accent = computed(() => {
@@ -56,11 +88,14 @@ const accent = computed(() => {
 </script>
 
 <template>
-  <button
-    type="button"
+  <div
     class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4"
     :class="accent.ring"
+    role="button"
+    tabindex="0"
     :aria-label="`Open ${app?.name ?? 'app'} details`"
+    @keydown.enter.prevent="$event.currentTarget.click()"
+    @keydown.space.prevent="$event.currentTarget.click()"
   >
     <!-- Gradient Glow -->
     <div
@@ -102,22 +137,35 @@ const accent = computed(() => {
         {{ app.description || "No description available" }}
       </p>
 
-      <!-- “Features” (categories) -->
-      <ul v-if="categories.shown.length" class="space-y-2 text-sm text-slate-500 dark:text-gray-400">
-        <li v-for="cat in categories.shown" :key="cat" class="flex items-center gap-2">
+      <!-- Categories (side-by-side) -->
+      <div v-if="categories.shown.length" class="flex flex-wrap gap-2 text-sm">
+        <div
+          v-for="cat in categories.shown"
+          :key="cat"
+          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
+        >
           <Check :size="16" :class="accent.check" />
           <span class="capitalize">{{ cat }}</span>
-        </li>
-        <li v-if="categories.remaining" class="flex items-center gap-2">
-          <Check :size="16" :class="accent.check" />
-          <span>+{{ categories.remaining }} more</span>
-        </li>
-      </ul>
+        </div>
+      </div>
 
-      <!-- Arrow -->
-      <div class="mt-6 flex items-center font-semibold text-sm group-hover:translate-x-2 transition-transform" :class="accent.arrow">
-        Install <ChevronRight :size="16" class="ml-1" />
+      <!-- Actions -->
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <div class="flex items-center font-semibold text-sm group-hover:translate-x-2 transition-transform" :class="accent.arrow">
+          Install <ChevronRight :size="16" class="ml-1" />
+        </div>
+
+        <a
+          :href="chatGptUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 dark:from-emerald-500/10 dark:to-green-500/10 dark:hover:from-emerald-500/20 dark:hover:to-green-500/20 text-green-700 dark:text-emerald-200 hover:text-green-800 transition-all font-semibold text-xs border border-green-200/50 dark:border-emerald-500/30 focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
+          @click.stop
+        >
+          <Bot :size="16" />
+          <span>Explain</span>
+        </a>
       </div>
     </div>
-  </button>
+  </div>
 </template>
