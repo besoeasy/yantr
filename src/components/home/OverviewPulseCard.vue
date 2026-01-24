@@ -7,7 +7,6 @@ const props = defineProps({
   totalVolumes: { type: Number, default: 0 },
   temporaryCount: { type: Number, default: 0 },
   imagesCount: { type: Number, default: 0 },
-  showWatchtowerAlert: { type: Boolean, default: false },
 });
 
 const greeting = computed(() => {
@@ -16,13 +15,6 @@ const greeting = computed(() => {
   if (hour < 18) return "Good afternoon";
   return "Good evening";
 });
-
-const statusLabel = computed(() => (props.showWatchtowerAlert ? "Watchtower missing" : "Auto-checks active"));
-const statusClass = computed(() =>
-  props.showWatchtowerAlert
-    ? "text-black dark:text-white underline underline-offset-2"
-    : "text-black/70 dark:text-white/70",
-);
 </script>
 
 <template>
@@ -49,12 +41,6 @@ const statusClass = computed(() =>
             </p>
           </div>
         </div>
-
-        <span
-          class="text-xs font-semibold px-3 py-1 rounded-full bg-white/70 dark:bg-white/5 border border-black/10 dark:border-white/10 text-black/80 dark:text-white/80"
-        >
-          {{ statusLabel }}
-        </span>
       </div>
 
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -80,9 +66,6 @@ const statusClass = computed(() =>
         <div class="flex items-center gap-2 text-xs font-bold text-black/70 dark:text-white/70 uppercase tracking-wider">
           <Activity class="w-3.5 h-3.5" />
           <span>Stack Signal</span>
-        </div>
-        <div class="text-sm font-bold" :class="statusClass">
-          {{ statusLabel }}
         </div>
       </div>
     </div>

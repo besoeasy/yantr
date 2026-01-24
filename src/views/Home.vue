@@ -255,7 +255,6 @@ onUnmounted(() => {
                 :total-volumes="totalVolumes"
                 :temporary-count="temporaryContainersCount"
                 :images-count="images.length"
-                :show-watchtower-alert="showWatchtowerAlert"
               />
             </div>
 
