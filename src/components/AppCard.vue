@@ -64,6 +64,7 @@ const accent = computed(() => {
   if (installed) {
     return {
       ring: "focus:ring-emerald-500",
+      border: "border-emerald-200 dark:border-emerald-500/30",
       glow: "bg-emerald-200 dark:bg-emerald-400/20",
       iconBg: "bg-emerald-900/10 dark:bg-emerald-900/30",
       iconHover: "group-hover:bg-emerald-900/15 dark:group-hover:bg-emerald-800/40",
@@ -76,6 +77,7 @@ const accent = computed(() => {
 
   return {
     ring: "focus:ring-sky-500",
+    border: "border-slate-200 dark:border-gray-700",
     glow: "bg-sky-200 dark:bg-sky-400/20",
     iconBg: "bg-slate-900/5 dark:bg-slate-900/30",
     iconHover: "group-hover:bg-slate-900/10 dark:group-hover:bg-slate-800/40",
@@ -89,14 +91,21 @@ const accent = computed(() => {
 
 <template>
   <div
-    class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4"
-    :class="accent.ring"
+    class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4"
+    :class="[accent.ring, accent.border]"
     role="button"
     tabindex="0"
     :aria-label="`Open ${app?.name ?? 'app'} details`"
     @keydown.enter.prevent="$event.currentTarget.click()"
     @keydown.space.prevent="$event.currentTarget.click()"
   >
+    <!-- Installed marker -->
+    <div
+      v-if="app?.isInstalled"
+      class="absolute inset-y-0 left-0 w-1 bg-emerald-500/70 dark:bg-emerald-400/60"
+      aria-hidden="true"
+    ></div>
+
     <!-- Gradient Glow -->
     <div
       class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"

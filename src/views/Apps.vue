@@ -196,41 +196,60 @@ onUnmounted(() => {
     <div class="lg:mr-64 xl:mr-72 p-4 sm:p-6 md:p-10 lg:p-12">
       <!-- Search Bar -->
       <div class="mb-6 md:mb-8">
-        <div class="relative">
-          <input
-            v-model="appSearch"
-            type="text"
-            placeholder="Search apps..."
-            class="w-full px-4 sm:px-5 py-3 sm:py-4 pl-11 sm:pl-12 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 transition-all text-base dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
-          />
-          <span class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl">🔍</span>
-          <button
-            v-if="appSearch"
-            @click="appSearch = ''"
-            class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1 touch-manipulation"
-            title="Clear search"
-          >
-            ✕
-          </button>
-        </div>
-        <div class="mt-2 text-sm text-gray-500 dark:text-slate-400 flex items-center justify-between">
-          <span v-if="combinedApps.length < allAppsCount || selectedCategory">
-            Showing {{ combinedApps.length }} of {{ allAppsCount }} apps
-            <span v-if="selectedCategory" class="inline-flex items-center gap-1">
-              in <span class="font-semibold text-blue-600 dark:text-blue-400">{{ selectedCategory }}</span>
-              <button @click="selectedCategory = null" class="ml-1 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors" title="Clear filter">✕</button>
-            </span>
-          </span>
+        <div class="group relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-gray-700">
+          <!-- Subtle glow on focus -->
+          <div class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-focus-within:opacity-60 transition-opacity duration-500 bg-sky-200 dark:bg-sky-400/20" aria-hidden="true"></div>
+
+          <div class="relative">
+            <div class="relative">
+              <input
+                v-model="appSearch"
+                type="text"
+                placeholder="Search apps..."
+                class="w-full px-4 sm:px-5 py-3 sm:py-4 pl-11 sm:pl-12 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 transition-all text-base focus:outline-none focus:ring-4 focus:ring-sky-500/20 focus:border-sky-300 dark:bg-black/30 dark:border-gray-700 dark:text-white dark:placeholder-gray-500"
+              />
+              <span class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl">🔍</span>
+              <button
+                v-if="appSearch"
+                @click="appSearch = ''"
+                class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1 touch-manipulation"
+                title="Clear search"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div class="mt-3 text-sm text-slate-500 dark:text-gray-400 flex items-center justify-between">
+              <span v-if="combinedApps.length < allAppsCount || selectedCategory">
+                Showing {{ combinedApps.length }} of {{ allAppsCount }} apps
+                <span v-if="selectedCategory" class="inline-flex items-center gap-1">
+                  in <span class="font-semibold text-sky-700 dark:text-sky-300">{{ selectedCategory }}</span>
+                  <button
+                    @click="selectedCategory = null"
+                    class="ml-1 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                    title="Clear filter"
+                  >
+                    ✕
+                  </button>
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div v-if="loading" class="text-center py-16">
-        <div class="text-gray-500 dark:text-slate-400 font-medium">Loading apps...</div>
+      <div v-if="loading" class="max-w-xl mx-auto py-10">
+        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-gray-700 text-center">
+          <div class="w-10 h-10 border-4 border-sky-600/30 border-t-sky-600 dark:border-sky-500/30 dark:border-t-sky-300 rounded-full animate-spin mx-auto mb-4"></div>
+          <div class="text-slate-600 dark:text-gray-300 font-medium">Loading apps...</div>
+        </div>
       </div>
-      <div v-else-if="combinedApps.length === 0" class="text-center py-16">
-        <div class="text-5xl mb-4">🔍</div>
-        <div class="text-gray-500 dark:text-slate-300 font-medium">No apps found</div>
-        <div class="text-sm text-gray-400 dark:text-slate-500 mt-2">Try a different search term</div>
+      <div v-else-if="combinedApps.length === 0" class="max-w-xl mx-auto py-10">
+        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-gray-700 text-center">
+          <div class="text-5xl mb-4">🔍</div>
+          <div class="text-slate-700 dark:text-gray-200 font-semibold">No apps found</div>
+          <div class="text-sm text-slate-500 dark:text-gray-400 mt-2">Try a different search term</div>
+        </div>
       </div>
       <div v-else class="grid grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         <AppCard
@@ -245,14 +264,15 @@ onUnmounted(() => {
     </div>
 
     <!-- Categories Sidebar - Fixed to right side on larger screens -->
-    <aside class="hidden lg:block fixed top-0 right-0 w-64 xl:w-72 h-screen bg-white border-l border-gray-200 dark:bg-slate-950 dark:border-slate-800 z-40 overflow-y-auto custom-scrollbar">
+    <aside class="hidden lg:block fixed top-0 right-0 w-64 xl:w-72 h-screen bg-slate-50 border-l border-slate-200 dark:bg-black dark:border-gray-800 z-40 overflow-y-auto custom-scrollbar">
       <div class="p-6">
-        <div class="flex items-center gap-2 mb-6 pb-4 border-b border-gray-100 dark:border-slate-800">
-          <Tag :size="20" class="text-gray-900 dark:text-white" />
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Categories</h3>
-        </div>
+        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-gray-700">
+          <div class="flex items-center gap-2 mb-4 pb-4 border-b border-slate-100 dark:border-gray-800">
+            <Tag :size="20" class="text-slate-900 dark:text-white" />
+            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Categories</h3>
+          </div>
 
-        <div class="space-y-1.5">
+          <div class="space-y-1.5">
           <!-- All Apps Option -->
           <button
             @click="selectedCategory = null"
@@ -296,6 +316,7 @@ onUnmounted(() => {
               {{ category.count }}
             </span>
           </button>
+          </div>
         </div>
       </div>
     </aside>
