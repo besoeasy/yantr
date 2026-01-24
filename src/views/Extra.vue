@@ -122,7 +122,7 @@ const externalItems = [
 
 <template>
   <main class="flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-900 dark:bg-black dark:text-white px-4 py-12">
-    <div class="w-full max-w-6xl mx-auto animate-fade-in-up">
+    <div class="w-full mx-auto animate-fade-in-up">
       <!-- Navigation Grid -->
       <section aria-label="Navigation" class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         <router-link
