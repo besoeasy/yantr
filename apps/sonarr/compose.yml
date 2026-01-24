@@ -1,0 +1,25 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    volumes:
+      - sonarr_config:/config
+      - sonarr_tv:/tv
+      - sonarr_downloads:/downloads
+    ports:
+      - "8989"
+    restart: unless-stopped
+    labels:
+      yantra.name: "Sonarr"
+      yantra.category: "media,tools"
+      yantra.port: "8989 (HTTP - Web UI)"
+      yantra.description: "Smart PVR for TV show monitoring and automated downloading with Usenet and BitTorrent"
+      yantra.website: "https://github.com/linuxserver/docker-sonarr"
+
+volumes:
+  sonarr_config:
+    name: sonarr_config
+  sonarr_tv:
+    name: sonarr_tv
+  sonarr_downloads:
+    name: sonarr_downloads
