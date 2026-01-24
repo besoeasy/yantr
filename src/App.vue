@@ -35,6 +35,7 @@ onMounted(() => {
     <!-- Desktop Sidebar -->
     <aside
       class="hidden md:flex bg-white dark:bg-slate-950 flex-col items-center border-r border-gray-200 dark:border-slate-800 w-20 py-6 px-2 fixed h-screen z-50"
+      style="--sidebar-size: 5rem"
     >
       <!-- Navigation (Top) -->
       <nav class="flex flex-col items-center gap-3 mt-1">
@@ -103,35 +104,35 @@ onMounted(() => {
           >
             <span
               aria-hidden="true"
-              class="flex flex-col items-center gap-0.5 text-sm font-black uppercase leading-none text-gray-900 dark:text-white"
+              class="flex flex-col items-center gap-[calc(var(--sidebar-size)*0.02)] text-[calc(var(--sidebar-size)*0.22)] font-black uppercase leading-[0.95] text-gray-900 dark:text-white"
             >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:-rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:-rotate-6"
                 style="transition-delay: 0ms"
                 >Y</span
               >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:rotate-6"
                 style="transition-delay: 35ms"
                 >A</span
               >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:-rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:-rotate-6"
                 style="transition-delay: 70ms"
                 >N</span
               >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:rotate-6"
                 style="transition-delay: 105ms"
                 >T</span
               >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:-rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:-rotate-6"
                 style="transition-delay: 140ms"
                 >R</span
               >
               <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:rotate-6"
                 style="transition-delay: 175ms"
                 >A</span
               >
