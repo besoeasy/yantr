@@ -103,14 +103,38 @@ onMounted(() => {
           >
             <span
               aria-hidden="true"
-              class="flex flex-col items-center text-[13px] font-black uppercase leading-[1] text-gray-900 dark:text-white"
+              class="flex flex-col items-center gap-0.5 text-sm font-black uppercase leading-none text-gray-900 dark:text-white"
             >
-              <span>Y</span>
-              <span>A</span>
-              <span>N</span>
-              <span>T</span>
-              <span>R</span>
-              <span>A</span>
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                style="transition-delay: 0ms"
+                >Y</span
+              >
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                style="transition-delay: 35ms"
+                >A</span
+              >
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                style="transition-delay: 70ms"
+                >N</span
+              >
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                style="transition-delay: 105ms"
+                >T</span
+              >
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:-rotate-6"
+                style="transition-delay: 140ms"
+                >R</span
+              >
+              <span
+                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110 group-hover:rotate-6"
+                style="transition-delay: 175ms"
+                >A</span
+              >
             </span>
           </router-link>
         </div>
