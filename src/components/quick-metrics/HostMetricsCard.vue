@@ -180,14 +180,16 @@ onUnmounted(() => {
         </div>
         
         <div>
-          <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight truncate" :title="osInfo.name">
+          <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight truncate drop-shadow-sm" :title="osInfo.name">
             {{ osInfo.name }}
           </h2>
-          <div class="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
-             <span v-if="osInfo.type" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] uppercase tracking-wide font-bold">
+          <div class="flex flex-wrap items-center gap-2 mt-2">
+             <span v-if="osInfo.type" class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[10px] text-slate-600 dark:text-slate-300 uppercase tracking-wider font-extrabold shadow-sm">
                {{ osInfo.type }}
              </span>
-             <span v-if="osInfo.kernel">v{{ osInfo.kernel }}</span>
+             <span v-if="osInfo.kernel" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 text-[10px] text-indigo-600 dark:text-indigo-300 font-bold tabular-nums shadow-sm">
+               v{{ osInfo.kernel }}
+             </span>
           </div>
         </div>
       </div>
@@ -248,18 +250,12 @@ onUnmounted(() => {
                </span>
                <span class="text-[10px] font-bold uppercase tracking-wider">Storage</span>
              </div>
-             <div>
-                <div class="flex justify-between items-end">
-                  <div class="text-xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
-                    {{ storageInfo.percent }}%
-                  </div>
-                  <div class="text-[10px] font-bold text-slate-400 mb-1 tabular-nums">
-                    {{ storageInfo.usedFormatted }} / {{ storageInfo.totalFormatted }}
-                  </div>
+             <div class="flex items-baseline justify-between">
+                <div class="text-xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
+                  {{ storageInfo.usedFormatted }}
                 </div>
-                <!-- Mini Progress Bar for consistency -->
-                <div class="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-full mt-1 overflow-hidden">
-                   <div class="h-full bg-emerald-500 rounded-full" :style="{ width: `${storageInfo.percent}%` }"></div>
+                <div class="text-[10px] font-bold text-slate-400 tabular-nums">
+                   <span class="opacity-50 mr-1">of</span> {{ storageInfo.totalFormatted }}
                 </div>
              </div>
            </div>
