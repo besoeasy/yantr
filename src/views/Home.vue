@@ -249,7 +249,7 @@ onUnmounted(() => {
           <!-- Unified Dashboard Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4 xl:gap-3">
             <!-- Combined Greeting + Operations Pulse -->
-            <div>
+            <div class="lg:col-span-2">
               <OverviewPulseCard
                 :running-apps="runningApps"
                 :total-volumes="totalVolumes"
