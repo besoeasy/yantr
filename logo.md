@@ -2,7 +2,7 @@ I will provide a reference logo image. Create a NEW original logo mark inspired 
 
 Design requirements:
 
-1. Export as PNG, with transperent background.
+1. Export as PNG, with transperent background, with resolution of 1000X1000.
 2. No text, no letters, no numbers, no slogans.
 3. Use a minimum of 2 and maximum of 4 flat colors (no gradients, no textures).
 4. Clean vector style, high contrast, balanced negative space.
