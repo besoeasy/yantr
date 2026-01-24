@@ -1,0 +1,32 @@
+services:
+  monerod:
+    image: ghcr.io/sethforprivacy/simple-monerod:latest
+    container_name: monerod
+    restart: unless-stopped
+    labels:
+      yantra.name: "Monero Node"
+      yantra.logo: "QmcCKS2i9xdSYNkGSsWtrGukXCaW7YPPpjM3dUzsKePqEC"
+      yantra.category: "cryptocurrency,blockchain,network"
+      yantra.port: "18089 (TCP - Restricted RPC), 18080 (TCP - P2P)"
+      yantra.description: "Pruned Monero full node with restricted RPC for wallets and apps"
+      yantra.website: "https://github.com/sethforprivacy/simple-monerod"
+    ports:
+      - "18080:18080/tcp"
+      - "18089:18089/tcp"
+    volumes:
+      - bitmonero:/home/monero/.bitmonero
+    command:
+      - monerod
+      - --public-node
+      - --prune-blockchain
+      - --rpc-restricted-bind-ip=0.0.0.0
+      - --rpc-restricted-bind-port=18089
+      - --no-igd
+      - --no-zmq
+      - --enable-dns-blocklist
+      - --db-sync-mode=safe
+      - --log-level=0
+      - --ban-list=/home/monero/ban_list.txt
+
+volumes:
+  bitmonero:
