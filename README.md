@@ -50,13 +50,8 @@ Most homelab platforms (Umbrel, CasaOS) demand your **entire computer**. Yantra 
 ---
 
 ## 📸 See It In Action
+<img width="2880" height="1768" alt="image" src="https://github.com/user-attachments/assets/a70dca2b-fae0-4e5d-b94b-c7168a71ca3f" />
 
-<p align="center">
-<img width="1688" height="1127" alt="yantra1" src="https://github.com/user-attachments/assets/9d1f1564-f87e-4359-a823-628a90a0bae0" />
-<img width="1688" height="1127" alt="yantra4" src="https://github.com/user-attachments/assets/acd0f7d9-b946-4a7e-8cfb-8d89098380fc" />
-<img width="1688" height="1127" alt="yantra3" src="https://github.com/user-attachments/assets/4dce806c-0abd-45d8-b04d-bda1aea5f2b4" />
-<img width="1688" height="1127" alt="yantra2" src="https://github.com/user-attachments/assets/e6e44e1f-7e30-4424-97a0-2a30e69f30ad" />
-</p>
 ---
 
 ## 🛠️ Perfect for Your Workflow
