@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
-import { ArrowLeft, ExternalLink, ArrowRight, Info, FileText, Tags, Box, Activity, Globe, TrendingUp, Loader2, Settings, Terminal, RefreshCw, Trash2, Cpu, MemoryStick, HardDrive, Network, Play, Square, RotateCcw, Eye, Folder, Lock, ShieldCheck, FolderOpen, Database, Share2 } from 'lucide-vue-next'
+import { ArrowLeft, ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download } from 'lucide-vue-next'
 
 const route = useRoute()
 const router = useRouter()
@@ -17,6 +17,7 @@ const refreshingLogs = ref(false)
 const browsingVolume = ref({})
 const showVolumeMenu = ref({})
 let statsInterval = null
+const autoScrollLogs = ref(true)
 
 // Extract volume names from container mounts
 const containerVolumes = computed(() => {
@@ -98,66 +99,6 @@ const allPortMappings = computed(() => {
   })
 })
 
-// Separate labeled and unlabeled ports
-const labeledPorts = computed(() => allPortMappings.value.filter(m => m.label))
-const unlabeledPorts = computed(() => allPortMappings.value.filter(m => !m.label))
-
-const getLabeledPorts = computed(() => {
-  if (!selectedContainer.value || !selectedContainer.value.ports) {
-    return []
-  }
-  
-  const ports = []
-  const portDescriptions = {}
-  
-  if (!selectedContainer.value.app || !selectedContainer.value.app.port) {
-    return []
-  }
-  
-  const portStr = selectedContainer.value.app.port
-  const regex = /(\d+)\s*\(([^-\)]+)\s*-\s*([^)]+)\)/g
-  let match
-  
-  while ((match = regex.exec(portStr)) !== null) {
-    portDescriptions[match[1]] = {
-      protocol: match[2].trim().toLowerCase(),
-      label: match[3].trim()
-    }
-  }
-  
-  if (Object.keys(portDescriptions).length === 0) {
-    return []
-  }
-  
-  const portKeys = Object.keys(selectedContainer.value.ports)
-  const portMap = {}
-  portKeys.forEach(key => {
-    const [privatePort, type] = key.split('/')
-    const bindings = selectedContainer.value.ports[key]
-    
-    if (type === 'tcp' && bindings && bindings.length > 0) {
-      const hostPort = bindings[0].HostPort
-      if (hostPort) {
-        portMap[privatePort] = hostPort
-      }
-    }
-  })
-  
-  for (const [privatePort, description] of Object.entries(portDescriptions)) {
-    const hostPort = portMap[privatePort]
-    
-    if (hostPort) {
-      ports.push({
-        port: hostPort,
-        protocol: description.protocol,
-        label: description.label
-      })
-    }
-  }
-  
-  return ports
-})
-
 function appUrl(port, protocol = 'http') {
   const normalizedProtocol = protocol.replace('://', '').replace(':', '')
   let host = window.location.hostname || 'localhost'
@@ -173,25 +114,6 @@ function appUrl(port, protocol = 'http') {
   }
 
   return `${normalizedProtocol}://${host}:${portMatch[0]}`
-}
-
-// Get protocol icon and color
-function getProtocolInfo(protocol, labeledProtocol) {
-  const proto = (labeledProtocol || protocol || 'tcp').toLowerCase()
-  
-  const protocolMap = {
-    'http': { icon: Globe, color: 'text-blue-600 dark:text-blue-300', bg: 'bg-blue-100 dark:bg-blue-500/15', label: 'HTTP' },
-    'https': { icon: Lock, color: 'text-green-600 dark:text-emerald-300', bg: 'bg-green-100 dark:bg-emerald-500/15', label: 'HTTPS' },
-    'smb': { icon: Share2, color: 'text-purple-600 dark:text-purple-300', bg: 'bg-purple-100 dark:bg-purple-500/15', label: 'SMB' },
-    'ftp': { icon: FolderOpen, color: 'text-orange-600 dark:text-orange-300', bg: 'bg-orange-100 dark:bg-orange-500/15', label: 'FTP' },
-    'sftp': { icon: ShieldCheck, color: 'text-teal-600 dark:text-teal-300', bg: 'bg-teal-100 dark:bg-teal-500/15', label: 'SFTP' },
-    'webdav': { icon: Database, color: 'text-indigo-600 dark:text-indigo-300', bg: 'bg-indigo-100 dark:bg-indigo-500/15', label: 'WebDAV' },
-    'ssh': { icon: Terminal, color: 'text-gray-700 dark:text-slate-300', bg: 'bg-gray-100 dark:bg-slate-800', label: 'SSH' },
-    'tcp': { icon: Network, color: 'text-blue-600 dark:text-blue-300', bg: 'bg-blue-100 dark:bg-blue-500/15', label: 'TCP' },
-    'udp': { icon: Network, color: 'text-cyan-600 dark:text-cyan-300', bg: 'bg-cyan-100 dark:bg-cyan-500/15', label: 'UDP' },
-  }
-  
-  return protocolMap[proto] || { icon: Network, color: 'text-gray-600 dark:text-slate-300', bg: 'bg-gray-100 dark:bg-slate-800', label: proto.toUpperCase() }
 }
 
 function formatBytes(bytes) {
@@ -244,6 +166,9 @@ async function fetchContainerLogs() {
     
     if (data.success) {
       containerLogs.value = data.logs
+      if (autoScrollLogs.value) {
+        scrollToBottom()
+      }
     }
   } catch (error) {
     console.error('Failed to fetch container logs:', error)
@@ -252,6 +177,14 @@ async function fetchContainerLogs() {
       refreshingLogs.value = false
     }, 300)
   }
+}
+
+const scrollToBottom = () => {
+    // Implementation via DOM manipulation in template refs would be better in Vue, but simplistic here
+    setTimeout(() => {
+        const el = document.getElementById('terminal-logs')
+        if (el) el.scrollTop = el.scrollHeight
+    }, 100)
 }
 
 async function deleteContainer() {
@@ -282,7 +215,7 @@ async function deleteContainer() {
 }
 
 async function browseVolume(volumeName, expiryMinutes = 60) {
-  browsingVolume.value[volumeName] = true
+  browsingVolume.value[volumeName] = volumeName
   showVolumeMenu.value[volumeName] = false
   try {
     const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, {
@@ -312,10 +245,6 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
   }
 }
 
-function toggleVolumeMenu(volumeName) {
-  showVolumeMenu.value[volumeName] = !showVolumeMenu.value[volumeName]
-}
-
 onMounted(async () => {
   await fetchContainerDetail()
   await Promise.all([
@@ -337,301 +266,292 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-200 font-sans pb-32">
-    
-    <!-- Top Navigation -->
-    <nav class="sticky top-0 z-40 bg-white/80 dark:bg-[#09090b]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 lg:px-8 h-16 flex items-center justify-between">
-        <router-link to="/"
-          class="flex items-center gap-2 text-sm font-semibold tracking-wide uppercase text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors">
-          <ArrowLeft :size="18" />
-          <span>Dashboard</span>
-        </router-link>
-        
+  <div class="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-200 font-sans">
+    <!-- Header -->
+    <header class="bg-white dark:bg-[#0c0c0e] border-b border-slate-200 dark:border-slate-800">
+      <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <router-link to="/" class="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500">
+            <ArrowLeft :size="18" />
+          </router-link>
+          
+          <div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+
+          <div class="flex items-center gap-2 text-sm">
+            <span class="text-slate-500">Containers</span>
+            <span class="text-slate-300 dark:text-slate-700">/</span>
+            <span class="font-medium text-slate-900 dark:text-white" v-if="selectedContainer">{{ selectedContainer.name }}</span>
+            <span v-else class="w-24 h-4 bg-slate-200 dark:bg-slate-800 animate-pulse rounded"></span>
+          </div>
+        </div>
+
         <div v-if="selectedContainer" class="flex items-center gap-3">
-          <span class="text-xs font-mono text-slate-400 dark:text-slate-600">{{ selectedContainer.id.substring(0, 12) }}</span>
-          <div :class="[
-            'flex items-center gap-1.5 px-2 py-0.5 border text-xs font-bold uppercase tracking-wider',
-            selectedContainer.state === 'running' 
-              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400' 
-              : 'bg-slate-500/10 border-slate-500/20 text-slate-600 dark:text-slate-400'
-          ]">
-            <div :class="['w-1.5 h-1.5 rounded-full', selectedContainer.state === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-500']"></div>
-            {{ selectedContainer.state }}
+          <div class="flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold uppercase tracking-wide"
+            :class="selectedContainer.state === 'running' 
+              ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400' 
+              : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'">
+            <div class="w-1.5 h-1.5 rounded-full" :class="selectedContainer.state === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'"></div>
+            <span>{{ selectedContainer.state }}</span>
           </div>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <!-- Loading State -->
-    <div v-if="!selectedContainer" class="flex flex-col items-center justify-center min-h-[60vh]">
-      <div class="relative">
-        <div class="w-16 h-16 border-2 border-slate-200 dark:border-slate-800 rounded-none transform rotate-45"></div>
-        <div class="absolute inset-0 w-16 h-16 border-2 border-sky-500 border-t-transparent border-l-transparent rounded-none animate-spin"></div>
-      </div>
-      <div class="mt-8 font-mono text-sm tracking-widest text-slate-400 uppercase">Connecting to Host...</div>
+    <div v-if="!selectedContainer" class="max-w-7xl mx-auto p-8 flex justify-center">
+       <div class="animate-spin text-slate-300"><RefreshCw :size="32" /></div>
     </div>
 
-    <!-- Main Content -->
-    <div v-else class="max-w-7xl mx-auto px-4 lg:px-8 py-8 lg:py-12">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <main v-else class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- LEFT COLUMN -->
+      <div class="lg:col-span-2 space-y-8">
         
-        <!-- Left Column: Metrics & Logs -->
-        <div class="lg:col-span-8 space-y-10">
-          
-          <!-- Identity Card -->
-          <div class="flex flex-col sm:flex-row gap-6 sm:gap-8 border-b border-dashed border-slate-300 dark:border-slate-800 pb-10">
-            <div class="w-24 h-24 sm:w-32 sm:h-32 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex items-center justify-center shrink-0">
-              <img v-if="selectedContainer.app.logo" :src="selectedContainer.app.logo" :alt="selectedContainer.name" class="w-full h-full object-contain" />
-              <div v-else class="text-4xl">📦</div>
-            </div>
-            
-            <div class="flex-1 space-y-4">
-              <div>
-                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2">{{ selectedContainer.name }}</h1>
-                <div class="flex flex-wrap gap-2">
-                  <span class="px-2 py-0.5 bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-400 text-xs font-mono border border-slate-200 dark:border-slate-700 uppercase"
-                    :title="selectedContainer.image">
-                    {{ selectedContainer.image }}
-                  </span>
-                </div>
-              </div>
-              
-              <p class="text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300 max-w-3xl">
-                {{ selectedContainer.app.description || "Container running without specific application metadata." }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Network Config -->
-          <div v-if="allPortMappings.length > 0" class="space-y-6">
-             <div class="flex items-center justify-between border-l-2 border-indigo-500 pl-3">
-               <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500">Network Bindings</h3>
-             </div>
-             
-             <div class="border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c0c0e] overflow-hidden">
-                <div class="overflow-x-auto">
-                   <table class="w-full text-left border-collapse">
-                      <thead>
-                         <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-[10px] uppercase text-slate-500 font-bold tracking-wider">
-                            <th class="py-3 px-4 font-mono whitespace-nowrap">Protocol</th>
-                            <th class="py-3 px-4 font-mono whitespace-nowrap">Host Port</th>
-                            <th class="py-3 px-4 font-mono whitespace-nowrap">Container Port</th>
-                            <th class="py-3 px-4 font-mono w-full">Description</th>
-                            <th class="py-3 px-4 text-right font-mono whitespace-nowrap">Access</th>
-                         </tr>
-                      </thead>
-                      <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">
-                         <tr v-for="(mapping, i) in allPortMappings" :key="i" class="hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors group">
-                            <td class="py-3 px-4">
-                               <div class="flex items-center gap-2">
-                                  <Network :size="14" :class="mapping.protocol === 'tcp' ? 'text-indigo-500' : 'text-slate-500'" />
-                                  <span class="font-mono font-bold uppercase text-slate-700 dark:text-slate-300 text-xs">{{ mapping.protocol }}</span>
-                                  <span v-if="mapping.labeledProtocol" class="text-[9px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded uppercase font-bold border border-slate-200 dark:border-slate-700">{{ mapping.labeledProtocol }}</span>
-                               </div>
-                            </td>
-                            <td class="py-3 px-4 font-mono">
-                               <span v-if="mapping.hostPort" class="text-slate-900 dark:text-white font-bold text-sm">{{ mapping.hostPort }}</span>
-                               <span v-else class="text-slate-400 italic text-xs">unbound</span>
-                            </td>
-                            <td class="py-3 px-4 font-mono text-slate-600 dark:text-slate-400 text-sm">
-                               {{ mapping.containerPort }}
-                            </td>
-                            <td class="py-3 px-4">
-                               <span v-if="mapping.label" class="text-slate-600 dark:text-slate-400 font-mono text-xs">{{ mapping.label }}</span>
-                               <span v-else class="text-slate-400 italic text-xs opacity-50">--</span>
-                            </td>
-                            <td class="py-3 px-4 text-right">
-                               <a v-if="mapping.hostPort && mapping.protocol === 'tcp'"
-                                  :href="appUrl(mapping.hostPort, mapping.labeledProtocol || 'http')"
-                                  target="_blank"
-                                  class="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 rounded-sm text-[10px] font-bold uppercase tracking-wide transition-colors"
-                               >
-                                  <span>Open</span>
-                                  <ExternalLink :size="12" />
-                               </a>
-                               <span v-else class="text-[10px] text-slate-400 uppercase tracking-wide opacity-50 cursor-not-allowed">Local</span>
-                            </td>
-                         </tr>
-                      </tbody>
-                   </table>
-                </div>
-             </div>
-          </div>
-
-          <!-- Volumes -->
-          <div v-if="containerVolumes.length > 0" class="space-y-6">
-             <div class="flex items-center justify-between border-l-2 border-sky-500 pl-3">
-               <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500">Storage & File Browser</h3>
-             </div>
-             
-             <div class="grid gap-4">
-                <div v-for="(volume, idx) in containerVolumes" :key="volume.name" 
-                     class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c0c0e] hover:border-sky-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/5 hover:-translate-y-1 animate-in"
-                     :style="{ animationDelay: `${idx * 100}ms` }">
-                   <div class="min-w-0 flex-1">
-                      <div class="flex items-center gap-2 mb-1">
-                         <HardDrive :size="16" class="text-sky-500 group-hover:scale-110 transition-transform duration-300" />
-                         <span class="font-mono text-sm font-bold truncate group-hover:text-sky-500 transition-colors" :title="volume.name">{{ volume.name }}</span>
-                      </div>
-                      <div class="text-xs font-mono text-slate-500 truncate pl-6">{{ volume.destination }}</div>
-                   </div>
-                   
-                   <div class="flex items-center gap-3 shrink-0">
-                      <span :class="['text-[10px] font-bold uppercase px-2 py-0.5 border', volume.rw ? 'border-emerald-500/30 text-emerald-600 dark:text-emerald-400' : 'border-slate-500/30 text-slate-500']">
-                         {{ volume.rw ? 'RW' : 'RO' }}
-                      </span>
-                      
-                      <div class="flex items-center gap-2">
-                        <button v-if="!showVolumeMenu[volume.name]" @click="showVolumeMenu[volume.name] = true" class="group/btn flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-sky-900/20 border border-slate-200 dark:border-slate-800 hover:border-sky-500/50 dark:hover:border-sky-500/50 text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all cursor-pointer rounded-sm">
-                           <FolderOpen :size="14" class="group-hover/btn:scale-110 transition-transform duration-300" />
-                           <span class="text-[10px] font-bold uppercase tracking-wider">Browse Files</span>
-                        </button>
-                        
-                        <div v-else class="flex items-center gap-2 animate-in slide-in-from-right-2 fade-in duration-200 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 rounded-sm">
-                           <button @click="browseVolume(volume.name, 60)" class="text-[10px] font-bold uppercase px-3 py-1 bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-sm hover:shadow-sky-500/20 hover:scale-105 active:scale-95 rounded-sm" title="Mount for 1 hour">Temp (1h)</button>
-                           <button @click="browseVolume(volume.name, 0)" class="text-[10px] font-bold uppercase px-3 py-1 bg-slate-700 hover:bg-slate-600 text-white transition-all shadow-sm hover:scale-105 active:scale-95 rounded-sm" title="Mount permanently">Perm</button>
-                        </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </div>
-
-          <!-- Logs Console -->
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500 border-l-2 border-slate-500 pl-3">System Output</h3>
-              <button @click="fetchContainerLogs" class="text-xs font-mono uppercase text-sky-500 hover:text-sky-400 flex items-center gap-2">
-                 <RefreshCw :size="12" :class="{ 'animate-spin': refreshingLogs }" />
-                 Refresh Logs
-              </button>
-            </div>
-            
-            <div class="bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-4 font-mono text-xs h-96 overflow-y-auto custom-scrollbar text-slate-300">
-               <div v-if="containerLogs.length === 0" class="h-full flex flex-col items-center justify-center text-slate-600">
-                  <Terminal :size="32" class="mb-2 opacity-50" />
-                  <span>No output detected</span>
-               </div>
-               <div v-else class="space-y-1">
-                  <div v-for="(log, i) in containerLogs" :key="i" class="break-all whitespace-pre-wrap font-mono">{{ log }}</div>
-               </div>
-            </div>
-          </div>
-          
-        </div>
-
-        <!-- Right Column: Network & Actions -->
-        <div class="lg:col-span-4 space-y-8">
-           
-           <!-- Resource Usage -->
-           <div v-if="containerStats">
-              <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500 border-l-2 border-pink-500 pl-3 mb-4">Resource Usage</h3>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-3">
-                   <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">CPU</div>
-                   <div class="text-lg font-mono font-bold text-slate-900 dark:text-white">{{ containerStats.cpu.percent }}%</div>
-                </div>
-                <div class="bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-3">
-                   <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Memory</div>
-                   <div class="text-lg font-mono font-bold text-slate-900 dark:text-white">{{ containerStats.memory.percent }}%</div>
-                </div>
-                <div class="bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-3">
-                   <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Net I/O</div>
-                   <div class="text-lg font-mono font-bold text-slate-900 dark:text-white text-xs truncate">{{ formatBytes(containerStats.network.rx) }} / {{ formatBytes(containerStats.network.tx) }}</div>
-                </div>
-                <div class="bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-3">
-                   <div class="text-[10px] uppercase tracking-wider text-slate-500 mb-1">Block I/O</div>
-                   <div class="text-lg font-mono font-bold text-slate-900 dark:text-white text-xs truncate">{{ formatBytes(containerStats.blockIO.read) }} / {{ formatBytes(containerStats.blockIO.write) }}</div>
-                </div>
-              </div>
+        <!-- Info Card -->
+        <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex flex-col sm:flex-row gap-6">
+           <div class="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-lg flex items-center justify-center p-3 shrink-0 border border-slate-100 dark:border-slate-800">
+              <img v-if="selectedContainer.app.logo" :src="selectedContainer.app.logo" class="w-full h-full object-contain" />
+              <div v-else class="text-3xl">📦</div>
            </div>
-
-           <!-- Environment Vars Small View -->
-           <div v-if="selectedContainer.env && selectedContainer.env.length > 0">
-              <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500 border-l-2 border-emerald-500 pl-3 mb-4">Runtime Env</h3>
-              <div class="bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-4 max-h-64 overflow-y-auto custom-scrollbar">
-                 <div v-for="(envVar, i) in selectedContainer.env" :key="i" class="font-mono text-[10px] mb-2 break-all border-b border-slate-800 pb-2 last:border-0 last:mb-0 last:pb-0">
-                    <span class="text-emerald-500 block mb-0.5">{{ envVar.split('=')[0] }}</span>
-                    <span class="text-slate-300 block pl-2">{{ envVar.split('=').slice(1).join('=') }}</span>
+           
+           <div class="flex-1 space-y-2">
+              <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{ selectedContainer.name }}</h1>
+              <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-2xl">
+                 {{ selectedContainer.app.description || "Container usage description not available." }}
+              </p>
+              <div class="pt-2 flex flex-wrap gap-2">
+                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-600 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-800">
+                    <Database :size="12" />
+                    {{ selectedContainer.image }}
+                 </div>
+                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-600 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-800">
+                    <span class="text-slate-400 dark:text-slate-500">ID:</span> {{ selectedContainer.id.substring(0, 12) }}
                  </div>
               </div>
            </div>
+        </div>
 
-           <!-- Action Panel -->
-           <div class="bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 p-6 shadow-xl shadow-slate-200/50 dark:shadow-black/50">
-              <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-tight flex items-center gap-3">
-                <span class="w-2 h-8 bg-red-500 block"></span>
-                Control
-              </h2>
-
-              <button 
-                @click="deleteContainer"
-                :disabled="deleting"
-                class="w-full relative group overflow-hidden bg-red-500 hover:bg-red-600 text-white p-4 font-bold uppercase tracking-widest text-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-              >
-                  <Trash2 :size="16" />
-                  <span>{{ deleting ? 'Terminating...' : 'Terminate Container' }}</span>
-              </button>
-              
-              <p class="text-[10px] text-slate-500 mt-4 text-center leading-relaxed">
-                 Warning: This action is irreversible. All associated volumes and data will be permanently destroyed.
-              </p>
+        <!-- Network Access (Moved from Right) -->
+        <div v-if="allPortMappings.length > 0" class="space-y-4">
+           <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Network Access</h3>
+           <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+             <div class="overflow-x-auto">
+               <table class="w-full text-left text-sm">
+                 <thead>
+                   <tr class="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-800 text-xs font-semibold uppercase text-slate-500">
+                     <th class="px-4 py-3 font-medium">Protocol</th>
+                     <th class="px-4 py-3 font-medium">Host Port</th>
+                     <th class="px-4 py-3 font-medium">Container Port</th>
+                     <th class="px-4 py-3 font-medium w-full">Description</th>
+                     <th class="px-4 py-3 text-right">Action</th>
+                   </tr>
+                 </thead>
+                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800/50">
+                   <tr v-for="(mapping, i) in allPortMappings" :key="i" class="hover:bg-slate-50 dark:hover:bg-slate-900/20">
+                     <td class="px-4 py-3">
+                       <div class="flex items-center gap-2">
+                         <span class="font-mono text-xs font-bold uppercase text-slate-700 dark:text-slate-300">{{ mapping.protocol }}</span>
+                         <span v-if="mapping.labeledProtocol" class="text-[10px] px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-500 rounded border border-slate-200 dark:border-slate-700 uppercase">{{ mapping.labeledProtocol }}</span>
+                       </div>
+                     </td>
+                     <td class="px-4 py-3 font-mono">
+                       <span v-if="mapping.hostPort" class="text-slate-900 dark:text-white font-medium">{{ mapping.hostPort }}</span>
+                       <span v-else class="text-slate-400 text-xs italic">Internal</span>
+                     </td>
+                     <td class="px-4 py-3 font-mono text-slate-600 dark:text-slate-400">
+                       {{ mapping.containerPort }}
+                     </td>
+                     <td class="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs">
+                        {{ mapping.label || '-' }}
+                     </td>
+                     <td class="px-4 py-3 text-right">
+                        <a v-if="mapping.hostPort && mapping.protocol === 'tcp'"
+                           :href="appUrl(mapping.hostPort, mapping.labeledProtocol || 'http')"
+                           target="_blank"
+                           class="inline-flex items-center justify-center p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                           title="Open in Browser"
+                        >
+                           <ExternalLink :size="16" />
+                        </a>
+                     </td>
+                   </tr>
+                 </tbody>
+               </table>
+             </div>
            </div>
+        </div>
 
+        <!-- Volumes (Moved Up) -->
+        <div v-if="containerVolumes.length > 0" class="space-y-4">
+           <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Attached Storage</h3>
+           <div class="grid gap-3">
+              <div v-for="volume in containerVolumes" :key="volume.name" 
+                   class="group bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 rounded-lg p-4 flex items-center justify-between hover:border-blue-500/50 transition-colors">
+                 
+                 <div class="flex items-center gap-4 min-w-0">
+                    <div class="w-10 h-10 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                       <HardDrive :size="20" />
+                    </div>
+                    <div class="min-w-0">
+                       <div class="font-medium text-slate-900 dark:text-white truncate text-sm" :title="volume.name">{{ volume.name }}</div>
+                       <div class="text-xs text-slate-500 font-mono truncate">{{ volume.destination }}</div>
+                    </div>
+                 </div>
+
+                 <div class="relative min-w-[120px] flex justify-end">
+                    <div v-if="browsingVolume[volume.name]" class="text-xs text-blue-500 animate-pulse font-medium">Starting...</div>
+                    <button 
+                       v-else-if="!showVolumeMenu[volume.name]"
+                       @click="showVolumeMenu[volume.name] = true"
+                       class="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                    >
+                       Browse Files
+                    </button>
+                    
+                    <div v-else class="flex items-center gap-1 animate-in fade-in zoom-in-95 duration-200">
+                       <button @click="browseVolume(volume.name, 60)" class="px-2 py-1 text-[10px] font-bold uppercase bg-blue-600 text-white rounded hover:bg-blue-700" title="1 Hour Access">
+                          1H
+                       </button>
+                       <button @click="browseVolume(volume.name, 0)" class="px-2 py-1 text-[10px] font-bold uppercase bg-slate-700 text-white rounded hover:bg-slate-600" title="Permanent Access">
+                          Perm
+                       </button>
+                    </div>
+                 </div>
+
+              </div>
+           </div>
+        </div>
+
+        <!-- Terminal Logs (Moved Down) -->
+        <div class="flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-[#1e1e1e] shadow-sm">
+           <div class="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-[#333]">
+              <div class="flex items-center gap-2 text-xs font-medium text-[#cccccc]">
+                 <Terminal :size="14" />
+                 <span class="uppercase tracking-wider">Output</span>
+              </div>
+              <div class="flex items-center gap-2">
+                 <button @click="autoScrollLogs = !autoScrollLogs" class="p-1 rounded hover:bg-[#3c3c3c] text-[#cccccc]" :title="autoScrollLogs ? 'Pause Auto-Scroll' : 'Enable Auto-Scroll'">
+                    <component :is="autoScrollLogs ? Pause : Play" :size="14" />
+                 </button>
+                 <button @click="fetchContainerLogs" class="p-1 rounded hover:bg-[#3c3c3c] text-[#cccccc]" :title="refreshingLogs ? 'Refreshing...' : 'Refresh'">
+                    <RefreshCw :size="14" :class="{ 'animate-spin': refreshingLogs }" />
+                 </button>
+              </div>
+           </div>
+           
+           <div 
+             id="terminal-logs"
+             class="h-96 overflow-y-auto p-4 font-mono text-xs leading-5 text-[#d4d4d4] scrollbar-thin scrollbar-thumb-[#424242] scrollbar-track-transparent"
+           >
+              <div v-if="containerLogs.length === 0" class="flex flex-col items-center justify-center h-full text-[#666]">
+                 <div class="mb-2 opacity-50">No output logs found</div>
+              </div>
+              <div v-else class="space-y-0.5">
+                 <div v-for="(log, i) in containerLogs" :key="i" class="break-all whitespace-pre-wrap hover:bg-[#2a2d2e] px-1 -mx-1 rounded-sm">
+                    <span class="text-[#569cd6] opacity-50 select-none mr-2 w-6 inline-block text-right">{{ i + 1 }}</span>{{ log }}
+                 </div>
+              </div>
+           </div>
         </div>
 
       </div>
-    </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="space-y-8">
+         
+         <!-- Stats Grid -->
+         <div v-if="containerStats" class="grid grid-cols-2 gap-4">
+            <div class="bg-white dark:bg-[#0c0c0e] p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+               <div class="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500 mb-2">
+                  <Cpu :size="14" /> CPU
+               </div>
+               <div class="text-2xl font-mono font-semibold text-slate-900 dark:text-white">
+                  {{ containerStats.cpu.percent }}%
+               </div>
+            </div>
+            
+            <div class="bg-white dark:bg-[#0c0c0e] p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+               <div class="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500 mb-2">
+                  <Activity :size="14" /> RAM
+               </div>
+               <div class="text-2xl font-mono font-semibold text-slate-900 dark:text-white">
+                  {{ containerStats.memory.percent }}%
+               </div>
+            </div>
+            
+            <div class="col-span-2 bg-white dark:bg-[#0c0c0e] p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex justify-between items-center">
+               <div>
+                  <div class="text-xs uppercase tracking-wider text-slate-500 mb-1">Network I/O</div>
+                  <div class="text-sm font-mono font-medium text-slate-900 dark:text-white">
+                     <span class="text-emerald-500">↓ {{ formatBytes(containerStats.network.rx) }}</span>
+                     <span class="text-slate-300 mx-2">|</span>
+                     <span class="text-blue-500">↑ {{ formatBytes(containerStats.network.tx) }}</span>
+                  </div>
+               </div>
+               <div>
+                  <div class="text-xs uppercase tracking-wider text-slate-500 mb-1">Block I/O</div>
+                  <div class="text-sm font-mono font-medium text-slate-900 dark:text-white text-right">
+                     {{ formatBytes(containerStats.blockIO.read) }} / {{ formatBytes(containerStats.blockIO.write) }}
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Actions -->
+         <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-sm">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Control</h3>
+            
+            <button 
+               @click="deleteContainer"
+               :disabled="deleting"
+               class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-md hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-300 transition-all font-medium text-sm"
+            >
+               <Trash2 :size="16" />
+               {{ deleting ? 'Terminating...' : 'Terminate Container' }}
+            </button>
+            
+            <p class="text-[10px] text-slate-400 text-center px-4 leading-relaxed">
+               Warning: This action is irreversible. All associated volumes and data will be permanently destroyed.
+            </p>
+         </div>
+
+         <!-- Environment Vars (Simplified) -->
+         <div v-if="selectedContainer.env && selectedContainer.env.length > 0" class="space-y-4">
+             <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Environment</h3>
+             <div class="bg-[#1e1e1e] rounded-lg border border-slate-800 p-4 max-h-60 overflow-y-auto custom-scrollbar">
+                <div v-for="(envVar, i) in selectedContainer.env" :key="i" class="font-mono text-[10px] mb-2 last:mb-0 break-all">
+                   <div class="text-[#569cd6] mb-0.5">{{ envVar.split('=')[0] }}</div>
+                   <div class="text-[#ce9178] pl-2">{{ envVar.split('=').slice(1).join('=') }}</div>
+                </div>
+             </div>
+         </div>
+
+      </div>
+      
+    </main>
   </div>
 </template>
 
 <style scoped>
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #4f4f4f;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
 }
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(148, 163, 184, 0.15);
-}
-
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.45);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.6);
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-in {
-  opacity: 0;
-  transform: translateY(10px);
-  animation: fade-in 0.5s ease-out forwards;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 </style>
