@@ -1,6 +1,6 @@
 <script setup>
 import { computed, toRefs } from "vue";
-import { Bot, Check, ChevronRight } from "lucide-vue-next";
+import { Check, ArrowRight, Box, Bot } from "lucide-vue-next";
 
 const props = defineProps({
   app: {
@@ -50,100 +50,64 @@ const categories = computed(() => {
   const shown = [parts[firstIndex], parts[secondIndex]];
   return { shown };
 });
-
-const accent = computed(() => {
-  const installed = Boolean(app.value?.isInstalled);
-  if (installed) {
-    return {
-      ring: "focus:ring-emerald-500",
-      border: "border-emerald-200 dark:border-emerald-500/30",
-      glow: "bg-emerald-200 dark:bg-emerald-400/20",
-      iconBg: "bg-emerald-900/10 dark:bg-emerald-900/30",
-      iconHover: "group-hover:bg-emerald-900/15 dark:group-hover:bg-emerald-800/40",
-      textHover: "group-hover:text-emerald-600 dark:group-hover:text-emerald-400",
-      check: "text-emerald-500 dark:text-emerald-400",
-      arrow: "text-emerald-600 dark:text-emerald-400",
-      badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200",
-    };
-  }
-
-  return {
-    ring: "focus:ring-sky-500",
-    border: "border-slate-200 dark:border-gray-700",
-    glow: "bg-sky-200 dark:bg-sky-400/20",
-    iconBg: "bg-slate-900/5 dark:bg-slate-900/30",
-    iconHover: "group-hover:bg-slate-900/10 dark:group-hover:bg-slate-800/40",
-    textHover: "group-hover:text-sky-700 dark:group-hover:text-sky-300",
-    check: "text-sky-600 dark:text-sky-300",
-    arrow: "text-sky-700 dark:text-sky-300",
-    badge: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-200",
-  };
-});
 </script>
 
 <template>
   <div
-    class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4 cursor-pointer"
-    :class="[accent.ring, accent.border]"
+    class="group relative flex flex-col h-full bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 rounded-lg p-5 transition-all duration-200 cursor-pointer"
     role="button"
     tabindex="0"
     :aria-label="`Open ${app?.name ?? 'app'} details`"
-    @keydown.enter.prevent="$event.currentTarget.click()"
-    @keydown.space.prevent="$event.currentTarget.click()"
   >
-    <!-- Installed marker -->
-    <div v-if="app?.isInstalled" class="absolute inset-y-0 left-0 w-1 bg-emerald-500/70 dark:bg-emerald-400/60" aria-hidden="true"></div>
-
-    <!-- Gradient Glow -->
-    <div
-      class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-70 transition-opacity duration-500"
-      :class="accent.glow"
-    ></div>
-
-    <div class="relative z-10">
-      <!-- Icon -->
-      <div
-        class="flex items-center justify-center w-20 h-20 rounded-2xl mb-5 transition-all duration-300 group-hover:scale-110"
-        :class="[accent.iconBg, accent.iconHover]"
-      >
-        <img v-if="app?.logo" :src="app.logo" :alt="app.name" class="w-12 h-12 object-contain" loading="lazy" />
-        <div v-else class="text-2xl font-bold text-slate-900 dark:text-white">
-          {{ (app?.name ?? "?").slice(0, 1).toUpperCase() }}
-        </div>
+    <!-- Header: Logo & Status -->
+    <div class="flex justify-between items-start mb-4">
+      <div class="w-12 h-12 rounded bg-slate-50 dark:bg-[#1a1a1c] border border-slate-100 dark:border-slate-800 flex items-center justify-center p-2.5 shrink-0">
+        <img
+          v-if="app?.logo"
+          :src="app.logo"
+          :alt="app.name"
+          class="w-full h-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
+          loading="lazy"
+        />
+        <Bot v-else :size="20" class="text-slate-400" />
       </div>
 
-      <!-- Title + badges -->
-      <div class="flex items-start justify-between gap-3">
-        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1 transition-colors" :class="accent.textHover">
-          {{ app.name }}
-        </h3>
-
-        <div class="flex items-center gap-2 pt-0.5">
-          <span v-if="app?.isInstalled" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold" :class="accent.badge"> Installed </span>
-          <span
-            v-if="instanceCount > 0"
-            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            :title="`${instanceCount} running`"
-          >
+      <div class="flex flex-col items-end gap-2">
+         <span v-if="app?.isInstalled" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30">
+            <Check :size="10" />
+            Installed
+         </span>
+         <span v-if="instanceCount > 0" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono text-slate-500 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+            <Box :size="10" />
             {{ instanceCount }}
-          </span>
-        </div>
+         </span>
       </div>
+    </div>
 
-      <p class="text-slate-600 dark:text-gray-300 leading-relaxed line-clamp-2 mb-5">
-        {{ app.description || "No description available" }}
+    <!-- Content -->
+    <div class="flex-1 flex flex-col">
+      <h3 class="text-base font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {{ app?.name || 'Unknown App' }}
+      </h3>
+      
+      <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-4 line-clamp-2">
+        {{ app?.description || 'No description available' }}
       </p>
 
-      <!-- Categories (side-by-side) -->
-      <div v-if="categories.shown.length" class="flex flex-wrap gap-2 text-sm">
-        <div
-          v-for="cat in categories.shown"
-          :key="cat"
-          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800/70 dark:text-slate-200"
-        >
-          <Check :size="16" :class="accent.check" />
-          <span class="capitalize">{{ cat }}</span>
-        </div>
+      <div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800/50 flex items-center justify-between">
+         <div class="flex flex-wrap gap-1.5">
+            <span 
+              v-for="cat in categories.shown" 
+              :key="cat"
+              class="text-[10px] font-mono px-1.5 py-0.5 bg-slate-50 dark:bg-[#1a1a1c] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded"
+            >
+              {{ cat }}
+            </span>
+         </div>
+         
+         <div class="text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors">
+             <ArrowRight :size="16" />
+         </div>
       </div>
     </div>
   </div>

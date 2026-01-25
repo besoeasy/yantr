@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import AppCard from "../components/AppCard.vue";
-import { Tag, Grid3x3 } from "lucide-vue-next";
+import { Tag, Search, Grid, LayoutGrid, X } from "lucide-vue-next";
 
 const router = useRouter();
 
@@ -37,7 +37,6 @@ const appInstanceCounts = computed(() => {
 
 const shuffledApps = computed(() => {
   // Deterministic shuffle, updated at most once per hour
-  // (hourSeed is kept reactive via a small timer).
   void hourSeed.value;
   return shuffleWithSeed(apps.value);
 });
@@ -56,7 +55,6 @@ const categories = computed(() => {
 
   const categoriesArray = Array.from(categorySet).sort();
 
-  // Calculate count for each category and filter out categories with less than 2 apps
   return categoriesArray
     .map((cat) => {
       const count = apps.value.filter((app) =>
@@ -166,10 +164,8 @@ onMounted(async () => {
   await Promise.all([fetchApps(), fetchContainers()]);
   loading.value = false;
 
-  // Auto-refresh every 10 seconds
   refreshInterval = setInterval(fetchContainers, 10000);
 
-  // Keep hourSeed reactive so we reshuffle at most hourly
   seedInterval = setInterval(() => {
     const nextSeed = getDateHourSeed();
     if (nextSeed !== hourSeed.value) {
@@ -179,174 +175,121 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-  }
-  if (seedInterval) {
-    clearInterval(seedInterval);
-    seedInterval = null;
-  }
+  if (refreshInterval) clearInterval(refreshInterval);
+  if (seedInterval) clearInterval(seedInterval);
 });
 </script>
 
 <template>
-  <div class="relative">
-    <!-- Main Content Area -->
-    <div class="lg:mr-64 xl:mr-72 p-4 sm:p-6 md:p-10 lg:p-12">
-      <!-- Search Bar -->
-      <div class="mb-6 md:mb-8">
-        <div class="group relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-5 sm:p-6 border border-slate-200 dark:border-gray-700">
-          <!-- Subtle glow on focus -->
-          <div class="absolute top-0 right-0 -mt-8 -mr-8 w-40 h-40 rounded-full blur-3xl opacity-0 group-focus-within:opacity-60 transition-opacity duration-500 bg-sky-200 dark:bg-sky-400/20" aria-hidden="true"></div>
-
-          <div class="relative">
-            <div class="relative">
-              <input
-                v-model="appSearch"
-                type="text"
-                placeholder="Search apps..."
-                class="w-full px-4 sm:px-5 py-3 sm:py-4 pl-11 sm:pl-12 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 placeholder-slate-400 transition-all text-base focus:outline-none focus:ring-4 focus:ring-sky-500/20 focus:border-sky-300 dark:bg-black/30 dark:border-gray-700 dark:text-white dark:placeholder-gray-500"
-              />
-              <span class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-lg sm:text-xl">🔍</span>
-              <button
-                v-if="appSearch"
-                @click="appSearch = ''"
-                class="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors p-1 touch-manipulation"
-                title="Clear search"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div class="mt-3 text-sm text-slate-500 dark:text-gray-400 flex items-center justify-between">
-              <span v-if="combinedApps.length < allAppsCount || selectedCategory">
-                Showing {{ combinedApps.length }} of {{ allAppsCount }} apps
-                <span v-if="selectedCategory" class="inline-flex items-center gap-1">
-                  in <span class="font-semibold text-sky-700 dark:text-sky-300">{{ selectedCategory }}</span>
-                  <button
-                    @click="selectedCategory = null"
-                    class="ml-1 text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-                    title="Clear filter"
-                  >
-                    ✕
-                  </button>
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="loading" class="max-w-xl mx-auto py-10">
-        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-gray-700 text-center">
-          <div class="w-10 h-10 border-4 border-sky-600/30 border-t-sky-600 dark:border-sky-500/30 dark:border-t-sky-300 rounded-full animate-spin mx-auto mb-4"></div>
-          <div class="text-slate-600 dark:text-gray-300 font-medium">Loading apps...</div>
-        </div>
-      </div>
-      <div v-else-if="combinedApps.length === 0" class="max-w-xl mx-auto py-10">
-        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-8 border border-slate-200 dark:border-gray-700 text-center">
-          <div class="text-5xl mb-4">🔍</div>
-          <div class="text-slate-700 dark:text-gray-200 font-semibold">No apps found</div>
-          <div class="text-sm text-slate-500 dark:text-gray-400 mt-2">Try a different search term</div>
-        </div>
-      </div>
-      <div v-else class="grid grid-cols-1 gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-        <AppCard
-          v-for="(app, index) in combinedApps"
-          :key="app.id"
-          :app="app"
-          :instance-count="appInstanceCounts[app.id] || 0"
-          :style="{ animationDelay: `${index * 30}ms` }"
-          @click="viewAppDetail(app.id)"
-          class="cursor-pointer"
-        />
-      </div>
-    </div>
-
-    <!-- Categories Sidebar - Fixed to right side on larger screens -->
-    <aside class="hidden lg:block fixed top-0 right-0 w-64 xl:w-72 h-screen bg-slate-50 border-l border-slate-200 dark:bg-black dark:border-gray-800 z-40 overflow-y-auto custom-scrollbar">
-      <div class="p-6">
-        <div class="relative overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-5 border border-slate-200 dark:border-gray-700">
-          <div class="flex items-center gap-2 mb-4 pb-4 border-b border-slate-100 dark:border-gray-800">
-            <Tag :size="20" class="text-slate-900 dark:text-white" />
-            <h3 class="text-lg font-bold text-slate-900 dark:text-white">Categories</h3>
+  <div class="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-200 font-sans flex flex-col lg:flex-row">
+    
+    <!-- Sidebar / Filters -->
+    <aside class="w-full lg:w-64 xl:w-72 bg-white dark:bg-[#0c0c0e] border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
+       <div class="p-6">
+          <div class="flex items-center gap-2 mb-8">
+             <LayoutGrid class="text-indigo-500" :size="24" />
+             <h1 class="text-xl font-bold text-slate-900 dark:text-white">App Catalog</h1>
           </div>
 
-          <div class="space-y-1.5">
-          <!-- All Apps Option -->
-          <button
-            @click="selectedCategory = null"
-            :class="selectedCategory === null ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-900'"
-            class="w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group"
-          >
-            <component
-              :is="Grid3x3"
-              :size="20"
-              :class="selectedCategory === null ? 'text-white dark:text-slate-900' : 'text-gray-400 group-hover:text-gray-600 dark:text-slate-500 dark:group-hover:text-slate-300'"
-              class="flex-shrink-0 transition-colors"
-            />
-            <span class="text-sm font-medium flex-1 text-left">All apps</span>
-            <span
-              class="text-xs font-bold px-2 py-1 rounded-full min-w-[28px] text-center"
-              :class="selectedCategory === null ? 'bg-gray-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-slate-700'"
-            >
-              {{ allAppsCount }}
-            </span>
-          </button>
+          <div class="space-y-1">
+             <button
+                @click="selectedCategory = null"
+                :class="[
+                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  selectedCategory === null 
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+             >
+                <div class="flex items-center gap-2.5">
+                   <Grid :size="16" />
+                   All Applications
+                </div>
+                <span class="text-xs font-mono font-bold">{{ allAppsCount }}</span>
+             </button>
 
-          <!-- Category Buttons -->
-          <button
-            v-for="category in categories"
-            :key="category.name"
-            @click="selectedCategory = category.name"
-            :class="selectedCategory === category.name ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-900'"
-            class="w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group"
-          >
-            <component
-              :is="Tag"
-              :size="18"
-              :class="selectedCategory === category.name ? 'text-white dark:text-slate-900' : 'text-gray-400 group-hover:text-gray-600 dark:text-slate-500 dark:group-hover:text-slate-300'"
-              class="flex-shrink-0 transition-colors"
-            />
-            <span class="text-sm font-medium capitalize flex-1 text-left">{{ category.name }}</span>
-            <span
-              class="text-xs font-bold px-2 py-1 rounded-full min-w-[28px] text-center"
-              :class="selectedCategory === category.name ? 'bg-gray-800 text-white dark:bg-slate-200 dark:text-slate-900' : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-slate-700'"
-            >
-              {{ category.count }}
-            </span>
-          </button>
+             <div class="pt-4 pb-2">
+                <div class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Categories</div>
+             </div>
+
+             <button
+                v-for="cat in categories"
+                :key="cat.name"
+                @click="selectedCategory = cat.name"
+                :class="[
+                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  selectedCategory === cat.name
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+             >
+                <div class="flex items-center gap-2.5">
+                   <Tag :size="16" />
+                   {{ cat.name }}
+                </div>
+                <span class="text-xs font-mono text-slate-400">{{ cat.count }}</span>
+             </button>
           </div>
-        </div>
-      </div>
+       </div>
     </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 min-w-0">
+        <!-- Top Bar -->
+        <div class="sticky top-0 z-30 bg-slate-50/80 dark:bg-[#09090b]/80 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-6 py-4">
+            <div class="relative max-w-2xl">
+               <input
+                 v-model="appSearch"
+                 type="text"
+                 placeholder="Search applications..."
+                 class="w-full bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all font-sans"
+               />
+               <Search :size="16" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+               <button 
+                  v-if="appSearch"
+                  @click="appSearch = ''"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  <X :size="14" />
+               </button>
+            </div>
+            
+            <div class="mt-3 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2" v-if="selectedCategory || appSearch">
+               <span>Showing {{ combinedApps.length }} results</span>
+               <span v-if="selectedCategory" class="inline-flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded">
+                  Category: {{ selectedCategory }}
+                  <button @click="selectedCategory = null" class="hover:text-indigo-800 dark:hover:text-indigo-200"><X :size="10" /></button>
+               </span>
+            </div>
+        </div>
+
+        <!-- content area -->
+        <div class="p-6">
+            <div v-if="loading" class="flex flex-col items-center justify-center py-20">
+               <div class="w-8 h-8 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+               <div class="text-sm text-slate-500">Loading catalog...</div>
+            </div>
+
+            <div v-else-if="combinedApps.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+                <div class="bg-slate-100 dark:bg-slate-800 rounded-full p-4 mb-4">
+                   <Search :size="32" class="text-slate-400" />
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white">No apps found</h3>
+                <p class="text-slate-500 mt-1 max-w-xs mx-auto">We couldn't find any apps matching your search filters.</p>
+                <button @click="appSearch = ''; selectedCategory = null" class="mt-4 text-sm font-medium text-blue-600 hover:underline">Clear all filters</button>
+            </div>
+
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                <AppCard
+                  v-for="app in combinedApps"
+                  :key="app.id"
+                  :app="app"
+                  :instance-count="appInstanceCounts[app.id] || 0"
+                  @click="viewAppDetail(app.id)"
+                />
+            </div>
+        </div>
+
+    </main>
   </div>
 </template>
-
-<style scoped>
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
-  border-radius: 3px;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #334155;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #d1d5db;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-</style>
