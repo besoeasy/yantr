@@ -279,7 +279,7 @@ onUnmounted(() => {
                 <button @click="appSearch = ''; selectedCategory = null" class="mt-4 text-sm font-medium text-blue-600 hover:underline">Clear all filters</button>
             </div>
 
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                 <AppCard
                   v-for="app in combinedApps"
                   :key="app.id"
