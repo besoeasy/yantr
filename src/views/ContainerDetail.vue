@@ -402,7 +402,7 @@ onUnmounted(() => {
                     <button 
                        v-else-if="!showVolumeMenu[volume.name]"
                        @click="showVolumeMenu[volume.name] = true"
-                       class="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                       class="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
                     >
                        Browse Files
                     </button>

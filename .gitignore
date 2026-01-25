@@ -1,5 +1,6 @@
 node_modules
 dist
+tmp
 
 apps/*/.env
 apps/*/compose.temp.yml
