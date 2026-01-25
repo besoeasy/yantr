@@ -183,58 +183,8 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-200 font-sans flex flex-col lg:flex-row">
     
-    <!-- Sidebar / Filters -->
-    <aside class="w-full lg:w-64 xl:w-72 bg-white dark:bg-[#0c0c0e] border-b lg:border-b-0 lg:border-r border-slate-200 dark:border-slate-800 lg:h-screen lg:sticky lg:top-0 overflow-y-auto">
-       <div class="p-6">
-          <div class="flex items-center gap-2 mb-8">
-             <LayoutGrid class="text-indigo-500" :size="24" />
-             <h1 class="text-xl font-bold text-slate-900 dark:text-white">App Catalog</h1>
-          </div>
-
-          <div class="space-y-1">
-             <button
-                @click="selectedCategory = null"
-                :class="[
-                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                  selectedCategory === null 
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
-                ]"
-             >
-                <div class="flex items-center gap-2.5">
-                   <Grid :size="16" />
-                   All Applications
-                </div>
-                <span class="text-xs font-mono font-bold">{{ allAppsCount }}</span>
-             </button>
-
-             <div class="pt-4 pb-2">
-                <div class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Categories</div>
-             </div>
-
-             <button
-                v-for="cat in categories"
-                :key="cat.name"
-                @click="selectedCategory = cat.name"
-                :class="[
-                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                  selectedCategory === cat.name
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
-                ]"
-             >
-                <div class="flex items-center gap-2.5">
-                   <Tag :size="16" />
-                   {{ cat.name }}
-                </div>
-                <span class="text-xs font-mono text-slate-400">{{ cat.count }}</span>
-             </button>
-          </div>
-       </div>
-    </aside>
-
     <!-- Main Content -->
-    <main class="flex-1 min-w-0">
+    <main class="flex-1 min-w-0 order-1 lg:order-1">
         <!-- Top Bar -->
         <div class="sticky top-0 z-30 bg-slate-50/80 dark:bg-[#09090b]/80 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-6 py-4">
             <div class="relative max-w-2xl">
@@ -291,5 +241,55 @@ onUnmounted(() => {
         </div>
 
     </main>
+
+    <!-- Sidebar / Filters -->
+    <aside class="w-full lg:w-64 xl:w-72 bg-white dark:bg-[#0c0c0e] border-t lg:border-t-0 lg:border-l border-slate-200 dark:border-slate-800 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-2 lg:order-2">
+       <div class="p-6">
+          <div class="flex items-center gap-2 mb-8">
+             <LayoutGrid class="text-indigo-500" :size="24" />
+             <h1 class="text-xl font-bold text-slate-900 dark:text-white">App Catalog</h1>
+          </div>
+
+          <div class="space-y-1">
+             <button
+                @click="selectedCategory = null"
+                :class="[
+                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  selectedCategory === null 
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+             >
+                <div class="flex items-center gap-2.5">
+                   <Grid :size="16" />
+                   All Applications
+                </div>
+                <span class="text-xs font-mono font-bold">{{ allAppsCount }}</span>
+             </button>
+
+             <div class="pt-4 pb-2">
+                <div class="px-3 text-xs font-bold text-slate-400 uppercase tracking-wider">Categories</div>
+             </div>
+
+             <button
+                v-for="cat in categories"
+                :key="cat.name"
+                @click="selectedCategory = cat.name"
+                :class="[
+                  'w-full flex items-center justify-between px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  selectedCategory === cat.name
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#1a1a1c] hover:text-slate-900 dark:hover:text-slate-200'
+                ]"
+             >
+                <div class="flex items-center gap-2.5">
+                   <Tag :size="16" />
+                   {{ cat.name }}
+                </div>
+                <span class="text-xs font-mono text-slate-400">{{ cat.count }}</span>
+             </button>
+          </div>
+       </div>
+    </aside>
   </div>
 </template>

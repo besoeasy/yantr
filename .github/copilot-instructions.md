@@ -1,6 +1,5 @@
-
-
 # Project Development Guidelines
+
 Use BUNJS as runtime environment for all JavaScript and TypeScript code.
 
 Backend is located in the `/daemon/` directory. Follow these guidelines when creating or modifying API endpoints.
@@ -16,7 +15,7 @@ Follow the structure and naming conventions outlined in `apps/apps.md` for all a
 - **Primary Framework**: Use TailwindCSS for all styling
 - **Custom CSS**: Avoid unless absolutely necessary for specific edge cases
 - **Rationale**: Maintains consistency and leverages utility-first approach
-Make sure dark mode is supported throughout the application.
+  Make sure dark mode is supported throughout the application.
 
 ### User Experience
 
