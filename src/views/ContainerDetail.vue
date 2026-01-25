@@ -461,16 +461,18 @@ onUnmounted(() => {
 
           <!-- Volumes -->
           <div v-if="containerVolumes.length > 0" class="space-y-6">
-             <div class="flex items-center justify-between border-l-2 border-orange-500 pl-3">
+             <div class="flex items-center justify-between border-l-2 border-sky-500 pl-3">
                <h3 class="text-sm font-mono uppercase tracking-widest text-slate-500 dark:text-slate-500">Storage & File Browser</h3>
              </div>
              
              <div class="grid gap-4">
-                <div v-for="volume in containerVolumes" :key="volume.name" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c0c0e]">
+                <div v-for="(volume, idx) in containerVolumes" :key="volume.name" 
+                     class="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c0c0e] hover:border-sky-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-sky-500/5 hover:-translate-y-1 animate-in"
+                     :style="{ animationDelay: `${idx * 100}ms` }">
                    <div class="min-w-0 flex-1">
                       <div class="flex items-center gap-2 mb-1">
-                         <HardDrive :size="16" class="text-orange-500" />
-                         <span class="font-mono text-sm font-bold truncate" :title="volume.name">{{ volume.name }}</span>
+                         <HardDrive :size="16" class="text-sky-500 group-hover:scale-110 transition-transform duration-300" />
+                         <span class="font-mono text-sm font-bold truncate group-hover:text-sky-500 transition-colors" :title="volume.name">{{ volume.name }}</span>
                       </div>
                       <div class="text-xs font-mono text-slate-500 truncate pl-6">{{ volume.destination }}</div>
                    </div>
@@ -481,14 +483,14 @@ onUnmounted(() => {
                       </span>
                       
                       <div class="flex items-center gap-2">
-                        <button v-if="!showVolumeMenu[volume.name]" @click="showVolumeMenu[volume.name] = true" class="group flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-orange-50 dark:hover:bg-orange-950/30 border border-slate-200 dark:border-slate-800 hover:border-orange-500/50 dark:hover:border-orange-500/50 text-slate-600 dark:text-slate-400 hover:text-orange-600 dark:hover:text-orange-500 transition-all cursor-pointer">
-                           <FolderOpen :size="14" class="group-hover:scale-110 transition-transform" />
+                        <button v-if="!showVolumeMenu[volume.name]" @click="showVolumeMenu[volume.name] = true" class="group/btn flex items-center gap-2 px-3 py-1.5 bg-slate-50 dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-sky-900/20 border border-slate-200 dark:border-slate-800 hover:border-sky-500/50 dark:hover:border-sky-500/50 text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-all cursor-pointer rounded-sm">
+                           <FolderOpen :size="14" class="group-hover/btn:scale-110 transition-transform duration-300" />
                            <span class="text-[10px] font-bold uppercase tracking-wider">Browse Files</span>
                         </button>
                         
-                        <div v-else class="flex items-center gap-2 animate-fadeIn bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 rounded-sm">
-                           <button @click="browseVolume(volume.name, 60)" class="text-[10px] font-bold uppercase px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white transition-colors shadow-sm" title="Mount for 1 hour">Temp (1h)</button>
-                           <button @click="browseVolume(volume.name, 0)" class="text-[10px] font-bold uppercase px-3 py-1 bg-slate-700 hover:bg-slate-600 text-white transition-colors shadow-sm" title="Mount permanently">Perm</button>
+                        <div v-else class="flex items-center gap-2 animate-in slide-in-from-right-2 fade-in duration-200 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-1 rounded-sm">
+                           <button @click="browseVolume(volume.name, 60)" class="text-[10px] font-bold uppercase px-3 py-1 bg-sky-500 hover:bg-sky-600 text-white transition-all shadow-sm hover:shadow-sky-500/20 hover:scale-105 active:scale-95 rounded-sm" title="Mount for 1 hour">Temp (1h)</button>
+                           <button @click="browseVolume(volume.name, 0)" class="text-[10px] font-bold uppercase px-3 py-1 bg-slate-700 hover:bg-slate-600 text-white transition-all shadow-sm hover:scale-105 active:scale-95 rounded-sm" title="Mount permanently">Perm</button>
                         </div>
                       </div>
                    </div>
