@@ -9,6 +9,23 @@
 
 Get up and running in seconds. No complicated setup.
 
+### 1) Install Docker (minimal)
+
+> These commands install Docker Engine + Docker Compose plugin.
+
+**Raspberry Pi OS / Debian / Ubuntu:**
+
+```bash
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+If you prefer the official step-by-step instructions instead of the convenience script:
+- https://docs.docker.com/engine/install/
+
+### 2) Run Yantra
+
 **Using Docker:**
 
 ```bash
