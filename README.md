@@ -1,4 +1,4 @@
-https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4
+👉 [Watch Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4)
 
 
 # Yantra 🔧
@@ -68,12 +68,6 @@ Most homelab platforms (Umbrel, CasaOS) demand your **entire computer**. Yantra 
 **The Result?** You get a powerful server-grade environment without sacrificing your daily driver machine.
 
 ---
-
-## 📸 See It In Action
-<img width="2880" height="1768" alt="image" src="https://github.com/user-attachments/assets/a70dca2b-fae0-4e5d-b94b-c7168a71ca3f" />
-
----
-
 ## 🛠️ Perfect for Your Workflow
 
 Yantra is designed for the modern "Work PC" homelab. Spin up tools, use them, spin them down.
