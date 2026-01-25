@@ -1,7 +1,6 @@
 <script setup>
 import { computed, toRefs } from "vue";
 import { Bot, Check, ChevronRight } from "lucide-vue-next";
-import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
 const props = defineProps({
   app: {
@@ -15,12 +14,6 @@ const props = defineProps({
 });
 
 const { app, instanceCount } = toRefs(props);
-
-const chatGptUrl = computed(() => {
-  if (!app.value) return "";
-
-  return buildChatGptExplainUrl(app.value.id);
-});
 
 function hashStringToUint32(value) {
   // FNV-1a 32-bit
@@ -90,7 +83,7 @@ const accent = computed(() => {
 
 <template>
   <div
-    class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4"
+    class="group relative w-full text-left overflow-hidden bg-white dark:bg-gray-900 rounded-3xl p-6 sm:p-7 border hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 focus:outline-none focus:ring-4 cursor-pointer"
     :class="[accent.ring, accent.border]"
     role="button"
     tabindex="0"
@@ -151,24 +144,6 @@ const accent = computed(() => {
           <Check :size="16" :class="accent.check" />
           <span class="capitalize">{{ cat }}</span>
         </div>
-      </div>
-
-      <!-- Actions -->
-      <div class="mt-6 flex items-center justify-between gap-3">
-        <div class="flex items-center font-semibold text-sm group-hover:translate-x-2 transition-transform" :class="accent.arrow">
-          Install <ChevronRight :size="16" class="ml-1" />
-        </div>
-
-        <a
-          :href="chatGptUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 dark:from-emerald-500/10 dark:to-green-500/10 dark:hover:from-emerald-500/20 dark:hover:to-green-500/20 text-green-700 dark:text-emerald-200 hover:text-green-800 transition-all font-semibold text-xs border border-green-200/50 dark:border-emerald-500/30 focus:outline-none focus:ring-4 focus:ring-emerald-500/30"
-          @click.stop
-        >
-          <Bot :size="16" />
-          <span>Explain</span>
-        </a>
       </div>
     </div>
   </div>

@@ -259,6 +259,7 @@ onUnmounted(() => {
           :instance-count="appInstanceCounts[app.id] || 0"
           :style="{ animationDelay: `${index * 30}ms` }"
           @click="viewAppDetail(app.id)"
+          class="cursor-pointer"
         />
       </div>
     </div>
