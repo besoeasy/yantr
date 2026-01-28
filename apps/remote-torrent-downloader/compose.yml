@@ -4,7 +4,7 @@ services:
     container_name: remote-torrent-downloader
     labels:
       yantra.name: "Remote Torrent Downloader"
-      yantra.logo: "QmWneNtuWTRCzU8C97UX66PpR2dhh9dLqhDBTifpbwZVBj"
+      yantra.logo: "QmVXGKnhSzuiR3KhJhNMaxJsvHjSugmWmGEtnxmDzAemi5"
       yantra.category: "media,download,utility"
       yantra.port: "6798 (HTTP - Web UI), 6799 (HTTP - DOWNLOADS), 4445 (SMB - Samba Drive)"
       yantra.description: "Media streaming and sharing platform with Telegram integration"
