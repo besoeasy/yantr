@@ -18,9 +18,24 @@ Get up and running in seconds. No complicated setup.
 **Raspberry Pi OS / Debian / Ubuntu:**
 
 ```bash
-curl -fsSL https://get.docker.com | sudo sh
+# Update package index
+sudo apt update
+
+# Install Docker Engine from Debian repository
+sudo apt install -y docker.io
+
+# Install Docker Compose v2 plugin (docker compose)
+sudo apt install -y docker-compose-plugin
+
+# Enable Docker to start on boot and start it now
+sudo systemctl enable --now docker
+
+# Allow current user to run docker without sudo
 sudo usermod -aG docker $USER
+
+# Reload group membership (or re-login)
 newgrp docker
+
 ```
 
 If you prefer the official step-by-step instructions instead of the convenience script:
