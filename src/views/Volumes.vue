@@ -262,27 +262,29 @@ onUnmounted(() => {
   <div class="min-h-screen bg-neutral-50 dark:bg-[#0f1117] font-sans text-slate-800 dark:text-slate-200 pb-20">
     <!-- Header -->
     <header class="bg-white dark:bg-[#181b21] border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-purple-50 dark:bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
-            <HardDrive class="w-5 h-5" />
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-purple-50 dark:bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
+              <HardDrive class="w-5 h-5" />
+            </div>
+            <h1 class="text-lg font-bold text-gray-900 dark:text-white">Volumes</h1>
           </div>
-          <h1 class="text-lg font-bold text-gray-900 dark:text-white">Volumes</h1>
-        </div>
-        
-        <div class="flex items-center gap-3">
-          <div class="relative hidden sm:block">
-            <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input 
-              v-model="searchQuery" 
-              type="text" 
-              placeholder="Search volumes..." 
-              class="pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white dark:focus:bg-[#181b21] transition-all w-64"
-            />
+          
+          <div class="flex items-center gap-3">
+            <div class="relative flex-1 sm:flex-initial">
+              <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input 
+                v-model="searchQuery" 
+                type="text" 
+                placeholder="Search volumes..." 
+                class="w-full sm:w-64 pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:bg-white dark:focus:bg-[#181b21] transition-all"
+              />
+            </div>
+            <button @click="fetchVolumes" class="p-2 bg-white dark:bg-[#181b21] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors shrink-0">
+              <RefreshCw class="w-4 h-4 text-gray-500" :class="{ 'animate-spin': loading }" />
+            </button>
           </div>
-          <button @click="fetchVolumes" class="p-2 bg-white dark:bg-[#181b21] border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors">
-            <RefreshCw class="w-4 h-4 text-gray-500" :class="{ 'animate-spin': loading }" />
-          </button>
         </div>
       </div>
     </header>
