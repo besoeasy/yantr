@@ -1,7 +1,7 @@
 # =========================
 # Builder stage (Vue build)
 # =========================
-FROM docker.io/oven/bun:1.3.7-debian AS builder
+FROM docker.io/oven/bun:debian AS builder
 
 WORKDIR /app
 
