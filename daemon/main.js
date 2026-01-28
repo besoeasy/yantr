@@ -4,6 +4,7 @@ import cors from "cors";
 import path from "path";
 import { readFile, writeFile, unlink } from "fs/promises";
 import { spawn } from "child_process";
+import { resolveComposeCommand } from "./compose.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -55,40 +56,7 @@ function spawnProcess(command, args, options = {}) {
   });
 }
 
-let composeCommandCache = null;
-
-async function resolveComposeCommand() {
-  if (composeCommandCache) {
-    return composeCommandCache;
-  }
-
-  const env = {
-    ...process.env,
-    DOCKER_HOST: `unix://${socketPath}`,
-  };
-
-  try {
-    const { exitCode } = await spawnProcess("docker", ["compose", "version"], { env });
-    if (exitCode === 0) {
-      composeCommandCache = { command: "docker", args: ["compose"] };
-      return composeCommandCache;
-    }
-  } catch (err) {
-    // ignore and try docker-compose
-  }
-
-  try {
-    const { exitCode } = await spawnProcess("docker-compose", ["version"], { env });
-    if (exitCode === 0) {
-      composeCommandCache = { command: "docker-compose", args: [] };
-      return composeCommandCache;
-    }
-  } catch (err) {
-    // ignore and fail below
-  }
-
-  throw new Error("docker compose is not available (docker compose or docker-compose not found)");
-}
+// Compose resolver moved to compose.js
 
 // System architecture cache
 let systemArchitecture = null;
@@ -1329,9 +1297,8 @@ app.post("/api/deploy", async (req, res) => {
     // Set unique project name for multi-instance deployments
     const projectName = (instanceId && instanceId > 1) ? `${appId}-${instanceId}` : appId;
 
-    const composeCmd = await resolveComposeCommand();
-    const commandPrefix = composeCmd.command === "docker" ? "docker compose" : "docker-compose";
-    const command = `${commandPrefix} -p "${projectName}" -f "${composeFile}" up -d`;
+    const composeCmd = await resolveComposeCommand({ socketPath, log });
+    const command = `${composeCmd.display} -p "${projectName}" -f "${composeFile}" up -d`;
     log("info", `🚀 [POST /api/deploy] Executing: ${command}`);
 
     try {
@@ -1651,7 +1618,7 @@ app.delete("/api/containers/:id", async (req, res) => {
         log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
 
         // Execute docker compose down with project name to target specific instance
-        const composeCmd = await resolveComposeCommand();
+        const composeCmd = await resolveComposeCommand({ socketPath });
         const { stdout, stderr, exitCode } = await spawnProcess(
           composeCmd.command,
           [...composeCmd.args, "-p", composeProject, "down"],
@@ -2374,6 +2341,10 @@ app.listen(PORT, "0.0.0.0", () => {
   log("info", `📂 Apps directory: ${path.join(__dirname, "..", "apps")}`);
   log("info", `🌐 Access: http://localhost:${PORT}`);
   log("info", "=".repeat(50) + "\n");
+
+  resolveComposeCommand({ socketPath, log }).catch((err) => {
+    log("warn", `⚠️  [COMPOSE] ${err.message}`);
+  });
 
   // Start cleanup scheduler (runs every 15 minutes to handle temporary installations)
   log("info", "🧹 Starting automatic cleanup scheduler");

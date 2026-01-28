@@ -1,6 +1,7 @@
 import Docker from "dockerode";
 import { readFile } from "fs/promises";
 import { spawn } from "child_process";
+import { resolveComposeCommand } from "./compose.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -47,40 +48,7 @@ function spawnProcess(command, args, options = {}) {
   });
 }
 
-let composeCommandCache = null;
-
-async function resolveComposeCommand() {
-  if (composeCommandCache) {
-    return composeCommandCache;
-  }
-
-  const env = {
-    ...process.env,
-    DOCKER_HOST: `unix://${socketPath}`,
-  };
-
-  try {
-    const { exitCode } = await spawnProcess("docker", ["compose", "version"], { env });
-    if (exitCode === 0) {
-      composeCommandCache = { command: "docker", args: ["compose"] };
-      return composeCommandCache;
-    }
-  } catch (err) {
-    // ignore and try docker-compose
-  }
-
-  try {
-    const { exitCode } = await spawnProcess("docker-compose", ["version"], { env });
-    if (exitCode === 0) {
-      composeCommandCache = { command: "docker-compose", args: [] };
-      return composeCommandCache;
-    }
-  } catch (err) {
-    // ignore and fail below
-  }
-
-  throw new Error("docker compose is not available (docker compose or docker-compose not found)");
-}
+// Compose resolver moved to compose.js
 
 /**
  * Logger utility for cleanup operations
@@ -168,7 +136,7 @@ export async function cleanupExpiredApps() {
               log("info", `Removing compose stack: ${composeProject}`);
 
               // Execute docker compose down without volume removal
-              const composeCmd = await resolveComposeCommand();
+              const composeCmd = await resolveComposeCommand({ socketPath });
               const { stdout, stderr, exitCode } = await spawnProcess(
                 composeCmd.command,
                 [...composeCmd.args, "down"],
