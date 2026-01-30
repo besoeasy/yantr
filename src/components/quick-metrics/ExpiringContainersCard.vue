@@ -68,19 +68,50 @@ const urgencyLabel = computed(() => {
 <template>
   <div
     v-if="stats.count > 0"
-    class="relative h-full overflow-hidden group rounded-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg dark:hover:shadow-slate-900/50"
-    :class="theme.border"
+    class="relative h-full overflow-hidden group rounded-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1"
   >
-    <!-- Gradient Background -->
-    <div class="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none"
-         :class="stats.next?.isUrgent || stats.next?.isExpired ? 'bg-gradient-to-br from-rose-500/20 via-orange-500/10 to-amber-500/20' : 'bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-orange-500/20'">
-    </div>
-    <!-- Background Texture -->
-    <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
-         style="background-image: radial-gradient(circle at 1rem 1rem, currentColor 1px, transparent 0); background-size: 1rem 1rem;">
+    <!-- Animated Background Mesh -->
+    <div class="absolute inset-0 bg-white dark:bg-gray-900">
+      <div 
+        class="absolute inset-0 z-10"
+        :class="stats.next?.isUrgent || stats.next?.isExpired 
+          ? 'bg-gradient-to-br from-rose-200/60 via-red-200/30 to-white/80 dark:from-rose-600/20 dark:via-red-600/10 dark:to-gray-900'
+          : 'bg-gradient-to-br from-orange-200/60 via-amber-200/30 to-white/80 dark:from-orange-600/20 dark:via-amber-600/10 dark:to-gray-900'"
+      ></div>
+      
+      <!-- Animated Orbs -->
+      <div 
+        class="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="stats.next?.isUrgent || stats.next?.isExpired
+          ? 'bg-rose-300/35 dark:bg-rose-500/20 group-hover:bg-rose-400/45 dark:group-hover:bg-rose-500/30'
+          : 'bg-orange-300/35 dark:bg-orange-500/20 group-hover:bg-orange-400/45 dark:group-hover:bg-orange-500/30'"
+      ></div>
+      <div 
+        class="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        :class="stats.next?.isUrgent || stats.next?.isExpired
+          ? 'bg-red-300/30 dark:bg-red-600/20 group-hover:bg-red-400/40 dark:group-hover:bg-red-600/30'
+          : 'bg-amber-300/30 dark:bg-amber-600/20 group-hover:bg-amber-400/40 dark:group-hover:bg-amber-600/30'"
+      ></div>
     </div>
 
-    <div class="relative z-10 h-full p-6 flex flex-col justify-between">
+    <!-- Animated Border Gradient -->
+    <div class="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+      <div 
+        class="absolute inset-0 animate-spin-slow"
+        :class="stats.next?.isUrgent || stats.next?.isExpired
+          ? 'bg-gradient-to-r from-rose-500/0 via-rose-500/60 to-rose-500/0'
+          : 'bg-gradient-to-r from-orange-500/0 via-orange-500/60 to-orange-500/0'"
+        style="animation-duration: 3s;"
+      ></div>
+    </div>
+
+    <div class="relative z-20 h-full p-6 flex flex-col justify-between border backdrop-blur-sm transition-all duration-300"
+         :class="[
+           'border-slate-200/80 dark:border-slate-700/60',
+           stats.next?.isUrgent || stats.next?.isExpired 
+             ? 'group-hover:border-rose-400/50 dark:group-hover:border-rose-500/40 group-hover:shadow-[0_0_20px_rgba(244,63,94,0.3)]'
+             : 'group-hover:border-orange-400/50 dark:group-hover:border-orange-500/40 group-hover:shadow-[0_0_20px_rgba(251,146,60,0.3)]'
+         ]">
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
