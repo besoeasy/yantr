@@ -6,7 +6,15 @@ import { readFile, writeFile, unlink } from "fs/promises";
 import { resolveComposeCommand } from "./compose.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { spawnProcess } from "./utils.js";
+import { 
+  spawnProcess,
+  errorHandler,
+  asyncHandler,
+  NotFoundError,
+  BadRequestError,
+  ConflictError,
+  DockerError 
+} from "./utils.js";
 
 import { startCleanupScheduler } from "./cleanup.js";
 
@@ -603,22 +611,14 @@ app.get("/api/health", (req, res) => {
 });
 
 // GET /api/network/identity - Public IP + geo/ISP resolved by daemon (machine IP)
-app.get("/api/network/identity", async (req, res) => {
-  try {
-    const force = String(req.query.force || "").toLowerCase() === "true";
-    const identity = await getPublicIpIdentityCached({ forceRefresh: force });
-    res.json({
-      success: true,
-      identity,
-    });
-  } catch (error) {
-    log("error", "❌ [GET /api/network/identity] Error:", error.message);
-    res.status(502).json({
-      success: false,
-      error: error.message || "Failed to resolve public IP",
-    });
-  }
-});
+app.get("/api/network/identity", asyncHandler(async (req, res) => {
+  const force = String(req.query.force || "").toLowerCase() === "true";
+  const identity = await getPublicIpIdentityCached({ forceRefresh: force });
+  res.json({
+    success: true,
+    identity,
+  });
+}));
 
 // GET /api/logs - Get stored logs
 app.get("/api/logs", (req, res) => {
@@ -639,9 +639,8 @@ app.get("/api/logs", (req, res) => {
 });
 
 // GET /api/containers - List all containers with their labels
-app.get("/api/containers", async (req, res) => {
-  try {
-    const containers = await docker.listContainers({ all: true });
+app.get("/api/containers", asyncHandler(async (req, res) => {
+  const containers = await docker.listContainers({ all: true });
 
     const formattedContainers = await mapWithConcurrency(containers, 8, async (container) => {
       const appLabels = parseAppLabels(container.Labels);
@@ -714,22 +713,14 @@ app.get("/api/containers", async (req, res) => {
       count: filteredContainers.length,
       containers: filteredContainers,
     });
-  } catch (error) {
-    log("error", "❌ [GET /api/containers] Error:", error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+}));
 
 // GET /api/containers/:id - Get single container details
-app.get("/api/containers/:id", async (req, res) => {
-  try {
-    const container = docker.getContainer(req.params.id);
-    const info = await container.inspect();
-    const appLabels = parseAppLabels(info.Config.Labels);
-    const composeProject = info.Config.Labels["com.docker.compose.project"];
+app.get("/api/containers/:id", asyncHandler(async (req, res) => {
+  const container = docker.getContainer(req.params.id);
+  const info = await container.inspect();
+  const appLabels = parseAppLabels(info.Config.Labels);
+  const composeProject = info.Config.Labels["com.docker.compose.project"];
 
     // If part of a compose project, get ports from all containers in the stack
     let allPorts = info.NetworkSettings.Ports;
@@ -792,21 +783,12 @@ app.get("/api/containers/:id", async (req, res) => {
         },
       },
     });
-  } catch (error) {
-    log("error", `❌ [GET /api/containers/:id] Container not found: ${req.params.id}`, error.message);
-    res.status(404).json({
-      success: false,
-      error: "Container not found",
-      message: error.message,
-    });
-  }
-});
+}));
 
 // GET /api/containers/:id/stats - Get real-time stats for a container
-app.get("/api/containers/:id/stats", async (req, res) => {
-  try {
-    const container = docker.getContainer(req.params.id);
-    const stats = await container.stats({ stream: false });
+app.get("/api/containers/:id/stats", asyncHandler(async (req, res) => {
+  const container = docker.getContainer(req.params.id);
+  const stats = await container.stats({ stream: false });
 
     // Calculate CPU percentage
     const cpuDelta = stats.cpu_stats.cpu_usage.total_usage - stats.precpu_stats.cpu_usage.total_usage;
@@ -873,20 +855,12 @@ app.get("/api/containers/:id/stats", async (req, res) => {
         },
       },
     });
-  } catch (error) {
-    log("error", `❌ [GET /api/containers/:id/stats] Error:`, error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+}));
 
 // GET /api/containers/:id/logs - Get logs from a container
-app.get("/api/containers/:id/logs", async (req, res) => {
-  try {
-    const container = docker.getContainer(req.params.id);
-    const tailLines = req.query.tail || 100;
+app.get("/api/containers/:id/logs", asyncHandler(async (req, res) => {
+  const container = docker.getContainer(req.params.id);
+  const tailLines = req.query.tail || 100;
 
     const logs = await container.logs({
       stdout: true,
@@ -910,82 +884,51 @@ app.get("/api/containers/:id/logs", async (req, res) => {
       success: true,
       logs: lines,
     });
-  } catch (error) {
-    log("error", `❌ [GET /api/containers/:id/logs] Error:`, error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+}));
 
 // GET /api/apps - List available apps from /apps directory
-app.get("/api/apps", async (req, res) => {
-  try {
-    const forceRefresh = req.query.refresh === "1" || req.query.refresh === "true";
-    const { apps, count } = await getAppsCatalogCached({ forceRefresh });
-    res.json({
-      success: true,
-      count,
-      apps: apps,
-    });
-  } catch (error) {
-    log("error", "❌ [GET /api/apps] Error:", error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
+app.get("/api/apps", asyncHandler(async (req, res) => {
+  const forceRefresh = req.query.refresh === "1" || req.query.refresh === "true";
+  const { apps, count } = await getAppsCatalogCached({ forceRefresh });
+  res.json({
+    success: true,
+    count,
+    apps: apps,
+  });
+}));
 
 // GET /api/apps/:id/check-arch - Check architecture compatibility for an app
-app.get("/api/apps/:id/check-arch", async (req, res) => {
+app.get("/api/apps/:id/check-arch", asyncHandler(async (req, res) => {
+  const appId = req.params.id;
+  const appsDir = path.join(__dirname, "..", "apps");
+  const appPath = path.join(appsDir, appId);
+  const composePath = path.join(appPath, "compose.yml");
+
+  // Verify compose file exists
   try {
-    const appId = req.params.id;
-    const appsDir = path.join(__dirname, "..", "apps");
-    const appPath = path.join(appsDir, appId);
-    const composePath = path.join(appPath, "compose.yml");
-
-    // Verify compose file exists
-    try {
-      await fsPromises.access(composePath);
-    } catch (err) {
-      log("error", `❌ [GET /api/apps/:id/check-arch] App not found: ${appId}`);
-      return res.status(404).json({
-        success: false,
-        error: `App '${appId}' not found`,
-      });
-    }
-
-    // Get image name from compose file
-    const imageName = await getImageFromCompose(composePath);
-    if (!imageName) {
-      log("error", `❌ [GET /api/apps/:id/check-arch] Could not extract image name from compose file`);
-      return res.status(400).json({
-        success: false,
-        error: "Could not extract image name from compose file",
-      });
-    }
-
-    // Check architecture support
-    const archCheck = await checkImageArchitectureSupport(imageName);
-
-    res.json({
-      success: true,
-      appId: appId,
-      image: imageName,
-      supported: archCheck.supported,
-      systemArch: archCheck.systemArch,
-      imageArch: archCheck.imageArch,
-    });
-  } catch (error) {
-    log("error", `❌ [GET /api/apps/:id/check-arch] Error:`, error.message);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    await fsPromises.access(composePath);
+  } catch (err) {
+    throw new NotFoundError(`App '${appId}' not found`);
   }
-});
+
+  // Get image name from compose file
+  const imageName = await getImageFromCompose(composePath);
+  if (!imageName) {
+    throw new BadRequestError("Could not extract image name from compose file");
+  }
+
+  // Check architecture support
+  const archCheck = await checkImageArchitectureSupport(imageName);
+
+  res.json({
+    success: true,
+    appId: appId,
+    image: imageName,
+    supported: archCheck.supported,
+    systemArch: archCheck.systemArch,
+    imageArch: archCheck.imageArch,
+  });
+}));
 
 // POST /api/deploy - Deploy a compose file from /apps directory
 app.post("/api/deploy", async (req, res) => {
@@ -2287,15 +2230,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  log("error", err.stack);
-  res.status(500).json({
-    success: false,
-    error: "Internal server error",
-    message: err.message,
-  });
-});
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Start server
 const PORT = 5252;
