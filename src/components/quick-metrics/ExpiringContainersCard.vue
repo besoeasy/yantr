@@ -58,10 +58,10 @@ const theme = computed(() => {
 
 const urgencyLabel = computed(() => {
   const next = stats.value.next
-  if (!next) return 'Safe'
-  if (next.isExpired) return 'Expired'
-  if (next.isUrgent) return 'Critical'
-  return 'Upcoming'
+  if (!next) return '✅ Safe'
+  if (next.isExpired) return '💀 Expired'
+  if (next.isUrgent) return '🚨 Critical'
+  return '⏰ Upcoming'
 })
 </script>
 
@@ -71,6 +71,10 @@ const urgencyLabel = computed(() => {
     class="relative h-full overflow-hidden group rounded-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-all duration-300 hover:shadow-lg dark:hover:shadow-slate-900/50"
     :class="theme.border"
   >
+    <!-- Gradient Background -->
+    <div class="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none"
+         :class="stats.next?.isUrgent || stats.next?.isExpired ? 'bg-gradient-to-br from-rose-500/20 via-orange-500/10 to-amber-500/20' : 'bg-gradient-to-br from-amber-500/20 via-yellow-500/10 to-orange-500/20'">
+    </div>
     <!-- Background Texture -->
     <div class="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none" 
          style="background-image: radial-gradient(circle at 1rem 1rem, currentColor 1px, transparent 0); background-size: 1rem 1rem;">
@@ -84,7 +88,7 @@ const urgencyLabel = computed(() => {
             <Timer class="w-5 h-5 transition-transform duration-700 ease-in-out group-hover:-rotate-12" :class="theme.text" />
           </div>
           <div>
-            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Expirations</h3>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">⏳ Expirations</h3>
             <div class="flex items-center gap-1.5 mt-0.5">
               <span class="relative flex h-2 w-2">
                 <span v-if="stats.next?.isUrgent" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-rose-400"></span>
@@ -106,7 +110,7 @@ const urgencyLabel = computed(() => {
         <!-- Big Metric (Next to expire) -->
         <div class="flex-1 min-w-0">
            <div class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">
-             {{ stats.next?.isExpired ? 'Expired For' : 'Expires In' }}
+             {{ stats.next?.isExpired ? '💀 Expired For' : '⏰ Expires In' }}
            </div>
            
            <div class="text-3xl sm:text-4xl font-black tabular-nums tracking-tight leading-none" 
@@ -119,7 +123,7 @@ const urgencyLabel = computed(() => {
            
            <div class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5 truncate">
              <Hourglass class="w-3.5 h-3.5" />
-             <span class="truncate">Next: <span :class="theme.text">{{ stats.next?.name }}</span></span>
+             <span class="truncate">🎯 Next: <span :class="theme.text">{{ stats.next?.name }}</span></span>
            </div>
         </div>
 
