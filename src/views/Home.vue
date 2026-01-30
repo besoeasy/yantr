@@ -221,7 +221,7 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-gray-50/50 dark:bg-slate-900/60">
     <!-- Main Content -->
-    <div class="p-6 sm:p-10 lg:p-14">
+    <div class="p-3 lg:p-6">
       <div class="space-y-10">
         <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-32">

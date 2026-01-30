@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Originless"
-      yantra.logo: "QmRXThtTrA56JhncJEPXjJBBwpu74NxbYCsHxnnkn1QQcq"
+      yantra.logo: "QmNPv75ULMPbZZiZsnrBx3h51onDfNBUoK84PDRKEg1GGT"
       yantra.category: "utility,tools"
       yantra.port: "3232 (HTTP - Web UI)"
       yantra.description: "One all-in-one storage backend you can drop into anything: your own apps, screenshot tools, pastebin-style pastes, Nostr clients, Reddit posts, forum embeds—anything that needs durable, anonymous file hosting. One Originless to rule them all and keep you anonymous."
