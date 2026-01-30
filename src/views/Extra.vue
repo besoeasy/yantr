@@ -101,22 +101,6 @@ const externalItems = [
     },
     features: ["Bug reports", "Feature requests"],
   },
-  {
-    title: "Telegram",
-    href: "https://t.me/+Qu06yCZHBAU3NTk1",
-    description: "Join the community chat",
-    icon: Send,
-    accent: {
-      ring: "focus:ring-sky-500",
-      glow: "bg-sky-200",
-      iconBg: "bg-sky-900/30",
-      iconHover: "group-hover:bg-sky-800/40",
-      textHover: "group-hover:text-sky-400",
-      check: "text-sky-400",
-      arrow: "text-sky-400",
-    },
-    features: ["Get help", "Share feedback"],
-  },
 ];
 </script>
 
