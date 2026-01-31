@@ -18,7 +18,7 @@ const { app, instanceCount } = toRefs(props);
 
 <template>
   <div
-    class="group relative flex items-start p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 cursor-pointer"
+    class="group relative flex items-start p-3 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 hover:shadow-md will-change-transform animate-fadeIn"
     role="button"
     tabindex="0"
     :aria-label="`Open ${app?.name ?? 'app'} details`"
