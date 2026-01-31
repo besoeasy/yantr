@@ -5,7 +5,8 @@
     "server": "node daemon/main.js",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker-build": "docker build -t yantra:optimized . && docker images yantra:optimized"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
