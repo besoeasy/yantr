@@ -1,10 +1,25 @@
-👉 [Watch Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4)
+👉 [Watch Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [GitHub](https://github.com/besoeasy/yantra)
 
-# Yantra 🔧
+# ⚙️ Yantra
 
-> **Turn your Laptop into a Private Homelab.**
->
-> Yantra is a sleek, self-hosted app store that runs _alongside_ your OS. Take back control of your data without dedicated hardware.
+## Turn Your Laptop into a Private Homelab
+
+**The self-hosted app store for your PC.** Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS.
+
+Yantra is to self-hosted apps what Homebrew is to software packages—simple, elegant, and built for your daily driver.
+
+---
+
+### ✨ At a Glance
+
+| | |
+|---|---|
+| **Philosophy** | 📦 App Store (not an OS replacement) |
+| **Hardware** | 💻 Use your existing PC/Laptop |
+| **Installation** | 🚀 Single Docker command |
+| **Commitment** | 🎯 Zero—install, use, delete |
+| **Ecosystem** | 🔓 100% Docker Compose (no lock-in) |
+| **Resource Usage** | ⚡ On-demand (nothing runs unless you start it) |
 
 ---
 
