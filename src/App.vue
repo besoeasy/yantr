@@ -145,7 +145,7 @@ onMounted(() => {
       <!-- Bottom Actions -->
       <div class="flex flex-col items-center gap-3 mt-4">
         <a
-          href="https://discord.gg/ebfPzDSF"
+          href="https://discord.gg/pZCaeTT8DX"
           target="_blank"
           rel="noopener noreferrer"
           class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40 transition-all duration-300 ease-out"
@@ -209,7 +209,7 @@ onMounted(() => {
         </router-link>
 
         <a
-          href="https://discord.gg/ebfPzDSF"
+          href="https://discord.gg/pZCaeTT8DX"
           target="_blank"
           rel="noopener noreferrer"
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95 text-gray-600 dark:text-slate-400"
