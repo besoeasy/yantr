@@ -132,9 +132,14 @@ Always ships the newest app releases regardless of your Yantra version—updates
 
 ## Live Screenshots (GIF)
 
+<details>
+<summary>Show GIFs</summary>
+
 <img src="https://dweb.link/ipfs/QmYzGtSazMMAZQ8ebKytukketa7mtzJF29KZCPt47jv2g7?filename=main.gif" alt="Main App" />
 <img src="https://dweb.link/ipfs/QmStcRpjf7mMpyxU8FxsvqQXFyzAWQsxvktRDgDDc637EW?filename=main.gif" alt="Temporary Install" />
-<img src="https://dweb.link/ipfs/Qmeq5gJ9zDyp9y5PKMvy1C7Dp3GJsbs2pLVWpMQBjf2CkZ?filename=main.gif" alt="Virutal Volumes" />
+<img src="https://dweb.link/ipfs/Qmeq5gJ9zDyp9y5PKMvy1C7Dp3GJsbs2pLVWpMQBjf2CkZ?filename=main.gif" alt="Virtual Volumes" />
+
+</details>
 
 ## 🧭 Why Yantra
 
