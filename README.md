@@ -3,17 +3,14 @@
 # Yantra 🔧
 
 > **Turn your Laptop into a Private Homelab.**
+>
 > Yantra is a sleek, self-hosted app store that runs _alongside_ your OS. Take back control of your data without dedicated hardware.
 
 ---
 
-## 🚀 Quick Start (Copy & Paste)
+## 🚀 Quick Start
 
-Launch Yantra in seconds with a single Docker command.
-
-### Run Yantra
-
-**Docker (recommended):**
+Launch Yantra in seconds with a single Docker command and access it at `http://localhost`.
 
 ```bash
 docker run -d \
@@ -24,6 +21,17 @@ docker run -d \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantra
 ```
+
+**✅ That's it!** Yantra is now running. Open your browser and navigate to `http://localhost` to start deploying apps.
+
+---
+
+### System Requirements
+
+- **Docker** installed and running
+- **Linux, macOS, or Windows** (with Docker Desktop)
+- **Disk space** for app data (minimal baseline, grows with apps)
+- **Network access** to Docker daemon
 
 ---
 
@@ -67,17 +75,55 @@ Your laptop remains yours. Your OS stays untouched. Yantra just gives you one-cl
 
 ---
 
-## 🛠️ Perfect for Your Workflow
+## 🛠️ Popular Apps & Use Cases
 
-Yantra is designed for the modern "Work PC" homelab. Spin up tools, use them, spin them down.
+Yantra comes with 100+ pre-configured applications. Here are some popular ones organized by use case:
 
-| Goal                  | Solution                                                                     |
-| :-------------------- | :--------------------------------------------------------------------------- |
-| **📥 Download Media** | **[MeTube](apps/metube)** - YouTube/Facebook downloader.                     |
-| **📄 Edit Docs**      | **[Stirling PDF](apps/stirling-pdf)** - Merge, split, and edit PDFs locally. |
-| **🔄 Convert Files**  | **[ConvertX](apps/convertx)** - Unlimited file conversion (PNG, JPG, etc).   |
-| **🕵️ Privacy**        | **[Tor Browser](apps/tor-browser)** & **[SearXNG](apps/searxng)**.           |
-| **⚡ Share**          | **[SAMBA](apps/samba)** or **[Dufs](apps/dufs)** for instant P2P sharing.    |
+### 📥 Media & Downloads
+
+- **[MeTube](apps/metube)** - YouTube/TikTok/Instagram downloader
+- **[Transmission](apps/transmission)** - Lightweight torrent client
+- **[qBittorrent](apps/qbittorrent)** - Feature-rich torrent client
+
+### 📄 Document Tools
+
+- **[Stirling PDF](apps/stirling-pdf)** - PDF merge, split, edit, and convert
+- **[LibreOffice](apps/libreoffice)** - Office document editing _(coming soon)_
+
+### 🔄 File Conversion
+
+- **[ConvertX](apps/convertx)** - Unlimited file conversion (PNG, JPG, WebP, etc)
+- **[BenToPDF](apps/bentopdf)** - Convert various formats to PDF
+
+### 🔐 Privacy & Security
+
+- **[Tor Browser](apps/tor-browser)** - Browse the web anonymously
+- **[SearXNG](apps/searxng)** - Privacy-respecting search engine
+
+### 💾 File Sharing & Sync
+
+- **[Syncthing](apps/syncthing)** - Continuous file synchronization
+- **[SAMBA](apps/samba)** - Network file sharing
+- **[Dufs](apps/dufs)** - Lightweight file server
+
+### 📊 Monitoring & Status
+
+- **[Glances](apps/glances)** - Real-time system resource monitoring
+- **[Uptime Kuma](apps/uptime-kuma)** - Service uptime monitoring
+
+### 🎵 Media & Entertainment
+
+- **[Jellyfin](apps/jellyfin)** - Open-source media server
+- **[Emby](apps/emby)** - Personal media library
+- **[Airsonic](apps/airsonic)** - Music streaming server
+
+### 🌐 Networking & Utilities
+
+- **[Pi-hole](apps/pihole)** - Network-wide ad blocker
+- **[Wireguard](apps/wireguard)** - VPN server
+- **[Networking Toolbox](apps/networking-toolbox)** - Network testing utilities
+
+**[👉 Browse all 100+ apps](apps/)**
 
 ---
 
@@ -109,14 +155,39 @@ rclone sync :webdav:http://localhost:5001 :webdav:http://localhost:5002 --webdav
 
 ---
 
-## 🔒 Pro Tip: Go Remote with Tailscale
+## 🔒 Remote Access with Tailscale
 
-Want to access your apps from anywhere?
+Want to access your Yantra apps from anywhere securely?
 
-**We recommend [Tailscale](https://tailscale.com)**. It creates a secure private network for your devices.
+**We recommend [Tailscale](https://tailscale.com)** - it creates a secure private network between your devices.
 
-- ✅ Access Yantra from any device, anywhere.
-- ✅ No port forwarding required.
-- ✅ End-to-end encrypted.
+- ✅ Access Yantra from any device, anywhere
+- ✅ No port forwarding or firewall configuration needed
+- ✅ End-to-end encrypted
+- ✅ Free tier available
 
 Simply install Tailscale on your server and devices to create your own secure private cloud.
+
+---
+
+## 🤝 Contributing
+
+Have ideas for new apps or improvements? Contributions are welcome!
+
+- **Add a new app**: Follow the [Apps Template Standards](apps/apps.md)
+- **Report issues**: [GitHub Issues](https://github.com/besoeasy/yantra/issues)
+- **Share feedback**: Help shape the future of Yantra
+
+---
+
+## 📝 License
+
+Yantra is open-source and available under the [LICENSE](LICENSE) file.
+
+---
+
+## 🙋 Support & Community
+
+- **Questions?** Check existing [GitHub Issues](https://github.com/besoeasy/yantra/issues)
+- **Found a bug?** [Report it here](https://github.com/besoeasy/yantra/issues/new)
+- **Want to contribute?** Fork, modify, and submit a pull request
