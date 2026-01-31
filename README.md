@@ -9,11 +9,11 @@
 
 ## 🚀 Quick Start (Copy & Paste)
 
-Get up and running in seconds. No complicated setup.
+Launch Yantra in seconds with a single Docker command.
 
 ### Run Yantra
 
-**Using Docker:**
+**Docker (recommended):**
 
 ```bash
 docker run -d \
