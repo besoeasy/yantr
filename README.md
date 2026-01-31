@@ -1,3 +1,6 @@
+<img width="2014" height="1395" alt="image" src="https://github.com/user-attachments/assets/70b654e1-2e80-4b1b-8bf4-3ab51bea6b87" />
+
+
 <div align="center">
 
 # ⚙️ Yantra
