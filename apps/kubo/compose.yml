@@ -2,6 +2,12 @@ services:
   kubo:
     container_name: kubo
     image: ipfs/kubo:latest
+    command: > # Command needed to make the WebUI usable without access to the command line
+      sh -c "
+        ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"*\"]' &&
+        ipfs config --json API.HTTPHeaders.Access-Control-Allow-Methods '[\"PUT\", \"POST\"]' &&
+        exec /usr/local/bin/start_ipfs daemon --migrate=true
+      "
     environment:
       - IPFS_PROFILE=lowpower
     volumes:
