@@ -1,20 +1,25 @@
 services:
-    kubo:
-        container_name: kubo
-        command: ["ipfs", "init", "--profile=lowpower"]
-        volumes:
-            - ipfs_staging:/export
-            - ipfs_data:/data/ipfs
-        ports:
-            - 4001 # TCP+UDP 4001 is the P2P comms port; I don't know if Yantra exposes it automatically.
-            - 4001/udp
-            - 8080
-            - 5001
-        image: ipfs/kubo:latest
-        labels:
-          yantra.name: "Kubo"
-          yantra.logo: "QmRACojSdFuqnyyfQZ9Zgiz6zrVCUX1JRkYZyvRGu1MCzG"
-          yantra.category: "network,utility" # I don't know all the categories
-          yantra.port: "8080 (HTTP - Gateway), 5001 (HTTP - Admin Web UI)"
-          yantra.description: "The first and most widely used node implementation for the Interplanetary Filesystem (IPFS). Share files with the Internet easily."
-          yantra.website: "https://ipfs.tech"
+  kubo:
+    container_name: kubo
+    image: ipfs/kubo:latest
+    environment:
+      - IPFS_PROFILE=lowpower
+    volumes:
+      - ipfs_staging:/export
+      - ipfs_data:/data/ipfs
+    ports:
+      - "4001"
+      - "4001/udp"
+      - "8080"
+      - "5001"
+    labels:
+      yantra.name: "Kubo"
+      yantra.logo: "QmRACojSdFuqnyyfQZ9Zgiz6zrVCUX1JRkYZyvRGu1MCzG"
+      yantra.category: "network,utility"
+      yantra.port: "8080 (HTTP - Gateway), 5001 (HTTP - Admin Web UI)"
+      yantra.description: "The first and most widely used node implementation for IPFS."
+      yantra.website: "https://ipfs.tech"
+
+volumes:
+  ipfs_staging:
+  ipfs_data:
