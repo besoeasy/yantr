@@ -20,7 +20,7 @@ let statsInterval = null
 const autoScrollLogs = ref(true)
 const currentTime = ref(Date.now())
 const activeTab = ref('resources')
-const showOnlyDescribedPorts = ref(false)
+const showOnlyDescribedPorts = ref(true)
 
 // Backup state
 const s3Configured = ref(false)
