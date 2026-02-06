@@ -20,6 +20,13 @@ let statsInterval = null
 const autoScrollLogs = ref(true)
 const currentTime = ref(Date.now())
 
+// Backup state
+const s3Configured = ref(false)
+const volumeBackups = ref({})
+const backingUp = ref(false)
+const showRestoreMenu = ref({})
+const backupJobId = ref(null)
+
 // Update current time every second for live countdown
 let timeUpdateInterval = null
 
@@ -281,7 +288,7 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     if (data.success) {
       const expiryText = expiryMinutes > 0 ? ` (expires in ${expiryMinutes}m)` : ' (no expiry)'
       toast.success(`Volume browser started on port ${data.port}${expiryText}`)
-      
+
       // Open browser in new tab
       if (data.port) {
         const host = window.location.hostname || 'localhost'
@@ -297,11 +304,205 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
   }
 }
 
+// Check S3 configuration
+async function checkS3Config() {
+  try {
+    const response = await fetch(`${apiUrl.value}/api/backup/config`)
+    const data = await response.json()
+    s3Configured.value = data.configured
+  } catch (error) {
+    console.error('Failed to check S3 config:', error)
+  }
+}
+
+// Fetch backups for container volumes
+async function fetchVolumeBackups() {
+  if (!selectedContainer.value) return
+
+  try {
+    const response = await fetch(
+      `${apiUrl.value}/api/containers/${selectedContainer.value.id}/backups`
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      volumeBackups.value = data.backups
+      s3Configured.value = data.configured !== false
+    }
+  } catch (error) {
+    console.error('Failed to fetch backups:', error)
+  }
+}
+
+// Backup all volumes
+async function backupAllVolumes() {
+  if (!selectedContainer.value) return
+
+  backingUp.value = true
+  try {
+    const response = await fetch(
+      `${apiUrl.value}/api/containers/${selectedContainer.value.id}/backup`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      toast.success('Backup started for all volumes')
+      backupJobId.value = data.jobId
+      pollBackupJob(data.jobId)
+    } else {
+      toast.error(data.error || 'Failed to start backup')
+    }
+  } catch (error) {
+    toast.error('Failed to start backup')
+  } finally {
+    backingUp.value = false
+  }
+}
+
+// Poll backup job status
+async function pollBackupJob(jobId) {
+  const pollInterval = setInterval(async () => {
+    try {
+      const response = await fetch(`${apiUrl.value}/api/backup/jobs/${jobId}`)
+      const data = await response.json()
+
+      if (data.success && data.job) {
+        if (data.job.status === 'completed') {
+          clearInterval(pollInterval)
+          toast.success('Backup completed successfully')
+          await fetchVolumeBackups()
+        } else if (data.job.status === 'failed') {
+          clearInterval(pollInterval)
+          toast.error(`Backup failed: ${data.job.error}`)
+        }
+      }
+    } catch (error) {
+      clearInterval(pollInterval)
+      console.error('Failed to poll backup job:', error)
+    }
+  }, 2000)
+}
+
+// Restore backup
+async function restoreBackup(volumeName, backupKey) {
+  if (!confirm(`Restore ${volumeName} from backup?\n\nThis will overwrite current data.`)) return
+
+  try {
+    const response = await fetch(
+      `${apiUrl.value}/api/volumes/${volumeName}/restore`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ backupKey, overwrite: true })
+      }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      toast.success('Restore started')
+      pollRestoreJob(data.jobId)
+    } else {
+      toast.error(data.error || 'Failed to start restore')
+    }
+  } catch (error) {
+    toast.error('Failed to start restore')
+  }
+
+  showRestoreMenu.value[volumeName] = false
+}
+
+// Poll restore job status
+async function pollRestoreJob(jobId) {
+  const pollInterval = setInterval(async () => {
+    try {
+      const response = await fetch(`${apiUrl.value}/api/restore/jobs/${jobId}`)
+      const data = await response.json()
+
+      if (data.success && data.job) {
+        if (data.job.status === 'completed') {
+          clearInterval(pollInterval)
+          toast.success('Restore completed successfully')
+        } else if (data.job.status === 'failed') {
+          clearInterval(pollInterval)
+          toast.error(`Restore failed: ${data.job.error}`)
+        }
+      }
+    } catch (error) {
+      clearInterval(pollInterval)
+      console.error('Failed to poll restore job:', error)
+    }
+  }, 2000)
+}
+
+// Delete backup
+async function deleteBackupFile(volumeName, backupKey) {
+  const timestamp = backupKey.split('/')[1].replace('.tar', '')
+
+  if (!confirm('Delete this backup?')) return
+
+  try {
+    const response = await fetch(
+      `${apiUrl.value}/api/volumes/${volumeName}/backup/${timestamp}`,
+      { method: 'DELETE' }
+    )
+    const data = await response.json()
+
+    if (data.success) {
+      toast.success('Backup deleted')
+      await fetchVolumeBackups()
+    } else {
+      toast.error(data.error || 'Failed to delete backup')
+    }
+  } catch (error) {
+    toast.error('Failed to delete backup')
+  }
+}
+
+// Toggle restore menu
+function toggleRestoreMenu(volumeName) {
+  showRestoreMenu.value[volumeName] = !showRestoreMenu.value[volumeName]
+}
+
+// Check if volume has backups
+function hasBackups(volumeName) {
+  return volumeBackups.value[volumeName]?.length > 0
+}
+
+// Get latest backup age
+function getLatestBackupAge(volumeName) {
+  const backups = volumeBackups.value[volumeName]
+  if (!backups || backups.length === 0) return 'Never'
+
+  const latest = backups[0]
+  const date = new Date(latest.timestamp)
+  const now = new Date()
+  const diffMs = now - date
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffDays > 0) return `${diffDays}d ago`
+  if (diffHours > 0) return `${diffHours}h ago`
+  if (diffMins > 0) return `${diffMins}m ago`
+  return 'Just now'
+}
+
+// Format backup date
+function formatBackupDate(timestamp) {
+  return new Date(timestamp).toLocaleString()
+}
+
 onMounted(async () => {
   await fetchContainerDetail()
   await Promise.all([
     fetchContainerStats(),
-    fetchContainerLogs()
+    fetchContainerLogs(),
+    checkS3Config(),
+    fetchVolumeBackups()
   ])
   
   // Start polling stats every 2 seconds
@@ -619,6 +820,93 @@ onUnmounted(() => {
                      {{ formatBytes(containerStats.blockIO.read) }} / {{ formatBytes(containerStats.blockIO.write) }}
                   </div>
                </div>
+            </div>
+         </div>
+
+         <!-- Volume Backups Section -->
+         <div v-if="containerVolumes.length > 0" class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Volume Backups</h3>
+              <button
+                v-if="s3Configured"
+                @click="backupAllVolumes"
+                :disabled="backingUp"
+                class="text-xs px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium"
+              >
+                {{ backingUp ? 'Backing up...' : 'Backup All' }}
+              </button>
+            </div>
+
+            <!-- S3 Not Configured Warning -->
+            <div v-if="!s3Configured" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+              <p class="text-xs text-yellow-800 dark:text-yellow-200">
+                Configure S3 storage to enable backups.
+              </p>
+            </div>
+
+            <!-- Volume Backup Cards -->
+            <div v-else class="space-y-3">
+              <div
+                v-for="volume in containerVolumes"
+                :key="volume.name"
+                class="bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700 p-3"
+              >
+                <div class="flex items-start justify-between mb-2">
+                  <div class="flex-1 min-w-0">
+                    <div class="font-medium text-sm truncate">{{ volume.name }}</div>
+                    <div class="text-xs text-slate-500">
+                      Latest: {{ getLatestBackupAge(volume.name) }}
+                    </div>
+                  </div>
+                  <div class="flex gap-2 ml-2">
+                    <button
+                      @click="backupAllVolumes"
+                      :disabled="backingUp"
+                      class="text-xs px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 transition-all"
+                    >
+                      Backup
+                    </button>
+                    <button
+                      @click="toggleRestoreMenu(volume.name)"
+                      :disabled="!hasBackups(volume.name)"
+                      class="text-xs px-2 py-1 bg-slate-200 dark:bg-slate-700 rounded hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                    >
+                      Restore
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Restore Dropdown -->
+                <div
+                  v-if="showRestoreMenu[volume.name] && hasBackups(volume.name)"
+                  class="mt-3 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-600 p-2 max-h-40 overflow-y-auto space-y-1"
+                >
+                  <div
+                    v-for="backup in volumeBackups[volume.name]"
+                    :key="backup.key"
+                    class="flex items-center justify-between py-1.5 px-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded text-xs"
+                  >
+                    <div>
+                      <div class="font-mono text-xs">{{ formatBackupDate(backup.timestamp) }}</div>
+                      <div class="text-slate-500 text-[10px]">{{ formatBytes(backup.size) }}</div>
+                    </div>
+                    <div class="flex gap-1">
+                      <button
+                        @click="restoreBackup(volume.name, backup.key)"
+                        class="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-all text-[10px]"
+                      >
+                        Restore
+                      </button>
+                      <button
+                        @click="deleteBackupFile(volume.name, backup.key)"
+                        class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-all text-[10px]"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
          </div>
 

@@ -35,22 +35,6 @@ const navItems = [
     features: ["Safe storage", "Portable data"],
   },
   {
-    title: "Backup",
-    to: "/backup",
-    description: "Backup and restore volumes to S3",
-    icon: Cloud,
-    accent: {
-      ring: "focus:ring-purple-500",
-      glow: "bg-purple-200",
-      iconBg: "bg-purple-900/30",
-      iconHover: "group-hover:bg-purple-800/40",
-      textHover: "group-hover:text-purple-400",
-      check: "text-purple-400",
-      arrow: "text-purple-400",
-    },
-    features: ["S3 backups", "Easy restore"],
-  },
-  {
     title: "Logs",
     to: "/logs",
     description: "Read container logs and recent output",

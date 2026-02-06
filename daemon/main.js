@@ -28,6 +28,11 @@ import {
   getRestoreJobStatus,
   getAllBackupJobs,
   getAllRestoreJobs,
+  // New volume-centric backup functions
+  createContainerBackup,
+  listVolumeBackups,
+  restoreVolumeBackup,
+  deleteVolumeBackup,
 } from "./backup.js";
 
 // Import package.json
@@ -2289,10 +2294,31 @@ app.post("/api/backup/config", asyncHandler(async (req, res) => {
   });
 }));
 
-// GET /api/backup/list - List all backups from S3
-app.get("/api/backup/list", asyncHandler(async (req, res) => {
-  const config = await getS3Config();
+// ============================================
+// NEW VOLUME-CENTRIC BACKUP API ENDPOINTS
+// ============================================
 
+// POST /api/containers/:id/backup - Create backup of all volumes attached to a container
+app.post("/api/containers/:id/backup", asyncHandler(async (req, res) => {
+  const containerId = req.params.id;
+  log("info", `💾 [POST /api/containers/${containerId}/backup] Creating backup`);
+
+  // Get container details
+  const containerInfo = await docker.getContainer(containerId).inspect();
+
+  // Extract volume names from mounts
+  const volumes = containerInfo.Mounts
+    .filter(mount => mount.Type === 'volume')
+    .map(mount => mount.Name);
+
+  if (volumes.length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: "No volumes attached to this container",
+    });
+  }
+
+  const config = await getS3Config();
   if (!config) {
     return res.status(400).json({
       success: false,
@@ -2300,126 +2326,116 @@ app.get("/api/backup/list", asyncHandler(async (req, res) => {
     });
   }
 
-  const backups = await listBackups(config, log);
+  const result = await createContainerBackup({
+    containerId,
+    volumes,
+    s3Config: config,
+    log,
+  });
+
+  log("info", `✅ [POST /api/containers/${containerId}/backup] Backup job started: ${result.jobId}`);
 
   res.json({
     success: true,
-    count: backups.length,
-    backups,
+    ...result,
+    volumes,
   });
 }));
 
-// POST /api/backup/create - Create a new backup
-app.post("/api/backup/create", asyncHandler(async (req, res) => {
-  log("info", "💾 [POST /api/backup/create] Creating backup");
+// GET /api/containers/:id/backups - List all backups for volumes attached to a container
+app.get("/api/containers/:id/backups", asyncHandler(async (req, res) => {
+  const containerId = req.params.id;
 
-  const { volumes, name, apps } = req.body;
-  const hasVolumes = Array.isArray(volumes) && volumes.length > 0;
-  const hasApps = Array.isArray(apps) && apps.length > 0;
+  // Get container details to extract volumes
+  const containerInfo = await docker.getContainer(containerId).inspect();
+  const volumeNames = containerInfo.Mounts
+    .filter(mount => mount.Type === 'volume')
+    .map(mount => mount.Name);
 
-  if (!hasVolumes && !hasApps) {
-    return res.status(400).json({
-      success: false,
-      error: "volumes or apps array is required and must not be empty",
+  if (volumeNames.length === 0) {
+    return res.json({
+      success: true,
+      backups: {},
     });
   }
 
   const config = await getS3Config();
+  if (!config) {
+    return res.json({
+      success: true,
+      backups: {},
+      configured: false,
+    });
+  }
 
+  const backups = await listVolumeBackups(volumeNames, config, log);
+
+  res.json({
+    success: true,
+    backups,
+    configured: true,
+  });
+}));
+
+// POST /api/volumes/:volumeName/restore - Restore a specific volume backup
+app.post("/api/volumes/:volumeName/restore", asyncHandler(async (req, res) => {
+  const volumeName = req.params.volumeName;
+  const { backupKey, overwrite = true } = req.body;
+
+  log("info", `🔄 [POST /api/volumes/${volumeName}/restore] Restoring from ${backupKey}`);
+
+  if (!backupKey) {
+    return res.status(400).json({
+      success: false,
+      error: "backupKey is required",
+    });
+  }
+
+  const config = await getS3Config();
   if (!config) {
     return res.status(400).json({
       success: false,
-      error: "S3 not configured. Please configure S3 settings first.",
+      error: "S3 not configured",
     });
   }
 
-  const allVolumes = await docker.listVolumes();
-  const volumeEntries = allVolumes.Volumes || [];
-  const volumeNames = new Set(volumeEntries.map(v => v.Name));
+  const result = await restoreVolumeBackup(volumeName, backupKey, config, overwrite, log);
 
-  const resolvedAppConfigs = [];
-  const appMetadata = [];
-  const appVolumeNames = [];
-
-  if (hasApps) {
-    const appsDir = path.join(__dirname, "..", "apps");
-    const fsPromises = await import("fs/promises");
-
-    for (const appItem of apps) {
-      const appEntry = typeof appItem === "string" ? { appId: appItem } : appItem;
-      const appId = appEntry?.appId;
-
-      if (!appId) {
-        return res.status(400).json({
-          success: false,
-          error: "appId is required for apps entries",
-        });
-      }
-
-      const instanceId = Number(appEntry.instanceId || 1);
-      const projectName = appEntry.projectName || (instanceId > 1 ? `${appId}-${instanceId}` : appId);
-      const appPath = path.join(appsDir, appId);
-      const composePath = path.join(appPath, "compose.yml");
-
-      try {
-        await fsPromises.access(composePath);
-      } catch {
-        return res.status(404).json({
-          success: false,
-          error: `App '${appId}' not found or has no compose.yml`,
-        });
-      }
-
-      const projectVolumes = volumeEntries
-        .filter((volume) => volume.Labels?.["com.docker.compose.project"] === projectName)
-        .map((volume) => volume.Name);
-
-      if (projectVolumes.length === 0) {
-        log("warn", `⚠️  [POST /api/backup/create] No volumes found for project '${projectName}'`);
-      }
-
-      resolvedAppConfigs.push({ appId, appPath, projectName, instanceId });
-      appMetadata.push({ appId, projectName, instanceId, volumes: projectVolumes });
-      appVolumeNames.push(...projectVolumes);
-    }
-  }
-
-  const requestedVolumes = hasVolumes ? volumes : [];
-
-  for (const volumeName of requestedVolumes) {
-    if (!volumeNames.has(volumeName)) {
-      return res.status(404).json({
-        success: false,
-        error: `Volume '${volumeName}' not found`,
-      });
-    }
-  }
-
-  const combinedVolumes = Array.from(new Set([...requestedVolumes, ...appVolumeNames]));
-
-  if (combinedVolumes.length === 0 && resolvedAppConfigs.length === 0) {
-    return res.status(400).json({
-      success: false,
-      error: "No volumes or app configs found to back up",
-    });
-  }
-
-  const result = await createBackup({
-    volumes: combinedVolumes,
-    s3Config: config,
-    name,
-    log,
-    appConfigs: resolvedAppConfigs,
-    apps: appMetadata,
-  });
-
-  log("info", `✅ [POST /api/backup/create] Backup job started: ${result.jobId}`);
+  log("info", `✅ [POST /api/volumes/${volumeName}/restore] Restore job started: ${result.jobId}`);
 
   res.json({
     success: true,
     ...result,
   });
 }));
+
+// DELETE /api/volumes/:volumeName/backup/:timestamp - Delete a specific volume backup
+app.delete("/api/volumes/:volumeName/backup/:timestamp", asyncHandler(async (req, res) => {
+  const { volumeName, timestamp } = req.params;
+
+  log("info", `🗑️ [DELETE /api/volumes/${volumeName}/backup/${timestamp}] Deleting backup`);
+
+  const config = await getS3Config();
+  if (!config) {
+    return res.status(400).json({
+      success: false,
+      error: "S3 not configured",
+    });
+  }
+
+  await deleteVolumeBackup(volumeName, timestamp, config, log);
+
+  log("info", `✅ [DELETE /api/volumes/${volumeName}/backup/${timestamp}] Backup deleted`);
+
+  res.json({
+    success: true,
+    message: "Backup deleted successfully",
+  });
+}));
+
+// ============================================
+// OLD APP-CENTRIC BACKUP API ENDPOINTS (DEPRECATED - Keep for now)
+// ============================================
 
 // GET /api/backup/jobs - Get all backup jobs
 app.get("/api/backup/jobs", (req, res) => {
@@ -2449,32 +2465,6 @@ app.get("/api/backup/jobs/:jobId", (req, res) => {
   });
 });
 
-// POST /api/backup/:backupId/restore - Restore a backup
-app.post("/api/backup/:backupId/restore", asyncHandler(async (req, res) => {
-  const backupId = req.params.backupId;
-  log("info", `🔄 [POST /api/backup/${backupId}/restore] Starting restore`);
-
-  const { volumes, overwrite, restoreApps } = req.body;
-
-  const config = await getS3Config();
-
-  if (!config) {
-    return res.status(400).json({
-      success: false,
-      error: "S3 not configured. Please configure S3 settings first.",
-    });
-  }
-
-  const result = await restoreBackup(backupId, config, volumes, overwrite, log, restoreApps);
-
-  log("info", `✅ [POST /api/backup/${backupId}/restore] Restore job started: ${result.jobId}`);
-
-  res.json({
-    success: true,
-    ...result,
-  });
-}));
-
 // GET /api/restore/jobs - Get all restore jobs
 app.get("/api/restore/jobs", (req, res) => {
   const jobs = getAllRestoreJobs();
@@ -2502,30 +2492,6 @@ app.get("/api/restore/jobs/:jobId", (req, res) => {
     job,
   });
 });
-
-// DELETE /api/backup/:backupId - Delete a backup
-app.delete("/api/backup/:backupId", asyncHandler(async (req, res) => {
-  const backupId = req.params.backupId;
-  log("info", `🗑️ [DELETE /api/backup/${backupId}] Deleting backup`);
-
-  const config = await getS3Config();
-
-  if (!config) {
-    return res.status(400).json({
-      success: false,
-      error: "S3 not configured",
-    });
-  }
-
-  await deleteBackup(backupId, config, log);
-
-  log("info", `✅ [DELETE /api/backup/${backupId}] Backup deleted successfully`);
-
-  res.json({
-    success: true,
-    message: "Backup deleted successfully",
-  });
-}));
 
 // ============================================
 // END BACKUP & RESTORE API ENDPOINTS

@@ -668,3 +668,324 @@ export function getAllBackupJobs() {
 export function getAllRestoreJobs() {
   return Array.from(restoreJobs.entries()).map(([id, job]) => ({ id, ...job }));
 }
+
+// ============================================
+// NEW VOLUME-CENTRIC BACKUP FUNCTIONS
+// ============================================
+
+// Create backup for container volumes
+export async function createContainerBackup({ containerId, volumes, s3Config, log }) {
+  const jobId = generateJobId();
+  const tmpDir = "/tmp";
+  let jobTmpDir = null;
+  const volumeList = Array.isArray(volumes) ? volumes : [];
+
+  backupJobs.set(jobId, {
+    status: "in-progress",
+    progress: 0,
+    containerId,
+    volumes: volumeList,
+    startedAt: new Date().toISOString(),
+  });
+
+  // Run backup asynchronously
+  (async () => {
+    try {
+      log?.("info", `[Backup ${jobId}] Starting volume backup for container ${containerId}`);
+
+      // Ensure alpine image exists for tar operations
+      try {
+        await docker.getImage("alpine:latest").inspect();
+        log?.("info", `[Backup ${jobId}] Alpine image already available`);
+      } catch (err) {
+        log?.("info", `[Backup ${jobId}] Pulling alpine:latest image...`);
+        await new Promise((resolve, reject) => {
+          docker.pull("alpine:latest", (err, stream) => {
+            if (err) return reject(err);
+            docker.modem.followProgress(stream, (err, output) => {
+              if (err) return reject(err);
+              resolve(output);
+            });
+          });
+        });
+        log?.("info", `[Backup ${jobId}] Alpine image pulled successfully`);
+      }
+
+      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
+      const minioClient = createMinioClient(s3Config);
+      const totalVolumes = volumeList.length;
+
+      for (let i = 0; i < volumeList.length; i++) {
+        const volumeName = volumeList[i];
+        log?.("info", `[Backup ${jobId}] Processing volume ${i + 1}/${totalVolumes}: ${volumeName}`);
+
+        // Update progress
+        backupJobs.set(jobId, {
+          ...backupJobs.get(jobId),
+          progress: Math.floor((i / totalVolumes) * 90),
+          currentVolume: volumeName,
+        });
+
+        // Create timestamp: 2026-02-06_10-30-45
+        const now = new Date();
+        const timestamp = now.toISOString()
+          .replace(/T/, '_')
+          .replace(/\..+/, '')
+          .replace(/:/g, '-');
+
+        const tarFileName = `${timestamp}.tar`;
+        const tarPath = path.join(jobTmpDir, tarFileName);
+
+        // Create tar using Alpine container
+        log?.("info", `[Backup ${jobId}] Creating tar archive of ${volumeName}`);
+
+        const container = await docker.createContainer({
+          Image: "alpine:latest",
+          Cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
+          HostConfig: {
+            Binds: [
+              `${volumeName}:/data:ro`,
+              `${jobTmpDir}:/backup`,
+            ],
+            AutoRemove: true,
+          },
+        });
+
+        await container.start();
+        await container.wait();
+
+        // Get tar file size
+        const stats = await stat(tarPath);
+        const sizeBytes = stats.size;
+
+        log?.("info", `[Backup ${jobId}] Created tar: ${(sizeBytes / (1024 * 1024)).toFixed(2)} MB`);
+
+        // Upload to S3 with NEW path format: /{volumeName}/{timestamp}.tar
+        const s3Key = `${volumeName}/${tarFileName}`;
+        log?.("info", `[Backup ${jobId}] Uploading ${volumeName} to S3 at ${s3Key}`);
+
+        await minioClient.fPutObject(s3Config.bucket, s3Key, tarPath);
+
+        log?.("info", `[Backup ${jobId}] Uploaded ${volumeName} successfully`);
+
+        // Cleanup tar file
+        try {
+          await unlink(tarPath);
+        } catch (err) {
+          log?.("warn", `[Backup ${jobId}] Failed to remove temp file ${tarFileName}:`, err.message);
+        }
+      }
+
+      // Mark completed
+      backupJobs.set(jobId, {
+        ...backupJobs.get(jobId),
+        status: "completed",
+        progress: 100,
+        completedAt: new Date().toISOString(),
+      });
+
+      log?.("info", `[Backup ${jobId}] Backup completed successfully`);
+    } catch (err) {
+      log?.("error", `[Backup ${jobId}] Backup failed:`, err.message);
+      backupJobs.set(jobId, {
+        ...backupJobs.get(jobId),
+        status: "failed",
+        error: err.message,
+      });
+    } finally {
+      if (jobTmpDir) {
+        try {
+          await rm(jobTmpDir, { recursive: true, force: true });
+        } catch (err) {
+          log?.("warn", `[Backup ${jobId}] Failed to clean temp directory:`, err.message);
+        }
+      }
+    }
+  })();
+
+  return { jobId, status: "started" };
+}
+
+// List backups for specific volumes
+export async function listVolumeBackups(volumeNames, s3Config, log) {
+  try {
+    const minioClient = createMinioClient(s3Config);
+    const backups = {};
+
+    for (const volumeName of volumeNames) {
+      const objects = [];
+      const stream = minioClient.listObjects(s3Config.bucket, `${volumeName}/`, false);
+
+      for await (const obj of stream) {
+        if (obj.name.endsWith('.tar')) {
+          // Extract timestamp from filename
+          const filename = obj.name.split('/')[1]; // Get "2026-02-06_10-30-45.tar"
+          const timestampStr = filename.replace('.tar', ''); // Remove .tar
+
+          // Convert timestamp format from "2026-02-06_10-30-45" to ISO
+          // Split into date and time parts
+          const parts = timestampStr.split('_');
+          if (parts.length === 2) {
+            const datePart = parts[0]; // "2026-02-06"
+            const timePart = parts[1].replace(/-/g, ':'); // "10:30:45"
+            const isoTimestamp = `${datePart}T${timePart}Z`;
+
+            objects.push({
+              key: obj.name,
+              timestamp: isoTimestamp,
+              size: obj.size,
+              lastModified: obj.lastModified
+            });
+          }
+        }
+      }
+
+      // Sort by timestamp (newest first)
+      backups[volumeName] = objects.sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+    }
+
+    return backups;
+  } catch (err) {
+    if (err.code === "NoSuchBucket") {
+      log?.("info", "No backups found - bucket doesn't exist yet");
+      return {};
+    }
+    throw new Error(`Failed to list volume backups: ${err.message}`);
+  }
+}
+
+// Restore a volume from backup
+export async function restoreVolumeBackup(volumeName, backupKey, s3Config, overwrite, log) {
+  const jobId = generateJobId();
+  const tmpDir = "/tmp";
+  let jobTmpDir = null;
+
+  restoreJobs.set(jobId, {
+    status: "in-progress",
+    progress: 0,
+    volumeName,
+    backupKey,
+    startedAt: new Date().toISOString(),
+  });
+
+  (async () => {
+    try {
+      jobTmpDir = await mkdtemp(path.join(tmpDir, `restore-${jobId}-`));
+      log?.("info", `[Restore ${jobId}] Starting restore for ${volumeName} from ${backupKey}`);
+
+      // Ensure alpine image exists for tar operations
+      try {
+        await docker.getImage("alpine:latest").inspect();
+        log?.("info", `[Restore ${jobId}] Alpine image already available`);
+      } catch (err) {
+        log?.("info", `[Restore ${jobId}] Pulling alpine:latest image...`);
+        await new Promise((resolve, reject) => {
+          docker.pull("alpine:latest", (err, stream) => {
+            if (err) return reject(err);
+            docker.modem.followProgress(stream, (err, output) => {
+              if (err) return reject(err);
+              resolve(output);
+            });
+          });
+        });
+        log?.("info", `[Restore ${jobId}] Alpine image pulled successfully`);
+      }
+
+      const minioClient = createMinioClient(s3Config);
+      const tarFileName = backupKey.split('/')[1]; // Extract filename from key
+      const tarPath = path.join(jobTmpDir, tarFileName);
+
+      // Download tar from S3
+      log?.("info", `[Restore ${jobId}] Downloading backup from S3`);
+      await minioClient.fGetObject(s3Config.bucket, backupKey, tarPath);
+
+      restoreJobs.set(jobId, { ...restoreJobs.get(jobId), progress: 30 });
+
+      // Check if volume exists
+      let volumeExists = false;
+      try {
+        await docker.getVolume(volumeName).inspect();
+        volumeExists = true;
+      } catch (err) {
+        volumeExists = false;
+      }
+
+      if (volumeExists && !overwrite) {
+        throw new Error('Volume exists and overwrite is false');
+      }
+
+      if (!volumeExists) {
+        log?.("info", `[Restore ${jobId}] Creating volume ${volumeName}`);
+        await docker.createVolume({ Name: volumeName });
+      }
+
+      restoreJobs.set(jobId, { ...restoreJobs.get(jobId), progress: 50 });
+
+      // Extract tar into volume
+      log?.("info", `[Restore ${jobId}] Extracting backup into volume`);
+
+      const container = await docker.createContainer({
+        Image: "alpine:latest",
+        Cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
+        HostConfig: {
+          Binds: [
+            `${volumeName}:/data`,
+            `${jobTmpDir}:/backup`,
+          ],
+          AutoRemove: true,
+        },
+      });
+
+      await container.start();
+      await container.wait();
+
+      await unlink(tarPath);
+
+      restoreJobs.set(jobId, {
+        ...restoreJobs.get(jobId),
+        status: "completed",
+        progress: 100,
+        completedAt: new Date().toISOString(),
+      });
+
+      log?.("info", `[Restore ${jobId}] Restore completed successfully`);
+    } catch (err) {
+      log?.("error", `[Restore ${jobId}] Restore failed:`, err.message);
+      restoreJobs.set(jobId, {
+        ...restoreJobs.get(jobId),
+        status: "failed",
+        error: err.message,
+      });
+    } finally {
+      if (jobTmpDir) {
+        try {
+          await rm(jobTmpDir, { recursive: true, force: true });
+        } catch (err) {
+          log?.("warn", `[Restore ${jobId}] Failed to cleanup temp directory:`, err.message);
+        }
+      }
+    }
+  })();
+
+  return { jobId, status: "started" };
+}
+
+// Delete a volume backup
+export async function deleteVolumeBackup(volumeName, timestamp, s3Config, log) {
+  try {
+    const minioClient = createMinioClient(s3Config);
+
+    // Construct the S3 key from volume name and timestamp
+    const key = `${volumeName}/${timestamp}.tar`;
+
+    log?.("info", `[Backup Delete] Deleting ${key}`);
+    await minioClient.removeObject(s3Config.bucket, key);
+
+    log?.("info", `[Backup Delete] Deleted ${key} successfully`);
+    return { success: true };
+  } catch (err) {
+    throw new Error(`Failed to delete backup: ${err.message}`);
+  }
+}
