@@ -114,7 +114,6 @@ async function startRestoredApps(metadata, log) {
       continue;
     }
 
-    log?.("info", `[Restore] Starting app ${appId}`);
     const { exitCode, stderr } = await spawnProcess(
       compose.command,
       [...compose.args, "-f", composePath, "up", "-d"],
@@ -146,12 +145,10 @@ export async function listBackups(s3Config, log) {
       }
     }
 
-    log?.("info", `Found ${appFolders.size} app backup folder(s)`);
 
     // Read metadata from each app folder
     const backups = [];
     for (const appName of appFolders) {
-      log?.("info", `Reading backup for app: ${appName}`);
 
       try {
         const metadataPath = `${prefix}${appName}/metadata.json`;
@@ -167,7 +164,6 @@ export async function listBackups(s3Config, log) {
         const metadataContent = Buffer.concat(chunks).toString("utf-8");
         const metadata = JSON.parse(metadataContent);
         backups.push(metadata);
-        log?.("info", `Successfully loaded backup for: ${appName}`);
       } catch (err) {
         log?.("error", `Failed to read metadata for ${appName}:`, err.message);
       }
@@ -469,8 +465,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
       const appConfigs = Array.isArray(metadata.appConfigs) ? metadata.appConfigs : [];
 
       if (shouldRestoreApps && appConfigs.length > 0) {
-        log?.("info", `[Restore ${jobId}] Restoring ${appConfigs.length} app config(s)`);
-
         for (const appConfig of appConfigs) {
           const appId = appConfig.appId;
           const tarFileName = appConfig.tarFileName;
@@ -494,8 +488,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
             log?.("warn", `[Restore ${jobId}] Skipping app ${appId} (already exists, overwrite=false)`);
             continue;
           }
-
-          log?.("info", `[Restore ${jobId}] Downloading app config for ${appId}`);
 
           const tarPath = path.join(jobTmpDir, tarFileName);
           
@@ -522,15 +514,12 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
             log?.("warn", `[Restore ${jobId}] Failed to remove app config tar ${tarFileName}:`, err.message);
           }
 
-          log?.("info", `[Restore ${jobId}] Restored app config for ${appId}`);
         }
       }
 
       // Determine which volumes to restore
       const volumes = volumesToRestore || metadata.volumes.map(v => v.name);
       const totalVolumes = volumes.length;
-
-      log?.("info", `[Restore ${jobId}] Restoring ${totalVolumes} volume(s)`);
 
       for (let i = 0; i < volumes.length; i++) {
         const volumeName = volumes[i];
@@ -540,8 +529,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
           log?.("warn", `[Restore ${jobId}] Volume ${volumeName} not found in backup, skipping`);
           continue;
         }
-
-        log?.("info", `[Restore ${jobId}] Restoring volume ${i + 1}/${totalVolumes}: ${volumeName}`);
 
         // Update progress
         restoreJobs.set(jobId, {
@@ -554,7 +541,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         const tarPath = path.join(jobTmpDir, tarFileName);
 
         // Step 2: Download tar from S3
-        log?.("info", `[Restore ${jobId}] Downloading ${volumeName} from S3`);
 
         await minioClient.fGetObject(
           s3Config.bucket,
@@ -565,7 +551,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         // Step 3: Ensure volume exists
         try {
           await docker.getVolume(volumeName).inspect();
-          log?.("info", `[Restore ${jobId}] Volume ${volumeName} exists`);
 
           if (!overwrite) {
             log?.("warn", `[Restore ${jobId}] Skipping ${volumeName} (already exists, overwrite=false)`);
@@ -574,13 +559,10 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
           }
         } catch (err) {
           // Volume doesn't exist, create it
-          log?.("info", `[Restore ${jobId}] Creating volume ${volumeName}`);
           await docker.createVolume({ Name: volumeName });
         }
 
         // Step 4: Extract tar into volume
-        log?.("info", `[Restore ${jobId}] Extracting archive into ${volumeName}`);
-
         const container = await docker.createContainer({
           Image: "alpine:latest",
           Cmd: ["tar", "xzf", `/backup/${tarFileName}`, "-C", "/data"],
@@ -595,8 +577,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
         await container.start();
         await container.wait();
-
-        log?.("info", `[Restore ${jobId}] Restored ${volumeName} successfully`);
 
         // Cleanup
         await unlink(tarPath);
@@ -627,7 +607,6 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
       if (jobTmpDir) {
         try {
           await rm(jobTmpDir, { recursive: true, force: true });
-          log?.("info", `[Restore ${jobId}] Cleaned up temp directory`);
         } catch (err) {
           log?.("warn", `[Restore ${jobId}] Failed to cleanup temp directory:`, err.message);
         }

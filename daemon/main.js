@@ -2125,7 +2125,6 @@ app.post("/api/ports/suggest", async (req, res) => {
 
 // GET /api/system/info - Get host system information
 app.get("/api/system/info", async (req, res) => {
-  log("info", "💻 [GET /api/system/info] Fetching host system information");
   try {
     const info = await docker.info();
     
@@ -2154,9 +2153,7 @@ app.get("/api/system/info", async (req, res) => {
         if (driverUsed) storageInfo.used = driverUsed;
         storageInfo.available = extractStorageInfo(info.DriverStatus, 'Data Space Available');
       }
-    } catch (dfError) {
-      log("warn", `⚠️ [GET /api/system/info] Could not fetch df data: ${dfError.message}`);
-    }
+    } catch (dfError) {}
 
     // Extract relevant system information
     const systemInfo = {
@@ -2186,15 +2183,11 @@ app.get("/api/system/info", async (req, res) => {
       name: info.Name || 'unknown',
     };
 
-    const storageMsg = storageInfo.used ? `, ${formatBytes(storageInfo.used)} storage used` : '';
-    log("info", `✅ [GET /api/system/info] System info retrieved: ${systemInfo.cpu.cores} cores, ${formatBytes(systemInfo.memory.total)} RAM${storageMsg}`);
-
     res.json({
       success: true,
       info: systemInfo,
     });
   } catch (error) {
-    log("error", "❌ [GET /api/system/info] Error:", error.message);
     res.status(500).json({
       success: false,
       error: error.message,
@@ -2298,8 +2291,6 @@ app.post("/api/backup/config", asyncHandler(async (req, res) => {
 
 // GET /api/backup/list - List all backups from S3
 app.get("/api/backup/list", asyncHandler(async (req, res) => {
-  log("info", "📋 [GET /api/backup/list] Listing backups");
-
   const config = await getS3Config();
 
   if (!config) {
@@ -2310,8 +2301,6 @@ app.get("/api/backup/list", asyncHandler(async (req, res) => {
   }
 
   const backups = await listBackups(config, log);
-
-  log("info", `✅ [GET /api/backup/list] Found ${backups.length} backup(s)`);
 
   res.json({
     success: true,
