@@ -9,11 +9,13 @@ const s3Config = ref(null)
 const s3Configured = ref(false)
 const backups = ref([])
 const volumes = ref([])
+const appsCatalog = ref([])
 const loading = ref(false)
 const configuring = ref(false)
 const showConfigModal = ref(false)
 const showCreateModal = ref(false)
 const showRestoreModal = ref(null)
+const showAdvancedVolumes = ref(false)
 
 // S3 Configuration Form
 const configForm = ref({
@@ -28,13 +30,15 @@ const configForm = ref({
 // Create Backup Form
 const createForm = ref({
   name: '',
-  selectedVolumes: []
+  selectedVolumes: [],
+  selectedApps: []
 })
 
 // Restore Form
 const restoreForm = ref({
   selectedVolumes: [],
-  overwrite: false
+  overwrite: false,
+  restoreApps: false
 })
 
 // Active jobs
@@ -122,19 +126,88 @@ async function loadVolumes() {
   }
 }
 
+// Load apps catalog
+async function loadApps() {
+  try {
+    const response = await fetch('/api/apps')
+    const data = await response.json()
+
+    if (data.success) {
+      appsCatalog.value = data.apps || []
+    }
+  } catch (error) {
+    console.error('Failed to load apps:', error)
+  }
+}
+
+function parseProjectName(projectName) {
+  const match = projectName.match(/^(.*?)-(\d+)$/)
+  if (!match) {
+    return { appId: projectName, instanceId: 1 }
+  }
+
+  return { appId: match[1], instanceId: Number(match[2]) }
+}
+
+function getAppDisplayName(appId, instanceId, projectName) {
+  const catalogEntry = appsCatalog.value.find(app => app.id === appId)
+  const baseName = catalogEntry?.name || appId || projectName || 'unknown'
+  return instanceId && instanceId > 1 ? `${baseName} (Instance #${instanceId})` : baseName
+}
+
+const appGroups = computed(() => {
+  const groups = new Map()
+
+  volumes.value.forEach((volume) => {
+    const projectName = volume.labels?.['com.docker.compose.project']
+    if (!projectName) return
+
+    const { appId, instanceId } = parseProjectName(projectName)
+    const group = groups.get(projectName) || {
+      projectName,
+      appId,
+      instanceId,
+      displayName: getAppDisplayName(appId, instanceId, projectName),
+      volumes: [],
+      sizeBytes: 0
+    }
+
+    group.volumes.push(volume)
+    group.sizeBytes += volume.sizeBytes || 0
+    groups.set(projectName, group)
+  })
+
+  return Array.from(groups.values()).sort((a, b) => a.displayName.localeCompare(b.displayName))
+})
+
+const unmanagedVolumes = computed(() =>
+  volumes.value.filter(volume => !volume.labels?.['com.docker.compose.project'])
+)
+
 // Create backup
 async function createBackup() {
-  if (createForm.value.selectedVolumes.length === 0) {
-    toast.error('Please select at least one volume')
+  const hasApps = createForm.value.selectedApps.length > 0
+  const hasVolumes = createForm.value.selectedVolumes.length > 0
+
+  if (!hasApps && !hasVolumes) {
+    toast.error('Please select at least one app or volume')
     return
   }
 
   try {
+    const appsPayload = hasApps
+      ? createForm.value.selectedApps.map((projectName) => {
+        const { appId, instanceId } = parseProjectName(projectName)
+        return { appId, instanceId, projectName }
+      })
+      : undefined
+
     const response = await fetch('/api/backup/create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        volumes: createForm.value.selectedVolumes,
+        volumes: hasVolumes ? createForm.value.selectedVolumes : undefined,
+        apps: appsPayload,
         name: createForm.value.name || undefined
       })
     })
@@ -144,7 +217,8 @@ async function createBackup() {
     if (data.success) {
       toast.success('Backup started! This may take a while...')
       showCreateModal.value = false
-      createForm.value = { name: '', selectedVolumes: [] }
+      createForm.value = { name: '', selectedVolumes: [], selectedApps: [] }
+      showAdvancedVolumes.value = false
       startPollingJobs()
     } else {
       toast.error(data.error || 'Failed to start backup')
@@ -167,7 +241,8 @@ async function restoreBackup(backupId) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         volumes: restoreForm.value.selectedVolumes.length > 0 ? restoreForm.value.selectedVolumes : undefined,
-        overwrite: restoreForm.value.overwrite
+        overwrite: restoreForm.value.overwrite,
+        restoreApps: restoreForm.value.restoreApps || undefined
       })
     })
 
@@ -176,7 +251,7 @@ async function restoreBackup(backupId) {
     if (data.success) {
       toast.success('Restore started! This may take a while...')
       showRestoreModal.value = null
-      restoreForm.value = { selectedVolumes: [], overwrite: false }
+      restoreForm.value = { selectedVolumes: [], overwrite: false, restoreApps: false }
       startPollingJobs()
     } else {
       toast.error(data.error || 'Failed to start restore')
@@ -278,6 +353,25 @@ function formatSize(bytes) {
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`
 }
 
+function getBackupJobLabel(job) {
+  if (job?.currentVolume) return job.currentVolume
+  if (job?.apps?.length) return `${job.apps.length} app(s)`
+  const volumeCount = job?.volumes?.length || 0
+  return `${volumeCount} volume(s)`
+}
+
+function getBackupAppLabel(app) {
+  if (!app) return 'unknown'
+  const appId = app.appId || app.id || app
+  let instanceId = app.instanceId
+
+  if (!instanceId && app.projectName) {
+    instanceId = parseProjectName(app.projectName).instanceId
+  }
+
+  return getAppDisplayName(appId, instanceId, app.projectName)
+}
+
 // Toggle volume selection
 function toggleVolume(volumeName, array) {
   const index = array.indexOf(volumeName)
@@ -292,11 +386,13 @@ function toggleVolume(volumeName, array) {
 function openRestoreModal(backup) {
   showRestoreModal.value = backup
   restoreForm.value.selectedVolumes = backup.volumes.map(v => v.name)
+  restoreForm.value.restoreApps = (backup.appConfigs || []).length > 0
 }
 
 // Lifecycle
 onMounted(async () => {
   await loadConfig()
+  await loadApps()
   await loadVolumes()
   if (s3Configured.value) {
     await loadBackups()
@@ -320,7 +416,7 @@ onUnmounted(() => {
           Backup & Restore
         </h1>
         <p class="text-gray-600 dark:text-gray-400 mt-1">
-          Backup your volumes to S3-compatible storage
+          Backup your apps and volumes to S3-compatible storage
         </p>
       </div>
       <div class="flex gap-2">
@@ -352,7 +448,7 @@ onUnmounted(() => {
             <div>
               <p class="font-semibold text-gray-900 dark:text-white">Creating Backup</p>
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                {{ job.currentVolume || `${job.volumes.length} volume(s)` }}
+                {{ getBackupJobLabel(job) }}
               </p>
             </div>
           </div>
@@ -436,6 +532,10 @@ onUnmounted(() => {
               </div>
 
               <div class="mt-4 space-y-2">
+                <div v-if="backup.apps && backup.apps.length" class="flex items-center gap-2 text-sm">
+                  <span class="text-gray-600 dark:text-gray-400">Apps:</span>
+                  <span class="font-semibold">{{ backup.apps.length }}</span>
+                </div>
                 <div class="flex items-center gap-2 text-sm">
                   <span class="text-gray-600 dark:text-gray-400">Volumes:</span>
                   <span class="font-semibold">{{ backup.volumes.length }}</span>
@@ -446,6 +546,15 @@ onUnmounted(() => {
                 </div>
                 <div class="flex flex-wrap gap-2 mt-2">
                   <span
+                    v-if="backup.apps && backup.apps.length"
+                    v-for="app in backup.apps"
+                    :key="app.projectName || app.appId"
+                    class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs"
+                  >
+                    {{ getBackupAppLabel(app) }}
+                  </span>
+                  <span
+                    v-else
                     v-for="vol in backup.volumes"
                     :key="vol.name"
                     class="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs"
@@ -574,10 +683,45 @@ onUnmounted(() => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">Select Volumes</label>
+            <div class="flex items-center justify-between mb-2">
+              <label class="block text-sm font-medium">Select Apps</label>
+              <button
+                v-if="appGroups.length > 0"
+                type="button"
+                @click="showAdvancedVolumes = !showAdvancedVolumes"
+                class="text-xs text-purple-600 hover:text-purple-700"
+              >
+                {{ showAdvancedVolumes ? 'Hide volumes (advanced)' : 'Show volumes (advanced)' }}
+              </button>
+            </div>
+            <div v-if="appGroups.length > 0" class="max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-2 space-y-1">
+              <label
+                v-for="appGroup in appGroups"
+                :key="appGroup.projectName"
+                class="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  :checked="createForm.selectedApps.includes(appGroup.projectName)"
+                  @change="toggleVolume(appGroup.projectName, createForm.selectedApps)"
+                  class="w-4 h-4"
+                />
+                <div class="flex-1">
+                  <p class="text-sm font-medium">{{ appGroup.displayName }}</p>
+                  <p class="text-xs text-gray-500">{{ appGroup.volumes.length }} volume(s) · {{ formatSize(appGroup.sizeBytes) }}</p>
+                </div>
+              </label>
+            </div>
+            <div v-else class="text-xs text-gray-500 dark:text-gray-400">
+              No app volumes detected. Showing all volumes instead.
+            </div>
+          </div>
+
+          <div v-if="showAdvancedVolumes || appGroups.length === 0" class="pt-2">
+            <label class="block text-sm font-medium mb-2">Volumes (Advanced)</label>
             <div class="max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-2 space-y-1">
               <label
-                v-for="volume in volumes"
+                v-for="volume in (appGroups.length > 0 ? unmanagedVolumes : volumes)"
                 :key="volume.name"
                 class="flex items-center gap-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer"
               >
@@ -589,9 +733,12 @@ onUnmounted(() => {
                 />
                 <div class="flex-1">
                   <p class="text-sm font-medium">{{ volume.name }}</p>
-                  <p class="text-xs text-gray-500">{{ volume.size }} MB</p>
+                  <p class="text-xs text-gray-500">{{ formatSize(volume.sizeBytes || 0) }}</p>
                 </div>
               </label>
+              <p v-if="appGroups.length > 0 && unmanagedVolumes.length === 0" class="text-xs text-gray-500 dark:text-gray-400 px-2 py-1">
+                No unmanaged volumes found.
+              </p>
             </div>
           </div>
         </div>
@@ -646,6 +793,18 @@ onUnmounted(() => {
               </label>
             </div>
           </div>
+
+          <label
+            v-if="showRestoreModal.appConfigs && showRestoreModal.appConfigs.length > 0"
+            class="flex items-center gap-2 cursor-pointer"
+          >
+            <input
+              v-model="restoreForm.restoreApps"
+              type="checkbox"
+              class="w-4 h-4"
+            />
+            <span class="text-sm">Restore app configs (compose/.env)</span>
+          </label>
 
           <label class="flex items-center gap-2 cursor-pointer">
             <input
