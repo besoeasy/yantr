@@ -226,6 +226,9 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
       const appConfigBackups = [];
       const totalVolumes = volumeList.length;
 
+      const minioClient = createMinioClient(s3Config);
+      const expectedKeys = [];
+
       for (let i = 0; i < volumeList.length; i++) {
         const volumeName = volumeList[i];
         log?.("info", `[Backup ${jobId}] Processing volume ${i + 1}/${totalVolumes}: ${volumeName}`);
@@ -237,7 +240,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           currentVolume: volumeName,
         });
 
-        const tarFileName = `${volumeName}.tar.gz`;
+        const tarFileName = `${volumeName}.tar`;
         const tarPath = path.join(jobTmpDir, tarFileName);
 
         // Step 1: Create tar of volume using temporary container
@@ -245,7 +248,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         const container = await docker.createContainer({
           Image: "alpine:latest",
-          Cmd: ["tar", "czf", `/backup/${tarFileName}`, "-C", "/data", "."],
+          Cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
           HostConfig: {
             Binds: [
               `${volumeName}:/data:ro`,
@@ -267,7 +270,6 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
         // Step 2: Upload to S3 using MinIO client
         log?.("info", `[Backup ${jobId}] Uploading ${volumeName} to S3`);
 
-        const minioClient = createMinioClient(s3Config);
         await minioClient.fPutObject(
           s3Config.bucket,
           `yantra-backup/${backupId}/${tarFileName}`,
@@ -281,6 +283,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           size: sizeBytes,
           tarFileName,
         });
+        expectedKeys.push(`yantra-backup/${backupId}/${tarFileName}`);
 
         // Cleanup tar file
         try {
@@ -312,12 +315,12 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         log?.("info", `[Backup ${jobId}] Archiving app config ${i + 1}/${totalAppConfigs}: ${appId}`);
 
-        const appTarFileName = `app-${appId}.tar.gz`;
+        const appTarFileName = `app-${appId}.tar`;
         const appTarPath = path.join(jobTmpDir, appTarFileName);
 
         const tarResult = await spawnProcess(
           "tar",
-          ["czf", appTarPath, "-C", appPath, "."]
+          ["cf", appTarPath, "-C", appPath, "."]
         );
 
         if (tarResult.exitCode !== 0) {
@@ -326,7 +329,6 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         const appStats = await stat(appTarPath);
 
-        const minioClient = createMinioClient(s3Config);
         await minioClient.fPutObject(
           s3Config.bucket,
           `yantra-backup/${backupId}/app-configs/${appTarFileName}`,
@@ -338,6 +340,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           tarFileName: appTarFileName,
           size: appStats.size,
         });
+        expectedKeys.push(`yantra-backup/${backupId}/app-configs/${appTarFileName}`);
 
         try {
           await unlink(appTarPath);
@@ -364,12 +367,16 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
       const metadataPath = path.join(jobTmpDir, "metadata.json");
       await writeFile(metadataPath, JSON.stringify(metadata, null, 2), "utf-8");
 
-      const minioClient = createMinioClient(s3Config);
       await minioClient.fPutObject(
         s3Config.bucket,
         `yantra-backup/${backupId}/metadata.json`,
         metadataPath
       );
+      expectedKeys.push(`yantra-backup/${backupId}/metadata.json`);
+
+      for (const key of expectedKeys) {
+        await minioClient.statObject(s3Config.bucket, key);
+      }
 
       try {
         await unlink(metadataPath);
@@ -499,10 +506,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
           await mkdir(appPath, { recursive: true });
 
-          const extract = await spawnProcess(
-            "tar",
-            ["xzf", tarPath, "-C", appPath]
-          );
+          const extract = await spawnProcess("tar", ["xf", tarPath, "-C", appPath]);
 
           if (extract.exitCode !== 0) {
             throw new Error(`Failed to extract app config ${appId}: ${extract.stderr}`);
@@ -565,7 +569,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         // Step 4: Extract tar into volume
         const container = await docker.createContainer({
           Image: "alpine:latest",
-          Cmd: ["tar", "xzf", `/backup/${tarFileName}`, "-C", "/data"],
+          Cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
           HostConfig: {
             Binds: [
               `${volumeName}:/data`,
