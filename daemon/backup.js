@@ -91,6 +91,14 @@ export async function listBackups(s3Config, log) {
       log?.("info", `Reading backup for app: ${appName}`);
 
       try {
+        // First, list what's actually in this folder to debug
+        const lsResult = await spawnProcess(
+          "rclone",
+          ["ls", `s3:${s3Config.bucket}/yantra-backup/${appName}/`],
+          { env: rcloneEnv }
+        );
+        log?.("info", `Files in ${appName} folder:`, lsResult.stdout || "(empty)");
+
         const metaResult = await spawnProcess(
           "rclone",
           ["cat", `s3:${s3Config.bucket}/yantra-backup/${appName}/metadata.json`],
@@ -102,10 +110,10 @@ export async function listBackups(s3Config, log) {
           backups.push(metadata);
           log?.("info", `Successfully loaded backup for: ${appName}`);
         } else {
-          log?.("warn", `Failed to read metadata for ${appName}`);
+          log?.("error", `Failed to read metadata for ${appName} - exitCode: ${metaResult.exitCode}, stderr: ${metaResult.stderr}, stdout: ${metaResult.stdout}`);
         }
       } catch (err) {
-        log?.("warn", `Failed to read metadata for ${appName}:`, err.message);
+        log?.("error", `Exception reading metadata for ${appName}:`, err.message);
       }
     }
 
