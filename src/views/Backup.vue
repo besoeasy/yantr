@@ -44,6 +44,7 @@ const restoreForm = ref({
 // Active jobs
 const backupJobs = ref([])
 const restoreJobs = ref([])
+const notifiedJobIds = new Set()
 let pollInterval = null
 
 // Load S3 configuration
@@ -299,7 +300,8 @@ async function pollJobs() {
 
       // Check for newly completed jobs
       backupData.jobs.forEach(job => {
-        if (job.status === 'completed' && !backupJobs.value.find(j => j.id === job.id)) {
+        if (job.status === 'completed' && !notifiedJobIds.has(job.id)) {
+          notifiedJobIds.add(job.id)
           toast.success('Backup completed successfully!')
           loadBackups()
         }
@@ -311,7 +313,8 @@ async function pollJobs() {
 
       // Check for newly completed jobs
       restoreData.jobs.forEach(job => {
-        if (job.status === 'completed' && !restoreJobs.value.find(j => j.id === job.id)) {
+        if (job.status === 'completed' && !notifiedJobIds.has(job.id)) {
+          notifiedJobIds.add(job.id)
           toast.success('Restore completed successfully!')
         }
       })
@@ -336,6 +339,7 @@ function stopPollingJobs() {
   if (pollInterval) {
     clearInterval(pollInterval)
     pollInterval = null
+    notifiedJobIds.clear()
   }
 }
 

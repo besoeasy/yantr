@@ -359,6 +359,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 export async function restoreBackup(backupId, s3Config, volumesToRestore, overwrite, log, restoreApps) {
   const jobId = generateJobId();
   const tmpDir = "/tmp";
+  let jobTmpDir = null;
   const appsDir = path.join(__dirname, "..", "apps");
 
   restoreJobs.set(jobId, {
@@ -371,6 +372,8 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
   // Run restore asynchronously
   (async () => {
     try {
+      // Create job-specific temp directory
+      jobTmpDir = await mkdtemp(path.join(tmpDir, `restore-${jobId}-`));
       log?.("info", `[Restore ${jobId}] Starting restore from backup ${backupId}`);
 
       // Ensure alpine image exists for tar operations
@@ -393,7 +396,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
       // Step 1: Download metadata
       const minioClient = createMinioClient(s3Config);
-      const metadataPath = path.join(tmpDir, `metadata-${jobId}.json`);
+      const metadataPath = path.join(jobTmpDir, "metadata.json");
 
       await minioClient.fGetObject(
         s3Config.bucket,
@@ -437,7 +440,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
           log?.("info", `[Restore ${jobId}] Downloading app config for ${appId}`);
 
-          const tarPath = path.join(tmpDir, tarFileName);
+          const tarPath = path.join(jobTmpDir, tarFileName);
           
           await minioClient.fGetObject(
             s3Config.bucket,
@@ -491,7 +494,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         });
 
         const tarFileName = volumeBackup.tarFileName;
-        const tarPath = path.join(tmpDir, tarFileName);
+        const tarPath = path.join(jobTmpDir, tarFileName);
 
         // Step 2: Download tar from S3
         log?.("info", `[Restore ${jobId}] Downloading ${volumeName} from S3`);
@@ -527,7 +530,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
           HostConfig: {
             Binds: [
               `${volumeName}:/data`,
-              `${tmpDir}:/backup`,
+              `${jobTmpDir}:/backup`,
             ],
             AutoRemove: true,
           },
@@ -558,6 +561,16 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         status: "failed",
         error: err.message,
       });
+    } finally {
+      // Cleanup job temp directory
+      if (jobTmpDir) {
+        try {
+          await rm(jobTmpDir, { recursive: true, force: true });
+          log?.("info", `[Restore ${jobId}] Cleaned up temp directory`);
+        } catch (err) {
+          log?.("warn", `[Restore ${jobId}] Failed to cleanup temp directory:`, err.message);
+        }
+      }
     }
   })();
 
