@@ -14,6 +14,7 @@ import AverageUptimeCard from "../components/quick-metrics/AverageUptimeCard.vue
 import ExpiringContainersCard from "../components/quick-metrics/ExpiringContainersCard.vue";
 import WatchtowerNextCheckCard from "../components/quick-metrics/WatchtowerNextCheckCard.vue";
 import HostMetricsCard from "../components/quick-metrics/HostMetricsCard.vue";
+import MinioStatusCard from "../components/quick-metrics/MinioStatusCard.vue";
 
 const router = useRouter();
 
@@ -269,6 +270,10 @@ onUnmounted(() => {
 
             <div>
               <HostMetricsCard :api-url="apiUrl" />
+            </div>
+
+            <div>
+              <MinioStatusCard />
             </div>
 
             <YantraContainersGrid

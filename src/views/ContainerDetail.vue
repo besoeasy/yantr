@@ -841,6 +841,7 @@ onUnmounted(() => {
             <div v-if="!s3Configured" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
               <p class="text-xs text-yellow-800 dark:text-yellow-200">
                 Configure S3 storage to enable backups.
+                <router-link to="/minioconfig" class="underline hover:text-yellow-900 dark:hover:text-yellow-100 font-semibold">Configure now</router-link>
               </p>
             </div>
 
