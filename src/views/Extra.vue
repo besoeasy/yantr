@@ -1,5 +1,5 @@
 <script setup>
-import { Box, ClipboardList, HardDrive, Home, Layers, Check, ChevronRight, Heart, Github, Send, Bug } from "lucide-vue-next";
+import { Box, ClipboardList, HardDrive, Home, Layers, Check, ChevronRight, Heart, Github, Send, Bug, Cloud } from "lucide-vue-next";
 
 const navItems = [
   {
@@ -33,6 +33,22 @@ const navItems = [
       arrow: "text-amber-400",
     },
     features: ["Safe storage", "Portable data"],
+  },
+  {
+    title: "Backup",
+    to: "/backup",
+    description: "Backup and restore volumes to S3",
+    icon: Cloud,
+    accent: {
+      ring: "focus:ring-purple-500",
+      glow: "bg-purple-200",
+      iconBg: "bg-purple-900/30",
+      iconHover: "group-hover:bg-purple-800/40",
+      textHover: "group-hover:text-purple-400",
+      check: "text-purple-400",
+      arrow: "text-purple-400",
+    },
+    features: ["S3 backups", "Easy restore"],
   },
   {
     title: "Logs",

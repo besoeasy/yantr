@@ -17,6 +17,18 @@ import {
 } from "./utils.js";
 
 import { startCleanupScheduler } from "./cleanup.js";
+import {
+  getS3Config,
+  saveS3Config,
+  listBackups,
+  createBackup,
+  restoreBackup,
+  deleteBackup,
+  getBackupJobStatus,
+  getRestoreJobStatus,
+  getAllBackupJobs,
+  getAllRestoreJobs,
+} from "./backup.js";
 
 // Import package.json
 const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf-8"));
@@ -2223,6 +2235,245 @@ function formatBytes(bytes) {
   return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`;
 }
 
+
+// ============================================
+// BACKUP & RESTORE API ENDPOINTS
+// ============================================
+
+// GET /api/backup/config - Get S3 configuration
+app.get("/api/backup/config", asyncHandler(async (req, res) => {
+  const config = await getS3Config();
+
+  if (!config) {
+    return res.json({
+      success: true,
+      configured: false,
+    });
+  }
+
+  // Return config without exposing secrets
+  res.json({
+    success: true,
+    configured: true,
+    config: {
+      provider: config.provider,
+      bucket: config.bucket,
+      region: config.region,
+      endpoint: config.endpoint,
+    },
+  });
+}));
+
+// POST /api/backup/config - Save S3 configuration
+app.post("/api/backup/config", asyncHandler(async (req, res) => {
+  log("info", "💾 [POST /api/backup/config] Saving S3 configuration");
+
+  const { provider, endpoint, bucket, accessKey, secretKey, region } = req.body;
+
+  if (!bucket || !accessKey || !secretKey) {
+    return res.status(400).json({
+      success: false,
+      error: "bucket, accessKey, and secretKey are required",
+    });
+  }
+
+  const config = {
+    provider: provider || "AWS",
+    endpoint,
+    bucket,
+    accessKey,
+    secretKey,
+    region: region || "us-east-1",
+  };
+
+  await saveS3Config(config);
+
+  log("info", "✅ [POST /api/backup/config] S3 configuration saved");
+
+  res.json({
+    success: true,
+    message: "S3 configuration saved successfully",
+  });
+}));
+
+// GET /api/backup/list - List all backups from S3
+app.get("/api/backup/list", asyncHandler(async (req, res) => {
+  log("info", "📋 [GET /api/backup/list] Listing backups");
+
+  const config = await getS3Config();
+
+  if (!config) {
+    return res.status(400).json({
+      success: false,
+      error: "S3 not configured. Please configure S3 settings first.",
+    });
+  }
+
+  const backups = await listBackups(config, log);
+
+  log("info", `✅ [GET /api/backup/list] Found ${backups.length} backup(s)`);
+
+  res.json({
+    success: true,
+    count: backups.length,
+    backups,
+  });
+}));
+
+// POST /api/backup/create - Create a new backup
+app.post("/api/backup/create", asyncHandler(async (req, res) => {
+  log("info", "💾 [POST /api/backup/create] Creating backup");
+
+  const { volumes, name } = req.body;
+
+  if (!volumes || !Array.isArray(volumes) || volumes.length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: "volumes array is required and must not be empty",
+    });
+  }
+
+  const config = await getS3Config();
+
+  if (!config) {
+    return res.status(400).json({
+      success: false,
+      error: "S3 not configured. Please configure S3 settings first.",
+    });
+  }
+
+  // Verify volumes exist
+  const allVolumes = await docker.listVolumes();
+  const volumeNames = allVolumes.Volumes?.map(v => v.Name) || [];
+
+  for (const volumeName of volumes) {
+    if (!volumeNames.includes(volumeName)) {
+      return res.status(404).json({
+        success: false,
+        error: `Volume '${volumeName}' not found`,
+      });
+    }
+  }
+
+  const result = await createBackup(volumes, config, name, log);
+
+  log("info", `✅ [POST /api/backup/create] Backup job started: ${result.jobId}`);
+
+  res.json({
+    success: true,
+    ...result,
+  });
+}));
+
+// GET /api/backup/jobs - Get all backup jobs
+app.get("/api/backup/jobs", (req, res) => {
+  const jobs = getAllBackupJobs();
+
+  res.json({
+    success: true,
+    count: jobs.length,
+    jobs,
+  });
+});
+
+// GET /api/backup/jobs/:jobId - Get backup job status
+app.get("/api/backup/jobs/:jobId", (req, res) => {
+  const job = getBackupJobStatus(req.params.jobId);
+
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      error: "Job not found",
+    });
+  }
+
+  res.json({
+    success: true,
+    job,
+  });
+});
+
+// POST /api/backup/:backupId/restore - Restore a backup
+app.post("/api/backup/:backupId/restore", asyncHandler(async (req, res) => {
+  const backupId = req.params.backupId;
+  log("info", `🔄 [POST /api/backup/${backupId}/restore] Starting restore`);
+
+  const { volumes, overwrite } = req.body;
+
+  const config = await getS3Config();
+
+  if (!config) {
+    return res.status(400).json({
+      success: false,
+      error: "S3 not configured. Please configure S3 settings first.",
+    });
+  }
+
+  const result = await restoreBackup(backupId, config, volumes, overwrite, log);
+
+  log("info", `✅ [POST /api/backup/${backupId}/restore] Restore job started: ${result.jobId}`);
+
+  res.json({
+    success: true,
+    ...result,
+  });
+}));
+
+// GET /api/restore/jobs - Get all restore jobs
+app.get("/api/restore/jobs", (req, res) => {
+  const jobs = getAllRestoreJobs();
+
+  res.json({
+    success: true,
+    count: jobs.length,
+    jobs,
+  });
+});
+
+// GET /api/restore/jobs/:jobId - Get restore job status
+app.get("/api/restore/jobs/:jobId", (req, res) => {
+  const job = getRestoreJobStatus(req.params.jobId);
+
+  if (!job) {
+    return res.status(404).json({
+      success: false,
+      error: "Job not found",
+    });
+  }
+
+  res.json({
+    success: true,
+    job,
+  });
+});
+
+// DELETE /api/backup/:backupId - Delete a backup
+app.delete("/api/backup/:backupId", asyncHandler(async (req, res) => {
+  const backupId = req.params.backupId;
+  log("info", `🗑️ [DELETE /api/backup/${backupId}] Deleting backup`);
+
+  const config = await getS3Config();
+
+  if (!config) {
+    return res.status(400).json({
+      success: false,
+      error: "S3 not configured",
+    });
+  }
+
+  await deleteBackup(backupId, config, log);
+
+  log("info", `✅ [DELETE /api/backup/${backupId}] Backup deleted successfully`);
+
+  res.json({
+    success: true,
+    message: "Backup deleted successfully",
+  });
+}));
+
+// ============================================
+// END BACKUP & RESTORE API ENDPOINTS
+// ============================================
 
 // Catch-all route to serve Vue.js app for client-side routing (must be last)
 if (process.env.NODE_ENV === "production") {

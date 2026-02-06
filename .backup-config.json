@@ -1,0 +1,8 @@
+{
+  "provider": "Other",
+  "endpoint": "https://s3.p0ts.com",
+  "bucket": "yantra",
+  "accessKey": "besoeasy",
+  "secretKey": "besoeasy@kixuba64",
+  "region": "us-east-1"
+}

@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docker-build": "docker build -t yantra:optimized . && docker images yantra:optimized"
+    "docker-build": "docker build -t yantra:optimized . && docker images yantra:optimized",
+    "docker-run": "docker run -d -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock yantra:optimized"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",
