@@ -530,42 +530,42 @@ onUnmounted(() => {
 <template>
   <div class="min-h-screen bg-slate-50 dark:bg-[#09090b] text-slate-900 dark:text-slate-200 font-sans">
     <!-- Header -->
-    <header class="bg-white dark:bg-[#0c0c0e] border-b border-slate-200 dark:border-slate-800">
-      <div class="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+    <header class="bg-white dark:bg-[#18181b] border-b border-slate-200 dark:border-slate-800/50">
+      <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <router-link to="/" class="inline-flex items-center justify-center w-8 h-8 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500">
+          <router-link to="/" class="inline-flex items-center justify-center w-9 h-9 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all text-slate-600 dark:text-slate-400">
             <ArrowLeft :size="18" />
           </router-link>
           
-          <div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+          <div class="h-5 w-px bg-slate-200 dark:bg-slate-800"></div>
 
-          <div class="flex items-center gap-2 text-sm">
-            <span class="text-slate-500">Containers</span>
+          <div class="flex items-center gap-2.5 text-sm">
+            <span class="text-slate-500 dark:text-slate-400">Containers</span>
             <span class="text-slate-300 dark:text-slate-700">/</span>
-            <span class="font-medium text-slate-900 dark:text-white" v-if="selectedContainer">{{ selectedContainer.name }}</span>
-            <span v-else class="w-24 h-4 bg-slate-200 dark:bg-slate-800 animate-pulse rounded"></span>
+            <span class="font-semibold text-slate-900 dark:text-white" v-if="selectedContainer">{{ selectedContainer.name }}</span>
+            <span v-else class="w-32 h-5 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-lg"></span>
           </div>
         </div>
 
-        <div v-if="selectedContainer" class="flex items-center gap-3">
+        <div v-if="selectedContainer" class="flex items-center gap-2">
           <!-- Expiration Badge -->
           <div v-if="expirationInfo" 
-               class="flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold uppercase tracking-wide"
+               class="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide"
                :class="{
-                 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400': expirationInfo.urgency === 'critical',
-                 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400': expirationInfo.urgency === 'warning',
-                 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400': expirationInfo.urgency === 'normal'
+                 'bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-400': expirationInfo.urgency === 'critical',
+                 'bg-orange-100 dark:bg-orange-950/50 text-orange-700 dark:text-orange-400': expirationInfo.urgency === 'warning',
+                 'bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400': expirationInfo.urgency === 'normal'
                }"
                :title="`Expires at: ${expirationInfo.expireAt}`">
-            <Clock :size="14" :class="expirationInfo.urgency === 'critical' ? 'animate-pulse' : ''" />
+            <Clock :size="13" :class="expirationInfo.urgency === 'critical' ? 'animate-pulse' : ''" />
             <span>{{ expirationInfo.timeLeft }}</span>
           </div>
           
           <!-- Running State Badge -->
-          <div class="flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-semibold uppercase tracking-wide"
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wide"
             :class="selectedContainer.state === 'running' 
-              ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400' 
-              : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'">
+              ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400' 
+              : 'bg-slate-100 dark:bg-slate-900/50 text-slate-600 dark:text-slate-400'">
             <div class="w-1.5 h-1.5 rounded-full" :class="selectedContainer.state === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'"></div>
             <span>{{ selectedContainer.state }}</span>
           </div>
@@ -577,27 +577,27 @@ onUnmounted(() => {
        <div class="animate-spin text-slate-300"><RefreshCw :size="32" /></div>
     </div>
 
-    <main v-else class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <main v-else class="max-w-7xl mx-auto px-6 py-6 space-y-5">
         
         <!-- Info Card -->
-        <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex flex-col sm:flex-row gap-6">
-           <div class="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-lg flex items-center justify-center p-3 shrink-0 border border-slate-100 dark:border-slate-800">
+        <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 p-6 flex flex-col sm:flex-row gap-6 shadow-sm">
+           <div class="w-20 h-20 bg-slate-100/50 dark:bg-slate-900/50 rounded-xl flex items-center justify-center p-3 shrink-0">
               <img v-if="selectedContainer.app.logo" :src="selectedContainer.app.logo" class="w-full h-full object-contain" />
               <div v-else class="text-3xl">📦</div>
            </div>
            
-           <div class="flex-1 space-y-2">
+           <div class="flex-1 space-y-3">
               <h1 class="text-2xl font-bold text-slate-900 dark:text-white">{{ selectedContainer.name }}</h1>
-              <p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-2xl">
+              <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed max-w-2xl">
                  {{ selectedContainer.app.description || "Container usage description not available." }}
               </p>
-              <div class="pt-2 flex flex-wrap gap-2">
-                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-600 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-800">
+              <div class="pt-1 flex flex-wrap gap-2">
+                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-900/50 text-xs font-mono text-slate-700 dark:text-slate-300 rounded-lg">
                     <Database :size="12" />
                     {{ selectedContainer.image }}
                  </div>
-                 <div class="inline-flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-600 dark:text-slate-400 rounded border border-slate-200 dark:border-slate-800">
-                    <span class="text-slate-400 dark:text-slate-500">ID:</span> {{ selectedContainer.id.substring(0, 12) }}
+                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-900/50 text-xs font-mono text-slate-700 dark:text-slate-300 rounded-lg">
+                    <span class="text-slate-500">ID:</span> {{ selectedContainer.id.substring(0, 12) }}
                  </div>
               </div>
            </div>
@@ -605,11 +605,11 @@ onUnmounted(() => {
 
         <!-- Expiration Warning Banner -->
         <div v-if="expirationInfo" 
-             class="rounded-lg border p-4 flex items-start gap-3"
+             class="rounded-2xl p-4 flex items-start gap-3"
              :class="{
-               'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800': expirationInfo.urgency === 'critical',
-               'bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800': expirationInfo.urgency === 'warning',
-               'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800': expirationInfo.urgency === 'normal'
+               'bg-red-100/50 dark:bg-red-950/30': expirationInfo.urgency === 'critical',
+               'bg-orange-100/50 dark:bg-orange-950/30': expirationInfo.urgency === 'warning',
+               'bg-blue-100/50 dark:bg-blue-950/30': expirationInfo.urgency === 'normal'
              }">
           <div class="shrink-0 mt-0.5">
             <AlertCircle :size="20" 
@@ -646,9 +646,9 @@ onUnmounted(() => {
         </div>
 
         <!-- Network Access (Moved from Right) -->
-        <div v-if="allPortMappings.length > 0" class="space-y-4">
-           <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Network Access</h3>
-           <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div v-if="allPortMappings.length > 0" class="space-y-3">
+           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Network Access</h3>
+           <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-sm">
              <div class="overflow-x-auto">
                <table class="w-full text-left text-sm">
                  <thead>
@@ -696,9 +696,9 @@ onUnmounted(() => {
         </div>
 
         <!-- Storage (Attached + Backups) -->
-        <div v-if="containerVolumes.length > 0" class="space-y-4">
-           <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Storage</h3>
-           <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-5 space-y-6">
+        <div v-if="containerVolumes.length > 0" class="space-y-3">
+           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Storage</h3>
+           <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 p-5 space-y-6 shadow-sm">
              <div class="space-y-2">
                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Attached Storage</div>
                <div class="flex items-start gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/30 rounded-lg">
@@ -713,11 +713,11 @@ onUnmounted(() => {
 
              <div class="grid gap-3">
                <div v-for="volume in containerVolumes" :key="volume.name" 
-                  class="group bg-white dark:bg-[#0c0c0e] border border-slate-200 dark:border-slate-800 rounded-lg p-4 space-y-3 hover:border-blue-500/50 transition-colors">
+                  class="group bg-slate-50/50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800/50 rounded-xl p-4 space-y-3 hover:border-blue-500/50 transition-all">
                    
                  <div class="flex items-center justify-between gap-4">
                   <div class="flex items-center gap-4 min-w-0">
-                    <div class="w-10 h-10 rounded bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                       <HardDrive :size="20" />
                     </div>
                     <div class="min-w-0">
@@ -732,9 +732,9 @@ onUnmounted(() => {
                       <button 
                         v-else-if="!showVolumeMenu[volume.name]"
                         @click="showVolumeMenu[volume.name] = true"
-                        class="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity px-3 py-1.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400"
+                        class="px-3 py-1.5 text-xs font-medium bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-blue-100 hover:text-blue-600 dark:hover:bg-blue-900/30 dark:hover:text-blue-400 transition-all"
                       >
-                        Browse Files
+                        Browse
                       </button>
                            
                       <div v-else class="flex items-center gap-1 animate-in fade-in zoom-in-95 duration-200">
@@ -750,7 +750,7 @@ onUnmounted(() => {
                     <button
                       @click="backupAllVolumes"
                       :disabled="backingUp || !s3Configured"
-                      class="text-xs px-2.5 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                      class="text-xs px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-medium"
                       title="Backup this container's volumes"
                     >
                       Backup
@@ -758,7 +758,7 @@ onUnmounted(() => {
                     <button
                       @click="toggleRestoreMenu(volume.name)"
                       :disabled="!hasBackups(volume.name) || !s3Configured"
-                      class="text-xs px-2.5 py-1.5 bg-slate-200 dark:bg-slate-700 rounded hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                      class="text-xs px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all font-medium"
                     >
                       Restore
                     </button>
@@ -826,42 +826,42 @@ onUnmounted(() => {
         </div>
 
         <!-- System Panel (Tabs) -->
-        <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
-          <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800">
+        <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-sm">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200/50 dark:border-slate-800/50">
             <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
               <ShieldCheck :size="14" />
               System
             </div>
-            <div class="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-900 p-1">
+            <div class="flex items-center gap-1 rounded-full bg-slate-100/80 dark:bg-slate-900/50 p-1">
               <button
                 @click="activeTab = 'resources'"
-                :class="activeTab === 'resources' ? 'bg-white dark:bg-[#0c0c0e] text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
-                class="px-3 py-1 text-xs rounded-full transition-all"
+                :class="activeTab === 'resources' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="px-3 py-1.5 text-xs rounded-full transition-all font-medium"
               >
                 Resources
               </button>
               <button
                 @click="activeTab = 'output'"
-                :class="activeTab === 'output' ? 'bg-white dark:bg-[#0c0c0e] text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
-                class="px-3 py-1 text-xs rounded-full transition-all"
+                :class="activeTab === 'output' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="px-3 py-1.5 text-xs rounded-full transition-all font-medium"
               >
                 Output
               </button>
               <button
                 @click="activeTab = 'env'"
-                :class="activeTab === 'env' ? 'bg-white dark:bg-[#0c0c0e] text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
-                class="px-3 py-1 text-xs rounded-full transition-all"
+                :class="activeTab === 'env' ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'"
+                class="px-3 py-1.5 text-xs rounded-full transition-all font-medium"
               >
                 Environment
               </button>
             </div>
           </div>
 
-          <div class="p-4">
+          <div class="p-5">
             <!-- Resources Tab -->
             <div v-if="activeTab === 'resources'">
-              <div v-if="containerStats" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div v-if="containerStats" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="bg-slate-100/50 dark:bg-slate-900/30 p-4 rounded-xl">
                   <div class="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500 mb-2">
                     <Cpu :size="14" /> CPU
                   </div>
@@ -870,7 +870,7 @@ onUnmounted(() => {
                   </div>
                 </div>
                 
-                <div class="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800">
+                <div class="bg-slate-100/50 dark:bg-slate-900/30 p-4 rounded-xl">
                   <div class="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500 mb-2">
                     <Activity :size="14" /> RAM
                   </div>
@@ -879,7 +879,7 @@ onUnmounted(() => {
                   </div>
                 </div>
                 
-                <div class="md:col-span-2 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                <div class="md:col-span-2 bg-slate-100/50 dark:bg-slate-900/30 p-4 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
                   <div>
                     <div class="text-xs uppercase tracking-wider text-slate-500 mb-1">Network I/O</div>
                     <div class="text-sm font-mono font-medium text-slate-900 dark:text-white">
@@ -917,7 +917,7 @@ onUnmounted(() => {
               
               <div 
                 id="terminal-logs"
-                class="h-96 overflow-y-auto p-4 font-mono text-xs leading-5 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-[#1e1e1e] rounded-lg border border-slate-200 dark:border-slate-800 scrollbar-thin scrollbar-thumb-[#424242] scrollbar-track-transparent"
+                class="h-96 overflow-y-auto p-4 font-mono text-xs leading-5 text-slate-700 dark:text-slate-200 bg-slate-100/50 dark:bg-[#1e1e1e] rounded-xl scrollbar-thin scrollbar-thumb-[#424242] scrollbar-track-transparent"
               >
                 <div v-if="containerLogs.length === 0" class="flex flex-col items-center justify-center h-full text-slate-400">
                   <div class="mb-2 opacity-70">No output logs found</div>
@@ -935,7 +935,7 @@ onUnmounted(() => {
               <div class="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
                 <Lock :size="14" /> Environment
               </div>
-              <div v-if="selectedContainer.env && selectedContainer.env.length > 0" class="bg-slate-50 dark:bg-[#1e1e1e] rounded-lg border border-slate-200 dark:border-slate-800 p-4 max-h-80 overflow-y-auto custom-scrollbar">
+              <div v-if="selectedContainer.env && selectedContainer.env.length > 0" class="bg-slate-100/50 dark:bg-[#1e1e1e] rounded-xl p-4 max-h-80 overflow-y-auto custom-scrollbar">
                 <div v-for="(envVar, i) in selectedContainer.env" :key="i" class="font-mono text-[10px] mb-2 last:mb-0 break-all">
                   <div class="text-slate-500 mb-0.5">{{ envVar.split('=')[0] }}</div>
                   <div class="text-slate-800 dark:text-slate-200 pl-2">{{ envVar.split('=').slice(1).join('=') }}</div>
@@ -951,13 +951,13 @@ onUnmounted(() => {
 
 
          <!-- Actions -->
-         <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-5 space-y-4 shadow-sm">
+         <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 p-5 space-y-4 shadow-sm">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Control</h3>
             
             <button 
                @click="deleteContainer"
                :disabled="deleting"
-               class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/30 rounded-md hover:bg-red-100 dark:hover:bg-red-900/20 hover:border-red-300 transition-all font-medium text-sm"
+               class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-200 dark:hover:bg-red-900/30 transition-all font-semibold text-sm"
             >
                <Trash2 :size="16" />
                {{ deleting ? 'Terminating...' : 'Terminate Container' }}
