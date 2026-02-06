@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { spawnProcess } from "./utils.js";
+import { Client as MinioClient } from "minio";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,7 +22,7 @@ function generateJobId() {
 
 // Get S3 config from environment or config file
 export async function getS3Config() {
-  const configPath = path.join(__dirname, "..", ".backup-config.json");
+  const configPath = path.join(__dirname, "..", "backup-config.json");
 
   try {
     const content = await readFile(configPath, "utf-8");
@@ -33,92 +34,95 @@ export async function getS3Config() {
 
 // Save S3 config
 export async function saveS3Config(config) {
-  const configPath = path.join(__dirname, "..", ".backup-config.json");
+  const configPath = path.join(__dirname, "..", "backup-config.json");
   await writeFile(configPath, JSON.stringify(config, null, 2), "utf-8");
 }
 
-// Create rclone environment variables from S3 config
-function createRcloneEnv(s3Config) {
-  const env = {
-    ...process.env,
-    RCLONE_CONFIG_S3_TYPE: "s3",
-    RCLONE_CONFIG_S3_PROVIDER: s3Config.provider || "AWS",
-    RCLONE_CONFIG_S3_ACCESS_KEY_ID: s3Config.accessKey,
-    RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: s3Config.secretKey,
-    RCLONE_CONFIG_S3_REGION: s3Config.region || "us-east-1",
-    RCLONE_CONFIG_S3_FORCE_PATH_STYLE: "true",
-  };
+// Create MinIO client from S3 config
+function createMinioClient(s3Config) {
+  // Parse endpoint to extract host and port
+  let endPoint = s3Config.endpoint;
+  let port = 9000;
+  let useSSL = true;
 
-  if (s3Config.endpoint) {
-    env.RCLONE_CONFIG_S3_ENDPOINT = s3Config.endpoint;
+  if (endPoint) {
+    // Remove protocol if present
+    endPoint = endPoint.replace(/^https?:\/\//, "");
+    useSSL = s3Config.endpoint.startsWith("https://");
+    
+    // Extract port if present
+    if (endPoint.includes(":")) {
+      const parts = endPoint.split(":");
+      endPoint = parts[0];
+      port = parseInt(parts[1], 10);
+    } else {
+      port = useSSL ? 443 : 80;
+    }
   }
 
-  return env;
+  return new MinioClient({
+    endPoint,
+    port,
+    useSSL,
+    accessKey: s3Config.accessKey,
+    secretKey: s3Config.secretKey,
+    region: s3Config.region || "us-east-1",
+  });
 }
 
 // List backups from S3
 export async function listBackups(s3Config, log) {
   try {
-    const rcloneEnv = createRcloneEnv(s3Config);
+    const minioClient = createMinioClient(s3Config);
+    const bucket = s3Config.bucket;
+    const prefix = "yantra-backup/";
 
     // List app directories in yantra-backup/
-    const { stdout, stderr, exitCode } = await spawnProcess(
-      "rclone",
-      ["lsjson", `s3:${s3Config.bucket}/yantra-backup/`],
-      { env: rcloneEnv }
-    );
+    const appFolders = new Set();
+    const stream = minioClient.listObjects(bucket, prefix, false);
 
-    if (exitCode !== 0) {
-      // If directory doesn't exist yet (no backups created), return empty array
-      if (stderr.includes("directory not found") || stderr.includes("not found")) {
-        log?.("info", "No backup directory found yet - returning empty list");
-        return [];
+    for await (const obj of stream) {
+      if (obj.prefix) {
+        // This is a directory/prefix
+        const appName = obj.prefix.replace(prefix, "").replace(/\/$/, "");
+        if (appName) appFolders.add(appName);
       }
-      throw new Error(`rclone failed: ${stderr}`);
     }
 
-    const items = JSON.parse(stdout || "[]");
-    log?.("info", `Found ${items.length} app backup folder(s)`);
+    log?.("info", `Found ${appFolders.size} app backup folder(s)`);
 
     // Read metadata from each app folder
     const backups = [];
-    for (const item of items) {
-      if (!item.IsDir) continue;
-
-      const appName = item.Name || item.Path?.replace(/\/$/, "") || "";
-      if (!appName) continue;
-
+    for (const appName of appFolders) {
       log?.("info", `Reading backup for app: ${appName}`);
 
       try {
-        // First, list what's actually in this folder to debug
-        const lsResult = await spawnProcess(
-          "rclone",
-          ["ls", `s3:${s3Config.bucket}/yantra-backup/${appName}/`],
-          { env: rcloneEnv }
-        );
-        log?.("info", `Files in ${appName} folder:`, lsResult.stdout || "(empty)");
-
-        const metaResult = await spawnProcess(
-          "rclone",
-          ["cat", `s3:${s3Config.bucket}/yantra-backup/${appName}/metadata.json`],
-          { env: rcloneEnv }
-        );
-
-        if (metaResult.exitCode === 0) {
-          const metadata = JSON.parse(metaResult.stdout);
-          backups.push(metadata);
-          log?.("info", `Successfully loaded backup for: ${appName}`);
-        } else {
-          log?.("error", `Failed to read metadata for ${appName} - exitCode: ${metaResult.exitCode}, stderr: ${metaResult.stderr}, stdout: ${metaResult.stdout}`);
+        const metadataPath = `${prefix}${appName}/metadata.json`;
+        
+        // Get metadata.json
+        const chunks = [];
+        const dataStream = await minioClient.getObject(bucket, metadataPath);
+        
+        for await (const chunk of dataStream) {
+          chunks.push(chunk);
         }
+        
+        const metadataContent = Buffer.concat(chunks).toString("utf-8");
+        const metadata = JSON.parse(metadataContent);
+        backups.push(metadata);
+        log?.("info", `Successfully loaded backup for: ${appName}`);
       } catch (err) {
-        log?.("error", `Exception reading metadata for ${appName}:`, err.message);
+        log?.("error", `Failed to read metadata for ${appName}:`, err.message);
       }
     }
 
     return backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   } catch (err) {
+    // If bucket doesn't exist or is empty, return empty array
+    if (err.code === "NoSuchBucket" || err.code === "NoSuchKey") {
+      log?.("info", "No backups found - bucket or prefix doesn't exist yet");
+      return [];
+    }
     throw new Error(`Failed to list backups: ${err.message}`);
   }
 }
@@ -207,24 +211,15 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         log?.("info", `[Backup ${jobId}] Created tar: ${(sizeBytes / (1024 * 1024)).toFixed(2)} MB`);
 
-        // Step 2: Upload to S3 using rclone
+        // Step 2: Upload to S3 using MinIO client
         log?.("info", `[Backup ${jobId}] Uploading ${volumeName} to S3`);
 
-        const rcloneEnv = createRcloneEnv(s3Config);
-        const { stdout, stderr, exitCode } = await spawnProcess(
-          "rclone",
-          [
-            "copy",
-            tarPath,
-            `s3:${s3Config.bucket}/yantra-backup/${backupId}/`,
-            "--progress",
-          ],
-          { env: rcloneEnv }
+        const minioClient = createMinioClient(s3Config);
+        await minioClient.fPutObject(
+          s3Config.bucket,
+          `yantra-backup/${backupId}/${tarFileName}`,
+          tarPath
         );
-
-        if (exitCode !== 0) {
-          throw new Error(`rclone upload failed: ${stderr}`);
-        }
 
         log?.("info", `[Backup ${jobId}] Uploaded ${volumeName} successfully`);
 
@@ -278,20 +273,12 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         const appStats = await stat(appTarPath);
 
-        const rcloneEnv = createRcloneEnv(s3Config);
-        const uploadResult = await spawnProcess(
-          "rclone",
-          [
-            "copy",
-            appTarPath,
-            `s3:${s3Config.bucket}/yantra-backup/${backupId}/app-configs/`,
-          ],
-          { env: rcloneEnv }
+        const minioClient = createMinioClient(s3Config);
+        await minioClient.fPutObject(
+          s3Config.bucket,
+          `yantra-backup/${backupId}/app-configs/${appTarFileName}`,
+          appTarPath
         );
-
-        if (uploadResult.exitCode !== 0) {
-          throw new Error(`Failed to upload app config ${appId}: ${uploadResult.stderr}`);
-        }
 
         appConfigBackups.push({
           appId,
@@ -324,20 +311,12 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
       const metadataPath = path.join(jobTmpDir, "metadata.json");
       await writeFile(metadataPath, JSON.stringify(metadata, null, 2), "utf-8");
 
-      const rcloneEnv = createRcloneEnv(s3Config);
-      const metaUpload = await spawnProcess(
-        "rclone",
-        [
-          "copy",
-          metadataPath,
-          `s3:${s3Config.bucket}/yantra-backup/${backupId}/`,
-        ],
-        { env: rcloneEnv }
+      const minioClient = createMinioClient(s3Config);
+      await minioClient.fPutObject(
+        s3Config.bucket,
+        `yantra-backup/${backupId}/metadata.json`,
+        metadataPath
       );
-
-      if (metaUpload.exitCode !== 0) {
-        throw new Error(`Failed to upload metadata: ${metaUpload.stderr}`);
-      }
 
       try {
         await unlink(metadataPath);
@@ -413,26 +392,14 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
       }
 
       // Step 1: Download metadata
-      const rcloneEnv = createRcloneEnv(s3Config);
+      const minioClient = createMinioClient(s3Config);
       const metadataPath = path.join(tmpDir, `metadata-${jobId}.json`);
 
-      const metaDownload = await spawnProcess(
-        "rclone",
-        [
-          "copy",
-          `s3:${s3Config.bucket}/yantra-backup/${backupId}/metadata.json`,
-          tmpDir,
-          "--progress",
-        ],
-        { env: rcloneEnv }
+      await minioClient.fGetObject(
+        s3Config.bucket,
+        `yantra-backup/${backupId}/metadata.json`,
+        metadataPath
       );
-
-      if (metaDownload.exitCode !== 0) {
-        throw new Error(`Failed to download metadata: ${metaDownload.stderr}`);
-      }
-
-      // Rename downloaded file
-      await spawnProcess("mv", [path.join(tmpDir, "metadata.json"), metadataPath]);
 
       const metadataContent = await readFile(metadataPath, "utf-8");
       const metadata = JSON.parse(metadataContent);
@@ -470,22 +437,14 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
           log?.("info", `[Restore ${jobId}] Downloading app config for ${appId}`);
 
-          const download = await spawnProcess(
-            "rclone",
-            [
-              "copy",
-              `s3:${s3Config.bucket}/yantra-backup/${backupId}/app-configs/${tarFileName}`,
-              tmpDir,
-              "--progress",
-            ],
-            { env: rcloneEnv }
+          const tarPath = path.join(tmpDir, tarFileName);
+          
+          await minioClient.fGetObject(
+            s3Config.bucket,
+            `yantra-backup/${backupId}/app-configs/${tarFileName}`,
+            tarPath
           );
 
-          if (download.exitCode !== 0) {
-            throw new Error(`Failed to download app config ${appId}: ${download.stderr}`);
-          }
-
-          const tarPath = path.join(tmpDir, tarFileName);
           await mkdir(appPath, { recursive: true });
 
           const extract = await spawnProcess(
@@ -537,20 +496,11 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         // Step 2: Download tar from S3
         log?.("info", `[Restore ${jobId}] Downloading ${volumeName} from S3`);
 
-        const download = await spawnProcess(
-          "rclone",
-          [
-            "copy",
-            `s3:${s3Config.bucket}/yantra-backup/${backupId}/${tarFileName}`,
-            tmpDir,
-            "--progress",
-          ],
-          { env: rcloneEnv }
+        await minioClient.fGetObject(
+          s3Config.bucket,
+          `yantra-backup/${backupId}/${tarFileName}`,
+          tarPath
         );
-
-        if (download.exitCode !== 0) {
-          throw new Error(`Failed to download ${volumeName}: ${download.stderr}`);
-        }
 
         // Step 3: Ensure volume exists
         try {
@@ -619,15 +569,22 @@ export async function deleteBackup(backupId, s3Config, log) {
   try {
     log?.("info", `[Backup Delete] Deleting backup ${backupId}`);
 
-    const rcloneEnv = createRcloneEnv(s3Config);
-    const { stdout, stderr, exitCode } = await spawnProcess(
-      "rclone",
-      ["purge", `s3:${s3Config.bucket}/yantra-backup/${backupId}/`],
-      { env: rcloneEnv }
-    );
+    const minioClient = createMinioClient(s3Config);
+    const bucket = s3Config.bucket;
+    const prefix = `yantra-backup/${backupId}/`;
 
-    if (exitCode !== 0) {
-      throw new Error(`rclone delete failed: ${stderr}`);
+    // List all objects with this prefix
+    const objectsList = [];
+    const stream = minioClient.listObjects(bucket, prefix, true);
+
+    for await (const obj of stream) {
+      objectsList.push(obj.name);
+    }
+
+    // Delete all objects
+    if (objectsList.length > 0) {
+      await minioClient.removeObjects(bucket, objectsList);
+      log?.("info", `[Backup Delete] Deleted ${objectsList.length} object(s)`);
     }
 
     log?.("info", `[Backup Delete] Backup ${backupId} deleted successfully`);

@@ -24,9 +24,9 @@ RUN rm -rf node_modules .npm
 # Production stage
 # =========================
 FROM docker.io/library/node:slim
-# Install Docker CLI and rclone (needed by your app)
+# Install Docker CLI (needed by your app)
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends docker.io docker-compose rclone wget \
+	&& apt-get install -y --no-install-recommends docker.io docker-compose wget \
 	&& rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

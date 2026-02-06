@@ -6,3 +6,5 @@ apps/*/.env
 apps/*/compose.temp.yml
 apps/*/.compose.temp.yml
 apps/*/.compose.tmp.yml
+
+backup-config.json
