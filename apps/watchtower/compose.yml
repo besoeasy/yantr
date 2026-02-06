@@ -14,6 +14,4 @@ services:
       - DOCKER_API_VERSION=1.44
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_SCHEDULE=0 */3 * * *
-      - WATCHTOWER_RUN_ONCE=false
-      - WATCHTOWER_STARTUP_DELAY=300
     restart: unless-stopped
