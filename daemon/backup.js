@@ -109,24 +109,26 @@ export async function listBackups(s3Config, log) {
 }
 
 // Create backup of volumes
-export async function createBackup(volumes, s3Config, name, log) {
+export async function createBackup({ volumes, s3Config, name, log, appConfigs = [], apps = [] }) {
   const jobId = generateJobId();
   const backupId = `backup-${Date.now()}`;
   const tmpDir = "/tmp";
   let jobTmpDir = null;
+  const volumeList = Array.isArray(volumes) ? volumes : [];
 
   backupJobs.set(jobId, {
     status: "in-progress",
     progress: 0,
     backupId,
-    volumes,
+    volumes: volumeList,
+    apps,
     startedAt: new Date().toISOString(),
   });
 
   // Run backup asynchronously
   (async () => {
     try {
-      log?.("info", `[Backup ${jobId}] Starting backup of ${volumes.length} volume(s)`);
+      log?.("info", `[Backup ${jobId}] Starting backup of ${volumeList.length} volume(s)`);
 
       // Ensure alpine image exists for tar operations
       try {
@@ -148,10 +150,11 @@ export async function createBackup(volumes, s3Config, name, log) {
 
       jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
       const volumeBackups = [];
-      const totalVolumes = volumes.length;
+      const appConfigBackups = [];
+      const totalVolumes = volumeList.length;
 
-      for (let i = 0; i < volumes.length; i++) {
-        const volumeName = volumes[i];
+      for (let i = 0; i < volumeList.length; i++) {
+        const volumeName = volumeList[i];
         log?.("info", `[Backup ${jobId}] Processing volume ${i + 1}/${totalVolumes}: ${volumeName}`);
 
         // Update progress
@@ -223,6 +226,70 @@ export async function createBackup(volumes, s3Config, name, log) {
         }
       }
 
+      const uniqueAppConfigs = new Map();
+      for (const appConfig of appConfigs) {
+        if (!appConfig || !appConfig.appId || !appConfig.appPath) continue;
+        if (!uniqueAppConfigs.has(appConfig.appId)) {
+          uniqueAppConfigs.set(appConfig.appId, appConfig);
+        }
+      }
+
+      const appConfigList = Array.from(uniqueAppConfigs.values());
+      const totalAppConfigs = appConfigList.length;
+
+      if (totalAppConfigs > 0) {
+        log?.("info", `[Backup ${jobId}] Backing up ${totalAppConfigs} app config(s)`);
+      }
+
+      for (let i = 0; i < totalAppConfigs; i++) {
+        const appConfig = appConfigList[i];
+        const appId = appConfig.appId;
+        const appPath = appConfig.appPath;
+
+        log?.("info", `[Backup ${jobId}] Archiving app config ${i + 1}/${totalAppConfigs}: ${appId}`);
+
+        const appTarFileName = `app-${appId}.tar.gz`;
+        const appTarPath = path.join(jobTmpDir, appTarFileName);
+
+        const tarResult = await spawnProcess(
+          "tar",
+          ["czf", appTarPath, "-C", appPath, "."]
+        );
+
+        if (tarResult.exitCode !== 0) {
+          throw new Error(`Failed to archive app ${appId}: ${tarResult.stderr}`);
+        }
+
+        const appStats = await stat(appTarPath);
+
+        const rcloneEnv = createRcloneEnv(s3Config);
+        const uploadResult = await spawnProcess(
+          "rclone",
+          [
+            "copy",
+            appTarPath,
+            `s3:${s3Config.bucket}/yantra-backups/${backupId}/app-configs/`,
+          ],
+          { env: rcloneEnv }
+        );
+
+        if (uploadResult.exitCode !== 0) {
+          throw new Error(`Failed to upload app config ${appId}: ${uploadResult.stderr}`);
+        }
+
+        appConfigBackups.push({
+          appId,
+          tarFileName: appTarFileName,
+          size: appStats.size,
+        });
+
+        try {
+          await unlink(appTarPath);
+        } catch (err) {
+          log?.("warn", `[Backup ${jobId}] Failed to remove app config tar ${appTarFileName}:`, err.message);
+        }
+      }
+
       // Step 3: Upload metadata
       log?.("info", `[Backup ${jobId}] Creating metadata`);
 
@@ -231,7 +298,11 @@ export async function createBackup(volumes, s3Config, name, log) {
         name: name || `Backup ${new Date().toLocaleString()}`,
         timestamp: new Date().toISOString(),
         volumes: volumeBackups,
-        totalSize: volumeBackups.reduce((sum, v) => sum + v.size, 0),
+        totalSize:
+          volumeBackups.reduce((sum, v) => sum + v.size, 0) +
+          appConfigBackups.reduce((sum, v) => sum + v.size, 0),
+        appConfigs: appConfigBackups,
+        apps,
       };
 
       const metadataPath = path.join(jobTmpDir, "metadata.json");
@@ -290,9 +361,10 @@ export async function createBackup(volumes, s3Config, name, log) {
 }
 
 // Restore backup from S3
-export async function restoreBackup(backupId, s3Config, volumesToRestore, overwrite, log) {
+export async function restoreBackup(backupId, s3Config, volumesToRestore, overwrite, log, restoreApps) {
   const jobId = generateJobId();
   const tmpDir = "/tmp";
+  const appsDir = path.join(__dirname, "..", "apps");
 
   restoreJobs.set(jobId, {
     status: "in-progress",
@@ -349,6 +421,75 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
       const metadataContent = await readFile(metadataPath, "utf-8");
       const metadata = JSON.parse(metadataContent);
       await unlink(metadataPath);
+
+      const shouldRestoreApps = restoreApps === true || (restoreApps === undefined && !volumesToRestore);
+      const appConfigs = Array.isArray(metadata.appConfigs) ? metadata.appConfigs : [];
+
+      if (shouldRestoreApps && appConfigs.length > 0) {
+        log?.("info", `[Restore ${jobId}] Restoring ${appConfigs.length} app config(s)`);
+
+        for (const appConfig of appConfigs) {
+          const appId = appConfig.appId;
+          const tarFileName = appConfig.tarFileName;
+
+          if (!appId || !tarFileName) {
+            log?.("warn", `[Restore ${jobId}] Skipping invalid app config entry`);
+            continue;
+          }
+
+          const appPath = path.join(appsDir, appId);
+          let appPathExists = false;
+
+          try {
+            await stat(appPath);
+            appPathExists = true;
+          } catch (err) {
+            appPathExists = false;
+          }
+
+          if (appPathExists && !overwrite) {
+            log?.("warn", `[Restore ${jobId}] Skipping app ${appId} (already exists, overwrite=false)`);
+            continue;
+          }
+
+          log?.("info", `[Restore ${jobId}] Downloading app config for ${appId}`);
+
+          const download = await spawnProcess(
+            "rclone",
+            [
+              "copy",
+              `s3:${s3Config.bucket}/yantra-backups/${backupId}/app-configs/${tarFileName}`,
+              tmpDir,
+              "--progress",
+            ],
+            { env: rcloneEnv }
+          );
+
+          if (download.exitCode !== 0) {
+            throw new Error(`Failed to download app config ${appId}: ${download.stderr}`);
+          }
+
+          const tarPath = path.join(tmpDir, tarFileName);
+          await mkdir(appPath, { recursive: true });
+
+          const extract = await spawnProcess(
+            "tar",
+            ["xzf", tarPath, "-C", appPath]
+          );
+
+          if (extract.exitCode !== 0) {
+            throw new Error(`Failed to extract app config ${appId}: ${extract.stderr}`);
+          }
+
+          try {
+            await unlink(tarPath);
+          } catch (err) {
+            log?.("warn", `[Restore ${jobId}] Failed to remove app config tar ${tarFileName}:`, err.message);
+          }
+
+          log?.("info", `[Restore ${jobId}] Restored app config for ${appId}`);
+        }
+      }
 
       // Determine which volumes to restore
       const volumes = volumesToRestore || metadata.volumes.map(v => v.name);

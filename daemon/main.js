@@ -2324,12 +2324,14 @@ app.get("/api/backup/list", asyncHandler(async (req, res) => {
 app.post("/api/backup/create", asyncHandler(async (req, res) => {
   log("info", "💾 [POST /api/backup/create] Creating backup");
 
-  const { volumes, name } = req.body;
+  const { volumes, name, apps } = req.body;
+  const hasVolumes = Array.isArray(volumes) && volumes.length > 0;
+  const hasApps = Array.isArray(apps) && apps.length > 0;
 
-  if (!volumes || !Array.isArray(volumes) || volumes.length === 0) {
+  if (!hasVolumes && !hasApps) {
     return res.status(400).json({
       success: false,
-      error: "volumes array is required and must not be empty",
+      error: "volumes or apps array is required and must not be empty",
     });
   }
 
@@ -2342,12 +2344,61 @@ app.post("/api/backup/create", asyncHandler(async (req, res) => {
     });
   }
 
-  // Verify volumes exist
   const allVolumes = await docker.listVolumes();
-  const volumeNames = allVolumes.Volumes?.map(v => v.Name) || [];
+  const volumeEntries = allVolumes.Volumes || [];
+  const volumeNames = new Set(volumeEntries.map(v => v.Name));
 
-  for (const volumeName of volumes) {
-    if (!volumeNames.includes(volumeName)) {
+  const resolvedAppConfigs = [];
+  const appMetadata = [];
+  const appVolumeNames = [];
+
+  if (hasApps) {
+    const appsDir = path.join(__dirname, "..", "apps");
+    const fsPromises = await import("fs/promises");
+
+    for (const appItem of apps) {
+      const appEntry = typeof appItem === "string" ? { appId: appItem } : appItem;
+      const appId = appEntry?.appId;
+
+      if (!appId) {
+        return res.status(400).json({
+          success: false,
+          error: "appId is required for apps entries",
+        });
+      }
+
+      const instanceId = Number(appEntry.instanceId || 1);
+      const projectName = appEntry.projectName || (instanceId > 1 ? `${appId}-${instanceId}` : appId);
+      const appPath = path.join(appsDir, appId);
+      const composePath = path.join(appPath, "compose.yml");
+
+      try {
+        await fsPromises.access(composePath);
+      } catch {
+        return res.status(404).json({
+          success: false,
+          error: `App '${appId}' not found or has no compose.yml`,
+        });
+      }
+
+      const projectVolumes = volumeEntries
+        .filter((volume) => volume.Labels?.["com.docker.compose.project"] === projectName)
+        .map((volume) => volume.Name);
+
+      if (projectVolumes.length === 0) {
+        log("warn", `⚠️  [POST /api/backup/create] No volumes found for project '${projectName}'`);
+      }
+
+      resolvedAppConfigs.push({ appId, appPath, projectName, instanceId });
+      appMetadata.push({ appId, projectName, instanceId, volumes: projectVolumes });
+      appVolumeNames.push(...projectVolumes);
+    }
+  }
+
+  const requestedVolumes = hasVolumes ? volumes : [];
+
+  for (const volumeName of requestedVolumes) {
+    if (!volumeNames.has(volumeName)) {
       return res.status(404).json({
         success: false,
         error: `Volume '${volumeName}' not found`,
@@ -2355,7 +2406,23 @@ app.post("/api/backup/create", asyncHandler(async (req, res) => {
     }
   }
 
-  const result = await createBackup(volumes, config, name, log);
+  const combinedVolumes = Array.from(new Set([...requestedVolumes, ...appVolumeNames]));
+
+  if (combinedVolumes.length === 0 && resolvedAppConfigs.length === 0) {
+    return res.status(400).json({
+      success: false,
+      error: "No volumes or app configs found to back up",
+    });
+  }
+
+  const result = await createBackup({
+    volumes: combinedVolumes,
+    s3Config: config,
+    name,
+    log,
+    appConfigs: resolvedAppConfigs,
+    apps: appMetadata,
+  });
 
   log("info", `✅ [POST /api/backup/create] Backup job started: ${result.jobId}`);
 
@@ -2398,7 +2465,7 @@ app.post("/api/backup/:backupId/restore", asyncHandler(async (req, res) => {
   const backupId = req.params.backupId;
   log("info", `🔄 [POST /api/backup/${backupId}/restore] Starting restore`);
 
-  const { volumes, overwrite } = req.body;
+  const { volumes, overwrite, restoreApps } = req.body;
 
   const config = await getS3Config();
 
@@ -2409,7 +2476,7 @@ app.post("/api/backup/:backupId/restore", asyncHandler(async (req, res) => {
     });
   }
 
-  const result = await restoreBackup(backupId, config, volumes, overwrite, log);
+  const result = await restoreBackup(backupId, config, volumes, overwrite, log, restoreApps);
 
   log("info", `✅ [POST /api/backup/${backupId}/restore] Restore job started: ${result.jobId}`);
 
