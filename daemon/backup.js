@@ -78,6 +78,24 @@ function getComposeEnv(socketPath) {
   };
 }
 
+async function runAlpineTask({ cmd, binds, context }) {
+  const container = await docker.createContainer({
+    Image: "alpine:latest",
+    Cmd: cmd,
+    HostConfig: {
+      Binds: binds,
+      AutoRemove: true,
+    },
+  });
+
+  await container.start();
+  const result = await container.wait();
+
+  if (result && Number.isFinite(result.StatusCode) && result.StatusCode !== 0) {
+    throw new Error(`${context} failed with status ${result.StatusCode}`);
+  }
+}
+
 async function startRestoredApps(metadata, log) {
   const apps = Array.isArray(metadata?.apps) ? metadata.apps : [];
   const appConfigs = Array.isArray(metadata?.appConfigs) ? metadata.appConfigs : [];
@@ -188,6 +206,8 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
   const tmpDir = "/tmp";
   let jobTmpDir = null;
   const volumeList = Array.isArray(volumes) ? volumes : [];
+  let minioClient = null;
+  const uploadedKeys = [];
 
   backupJobs.set(jobId, {
     status: "in-progress",
@@ -226,7 +246,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
       const appConfigBackups = [];
       const totalVolumes = volumeList.length;
 
-      const minioClient = createMinioClient(s3Config);
+      minioClient = createMinioClient(s3Config);
       const expectedKeys = [];
 
       for (let i = 0; i < volumeList.length; i++) {
@@ -246,20 +266,14 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
         // Step 1: Create tar of volume using temporary container
         log?.("info", `[Backup ${jobId}] Creating tar archive of ${volumeName}`);
 
-        const container = await docker.createContainer({
-          Image: "alpine:latest",
-          Cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
-          HostConfig: {
-            Binds: [
-              `${volumeName}:/data:ro`,
-              `${jobTmpDir}:/backup`,
-            ],
-            AutoRemove: true,
-          },
+        await runAlpineTask({
+          cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
+          binds: [
+            `${volumeName}:/data:ro`,
+            `${jobTmpDir}:/backup`,
+          ],
+          context: `Backup volume tar for ${volumeName}`,
         });
-
-        await container.start();
-        await container.wait();
 
         // Get tar file size
         const stats = await stat(tarPath);
@@ -275,6 +289,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           `yantra-backup/${backupId}/${tarFileName}`,
           tarPath
         );
+        uploadedKeys.push(`yantra-backup/${backupId}/${tarFileName}`);
 
         log?.("info", `[Backup ${jobId}] Uploaded ${volumeName} successfully`);
 
@@ -334,6 +349,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           `yantra-backup/${backupId}/app-configs/${appTarFileName}`,
           appTarPath
         );
+        uploadedKeys.push(`yantra-backup/${backupId}/app-configs/${appTarFileName}`);
 
         appConfigBackups.push({
           appId,
@@ -372,6 +388,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
         `yantra-backup/${backupId}/metadata.json`,
         metadataPath
       );
+      uploadedKeys.push(`yantra-backup/${backupId}/metadata.json`);
       expectedKeys.push(`yantra-backup/${backupId}/metadata.json`);
 
       for (const key of expectedKeys) {
@@ -395,6 +412,13 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
       log?.("info", `[Backup ${jobId}] Backup completed successfully`);
     } catch (err) {
+      if (minioClient && uploadedKeys.length > 0) {
+        try {
+          await minioClient.removeObjects(s3Config.bucket, uploadedKeys);
+        } catch (cleanupErr) {
+          log?.("warn", `[Backup ${jobId}] Failed to rollback uploaded objects:`, cleanupErr.message);
+        }
+      }
       log?.("error", `[Backup ${jobId}] Backup failed:`, err.message);
       backupJobs.set(jobId, {
         ...backupJobs.get(jobId),
@@ -421,6 +445,11 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
   const tmpDir = "/tmp";
   let jobTmpDir = null;
   const appsDir = path.join(__dirname, "..", "apps");
+  const rollbackActions = [];
+
+  function registerRollback(action) {
+    rollbackActions.push(action);
+  }
 
   restoreJobs.set(jobId, {
     status: "in-progress",
@@ -496,6 +525,30 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
             continue;
           }
 
+          if (appPathExists && overwrite) {
+            const appRollbackTar = path.join(jobTmpDir, `rollback-app-${appId}.tar`);
+            const backupResult = await spawnProcess("tar", ["cf", appRollbackTar, "-C", appPath, "."]);
+
+            if (backupResult.exitCode !== 0) {
+              throw new Error(`Failed to snapshot app config ${appId}: ${backupResult.stderr}`);
+            }
+
+            registerRollback(async () => {
+              await rm(appPath, { recursive: true, force: true });
+              await mkdir(appPath, { recursive: true });
+              const restoreResult = await spawnProcess("tar", ["xf", appRollbackTar, "-C", appPath]);
+              if (restoreResult.exitCode !== 0) {
+                throw new Error(`Failed to rollback app config ${appId}: ${restoreResult.stderr}`);
+              }
+            });
+
+            await rm(appPath, { recursive: true, force: true });
+          } else if (!appPathExists) {
+            registerRollback(async () => {
+              await rm(appPath, { recursive: true, force: true });
+            });
+          }
+
           const tarPath = path.join(jobTmpDir, tarFileName);
           
           await minioClient.fGetObject(
@@ -553,8 +606,10 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
         );
 
         // Step 3: Ensure volume exists
+        let volumeExists = false;
         try {
           await docker.getVolume(volumeName).inspect();
+          volumeExists = true;
 
           if (!overwrite) {
             log?.("warn", `[Restore ${jobId}] Skipping ${volumeName} (already exists, overwrite=false)`);
@@ -562,25 +617,61 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
             continue;
           }
         } catch (err) {
-          // Volume doesn't exist, create it
+          volumeExists = false;
+        }
+
+        if (volumeExists && overwrite) {
+          const rollbackTar = path.join(jobTmpDir, `rollback-${volumeName}.tar`);
+          await runAlpineTask({
+            cmd: ["tar", "cf", `/backup/${path.basename(rollbackTar)}`, "-C", "/data", "."],
+            binds: [
+              `${volumeName}:/data:ro`,
+              `${jobTmpDir}:/backup`,
+            ],
+            context: `Snapshot volume ${volumeName}`,
+          });
+
+          registerRollback(async () => {
+            await runAlpineTask({
+              cmd: ["sh", "-c", "rm -rf /data/* /data/.[!.]* /data/..?*"],
+              binds: [`${volumeName}:/data`],
+              context: `Rollback clear volume ${volumeName}`,
+            });
+            await runAlpineTask({
+              cmd: ["tar", "xf", `/backup/${path.basename(rollbackTar)}`, "-C", "/data"],
+              binds: [
+                `${volumeName}:/data`,
+                `${jobTmpDir}:/backup`,
+              ],
+              context: `Rollback restore volume ${volumeName}`,
+            });
+          });
+
+          await runAlpineTask({
+            cmd: ["sh", "-c", "rm -rf /data/* /data/.[!.]* /data/..?*"],
+            binds: [`${volumeName}:/data`],
+            context: `Clear volume ${volumeName}`,
+          });
+        } else if (!volumeExists) {
           await docker.createVolume({ Name: volumeName });
+          registerRollback(async () => {
+            try {
+              await docker.getVolume(volumeName).remove();
+            } catch (removeErr) {
+              log?.("warn", `[Restore ${jobId}] Failed to rollback volume ${volumeName}:`, removeErr.message);
+            }
+          });
         }
 
         // Step 4: Extract tar into volume
-        const container = await docker.createContainer({
-          Image: "alpine:latest",
-          Cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
-          HostConfig: {
-            Binds: [
-              `${volumeName}:/data`,
-              `${jobTmpDir}:/backup`,
-            ],
-            AutoRemove: true,
-          },
+        await runAlpineTask({
+          cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
+          binds: [
+            `${volumeName}:/data`,
+            `${jobTmpDir}:/backup`,
+          ],
+          context: `Restore volume ${volumeName}`,
         });
-
-        await container.start();
-        await container.wait();
 
         // Cleanup
         await unlink(tarPath);
@@ -600,6 +691,15 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
       log?.("info", `[Restore ${jobId}] Restore completed successfully`);
     } catch (err) {
+      if (rollbackActions.length > 0) {
+        for (const rollback of [...rollbackActions].reverse()) {
+          try {
+            await rollback();
+          } catch (rollbackErr) {
+            log?.("warn", `[Restore ${jobId}] Rollback action failed:`, rollbackErr.message);
+          }
+        }
+      }
       log?.("error", `[Restore ${jobId}] Restore failed:`, err.message);
       restoreJobs.set(jobId, {
         ...restoreJobs.get(jobId),
@@ -679,6 +779,8 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
   const tmpDir = "/tmp";
   let jobTmpDir = null;
   const volumeList = Array.isArray(volumes) ? volumes : [];
+  let minioClient = null;
+  const uploadedKeys = [];
 
   backupJobs.set(jobId, {
     status: "in-progress",
@@ -712,7 +814,7 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
       }
 
       jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
-      const minioClient = createMinioClient(s3Config);
+      minioClient = createMinioClient(s3Config);
       const totalVolumes = volumeList.length;
 
       for (let i = 0; i < volumeList.length; i++) {
@@ -739,20 +841,14 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
         // Create tar using Alpine container
         log?.("info", `[Backup ${jobId}] Creating tar archive of ${volumeName}`);
 
-        const container = await docker.createContainer({
-          Image: "alpine:latest",
-          Cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
-          HostConfig: {
-            Binds: [
-              `${volumeName}:/data:ro`,
-              `${jobTmpDir}:/backup`,
-            ],
-            AutoRemove: true,
-          },
+        await runAlpineTask({
+          cmd: ["tar", "cf", `/backup/${tarFileName}`, "-C", "/data", "."],
+          binds: [
+            `${volumeName}:/data:ro`,
+            `${jobTmpDir}:/backup`,
+          ],
+          context: `Backup volume tar for ${volumeName}`,
         });
-
-        await container.start();
-        await container.wait();
 
         // Get tar file size
         const stats = await stat(tarPath);
@@ -765,6 +861,7 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
         log?.("info", `[Backup ${jobId}] Uploading ${volumeName} to S3 at ${s3Key}`);
 
         await minioClient.fPutObject(s3Config.bucket, s3Key, tarPath);
+        uploadedKeys.push(s3Key);
 
         log?.("info", `[Backup ${jobId}] Uploaded ${volumeName} successfully`);
 
@@ -786,6 +883,13 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
 
       log?.("info", `[Backup ${jobId}] Backup completed successfully`);
     } catch (err) {
+      if (minioClient && uploadedKeys.length > 0) {
+        try {
+          await minioClient.removeObjects(s3Config.bucket, uploadedKeys);
+        } catch (cleanupErr) {
+          log?.("warn", `[Backup ${jobId}] Failed to rollback uploaded objects:`, cleanupErr.message);
+        }
+      }
       log?.("error", `[Backup ${jobId}] Backup failed:`, err.message);
       backupJobs.set(jobId, {
         ...backupJobs.get(jobId),
@@ -861,6 +965,11 @@ export async function restoreVolumeBackup(volumeName, backupKey, s3Config, overw
   const jobId = generateJobId();
   const tmpDir = "/tmp";
   let jobTmpDir = null;
+  const rollbackActions = [];
+
+  function registerRollback(action) {
+    rollbackActions.push(action);
+  }
 
   restoreJobs.set(jobId, {
     status: "in-progress",
@@ -913,12 +1022,53 @@ export async function restoreVolumeBackup(volumeName, backupKey, s3Config, overw
       }
 
       if (volumeExists && !overwrite) {
-        throw new Error('Volume exists and overwrite is false');
+        throw new Error("Volume exists and overwrite is false");
+      }
+
+      if (volumeExists && overwrite) {
+        const rollbackTar = path.join(jobTmpDir, `rollback-${volumeName}.tar`);
+        await runAlpineTask({
+          cmd: ["tar", "cf", `/backup/${path.basename(rollbackTar)}`, "-C", "/data", "."],
+          binds: [
+            `${volumeName}:/data:ro`,
+            `${jobTmpDir}:/backup`,
+          ],
+          context: `Snapshot volume ${volumeName}`,
+        });
+
+        registerRollback(async () => {
+          await runAlpineTask({
+            cmd: ["sh", "-c", "rm -rf /data/* /data/.[!.]* /data/..?*"],
+            binds: [`${volumeName}:/data`],
+            context: `Rollback clear volume ${volumeName}`,
+          });
+          await runAlpineTask({
+            cmd: ["tar", "xf", `/backup/${path.basename(rollbackTar)}`, "-C", "/data"],
+            binds: [
+              `${volumeName}:/data`,
+              `${jobTmpDir}:/backup`,
+            ],
+            context: `Rollback restore volume ${volumeName}`,
+          });
+        });
+
+        await runAlpineTask({
+          cmd: ["sh", "-c", "rm -rf /data/* /data/.[!.]* /data/..?*"],
+          binds: [`${volumeName}:/data`],
+          context: `Clear volume ${volumeName}`,
+        });
       }
 
       if (!volumeExists) {
         log?.("info", `[Restore ${jobId}] Creating volume ${volumeName}`);
         await docker.createVolume({ Name: volumeName });
+        registerRollback(async () => {
+          try {
+            await docker.getVolume(volumeName).remove();
+          } catch (removeErr) {
+            log?.("warn", `[Restore ${jobId}] Failed to rollback volume ${volumeName}:`, removeErr.message);
+          }
+        });
       }
 
       restoreJobs.set(jobId, { ...restoreJobs.get(jobId), progress: 50 });
@@ -926,20 +1076,14 @@ export async function restoreVolumeBackup(volumeName, backupKey, s3Config, overw
       // Extract tar into volume
       log?.("info", `[Restore ${jobId}] Extracting backup into volume`);
 
-      const container = await docker.createContainer({
-        Image: "alpine:latest",
-        Cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
-        HostConfig: {
-          Binds: [
-            `${volumeName}:/data`,
-            `${jobTmpDir}:/backup`,
-          ],
-          AutoRemove: true,
-        },
+      await runAlpineTask({
+        cmd: ["tar", "xf", `/backup/${tarFileName}`, "-C", "/data"],
+        binds: [
+          `${volumeName}:/data`,
+          `${jobTmpDir}:/backup`,
+        ],
+        context: `Restore volume ${volumeName}`,
       });
-
-      await container.start();
-      await container.wait();
 
       await unlink(tarPath);
 
@@ -952,6 +1096,15 @@ export async function restoreVolumeBackup(volumeName, backupKey, s3Config, overw
 
       log?.("info", `[Restore ${jobId}] Restore completed successfully`);
     } catch (err) {
+      if (rollbackActions.length > 0) {
+        for (const rollback of [...rollbackActions].reverse()) {
+          try {
+            await rollback();
+          } catch (rollbackErr) {
+            log?.("warn", `[Restore ${jobId}] Rollback action failed:`, rollbackErr.message);
+          }
+        }
+      }
       log?.("error", `[Restore ${jobId}] Restore failed:`, err.message);
       restoreJobs.set(jobId, {
         ...restoreJobs.get(jobId),
