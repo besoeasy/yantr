@@ -1,5 +1,5 @@
 import Docker from "dockerode";
-import { readFile, writeFile, unlink, mkdir, stat } from "fs/promises";
+import { readFile, writeFile, unlink, mkdir, stat, mkdtemp, rm } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -111,6 +111,7 @@ export async function createBackup(volumes, s3Config, name, log) {
   const jobId = generateJobId();
   const backupId = `backup-${Date.now()}`;
   const tmpDir = "/tmp";
+  let jobTmpDir = null;
 
   backupJobs.set(jobId, {
     status: "in-progress",
@@ -125,6 +126,25 @@ export async function createBackup(volumes, s3Config, name, log) {
     try {
       log?.("info", `[Backup ${jobId}] Starting backup of ${volumes.length} volume(s)`);
 
+      // Ensure alpine image exists for tar operations
+      try {
+        await docker.getImage("alpine:latest").inspect();
+        log?.("info", `[Backup ${jobId}] Alpine image already available`);
+      } catch (err) {
+        log?.("info", `[Backup ${jobId}] Pulling alpine:latest image...`);
+        await new Promise((resolve, reject) => {
+          docker.pull("alpine:latest", (err, stream) => {
+            if (err) return reject(err);
+            docker.modem.followProgress(stream, (err, output) => {
+              if (err) return reject(err);
+              resolve(output);
+            });
+          });
+        });
+        log?.("info", `[Backup ${jobId}] Alpine image pulled successfully`);
+      }
+
+      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
       const volumeBackups = [];
       const totalVolumes = volumes.length;
 
@@ -140,7 +160,7 @@ export async function createBackup(volumes, s3Config, name, log) {
         });
 
         const tarFileName = `${volumeName}.tar.gz`;
-        const tarPath = path.join(tmpDir, tarFileName);
+        const tarPath = path.join(jobTmpDir, tarFileName);
 
         // Step 1: Create tar of volume using temporary container
         log?.("info", `[Backup ${jobId}] Creating tar archive of ${volumeName}`);
@@ -151,7 +171,7 @@ export async function createBackup(volumes, s3Config, name, log) {
           HostConfig: {
             Binds: [
               `${volumeName}:/data:ro`,
-              `${tmpDir}:/backup`,
+              `${jobTmpDir}:/backup`,
             ],
             AutoRemove: true,
           },
@@ -194,7 +214,11 @@ export async function createBackup(volumes, s3Config, name, log) {
         });
 
         // Cleanup tar file
-        await unlink(tarPath);
+        try {
+          await unlink(tarPath);
+        } catch (err) {
+          log?.("warn", `[Backup ${jobId}] Failed to remove temp file ${tarFileName}:`, err.message);
+        }
       }
 
       // Step 3: Upload metadata
@@ -208,7 +232,7 @@ export async function createBackup(volumes, s3Config, name, log) {
         totalSize: volumeBackups.reduce((sum, v) => sum + v.size, 0),
       };
 
-      const metadataPath = path.join(tmpDir, "metadata.json");
+      const metadataPath = path.join(jobTmpDir, "metadata.json");
       await writeFile(metadataPath, JSON.stringify(metadata, null, 2), "utf-8");
 
       const rcloneEnv = createRcloneEnv(s3Config);
@@ -226,7 +250,11 @@ export async function createBackup(volumes, s3Config, name, log) {
         throw new Error(`Failed to upload metadata: ${metaUpload.stderr}`);
       }
 
-      await unlink(metadataPath);
+      try {
+        await unlink(metadataPath);
+      } catch (err) {
+        log?.("warn", `[Backup ${jobId}] Failed to remove metadata file:`, err.message);
+      }
 
       // Mark as completed
       backupJobs.set(jobId, {
@@ -245,6 +273,14 @@ export async function createBackup(volumes, s3Config, name, log) {
         status: "failed",
         error: err.message,
       });
+    } finally {
+      if (jobTmpDir) {
+        try {
+          await rm(jobTmpDir, { recursive: true, force: true });
+        } catch (err) {
+          log?.("warn", `[Backup ${jobId}] Failed to clean temp directory:`, err.message);
+        }
+      }
     }
   })();
 
@@ -267,6 +303,24 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
   (async () => {
     try {
       log?.("info", `[Restore ${jobId}] Starting restore from backup ${backupId}`);
+
+      // Ensure alpine image exists for tar operations
+      try {
+        await docker.getImage("alpine:latest").inspect();
+        log?.("info", `[Restore ${jobId}] Alpine image already available`);
+      } catch (err) {
+        log?.("info", `[Restore ${jobId}] Pulling alpine:latest image...`);
+        await new Promise((resolve, reject) => {
+          docker.pull("alpine:latest", (err, stream) => {
+            if (err) return reject(err);
+            docker.modem.followProgress(stream, (err, output) => {
+              if (err) return reject(err);
+              resolve(output);
+            });
+          });
+        });
+        log?.("info", `[Restore ${jobId}] Alpine image pulled successfully`);
+      }
 
       // Step 1: Download metadata
       const rcloneEnv = createRcloneEnv(s3Config);
