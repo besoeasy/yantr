@@ -576,10 +576,7 @@ onUnmounted(() => {
        <div class="animate-spin text-slate-300"><RefreshCw :size="32" /></div>
     </div>
 
-    <main v-else class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <!-- LEFT COLUMN -->
-      <div class="lg:col-span-2 space-y-8">
+    <main v-else class="max-w-7xl mx-auto px-4 py-8 space-y-8">
         
         <!-- Info Card -->
         <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 flex flex-col sm:flex-row gap-6">
@@ -859,10 +856,7 @@ onUnmounted(() => {
            </div>
         </div>
 
-      </div>
-
-      <!-- RIGHT COLUMN -->
-      <div class="space-y-8">
+      <!-- RIGHT COLUMN (now stacked) -->
          
          <!-- Stats Grid -->
          <div v-if="containerStats" class="grid grid-cols-2 gap-4">
@@ -932,8 +926,6 @@ onUnmounted(() => {
              </div>
          </div>
 
-      </div>
-      
     </main>
   </div>
 </template>
