@@ -134,29 +134,35 @@ const expirationInfo = computed(() => {
     return {
       expired: true,
       timeLeft: 'Expired',
-      urgency: 'critical'
+      urgency: 'critical',
+      percentage: 0
     }
   }
   
-  const seconds = Math.floor(timeLeftMs / 1000)
-  const minutes = Math.floor(seconds / 60)
-  const hours = Math.floor(minutes / 60)
+  const totalMinutes = Math.floor(timeLeftMs / 60000)
+  const hours = Math.floor(totalMinutes / 60)
   const days = Math.floor(hours / 24)
+  const minutes = totalMinutes % 60
+  
+  // Calculate percentage (assuming max lifetime is from creation to expiration)
+  // For now, we'll calculate based on the remaining time
+  const oneDayMs = 86400000
+  const percentage = Math.min(100, Math.max(0, (timeLeftMs / oneDayMs) * 100))
   
   let timeLeft = ''
   let urgency = 'normal'
   
   if (days > 0) {
-    timeLeft = `${days}d ${hours % 24}h`
+    timeLeft = `${days} ${days === 1 ? 'day' : 'days'}${hours % 24 > 0 ? `, ${hours % 24} ${hours % 24 === 1 ? 'hour' : 'hours'}` : ''}`
     urgency = days < 1 ? 'warning' : 'normal'
   } else if (hours > 0) {
-    timeLeft = `${hours}h ${minutes % 60}m`
+    timeLeft = `${hours} ${hours === 1 ? 'hour' : 'hours'}${minutes > 0 ? `, ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}` : ''}`
     urgency = hours < 2 ? 'critical' : 'warning'
-  } else if (minutes > 0) {
-    timeLeft = `${minutes}m ${seconds % 60}s`
+  } else if (totalMinutes > 0) {
+    timeLeft = `${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`
     urgency = 'critical'
   } else {
-    timeLeft = `${seconds}s`
+    timeLeft = 'Less than a minute'
     urgency = 'critical'
   }
   
@@ -164,7 +170,9 @@ const expirationInfo = computed(() => {
     expired: false,
     timeLeft,
     urgency,
-    expireAt: new Date(expireAtMs).toLocaleString()
+    percentage,
+    expireAt: new Date(expireAtMs).toLocaleString(),
+    totalMinutes
   }
 })
 
@@ -614,42 +622,99 @@ onUnmounted(() => {
 
         <!-- Expiration Warning Banner -->
         <div v-if="expirationInfo" 
-             class="rounded-2xl p-4 flex items-start gap-3"
+             class="rounded-2xl overflow-hidden border-2 transition-all duration-300"
              :class="{
-               'bg-red-100/50 dark:bg-red-950/30': expirationInfo.urgency === 'critical',
-               'bg-orange-100/50 dark:bg-orange-950/30': expirationInfo.urgency === 'warning',
-               'bg-blue-100/50 dark:bg-blue-950/30': expirationInfo.urgency === 'normal'
+               'bg-red-50/80 dark:bg-red-950/40 border-red-200 dark:border-red-800 shadow-lg shadow-red-500/20': expirationInfo.urgency === 'critical',
+               'bg-orange-50/80 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800 shadow-lg shadow-orange-500/20': expirationInfo.urgency === 'warning',
+               'bg-blue-50/80 dark:bg-blue-950/40 border-blue-200 dark:border-blue-800 shadow-lg shadow-blue-500/20': expirationInfo.urgency === 'normal'
              }">
-          <div class="shrink-0 mt-0.5">
-            <AlertCircle :size="20" 
-                        :class="{
-                          'text-red-600 dark:text-red-400': expirationInfo.urgency === 'critical',
-                          'text-orange-600 dark:text-orange-400': expirationInfo.urgency === 'warning',
-                          'text-blue-600 dark:text-blue-400': expirationInfo.urgency === 'normal'
-                        }" />
-          </div>
-          <div class="flex-1">
-            <div class="font-semibold text-sm mb-1"
+          <!-- Progress Bar -->
+          <div class="h-1.5 w-full overflow-hidden"
+               :class="{
+                 'bg-red-200 dark:bg-red-900': expirationInfo.urgency === 'critical',
+                 'bg-orange-200 dark:bg-orange-900': expirationInfo.urgency === 'warning',
+                 'bg-blue-200 dark:bg-blue-900': expirationInfo.urgency === 'normal'
+               }">
+            <div class="h-full transition-all duration-1000 ease-linear"
                  :class="{
-                   'text-red-900 dark:text-red-200': expirationInfo.urgency === 'critical',
-                   'text-orange-900 dark:text-orange-200': expirationInfo.urgency === 'warning',
-                   'text-blue-900 dark:text-blue-200': expirationInfo.urgency === 'normal'
-                 }">
-              {{ expirationInfo.expired ? 'Container Expired' : 'Temporary Container' }}
+                   'bg-gradient-to-r from-red-500 to-red-600': expirationInfo.urgency === 'critical',
+                   'bg-gradient-to-r from-orange-500 to-orange-600': expirationInfo.urgency === 'warning',
+                   'bg-gradient-to-r from-blue-500 to-blue-600': expirationInfo.urgency === 'normal'
+                 }"
+                 :style="{ width: expirationInfo.percentage + '%' }">
             </div>
-            <div class="text-xs"
-                 :class="{
-                   'text-red-700 dark:text-red-300': expirationInfo.urgency === 'critical',
-                   'text-orange-700 dark:text-orange-300': expirationInfo.urgency === 'warning',
-                   'text-blue-700 dark:text-blue-300': expirationInfo.urgency === 'normal'
-                 }">
-              <span v-if="!expirationInfo.expired">
-                This container will be automatically removed in <span class="font-mono font-bold">{{ expirationInfo.timeLeft }}</span>
-              </span>
-              <span v-else>
-                This container has expired and will be removed shortly.
-              </span>
-              <span class="block mt-1 opacity-75">Scheduled removal: {{ expirationInfo.expireAt }}</span>
+          </div>
+
+          <div class="p-5 flex items-start gap-4">
+            <div class="shrink-0">
+              <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                   :class="{
+                     'bg-red-100 dark:bg-red-900/50': expirationInfo.urgency === 'critical',
+                     'bg-orange-100 dark:bg-orange-900/50': expirationInfo.urgency === 'warning',
+                     'bg-blue-100 dark:bg-blue-900/50': expirationInfo.urgency === 'normal'
+                   }">
+                <Clock :size="24" 
+                      :class="{
+                        'text-red-600 dark:text-red-400': expirationInfo.urgency === 'critical',
+                        'text-orange-600 dark:text-orange-400': expirationInfo.urgency === 'warning',
+                        'text-blue-600 dark:text-blue-400': expirationInfo.urgency === 'normal'
+                      }"
+                      class="animate-pulse" />
+              </div>
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-2">
+                <h3 class="font-bold text-base"
+                   :class="{
+                     'text-red-900 dark:text-red-200': expirationInfo.urgency === 'critical',
+                     'text-orange-900 dark:text-orange-200': expirationInfo.urgency === 'warning',
+                     'text-blue-900 dark:text-blue-200': expirationInfo.urgency === 'normal'
+                   }">
+                  {{ expirationInfo.expired ? 'Container Expired' : 'Temporary Container' }}
+                </h3>
+                <span v-if="!expirationInfo.expired" 
+                      class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"
+                      :class="{
+                        'bg-red-200 dark:bg-red-900/50 text-red-800 dark:text-red-300': expirationInfo.urgency === 'critical',
+                        'bg-orange-200 dark:bg-orange-900/50 text-orange-800 dark:text-orange-300': expirationInfo.urgency === 'warning',
+                        'bg-blue-200 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300': expirationInfo.urgency === 'normal'
+                      }">
+                  {{ expirationInfo.urgency }}
+                </span>
+              </div>
+              
+              <div class="text-sm mb-3"
+                   :class="{
+                     'text-red-800 dark:text-red-300': expirationInfo.urgency === 'critical',
+                     'text-orange-800 dark:text-orange-300': expirationInfo.urgency === 'warning',
+                     'text-blue-800 dark:text-blue-300': expirationInfo.urgency === 'normal'
+                   }">
+                <span v-if="!expirationInfo.expired">
+                  This container will be automatically removed in 
+                  <span class="font-bold text-lg px-2 py-0.5 rounded-lg inline-flex items-center gap-1"
+                        :class="{
+                          'bg-red-100 dark:bg-red-900/50': expirationInfo.urgency === 'critical',
+                          'bg-orange-100 dark:bg-orange-900/50': expirationInfo.urgency === 'warning',
+                          'bg-blue-100 dark:bg-blue-900/50': expirationInfo.urgency === 'normal'
+                        }">
+                    {{ expirationInfo.timeLeft }}
+                  </span>
+                </span>
+                <span v-else class="font-semibold">
+                  This container has expired and will be removed shortly.
+                </span>
+              </div>
+              
+              <div class="flex items-center gap-2 text-xs opacity-75"
+                   :class="{
+                     'text-red-700 dark:text-red-400': expirationInfo.urgency === 'critical',
+                     'text-orange-700 dark:text-orange-400': expirationInfo.urgency === 'warning',
+                     'text-blue-700 dark:text-blue-400': expirationInfo.urgency === 'normal'
+                   }">
+                <Clock :size="12" />
+                <span>Scheduled removal: {{ expirationInfo.expireAt }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -714,7 +779,7 @@ onUnmounted(() => {
                   class="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all text-xs font-semibold"
                >
                   <ExternalLink :size="14" />
-                  Open in Browser
+                  Open
                </a>
                <div v-else class="mt-4 w-full flex items-center justify-center px-3 py-2 bg-slate-100 dark:bg-slate-800/50 text-slate-400 rounded-lg text-xs">
                  Internal Only
