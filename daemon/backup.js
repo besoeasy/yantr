@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { spawnProcess } from "./utils.js";
+import { resolveComposeCommand } from "./compose.js";
 import { Client as MinioClient } from "minio";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -68,6 +69,62 @@ function createMinioClient(s3Config) {
     secretKey: s3Config.secretKey,
     region: s3Config.region || "us-east-1",
   });
+}
+
+function getComposeEnv(socketPath) {
+  return {
+    ...process.env,
+    DOCKER_HOST: socketPath ? `unix://${socketPath}` : process.env.DOCKER_HOST,
+  };
+}
+
+async function startRestoredApps(metadata, log) {
+  const apps = Array.isArray(metadata?.apps) ? metadata.apps : [];
+  const appConfigs = Array.isArray(metadata?.appConfigs) ? metadata.appConfigs : [];
+  const appIds = new Set();
+
+  for (const app of apps) {
+    if (app?.appId) {
+      appIds.add(app.appId);
+    }
+  }
+
+  for (const appConfig of appConfigs) {
+    if (appConfig?.appId) {
+      appIds.add(appConfig.appId);
+    }
+  }
+
+  if (appIds.size === 0) {
+    return;
+  }
+
+  const socketPath = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
+  const compose = await resolveComposeCommand({ socketPath, log });
+  const env = getComposeEnv(socketPath);
+  const appsDir = path.join(__dirname, "..", "apps");
+
+  for (const appId of appIds) {
+    const composePath = path.join(appsDir, appId, "compose.yml");
+
+    try {
+      await stat(composePath);
+    } catch (err) {
+      log?.("warn", `[Restore] Compose file not found for ${appId}, skipping start`);
+      continue;
+    }
+
+    log?.("info", `[Restore] Starting app ${appId}`);
+    const { exitCode, stderr } = await spawnProcess(
+      compose.command,
+      [...compose.args, "-f", composePath, "up", "-d"],
+      { env }
+    );
+
+    if (exitCode !== 0) {
+      log?.("warn", `[Restore] Failed to start ${appId}: ${stderr}`);
+    }
+  }
 }
 
 // List backups from S3
@@ -543,6 +600,10 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
         // Cleanup
         await unlink(tarPath);
+      }
+
+      if (shouldRestoreApps) {
+        await startRestoredApps(metadata, log);
       }
 
       // Mark as completed
