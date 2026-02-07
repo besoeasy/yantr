@@ -238,9 +238,9 @@ onUnmounted(() => {
         </div>
 
         <!-- Content -->
-        <div v-else class="space-y-12 animate-fadeIn">
+        <div v-else class="animate-fadeIn">
           <!-- Filter Tabs -->
-          <div v-if="containers.length > 0" class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <div v-if="containers.length > 0" class="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-hide">
             <button
               @click="activeFilter = 'all'"
               :class="[
@@ -307,7 +307,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Empty State -->
-          <div v-if="containers.length === 0" class="text-center py-24 bg-white dark:bg-slate-900/70 rounded-3xl shadow-sm dark:shadow-slate-950/60">
+          <div v-if="containers.length === 0" class="text-center py-24 bg-white dark:bg-slate-900/70 rounded-3xl shadow-sm dark:shadow-slate-950/60 mb-6">
             <div class="w-24 h-24 bg-gray-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
               <Store :size="40" class="text-gray-300 dark:text-slate-500" />
             </div>
