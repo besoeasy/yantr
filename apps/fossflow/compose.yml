@@ -1,6 +1,6 @@
 services:
   fossflow:
-    image: stnsmith/fossflow:master-6cb6496@sha256:891e3b2296e5cf3ee8d319ea0d6b8ea03597323b4a61cbba5d98259f13a108c5
+    image: stnsmith/fossflow:master-6cb6496
     container_name: fossflow
     labels:
       yantra.name: "FossFLOW"

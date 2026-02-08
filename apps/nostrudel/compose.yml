@@ -1,6 +1,6 @@
 services:
   nostrudel:
-    image: ghcr.io/hzrd149/nostrudel:0.46.1@sha256:c89738d354beeef4c41a3b73d483ee8a5ba03950691d0966a7310ed10fc980ef
+    image: ghcr.io/hzrd149/nostrudel:0.46.1
     container_name: nostrudel
     labels:
       yantra.name: "noStrudel"
@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
 
   nostrudel-cors:
-    image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5@sha256:641f5ea3265acbc339a03a72b79cd942c4bedab9b1c8b3fc13e5f3f087f649e6
+    image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5
     container_name: nostrudel-cors
     environment:
       - CORSANYWHERE_REQUIRE_HEADERS=host

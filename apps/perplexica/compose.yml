@@ -1,6 +1,6 @@
 services:
   perplexica:
-    image: itzcrazykns1337/perplexica:v1.11.2@sha256:6d03063aacc8b4e85e1fc95275d77a0afef6f4136c797727464d31bf73ef3439
+    image: itzcrazykns1337/perplexica:v1.11.2
     container_name: perplexica
     labels:
       yantra.name: "Perplexica"

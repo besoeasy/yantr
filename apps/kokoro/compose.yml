@@ -1,6 +1,6 @@
 services:
   kokoro:
-    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master@sha256:03a5201c0327f1f1a1619ebbd9722e3b5477b0cccc588aaddb74dd89aad67f15
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
     container_name: kokoro
     labels:
       yantra.name: "Kokoro"
