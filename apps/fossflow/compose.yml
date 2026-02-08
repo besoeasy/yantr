@@ -1,0 +1,24 @@
+services:
+  fossflow:
+    image: stnsmith/fossflow:master-6cb6496@sha256:891e3b2296e5cf3ee8d319ea0d6b8ea03597323b4a61cbba5d98259f13a108c5
+    container_name: fossflow
+    labels:
+      yantra.name: "FossFLOW"
+      yantra.logo: "QmPSsqDuspCoih7swBFcduBTkmxT7CdcMGrUsmRFnbXCWH"
+      yantra.category: "productivity,networking"
+      yantra.port: "80 (HTTP - Web UI)"
+      yantra.description: "Create beautiful isometric infrastructure diagrams with auto-save and offline support"
+      yantra.website: "https://github.com/stan-smith/FossFLOW"
+    ports:
+      - "80"
+    volumes:
+      - fossflow_diagrams:/data/diagrams
+    environment:
+      - NODE_ENV=production
+      - ENABLE_SERVER_STORAGE=true
+      - STORAGE_PATH=/data/diagrams
+      - ENABLE_GIT_BACKUP=false
+    restart: unless-stopped
+
+volumes:
+  fossflow_diagrams:
