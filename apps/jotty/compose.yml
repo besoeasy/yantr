@@ -17,7 +17,6 @@ services:
       - jotty_cache:/app/.next/cache
     environment:
       - NODE_ENV=production
-    user: "1000:1000"
     restart: unless-stopped
 
 volumes:

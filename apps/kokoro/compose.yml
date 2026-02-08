@@ -11,5 +11,4 @@ services:
       yantra.website: "https://github.com/remsky/Kokoro-FastAPI"
     ports:
       - "8880"
-    user: "1000:1000"
     restart: unless-stopped

@@ -13,6 +13,5 @@ services:
       - "7420"
     environment:
       - PORT=7420
-    user: "1000:1000"
     init: true
     restart: unless-stopped
