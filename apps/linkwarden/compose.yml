@@ -1,0 +1,40 @@
+services:
+  linkwarden:
+    image: ghcr.io/linkwarden/linkwarden:v2.13.5@sha256:1588811d7b7d249d387782bb94c7eb189082b82b542ac1667d2ac3d7e7f70ce6
+    container_name: linkwarden
+    labels:
+      yantra.name: "Linkwarden"
+      yantra.logo: "QmTkGBde4hh4635YkCT2edGjHTo9GsxMJbGxESjftVuQ6R"
+      yantra.category: "productivity,utility"
+      yantra.port: "3000 (HTTP - Web UI)"
+      yantra.description: "Bookmark preservation tool for individuals and teams with full-text search and archiving"
+      yantra.website: "https://github.com/linkwarden/linkwarden"
+    ports:
+      - "3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:linkwarden@linkwarden-db:5432/postgres
+      - NEXTAUTH_SECRET=linkwarden
+    volumes:
+      - linkwarden_data:/data/data
+    depends_on:
+      linkwarden-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  linkwarden-db:
+    image: postgres:16-alpine@sha256:0366402213df5db03c47ff80bcc697e92c8be0c213d03c941df1fc42d1ba9560
+    container_name: linkwarden-db
+    environment:
+      - POSTGRES_PASSWORD=linkwarden
+    volumes:
+      - linkwarden_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  linkwarden_data:
+  linkwarden_db:
