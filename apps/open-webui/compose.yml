@@ -1,0 +1,33 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    labels:
+      yantra.name: "Open WebUI"
+      yantra.logo: "QmWkEdpJs4YgavTvXynmEfenjJahsbD7xhu4akP6BtQytt"
+      yantra.category: "ai"
+      yantra.port: "8080 (HTTP - Web UI)"
+      yantra.description: "Web UI for chatting with local LLMs via Ollama"
+      yantra.website: "https://github.com/open-webui/open-webui"
+    ports:
+      - "8080"
+    environment:
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://ollama:11434}
+    depends_on:
+      - ollama
+    volumes:
+      - open_webui_data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  open_webui_data:
