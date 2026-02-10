@@ -405,50 +405,6 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- Dependencies -->
-          <div v-if="dependencies.length > 0" class="space-y-4">
-            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Dependencies</h3>
-
-            <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-4">
-              <div class="flex flex-wrap gap-2">
-                <button
-                  v-for="dep in dependencies"
-                  :key="dep"
-                  @click="router.push(`/apps/${dep}`)"
-                  class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-mono uppercase tracking-wider rounded border transition-all hover:scale-105 active:scale-95"
-                  :class="missingDependencies.includes(dep)
-                    ? 'border-amber-300 text-amber-700 bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer'
-                    : 'border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-300 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 cursor-pointer'"
-                  :title="`Click to view ${dep}`"
-                >
-                  <Package :size="12" />
-                  {{ dep }}
-                  <ExternalLink :size="10" class="opacity-50" />
-                </button>
-              </div>
-
-              <div v-if="missingDependencies.length > 0" class="mt-3 flex items-start gap-2 text-[11px] text-amber-600 dark:text-amber-400">
-                <AlertTriangle :size="14" />
-                <div class="flex-1">
-                  <span class="block mb-1">
-                    Start required apps first:
-                  </span>
-                  <div class="flex flex-wrap gap-1">
-                    <button
-                      v-for="dep in missingDependencies"
-                      :key="dep"
-                      @click="router.push(`/apps/${dep}`)"
-                      class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors font-mono text-[10px] font-medium"
-                    >
-                      {{ dep }}
-                      <ExternalLink :size="8" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Image Details -->
           <div v-if="imageDetails && imageDetails.length > 0" class="space-y-4">
              <div class="flex items-center justify-between px-1">
@@ -494,13 +450,58 @@ onMounted(async () => {
 
         <!-- Right Column: Deployment Configuration -->
         <div class="lg:col-span-4">
-          <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 shadow-sm sticky top-6">
-            <h2 class="text-sm font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
-              <span class="text-blue-500">⚙️</span>
-              Configuration
-            </h2>
-            
-            <div class="space-y-6">
+          <div class="space-y-6 sticky top-6">
+            <!-- Dependencies -->
+            <div v-if="dependencies.length > 0" class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+              <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <Package :size="16" class="text-amber-500" />
+                Dependencies
+              </h2>
+
+              <div class="mt-4 flex flex-wrap gap-2">
+                <button
+                  v-for="dep in dependencies"
+                  :key="dep"
+                  @click="router.push(`/apps/${dep}`)"
+                  class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-mono uppercase tracking-wider rounded border transition-all hover:scale-105 active:scale-95"
+                  :class="missingDependencies.includes(dep)
+                    ? 'border-amber-300 text-amber-700 bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer'
+                    : 'border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-300 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 cursor-pointer'"
+                  :title="`Click to view ${dep}`"
+                >
+                  {{ dep }}
+                  <ExternalLink :size="10" class="opacity-50" />
+                </button>
+              </div>
+
+              <div v-if="missingDependencies.length > 0" class="mt-4 flex items-start gap-2 text-[11px] text-amber-600 dark:text-amber-400">
+                <AlertTriangle :size="14" />
+                <div class="flex-1">
+                  <span class="block mb-1">
+                    Start required apps first:
+                  </span>
+                  <div class="flex flex-wrap gap-1">
+                    <button
+                      v-for="dep in missingDependencies"
+                      :key="dep"
+                      @click="router.push(`/apps/${dep}`)"
+                      class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors font-mono text-[10px] font-medium"
+                    >
+                      {{ dep }}
+                      <ExternalLink :size="8" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+              <h2 class="text-sm font-bold text-slate-900 dark:text-white mb-6 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <span class="text-blue-500">⚙️</span>
+                Configuration
+              </h2>
+
+              <div class="space-y-6">
               <!-- Environment Vars -->
               <div v-if="app.environment?.length > 0" class="space-y-4">
                 <div v-for="env in app.environment" :key="env.envVar" class="space-y-1.5">
@@ -607,6 +608,7 @@ onMounted(async () => {
                  </div>
               </div>
 
+              </div>
             </div>
           </div>
         </div>
