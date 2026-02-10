@@ -155,3 +155,14 @@ export function asyncHandler(fn) {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
 }
+
+/**
+ * Extract base app ID from compose project name
+ * Removes instance suffixes like -2, -3, etc.
+ * @param {string} composeProject - The compose project name
+ * @returns {string} Base app ID without instance suffix
+ */
+export function getBaseAppId(composeProject) {
+  if (!composeProject) return composeProject;
+  return composeProject.replace(/-\d+$/, '');
+}

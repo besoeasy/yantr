@@ -1,7 +1,7 @@
 import Docker from "dockerode";
-import { readFile } from "fs/promises";
+import { readFile, access } from "fs/promises";
 import { resolveComposeCommand } from "./compose.js";
-import { spawnProcess } from "./utils.js";
+import { spawnProcess, getBaseAppId } from "./utils.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -85,24 +85,24 @@ export async function cleanupExpiredApps() {
           // If part of a compose project, remove the entire stack
           if (composeProject) {
             const appsDir = path.join(__dirname, "..", "apps");
-            const appPath = path.join(appsDir, composeProject);
+            const baseAppId = getBaseAppId(composeProject);
+            const appPath = path.join(appsDir, baseAppId);
             const composePath = path.join(appPath, "compose.yml");
 
             try {
-              const fs = await import("fs/promises");
               try {
-                await fs.access(composePath);
+                await access(composePath);
               } catch {
                 throw new Error("Compose file not found");
               }
-              
+
               log("info", `Removing compose stack: ${composeProject}`);
 
-              // Execute docker compose down without volume removal
+              // Execute docker compose down with project name to target specific instance
               const composeCmd = await resolveComposeCommand({ socketPath });
               const { stdout, stderr, exitCode } = await spawnProcess(
                 composeCmd.command,
-                [...composeCmd.args, "down"],
+                [...composeCmd.args, "-p", composeProject, "down"],
                 {
                   cwd: appPath,
                   env: {

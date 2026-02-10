@@ -2,32 +2,25 @@ import express from "express";
 import Docker from "dockerode";
 import cors from "cors";
 import path from "path";
-import { readFile, writeFile, unlink } from "fs/promises";
+import { readFile, writeFile, unlink, access, readdir } from "fs/promises";
 import { resolveComposeCommand } from "./compose.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { 
+import {
   spawnProcess,
   errorHandler,
   asyncHandler,
   NotFoundError,
   BadRequestError,
   ConflictError,
-  DockerError 
+  DockerError,
+  getBaseAppId
 } from "./utils.js";
 
 import { startCleanupScheduler } from "./cleanup.js";
 import {
   getS3Config,
   saveS3Config,
-  listBackups,
-  createBackup,
-  restoreBackup,
-  deleteBackup,
-  getBackupJobStatus,
-  getRestoreJobStatus,
-  getAllBackupJobs,
-  getAllRestoreJobs,
   // New volume-centric backup functions
   createContainerBackup,
   listVolumeBackups,
@@ -47,8 +40,6 @@ const app = express();
 const socketPath = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
 
 const docker = new Docker({ socketPath });
-
-// Compose resolver moved to compose.js
 
 // System architecture cache
 let systemArchitecture = null;
@@ -255,8 +246,7 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
     const appsDir = path.join(__dirname, "..", "apps");
     const apps = [];
 
-    const fs = await import("fs/promises");
-    const entries = await fs.readdir(appsDir, { withFileTypes: true });
+    const entries = await readdir(appsDir, { withFileTypes: true });
 
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
@@ -265,10 +255,9 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
       const composePath = path.join(appPath, "compose.yml");
 
       try {
-        // Check if compose.yml exists using fs
-        const fs = await import("fs/promises");
+        // Check if compose.yml exists
         try {
-          await fs.access(composePath);
+          await access(composePath);
         } catch {
           continue; // File doesn't exist, skip
         }
@@ -677,10 +666,7 @@ app.get("/api/containers", asyncHandler(async (req, res) => {
       }
 
       // Extract base app ID from compose project (remove -2, -3 suffix for instances)
-      let baseAppId = composeProject || container.Names[0]?.replace("/", "") || "unknown";
-      if (composeProject && composeProject.match(/-\d+$/)) {
-        baseAppId = composeProject.replace(/-\d+$/, '');
-      }
+      const baseAppId = getBaseAppId(composeProject) || container.Names[0]?.replace("/", "") || "unknown";
 
       return {
         id: container.Id,
@@ -929,7 +915,7 @@ app.get("/api/apps/:id/check-arch", asyncHandler(async (req, res) => {
 
   // Verify compose file exists
   try {
-    await fsPromises.access(composePath);
+    await access(composePath);
   } catch (err) {
     throw new NotFoundError(`App '${appId}' not found`);
   }
@@ -1293,8 +1279,7 @@ app.post("/api/deploy", async (req, res) => {
       if (expiresIn || customPortMappings || (instanceId && instanceId > 1)) {
         try {
           const tempComposePath = path.join(appPath, ".compose.tmp.yml");
-          const fs = await import("fs/promises");
-          await fs.unlink(tempComposePath);
+          await unlink(tempComposePath);
           log("info", `🚀 [POST /api/deploy] Cleaned up temporary compose file`);
         } catch (err) {
           log("warn", `⚠️  [POST /api/deploy] Failed to cleanup temp file: ${err.message}`);
@@ -1567,22 +1552,18 @@ app.delete("/api/containers/:id", async (req, res) => {
       const appsDir = path.join(__dirname, "..", "apps");
 
       // Extract base app ID from project (remove -2, -3 suffix for instances)
-      let baseAppId = composeProject;
-      if (composeProject.match(/-\d+$/)) {
-        baseAppId = composeProject.replace(/-\d+$/, '');
-      }
+      const baseAppId = getBaseAppId(composeProject);
 
       const appPath = path.join(appsDir, baseAppId); // Use base app ID for folder lookup
       const composePath = path.join(appPath, "compose.yml");
 
       try {
-        const fs = await import("fs/promises");
         try {
-          await fs.access(composePath);
+          await access(composePath);
         } catch {
           throw new Error("Compose file not found");
         }
-        
+
         log("info", `🗑️  [DELETE /api/containers/:id] Found managed app at ${appPath}, shutting down stack...`);
 
         // Execute docker compose down with project name to target specific instance
@@ -2473,65 +2454,6 @@ app.delete("/api/volumes/:volumeName/backup/:timestamp", asyncHandler(async (req
   });
 }));
 
-// ============================================
-// OLD APP-CENTRIC BACKUP API ENDPOINTS (DEPRECATED - Keep for now)
-// ============================================
-
-// GET /api/backup/jobs - Get all backup jobs
-app.get("/api/backup/jobs", (req, res) => {
-  const jobs = getAllBackupJobs();
-
-  res.json({
-    success: true,
-    count: jobs.length,
-    jobs,
-  });
-});
-
-// GET /api/backup/jobs/:jobId - Get backup job status
-app.get("/api/backup/jobs/:jobId", (req, res) => {
-  const job = getBackupJobStatus(req.params.jobId);
-
-  if (!job) {
-    return res.status(404).json({
-      success: false,
-      error: "Job not found",
-    });
-  }
-
-  res.json({
-    success: true,
-    job,
-  });
-});
-
-// GET /api/restore/jobs - Get all restore jobs
-app.get("/api/restore/jobs", (req, res) => {
-  const jobs = getAllRestoreJobs();
-
-  res.json({
-    success: true,
-    count: jobs.length,
-    jobs,
-  });
-});
-
-// GET /api/restore/jobs/:jobId - Get restore job status
-app.get("/api/restore/jobs/:jobId", (req, res) => {
-  const job = getRestoreJobStatus(req.params.jobId);
-
-  if (!job) {
-    return res.status(404).json({
-      success: false,
-      error: "Job not found",
-    });
-  }
-
-  res.json({
-    success: true,
-    job,
-  });
-});
 
 // ============================================
 // END BACKUP & RESTORE API ENDPOINTS
