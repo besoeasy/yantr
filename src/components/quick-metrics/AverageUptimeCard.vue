@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { Clock, Activity, Zap } from 'lucide-vue-next'
+import { formatDuration } from '../../utils/metrics'
 
 const props = defineProps({
   containers: { type: Array, default: () => [] },
@@ -22,14 +23,7 @@ const stats = computed(() => {
   }, 0)
 
   const avgUptime = totalUptime / count
-  const days = Math.floor(avgUptime / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((avgUptime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const minutes = Math.floor((avgUptime % (1000 * 60 * 60)) / (1000 * 60))
-
-  let formatted = ''
-  if (days > 0) formatted = `${days}d ${hours}h`
-  else if (hours > 0) formatted = `${hours}h ${minutes}m`
-  else formatted = `${minutes}m`
+  const formatted = formatDuration(avgUptime)
 
   return { formatted, count, rawAvg: avgUptime }
 })

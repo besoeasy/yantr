@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "lucide-vue-next";
+import { formatDuration } from "../utils/metrics";
+import { useApiUrl } from "../composables/useApiUrl";
 import YantraContainersGrid from "../components/home/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
@@ -17,12 +19,12 @@ import HostMetricsCard from "../components/quick-metrics/HostMetricsCard.vue";
 import MinioStatusCard from "../components/quick-metrics/MinioStatusCard.vue";
 
 const router = useRouter();
+const { apiUrl } = useApiUrl();
 
 const containers = ref([]);
 const volumes = ref([]);
 const images = ref([]);
 const loading = ref(false);
-const apiUrl = ref("");
 const currentTime = ref(Date.now());
 const watchtowerInstalled = ref(false);
 const activeFilter = ref("all");
@@ -136,22 +138,12 @@ function getExpirationInfo(container) {
 function formatUptime(container) {
   if (!container.created || container.state !== "running") return null;
 
-  const createdTime = container.created * 1000; // Convert to milliseconds
+  const createdTime = container.created * 1000;
   const uptime = currentTime.value - createdTime;
 
   if (uptime <= 0) return "Just started";
 
-  const days = Math.floor(uptime / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((uptime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
-
-  if (days > 0) {
-    return `${days}d ${hours}h`;
-  } else if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
-  }
+  return formatDuration(uptime);
 }
 
 async function fetchContainers() {

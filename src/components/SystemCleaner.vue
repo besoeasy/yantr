@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { Trash2, RefreshCw, CheckCircle2, Package, Database, Sparkles, ArrowRight } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
+import { formatBytes } from '../utils/metrics'
 
 const toast = useToast()
 
@@ -57,14 +58,6 @@ watch(() => props.initialVolumeStats, (newStats) => {
 
 
 // Methods
-function formatBytes(bytes) {
-  if (bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
 async function cleanSystem() {
   if (!confirm(`Are you sure you want to reclaim ${totalReclaimableFormatted.value}?\n\nThis will permanently delete:\n- ${imageStats.value.unusedCount} unused images\n- ${volumeStats.value.unusedCount} unused volumes`)) {
     return

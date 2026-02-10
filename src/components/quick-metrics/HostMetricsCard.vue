@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Cpu, MemoryStick, HardDrive, Server } from 'lucide-vue-next'
+import { formatBytes } from '../../utils/metrics'
 
 const props = defineProps({
   apiUrl: { type: String, required: true }
@@ -89,14 +90,6 @@ const storageTheme = computed(() => {
     progress: 'bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-400 dark:to-teal-400'
   }
 })
-
-function formatBytes(bytes) {
-  if (!bytes || bytes === 0) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${(bytes / Math.pow(k, i)).toFixed(1)} ${sizes[i]}`
-}
 
 async function fetchSystemInfo() {
   try {
