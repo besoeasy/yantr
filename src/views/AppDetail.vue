@@ -168,7 +168,10 @@ async function deployApp() {
   if (deploying.value) return;
 
   if (missingDependencies.value.length > 0) {
-    toast.error(`Start required apps first: ${missingDependencies.value.join(", ")}`);
+    const depApps = missingDependencies.value.join(", ");
+    toast.error(`Missing dependencies: ${depApps}. Click dependency badges below to deploy them first.`, {
+      timeout: 5000
+    });
     return;
   }
 
@@ -228,7 +231,15 @@ async function deployApp() {
         router.push("/");
       }, 1500);
     } else {
-      throw new Error(result.error || "Deployment failed");
+      // Check if it's a dependency error
+      if (result.missingDependencies && result.missingDependencies.length > 0) {
+        const deps = result.missingDependencies.join(", ");
+        toast.error(`Missing dependencies: ${deps}. Click dependency badges below to deploy them first.`, {
+          timeout: 5000
+        });
+      } else {
+        throw new Error(result.message || result.error || "Deployment failed");
+      }
     }
   } catch (error) {
     console.error("Deployment error:", error);
@@ -384,23 +395,40 @@ onMounted(async () => {
 
             <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-4">
               <div class="flex flex-wrap gap-2">
-                <span
+                <button
                   v-for="dep in dependencies"
                   :key="dep"
-                  class="px-2 py-1 text-xs font-mono uppercase tracking-wider rounded border"
+                  @click="router.push(`/apps/${dep}`)"
+                  class="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-mono uppercase tracking-wider rounded border transition-all hover:scale-105 active:scale-95"
                   :class="missingDependencies.includes(dep)
-                    ? 'border-amber-300 text-amber-600 bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:bg-amber-950/30'
-                    : 'border-emerald-200 text-emerald-600 bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-400 dark:bg-emerald-950/20'"
+                    ? 'border-amber-300 text-amber-700 bg-amber-50 dark:border-amber-700 dark:text-amber-300 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 cursor-pointer'
+                    : 'border-emerald-200 text-emerald-700 bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-300 dark:bg-emerald-950/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 cursor-pointer'"
+                  :title="`Click to view ${dep}`"
                 >
+                  <Package :size="12" />
                   {{ dep }}
-                </span>
+                  <ExternalLink :size="10" class="opacity-50" />
+                </button>
               </div>
 
               <div v-if="missingDependencies.length > 0" class="mt-3 flex items-start gap-2 text-[11px] text-amber-600 dark:text-amber-400">
                 <AlertTriangle :size="14" />
-                <span>
-                  Start required apps first: {{ missingDependencies.join(', ') }}.
-                </span>
+                <div class="flex-1">
+                  <span class="block mb-1">
+                    Start required apps first:
+                  </span>
+                  <div class="flex flex-wrap gap-1">
+                    <button
+                      v-for="dep in missingDependencies"
+                      :key="dep"
+                      @click="router.push(`/apps/${dep}`)"
+                      class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors font-mono text-[10px] font-medium"
+                    >
+                      {{ dep }}
+                      <ExternalLink :size="8" />
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -233,7 +233,7 @@ onMounted(() => {
 
     <!-- Main Content -->
     <main class="flex-1 min-h-screen md:ml-20 pb-20 md:pb-0">
-      <router-view />
+      <router-view :key="route.fullPath" />
     </main>
   </div>
 </template>
