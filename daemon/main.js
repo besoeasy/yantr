@@ -342,6 +342,10 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
           port.isNamed = namedPorts.has(port.hostPort);
         });
 
+        const dependencies = labels.dependencies
+          ? labels.dependencies.split(",").map((dep) => dep.trim()).filter(Boolean)
+          : [];
+
         apps.push({
           id: entry.name,
           name: labels.name || entry.name,
@@ -356,6 +360,7 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
 
           website: labels.website || null,
           docs: labels.docs || null,
+          dependencies: dependencies,
           path: appPath,
           composePath: composePath,
           environment: envVars,
@@ -1016,6 +1021,34 @@ app.post("/api/deploy", async (req, res) => {
       } else {
         log("info", `✅ [POST /api/deploy] Architecture compatible (${archCheck.systemArch})`);
       }
+    }
+
+    // Check dependencies
+    const dependenciesMatch = composeContent.match(/yantra\.dependencies:\s*["'](.+?)["']/);
+    if (dependenciesMatch) {
+      const dependencies = dependenciesMatch[1].split(',').map(dep => dep.trim());
+      log("info", `🔗 [POST /api/deploy] Checking dependencies: ${dependencies.join(', ')}`);
+
+      const containers = await docker.listContainers({ all: false }); // Only running containers
+      const runningProjects = new Set(
+        containers
+          .map(c => c.Labels && c.Labels["com.docker.compose.project"])
+          .filter(Boolean)
+      );
+
+      const missingDeps = dependencies.filter(dep => !runningProjects.has(dep));
+
+      if (missingDeps.length > 0) {
+        log("error", `❌ [POST /api/deploy] Missing dependencies: ${missingDeps.join(', ')}`);
+        return res.status(400).json({
+          success: false,
+          error: "Missing dependencies",
+          message: `This app requires the following apps to be running: ${missingDeps.join(', ')}. Please deploy ${missingDeps.length === 1 ? 'it' : 'them'} first.`,
+          missingDependencies: missingDeps,
+        });
+      }
+
+      log("info", `✅ [POST /api/deploy] All dependencies satisfied`);
     }
 
     // Write .env file if environment variables provided

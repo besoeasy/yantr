@@ -90,6 +90,22 @@ const categories = computed(() => {
   return app.value.category.split(",").map((c) => c.trim());
 });
 
+const dependencies = computed(() => {
+  return Array.isArray(app.value?.dependencies) ? app.value.dependencies : [];
+});
+
+const runningAppIds = computed(() => {
+  return new Set(containers.value.filter((c) => c.state === "running").map((c) => c.app?.id).filter(Boolean));
+});
+
+const missingDependencies = computed(() => {
+  return dependencies.value.filter((dep) => !runningAppIds.value.has(dep));
+});
+
+const canDeploy = computed(() => {
+  return !deploying.value && missingDependencies.value.length === 0;
+});
+
 const chatGptUrl = computed(() => {
   if (!app.value) return "";
 
@@ -150,6 +166,11 @@ async function fetchImageDetails() {
 
 async function deployApp() {
   if (deploying.value) return;
+
+  if (missingDependencies.value.length > 0) {
+    toast.error(`Start required apps first: ${missingDependencies.value.join(", ")}`);
+    return;
+  }
 
   // Check for port conflicts if customizing ports
   if (customizePorts.value) {
@@ -357,6 +378,33 @@ onMounted(async () => {
             </div>
           </div>
 
+          <!-- Dependencies -->
+          <div v-if="dependencies.length > 0" class="space-y-4">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 px-1">Dependencies</h3>
+
+            <div class="bg-white dark:bg-[#0c0c0e] rounded-lg border border-slate-200 dark:border-slate-800 p-4">
+              <div class="flex flex-wrap gap-2">
+                <span
+                  v-for="dep in dependencies"
+                  :key="dep"
+                  class="px-2 py-1 text-xs font-mono uppercase tracking-wider rounded border"
+                  :class="missingDependencies.includes(dep)
+                    ? 'border-amber-300 text-amber-600 bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:bg-amber-950/30'
+                    : 'border-emerald-200 text-emerald-600 bg-emerald-50 dark:border-emerald-800/50 dark:text-emerald-400 dark:bg-emerald-950/20'"
+                >
+                  {{ dep }}
+                </span>
+              </div>
+
+              <div v-if="missingDependencies.length > 0" class="mt-3 flex items-start gap-2 text-[11px] text-amber-600 dark:text-amber-400">
+                <AlertTriangle :size="14" />
+                <span>
+                  Start required apps first: {{ missingDependencies.join(', ') }}.
+                </span>
+              </div>
+            </div>
+          </div>
+
           <!-- Image Details -->
           <div v-if="imageDetails && imageDetails.length > 0" class="space-y-4">
              <div class="flex items-center justify-between px-1">
@@ -497,7 +545,8 @@ onMounted(async () => {
               <div class="pt-2">
                  <button
                    @click="deployApp"
-                   :disabled="deploying"
+                   :disabled="!canDeploy"
+                   :title="missingDependencies.length > 0 ? `Start required apps: ${missingDependencies.join(', ')}` : ''"
                    class="w-full relative group bg-indigo-600 hover:bg-indigo-700 text-white rounded-md p-3.5 font-bold uppercase tracking-wider text-xs transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-indigo-500/20"
                  >
                     <span v-if="deploying" class="flex items-center justify-center gap-3">

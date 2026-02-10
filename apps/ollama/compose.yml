@@ -1,0 +1,32 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    labels:
+      yantra.name: "Ollama"
+      yantra.logo: "QmWkEdpJs4YgavTvXynmEfenjJahsbD7xhu4akP6BtQytt"
+      yantra.category: "ai,backend"
+      yantra.port: "11434 (HTTP - API)"
+      yantra.description: "Local LLM inference server - run models like Llama, Mistral, and more"
+      yantra.website: "https://ollama.ai"
+    ports:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 28G
+    mem_swappiness: 0
+    shm_size: 8gb
+    networks:
+      - yantra_network
+
+volumes:
+  ollama_data:
+
+networks:
+  yantra_network:
+    driver: bridge
+    name: yantra_network
