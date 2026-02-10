@@ -59,6 +59,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
+            type=raw,value={{date 'YYYYMMDD'}}
 
       - name: Build and push Docker image
         if: steps.commit-check.outputs.should_build == 'true'
