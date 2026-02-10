@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass, MessageCircle } from "lucide-vue-next";
+import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
 
 const route = useRoute();
@@ -151,7 +151,7 @@ onMounted(() => {
           class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:shadow-slate-900/40 transition-all duration-300 ease-out"
           title="Join Telegram"
         >
-          <MessageCircle :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+          <Send :size="20" class="group-hover:scale-110 transition-transform duration-300" />
           <span
             class="absolute left-full ml-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-slate-100 dark:text-slate-900"
           >
@@ -215,7 +215,7 @@ onMounted(() => {
           class="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all active:scale-95 text-gray-600 dark:text-slate-400"
           title="Join Telegram"
         >
-          <MessageCircle :size="20" />
+          <Send :size="20" />
           <span class="text-[10px] font-medium">Telegram</span>
         </a>
 
