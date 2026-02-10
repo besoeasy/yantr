@@ -2,13 +2,13 @@
 
 # ⚙️ Yantra
 
-**The self-hosted app store for your PC**
+**The self-hosted app store for your PC and laptop**
 
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/besoeasy/yantra/pkgs/container/yantra)
 [![Vue](https://img.shields.io/badge/Vue-3-42b883?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](LICENSE)
 
-Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantra is to self-hosted apps what Homebrew is to software packages—simple, elegant, and built for your daily driver.
+Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantra is to self-hosted apps what Homebrew is to software packages: simple, elegant, and built for your daily driver. If you like Umbrel but do not want an OS takeover, Yantra gives you the same app-store flow on the machine you already use.
 
 [🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🛠️ Apps](#%EF%B8%8F-app-catalog) • [🎥 Demo Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [💬 Issues](https://github.com/besoeasy/yantra/issues)
 
@@ -156,21 +156,27 @@ Always ships the newest app releases regardless of your Yantra version—updates
 
 ## 🧭 Why Yantra
 
-Most homelab platforms treat your hardware like an **OS replacement**. Yantra is different: it’s a lightweight app store that runs **alongside** your existing system. Your laptop stays yours—Yantra simply gives you one-click access to powerful self-hosted apps when you need them.
+Most homelab platforms treat your hardware like an **OS replacement**. Yantra is different: it is a lightweight app store that runs **alongside** your existing system. Your laptop stays yours. Install once, run what you need, and shut it down when you are done.
+
+### Built for daily machines
+
+- **Replace OS-based platforms** without reinstalling your system.
+- **Run locally on a laptop** for personal workflows, testing, or short-lived apps.
+- **Keep full control** with standard Docker Compose and open volumes.
 
 ### Feature Comparison
 
-| Feature            | 🔧 Yantra                      | 🚫 Others (Umbrel/CasaOS)              |
-| :----------------- | :----------------------------- | :------------------------------------- |
-| **Philosophy**     | App Store (Runs _on_ your OS)  | Operating System (Taking over your OS) |
-| **Hardware**       | Your existing Laptop/PC        | Dedicated Pi/Server                    |
-| **Installation**   | Single Docker command          | Full OS installation required          |
-| **Flexibility**    | Run alongside daily work       | Exclusive computer use                 |
-| **Control**        | Full System Access             | Locked Ecosystem                       |
-| **Resource Usage** | On-demand (start what you use) | Always-on services                     |
-| **Isolation**      | Clean Docker Containers        | System-wide dependencies               |
-| **Portability**    | Easy backup/migration          | Tied to specific hardware              |
-| **Learning Curve** | Familiar Docker workflow       | New OS paradigm to learn               |
+| Feature            | 🔧 Yantra                                 | 🚫 Others (Umbrel/CasaOS)              |
+| :----------------- | :---------------------------------------- | :------------------------------------- |
+| **Philosophy**     | App Store (Runs _on_ your OS)             | Operating System (Taking over your OS) |
+| **Hardware**       | Your existing Laptop/PC                   | Dedicated Pi/Server                    |
+| **Installation**   | Single Docker command                     | Full OS installation required          |
+| **Flexibility**    | Run alongside daily work or local testing | Exclusive computer use                 |
+| **Control**        | Full system access + open Docker Compose  | Locked ecosystem                       |
+| **Resource Usage** | On-demand (start what you use)            | Always-on services                     |
+| **Isolation**      | Clean Docker containers                   | System-wide dependencies               |
+| **Portability**    | Easy backup/migration                     | Tied to specific hardware              |
+| **Learning Curve** | Familiar Docker workflow                  | New OS paradigm to learn               |
 
 ---
 
