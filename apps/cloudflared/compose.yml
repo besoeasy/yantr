@@ -8,6 +8,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Cloudflared"
+      yantra.logo: "Qmcyr4xpG4SZdBp9VorVjRrvHqHoQzCu9YHCQZGNC5ck8T"
       yantra.category: "network,security"
       yantra.description: "Cloudflare Tunnel for secure remote access without exposing ports"
       yantra.website: "https://github.com/cloudflare/cloudflared"

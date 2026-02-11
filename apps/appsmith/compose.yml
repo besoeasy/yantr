@@ -4,6 +4,7 @@ services:
     container_name: appsmith
     labels:
       yantra.name: "Appsmith"
+      yantra.logo: "QmcEzSU5HXbZ9jiG6ZAY4PrqHRq2ddhQnfT2gcpXg34kuy"
       yantra.category: "productivity,development"
       yantra.port: "80 (HTTP - Web UI), 443 (HTTPS - Web UI)"
       yantra.description: "Low-code internal tools platform for rapid application development"

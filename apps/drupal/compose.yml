@@ -4,6 +4,7 @@ services:
     container_name: drupal
     labels:
       yantra.name: "Drupal"
+      yantra.logo: "QmXryrL9jF3YL37TEs7eZRsv5mvDyUYSkWdPrEDKE8GM8k"
       yantra.category: "cms,productivity"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Powerful open-source content management system for building websites"

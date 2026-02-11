@@ -4,6 +4,7 @@ services:
     container_name: dockge
     labels:
       yantra.name: "Dockge"
+      yantra.logo: "QmXUGnzPpcRuGks5CJB6we1cFcBW2qPau9FZUs98wPGFJL"
       yantra.category: "docker,management"
       yantra.port: "5001 (HTTP - Web UI)"
       yantra.description: "Self-hosted Docker Compose stack manager with GUI for easy deployment"

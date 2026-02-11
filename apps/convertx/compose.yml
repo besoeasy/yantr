@@ -4,6 +4,7 @@ services:
     container_name: convertx
     labels:
       yantra.name: "ConvertX"
+      yantra.logo: "QmafozB6D4dw51adzoPyrCwTTCATQv1nbVwZPME6yzDWF7"
       yantra.category: "tools,utility"
       yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "Self-hosted file conversion tool supporting multiple formats"

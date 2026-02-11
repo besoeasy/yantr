@@ -9,6 +9,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Cloud Torrent"
+      yantra.logo: "QmdPAfpuG5zkJs4GMX2DJ4xhKYq8vkT98TMjHgecAwkQVL"
       yantra.category: "download,utility"
       yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "Cloud-based BitTorrent client with streaming support"

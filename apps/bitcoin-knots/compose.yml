@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Bitcoin Knots"
+      yantra.logo: "QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ"
       yantra.category: "cryptocurrency"
       yantra.port: "8332 (HTTP - Web UI)"
       yantra.description: "Bitcoin full node with enhanced features and privacy focus."

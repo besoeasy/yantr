@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Domain Locker"
+      yantra.logo: "QmXCFhWvYYmz21YHP38zFFxsitmvMeZStbjfacg2dKrZnw"
       yantra.category: "security,tools"
       yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "Complete visibility of your domain portfolio with monitoring and alerts"

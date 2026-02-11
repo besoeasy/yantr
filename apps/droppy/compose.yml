@@ -4,6 +4,7 @@ services:
     container_name: droppy
     labels:
       yantra.name: "Droppy"
+      yantra.logo: "Qme6oZNcBv7JN97qa66RiKE7UwpxxcVGbdRz395uaSPMPM"
       yantra.category: "file-manager,utility"
       yantra.port: "8989 (HTTP - Web UI)"
       yantra.description: "Lightweight self-hosted file manager and sharing solution"

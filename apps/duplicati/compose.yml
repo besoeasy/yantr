@@ -4,6 +4,7 @@ services:
     container_name: duplicati
     labels:
       yantra.name: "Duplicati"
+      yantra.logo: "QmX52qWfGH9q5mPvjT3mfmf6ag6BUW8fGwGX1WrbPxfqn8"
       yantra.category: "tools,security,utility"
       yantra.port: "8200 (HTTP - Web UI)"
       yantra.description: "Free backup software for encrypted, incremental backups"

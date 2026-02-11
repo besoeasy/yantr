@@ -12,6 +12,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Deluge"
+      yantra.logo: "QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33"
       yantra.category: "download,utility"
       yantra.port: "8112 (HTTP - Web UI)"
       yantra.description: "Lightweight BitTorrent client with web interface"

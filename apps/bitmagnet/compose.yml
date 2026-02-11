@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     labels:
       yantra.name: "Bitmagnet"
+      yantra.logo: "QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP"
       yantra.category: "media,tools,utility"
       yantra.port: "3333 (HTTP - Web UI)"
       yantra.description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent client."

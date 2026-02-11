@@ -4,6 +4,7 @@ services:
     container_name: dashmachine
     labels:
       yantra.name: "Dashmachine"
+      yantra.logo: "QmTvbLNZMCyEQmcFBbY7EkKq9hnJTPy8ut4hAYRH3Xxaiw"
       yantra.category: "dashboard,organization"
       yantra.port: "5000 (HTTP - Web UI)"
       yantra.description: "Customizable personal dashboard for organizing links and services"

@@ -4,6 +4,7 @@ services:
     container_name: freshrss
     labels:
       yantra.name: "FreshRSS"
+      yantra.logo: "QmeS63xjuJXpVGUXP5B78naYoBcrcL7H5ZprF13kLZJUMq"
       yantra.category: "feed,productivity"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Self-hosted RSS feed aggregator for reading news and updates from multiple sources"

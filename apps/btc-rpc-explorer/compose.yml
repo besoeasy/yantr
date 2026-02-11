@@ -13,6 +13,7 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "BTC RPC Explorer"
+      yantra.logo: "QmRRQssYsvyCwP7kbYMeYkJ9Qgmf76SLvpJ8EYDvNXiinS"
       yantra.category: "cryptocurrency,tools"
       yantra.port: "3002 (HTTP - Web UI)"
       yantra.description: "Self-hosted Bitcoin blockchain explorer using your node's RPC"
