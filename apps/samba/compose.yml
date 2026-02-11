@@ -3,9 +3,9 @@ services:
     image: dockurr/samba:latest
     container_name: samba
     environment:
-      - NAME=${SAMBA_NAME:-Data}
-      - USER=${SAMBA_USER:-admin}
-      - PASS=${SAMBA_PASS:-admin}
+      NAME: ${SAMBA_NAME:-Data}
+      USER: ${SAMBA_USER:-admin}
+      PASS: ${SAMBA_PASS:-admin}
     ports:
       - "445:445"
     volumes:

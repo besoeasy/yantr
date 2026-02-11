@@ -12,6 +12,6 @@ services:
     ports:
       - "7420"
     environment:
-      - PORT=7420
+      PORT: 7420
     init: true
     restart: unless-stopped

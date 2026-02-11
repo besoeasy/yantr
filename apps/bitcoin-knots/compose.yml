@@ -3,8 +3,8 @@ services:
     image: bitcoinknots/bitcoin:latest
     container_name: bitcoin-knots
     environment:
-      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER:-bitcoin}
-      - BITCOIN_RPC_PASSWORD=${BITCOIN_RPC_PASSWORD:-changeme}
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER:-bitcoin}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD:-changeme}
     command:
       -printtoconsole
       -server=1

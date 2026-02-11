@@ -4,8 +4,8 @@ services:
     container_name: bitcoin-knots-vm
     hostname: bitcoin-knots-vm
     environment:
-      - BITCOIN_RPC_USER=${BITCOIN_RPC_USER:-bitcoin}
-      - BITCOIN_RPC_PASSWORD=${BITCOIN_RPC_PASSWORD:-changeme}
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER:-bitcoin}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD:-changeme}
     volumes:
       - bitcoin_knots_config:/config
     ports:

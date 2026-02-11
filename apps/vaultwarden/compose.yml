@@ -14,7 +14,7 @@ services:
     volumes:
       - vaultwarden_data:/data
     environment:
-      - WEBSOCKET_ENABLED=true
+      WEBSOCKET_ENABLED: true
     restart: unless-stopped
 
 volumes:

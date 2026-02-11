@@ -12,7 +12,7 @@ services:
     ports:
       - "5001"
     environment:
-      - DOCKGE_STACKS_DIR=${DOCKGE_STACKS_DIR:-/opt/stacks}
+      DOCKGE_STACKS_DIR: ${DOCKGE_STACKS_DIR:-/opt/stacks}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - dockge_data:/app/data

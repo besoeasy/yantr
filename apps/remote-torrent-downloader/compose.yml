@@ -16,9 +16,9 @@ services:
       - "6888/tcp"
       - "6888/udp"
     environment:
-      - TELEGRAMBOT=${TELEGRAM_BOT_TOKEN}
-      - NSEC=${NOSTR_NSEC}
-      - AUTHCODE=${AUTHCODE}
+      TELEGRAMBOT: ${TELEGRAM_BOT_TOKEN}
+      NSEC: ${NOSTR_NSEC}
+      AUTHCODE: ${AUTHCODE}
     volumes:
       - remote-torrent-downloader_data:/tmp/remote-torrent-downloader
     restart: unless-stopped

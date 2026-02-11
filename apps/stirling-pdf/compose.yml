@@ -15,8 +15,8 @@ services:
       - stirling_pdf_data:/usr/share/tessdata
       - stirling_pdf_config:/configs
     environment:
-      - DOCKER_ENABLE_SECURITY=${STIRLING_PDF_SECURITY:-false}
-      - SYSTEM_DEFAULTLOCALE=${STIRLING_PDF_LOCALE:-en-US}
+      DOCKER_ENABLE_SECURITY: ${STIRLING_PDF_SECURITY:-false}
+      SYSTEM_DEFAULTLOCALE: ${STIRLING_PDF_LOCALE:-en-US}
     restart: unless-stopped
 
 volumes:

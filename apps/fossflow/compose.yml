@@ -14,10 +14,10 @@ services:
     volumes:
       - fossflow_diagrams:/data/diagrams
     environment:
-      - NODE_ENV=production
-      - ENABLE_SERVER_STORAGE=true
-      - STORAGE_PATH=/data/diagrams
-      - ENABLE_GIT_BACKUP=false
+      NODE_ENV: production
+      ENABLE_SERVER_STORAGE: true
+      STORAGE_PATH: /data/diagrams
+      ENABLE_GIT_BACKUP: false
     restart: unless-stopped
 
 volumes:

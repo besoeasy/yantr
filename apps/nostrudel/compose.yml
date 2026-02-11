@@ -12,7 +12,7 @@ services:
     ports:
       - "80"
     environment:
-      - CORS_PROXY=nostrudel-cors:8080
+      CORS_PROXY: nostrudel-cors:8080
     depends_on:
       - nostrudel-cors
     init: true
@@ -22,5 +22,5 @@ services:
     image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5
     container_name: nostrudel-cors
     environment:
-      - CORSANYWHERE_REQUIRE_HEADERS=host
+      CORSANYWHERE_REQUIRE_HEADERS: host
     restart: unless-stopped

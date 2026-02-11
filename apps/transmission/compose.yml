@@ -3,8 +3,8 @@ services:
     image: linuxserver/transmission:latest
     container_name: transmission
     environment:
-      - USER=${TRANSMISSION_USER:-admin}
-      - PASS=${TRANSMISSION_PASS:-admin}
+      USER: ${TRANSMISSION_USER:-admin}
+      PASS: ${TRANSMISSION_PASS:-admin}
     volumes:
       - transmission_config:/config
       - transmission_downloads:/downloads

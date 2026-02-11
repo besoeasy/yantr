@@ -15,7 +15,7 @@ services:
       - "53:53/udp"
       - "80"
     environment:
-      - WEBPASSWORD=${WEBPASSWORD:-yantra}
+      WEBPASSWORD: ${WEBPASSWORD:-yantra}
     volumes:
       - ./entrypoint.sh:/app/entrypoint.sh:ro
       - pihole_data:/etc/pihole

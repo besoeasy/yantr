@@ -9,8 +9,8 @@ services:
     volumes:
       - stremio-data:/root/.stremio-server
     environment:
-      - NO_CORS=1
-      - HTTPS=1 # Enable HTTPS
+      NO_CORS: 1
+      HTTPS: 1
     labels:
       yantra.name: "Stremio"
       yantra.logo: "QmYomVCvc7rjRf1283spKQoN9NPGVpRZ6L7ERe8NmCTY2K"

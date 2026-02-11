@@ -22,12 +22,12 @@ services:
     volumes:
       - ./config.yaml:/config.yaml:ro
     environment:
-      - LOG_LEVEL=info
-      - LOG_FORMAT=json
-      - METRICS_PORT=8181
-      - RELAY_NAME=relay-on-yantra
-      - DB_HOST=cockroachdb
-      - DB_PORT=26257
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+      METRICS_PORT: 8181
+      RELAY_NAME: relay-on-yantra
+      DB_HOST: cockroachdb
+      DB_PORT: 26257
     command: /usr/local/bin/relay start --config /config.yaml --db-host cockroachdb --db-port 26257
     depends_on:
       cockroachdb:

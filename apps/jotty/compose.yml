@@ -16,7 +16,7 @@ services:
       - jotty_config:/app/config
       - jotty_cache:/app/.next/cache
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
     restart: unless-stopped
 
 volumes:

@@ -4,7 +4,7 @@ services:
     container_name: cloudflared
     command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
     environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
     restart: unless-stopped
     labels:
       yantra.name: "Cloudflared"

@@ -7,14 +7,14 @@ services:
     ports:
       - "25565"
     environment:
-      - EULA=${EULA:-TRUE}
-      - TYPE=${TYPE:-VANILLA}
-      - VERSION=${VERSION:-LATEST}
-      - MEMORY=${MEMORY:-1G}
-      - DIFFICULTY=${DIFFICULTY:-normal}
-      - MODE=${MODE:-survival}
-      - MAX_PLAYERS=${MAX_PLAYERS:-20}
-      - MOTD=${MOTD:-A Minecraft Server}
+      EULA: ${EULA:-TRUE}
+      TYPE: ${TYPE:-VANILLA}
+      VERSION: ${VERSION:-LATEST}
+      MEMORY: ${MEMORY:-1G}
+      DIFFICULTY: ${DIFFICULTY:-normal}
+      MODE: ${MODE:-survival}
+      MAX_PLAYERS: ${MAX_PLAYERS:-20}
+      MOTD: ${MOTD:-A Minecraft Server}
     volumes:
       - minecraft-data:/data
     restart: unless-stopped

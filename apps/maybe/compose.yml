@@ -14,16 +14,16 @@ services:
     volumes:
       - maybe_storage:/rails/storage
     environment:
-      - SELF_HOSTING_ENABLED=true
-      - PORT=3063
-      - DATABASE_URL=postgresql://maybe:maybe@maybe-db:5432/maybe
-      - RAILS_FORCE_SSL=false
-      - RAILS_ASSUME_SSL=false
-      - POSTGRES_DB=maybe
-      - POSTGRES_USER=maybe
-      - POSTGRES_PASSWORD=maybe
-      - GOOD_JOB_EXECUTION_MODE=async
-      - REDIS_URL=redis://maybe-redis:6379/1
+      SELF_HOSTING_ENABLED: true
+      PORT: 3063
+      DATABASE_URL: postgresql://maybe:maybe@maybe-db:5432/maybe
+      RAILS_FORCE_SSL: false
+      RAILS_ASSUME_SSL: false
+      POSTGRES_DB: maybe
+      POSTGRES_USER: maybe
+      POSTGRES_PASSWORD: maybe
+      GOOD_JOB_EXECUTION_MODE: async
+      REDIS_URL: redis://maybe-redis:6379/1
     depends_on:
       maybe-db:
         condition: service_healthy
@@ -36,16 +36,16 @@ services:
     container_name: maybe-worker
     command: bundle exec sidekiq
     environment:
-      - SELF_HOSTING_ENABLED=true
-      - PORT=3063
-      - DATABASE_URL=postgresql://maybe:maybe@maybe-db:5432/maybe
-      - RAILS_FORCE_SSL=false
-      - RAILS_ASSUME_SSL=false
-      - POSTGRES_DB=maybe
-      - POSTGRES_USER=maybe
-      - POSTGRES_PASSWORD=maybe
-      - GOOD_JOB_EXECUTION_MODE=async
-      - REDIS_URL=redis://maybe-redis:6379/1
+      SELF_HOSTING_ENABLED: true
+      PORT: 3063
+      DATABASE_URL: postgresql://maybe:maybe@maybe-db:5432/maybe
+      RAILS_FORCE_SSL: false
+      RAILS_ASSUME_SSL: false
+      POSTGRES_DB: maybe
+      POSTGRES_USER: maybe
+      POSTGRES_PASSWORD: maybe
+      GOOD_JOB_EXECUTION_MODE: async
+      REDIS_URL: redis://maybe-redis:6379/1
     depends_on:
       maybe-redis:
         condition: service_healthy
@@ -57,10 +57,10 @@ services:
     volumes:
       - maybe_db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=maybe
-      - POSTGRES_USER=maybe
-      - POSTGRES_PASSWORD=maybe
-      - PGDATA=/var/lib/postgresql/data/pgdata
+      POSTGRES_DB: maybe
+      POSTGRES_USER: maybe
+      POSTGRES_PASSWORD: maybe
+      PGDATA: /var/lib/postgresql/data/pgdata
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U maybe']
       interval: 10s

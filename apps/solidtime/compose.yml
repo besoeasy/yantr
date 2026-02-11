@@ -12,19 +12,19 @@ services:
     ports:
       - "8000"
     environment:
-      - APP_ENV=production
-      - APP_DEBUG=false
-      - APP_KEY=base64:your-app-key-will-be-generated
-      - CONTAINER_MODE=http
-      - DB_CONNECTION=pgsql
-      - DB_HOST=solidtime-db
-      - DB_PORT=5432
-      - DB_DATABASE=solidtime
-      - DB_USERNAME=solidtime
-      - DB_PASSWORD=solidtime
-      - QUEUE_CONNECTION=database
-      - APP_URL=http://localhost:8000
-      - GOTENBERG_URL=http://solidtime-gotenberg:3000
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_KEY: base64:your-app-key-will-be-generated
+      CONTAINER_MODE: http
+      DB_CONNECTION: pgsql
+      DB_HOST: solidtime-db
+      DB_PORT: 5432
+      DB_DATABASE: solidtime
+      DB_USERNAME: solidtime
+      DB_PASSWORD: solidtime
+      QUEUE_CONNECTION: database
+      APP_URL: http://localhost:8000
+      GOTENBERG_URL: http://solidtime-gotenberg:3000
     volumes:
       - solidtime_data:/var/www/html/storage
     depends_on:
@@ -41,14 +41,14 @@ services:
     image: solidtime/solidtime:0.10.0
     container_name: solidtime-scheduler
     environment:
-      - APP_ENV=production
-      - CONTAINER_MODE=scheduler
-      - DB_CONNECTION=pgsql
-      - DB_HOST=solidtime-db
-      - DB_PORT=5432
-      - DB_DATABASE=solidtime
-      - DB_USERNAME=solidtime
-      - DB_PASSWORD=solidtime
+      APP_ENV: production
+      CONTAINER_MODE: scheduler
+      DB_CONNECTION: pgsql
+      DB_HOST: solidtime-db
+      DB_PORT: 5432
+      DB_DATABASE: solidtime
+      DB_USERNAME: solidtime
+      DB_PASSWORD: solidtime
     volumes:
       - solidtime_data:/var/www/html/storage
     depends_on:
@@ -59,15 +59,15 @@ services:
     image: solidtime/solidtime:0.10.0
     container_name: solidtime-queue
     environment:
-      - APP_ENV=production
-      - CONTAINER_MODE=worker
-      - DB_CONNECTION=pgsql
-      - DB_HOST=solidtime-db
-      - DB_PORT=5432
-      - DB_DATABASE=solidtime
-      - DB_USERNAME=solidtime
-      - DB_PASSWORD=solidtime
-      - QUEUE_CONNECTION=database
+      APP_ENV: production
+      CONTAINER_MODE: worker
+      DB_CONNECTION: pgsql
+      DB_HOST: solidtime-db
+      DB_PORT: 5432
+      DB_DATABASE: solidtime
+      DB_USERNAME: solidtime
+      DB_PASSWORD: solidtime
+      QUEUE_CONNECTION: database
     volumes:
       - solidtime_data:/var/www/html/storage
     depends_on:
@@ -78,9 +78,9 @@ services:
     image: postgres:17.3
     container_name: solidtime-db
     environment:
-      - POSTGRES_USER=solidtime
-      - POSTGRES_PASSWORD=solidtime
-      - POSTGRES_DB=solidtime
+      POSTGRES_USER: solidtime
+      POSTGRES_PASSWORD: solidtime
+      POSTGRES_DB: solidtime
     volumes:
       - solidtime_db:/var/lib/postgresql/data
     restart: unless-stopped

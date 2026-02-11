@@ -12,8 +12,8 @@ services:
     ports:
       - "3030"
     environment:
-      - admin=${admin:-admin}
-      - mynewpassword=${mynewpassword:-changeme}
+      admin: ${admin:-admin}
+      mynewpassword: ${mynewpassword:-changeme}
     volumes:
       - traggo_data:/opt/traggo/data
     restart: unless-stopped

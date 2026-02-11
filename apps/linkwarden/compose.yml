@@ -12,8 +12,8 @@ services:
     ports:
       - "3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:linkwarden@linkwarden-db:5432/postgres
-      - NEXTAUTH_SECRET=linkwarden
+      DATABASE_URL: postgresql://postgres:linkwarden@linkwarden-db:5432/postgres
+      NEXTAUTH_SECRET: linkwarden
     volumes:
       - linkwarden_data:/data/data
     depends_on:
@@ -25,7 +25,7 @@ services:
     image: postgres:16-alpine
     container_name: linkwarden-db
     environment:
-      - POSTGRES_PASSWORD=linkwarden
+      POSTGRES_PASSWORD: linkwarden
     volumes:
       - linkwarden_db:/var/lib/postgresql/data
     healthcheck:

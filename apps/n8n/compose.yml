@@ -14,7 +14,7 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
     environment:
-      - N8N_PORT=5678
+      N8N_PORT: 5678
     restart: unless-stopped
 
 volumes:

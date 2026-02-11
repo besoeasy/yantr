@@ -4,7 +4,7 @@ services:
     container_name: jackett
     hostname: jackett
     environment:
-      - AUTO_UPDATE=true
+      AUTO_UPDATE: true
     volumes:
       - jackett_config:/config
       - jackett_downloads:/downloads

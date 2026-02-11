@@ -14,10 +14,10 @@ services:
     volumes:
       - ghostfolio_data:/data
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=file:/data/ghostfolio.db
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      NODE_ENV: production
+      DATABASE_URL: file:/data/ghostfolio.db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     depends_on:
       - redis
     restart: unless-stopped

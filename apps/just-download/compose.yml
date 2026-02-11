@@ -14,9 +14,9 @@ services:
     volumes:
       - just-download_config:/config
     environment:
-      - LOCK_TRANSMISSION_CONFIG=1
-      - CONFIG_LOCATION=/config/config.json
-      - CONFIG={"indexers": [], "transmission": {"host": "transmission_server_1", "port": 9091}}
+      LOCK_TRANSMISSION_CONFIG: 1
+      CONFIG_LOCATION: /config/config.json
+      CONFIG: '{"indexers": [], "transmission": {"host": "transmission_server_1", "port": 9091}}'
     restart: unless-stopped
 
 volumes:

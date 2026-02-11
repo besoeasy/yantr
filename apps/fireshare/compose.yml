@@ -12,10 +12,10 @@ services:
     ports:
       - "80"
     environment:
-      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
-      - SECRET_KEY=${SECRET_KEY:-changeme}
-      - MINUTES_BETWEEN_VIDEO_SCANS=${MINUTES_BETWEEN_VIDEO_SCANS:-60}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      SECRET_KEY: ${SECRET_KEY:-changeme}
+      MINUTES_BETWEEN_VIDEO_SCANS: ${MINUTES_BETWEEN_VIDEO_SCANS:-60}
     volumes:
       - fireshare_data:/data
       - fireshare_processed:/processed

@@ -14,13 +14,13 @@ services:
       - "3000"
       - "3001"
     environment:
-      - PEER_HOST=${PEER_HOST:-}
-      - LIVE_GENESIS_PUB=${LIVE_GENESIS_PUB:-}
-      - LIVE_GENESIS_ACCOUNT=${LIVE_GENESIS_ACCOUNT:-}
-      - LIVE_GENESIS_WORK=${LIVE_GENESIS_WORK:-}
-      - LIVE_GENESIS_SIG=${LIVE_GENESIS_SIG:-}
-      - CLI_OPTIONS=${CLI_OPTIONS:-}
-      - LMDB_BOOTSTRAP_URL=${LMDB_BOOTSTRAP_URL:-}
+      PEER_HOST: ${PEER_HOST:-}
+      LIVE_GENESIS_PUB: ${LIVE_GENESIS_PUB:-}
+      LIVE_GENESIS_ACCOUNT: ${LIVE_GENESIS_ACCOUNT:-}
+      LIVE_GENESIS_WORK: ${LIVE_GENESIS_WORK:-}
+      LIVE_GENESIS_SIG: ${LIVE_GENESIS_SIG:-}
+      CLI_OPTIONS: ${CLI_OPTIONS:-}
+      LMDB_BOOTSTRAP_URL: ${LMDB_BOOTSTRAP_URL:-}
     volumes:
       - nano_config:/config
     restart: unless-stopped
