@@ -5,8 +5,7 @@ services:
     environment:
       BITCOIN_RPC_USER: ${BITCOIN_RPC_USER:-bitcoin}
       BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD:-changeme}
-    command:
-      -printtoconsole
+    command: -printtoconsole
       -server=1
       -rpcuser=${BITCOIN_RPC_USER}
       -rpcpassword=${BITCOIN_RPC_PASSWORD}
@@ -15,8 +14,8 @@ services:
     volumes:
       - bitcoin_knots_data:/bitcoin/.bitcoin
     ports:
-      - "8332"   # RPC
-      - "8333"   # P2P
+      - "8332" # RPC
+      - "8333" # P2P
     restart: unless-stopped
     labels:
       yantra.name: "Bitcoin Knots"
@@ -25,6 +24,13 @@ services:
       yantra.port: "8332 (HTTP - Web UI)"
       yantra.description: "Bitcoin full node with enhanced features and privacy focus."
       yantra.website: "https://bitcoinknots.org"
+    networks:
+      - yantra_network
 
 volumes:
   bitcoin_knots_data:
+
+networks:
+  yantra_network:
+    name: yantra_network
+    external: true

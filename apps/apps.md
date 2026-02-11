@@ -27,6 +27,22 @@ where app-name is the application name, rules for names are
 3. **PORTS MAPPING**
    - AVOID MApping PORT OURSELVES like "HOST-PORT:CONATINER-PORT", just "CONATINER-PORT" is enough.
 
+4. **Dependencies & Networking**
+
+   - Each app must be deployable on its own.
+   - For apps that talk to each other, attach all services to the shared external network:
+     ```yaml
+     networks:
+       yantra_network:
+         name: yantra_network
+         external: true
+     ```
+   - Resolve dependencies via service names on `yantra_network` (for example, `http://ollama:11434`).
+   - Use environment variables with sensible defaults to configure dependency endpoints.
+   - Do not use `depends_on` across different apps. Only use it within the same compose.yml if needed.
+   - Keep `yantra.dependencies` labels for UI metadata only.
+  - If a service uses `yantra_network`, the root `networks.yantra_network` must set `external: true` and `name: yantra_network`.
+
 ## Yantra labels
 
 We use docker labels in compose.yml to tag and work with our docker conatiner.

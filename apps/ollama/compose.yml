@@ -28,5 +28,5 @@ volumes:
 
 networks:
   yantra_network:
-    driver: bridge
     name: yantra_network
+    external: true

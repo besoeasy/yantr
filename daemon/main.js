@@ -40,6 +40,7 @@ const app = express();
 const socketPath = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
 
 const docker = new Docker({ socketPath });
+const SHARED_NETWORK_NAME = "yantra_network";
 
 // System architecture cache
 let systemArchitecture = null;
@@ -230,6 +231,37 @@ async function getPublicIpIdentityCached({ forceRefresh } = { forceRefresh: fals
 
 function nowMs() {
   return Date.now();
+}
+
+async function ensureYantraNetwork({ log: logFn } = {}) {
+  const logger = logFn || (() => {});
+
+  try {
+    const networks = await docker.listNetworks({
+      filters: { name: [SHARED_NETWORK_NAME] },
+    });
+
+    if (networks.some((network) => network.Name === SHARED_NETWORK_NAME)) {
+      return { created: false };
+    }
+  } catch (err) {
+    logger("warn", `⚠️  [NETWORK] Failed to list networks: ${err?.message || err}`);
+  }
+
+  try {
+    await docker.createNetwork({
+      Name: SHARED_NETWORK_NAME,
+      Driver: "bridge",
+    });
+    logger("info", `🧩 [NETWORK] Created ${SHARED_NETWORK_NAME}`);
+    return { created: true };
+  } catch (err) {
+    if (err?.statusCode === 409 || `${err?.message || err}`.includes("already exists")) {
+      return { created: false };
+    }
+
+    throw new DockerError(`Failed to ensure ${SHARED_NETWORK_NAME}`, err?.message || err);
+  }
 }
 
 async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) {
@@ -955,6 +987,81 @@ app.get("/api/apps/:id/check-arch", asyncHandler(async (req, res) => {
   });
 }));
 
+// GET /api/apps/:id/dependency-env - Get environment variables from dependency containers
+app.get("/api/apps/:id/dependency-env", asyncHandler(async (req, res) => {
+  const appId = req.params.id;
+  const appsDir = path.join(__dirname, "..", "apps");
+  const appPath = path.join(appsDir, appId);
+  const composePath = path.join(appPath, "compose.yml");
+
+  // Verify compose file exists
+  let composeContent;
+  try {
+    composeContent = await readFile(composePath, "utf-8");
+  } catch (err) {
+    throw new NotFoundError(`App '${appId}' not found or has no compose.yml`);
+  }
+
+  // Extract dependencies from compose file
+  const dependenciesMatch = composeContent.match(/yantra\.dependencies:\s*["'](.+?)["']/);
+  if (!dependenciesMatch) {
+    return res.json({
+      success: true,
+      dependencies: [],
+      environmentVariables: {}
+    });
+  }
+
+  const dependencies = dependenciesMatch[1].split(',').map(dep => dep.trim());
+  log("info", `[GET /api/apps/:id/dependency-env] Found dependencies for ${appId}: ${dependencies.join(', ')}`);
+
+  // Get environment variables from each dependency container
+  const environmentVariables = {};
+
+  for (const depAppId of dependencies) {
+    try {
+      // Find running container for this dependency
+      const containers = await docker.listContainers({
+        all: false,
+        filters: { label: [`com.docker.compose.project=${depAppId}`] }
+      });
+
+      if (containers.length === 0) {
+        log("info", `[GET /api/apps/:id/dependency-env] Dependency ${depAppId} not running`);
+        continue;
+      }
+
+      // Get the first container (should be the main service)
+      const container = docker.getContainer(containers[0].Id);
+      const inspect = await container.inspect();
+
+      // Extract environment variables
+      const env = inspect.Config.Env || [];
+      environmentVariables[depAppId] = {};
+
+      env.forEach(envVar => {
+        const [key, ...valueParts] = envVar.split('=');
+        const value = valueParts.join('='); // In case value contains '='
+
+        // Filter out unresolved template strings (e.g., ${VAR:-default})
+        if (value && !value.match(/^\$\{.*\}$/)) {
+          environmentVariables[depAppId][key] = value;
+        }
+      });
+
+      log("info", `[GET /api/apps/:id/dependency-env] Extracted ${Object.keys(environmentVariables[depAppId]).length} env vars from ${depAppId}`);
+    } catch (err) {
+      log("error", `[GET /api/apps/:id/dependency-env] Error fetching env from ${depAppId}:`, err.message);
+    }
+  }
+
+  res.json({
+    success: true,
+    dependencies,
+    environmentVariables
+  });
+}));
+
 // POST /api/deploy - Deploy a compose file from /apps directory
 app.post("/api/deploy", async (req, res) => {
   log("info", "🚀 [POST /api/deploy] Deploy request received");
@@ -1023,6 +1130,17 @@ app.post("/api/deploy", async (req, res) => {
       } else {
         log("info", `✅ [POST /api/deploy] Architecture compatible (${archCheck.systemArch})`);
       }
+    }
+
+    try {
+      await ensureYantraNetwork({ log });
+    } catch (err) {
+      log("error", `❌ [POST /api/deploy] ${err.message}`);
+      return res.status(500).json({
+        success: false,
+        error: "Network initialization failed",
+        message: err.message,
+      });
     }
 
     // Check dependencies
@@ -2499,6 +2617,10 @@ app.listen(PORT, "0.0.0.0", () => {
 
   resolveComposeCommand({ socketPath, log }).catch((err) => {
     log("warn", `⚠️  [COMPOSE] ${err.message}`);
+  });
+
+  ensureYantraNetwork({ log }).catch((err) => {
+    log("warn", `⚠️  [NETWORK] ${err.message}`);
   });
 
   // Start cleanup scheduler (runs every 15 minutes to handle temporary installations)

@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import { useApiUrl } from "../composables/useApiUrl";
 import { usePortConflict } from "../composables/usePortConflict";
-import { Globe, FileCode, ArrowLeft, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, RotateCcw } from "lucide-vue-next";
+import { Globe, FileCode, ArrowLeft, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, RotateCcw, Download } from "lucide-vue-next";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
 const route = useRoute();
@@ -18,6 +18,8 @@ const containers = ref([]);
 const loading = ref(true);
 const deploying = ref(false);
 const envValues = ref({});
+const dependencyEnvSuggestions = ref({});
+const loadingDependencyEnv = ref(false);
 const temporaryInstall = ref(false);
 const expirationHours = ref(24);
 const customizePorts = ref(false);
@@ -89,6 +91,47 @@ const chatGptUrl = computed(() => {
   return buildChatGptExplainUrl(app.value.id);
 });
 
+// Get suggested value from dependency containers with smart matching
+function getSuggestedValue(envVar) {
+  // First try direct match
+  for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
+    if (depEnv[envVar]) {
+      return depEnv[envVar];
+    }
+  }
+
+  // Try smart matching for common patterns
+  const matchPatterns = {
+    'BTCEXP_BITCOIND_USER': ['BITCOIN_RPC_USER', 'RPC_USER', 'RPCUSER'],
+    'BTCEXP_BITCOIND_PASS': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
+    'BTCEXP_BITCOIND_PASSWORD': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
+  };
+
+  // Check if we have a pattern for this env var
+  if (matchPatterns[envVar]) {
+    for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
+      for (const pattern of matchPatterns[envVar]) {
+        if (depEnv[pattern]) {
+          return depEnv[pattern];
+        }
+      }
+    }
+  }
+
+  // Generic smart matching: try to find similar variable names
+  const cleanEnvVar = envVar.toLowerCase().replace(/^[a-z]+_/, ''); // Remove prefix like BTCEXP_
+  for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
+    for (const [key, value] of Object.entries(depEnv)) {
+      const cleanKey = key.toLowerCase().replace(/^[a-z]+_/, '');
+      if (cleanKey === cleanEnvVar || cleanKey.includes(cleanEnvVar) || cleanEnvVar.includes(cleanKey)) {
+        return value;
+      }
+    }
+  }
+
+  return null;
+}
+
 // Functions
 async function fetchApp() {
   try {
@@ -120,6 +163,148 @@ async function fetchContainers() {
     }
   } catch (error) {
     console.error("Error fetching containers:", error);
+  }
+}
+
+function parseContainerEnv(envList) {
+  const envMap = {};
+  if (!Array.isArray(envList)) return envMap;
+
+  envList.forEach((entry) => {
+    const idx = entry.indexOf("=");
+    if (idx <= 0) return;
+    const key = entry.slice(0, idx).trim();
+    if (!key) return;
+    envMap[key] = entry.slice(idx + 1);
+  });
+
+  return envMap;
+}
+
+function extractEnvVarTokens(value) {
+  if (!value || typeof value !== "string") return [];
+  const matches = [...value.matchAll(/\$\{([A-Z0-9_]+)(?::?-?[^}]*)?\}/g)];
+  return matches.map((match) => match[1]);
+}
+
+function buildDependencyEnvIndex() {
+  const envIndex = {};
+  const sourceIndex = {};
+
+  dependencies.value.forEach((dep) => {
+    const runningContainer = containers.value.find(
+      (container) => container.app?.id === dep && container.state === "running"
+    );
+    const fallbackContainer = containers.value.find(
+      (container) => container.app?.id === dep
+    );
+    const container = runningContainer || fallbackContainer;
+    if (!container) return;
+
+    const envMap = parseContainerEnv(container.env);
+    Object.entries(envMap).forEach(([key, value]) => {
+      if (envIndex[key] === undefined) {
+        envIndex[key] = value;
+        sourceIndex[key] = dep;
+      }
+    });
+  });
+
+  return { envIndex, sourceIndex };
+}
+
+function autoFillEnvFromDependencies() {
+  if (!app.value?.environment?.length || !dependencies.value.length) return;
+
+  const { envIndex, sourceIndex } = buildDependencyEnvIndex();
+  const nextSources = {};
+  const nextValues = { ...envValues.value };
+
+  app.value.environment.forEach((env) => {
+    if (nextValues[env.envVar]) return;
+
+    if (envIndex[env.envVar] !== undefined) {
+      nextValues[env.envVar] = envIndex[env.envVar];
+      nextSources[env.envVar] = sourceIndex[env.envVar];
+      return;
+    }
+
+    const tokens = extractEnvVarTokens(env.default);
+    for (const token of tokens) {
+      if (envIndex[token] !== undefined) {
+        nextValues[env.envVar] = envIndex[token];
+        nextSources[env.envVar] = sourceIndex[token];
+        break;
+      }
+    }
+  });
+
+  envValues.value = nextValues;
+}
+
+async function fillFromDependencies() {
+  if (!app.value || !dependencies.value.length) {
+    toast.info("No dependencies to fill from");
+    return;
+  }
+
+  loadingDependencyEnv.value = true;
+
+  try {
+    const response = await fetch(`${apiUrl.value}/api/apps/${app.value.id}/dependency-env`);
+    const data = await response.json();
+
+    if (data.success && data.environmentVariables) {
+      let filledCount = 0;
+
+      // Fill environment variables using smart matching
+      if (app.value.environment) {
+        app.value.environment.forEach(env => {
+          const envVar = env.envVar;
+
+          // Skip if already filled
+          if (envValues.value[envVar]) return;
+
+          // Try direct match first
+          for (const [depId, depEnv] of Object.entries(data.environmentVariables)) {
+            if (depEnv[envVar]) {
+              envValues.value[envVar] = depEnv[envVar];
+              filledCount++;
+              return;
+            }
+          }
+
+          // Try smart matching patterns
+          const matchPatterns = {
+            'BTCEXP_BITCOIND_USER': ['BITCOIN_RPC_USER', 'RPC_USER', 'RPCUSER'],
+            'BTCEXP_BITCOIND_PASS': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
+          };
+
+          if (matchPatterns[envVar]) {
+            for (const [depId, depEnv] of Object.entries(data.environmentVariables)) {
+              for (const pattern of matchPatterns[envVar]) {
+                if (depEnv[pattern]) {
+                  envValues.value[envVar] = depEnv[pattern];
+                  filledCount++;
+                  return;
+                }
+              }
+            }
+          }
+        });
+      }
+
+      if (filledCount > 0) {
+        toast.success(`Filled ${filledCount} variable${filledCount > 1 ? 's' : ''} from dependencies`);
+      } else {
+        toast.info("No matching variables found in dependencies");
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching dependency environment variables:", error);
+    toast.error("Failed to fetch dependency variables");
+  } finally {
+    loadingDependencyEnv.value = false;
   }
 }
 
@@ -483,9 +668,24 @@ onMounted(async () => {
             </div>
 
             <div class="bg-white dark:bg-[#1c1c1e] rounded-2xl border border-slate-200/50 dark:border-slate-800/50 p-5 shadow-sm">
-              <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-5 flex items-center gap-2">
-                Configuration
-              </h2>
+              <div class="flex items-center justify-between mb-5">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+                  Configuration
+                </h2>
+                <button
+                  v-if="dependencies.length > 0 && app.environment?.length > 0"
+                  @click="fillFromDependencies"
+                  :disabled="loadingDependencyEnv || missingDependencies.length > 0"
+                  class="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg v-if="loadingDependencyEnv" class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <Download v-else :size="12" />
+                  <span>{{ loadingDependencyEnv ? 'Filling...' : 'Fill from Dependencies' }}</span>
+                </button>
+              </div>
 
               <div class="space-y-5">
               <!-- Environment Vars -->

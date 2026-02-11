@@ -291,6 +291,59 @@ function validateYantraLabels(appName, composeObj) {
     return { errors, warnings };
 }
 
+function extractServiceNetworkNames(service) {
+    if (!service || typeof service !== 'object') return [];
+    const networks = service.networks;
+    if (Array.isArray(networks)) {
+        return networks.filter(name => typeof name === 'string');
+    }
+    if (networks && typeof networks === 'object') {
+        return Object.keys(networks);
+    }
+    return [];
+}
+
+function validateYantraNetwork(composeObj) {
+    const errors = [];
+    const warnings = [];
+    const services = composeObj && typeof composeObj === 'object' ? (composeObj.services || {}) : {};
+
+    const usingServices = [];
+    for (const [svcName, service] of Object.entries(services)) {
+        const networkNames = extractServiceNetworkNames(service);
+        if (networkNames.includes('yantra_network')) {
+            usingServices.push(svcName);
+        }
+    }
+
+    const networkConfig = composeObj && typeof composeObj === 'object'
+        ? (composeObj.networks ? composeObj.networks.yantra_network : null)
+        : null;
+
+    if (usingServices.length > 0) {
+        if (!networkConfig || typeof networkConfig !== 'object') {
+            errors.push(`Services [${usingServices.join(', ')}] use yantra_network but networks.yantra_network is missing`);
+            return { errors, warnings };
+        }
+
+        if (networkConfig.name !== 'yantra_network') {
+            errors.push('networks.yantra_network.name must be "yantra_network"');
+        }
+
+        if (networkConfig.external !== true) {
+            errors.push('networks.yantra_network must set external: true');
+        }
+
+        if (Object.prototype.hasOwnProperty.call(networkConfig, 'driver')) {
+            errors.push('networks.yantra_network must not set driver when using external: true');
+        }
+    } else if (networkConfig) {
+        warnings.push('networks.yantra_network is defined but no service uses it');
+    }
+
+    return { errors, warnings };
+}
+
 async function detectPortConflict() {
     const appsDir = path.join(__dirname, '..', 'apps');
     const portToFiles = new Map();
@@ -388,7 +441,10 @@ async function validateAllApps() {
             continue;
         }
 
-        const { errors, warnings } = validateYantraLabels(appName, composeObj);
+        const labelResult = validateYantraLabels(appName, composeObj);
+        const networkResult = validateYantraNetwork(composeObj);
+        const errors = [...labelResult.errors, ...networkResult.errors];
+        const warnings = [...labelResult.warnings, ...networkResult.warnings];
         
         if (errors.length > 0 || warnings.length > 0) {
             validationResults.push({
