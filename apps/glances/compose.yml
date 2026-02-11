@@ -4,7 +4,6 @@ services:
     container_name: glances
     labels:
       yantra.name: "Glances"
-      yantra.logo: "QmVa2UDC7pALhMyoiXgQsThyF9QszT2f7WcK168k7AGXhf"
       yantra.category: "monitoring,tools"
       yantra.port: "61208 (HTTP - Web UI)"
       yantra.description: "Real-time system monitoring for containers and host metrics"

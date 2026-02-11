@@ -15,7 +15,6 @@ services:
       yantra.description: "Modern customizable dashboard with 30+ integrations and 10K+ icons"
       yantra.category: "dashboard,tools"
       yantra.port: "7575 (HTTP - Web UI)"
-      yantra.logo: "QmbzneVDy4kGiwYkUpPMFWHFk3RvtdPhdKtzK2zQqByXjL"
       yantra.website: "https://github.com/homarr-labs/homarr"
 
 volumes:

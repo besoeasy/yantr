@@ -4,7 +4,6 @@ services:
     container_name: nextcloud
     labels:
       yantra.name: "Nextcloud"
-      yantra.logo: "Qmbai3MPS4LMTkpQKzmTCqABJhAfhQSD58bS8MLi6cD7Kc"
       yantra.category: "productivity,utility"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Self-hosted file sync and collaboration platform with calendar, contacts, and sharing"

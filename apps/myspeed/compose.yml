@@ -10,7 +10,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "MySpeed"
-      yantra.logo: "Qma15zxYfVUTVMdxAdnCEwWHemLCEWon2pGUjs8rG56VvZ"
       yantra.category: "network,tools"
       yantra.port: "5216 (HTTP - Web UI)"
       yantra.description: "Speed test analysis software that tracks your internet speed for 30 days"

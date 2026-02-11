@@ -4,7 +4,6 @@ services:
     container_name: specter-desktop
     labels:
       yantra.name: "Specter Desktop"
-      yantra.logo: "QmZfCWe2Af3FenimdADmbrThB56Gh4zZKTBajnH5KwuD69"
       yantra.category: "security,tools"
       yantra.port: "25441 (HTTP - Web UI)"
       yantra.description: "Bitcoin wallet interface with focus on privacy and security"

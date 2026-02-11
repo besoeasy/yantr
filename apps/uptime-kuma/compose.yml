@@ -4,7 +4,6 @@ services:
     container_name: uptime-kuma
     labels:
       yantra.name: "Uptime Kuma"
-      yantra.logo: "QmeooQzShvWFotYPR6UhW7cM43etXw8w3qHvHUAYidBy6o"
       yantra.category: "tools,network"
       yantra.port: "3001 (HTTP - Web UI)"
       yantra.description: "Self-hosted uptime monitoring tool"

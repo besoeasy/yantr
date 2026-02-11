@@ -4,7 +4,6 @@ services:
     container_name: pi-alert
     labels:
       yantra.name: "Pi.Alert"
-      yantra.logo: "QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3"
       yantra.category: "network,monitoring,security"
       yantra.port: "20211 (UDP - Monitoring)"
       yantra.description: "Network monitoring tool for detecting new devices and security alerts"

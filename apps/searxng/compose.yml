@@ -4,7 +4,6 @@ services:
     container_name: searxng
     labels:
       yantra.name: "SearXNG"
-      yantra.logo: "QmdNaDHV8YPXxMZ8RCVzHGaLn2zSdJaLLbzxLSkPbCzSsX"
       yantra.category: "tools,security"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Privacy-focused metasearch engine aggregating results"

@@ -4,7 +4,6 @@ services:
     container_name: postgresql
     labels:
       yantra.name: "PostgreSQL"
-      yantra.logo: "QmdxqkM653ZHpfJrdWK6snZfYfQS9h3W8s7kvByBSDzZ8q"
       yantra.category: "database,storage"
       yantra.port: "5432 (TCP - Database)"
       yantra.description: "Powerful open-source relational database with advanced features"

@@ -4,7 +4,6 @@ services:
     container_name: just-download
     labels:
       yantra.name: "Just. Download."
-      yantra.logo: "Qmc9ChgqKxSUXJ37gC8ndutwEmzCic4QQrgTaxPCffuV6V"
       yantra.category: "media"
       yantra.port: "5000 (HTTP - Web UI)"
       yantra.description: "Simple torrent downloader that bridges Torznab indexers with Transmission"

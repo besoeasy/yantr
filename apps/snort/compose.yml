@@ -4,7 +4,6 @@ services:
     container_name: snort
     labels:
       yantra.name: "Snort"
-      yantra.logo: "QmViqJvHxhzSXavuZtRvPKUjo2AGe7ZPbhq7UsS3v4WiMC"
       yantra.category: "social"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Fast and lightweight Nostr web client built with React for easy network interaction"

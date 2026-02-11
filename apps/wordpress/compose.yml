@@ -4,7 +4,6 @@ services:
     container_name: wordpress
     labels:
       yantra.name: "WordPress"
-      yantra.logo: "QmV9SwSWz5hSuJBGd8ApiXfet1GXdLHigfNwVewf59WzoC"
       yantra.category: "cms,blog"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Popular open-source content management system for websites and blogs"

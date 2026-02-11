@@ -4,7 +4,6 @@ services:
     container_name: libreddit
     labels:
       yantra.name: "LibReddit"
-      yantra.logo: "QmTieAKkWAmA12gchbEJiBGZZK64hsuKQYRtSbibJ9qWxF"
       yantra.category: "social,privacy"
       yantra.port: "7420 (HTTP - Web UI)"
       yantra.description: "Private Reddit front-end written in Rust with no JavaScript, ads, or tracking"

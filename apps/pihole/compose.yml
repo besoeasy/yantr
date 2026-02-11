@@ -5,7 +5,6 @@ services:
     entrypoint: /app/entrypoint.sh
     labels:
       yantra.name: "Pi-hole"
-      yantra.logo: "QmWk56fGA1itVTPbNtCQw1kZXScPSKJqQeNf5QfqnSVhsc"
       yantra.category: "network,security"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Network-wide ad blocking via DNS sinkhole"

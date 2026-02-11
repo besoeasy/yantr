@@ -13,7 +13,6 @@ services:
     command: relay --config /etc/strfry.conf
     labels:
       yantra.name: "Strfry"
-      yantra.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
       yantra.category: "network,social"
       yantra.port: "7777 (HTTP - Web UI)"
       yantra.description: "High-performance nostr relay with LMDB storage"

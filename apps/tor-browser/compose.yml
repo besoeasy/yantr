@@ -10,4 +10,3 @@ services:
       yantra.category: "privacy,security"
       yantra.port: "5800 (HTTP - Web UI)"
       yantra.website: "https://github.com/domistyle/docker-tor-browser"
-      yantra.logo: "QmcmXdgNMubKaD6ZtezJ7W7r5BKsL4wKfjwFPcZY1kmaes"

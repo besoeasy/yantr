@@ -4,7 +4,6 @@ services:
     container_name: urlwatch
     labels:
       yantra.name: "UrlWatch"
-      yantra.logo: "QmSmLz2mPRjZ4rVkPh7ZC8QkubeAen7vZh9i2cxPvcmwRN"
       yantra.category: "utility,monitoring"
       yantra.port: "8081 (HTTP - Web UI)"
       yantra.description: "Monitor websites for changes and receive notifications on updates"

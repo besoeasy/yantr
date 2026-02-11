@@ -4,7 +4,6 @@ services:
     container_name: perplexica
     labels:
       yantra.name: "Perplexica"
-      yantra.logo: "QmXkTfV5b7aUepUyRLpo9C26P34LWrRyNcQTewFSZjezYc"
       yantra.category: "ai"
       yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "AI-powered search engine that delivers conversational responses with contextual understanding"

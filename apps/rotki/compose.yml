@@ -4,7 +4,6 @@ services:
     container_name: rotki
     labels:
       yantra.name: "Rotki"
-      yantra.logo: "QmTRLwvRfA3n2Fnj8JoqUcoPXRVeNLYqk7TRqKhAq94SjE"
       yantra.category: "productivity,security,utility"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Privacy-focused portfolio tracker and analytics for crypto"

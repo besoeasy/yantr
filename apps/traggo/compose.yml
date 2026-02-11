@@ -4,7 +4,6 @@ services:
     container_name: traggo
     labels:
       yantra.name: "Traggo"
-      yantra.logo: "QmR3VddXtW54eNYkgePzkgheV2NtLSzfZHYVkZoA1RsBQZ"
       yantra.category: "productivity,time-tracking"
       yantra.port: "3030 (HTTP - Web UI)"
       yantra.description: "Simple and lightweight time tracking application for personal productivity"

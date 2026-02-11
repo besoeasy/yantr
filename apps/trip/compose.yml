@@ -4,7 +4,6 @@ services:
     container_name: trip
     labels:
       yantra.name: "Trip"
-      yantra.logo: "QmcxepcQDfmK7gcGSdWPNuyFR1oqR4qeG5jvetn2qYHg8z"
       yantra.category: "productivity,tools"
       yantra.port: "8000 (HTTP - Web UI)"
       yantra.description: "Self-hostable map tracker and trip planner to visualize POIs and organize your next adventure"

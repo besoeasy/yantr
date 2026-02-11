@@ -4,7 +4,6 @@ services:
     container_name: zenko-s3
     labels:
       yantra.name: "Scality S3"
-      yantra.logo: "Qma7Awm4V7N2WfxobWKcgpntdjgVyG47DPyhBKYwLM1ARE"
       yantra.category: "storage,s3"
       yantra.port: "8000 (HTTP - S3 API)"
       yantra.description: "S3-compatible object storage server for self-hosted cloud storage"

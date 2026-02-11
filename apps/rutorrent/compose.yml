@@ -4,7 +4,6 @@ services:
     container_name: rutorrent
     labels:
       yantra.name: "ruTorrent"
-      yantra.logo: "QmSfjAPUgtY5bJANxVyHkriYrXHDad7omhmJAxt67bELSv"
       yantra.category: "torrent,download"
       yantra.port: "80 (HTTP - Web UI), 51413 (TCP - Torrent)"
       yantra.description: "Lightweight torrent client with web interface for managing downloads"

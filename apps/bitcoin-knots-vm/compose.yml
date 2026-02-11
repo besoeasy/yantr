@@ -15,7 +15,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Bitcoin Knots VM"
-      yantra.logo: "QmTttEiisTnt6ivcGQo9W6BCKNpuViU9zAhNYLKd8xK9Lm"
       yantra.category: "cryptocurrency"
       yantra.port: "3000 (HTTP - Web UI), 3001 (HTTPS - Web UI)"
       yantra.description: "Bitcoin full node with enhanced features and privacy focus."

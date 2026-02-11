@@ -13,7 +13,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Syncthing"
-      yantra.logo: "QmXjiuL2tgJYmbLa5rZz117MqGX49xpYbUdRrcjFrtj2Na"
       yantra.category: "tools,utility"
       yantra.port: "8384 (HTTP - Web UI)"
       yantra.description: "Continuous file synchronization program. It synchronizes files between two or more computers."

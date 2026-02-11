@@ -4,7 +4,6 @@ services:
     container_name: smokeping
     labels:
       yantra.name: "Smokeping"
-      yantra.logo: "QmerDnfp1VxvYJi47iuc18CiQSVHCJBzata77pGJjS6GPE"
       yantra.category: "network,monitoring"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Latency and packet loss monitoring tool with graphing capabilities"

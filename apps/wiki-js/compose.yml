@@ -4,7 +4,6 @@ services:
     container_name: wiki-js
     labels:
       yantra.name: "Wiki.js"
-      yantra.logo: "QmTNPAT7VYCKfavYZKJTAsoRNJdKJheiozEZzbcXdyo2Ys"
       yantra.category: "documentation,wiki"
       yantra.port: "3000 (HTTP - Web UI)"
       yantra.description: "Modern, lightweight wiki platform for creating and organizing knowledge bases"

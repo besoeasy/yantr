@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Monero Node"
-      yantra.logo: "QmcCKS2i9xdSYNkGSsWtrGukXCaW7YPPpjM3dUzsKePqEC"
       yantra.category: "cryptocurrency,blockchain,network"
       yantra.port: "18089 (TCP - Restricted RPC), 18080 (TCP - P2P)"
       yantra.description: "Pruned Monero full node with restricted RPC for wallets and apps"

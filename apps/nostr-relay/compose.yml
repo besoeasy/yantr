@@ -40,7 +40,6 @@ services:
       start_period: 30s
     labels:
       yantra.name: "Shugur Relay"
-      yantra.logo: "QmWYodJVCS9WQCZDhhBskZJopXgdSm347BZ2ip1CUoc97C"
       yantra.category: "network,social"
       yantra.port: "8080 (HTTP - Relay)"
       yantra.description: "High-performance nostr relay with distributed database"

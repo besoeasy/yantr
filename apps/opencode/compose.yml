@@ -4,7 +4,6 @@ services:
     container_name: opencode
     labels:
       yantra.name: "OpenCode"
-      yantra.logo: "QmWXyiTM11psMb5VXfnkd9qcEVPh11iHJwLAeEjAQroZkq"
       yantra.category: "development,productivity,ai"
       yantra.port: "4096 (HTTP - Web UI)"
       yantra.description: "Open source AI coding agent for terminal, IDE, and desktop"

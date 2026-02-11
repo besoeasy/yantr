@@ -4,7 +4,6 @@ services:
     container_name: youtubedl-material
     labels:
       yantra.name: "YoutubeDL Material"
-      yantra.logo: "QmVgdMmZ1Ms2EskZfwc8VTfS1nXB2D3EW4PsJLKCDg4zFM"
       yantra.category: "media,downloader"
       yantra.port: "17442 (HTTP - Web UI)"
       yantra.description: "Web UI for youtube-dl with subscription support and organization features"

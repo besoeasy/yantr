@@ -4,7 +4,6 @@ services:
     container_name: librespeed
     labels:
       yantra.name: "LibreSpeed"
-      yantra.logo: "QmR4dXKau4JxsY94BRLupk32nemq1nxqwJHCsmhGvsdKye"
       yantra.category: "network,tools"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Self-hosted speed test tool for bandwidth measurement"

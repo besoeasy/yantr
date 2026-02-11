@@ -14,7 +14,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Originless"
-      yantra.logo: "QmNPv75ULMPbZZiZsnrBx3h51onDfNBUoK84PDRKEg1GGT"
       yantra.category: "utility,tools"
       yantra.port: "3232 (HTTP - Web UI)"
       yantra.description: "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting"

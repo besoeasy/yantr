@@ -13,7 +13,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Jackett"
-      yantra.logo: "Qmb78Bkc91NEBfpcddiY4eurijGBviSEHiTB37kt2NP9gt"
       yantra.category: "media,tools,utility"
       yantra.port: "9117 (HTTP - Web UI)"
       yantra.description: "API proxy for torrent trackers with Sonarr/Radarr support."

@@ -10,7 +10,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Emby"
-      yantra.logo: "QmdPMq6p7sEvXuRSt9MxkDzzr7Tm6Gxii9oVXGpYWFVi3Q"
       yantra.category: "media,entertainment"
       yantra.port: "8096 (HTTP - Web UI)"
       yantra.description: "Media server for streaming video, music, live TV, and photos"

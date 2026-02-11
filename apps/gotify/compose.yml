@@ -4,7 +4,6 @@ services:
     container_name: gotify
     labels:
       yantra.name: "Gotify"
-      yantra.logo: "QmQqMSn4uLQXyC3RDyNRLp3kNDe4xuZS8BMbxCTbzkBn9k"
       yantra.category: "notification,tools"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Self-hosted push notification service for sending and receiving notifications"

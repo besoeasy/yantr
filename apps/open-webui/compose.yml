@@ -4,7 +4,6 @@ services:
     container_name: open-webui
     labels:
       yantra.name: "Open WebUI"
-      yantra.logo: "QmWkEdpJs4YgavTvXynmEfenjJahsbD7xhu4akP6BtQytt"
       yantra.category: "ai"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Web UI for chatting with local LLMs via Ollama"

@@ -4,7 +4,6 @@ services:
     container_name: mariadb
     labels:
       yantra.name: "MariaDB"
-      yantra.logo: "Qmegk86ebzbktv7YWCMnVrueBpfpZHm9wktuUSdQBHvHQx"
       yantra.category: "database,storage"
       yantra.port: "3306 (TCP - Database)"
       yantra.description: "Open-source relational database compatible with MySQL"

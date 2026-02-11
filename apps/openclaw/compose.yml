@@ -4,7 +4,6 @@ services:
     container_name: openclaw
     labels:
       yantra.name: "OpenClaw"
-      yantra.logo: "Qma5h9Xquf4PKQczQHpZSVyUoevXQPV7vkTDr2Y6vUwcGm"
       yantra.category: "ai,tools,utility"
       yantra.port: "18789 (HTTP - Web UI)"
       yantra.description: "Self-hosted development environment and container management tool"

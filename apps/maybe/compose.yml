@@ -4,7 +4,6 @@ services:
     container_name: maybe
     labels:
       yantra.name: "Maybe"
-      yantra.logo: "QmcZLRLn3cHum9YMRhHv3355rVDgVVgQkioRm29x8YRX9q"
       yantra.category: "finance,productivity"
       yantra.port: "3063 (HTTP - Web UI)"
       yantra.description: "Open-source personal finance OS for managing accounts, investments, and transactions"

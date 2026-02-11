@@ -11,7 +11,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Sonarr"
-      yantra.logo: "QmUQSzXqXkyRwZSCTWG32ju8JAeLHkt8Hzo5u4yyp7aHvn"
       yantra.category: "media,tools"
       yantra.port: "8989 (HTTP - Web UI)"
       yantra.description: "Smart PVR for TV show monitoring and automated downloading with Usenet and BitTorrent"

@@ -4,7 +4,6 @@ services:
     container_name: privatebin
     labels:
       yantra.name: "PrivateBin"
-      yantra.logo: "QmYw42ipPg13fBosbeuza8gx8eQvXRUK6aGfsgY2cz32g6"
       yantra.category: "utility,privacy"
       yantra.port: "8080 (HTTP - Web UI)"
       yantra.description: "Minimalist, open source online pastebin with zero-knowledge server design"

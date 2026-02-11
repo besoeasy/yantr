@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Heimdall"
-      yantra.logo: "QmUAFgodP1LGccSwBxrzWkDYbog44e6vVjdHeMpQiHrUGJ"
       yantra.category: "dashboard,organization"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Application dashboard and launcher with simple icon-based interface"

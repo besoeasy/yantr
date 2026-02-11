@@ -4,7 +4,6 @@ services:
     container_name: airsonic
     labels:
       yantra.name: "Airsonic"
-      yantra.logo: "QmRE29GVdhaUYbd6vFERvTmKd9DnuoQUzQPAzHvtjzUUtN"
       yantra.category: "media,music"
       yantra.port: "4040 (HTTP - Web UI)"
       yantra.description: "Self-hosted music streaming server with web interface and mobile apps"

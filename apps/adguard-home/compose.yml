@@ -4,7 +4,6 @@ services:
     container_name: adguard-home
     labels:
       yantra.name: "AdGuard Home"
-      yantra.logo: "Qme1P7XVdPNSoHQeuT2pUDfwoVQ8qX7RFBVpeMXewSbSG6"
       yantra.category: "network,security,dns"
       yantra.port: "3000 (HTTP - Initial Setup), 80 (HTTP - Web UI)"
       yantra.description: "DNS-level ad blocking and privacy protection with parental controls"

@@ -4,7 +4,6 @@ services:
     container_name: mongodb
     labels:
       yantra.name: "MongoDB"
-      yantra.logo: "QmSu7is9ZSvhmrtCgi3J1uHTCkNzLuvAEbCbeXsMLuqzr6"
       yantra.category: "database,storage"
       yantra.port: "27017 (TCP - Database)"
       yantra.description: "NoSQL document database for flexible data storage and management"

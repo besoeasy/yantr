@@ -4,7 +4,6 @@ services:
     container_name: ollama
     labels:
       yantra.name: "Ollama"
-      yantra.logo: "QmWkEdpJs4YgavTvXynmEfenjJahsbD7xhu4akP6BtQytt"
       yantra.category: "ai,backend"
       yantra.port: "11434 (HTTP - API)"
       yantra.description: "Local LLM inference server - run models like Llama, Mistral, and more"

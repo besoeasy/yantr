@@ -4,7 +4,6 @@ services:
     container_name: whoogle
     labels:
       yantra.name: "Whoogle"
-      yantra.logo: "QmP5zYBKJYTkya4TGDMsqVaskPBgA3QLTrvSpA16xHhuBc"
       yantra.category: "search,privacy"
       yantra.port: "5000 (HTTP - Web UI)"
       yantra.description: "Privacy-focused metasearch engine - fast, clean Google-like search results"

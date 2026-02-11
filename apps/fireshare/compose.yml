@@ -4,7 +4,6 @@ services:
     container_name: fireshare
     labels:
       yantra.name: "Fireshare"
-      yantra.logo: "QmUPzSf2CuLHYv88MBPiqEPaDmjynQH3yEtGkFzkWukD95"
       yantra.category: "media,file-sharing"
       yantra.port: "80 (HTTP - Web UI)"
       yantra.description: "Self-hosted video sharing platform with seamless streaming and organization"

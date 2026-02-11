@@ -13,7 +13,6 @@ services:
     restart: unless-stopped
     labels:
       yantra.name: "Samba"
-      yantra.logo: "QmQbWgQmuLkzswJ49hak29MPJwTkuLvJL1XDbTPzrfQ8gY"
       yantra.category: "network,storage,utility"
       yantra.port: "445 (SMB - File Sharing)"
       yantra.description: "SMB/CIFS file sharing server for network storage access"
