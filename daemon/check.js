@@ -174,16 +174,16 @@ function validateYantraLabels(appName, composeObj) {
     const errors = [];
     const warnings = [];
     const services = composeObj && typeof composeObj === 'object' ? (composeObj.services || {}) : {};
-    
+
     // Check if there's at least one service with yantra labels
     let hasYantraLabels = false;
     let yantraLabels = {};
     let serviceName = '';
-    
+
     for (const [svcName, service] of Object.entries(services)) {
         if (!service || typeof service !== 'object') continue;
         const labels = extractYantraLabels(service);
-        
+
         if (Object.keys(labels).length > 0) {
             hasYantraLabels = true;
             yantraLabels = labels;
@@ -191,11 +191,23 @@ function validateYantraLabels(appName, composeObj) {
             break;
         }
     }
-    
+
     if (!hasYantraLabels) {
         errors.push(`No yantra labels found in any service`);
         return { errors, warnings };
     }
+
+    // Check environment variable format across all services
+    for (const [svcName, service] of Object.entries(services)) {
+        if (!service || typeof service !== 'object') continue;
+        const environment = service.environment;
+
+        if (Array.isArray(environment)) {
+            // List format detected - this is the old format
+            errors.push(`Service "${svcName}" uses list format for environment variables. Use key-value format instead (e.g., "VAR: \${VAR:-default}" not "- VAR=\${VAR:-default}")`);
+        }
+    }
+
     
     // 1. Check required labels
     const requiredLabels = ['yantra.name', 'yantra.category', 'yantra.description', 'yantra.website'];

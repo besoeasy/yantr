@@ -17,7 +17,7 @@ services:
       yantra.logo: "QmNPv75ULMPbZZiZsnrBx3h51onDfNBUoK84PDRKEg1GGT"
       yantra.category: "utility,tools"
       yantra.port: "3232 (HTTP - Web UI)"
-      yantra.description: "One all-in-one storage backend you can drop into anything: your own apps, screenshot tools, pastebin-style pastes, Nostr clients, Reddit posts, forum embeds—anything that needs durable, anonymous file hosting. One Originless to rule them all and keep you anonymous."
+      yantra.description: "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting"
       yantra.website: "https://github.com/besoeasy/originless"
 
 volumes:
