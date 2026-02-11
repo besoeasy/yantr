@@ -14,8 +14,8 @@ RUN npm ci --prefer-offline --no-audit || npm install
 # Copy source
 COPY . .
 
-# Build Vue app
-RUN npm run build
+# Build Vue app (inject build timestamp)
+RUN VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build
 
 # Clean up build artifacts and cache
 RUN rm -rf node_modules .npm

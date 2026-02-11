@@ -1,6 +1,30 @@
 <script setup>
 import { Box, ClipboardList, HardDrive, Home, Layers, Check, ChevronRight, Heart, Github, Send, Bug, Cloud } from "lucide-vue-next";
 
+const rawBuildTimestamp = import.meta.env.VITE_BUILD_TIMESTAMP;
+const buildDate = rawBuildTimestamp ? new Date(rawBuildTimestamp) : null;
+const buildTimestamp = buildDate && !Number.isNaN(buildDate.getTime())
+  ? buildDate.toISOString().replace("T", " ").replace("Z", " UTC")
+  : "Unknown";
+
+const buildRelative = (() => {
+  if (!buildDate || Number.isNaN(buildDate.getTime())) return "Unknown";
+
+  const now = Date.now();
+  const diffSeconds = Math.max(0, Math.floor((now - buildDate.getTime()) / 1000));
+
+  if (diffSeconds < 60) return `${diffSeconds}s ago`;
+
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) return `${diffMinutes}m ago`;
+
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+})();
+
 const navItems = [
   {
     title: "Images",
@@ -197,6 +221,15 @@ const externalItems = [
             </ul>
           </div>
         </a>
+      </section>
+
+      <!-- Build Version -->
+      <section aria-label="Build Information" class="w-full">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-gray-700 p-8 flex flex-col gap-3">
+          <div class="text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Yantra build</div>
+          <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ buildTimestamp }}</div>
+          <div class="text-sm text-slate-600 dark:text-gray-300">Generated at image build time (UTC), {{ buildRelative }}.</div>
+        </div>
       </section>
     </div>
   </main>
