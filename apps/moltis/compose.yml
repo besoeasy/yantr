@@ -1,0 +1,21 @@
+services:
+  moltis:
+    image: ghcr.io/moltis-org/moltis:latest
+    container_name: moltis
+    labels:
+      yantra.name: "Moltis"
+      yantra.logo: "Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd"
+      yantra.category: "ai,tools"
+      yantra.port: "13131 (HTTPS - Web UI)"
+      yantra.description: "Self-hosted Moltis server with web UI and Docker access"
+      yantra.website: "https://github.com/moltis-org/moltis"
+    ports:
+      - "13131"
+    volumes:
+      - moltis_config:/home/moltis/.config/moltis
+      - moltis_data:/home/moltis/.moltis
+    restart: unless-stopped
+
+volumes:
+  moltis_config:
+  moltis_data:
