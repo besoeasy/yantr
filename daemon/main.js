@@ -233,6 +233,20 @@ function nowMs() {
   return Date.now();
 }
 
+function normalizeUiBasePath(value) {
+  if (!value || value === "/") {
+    return "/";
+  }
+
+  const trimmed = String(value).trim();
+  if (!trimmed) {
+    return "/";
+  }
+
+  const withLeadingSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return withLeadingSlash.replace(/\/+$/, "");
+}
+
 async function ensureYantraNetwork({ log: logFn } = {}) {
   const logger = logFn || (() => {});
 
@@ -624,12 +638,18 @@ async function getImageFromCompose(composePath) {
 app.use(cors());
 app.use(express.json());
 
+let uiDistPath = null;
+let uiBasePath = "/";
+
 // Serve static files from Vue.js dist folder in production
 if (process.env.NODE_ENV === "production") {
-  const distPath = path.join(__dirname, "..", "dist");
-  app.use(express.static(distPath));
+  uiDistPath = path.join(__dirname, "..", "dist");
+  uiBasePath = normalizeUiBasePath(process.env.UI_BASE_PATH || process.env.VITE_BASE_PATH || "/");
 
-  log("info", `📦 Serving Vue.js app from: ${distPath}`);
+  app.use(uiBasePath, express.static(uiDistPath, { index: false }));
+
+  log("info", `📦 Serving Vue.js app from: ${uiDistPath}`);
+  log("info", `🧭 UI virtual root: ${uiBasePath}`);
 }
 
 // Helper function to parse app labels
@@ -2593,11 +2613,34 @@ app.delete("/api/volumes/:volumeName/backup/:timestamp", asyncHandler(async (req
 // END BACKUP & RESTORE API ENDPOINTS
 // ============================================
 
-// Catch-all route to serve Vue.js app for client-side routing (must be last)
-if (process.env.NODE_ENV === "production") {
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
-  });
+// SPA fallback route for client-side routing (must be last route before error handler)
+if (process.env.NODE_ENV === "production" && uiDistPath) {
+  const uiFallback = (req, res, next) => {
+    if (!req.accepts("html")) {
+      return next();
+    }
+
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+
+    if (path.extname(req.path)) {
+      return next();
+    }
+
+    return res.sendFile(path.join(uiDistPath, "index.html"));
+  };
+
+  if (uiBasePath === "/") {
+    app.get("*", uiFallback);
+  } else {
+    app.get(`${uiBasePath}`,
+      uiFallback,
+    );
+    app.get(`${uiBasePath}/*`,
+      uiFallback,
+    );
+  }
 }
 
 // Error handling middleware (must be last)
