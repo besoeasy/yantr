@@ -1,6 +1,7 @@
 services:
   opencode:
-    image: ghcr.io/besoeasy/opencode:latest
+    image: ghcr.io/anomalyco/opencode:latest
+    command: ["web", "--hostname", "0.0.0.0", "--port", "4096"]
     container_name: opencode
     labels:
       yantra.name: "OpenCode"
