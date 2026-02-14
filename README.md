@@ -8,6 +8,8 @@
 [![Vue](https://img.shields.io/badge/Vue-3-42b883?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](LICENSE)
 
+[![Join Telegram](https://img.shields.io/badge/Join%20Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+h4RvCk63PxUyODQ1)
+
 Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantra turns the machine you already have into a self-hosted homelab, while keeping every app isolated: it never touches your host filesystem and stores data only in Docker volumes. If you like Umbrel but do not want an OS takeover, Yantra gives you the same app-store flow on the machine you already use.
 
 [🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🛠️ Apps](#%EF%B8%8F-app-catalog) • [🎥 Demo Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [💬 Issues](https://github.com/besoeasy/yantra/issues)
