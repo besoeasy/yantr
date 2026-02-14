@@ -11,9 +11,12 @@ services:
       yantra.website: "https://github.com/moltis-org/moltis"
     ports:
       - "13131"
+    environment:
+      MOLTIS_PASSWORD: ${MOLTIS_PASSWORD:-yantra}
     volumes:
       - moltis_config:/home/moltis/.config/moltis
       - moltis_data:/home/moltis/.moltis
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
 volumes:
