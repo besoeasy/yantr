@@ -11,8 +11,6 @@ services:
       yantra.website: "https://github.com/moltis-org/moltis"
     ports:
       - "13131"
-    environment:
-      MOLTIS_PASSWORD: ${MOLTIS_PASSWORD:-yantra3654}
     volumes:
       - moltis_config:/home/moltis/.config/moltis
       - moltis_data:/home/moltis/.moltis
