@@ -7,7 +7,7 @@ services:
       yantra.logo: "bafkreiabgxumoblpm3gfzhj5ucbxh36dyq2d3qg3pm2twbsuerp2c4ot6q"
       yantra.category: "tools,privacy"
       yantra.port: "52443 (HTTP - Web UI)"
-      yantra.description: "Privacy-first file sharing with end-to-end encryption, supporting hosted uploads and P2P transfers."
+      yantra.description: "Privacy-first file sharing solution with end-to-end encryption, supporting hosted uploads and P2P transfers."
       yantra.website: "https://github.com/WillTDA/Dropgate"
     ports:
       - "52443"
