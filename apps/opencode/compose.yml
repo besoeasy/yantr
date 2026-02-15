@@ -12,11 +12,6 @@ services:
       yantra.website: "https://github.com/anomalyco/opencode"
     ports:
       - "4096"
-    volumes:
-      - opencode_data:/root/.opencode
     stdin_open: true
     tty: true
     restart: unless-stopped
-
-volumes:
-  opencode_data:
