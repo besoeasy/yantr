@@ -119,20 +119,20 @@
           <!-- Install Widget -->
           <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50/50 max-w-lg">
             <div class="flex border-b border-gray-200 bg-white">
-              <button id="tab-docker" onclick="switchInstallTab('docker')" class="px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black">Docker</button>
-              <button id="tab-curl" onclick="switchInstallTab('curl')" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors">Curl</button>
+              <button id="tab-no-docker" onclick="switchInstallTab('no-docker')" class="px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black">No Docker?</button>
+              <button id="tab-has-docker" onclick="switchInstallTab('has-docker')" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors">Have Docker?</button>
             </div>
-            <div id="content-docker" class="p-4 bg-gray-50 flex items-center justify-between group">
-              <code class="text-sm text-gray-800 font-medium overflow-x-auto whitespace-nowrap hide-scrollbar pr-4">
-                docker run -d -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock ghcr.io/besoeasy/yantra
-              </code>
+            <div id="content-no-docker" class="p-4 bg-gray-50 flex items-start justify-between group">
+              <code class="text-xs sm:text-sm text-gray-800 font-medium overflow-x-auto whitespace-pre hide-scrollbar pr-4">curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER && newgrp docker
+docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra</code>
               <button
                 onclick="
                   navigator.clipboard.writeText(
-                    'docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
+                    'curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker\ndocker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
-                class="text-gray-400 hover:text-black transition-colors p-1"
+                class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
                 title="Copy command"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,17 +145,17 @@
                 </svg>
               </button>
             </div>
-            <div id="content-curl" class="p-4 bg-gray-50 flex items-center justify-between group hidden">
+            <div id="content-has-docker" class="p-4 bg-gray-50 flex items-start justify-between group hidden">
               <code class="text-sm text-gray-800 font-medium overflow-x-auto whitespace-nowrap hide-scrollbar pr-4">
-                curl -fsSL https://raw.githubusercontent.com/besoeasy/Yantra/main/i.sh | sudo bash
+                docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra
               </code>
               <button
                 onclick="
                   navigator.clipboard.writeText(
-                    'curl -fsSL https://raw.githubusercontent.com/besoeasy/Yantra/main/i.sh | sudo bash',
+                    'docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
-                class="text-gray-400 hover:text-black transition-colors p-1"
+                class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
                 title="Copy command"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -252,21 +252,21 @@
     <script>
       function switchInstallTab(tab) {
         // Update button styles
-        const dockerTab = document.getElementById('tab-docker');
-        const curlTab = document.getElementById('tab-curl');
-        const dockerContent = document.getElementById('content-docker');
-        const curlContent = document.getElementById('content-curl');
+        const noDockerTab = document.getElementById("tab-no-docker");
+        const hasDockerTab = document.getElementById("tab-has-docker");
+        const noDockerContent = document.getElementById("content-no-docker");
+        const hasDockerContent = document.getElementById("content-has-docker");
 
-        if (tab === 'docker') {
-          dockerTab.className = 'px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black';
-          curlTab.className = 'px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors';
-          dockerContent.classList.remove('hidden');
-          curlContent.classList.add('hidden');
+        if (tab === "no-docker") {
+          noDockerTab.className = "px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black";
+          hasDockerTab.className = "px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors";
+          noDockerContent.classList.remove("hidden");
+          hasDockerContent.classList.add("hidden");
         } else {
-          curlTab.className = 'px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black';
-          dockerTab.className = 'px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors';
-          curlContent.classList.remove('hidden');
-          dockerContent.classList.add('hidden');
+          hasDockerTab.className = "px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black";
+          noDockerTab.className = "px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors";
+          hasDockerContent.classList.remove("hidden");
+          noDockerContent.classList.add("hidden");
         }
       }
 
