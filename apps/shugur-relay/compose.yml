@@ -1,17 +1,4 @@
 services:
-  cockroachdb:
-    image: cockroachdb/cockroach:latest
-    container_name: shugur-cockroachdb
-    command: start-single-node --insecure
-    volumes:
-      - cockroach-data:/cockroach/cockroach-data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health?ready=1 >/dev/null"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-
   shugur-relay:
     image: ghcr.io/shugur-network/relay:latest
     container_name: shugur-relay
@@ -33,7 +20,11 @@ services:
       cockroachdb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "(command -v wget >/dev/null && wget -q --spider http://localhost:8080/api/info) || (command -v curl >/dev/null && curl -fsI http://localhost:8080/api/info)"]
+      test:
+        [
+          "CMD-SHELL",
+          "(command -v wget >/dev/null && wget -q --spider http://localhost:8080/api/info) || (command -v curl >/dev/null && curl -fsI http://localhost:8080/api/info)",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -45,6 +36,19 @@ services:
       yantra.port: "8080 (HTTP - Relay)"
       yantra.description: "High-performance nostr relay with distributed database"
       yantra.website: "https://github.com/Shugur-Network/relay"
+
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    container_name: shugur-cockroachdb
+    command: start-single-node --insecure
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health?ready=1 >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
 volumes:
   cockroach-data:

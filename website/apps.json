@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-02-14T22:51:04.883Z",
-    "totalApps": 102,
+    "generatedAt": "2026-02-15T10:58:13.616Z",
+    "totalApps": 103,
     "categories": [
       "ai",
       "backend",
@@ -1570,6 +1570,22 @@
       "dependencies": [],
       "image": "tzahi12345/youtubedl-material:latest",
       "serviceName": "youtubedl-material"
+    },
+    {
+      "id": "zeroclaw",
+      "name": "ZeroClaw",
+      "logo": "Qmex7mP7CtY1uo7a2erXmuNrvQdY6aw5FTQtxpJjAbiu8v",
+      "category": [
+        "ai",
+        "tools",
+        "utility"
+      ],
+      "port": "3000 (HTTP - Gateway API)",
+      "description": "Autonomous Rust AI assistant runtime with pluggable providers and secure local gateway",
+      "website": "https://github.com/theonlyhennygod/zeroclaw",
+      "dependencies": [],
+      "image": "ghcr.io/theonlyhennygod/zeroclaw:latest",
+      "serviceName": "zeroclaw"
     },
     {
       "id": "zeronote",
