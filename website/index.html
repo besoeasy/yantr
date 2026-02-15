@@ -9,6 +9,20 @@
       content="Turn any device into a self-hosted homelab. Run 100+ apps like Ollama, Open WebUI, and more on your own infrastructure."
     />
     <meta name="theme-color" content="#ffffff" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yantra.besoeasy.com/" />
+    <meta property="og:title" content="Yantra — The Open Source Homelab Control Plane" />
+    <meta property="og:description" content="Turn any device into a self-hosted homelab. Run 100+ apps like Ollama, Open WebUI, and more on your own infrastructure." />
+    <meta property="og:image" content="https://yantra.besoeasy.com/yantra.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://yantra.besoeasy.com/" />
+    <meta property="twitter:title" content="Yantra — The Open Source Homelab Control Plane" />
+    <meta property="twitter:description" content="Turn any device into a self-hosted homelab. Run 100+ apps like Ollama, Open WebUI, and more on your own infrastructure." />
+    <meta property="twitter:image" content="https://yantra.besoeasy.com/yantra.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,11 +120,11 @@
       <!-- Hero -->
       <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-24">
         <div>
-          <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 font-sans text-black leading-[1.1]">
-            The open source<br />
-            homelab control plane.
+          <h1 id="hero-title" class="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 font-sans text-black leading-[1.1] transition-opacity duration-500 ease-in-out">
+            Self-host<br />
+            open source apps.
           </h1>
-          <p class="text-lg text-gray-600 leading-relaxed max-w-xl mb-10 font-sans">
+          <p id="hero-desc" class="text-lg text-gray-600 leading-relaxed max-w-xl mb-10 font-sans transition-opacity duration-500 ease-in-out">
             Turn any device into a private cloud. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure. No OS replacement needed.
           </p>
 
@@ -123,11 +137,11 @@
             <div id="content-no-docker" class="p-4 bg-gray-50 flex items-start justify-between group">
               <code class="text-xs sm:text-sm text-gray-800 font-medium overflow-x-auto whitespace-pre hide-scrollbar pr-4">curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker $USER && newgrp docker
-docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra</code>
+docker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra</code>
               <button
                 onclick="
                   navigator.clipboard.writeText(
-                    'curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker\ndocker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
+                    'curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker\ndocker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
                 class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
@@ -145,12 +159,12 @@ docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.s
             </div>
             <div id="content-has-docker" class="p-4 bg-gray-50 flex items-start justify-between group hidden">
               <code class="text-sm text-gray-800 font-medium overflow-x-auto whitespace-nowrap hide-scrollbar pr-4">
-                docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra
+                docker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra
               </code>
               <button
                 onclick="
                   navigator.clipboard.writeText(
-                    'docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
+                    'docker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
                 class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
@@ -247,6 +261,22 @@ docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.s
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="features-grid-container">
           <!-- Cards injected via JS -->
+        </div>
+      </div>
+
+      <!-- Screenshot Section -->
+      <div class="py-20 border-t border-gray-100" id="screenshots">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-sans mb-4 tracking-tight">See it in action</h2>
+          </div>
+          <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-200 bg-gray-100 relative group">
+             <div class="absolute inset-0 bg-gray-200 animate-pulse" id="screenshot-loader"></div>
+             <img id="screenshot-img" src="" alt="Yantra Interface" class="w-full h-auto opacity-0 transition-opacity duration-700 relative z-10">
+             <div class="absolute bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur border-t border-gray-200 translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20">
+                  <p id="screenshot-caption" class="text-sm font-medium text-black font-mono text-center"></p>
+             </div>
+          </div>
         </div>
       </div>
     </main>
@@ -633,11 +663,81 @@ docker run -d --name yantra -p 80:5252 -v /var/run/docker.sock:/var/run/docker.s
         if (section) observer.observe(section);
       }
 
+      function initHeroRotator() {
+        const messages = [
+          {
+            title: "Don't buy that<br />overpriced NUC.",
+            desc: "Turn your old laptop into a powerhouse homelab. Yantra runs on the hardware you already own."
+          },
+          {
+            title: "Don't surrender<br />your OS.",
+            desc: "Yantra runs alongside macOS, Windows, and Linux. No formatting, no ISOs, no taking over your computer."
+          },
+          {
+            title: "Self-host<br />open source apps.",
+            desc: "Turn any device into a private cloud. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure."
+          },
+           {
+            title: "Your data, your rules,<br />your hardware.",
+            desc: "Stop renting cloud servers. Host your own AI, media, and files locally with zero monthly fees."
+          }
+        ];
+
+        let currentIndex = 0;
+        const titleEl = document.getElementById('hero-title');
+        const descEl = document.getElementById('hero-desc');
+
+        setInterval(() => {
+            // Fade out
+            titleEl.classList.add('opacity-0');
+            descEl.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % messages.length;
+                titleEl.innerHTML = messages[currentIndex].title;
+                descEl.textContent = messages[currentIndex].desc;
+                
+                // Fade in
+                titleEl.classList.remove('opacity-0');
+                descEl.classList.remove('opacity-0');
+            }, 500); // Wait for fade out
+            
+        }, 5000); // Rotate every 5 seconds
+      }
+
+      function loadRandomScreenshot() {
+        const screenshots = [
+            { url: "https://github.com/user-attachments/assets/2e107ef8-2411-4d62-9886-9fb917b9993d", caption: "Main Dashboard - Clean, modern interface for managing your apps" },
+            { url: "https://github.com/user-attachments/assets/3a9604fa-d634-4329-aa73-ed4658145b00", caption: "Temporary Installation - Set auto-expiry for apps to keep your system clean" },
+            { url: "https://github.com/user-attachments/assets/862fb852-e52d-4f94-8372-234c1d6c6b51", caption: "Volume Browser - Browse and manage persistent data files directly" },
+            { url: "https://github.com/user-attachments/assets/e5dc0ad8-0181-4676-b7b1-1cc961a6b1ed", caption: "Dark Mode - Fully supported dark theme for late night hacking" }
+        ];
+
+        const random = screenshots[Math.floor(Math.random() * screenshots.length)];
+        const img = document.getElementById('screenshot-img');
+        const caption = document.getElementById('screenshot-caption');
+        const loader = document.getElementById('screenshot-loader');
+        
+        if (img && caption) {
+            // Preload image
+            const tempImg = new Image();
+            tempImg.onload = () => {
+                 img.src = random.url;
+                 caption.textContent = random.caption;
+                 img.classList.remove('opacity-0');
+                 if(loader) loader.classList.add('hidden');
+            };
+            tempImg.src = random.url;
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         loadApps();
         loadStars();
         animateFeatures();
         initScrollAnimations();
+        initHeroRotator();
+        loadRandomScreenshot();
       });
     </script>
   </body>
