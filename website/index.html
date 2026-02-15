@@ -33,17 +33,6 @@
     <!-- Local Tailwind CSS bundle -->
     <link rel="stylesheet" href="./tailwind.css" />
     <style>
-      .typing-effect {
-        border-right: 2px solid #4ade80;
-        white-space: nowrap;
-        overflow: hidden;
-        animation: blink 1s step-end infinite;
-      }
-      @keyframes blink {
-        50% {
-          border-color: transparent;
-        }
-      }
       .hide-scrollbar::-webkit-scrollbar {
         display: none;
       }
@@ -51,11 +40,23 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
+      .bg-grid-pattern {
+        background-color: #ffffff;
+        background-image: linear-gradient(#f1f5f9 1px, transparent 1px), linear-gradient(90deg, #f1f5f9 1px, transparent 1px);
+        background-size: 20px 20px;
+      }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
     </style>
   </head>
-  <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white">
+  <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
+    <div class="absolute inset-0 -z-10 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] h-[600px] pointer-events-none"></div>
+
     <!-- Header -->
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm border-b border-gray-100">
+    <header class="sticky top-0 z-50 glass-effect border-b border-gray-100/50">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         <div class="flex items-center gap-8">
           <a href="#" class="text-xl font-bold tracking-tight bg-black text-white px-2 py-1">YANTRA</a>
@@ -98,26 +99,26 @@
       </div>
 
       <!-- Hero -->
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start mb-24">
-        <div>
+      <div class="mb-32 flex flex-col items-center text-center relative z-10">
+        <div class="max-w-4xl mx-auto">
           <h1
             id="hero-title"
-            class="text-5xl sm:text-6xl font-extrabold tracking-tight mb-6 font-sans text-black leading-[1.1] transition-opacity duration-500 ease-in-out"
+            class="text-6xl sm:text-7xl font-bold tracking-tight mb-8 font-sans text-black leading-none transition-opacity duration-500 ease-in-out"
           >
-            Self-host<br />
+            Self-host
             open source apps.
           </h1>
-          <p id="hero-desc" class="text-lg text-gray-600 leading-relaxed max-w-xl mb-10 font-sans transition-opacity duration-500 ease-in-out">
-            Turn any device into a private cloud. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure. No OS replacement needed.
+          <p id="hero-desc" class="text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto mb-12 font-sans transition-opacity duration-500 ease-in-out">
+            Turn any device into a private cloud with one command. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure. No OS replacement needed.
           </p>
 
           <!-- Install Widget -->
-          <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50/50 max-w-lg">
-            <div class="flex border-b border-gray-200 bg-white">
+          <div class="border border-gray-200 rounded-xl overflow-hidden shadow-2xl bg-white max-w-2xl mx-auto text-left ring-1 ring-gray-900/5">
+            <div class="flex border-b border-gray-100 bg-gray-50/50 p-1">
               <button
                 id="tab-no-docker"
                 onclick="switchInstallTab('no-docker')"
-                class="px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black"
+                class="px-4 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-black border border-gray-200"
               >
                 No Docker?
               </button>
@@ -129,10 +130,13 @@
                 Have Docker?
               </button>
             </div>
-            <div id="content-no-docker" class="p-4 bg-gray-50 flex items-start justify-between group">
-              <code class="text-xs sm:text-sm text-gray-800 font-medium overflow-x-auto whitespace-pre hide-scrollbar pr-4"
-                >curl -fsSL https://get.docker.com | sudo sh sudo usermod -aG docker $USER && newgrp docker docker run -d --name yantra -p 80:5252 -p 443:5252
-                -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra</code
+            <div id="content-no-docker" class="p-5 bg-[#18181b] flex items-start justify-between group">
+              <code class="text-xs sm:text-sm text-gray-300 font-mono overflow-x-auto whitespace-pre hide-scrollbar pr-4 leading-relaxed"
+                >curl -fsSL https://get.docker.com | sudo sh 
+sudo usermod -aG docker $USER && newgrp docker 
+docker run -d --name yantra -p 80:5252 -p 443:5252 \
+  -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped \
+  ghcr.io/besoeasy/yantra</code
               >
               <button
                 onclick="
@@ -140,10 +144,10 @@
                     'curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker\ndocker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
-                class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
+                class="text-gray-500 hover:text-white transition-colors p-1.5 rounded hover:bg-white/10"
                 title="Copy command"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -153,9 +157,11 @@
                 </svg>
               </button>
             </div>
-            <div id="content-has-docker" class="p-4 bg-gray-50 flex items-start justify-between group hidden">
-              <code class="text-sm text-gray-800 font-medium overflow-x-auto whitespace-nowrap hide-scrollbar pr-4">
-                docker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra
+            <div id="content-has-docker" class="p-5 bg-[#18181b] flex items-start justify-between group hidden">
+              <code class="text-sm text-gray-300 font-mono overflow-x-auto whitespace-nowrap hide-scrollbar pr-4 leading-relaxed">
+                docker run -d --name yantra -p 80:5252 -p 443:5252 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --restart unless-stopped ghcr.io/besoeasy/yantra
               </code>
               <button
                 onclick="
@@ -163,10 +169,10 @@
                     'docker run -d --name yantra -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantra',
                   )
                 "
-                class="text-gray-400 hover:text-black transition-colors p-1 mt-1"
+                class="text-gray-500 hover:text-white transition-colors p-1.5 rounded hover:bg-white/10"
                 title="Copy command"
               >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -179,45 +185,6 @@
           </div>
         </div>
 
-        <!-- Terminal Image/Preview -->
-        <div class="relative mt-4 lg:mt-0">
-          <div class="rounded-lg bg-[#0d0d0d] border border-gray-800 shadow-xl overflow-hidden">
-            <div class="flex items-center gap-1.5 px-4 py-3 bg-[#1a1a1a] border-b border-gray-800">
-              <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
-              <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
-            </div>
-            <div class="p-6 text-sm font-mono leading-relaxed h-[340px] overflow-y-auto">
-              <div class="text-gray-400 mb-2"># Deploying Open WebUI...</div>
-              <div class="flex gap-2 text-gray-300">
-                <span class="text-green-500">➜</span>
-                <span>node daemon/main.js deploy open-webui</span>
-              </div>
-              <div class="mt-2 text-gray-500">
-                [+] Pulling images...<br />
-                [+] Creating volumes...<br />
-                [+] Starting container open-webui...<br />
-              </div>
-              <div class="mt-2 text-green-400">✔ App deployed successfully</div>
-              <div class="mt-4 text-gray-400 mb-2"># Checking status...</div>
-              <div class="flex gap-2 text-gray-300">
-                <span class="text-green-500">➜</span>
-                <span>docker ps --format "{{.Names}}\t{{.Status}}"</span>
-              </div>
-              <div class="mt-2 text-gray-300">
-                yantra Up 2 hours<br />
-                ollama Up 15 minutes<br />
-                open-webui Up 12 seconds
-              </div>
-              <div class="mt-4 flex gap-2">
-                <span class="text-green-500">➜</span>
-                <span class="typing-effect border-r-2 border-green-500 pr-1">_</span>
-              </div>
-            </div>
-          </div>
-          <!-- Decoration -->
-          <div class="absolute -z-10 -right-20 -bottom-20 w-64 h-64 bg-gray-100 rounded-full blur-3xl opacity-50"></div>
-        </div>
       </div>
 
       <!-- What is Yantra Section (Features in list style) -->
@@ -298,14 +265,17 @@
         const noDockerContent = document.getElementById("content-no-docker");
         const hasDockerContent = document.getElementById("content-has-docker");
 
+        const activeClass = "px-4 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-black border border-gray-200";
+        const inactiveClass = "px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors";
+
         if (tab === "no-docker") {
-          noDockerTab.className = "px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black";
-          hasDockerTab.className = "px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors";
+          noDockerTab.className = activeClass;
+          hasDockerTab.className = inactiveClass;
           noDockerContent.classList.remove("hidden");
           hasDockerContent.classList.add("hidden");
         } else {
-          hasDockerTab.className = "px-4 py-2 text-sm font-bold border-b-2 border-black bg-gray-50 text-black";
-          noDockerTab.className = "px-4 py-2 text-sm font-medium text-gray-500 hover:text-black transition-colors";
+          hasDockerTab.className = activeClass;
+          noDockerTab.className = inactiveClass;
           hasDockerContent.classList.remove("hidden");
           noDockerContent.classList.add("hidden");
         }
