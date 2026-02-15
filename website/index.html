@@ -65,9 +65,11 @@
       .star-icon:hover {
         opacity: 1 !important;
         filter: grayscale(0%);
-        transform: scale(1.5) !important; /* Temporarily pause animation or override transform */
+        transform: scale(1.1) !important; /* Temporarily pause animation or override transform */
         z-index: 20;
         animation-play-state: paused;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
       }
       @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
@@ -83,10 +85,10 @@
     </style>
   </head>
   <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
-    <div class="absolute inset-0 -z-10 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] h-[600px] pointer-events-none"></div>
+    <div class="absolute inset-0 -z-10 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] h-[900px] pointer-events-none"></div>
     
     <!-- Hero Background Animation Container -->
-    <div id="hero-stars" class="absolute top-0 left-0 w-full h-[800px] overflow-hidden -z-10 [mask-image:linear-gradient(to_bottom,black_20%,transparent)] pointer-events-none"></div>
+    <div id="hero-stars" class="absolute top-0 left-0 w-full h-[1000px] overflow-hidden -z-10 [mask-image:linear-gradient(to_bottom,black_20%,transparent)] pointer-events-none"></div>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass-effect border-b border-gray-100/50">
@@ -769,19 +771,20 @@ docker run -d --name yantra -p 80:5252 -p 443:5252 \
             if (!logoUrl) continue;
 
             const el = document.createElement("div");
-            el.className = "star-icon absolute flex items-center justify-center p-1 rounded-full bg-white/10 backdrop-blur-sm shadow-sm border border-white/20";
+            el.className = "star-icon absolute flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 backdrop-blur-md shadow-sm border border-white/20";
             
             // Random positioning constrained to viewport width
-            el.style.left = Math.floor(Math.random() * 96) + 2 + "%"; 
+            el.style.left = Math.floor(Math.random() * 90) + 5 + "%"; 
             el.style.top = Math.floor(Math.random() * 90) + 5 + "%";
             
-            const size = Math.floor(Math.random() * 24) + 24; // 24px - 48px
-            el.style.width = size + "px";
-            el.style.height = size + "px";
+            const size = Math.floor(Math.random() * 8) + 16; // 16px - 24px icon size
             
             el.style.animationDelay = (Math.random() * 5) + "s";
             el.style.animationDuration = (Math.random() * 3 + 3) + "s";
-            el.innerHTML = `<img src="${logoUrl}" class="w-full h-full object-contain" alt="${app.name}" title="${app.name}">`;
+            el.innerHTML = `
+              <img src="${logoUrl}" style="width:${size}px; height:${size}px;" class="object-contain shrink-0" alt="${app.name}">
+              <span class="text-xs font-semibold text-gray-700 whitespace-nowrap">${app.name}</span>
+            `;
             
             container.appendChild(el);
           }
