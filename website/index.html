@@ -316,6 +316,18 @@ docker run -d --name yantra -p 80:5252 -p 443:5252 \
         }
       }
 
+      function getRandomUniqueItems(items, count) {
+        if (!Array.isArray(items) || items.length === 0 || count <= 0) return [];
+
+        const shuffled = [...items];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+
+        return shuffled.slice(0, Math.min(count, shuffled.length));
+      }
+
       async function loadApps() {
         try {
           const response = await fetch("./apps.json");
@@ -363,9 +375,9 @@ docker run -d --name yantra -p 80:5252 -p 443:5252 \
             return card;
           };
 
-          // Initial load: 12 random apps (increased from 8)
+          // Initial load: unique random apps
           const DISPLAY_COUNT = 11;
-          let currentApps = apps.sort(() => 0.5 - Math.random()).slice(0, DISPLAY_COUNT);
+          let currentApps = getRandomUniqueItems(apps, DISPLAY_COUNT);
           currentApps.forEach((app) => {
             grid.appendChild(createCard(app));
           });
@@ -374,12 +386,17 @@ docker run -d --name yantra -p 80:5252 -p 443:5252 \
           setInterval(() => {
             if (document.hidden) return; // Pause if tab is hidden
 
-            // Pick a random app
-            const randomApp = apps[Math.floor(Math.random() * apps.length)];
+            // Pick a random app not currently shown
+            const currentIds = new Set(currentApps.map((app) => app.id));
+            const availableApps = apps.filter((app) => !currentIds.has(app.id));
+            if (availableApps.length === 0) return;
+
+            const randomApp = availableApps[Math.floor(Math.random() * availableApps.length)];
             const newCard = createCard(randomApp);
 
             // Add to front
             grid.prepend(newCard);
+            currentApps = [randomApp, ...currentApps].slice(0, DISPLAY_COUNT);
 
             // Remove from back with slow fade
             if (grid.children.length > DISPLAY_COUNT) {
@@ -759,9 +776,10 @@ docker run -d --name yantra -p 80:5252 -p 443:5252 \
           if (!apps || !apps.length) return;
 
           const starCount = 35;
+          const appsWithLogo = apps.filter((app) => app.logo);
+          const selectedApps = getRandomUniqueItems(appsWithLogo, starCount);
 
-          for (let i = 0; i < starCount; i++) {
-            const app = apps[Math.floor(Math.random() * apps.length)];
+          for (const app of selectedApps) {
             const logoUrl = app.logo
               ? app.logo.startsWith("http")
                 ? app.logo
