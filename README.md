@@ -25,8 +25,7 @@ Launch Yantr in seconds with a single Docker command and access it at http://loc
 ```bash
 docker run -d \
   --name yantr \
-  -p 80:5252 \
-  -p 443:5252 \
+  -p 80:5252 -p 443:5252 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantr
