@@ -3,12 +3,12 @@ services:
     image: ghostfolio/ghostfolio:latest
     container_name: ghostfolio
     labels:
-      yantra.name: "Ghostfolio"
-      yantra.logo: "QmZ288p9irBeP9M369V2FY876tRk9nodM7u4hzeGBAYAUD"
-      yantra.category: "productivity,utility"
-      yantra.port: "3333 (HTTP - Web UI)"
-      yantra.description: "Open source wealth management for portfolio tracking"
-      yantra.website: "https://ghostfol.io"
+      yantr.name: "Ghostfolio"
+      yantr.logo: "QmZ288p9irBeP9M369V2FY876tRk9nodM7u4hzeGBAYAUD"
+      yantr.category: "productivity,utility"
+      yantr.port: "3333 (HTTP - Web UI)"
+      yantr.description: "Open source wealth management for portfolio tracking"
+      yantr.website: "https://ghostfol.io"
     ports:
       - "3333"
     volumes:

@@ -3,12 +3,12 @@ services:
     image: linuxserver/davos:latest
     container_name: davos
     labels:
-      yantra.name: "Davos"
-      yantra.logo: "QmVN8Wpn8RgjPwR7ggoVxPjKqE4GzYN69uZGMiyQmu792X"
-      yantra.category: "download,file-management"
-      yantra.port: "8080 (HTTP - Web UI)"
-      yantra.description: "Lightweight download manager for managing files with web interface"
-      yantra.website: "https://github.com/linuxserver/docker-davos"
+      yantr.name: "Davos"
+      yantr.logo: "QmVN8Wpn8RgjPwR7ggoVxPjKqE4GzYN69uZGMiyQmu792X"
+      yantr.category: "download,file-management"
+      yantr.port: "8080 (HTTP - Web UI)"
+      yantr.description: "Lightweight download manager for managing files with web interface"
+      yantr.website: "https://github.com/linuxserver/docker-davos"
     ports:
       - "8080"
     volumes:

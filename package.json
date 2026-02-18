@@ -1,13 +1,13 @@
 {
-  "name": "yantra",
+  "name": "yantr",
   "type": "module",
   "scripts": {
     "server": "node daemon/main.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "docker-build": "docker build -t yantra:optimized . && docker images yantra:optimized",
-    "docker-run": "docker run -d -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock yantra:optimized",
+    "docker-build": "docker build -t yantr:optimized . && docker images yantr:optimized",
+    "docker-run": "docker run -d -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock yantr:optimized",
     "website": "npx @tailwindcss/cli -i ./website/tailwind.input.css -o ./website/tailwind.css --minify && node appstojson.js"
   },
   "dependencies": {

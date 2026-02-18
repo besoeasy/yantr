@@ -3,12 +3,12 @@ services:
     image: zenko/cloudserver:latest
     container_name: zenko-s3
     labels:
-      yantra.name: "Scality S3"
-      yantra.logo: "QmSoQJKaWvrk9pff9x5EfxcG9QkRnGfCrkcSuGw2u8g7XJ"
-      yantra.category: "storage,s3"
-      yantra.port: "8000 (HTTP - S3 API)"
-      yantra.description: "S3-compatible object storage server for self-hosted cloud storage"
-      yantra.website: "https://www.zenko.io/cloudserver/"
+      yantr.name: "Scality S3"
+      yantr.logo: "QmSoQJKaWvrk9pff9x5EfxcG9QkRnGfCrkcSuGw2u8g7XJ"
+      yantr.category: "storage,s3"
+      yantr.port: "8000 (HTTP - S3 API)"
+      yantr.description: "S3-compatible object storage server for self-hosted cloud storage"
+      yantr.website: "https://www.zenko.io/cloudserver/"
     ports:
       - "8000"
     environment:

@@ -12,7 +12,7 @@ services:
       LOG_LEVEL: info
       LOG_FORMAT: json
       METRICS_PORT: 8181
-      RELAY_NAME: relay-on-yantra
+      RELAY_NAME: relay-on-yantr
       DB_HOST: cockroachdb
       DB_PORT: 26257
     command: /usr/local/bin/relay start --config /config.yaml --db-host cockroachdb --db-port 26257
@@ -30,12 +30,12 @@ services:
       retries: 3
       start_period: 30s
     labels:
-      yantra.name: "Shugur Relay"
-      yantra.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
-      yantra.category: "network,social"
-      yantra.port: "8080 (HTTP - Relay)"
-      yantra.description: "High-performance nostr relay with distributed database"
-      yantra.website: "https://github.com/Shugur-Network/relay"
+      yantr.name: "Shugur Relay"
+      yantr.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
+      yantr.category: "network,social"
+      yantr.port: "8080 (HTTP - Relay)"
+      yantr.description: "High-performance nostr relay with distributed database"
+      yantr.website: "https://github.com/Shugur-Network/relay"
 
   cockroachdb:
     image: cockroachdb/cockroach:latest

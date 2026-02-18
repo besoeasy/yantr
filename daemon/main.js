@@ -40,7 +40,7 @@ const app = express();
 const socketPath = process.env.DOCKER_SOCKET || "/var/run/docker.sock";
 
 const docker = new Docker({ socketPath });
-const SHARED_NETWORK_NAME = "yantra_network";
+const SHARED_NETWORK_NAME = "yantr_network";
 
 // System architecture cache
 let systemArchitecture = null;
@@ -75,7 +75,7 @@ async function fetchJsonWithTimeout(url, timeoutMs = 6000) {
 
   try {
     const res = await fetch(url, {
-      headers: { "user-agent": "yantra-daemon" },
+      headers: { "user-agent": "yantr-daemon" },
       signal: controller.signal,
     });
     if (!res.ok) {
@@ -247,7 +247,7 @@ function normalizeUiBasePath(value) {
   return withLeadingSlash.replace(/\/+$/, "");
 }
 
-async function ensureYantraNetwork({ log: logFn } = {}) {
+async function ensureYantrNetwork({ log: logFn } = {}) {
   const logger = logFn || (() => {});
 
   try {
@@ -311,15 +311,15 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
         const composeContent = await readFile(composePath, "utf-8");
         const labels = {};
 
-        // Format 1: yantra.name: "value"
-        const labelRegex = /yantra\.([\w-]+):\s*["'](.+?)["']/g;
+        // Format 1: yantr.name: "value"
+        const labelRegex = /yantr\.([\w-]+):\s*["'](.+?)["']/g;
         let match;
         while ((match = labelRegex.exec(composeContent)) !== null) {
           labels[match[1]] = match[2];
         }
 
-        // Format 2: - "yantra.name=value"
-        const arrayLabelRegex = /-\s*["']yantra\.([\w-]+)=(.+?)["']/g;
+        // Format 2: - "yantr.name=value"
+        const arrayLabelRegex = /-\s*["']yantr\.([\w-]+)=(.+?)["']/g;
         while ((match = arrayLabelRegex.exec(composeContent)) !== null) {
           labels[match[1]] = match[2];
         }
@@ -379,7 +379,7 @@ async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: false }) 
           }
         }
 
-        // Parse yantra.port to identify named ports
+        // Parse yantr.port to identify named ports
         const namedPorts = new Set();
         if (labels.port) {
           const portDescRegex = /(\d+)\s*\(([^-\)]+)\s*-\s*([^)]+)\)/g;
@@ -662,8 +662,8 @@ function parseAppLabels(labels) {
   }
 
   for (const [key, value] of Object.entries(labels)) {
-    if (key.startsWith("yantra.")) {
-      const labelName = key.replace("yantra.", "");
+    if (key.startsWith("yantr.")) {
+      const labelName = key.replace("yantr.", "");
       appLabels[labelName] = value;
     }
   }
@@ -764,24 +764,24 @@ app.get("/api/containers", asyncHandler(async (req, res) => {
     });
 
     // Filter out auxiliary containers (sidecars)
-    // Identify stacks that have at least one explicit Yantra app
-    const yantraProjects = new Set();
+    // Identify stacks that have at least one explicit Yantr app
+    const yantrProjects = new Set();
     formattedContainers.forEach((c) => {
       const project = c.labels ? c.labels["com.docker.compose.project"] : null;
       if (c.appLabels && c.appLabels.name && project) {
-        yantraProjects.add(project);
+        yantrProjects.add(project);
       }
     });
 
     // Filter: Show container IF:
-    // 1. It has a visible Yantra name label
-    // 2. OR it does NOT belong to a project that has a Yantra app (unmanaged/external containers)
+    // 1. It has a visible Yantr name label
+    // 2. OR it does NOT belong to a project that has a Yantr app (unmanaged/external containers)
     const filteredContainers = formattedContainers.filter((c) => {
-      const hasYantraLabel = !!(c.appLabels && c.appLabels.name);
+      const hasYantrLabel = !!(c.appLabels && c.appLabels.name);
       const project = c.labels ? c.labels["com.docker.compose.project"] : null;
-      const isPartOfYantraStack = project && yantraProjects.has(project);
+      const isPartOfYantrStack = project && yantrProjects.has(project);
 
-      return hasYantraLabel || !isPartOfYantraStack;
+      return hasYantrLabel || !isPartOfYantrStack;
     });
 
     res.json({
@@ -844,7 +844,7 @@ app.get("/api/containers/:id", asyncHandler(async (req, res) => {
         mounts: info.Mounts,
         env: info.Config.Env,
         labels: appLabels,
-        expireAt: info.Config.Labels?.["yantra.expireAt"] || null,
+        expireAt: info.Config.Labels?.["yantr.expireAt"] || null,
         app: {
           name: appLabels.name || info.Name.replace("/", ""),
           logo: appLabels.logo
@@ -1023,7 +1023,7 @@ app.get("/api/apps/:id/dependency-env", asyncHandler(async (req, res) => {
   }
 
   // Extract dependencies from compose file
-  const dependenciesMatch = composeContent.match(/yantra\.dependencies:\s*["'](.+?)["']/);
+  const dependenciesMatch = composeContent.match(/yantr\.dependencies:\s*["'](.+?)["']/);
   if (!dependenciesMatch) {
     return res.json({
       success: true,
@@ -1153,7 +1153,7 @@ app.post("/api/deploy", async (req, res) => {
     }
 
     try {
-      await ensureYantraNetwork({ log });
+      await ensureYantrNetwork({ log });
     } catch (err) {
       log("error", `❌ [POST /api/deploy] ${err.message}`);
       return res.status(500).json({
@@ -1164,7 +1164,7 @@ app.post("/api/deploy", async (req, res) => {
     }
 
     // Check dependencies
-    const dependenciesMatch = composeContent.match(/yantra\.dependencies:\s*["'](.+?)["']/);
+    const dependenciesMatch = composeContent.match(/yantr\.dependencies:\s*["'](.+?)["']/);
     let dependencyWarnings = null;
     if (dependenciesMatch) {
       const dependencies = dependenciesMatch[1].split(',').map(dep => dep.trim());
@@ -1239,8 +1239,8 @@ app.post("/api/deploy", async (req, res) => {
             // Add expiration labels after 'labels:' line with proper YAML indentation
             // Labels should always be indented 2 spaces more than the 'labels:' key
             const labelIndent = " ".repeat(baseIndentLevel + 2);
-            result.push(`${labelIndent}yantra.expireAt: "${expireAtTimestamp}"`);
-            result.push(`${labelIndent}yantra.temporary: "true"`);
+            result.push(`${labelIndent}yantr.expireAt: "${expireAtTimestamp}"`);
+            result.push(`${labelIndent}yantr.temporary: "true"`);
           } else if (inLabelsSection) {
             // Check if we've left the labels section
             const currentIndent = line.search(/\S/);
@@ -1883,7 +1883,7 @@ app.post("/api/system/prune", async (req, res) => {
 // Root endpoint
 app.get("/", (req, res) => {
   res.json({
-    name: "Yantra API",
+    name: "Yantr API",
     version: packageJson.version,
     description: "Lightweight Docker dashboard for self-hosting",
     endpoints: {
@@ -1963,8 +1963,8 @@ app.get("/api/volumes", async (req, res) => {
     const usedVolumeNames = new Set();
 
     containers.forEach((container) => {
-      if (container.Labels && container.Labels["yantra.volume-browser"]) {
-        browsedVolumes.add(container.Labels["yantra.volume-browser"]);
+      if (container.Labels && container.Labels["yantr.volume-browser"]) {
+        browsedVolumes.add(container.Labels["yantr.volume-browser"]);
       }
 
       // Add all mounted volumes to the used set
@@ -2043,7 +2043,7 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
     // Check if a browser container already exists for this volume
     const containers = await docker.listContainers({ all: true });
     const existingBrowser = containers.find(
-      (c) => c.Labels && c.Labels["yantra.volume-browser"] === volumeName
+      (c) => c.Labels && c.Labels["yantr.volume-browser"] === volumeName
     );
 
     if (existingBrowser) {
@@ -2087,18 +2087,18 @@ app.post("/api/volumes/:name/browse", async (req, res) => {
     }
 
     // Create new browser container
-    const containerName = `yantra-v-${volumeName}`;
+    const containerName = `yantr-v-${volumeName}`;
 
     // Prepare labels
     const labels = {
-      "yantra.volume-browser": volumeName,
-      "yantra.managed": "true",
+      "yantr.volume-browser": volumeName,
+      "yantr.managed": "true",
     };
 
     // Add expiry label if specified
     if (expiryMinutes > 0) {
       const expiryTimestamp = Math.floor(Date.now() / 1000) + (expiryMinutes * 60);
-      labels["yantra.expireAt"] = expiryTimestamp.toString();
+      labels["yantr.expireAt"] = expiryTimestamp.toString();
     }
 
     const container = await docker.createContainer({
@@ -2148,7 +2148,7 @@ app.delete("/api/volumes/:name/browse", async (req, res) => {
   try {
     const containers = await docker.listContainers({ all: true });
     const browserContainer = containers.find(
-      (c) => c.Labels && c.Labels["yantra.volume-browser"] === volumeName
+      (c) => c.Labels && c.Labels["yantr.volume-browser"] === volumeName
     );
 
     if (!browserContainer) {
@@ -2261,7 +2261,7 @@ app.post("/api/ports/suggest", async (req, res) => {
     let currentPort = START_PORT;
 
     const suggestedPorts = appPorts.map((port) => {
-      // Only suggest for named ports (ports with descriptions in yantra.port label)
+      // Only suggest for named ports (ports with descriptions in yantr.port label)
       if (!port.isNamed) {
         // Keep original port for unnamed ports (like BitTorrent ports, etc.)
         return {
@@ -2620,7 +2620,7 @@ app.use(errorHandler);
 const PORT = 5252;
 app.listen(PORT, "0.0.0.0", () => {
   log("info", "\n" + "=".repeat(50));
-  log("info", "🚀 Yantra API Server Started");
+  log("info", "🚀 Yantr API Server Started");
   log("info", "=".repeat(50));
   log("info", `📡 Port: ${PORT}`);
   log("info", `🔌 Socket: ${socketPath}`);
@@ -2632,7 +2632,7 @@ app.listen(PORT, "0.0.0.0", () => {
     log("warn", `⚠️  [COMPOSE] ${err.message}`);
   });
 
-  ensureYantraNetwork({ log }).catch((err) => {
+  ensureYantrNetwork({ log }).catch((err) => {
     log("warn", `⚠️  [NETWORK] ${err.message}`);
   });
 

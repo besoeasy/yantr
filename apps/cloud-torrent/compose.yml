@@ -8,12 +8,12 @@ services:
       - "3000"
     restart: unless-stopped
     labels:
-      yantra.name: "Cloud Torrent"
-      yantra.logo: "QmdPAfpuG5zkJs4GMX2DJ4xhKYq8vkT98TMjHgecAwkQVL"
-      yantra.category: "download,utility"
-      yantra.port: "3000 (HTTP - Web UI)"
-      yantra.description: "Cloud-based BitTorrent client with streaming support"
-      yantra.website: "https://github.com/jpillora/cloud-torrent"
+      yantr.name: "Cloud Torrent"
+      yantr.logo: "QmdPAfpuG5zkJs4GMX2DJ4xhKYq8vkT98TMjHgecAwkQVL"
+      yantr.category: "download,utility"
+      yantr.port: "3000 (HTTP - Web UI)"
+      yantr.description: "Cloud-based BitTorrent client with streaming support"
+      yantr.website: "https://github.com/jpillora/cloud-torrent"
 
 volumes:
   cloud-torrent-downloads:

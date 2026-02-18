@@ -3,12 +3,12 @@ services:
     image: linuxserver/nano:latest
     container_name: nano
     labels:
-      yantra.name: "Nano"
-      yantra.logo: "Qmf4kNnrTW6jAtNGrhM62yC1XmvXf2x5ZtxcUfZUinegca"
-      yantra.category: "cryptocurrency,blockchain"
-      yantra.port: "8075 (HTTP - RPC API)"
-      yantra.description: "Open source, green cryptocurrency and peer-to-peer payment system"
-      yantra.website: "https://github.com/linuxserver/docker-nano"
+      yantr.name: "Nano"
+      yantr.logo: "Qmf4kNnrTW6jAtNGrhM62yC1XmvXf2x5ZtxcUfZUinegca"
+      yantr.category: "cryptocurrency,blockchain"
+      yantr.port: "8075 (HTTP - RPC API)"
+      yantr.description: "Open source, green cryptocurrency and peer-to-peer payment system"
+      yantr.website: "https://github.com/linuxserver/docker-nano"
     ports:
       - "8075"
       - "3000"

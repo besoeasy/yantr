@@ -11,20 +11,20 @@ const outputDir = path.join(__dirname, 'website');
 const outputFile = path.join(outputDir, 'apps.json');
 
 /**
- * Extract yantra labels from compose.yml service
+ * Extract yantr labels from compose.yml service
  */
-function extractYantraLabels(service) {
+function extractYantrLabels(service) {
   const labels = service?.labels || {};
-  const yantraData = {};
+  const yantrData = {};
 
   for (const [key, value] of Object.entries(labels)) {
-    if (key.startsWith('yantra.')) {
-      const labelName = key.replace('yantra.', '');
-      yantraData[labelName] = value;
+    if (key.startsWith('yantr.')) {
+      const labelName = key.replace('yantr.', '');
+      yantrData[labelName] = value;
     }
   }
 
-  return yantraData;
+  return yantrData;
 }
 
 /**
@@ -44,22 +44,22 @@ function parseComposeFile(appId, composePath) {
     const firstServiceName = Object.keys(composeData.services)[0];
     const firstService = composeData.services[firstServiceName];
 
-    const yantraLabels = extractYantraLabels(firstService);
+    const yantrLabels = extractYantrLabels(firstService);
 
-    if (!yantraLabels.name) {
-      console.warn(`⚠️  No yantra.name label found for ${appId}`);
+    if (!yantrLabels.name) {
+      console.warn(`⚠️  No yantr.name label found for ${appId}`);
       return null;
     }
 
     return {
       id: appId,
-      name: yantraLabels.name || appId,
-      logo: yantraLabels.logo || null,
-      category: yantraLabels.category ? yantraLabels.category.split(',').map(c => c.trim()) : [],
-      port: yantraLabels.port || null,
-      description: yantraLabels.description || '',
-      website: yantraLabels.website || null,
-      dependencies: yantraLabels.dependencies ? yantraLabels.dependencies.split(',').map(d => d.trim()) : [],
+      name: yantrLabels.name || appId,
+      logo: yantrLabels.logo || null,
+      category: yantrLabels.category ? yantrLabels.category.split(',').map(c => c.trim()) : [],
+      port: yantrLabels.port || null,
+      description: yantrLabels.description || '',
+      website: yantrLabels.website || null,
+      dependencies: yantrLabels.dependencies ? yantrLabels.dependencies.split(',').map(d => d.trim()) : [],
       image: firstService.image || null,
       serviceName: firstServiceName,
     };

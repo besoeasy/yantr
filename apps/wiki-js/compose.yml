@@ -3,12 +3,12 @@ services:
     image: linuxserver/wikijs:latest
     container_name: wiki-js
     labels:
-      yantra.name: "Wiki.js"
-      yantra.logo: "QmdFpskYSKmBYLyBWGSnqronCxH2V3kxSLiDBHmCCWGVRs"
-      yantra.category: "documentation,wiki"
-      yantra.port: "3000 (HTTP - Web UI)"
-      yantra.description: "Modern, lightweight wiki platform for creating and organizing knowledge bases"
-      yantra.website: "https://github.com/requarks/wiki"
+      yantr.name: "Wiki.js"
+      yantr.logo: "QmdFpskYSKmBYLyBWGSnqronCxH2V3kxSLiDBHmCCWGVRs"
+      yantr.category: "documentation,wiki"
+      yantr.port: "3000 (HTTP - Web UI)"
+      yantr.description: "Modern, lightweight wiki platform for creating and organizing knowledge bases"
+      yantr.website: "https://github.com/requarks/wiki"
     ports:
       - "3000"
     volumes:

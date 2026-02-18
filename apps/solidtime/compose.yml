@@ -3,12 +3,12 @@ services:
     image: solidtime/solidtime:0.10.0
     container_name: solidtime
     labels:
-      yantra.name: "Solidtime"
-      yantra.logo: "QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6"
-      yantra.category: "productivity,time-tracking"
-      yantra.port: "8000 (HTTP - Web UI)"
-      yantra.description: "A simple, secure, and private time tracking app with detailed reports and CSV export"
-      yantra.website: "https://www.solidtime.io/"
+      yantr.name: "Solidtime"
+      yantr.logo: "QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6"
+      yantr.category: "productivity,time-tracking"
+      yantr.port: "8000 (HTTP - Web UI)"
+      yantr.description: "A simple, secure, and private time tracking app with detailed reports and CSV export"
+      yantr.website: "https://www.solidtime.io/"
     ports:
       - "8000"
     environment:

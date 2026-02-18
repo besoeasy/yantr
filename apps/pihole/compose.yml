@@ -4,18 +4,18 @@ services:
     container_name: pihole
     entrypoint: /app/entrypoint.sh
     labels:
-      yantra.name: "Pi-hole"
-      yantra.logo: "QmYbagd1HGhQkxjcgj8KvEGc3ASyubA7MuVSZokJkSmpBr"
-      yantra.category: "network,security"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Network-wide ad blocking via DNS sinkhole"
-      yantra.website: "https://docs.pi-hole.net"
+      yantr.name: "Pi-hole"
+      yantr.logo: "QmYbagd1HGhQkxjcgj8KvEGc3ASyubA7MuVSZokJkSmpBr"
+      yantr.category: "network,security"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Network-wide ad blocking via DNS sinkhole"
+      yantr.website: "https://docs.pi-hole.net"
     ports:
       - "53:53/tcp"
       - "53:53/udp"
       - "80"
     environment:
-      WEBPASSWORD: ${WEBPASSWORD:-yantra}
+      WEBPASSWORD: ${WEBPASSWORD:-yantr}
     volumes:
       - ./entrypoint.sh:/app/entrypoint.sh:ro
       - pihole_data:/etc/pihole

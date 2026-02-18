@@ -9,12 +9,12 @@ services:
       - "8096"
     restart: unless-stopped
     labels:
-      yantra.name: "Emby"
-      yantra.logo: "QmQW3NWmVuq3Q76pibyTu2XAkzLfWVKCeSKNcywmNwXGUV"
-      yantra.category: "media,entertainment"
-      yantra.port: "8096 (HTTP - Web UI)"
-      yantra.description: "Media server for streaming video, music, live TV, and photos"
-      yantra.website: "https://emby.media/"
+      yantr.name: "Emby"
+      yantr.logo: "QmQW3NWmVuq3Q76pibyTu2XAkzLfWVKCeSKNcywmNwXGUV"
+      yantr.category: "media,entertainment"
+      yantr.port: "8096 (HTTP - Web UI)"
+      yantr.description: "Media server for streaming video, music, live TV, and photos"
+      yantr.website: "https://emby.media/"
 
 volumes:
   emby-config:

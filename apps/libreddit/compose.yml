@@ -3,12 +3,12 @@ services:
     image: ceramicwhite/libreddit:0.22.9
     container_name: libreddit
     labels:
-      yantra.name: "LibReddit"
-      yantra.logo: "QmTieAKkWAmA12gchbEJiBGZZK64hsuKQYRtSbibJ9qWxF"
-      yantra.category: "social,privacy"
-      yantra.port: "7420 (HTTP - Web UI)"
-      yantra.description: "Private Reddit front-end written in Rust with no JavaScript, ads, or tracking"
-      yantra.website: "https://github.com/spikecodes/libreddit"
+      yantr.name: "LibReddit"
+      yantr.logo: "QmTieAKkWAmA12gchbEJiBGZZK64hsuKQYRtSbibJ9qWxF"
+      yantr.category: "social,privacy"
+      yantr.port: "7420 (HTTP - Web UI)"
+      yantr.description: "Private Reddit front-end written in Rust with no JavaScript, ads, or tracking"
+      yantr.website: "https://github.com/spikecodes/libreddit"
     ports:
       - "7420"
     environment:

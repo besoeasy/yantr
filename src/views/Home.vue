@@ -5,7 +5,7 @@ import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from
 import { formatDuration } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
-import YantraContainersGrid from "../components/home/YantraContainersGrid.vue";
+import YantrContainersGrid from "../components/home/YantrContainersGrid.vue";
 import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
 import SystemCleaner from "../components/SystemCleaner.vue";
@@ -70,29 +70,29 @@ const showWatchtowerAlert = computed(() => !watchtowerInstalled.value);
 
 // Container Grouping
 const volumeContainers = computed(() => {
-  return containers.value.filter((c) => c.labels && c.labels["yantra.volume-browser"]);
+  return containers.value.filter((c) => c.labels && c.labels["yantr.volume-browser"]);
 });
 
-const yantraContainers = computed(() => {
+const yantrContainers = computed(() => {
   return containers.value.filter((c) => {
-    const isVolume = c.labels && c.labels["yantra.volume-browser"];
-    const isYantraApp = c.app || (c.labels && c.labels["yantra.app.id"]);
-    return !isVolume && isYantraApp;
+    const isVolume = c.labels && c.labels["yantr.volume-browser"];
+    const isYantrApp = c.app || (c.labels && c.labels["yantr.app.id"]);
+    return !isVolume && isYantrApp;
   });
 });
 
 const otherContainers = computed(() => {
   return containers.value.filter((c) => {
-    const isVolume = c.labels && c.labels["yantra.volume-browser"];
-    const isYantraApp = c.app || (c.labels && c.labels["yantra.app.id"]);
-    return !isVolume && !isYantraApp;
+    const isVolume = c.labels && c.labels["yantr.volume-browser"];
+    const isYantrApp = c.app || (c.labels && c.labels["yantr.app.id"]);
+    return !isVolume && !isYantrApp;
   });
 });
 
-const temporaryContainersCount = computed(() => containers.value.filter((c) => c?.labels?.["yantra.expireAt"]).length);
+const temporaryContainersCount = computed(() => containers.value.filter((c) => c?.labels?.["yantr.expireAt"]).length);
 
 // Filter visibility computed properties
-const showYantraApps = computed(() => activeFilter.value === "all" || activeFilter.value === "yantra");
+const showYantrApps = computed(() => activeFilter.value === "all" || activeFilter.value === "yantr");
 const showDockerApps = computed(() => activeFilter.value === "all" || activeFilter.value === "docker");
 const showVolumeBrowsers = computed(() => activeFilter.value === "all" || activeFilter.value === "volumes");
 const showMetrics = computed(() => activeFilter.value === "all" || activeFilter.value === "metrics");
@@ -119,14 +119,14 @@ function formatTimeRemaining(expireAt) {
 
 // Check if container is temporary
 function isTemporary(container) {
-  return container.labels && container.labels["yantra.expireAt"];
+  return container.labels && container.labels["yantr.expireAt"];
 }
 
 // Get expiration info
 function getExpirationInfo(container) {
   if (!isTemporary(container)) return null;
 
-  const expireAt = container.labels["yantra.expireAt"];
+  const expireAt = container.labels["yantr.expireAt"];
   return {
     expireAt,
     timeRemaining: formatTimeRemaining(expireAt),
@@ -238,17 +238,17 @@ onUnmounted(() => {
               <span>All</span>
             </button>
             <button
-              v-if="yantraContainers.length > 0"
-              @click="activeFilter = 'yantra'"
+              v-if="yantrContainers.length > 0"
+              @click="activeFilter = 'yantr'"
               :class="[
                 'px-4 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'yantra'
+                activeFilter === 'yantr'
                   ? 'bg-gray-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-lg'
                   : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700',
               ]"
             >
               <PackageCheck :size="16" />
-              <span>Yantra Apps</span>
+              <span>Yantr Apps</span>
             </button>
             <button
               v-if="otherContainers.length > 0"
@@ -334,9 +334,9 @@ onUnmounted(() => {
               <MinioStatusCard />
             </div>
 
-            <YantraContainersGrid
-              v-if="showYantraApps && yantraContainers.length > 0"
-              :containers="yantraContainers"
+            <YantrContainersGrid
+              v-if="showYantrApps && yantrContainers.length > 0"
+              :containers="yantrContainers"
               :format-uptime="formatUptime"
               :is-temporary="isTemporary"
               :get-expiration-info="getExpirationInfo"

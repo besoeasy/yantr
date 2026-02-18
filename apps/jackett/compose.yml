@@ -12,12 +12,12 @@ services:
       - "9117"
     restart: unless-stopped
     labels:
-      yantra.name: "Jackett"
-      yantra.logo: "QmQs2oSE9ccQrueSFPw6ZPXCVHk2rFuT54HUyZAApSoqDJ"
-      yantra.category: "media,tools,utility"
-      yantra.port: "9117 (HTTP - Web UI)"
-      yantra.description: "API proxy for torrent trackers with Sonarr/Radarr support."
-      yantra.website: "https://github.com/Jackett/Jackett"
+      yantr.name: "Jackett"
+      yantr.logo: "QmQs2oSE9ccQrueSFPw6ZPXCVHk2rFuT54HUyZAApSoqDJ"
+      yantr.category: "media,tools,utility"
+      yantr.port: "9117 (HTTP - Web UI)"
+      yantr.description: "API proxy for torrent trackers with Sonarr/Radarr support."
+      yantr.website: "https://github.com/Jackett/Jackett"
 
 volumes:
   jackett_config:

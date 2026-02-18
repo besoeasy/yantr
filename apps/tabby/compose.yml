@@ -3,12 +3,12 @@ services:
     image: parksauce/tabby:latest
     container_name: tabby
     labels:
-      yantra.name: "Tabby"
-      yantra.logo: "QmcQ3CYdea4rtPmwJTSggcFYvpKcSpSqSQMbS9RdWjzTWS"
-      yantra.category: "productivity,browsing"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Beautiful and customizable browser start page with tab management"
-      yantra.website: "https://github.com/parksauce/tabby"
+      yantr.name: "Tabby"
+      yantr.logo: "QmcQ3CYdea4rtPmwJTSggcFYvpKcSpSqSQMbS9RdWjzTWS"
+      yantr.category: "productivity,browsing"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Beautiful and customizable browser start page with tab management"
+      yantr.website: "https://github.com/parksauce/tabby"
     ports:
       - "80"
     depends_on:

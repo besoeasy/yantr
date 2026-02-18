@@ -12,12 +12,12 @@ services:
       - samba-storage:/storage
     restart: unless-stopped
     labels:
-      yantra.name: "Samba"
-      yantra.logo: "QmYNjTj44mLCz5SZrWR9GkWU94bZw7hvqZZuFAwJJcsWU7"
-      yantra.category: "network,storage,utility"
-      yantra.port: "445 (SMB - File Sharing)"
-      yantra.description: "SMB/CIFS file sharing server for network storage access"
-      yantra.website: "https://github.com/dockur/samba"
+      yantr.name: "Samba"
+      yantr.logo: "QmYNjTj44mLCz5SZrWR9GkWU94bZw7hvqZZuFAwJJcsWU7"
+      yantr.category: "network,storage,utility"
+      yantr.port: "445 (SMB - File Sharing)"
+      yantr.description: "SMB/CIFS file sharing server for network storage access"
+      yantr.website: "https://github.com/dockur/samba"
 
 volumes:
   samba-storage:

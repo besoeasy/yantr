@@ -186,7 +186,7 @@ onMounted(() => {
           <input
             v-model="bucket"
             type="text"
-            placeholder="yantra"
+            placeholder="yantr"
             class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
           <p class="mt-1 text-xs text-slate-500">The bucket must exist before saving configuration</p>

@@ -3,13 +3,13 @@ services:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     labels:
-      yantra.name: "Open WebUI"
-      yantra.logo: "QmVDEiXJcSXvSWsx5DhRvMoufg3j2H7jK1Yv8ijAZfBEtv"
-      yantra.category: "ai"
-      yantra.port: "8080 (HTTP - Web UI)"
-      yantra.description: "Web UI for chatting with local LLMs via Ollama"
-      yantra.website: "https://github.com/open-webui/open-webui"
-      yantra.dependencies: "ollama"
+      yantr.name: "Open WebUI"
+      yantr.logo: "QmVDEiXJcSXvSWsx5DhRvMoufg3j2H7jK1Yv8ijAZfBEtv"
+      yantr.category: "ai"
+      yantr.port: "8080 (HTTP - Web UI)"
+      yantr.description: "Web UI for chatting with local LLMs via Ollama"
+      yantr.website: "https://github.com/open-webui/open-webui"
+      yantr.dependencies: "ollama"
     ports:
       - "8080"
     environment:
@@ -18,12 +18,12 @@ services:
       - open_webui_data:/app/backend/data
     restart: unless-stopped
     networks:
-      - yantra_network
+      - yantr_network
 
 volumes:
   open_webui_data:
 
 networks:
-  yantra_network:
-    name: yantra_network
+  yantr_network:
+    name: yantr_network
     external: true

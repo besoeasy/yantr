@@ -3,12 +3,12 @@ services:
     image: ollama/ollama:latest
     container_name: ollama
     labels:
-      yantra.name: "Ollama"
-      yantra.logo: "QmdJujFNrnbZ8Z9SVzrZGoUEvcxg5TQqizNg51nUcwcp5Z"
-      yantra.category: "ai,backend"
-      yantra.port: "11434 (HTTP - API)"
-      yantra.description: "Local LLM inference server - run models like Llama, Mistral, and more"
-      yantra.website: "https://ollama.ai"
+      yantr.name: "Ollama"
+      yantr.logo: "QmdJujFNrnbZ8Z9SVzrZGoUEvcxg5TQqizNg51nUcwcp5Z"
+      yantr.category: "ai,backend"
+      yantr.port: "11434 (HTTP - API)"
+      yantr.description: "Local LLM inference server - run models like Llama, Mistral, and more"
+      yantr.website: "https://ollama.ai"
     ports:
       - "11434"
     volumes:
@@ -21,12 +21,12 @@ services:
     mem_swappiness: 0
     shm_size: 8gb
     networks:
-      - yantra_network
+      - yantr_network
 
 volumes:
   ollama_data:
 
 networks:
-  yantra_network:
-    name: yantra_network
+  yantr_network:
+    name: yantr_network
     external: true

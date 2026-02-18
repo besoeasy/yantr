@@ -3,12 +3,12 @@ services:
     image: ghcr.io/getumbrel/openclaw-umbrel:2026.2.12
     container_name: openclaw
     labels:
-      yantra.name: "OpenClaw"
-      yantra.logo: "QmRdr8gQqpGLXkZc53NcQV3i71931yNQqYrLhpaWEpTMwp"
-      yantra.category: "ai,tools,utility"
-      yantra.port: "18789 (HTTP - Web UI)"
-      yantra.description: "Self-hosted development environment and container management tool"
-      yantra.website: "https://github.com/getumbrel/openclaw-umbrel"
+      yantr.name: "OpenClaw"
+      yantr.logo: "QmRdr8gQqpGLXkZc53NcQV3i71931yNQqYrLhpaWEpTMwp"
+      yantr.category: "ai,tools,utility"
+      yantr.port: "18789 (HTTP - Web UI)"
+      yantr.description: "Self-hosted development environment and container management tool"
+      yantr.website: "https://github.com/getumbrel/openclaw-umbrel"
     init: true
     restart: on-failure
     stop_grace_period: 1m

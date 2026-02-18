@@ -85,7 +85,7 @@ export async function cleanupExpiredApps() {
     results.checked = containers.length;
 
     // Early exit if no containers have expiration labels
-    const hasExpiredContainers = containers.some(c => c.Labels?.["yantra.expireAt"]);
+    const hasExpiredContainers = containers.some(c => c.Labels?.["yantr.expireAt"]);
     if (!hasExpiredContainers) {
       log("info", "No temporary apps found, skipping cleanup");
       return results;
@@ -99,7 +99,7 @@ export async function cleanupExpiredApps() {
     const expiredContainers = [];
     for (const container of containers) {
       const labels = container.Labels || {};
-      const expireAt = labels["yantra.expireAt"];
+      const expireAt = labels["yantr.expireAt"];
 
       if (!expireAt) continue;
 

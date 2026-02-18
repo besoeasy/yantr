@@ -28,12 +28,12 @@ services:
       postgres:
         condition: service_healthy
     labels:
-      yantra.name: "Bitmagnet"
-      yantra.logo: "QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP"
-      yantra.category: "media,tools,utility"
-      yantra.port: "3333 (HTTP - Web UI)"
-      yantra.description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent client."
-      yantra.website: "https://bitmagnet.io"
+      yantr.name: "Bitmagnet"
+      yantr.logo: "QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP"
+      yantr.category: "media,tools,utility"
+      yantr.port: "3333 (HTTP - Web UI)"
+      yantr.description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent client."
+      yantr.website: "https://bitmagnet.io"
 
   postgres:
     image: postgres:16-alpine

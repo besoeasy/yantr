@@ -9,12 +9,12 @@ services:
       - "8096"
     restart: unless-stopped
     labels:
-      yantra.name: "Jellyfin"
-      yantra.logo: "QmcsxWwZb9CZYsG5EvAEVwqjEw2FeX3KroZD5rvo87XWMZ"
-      yantra.category: "media,entertainment"
-      yantra.port: "8096 (HTTP - Web UI)"
-      yantra.description: "Free and open-source media server for streaming video, music, and photos"
-      yantra.website: "https://jellyfin.org/"
+      yantr.name: "Jellyfin"
+      yantr.logo: "QmcsxWwZb9CZYsG5EvAEVwqjEw2FeX3KroZD5rvo87XWMZ"
+      yantr.category: "media,entertainment"
+      yantr.port: "8096 (HTTP - Web UI)"
+      yantr.description: "Free and open-source media server for streaming video, music, and photos"
+      yantr.website: "https://jellyfin.org/"
 
 volumes:
   jellyfin-config:

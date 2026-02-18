@@ -3,12 +3,12 @@ services:
     image: rmountjoy/dashmachine:latest
     container_name: dashmachine
     labels:
-      yantra.name: "Dashmachine"
-      yantra.logo: "QmTvbLNZMCyEQmcFBbY7EkKq9hnJTPy8ut4hAYRH3Xxaiw"
-      yantra.category: "dashboard,organization"
-      yantra.port: "5000 (HTTP - Web UI)"
-      yantra.description: "Customizable personal dashboard for organizing links and services"
-      yantra.website: "https://github.com/rmountjoy92/dashmachine"
+      yantr.name: "Dashmachine"
+      yantr.logo: "QmTvbLNZMCyEQmcFBbY7EkKq9hnJTPy8ut4hAYRH3Xxaiw"
+      yantr.category: "dashboard,organization"
+      yantr.port: "5000 (HTTP - Web UI)"
+      yantr.description: "Customizable personal dashboard for organizing links and services"
+      yantr.website: "https://github.com/rmountjoy92/dashmachine"
     ports:
       - "5000"
     volumes:

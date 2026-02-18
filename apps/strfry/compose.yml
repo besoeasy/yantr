@@ -12,12 +12,12 @@ services:
         target: /etc/strfry.conf
     command: relay --config /etc/strfry.conf
     labels:
-      yantra.name: "Strfry"
-      yantra.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
-      yantra.category: "network,social"
-      yantra.port: "7777 (HTTP - Web UI)"
-      yantra.description: "High-performance nostr relay with LMDB storage"
-      yantra.website: "https://github.com/hoytech/strfry"
+      yantr.name: "Strfry"
+      yantr.logo: "QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD"
+      yantr.category: "network,social"
+      yantr.port: "7777 (HTTP - Web UI)"
+      yantr.description: "High-performance nostr relay with LMDB storage"
+      yantr.website: "https://github.com/hoytech/strfry"
 
 configs:
   strfry-config:
@@ -55,7 +55,7 @@ configs:
               name = "Strfry Relay"
               description = "A high-performance nostr relay powered by strfry"
               pubkey = ""
-              contact = "https://github.com/besoeasy/Yantra"
+              contact = "https://github.com/besoeasy/Yantr"
               icon = "https://github.com/hoytech/strfry/raw/master/docs/strfry.svg"
               nips = ""
           }

@@ -3,12 +3,12 @@ services:
     image: linuxserver/freshrss:latest
     container_name: freshrss
     labels:
-      yantra.name: "FreshRSS"
-      yantra.logo: "QmeS63xjuJXpVGUXP5B78naYoBcrcL7H5ZprF13kLZJUMq"
-      yantra.category: "feed,productivity"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Self-hosted RSS feed aggregator for reading news and updates from multiple sources"
-      yantra.website: "https://github.com/FreshRSS/FreshRSS"
+      yantr.name: "FreshRSS"
+      yantr.logo: "QmeS63xjuJXpVGUXP5B78naYoBcrcL7H5ZprF13kLZJUMq"
+      yantr.category: "feed,productivity"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Self-hosted RSS feed aggregator for reading news and updates from multiple sources"
+      yantr.website: "https://github.com/FreshRSS/FreshRSS"
     ports:
       - "80"
     volumes:

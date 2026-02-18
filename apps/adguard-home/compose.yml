@@ -3,12 +3,12 @@ services:
     image: adguard/adguardhome:latest
     container_name: adguard-home
     labels:
-      yantra.name: "AdGuard Home"
-      yantra.logo: "QmSBZ3r1XdbMZ9CiUUvtQvfL9HYjLGMF4nqftRJ2XHAS3j"
-      yantra.category: "network,security,dns"
-      yantra.port: "3000 (HTTP - Initial Setup), 80 (HTTP - Web UI)"
-      yantra.description: "DNS-level ad blocking and privacy protection with parental controls"
-      yantra.website: "https://github.com/AdguardTeam/AdGuardHome"
+      yantr.name: "AdGuard Home"
+      yantr.logo: "QmSBZ3r1XdbMZ9CiUUvtQvfL9HYjLGMF4nqftRJ2XHAS3j"
+      yantr.category: "network,security,dns"
+      yantr.port: "3000 (HTTP - Initial Setup), 80 (HTTP - Web UI)"
+      yantr.description: "DNS-level ad blocking and privacy protection with parental controls"
+      yantr.website: "https://github.com/AdguardTeam/AdGuardHome"
     ports:
       - "53:53/tcp"
       - "53:53/udp"

@@ -4,12 +4,12 @@ services:
     container_name: monerod
     restart: unless-stopped
     labels:
-      yantra.name: "Monero Node"
-      yantra.logo: "QmarnKCoBY8ZQRnK319Sv9QDdKrUKfnpYteZ71XiswoP8y"
-      yantra.category: "cryptocurrency,blockchain,network"
-      yantra.port: "18089 (TCP - Restricted RPC), 18080 (TCP - P2P)"
-      yantra.description: "Pruned Monero full node with restricted RPC for wallets and apps"
-      yantra.website: "https://github.com/sethforprivacy/simple-monerod"
+      yantr.name: "Monero Node"
+      yantr.logo: "QmarnKCoBY8ZQRnK319Sv9QDdKrUKfnpYteZ71XiswoP8y"
+      yantr.category: "cryptocurrency,blockchain,network"
+      yantr.port: "18089 (TCP - Restricted RPC), 18080 (TCP - P2P)"
+      yantr.description: "Pruned Monero full node with restricted RPC for wallets and apps"
+      yantr.website: "https://github.com/sethforprivacy/simple-monerod"
     ports:
       - "18080:18080/tcp"
       - "18089:18089/tcp"

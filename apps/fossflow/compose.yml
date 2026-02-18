@@ -3,12 +3,12 @@ services:
     image: stnsmith/fossflow:master-6cb6496
     container_name: fossflow
     labels:
-      yantra.name: "FossFLOW"
-      yantra.logo: "QmRAuJY5TKuw91AVqu6ci9yAvRaimuGDzBoVYqftE7oo8q"
-      yantra.category: "productivity,networking"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Create beautiful isometric infrastructure diagrams with auto-save and offline support"
-      yantra.website: "https://github.com/stan-smith/FossFLOW"
+      yantr.name: "FossFLOW"
+      yantr.logo: "QmRAuJY5TKuw91AVqu6ci9yAvRaimuGDzBoVYqftE7oo8q"
+      yantr.category: "productivity,networking"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Create beautiful isometric infrastructure diagrams with auto-save and offline support"
+      yantr.website: "https://github.com/stan-smith/FossFLOW"
     ports:
       - "80"
     volumes:

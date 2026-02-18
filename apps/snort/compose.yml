@@ -3,12 +3,12 @@ services:
     image: voidic/snort:v0.3.0
     container_name: snort
     labels:
-      yantra.name: "Snort"
-      yantra.logo: "QmQG28hMnofAKwXt6F6FD3ZBhwmeCAotfqy92e6Pbkhs44"
-      yantra.category: "social"
-      yantra.port: "8080 (HTTP - Web UI)"
-      yantra.description: "Fast and lightweight Nostr web client built with React for easy network interaction"
-      yantra.website: "https://git.v0l.io/Kieran/snort"
+      yantr.name: "Snort"
+      yantr.logo: "QmQG28hMnofAKwXt6F6FD3ZBhwmeCAotfqy92e6Pbkhs44"
+      yantr.category: "social"
+      yantr.port: "8080 (HTTP - Web UI)"
+      yantr.description: "Fast and lightweight Nostr web client built with React for easy network interaction"
+      yantr.website: "https://git.v0l.io/Kieran/snort"
     ports:
       - "8080"
     init: true

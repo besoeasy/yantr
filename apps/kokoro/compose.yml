@@ -3,12 +3,12 @@ services:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
     container_name: kokoro
     labels:
-      yantra.name: "Kokoro"
-      yantra.logo: "Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z"
-      yantra.category: "ai"
-      yantra.port: "8880 (HTTP - Web UI)"
-      yantra.description: "Lightweight Text-to-Speech model with 82M parameters delivering high-quality speech synthesis"
-      yantra.website: "https://github.com/remsky/Kokoro-FastAPI"
+      yantr.name: "Kokoro"
+      yantr.logo: "Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z"
+      yantr.category: "ai"
+      yantr.port: "8880 (HTTP - Web UI)"
+      yantr.description: "Lightweight Text-to-Speech model with 82M parameters delivering high-quality speech synthesis"
+      yantr.website: "https://github.com/remsky/Kokoro-FastAPI"
     ports:
       - "8880"
     restart: unless-stopped

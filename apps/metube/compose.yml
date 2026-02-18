@@ -9,12 +9,12 @@ services:
       - "8081"
     restart: unless-stopped
     labels:
-      yantra.name: "MeTube"
-      yantra.logo: "QmVHF6jueKh11T7LVbBC6NCCs2tuMo7Af7tKfWJEdXSkwQ"
-      yantra.category: "media,tools,utility"
-      yantra.port: "8081 (HTTP - Web UI)"
-      yantra.description: "Web GUI for yt-dlp/youtube-dl with playlist support."
-      yantra.website: "https://github.com/alexta69/metube"
+      yantr.name: "MeTube"
+      yantr.logo: "QmVHF6jueKh11T7LVbBC6NCCs2tuMo7Af7tKfWJEdXSkwQ"
+      yantr.category: "media,tools,utility"
+      yantr.port: "8081 (HTTP - Web UI)"
+      yantr.description: "Web GUI for yt-dlp/youtube-dl with playlist support."
+      yantr.website: "https://github.com/alexta69/metube"
 
 volumes:
   metube_downloads:

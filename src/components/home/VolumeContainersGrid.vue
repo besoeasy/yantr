@@ -36,8 +36,8 @@ const emit = defineEmits(["select"]);
         <div>
            <div class="flex items-start justify-between mb-4">
                <div class="min-w-0">
-                   <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-2 leading-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors" :title="container.labels?.['yantra.volume-browser'] || container.name">
-                     {{ container.labels?.["yantra.volume-browser"] || container.name }}
+                   <h3 class="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-2 leading-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors" :title="container.labels?.['yantr.volume-browser'] || container.name">
+                     {{ container.labels?.["yantr.volume-browser"] || container.name }}
                    </h3>
                
                    <div class="flex items-center gap-1.5 flex-wrap">

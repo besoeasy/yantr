@@ -9,12 +9,12 @@ services:
       - "8000"
     restart: unless-stopped
     labels:
-      yantra.name: "ZeroNote"
-      yantra.logo: "Qmbdks6yn4TrP2hfFZJ1dZPW84kYhrWoXDj4tLBtpWfRiF"
-      yantra.category: "productivity,security"
-      yantra.port: "8000 (HTTP - Web UI)"
-      yantra.description: "Offline-first encrypted notes application."
-      yantra.website: "https://github.com/besoeasy/zeronote"
+      yantr.name: "ZeroNote"
+      yantr.logo: "Qmbdks6yn4TrP2hfFZJ1dZPW84kYhrWoXDj4tLBtpWfRiF"
+      yantr.category: "productivity,security"
+      yantr.port: "8000 (HTTP - Web UI)"
+      yantr.description: "Offline-first encrypted notes application."
+      yantr.website: "https://github.com/besoeasy/zeronote"
 
 volumes:
   zeronote_data:

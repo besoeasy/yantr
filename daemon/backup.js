@@ -149,9 +149,9 @@ export async function listBackups(s3Config, log) {
   try {
     const minioClient = createMinioClient(s3Config);
     const bucket = s3Config.bucket;
-    const prefix = "yantra-backup/";
+    const prefix = "yantr-backup/";
 
-    // List app directories in yantra-backup/
+    // List app directories in yantr-backup/
     const appFolders = new Set();
     const stream = minioClient.listObjects(bucket, prefix, false);
 
@@ -241,7 +241,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
         log?.("info", `[Backup ${jobId}] Alpine image pulled successfully`);
       }
 
-      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
+      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantr-backup-"));
       const volumeBackups = [];
       const appConfigBackups = [];
       const totalVolumes = volumeList.length;
@@ -286,10 +286,10 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         await minioClient.fPutObject(
           s3Config.bucket,
-          `yantra-backup/${backupId}/${tarFileName}`,
+          `yantr-backup/${backupId}/${tarFileName}`,
           tarPath
         );
-        uploadedKeys.push(`yantra-backup/${backupId}/${tarFileName}`);
+        uploadedKeys.push(`yantr-backup/${backupId}/${tarFileName}`);
 
         log?.("info", `[Backup ${jobId}] Uploaded ${volumeName} successfully`);
 
@@ -298,7 +298,7 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
           size: sizeBytes,
           tarFileName,
         });
-        expectedKeys.push(`yantra-backup/${backupId}/${tarFileName}`);
+        expectedKeys.push(`yantr-backup/${backupId}/${tarFileName}`);
 
         // Cleanup tar file
         try {
@@ -346,17 +346,17 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
         await minioClient.fPutObject(
           s3Config.bucket,
-          `yantra-backup/${backupId}/app-configs/${appTarFileName}`,
+          `yantr-backup/${backupId}/app-configs/${appTarFileName}`,
           appTarPath
         );
-        uploadedKeys.push(`yantra-backup/${backupId}/app-configs/${appTarFileName}`);
+        uploadedKeys.push(`yantr-backup/${backupId}/app-configs/${appTarFileName}`);
 
         appConfigBackups.push({
           appId,
           tarFileName: appTarFileName,
           size: appStats.size,
         });
-        expectedKeys.push(`yantra-backup/${backupId}/app-configs/${appTarFileName}`);
+        expectedKeys.push(`yantr-backup/${backupId}/app-configs/${appTarFileName}`);
 
         try {
           await unlink(appTarPath);
@@ -385,11 +385,11 @@ export async function createBackup({ volumes, s3Config, name, log, appConfigs = 
 
       await minioClient.fPutObject(
         s3Config.bucket,
-        `yantra-backup/${backupId}/metadata.json`,
+        `yantr-backup/${backupId}/metadata.json`,
         metadataPath
       );
-      uploadedKeys.push(`yantra-backup/${backupId}/metadata.json`);
-      expectedKeys.push(`yantra-backup/${backupId}/metadata.json`);
+      uploadedKeys.push(`yantr-backup/${backupId}/metadata.json`);
+      expectedKeys.push(`yantr-backup/${backupId}/metadata.json`);
 
       for (const key of expectedKeys) {
         await minioClient.statObject(s3Config.bucket, key);
@@ -489,7 +489,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
       await minioClient.fGetObject(
         s3Config.bucket,
-        `yantra-backup/${backupId}/metadata.json`,
+        `yantr-backup/${backupId}/metadata.json`,
         metadataPath
       );
 
@@ -553,7 +553,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
           
           await minioClient.fGetObject(
             s3Config.bucket,
-            `yantra-backup/${backupId}/app-configs/${tarFileName}`,
+            `yantr-backup/${backupId}/app-configs/${tarFileName}`,
             tarPath
           );
 
@@ -601,7 +601,7 @@ export async function restoreBackup(backupId, s3Config, volumesToRestore, overwr
 
         await minioClient.fGetObject(
           s3Config.bucket,
-          `yantra-backup/${backupId}/${tarFileName}`,
+          `yantr-backup/${backupId}/${tarFileName}`,
           tarPath
         );
 
@@ -728,7 +728,7 @@ export async function deleteBackup(backupId, s3Config, log) {
 
     const minioClient = createMinioClient(s3Config);
     const bucket = s3Config.bucket;
-    const prefix = `yantra-backup/${backupId}/`;
+    const prefix = `yantr-backup/${backupId}/`;
 
     // List all objects with this prefix
     const objectsList = [];
@@ -813,7 +813,7 @@ export async function createContainerBackup({ containerId, volumes, s3Config, lo
         log?.("info", `[Backup ${jobId}] Alpine image pulled successfully`);
       }
 
-      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantra-backup-"));
+      jobTmpDir = await mkdtemp(path.join(tmpDir, "yantr-backup-"));
       minioClient = createMinioClient(s3Config);
       const totalVolumes = volumeList.length;
 

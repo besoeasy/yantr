@@ -3,12 +3,12 @@ services:
     image: shaneisrael/fireshare:latest
     container_name: fireshare
     labels:
-      yantra.name: "Fireshare"
-      yantra.logo: "QmZ31p6GWvGNm2mJTmVyCUr68PAJoax6mCVfgw4DEHbTQk"
-      yantra.category: "media,file-sharing"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Self-hosted video sharing platform with seamless streaming and organization"
-      yantra.website: "https://github.com/ShaneIsrael/fireshare"
+      yantr.name: "Fireshare"
+      yantr.logo: "QmZ31p6GWvGNm2mJTmVyCUr68PAJoax6mCVfgw4DEHbTQk"
+      yantr.category: "media,file-sharing"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Self-hosted video sharing platform with seamless streaming and organization"
+      yantr.website: "https://github.com/ShaneIsrael/fireshare"
     ports:
       - "80"
     environment:

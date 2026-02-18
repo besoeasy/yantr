@@ -8,12 +8,12 @@ services:
       - "9696"
     restart: unless-stopped
     labels:
-      yantra.name: "Prowlarr"
-      yantra.logo: "Qma8EiYwcHKzMtqS8vbvtGCtRApdWnhMszeZCECuuoMzz7"
-      yantra.category: "media,tools"
-      yantra.port: "9696 (HTTP - Web UI)"
-      yantra.description: "Indexer manager for automating and integrating Usenet and torrent indexers"
-      yantra.website: "https://github.com/linuxserver/docker-prowlarr"
+      yantr.name: "Prowlarr"
+      yantr.logo: "Qma8EiYwcHKzMtqS8vbvtGCtRApdWnhMszeZCECuuoMzz7"
+      yantr.category: "media,tools"
+      yantr.port: "9696 (HTTP - Web UI)"
+      yantr.description: "Indexer manager for automating and integrating Usenet and torrent indexers"
+      yantr.website: "https://github.com/linuxserver/docker-prowlarr"
 
 volumes:
   prowlarr_config:

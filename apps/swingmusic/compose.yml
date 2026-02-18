@@ -9,12 +9,12 @@ services:
       - "1970"
     restart: unless-stopped
     labels:
-      yantra.name: "SwingMusic"
-      yantra.logo: "QmVWKyW9G8C4zxCDMMutg7eSNuugdAzUUNwzhbvjkv6j1o"
-      yantra.category: "media,entertainment"
-      yantra.port: "1970 (HTTP - Web UI)"
-      yantra.description: "Beautiful music player with a modern web interface"
-      yantra.website: "https://swingmusic.vercel.app/"
+      yantr.name: "SwingMusic"
+      yantr.logo: "QmVWKyW9G8C4zxCDMMutg7eSNuugdAzUUNwzhbvjkv6j1o"
+      yantr.category: "media,entertainment"
+      yantr.port: "1970 (HTTP - Web UI)"
+      yantr.description: "Beautiful music player with a modern web interface"
+      yantr.website: "https://swingmusic.vercel.app/"
 
 volumes:
   swingmusic-music:

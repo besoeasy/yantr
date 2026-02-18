@@ -3,12 +3,12 @@ services:
     image: ghcr.io/besoeasy/remote-torrent-downloader:latest
     container_name: remote-torrent-downloader
     labels:
-      yantra.name: "Remote Torrent Downloader"
-      yantra.logo: "QmeQL3b6vWfQX2TEbuovsof5mv23Jkxgnp8ejTyqjQMay3"
-      yantra.category: "media,download,utility"
-      yantra.port: "6798 (HTTP - Web UI), 6799 (HTTP - DOWNLOADS), 4445 (SMB - Samba Drive)"
-      yantra.description: "Media streaming and sharing platform with Telegram integration"
-      yantra.website: "https://github.com/besoeasy/Remote-Torrent-Downloader"
+      yantr.name: "Remote Torrent Downloader"
+      yantr.logo: "QmeQL3b6vWfQX2TEbuovsof5mv23Jkxgnp8ejTyqjQMay3"
+      yantr.category: "media,download,utility"
+      yantr.port: "6798 (HTTP - Web UI), 6799 (HTTP - DOWNLOADS), 4445 (SMB - Samba Drive)"
+      yantr.description: "Media streaming and sharing platform with Telegram integration"
+      yantr.website: "https://github.com/besoeasy/Remote-Torrent-Downloader"
     ports:
       - "6798"
       - "6799"

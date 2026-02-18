@@ -3,12 +3,12 @@ services:
     image: louislam/dockge:1
     container_name: dockge
     labels:
-      yantra.name: "Dockge"
-      yantra.logo: "QmXUGnzPpcRuGks5CJB6we1cFcBW2qPau9FZUs98wPGFJL"
-      yantra.category: "docker,management"
-      yantra.port: "5001 (HTTP - Web UI)"
-      yantra.description: "Self-hosted Docker Compose stack manager with GUI for easy deployment"
-      yantra.website: "https://github.com/louislam/dockge"
+      yantr.name: "Dockge"
+      yantr.logo: "QmXUGnzPpcRuGks5CJB6we1cFcBW2qPau9FZUs98wPGFJL"
+      yantr.category: "docker,management"
+      yantr.port: "5001 (HTTP - Web UI)"
+      yantr.description: "Self-hosted Docker Compose stack manager with GUI for easy deployment"
+      yantr.website: "https://github.com/louislam/dockge"
     ports:
       - "5001"
     environment:

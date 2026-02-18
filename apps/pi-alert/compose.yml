@@ -3,12 +3,12 @@ services:
     image: jokobsk/pi.alert:latest
     container_name: pi-alert
     labels:
-      yantra.name: "Pi.Alert"
-      yantra.logo: "QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3"
-      yantra.category: "network,monitoring,security"
-      yantra.port: "20211 (UDP - Monitoring)"
-      yantra.description: "Network monitoring tool for detecting new devices and security alerts"
-      yantra.website: "https://github.com/jokobsk/pi.alert"
+      yantr.name: "Pi.Alert"
+      yantr.logo: "QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3"
+      yantr.category: "network,monitoring,security"
+      yantr.port: "20211 (UDP - Monitoring)"
+      yantr.description: "Network monitoring tool for detecting new devices and security alerts"
+      yantr.website: "https://github.com/jokobsk/pi.alert"
     ports:
       - "20211/udp"
     volumes:

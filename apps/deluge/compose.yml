@@ -11,12 +11,12 @@ services:
       - "6881/udp"
     restart: unless-stopped
     labels:
-      yantra.name: "Deluge"
-      yantra.logo: "QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33"
-      yantra.category: "download,utility"
-      yantra.port: "8112 (HTTP - Web UI)"
-      yantra.description: "Lightweight BitTorrent client with web interface"
-      yantra.website: "https://deluge-torrent.org/"
+      yantr.name: "Deluge"
+      yantr.logo: "QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33"
+      yantr.category: "download,utility"
+      yantr.port: "8112 (HTTP - Web UI)"
+      yantr.description: "Lightweight BitTorrent client with web interface"
+      yantr.website: "https://deluge-torrent.org/"
 
 volumes:
   deluge-config:

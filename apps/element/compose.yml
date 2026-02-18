@@ -3,12 +3,12 @@ services:
     image: vectorim/element-web:latest
     container_name: element
     labels:
-      yantra.name: "Element"
-      yantra.logo: "QmWMcjdA7izomrqwuW6D8JT8y75K7jCANqnDMYxZRzmzHU"
-      yantra.category: "productivity,security"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Secure and decentralized Matrix chat client for communication"
-      yantra.website: "https://element.io"
+      yantr.name: "Element"
+      yantr.logo: "QmWMcjdA7izomrqwuW6D8JT8y75K7jCANqnDMYxZRzmzHU"
+      yantr.category: "productivity,security"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Secure and decentralized Matrix chat client for communication"
+      yantr.website: "https://element.io"
     ports:
       - "80"
     volumes:

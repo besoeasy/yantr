@@ -7,8 +7,8 @@ services:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN}
     restart: unless-stopped
     labels:
-      yantra.name: "Cloudflared"
-      yantra.logo: "Qmcyr4xpG4SZdBp9VorVjRrvHqHoQzCu9YHCQZGNC5ck8T"
-      yantra.category: "network,security"
-      yantra.description: "Cloudflare Tunnel for secure remote access without exposing ports"
-      yantra.website: "https://github.com/cloudflare/cloudflared"
+      yantr.name: "Cloudflared"
+      yantr.logo: "Qmcyr4xpG4SZdBp9VorVjRrvHqHoQzCu9YHCQZGNC5ck8T"
+      yantr.category: "network,security"
+      yantr.description: "Cloudflare Tunnel for secure remote access without exposing ports"
+      yantr.website: "https://github.com/cloudflare/cloudflared"

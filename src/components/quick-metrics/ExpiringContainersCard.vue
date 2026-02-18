@@ -10,9 +10,9 @@ const props = defineProps({
 
 const stats = computed(() => {
   const tempContainers = props.containers
-    .filter(c => c?.labels && c.labels['yantra.expireAt'])
+    .filter(c => c?.labels && c.labels['yantr.expireAt'])
     .map(c => {
-      const expireAt = parseInt(c.labels['yantra.expireAt'], 10) * 1000
+      const expireAt = parseInt(c.labels['yantr.expireAt'], 10) * 1000
       const remainingMs = expireAt - props.currentTime
       return {
         id: c.id,

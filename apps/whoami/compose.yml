@@ -8,10 +8,10 @@ services:
       - "80"
     restart: unless-stopped
     labels:
-      yantra.name: "Whoami"
-      yantra.logo: "QmZvfwKJRMrMvzUyRyrLJjShVCsGozSAPDrCq6Vg1Fpde5"
-      yantra.category: "tools,utility"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Tiny HTTP service that prints system information - perfect for testing"
-      yantra.website: "https://github.com/traefik/whoami"
+      yantr.name: "Whoami"
+      yantr.logo: "QmZvfwKJRMrMvzUyRyrLJjShVCsGozSAPDrCq6Vg1Fpde5"
+      yantr.category: "tools,utility"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Tiny HTTP service that prints system information - perfect for testing"
+      yantr.website: "https://github.com/traefik/whoami"
 

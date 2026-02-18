@@ -12,12 +12,12 @@ services:
       - "21027/udp" # Discovery
     restart: unless-stopped
     labels:
-      yantra.name: "Syncthing"
-      yantra.logo: "Qmd864pdeSwReg9hfWERXdNiDCEqN7w3urE2416cWNGFSm"
-      yantra.category: "tools,utility"
-      yantra.port: "8384 (HTTP - Web UI)"
-      yantra.description: "Continuous file synchronization program. It synchronizes files between two or more computers."
-      yantra.website: "https://syncthing.net/"
+      yantr.name: "Syncthing"
+      yantr.logo: "Qmd864pdeSwReg9hfWERXdNiDCEqN7w3urE2416cWNGFSm"
+      yantr.category: "tools,utility"
+      yantr.port: "8384 (HTTP - Web UI)"
+      yantr.description: "Continuous file synchronization program. It synchronizes files between two or more computers."
+      yantr.website: "https://syncthing.net/"
 
 volumes:
   syncthing_data:

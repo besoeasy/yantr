@@ -3,12 +3,12 @@ services:
     image: ghcr.io/fccview/jotty:1.19.1
     container_name: jotty
     labels:
-      yantra.name: "Jotty"
-      yantra.logo: "QmaCFEHEEBeqHMxCD3JKPx5AQJpoU4VFAXru85xRm5qeXV"
-      yantra.category: "productivity,utility"
-      yantra.port: "3000 (HTTP - Web UI)"
-      yantra.description: "Lightweight checklists and notes app with Markdown support, Kanban boards, and file-based storage"
-      yantra.website: "https://github.com/fccview/jotty"
+      yantr.name: "Jotty"
+      yantr.logo: "QmaCFEHEEBeqHMxCD3JKPx5AQJpoU4VFAXru85xRm5qeXV"
+      yantr.category: "productivity,utility"
+      yantr.port: "3000 (HTTP - Web UI)"
+      yantr.description: "Lightweight checklists and notes app with Markdown support, Kanban boards, and file-based storage"
+      yantr.website: "https://github.com/fccview/jotty"
     ports:
       - "3000"
     volumes:

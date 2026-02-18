@@ -8,12 +8,12 @@ services:
       - "80"
     restart: unless-stopped
     labels:
-      yantra.name: "Heimdall"
-      yantra.logo: "QmURGit77px6MrQiuco9TGGgg3z9rkhcWs3MZ5pfSpzCE4"
-      yantra.category: "dashboard,organization"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Application dashboard and launcher with simple icon-based interface"
-      yantra.website: "https://github.com/linuxserver/Heimdall"
+      yantr.name: "Heimdall"
+      yantr.logo: "QmURGit77px6MrQiuco9TGGgg3z9rkhcWs3MZ5pfSpzCE4"
+      yantr.category: "dashboard,organization"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Application dashboard and launcher with simple icon-based interface"
+      yantr.website: "https://github.com/linuxserver/Heimdall"
 
 volumes:
   heimdall-config:

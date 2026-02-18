@@ -79,7 +79,7 @@ function extractPublishedPortsFromComposeObject(composeObj) {
             }
         }
 
-        // 2) Validate yantra.port label format
+        // 2) Validate yantr.port label format
         const labels = service.labels;
         if (Array.isArray(labels)) {
             for (const label of labels) {
@@ -88,9 +88,9 @@ function extractPublishedPortsFromComposeObject(composeObj) {
                 if (idx === -1) continue;
                 const key = label.slice(0, idx).trim();
                 const value = label.slice(idx + 1).trim();
-                if (key === 'yantra.port') {
+                if (key === 'yantr.port') {
                     try {
-                        validateYantraPortFormat(value, serviceName);
+                        validateYantrPortFormat(value, serviceName);
                     } catch (error) {
                         // Re-throw to stop processing - port format is critical
                         throw error;
@@ -98,10 +98,10 @@ function extractPublishedPortsFromComposeObject(composeObj) {
                 }
             }
         } else if (labels && typeof labels === 'object') {
-            const value = labels['yantra.port'];
+            const value = labels['yantr.port'];
             if (value) {
                 try {
-                    validateYantraPortFormat(value, serviceName);
+                    validateYantrPortFormat(value, serviceName);
                 } catch (error) {
                     // Re-throw to stop processing - port format is critical
                     throw error;
@@ -113,7 +113,7 @@ function extractPublishedPortsFromComposeObject(composeObj) {
     return [...publishedPorts].filter(p => Number.isFinite(p) && p > 0).sort((a, b) => a - b);
 }
 
-function validateYantraPortFormat(portValue, serviceName) {
+function validateYantrPortFormat(portValue, serviceName) {
     if (!portValue) return;
     
     const portStr = String(portValue).trim();
@@ -128,7 +128,7 @@ function validateYantraPortFormat(portValue, serviceName) {
         
         if (!match) {
             throw new Error(
-                `Invalid yantra.port format in service "${serviceName}": "${entry}"`
+                `Invalid yantr.port format in service "${serviceName}": "${entry}"`
             );
         }
         
@@ -144,7 +144,7 @@ function validateYantraPortFormat(portValue, serviceName) {
     }
 }
 
-function extractYantraLabels(service) {
+function extractYantrLabels(service) {
     const labels = {};
     const serviceLabels = service.labels;
     
@@ -155,13 +155,13 @@ function extractYantraLabels(service) {
             if (idx === -1) continue;
             const key = label.slice(0, idx).trim();
             const value = label.slice(idx + 1).trim();
-            if (key.startsWith('yantra.')) {
+            if (key.startsWith('yantr.')) {
                 labels[key] = value;
             }
         }
     } else if (serviceLabels && typeof serviceLabels === 'object') {
         for (const [key, value] of Object.entries(serviceLabels)) {
-            if (key.startsWith('yantra.')) {
+            if (key.startsWith('yantr.')) {
                 labels[key] = value;
             }
         }
@@ -170,30 +170,30 @@ function extractYantraLabels(service) {
     return labels;
 }
 
-function validateYantraLabels(appName, composeObj) {
+function validateYantrLabels(appName, composeObj) {
     const errors = [];
     const warnings = [];
     const services = composeObj && typeof composeObj === 'object' ? (composeObj.services || {}) : {};
 
-    // Check if there's at least one service with yantra labels
-    let hasYantraLabels = false;
-    let yantraLabels = {};
+    // Check if there's at least one service with yantr labels
+    let hasYantrLabels = false;
+    let yantrLabels = {};
     let serviceName = '';
 
     for (const [svcName, service] of Object.entries(services)) {
         if (!service || typeof service !== 'object') continue;
-        const labels = extractYantraLabels(service);
+        const labels = extractYantrLabels(service);
 
         if (Object.keys(labels).length > 0) {
-            hasYantraLabels = true;
-            yantraLabels = labels;
+            hasYantrLabels = true;
+            yantrLabels = labels;
             serviceName = svcName;
             break;
         }
     }
 
-    if (!hasYantraLabels) {
-        errors.push(`No yantra labels found in any service`);
+    if (!hasYantrLabels) {
+        errors.push(`No yantr labels found in any service`);
         return { errors, warnings };
     }
 
@@ -218,81 +218,81 @@ function validateYantraLabels(appName, composeObj) {
 
     
     // 1. Check required labels
-    const requiredLabels = ['yantra.name', 'yantra.category', 'yantra.description', 'yantra.website', 'yantra.logo'];
+    const requiredLabels = ['yantr.name', 'yantr.category', 'yantr.description', 'yantr.website', 'yantr.logo'];
     for (const required of requiredLabels) {
-        if (!yantraLabels[required]) {
+        if (!yantrLabels[required]) {
             errors.push(`Missing required label: ${required}`);
         }
     }
     
-    // 2. Validate yantra.name format
-    if (yantraLabels['yantra.name']) {
-        const name = yantraLabels['yantra.name'];
+    // 2. Validate yantr.name format
+    if (yantrLabels['yantr.name']) {
+        const name = yantrLabels['yantr.name'];
         if (name !== name.trim()) {
-            errors.push(`yantra.name has leading/trailing whitespace: "${name}"`);
+            errors.push(`yantr.name has leading/trailing whitespace: "${name}"`);
         }
         if (name.length === 0) {
-            errors.push(`yantra.name is empty`);
+            errors.push(`yantr.name is empty`);
         }
     }
     
-    // 3. Validate yantra.logo (if present)
-    if (yantraLabels['yantra.logo']) {
-        const logo = yantraLabels['yantra.logo'];
+    // 3. Validate yantr.logo (if present)
+    if (yantrLabels['yantr.logo']) {
+        const logo = yantrLabels['yantr.logo'];
         // Check if it's an IPFS CID (basic validation)
         if (logo.includes('://')) {
-            warnings.push(`yantra.logo should be an IPFS CID, not a full URL: "${logo}"`);
+            warnings.push(`yantr.logo should be an IPFS CID, not a full URL: "${logo}"`);
         } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(logo) && !/^baf[a-zA-Z0-9]+$/.test(logo)) {
-            warnings.push(`yantra.logo doesn't appear to be a valid IPFS CID: "${logo}"`);
+            warnings.push(`yantr.logo doesn't appear to be a valid IPFS CID: "${logo}"`);
         }
     }
     
-    // 4. Validate yantra.category
-    if (yantraLabels['yantra.category']) {
-        const category = yantraLabels['yantra.category'];
+    // 4. Validate yantr.category
+    if (yantrLabels['yantr.category']) {
+        const category = yantrLabels['yantr.category'];
         const categories = category.split(',').map(c => c.trim()).filter(Boolean);
         
         if (categories.length === 0) {
-            errors.push(`yantra.category is empty`);
+            errors.push(`yantr.category is empty`);
         } else if (categories.length > 3) {
-            errors.push(`yantra.category has ${categories.length} categories (max 3 allowed)`);
+            errors.push(`yantr.category has ${categories.length} categories (max 3 allowed)`);
         }
         
         for (const cat of categories) {
             if (cat !== cat.toLowerCase()) {
-                errors.push(`yantra.category must be lowercase: "${cat}"`);
+                errors.push(`yantr.category must be lowercase: "${cat}"`);
             }
             if (!/^[a-z0-9-]+$/.test(cat)) {
-                errors.push(`yantra.category contains invalid characters: "${cat}" (only lowercase letters, numbers, and hyphens allowed)`);
+                errors.push(`yantr.category contains invalid characters: "${cat}" (only lowercase letters, numbers, and hyphens allowed)`);
             }
         }
     }
     
-    // 5. Validate yantra.description
-    if (yantraLabels['yantra.description']) {
-        const description = yantraLabels['yantra.description'];
+    // 5. Validate yantr.description
+    if (yantrLabels['yantr.description']) {
+        const description = yantrLabels['yantr.description'];
         if (description.length > 120) {
-            errors.push(`yantra.description is too long (${description.length} chars, max 120): "${description.substring(0, 50)}..."`);
+            errors.push(`yantr.description is too long (${description.length} chars, max 120): "${description.substring(0, 50)}..."`);
         }
         if (description.length === 0) {
-            errors.push(`yantra.description is empty`);
+            errors.push(`yantr.description is empty`);
         }
     }
     
-    // 6. Validate yantra.website
-    if (yantraLabels['yantra.website']) {
-        const website = yantraLabels['yantra.website'];
+    // 6. Validate yantr.website
+    if (yantrLabels['yantr.website']) {
+        const website = yantrLabels['yantr.website'];
         if (!website.startsWith('http://') && !website.startsWith('https://')) {
-            errors.push(`yantra.website must be a valid URL starting with http:// or https://: "${website}"`);
+            errors.push(`yantr.website must be a valid URL starting with http:// or https://: "${website}"`);
         }
     }
     
-    // 7. Validate yantra.port format (if present)
-    if (yantraLabels['yantra.port']) {
+    // 7. Validate yantr.port format (if present)
+    if (yantrLabels['yantr.port']) {
         try {
-            validateYantraPortFormat(yantraLabels['yantra.port'], serviceName);
+            validateYantrPortFormat(yantrLabels['yantr.port'], serviceName);
         } catch (error) {
-            errors.push(`yantra.port format error: ${error.message}`);
+            errors.push(`yantr.port format error: ${error.message}`);
         }
     }
     
@@ -402,7 +402,7 @@ function extractServiceNetworkNames(service) {
     return [];
 }
 
-function validateYantraNetwork(composeObj) {
+function validateYantrNetwork(composeObj) {
     const errors = [];
     const warnings = [];
     const services = composeObj && typeof composeObj === 'object' ? (composeObj.services || {}) : {};
@@ -410,34 +410,34 @@ function validateYantraNetwork(composeObj) {
     const usingServices = [];
     for (const [svcName, service] of Object.entries(services)) {
         const networkNames = extractServiceNetworkNames(service);
-        if (networkNames.includes('yantra_network')) {
+        if (networkNames.includes('yantr_network')) {
             usingServices.push(svcName);
         }
     }
 
     const networkConfig = composeObj && typeof composeObj === 'object'
-        ? (composeObj.networks ? composeObj.networks.yantra_network : null)
+        ? (composeObj.networks ? composeObj.networks.yantr_network : null)
         : null;
 
     if (usingServices.length > 0) {
         if (!networkConfig || typeof networkConfig !== 'object') {
-            errors.push(`Services [${usingServices.join(', ')}] use yantra_network but networks.yantra_network is missing`);
+            errors.push(`Services [${usingServices.join(', ')}] use yantr_network but networks.yantr_network is missing`);
             return { errors, warnings };
         }
 
-        if (networkConfig.name !== 'yantra_network') {
-            errors.push('networks.yantra_network.name must be "yantra_network"');
+        if (networkConfig.name !== 'yantr_network') {
+            errors.push('networks.yantr_network.name must be "yantr_network"');
         }
 
         if (networkConfig.external !== true) {
-            errors.push('networks.yantra_network must set external: true');
+            errors.push('networks.yantr_network must set external: true');
         }
 
         if (Object.prototype.hasOwnProperty.call(networkConfig, 'driver')) {
-            errors.push('networks.yantra_network must not set driver when using external: true');
+            errors.push('networks.yantr_network must not set driver when using external: true');
         }
     } else if (networkConfig) {
-        warnings.push('networks.yantra_network is defined but no service uses it');
+        warnings.push('networks.yantr_network is defined but no service uses it');
     }
 
     return { errors, warnings };
@@ -540,8 +540,8 @@ async function validateAllApps() {
             continue;
         }
 
-        const labelResult = validateYantraLabels(appName, composeObj);
-        const networkResult = validateYantraNetwork(composeObj);
+        const labelResult = validateYantrLabels(appName, composeObj);
+        const networkResult = validateYantrNetwork(composeObj);
         const envValueWarnings = detectUnquotedEnvValues(composeContent);
         const errors = [...labelResult.errors, ...networkResult.errors];
         const warnings = [...labelResult.warnings, ...networkResult.warnings, ...envValueWarnings];
@@ -566,7 +566,7 @@ async function validateAllApps() {
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
     (async () => {
-        console.log('🔍 Running Yantra app validation...\n');
+        console.log('🔍 Running Yantr app validation...\n');
         
         // 1. Check port conflicts
         const portResult = await detectPortConflict();

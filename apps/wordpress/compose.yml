@@ -3,12 +3,12 @@ services:
     image: wordpress:latest
     container_name: wordpress
     labels:
-      yantra.name: "WordPress"
-      yantra.logo: "QmfTeVfmHVGfwU4Q99TUT9xvGWc3s4RjPR3kzahnjqppKP"
-      yantra.category: "cms,blog"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Popular open-source content management system for websites and blogs"
-      yantra.website: "https://github.com/WordPress/WordPress"
+      yantr.name: "WordPress"
+      yantr.logo: "QmfTeVfmHVGfwU4Q99TUT9xvGWc3s4RjPR3kzahnjqppKP"
+      yantr.category: "cms,blog"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Popular open-source content management system for websites and blogs"
+      yantr.website: "https://github.com/WordPress/WordPress"
     restart: unless-stopped
     ports:
       - "80"

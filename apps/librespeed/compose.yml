@@ -3,12 +3,12 @@ services:
     image: ghcr.io/librespeed/speedtest:latest
     container_name: librespeed
     labels:
-      yantra.name: "LibreSpeed"
-      yantra.logo: "QmSPU6HmY4jRjanybWFDGQapEbSoY6ii4nc7MSUjicS5Xd"
-      yantra.category: "network,tools"
-      yantra.port: "8080 (HTTP - Web UI)"
-      yantra.description: "Self-hosted speed test tool for bandwidth measurement"
-      yantra.website: "https://github.com/librespeed/speedtest"
+      yantr.name: "LibreSpeed"
+      yantr.logo: "QmSPU6HmY4jRjanybWFDGQapEbSoY6ii4nc7MSUjicS5Xd"
+      yantr.category: "network,tools"
+      yantr.port: "8080 (HTTP - Web UI)"
+      yantr.description: "Self-hosted speed test tool for bandwidth measurement"
+      yantr.website: "https://github.com/librespeed/speedtest"
     ports:
       - "8080"
     restart: unless-stopped

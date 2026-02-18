@@ -3,12 +3,12 @@ services:
     image: nextcloud:stable
     container_name: nextcloud
     labels:
-      yantra.name: "Nextcloud"
-      yantra.logo: "QmU23rKmzJwT93oCrnprdGJQBv4VaPiaZ6re88qbfmVE2u"
-      yantra.category: "productivity,utility"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Self-hosted file sync and collaboration platform with calendar, contacts, and sharing"
-      yantra.website: "https://github.com/nextcloud/server"
+      yantr.name: "Nextcloud"
+      yantr.logo: "QmU23rKmzJwT93oCrnprdGJQBv4VaPiaZ6re88qbfmVE2u"
+      yantr.category: "productivity,utility"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Self-hosted file sync and collaboration platform with calendar, contacts, and sharing"
+      yantr.website: "https://github.com/nextcloud/server"
     ports:
       - "80"
     environment:

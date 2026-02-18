@@ -6,9 +6,9 @@ services:
       - "3000"
     restart: unless-stopped
     labels:
-      yantra.name: "Web Check"
-      yantra.logo: "QmXwF1DUNZLpkLFzK7HhVdtNNPncNZMS4ktb7KHb6K8Khz"
-      yantra.category: "tools,network,utility"
-      yantra.port: "3000 (HTTP - Web UI)"
-      yantra.description: "All-in-one tool for analyzing and monitoring websites"
-      yantra.website: "https://github.com/lissy93/web-check"
+      yantr.name: "Web Check"
+      yantr.logo: "QmXwF1DUNZLpkLFzK7HhVdtNNPncNZMS4ktb7KHb6K8Khz"
+      yantr.category: "tools,network,utility"
+      yantr.port: "3000 (HTTP - Web UI)"
+      yantr.description: "All-in-one tool for analyzing and monitoring websites"
+      yantr.website: "https://github.com/lissy93/web-check"

@@ -3,12 +3,12 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     labels:
-      yantra.name: "Portainer"
-      yantra.logo: "QmXyDE7nzzoUS8dez7bWBgeP2X2xkJ6XesJ7QSWUsvdV5F"
-      yantra.category: "tools,utility"
-      yantra.port: "9443 (HTTPS - Web UI)"
-      yantra.description: "Container management UI for Docker environments"
-      yantra.website: "https://docs.portainer.io"
+      yantr.name: "Portainer"
+      yantr.logo: "QmXyDE7nzzoUS8dez7bWBgeP2X2xkJ6XesJ7QSWUsvdV5F"
+      yantr.category: "tools,utility"
+      yantr.port: "9443 (HTTPS - Web UI)"
+      yantr.description: "Container management UI for Docker environments"
+      yantr.website: "https://docs.portainer.io"
     ports:
       - "9443"
     volumes:

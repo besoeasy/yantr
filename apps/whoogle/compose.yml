@@ -3,12 +3,12 @@ services:
     image: benbusby/whoogle-search:latest
     container_name: whoogle
     labels:
-      yantra.name: "Whoogle"
-      yantra.logo: "QmNPLDz2jjjG67UeNVAC1wgdBs9eMrUQQYkRRWXWmtSZxV"
-      yantra.category: "search,privacy"
-      yantra.port: "5000 (HTTP - Web UI)"
-      yantra.description: "Privacy-focused metasearch engine - fast, clean Google-like search results"
-      yantra.website: "https://github.com/benbusby/whoogle"
+      yantr.name: "Whoogle"
+      yantr.logo: "QmNPLDz2jjjG67UeNVAC1wgdBs9eMrUQQYkRRWXWmtSZxV"
+      yantr.category: "search,privacy"
+      yantr.port: "5000 (HTTP - Web UI)"
+      yantr.description: "Privacy-focused metasearch engine - fast, clean Google-like search results"
+      yantr.website: "https://github.com/benbusby/whoogle"
     ports:
       - "5000"
     volumes:

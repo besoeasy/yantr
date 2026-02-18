@@ -3,11 +3,11 @@ services:
     image: containrrr/watchtower:latest
     container_name: watchtower
     labels:
-      yantra.name: "Watchtower"
-      yantra.logo: "QmXGn6c1UzVGBQmuxcikBush4KYdM2KASxggR8Z7rH7kw4"
-      yantra.category: "tools,utility"
-      yantra.description: "Automatically update running Docker containers"
-      yantra.website: "https://containrrr.dev/watchtower"
+      yantr.name: "Watchtower"
+      yantr.logo: "QmXGn6c1UzVGBQmuxcikBush4KYdM2KASxggR8Z7rH7kw4"
+      yantr.category: "tools,utility"
+      yantr.description: "Automatically update running Docker containers"
+      yantr.website: "https://containrrr.dev/watchtower"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:

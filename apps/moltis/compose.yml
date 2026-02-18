@@ -3,12 +3,12 @@ services:
     image: ghcr.io/moltis-org/moltis:latest
     container_name: moltis
     labels:
-      yantra.name: "Moltis"
-      yantra.logo: "Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd"
-      yantra.category: "ai,tools"
-      yantra.port: "13131 (HTTPS - Web UI)"
-      yantra.description: "Self-hosted Moltis server with web UI and Docker access"
-      yantra.website: "https://github.com/moltis-org/moltis"
+      yantr.name: "Moltis"
+      yantr.logo: "Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd"
+      yantr.category: "ai,tools"
+      yantr.port: "13131 (HTTPS - Web UI)"
+      yantr.description: "Self-hosted Moltis server with web UI and Docker access"
+      yantr.website: "https://github.com/moltis-org/moltis"
     ports:
       - "13131"
     volumes:

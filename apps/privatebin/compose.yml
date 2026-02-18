@@ -3,12 +3,12 @@ services:
     image: privatebin/nginx-fpm-alpine:latest
     container_name: privatebin
     labels:
-      yantra.name: "PrivateBin"
-      yantra.logo: "QmWNmuv1fVzwz63qzbD1RHwX6MbNk5xAUwC5RR2ZsPeiGj"
-      yantra.category: "utility,privacy"
-      yantra.port: "8080 (HTTP - Web UI)"
-      yantra.description: "Minimalist, open source online pastebin with zero-knowledge server design"
-      yantra.website: "https://github.com/PrivateBin/PrivateBin"
+      yantr.name: "PrivateBin"
+      yantr.logo: "QmWNmuv1fVzwz63qzbD1RHwX6MbNk5xAUwC5RR2ZsPeiGj"
+      yantr.category: "utility,privacy"
+      yantr.port: "8080 (HTTP - Web UI)"
+      yantr.description: "Minimalist, open source online pastebin with zero-knowledge server design"
+      yantr.website: "https://github.com/PrivateBin/PrivateBin"
     ports:
       - "8080"
     volumes:

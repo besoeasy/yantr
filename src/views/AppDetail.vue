@@ -54,7 +54,7 @@ const ports = computed(() => {
 
 const fixedPorts = computed(() => {
   if (!app.value?.ports) return [];
-  // Filter out ports that are already described in yantra.port (isNamed)
+  // Filter out ports that are already described in yantr.port (isNamed)
   return app.value.ports.filter((p) => !p.isNamed);
 });
 
@@ -515,7 +515,7 @@ onMounted(async () => {
                   Website
                 </a>
                 <a
-                  :href="`https://github.com/besoeasy/yantra/blob/main/apps/${app.id}/compose.yml`"
+                  :href="`https://github.com/besoeasy/yantr/blob/main/apps/${app.id}/compose.yml`"
                   target="_blank"
                   class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-600 dark:text-slate-400 hover:border-purple-500 hover:text-purple-500 transition-colors text-xs font-medium uppercase tracking-wide"
                 >

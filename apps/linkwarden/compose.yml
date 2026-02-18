@@ -3,12 +3,12 @@ services:
     image: ghcr.io/linkwarden/linkwarden:v2.13.5
     container_name: linkwarden
     labels:
-      yantra.name: "Linkwarden"
-      yantra.logo: "QmXS2iBXkfwvLA2iiVGCxj8sY3j8KKCf2NGz6hCgiuSeQU"
-      yantra.category: "productivity,utility"
-      yantra.port: "3000 (HTTP - Web UI)"
-      yantra.description: "Bookmark preservation tool for individuals and teams with full-text search and archiving"
-      yantra.website: "https://github.com/linkwarden/linkwarden"
+      yantr.name: "Linkwarden"
+      yantr.logo: "QmXS2iBXkfwvLA2iiVGCxj8sY3j8KKCf2NGz6hCgiuSeQU"
+      yantr.category: "productivity,utility"
+      yantr.port: "3000 (HTTP - Web UI)"
+      yantr.description: "Bookmark preservation tool for individuals and teams with full-text search and archiving"
+      yantr.website: "https://github.com/linkwarden/linkwarden"
     ports:
       - "3000"
     environment:

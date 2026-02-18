@@ -11,12 +11,12 @@ services:
     ports:
       - "7575"
     labels:
-      yantra.name: "Homarr"
-      yantra.logo: "QmXrjcV7SukGrmAgqF3tHVCu2LTYYGkhADumKY74AHzLf4"
-      yantra.description: "Modern customizable dashboard with 30+ integrations and 10K+ icons"
-      yantra.category: "dashboard,tools"
-      yantra.port: "7575 (HTTP - Web UI)"
-      yantra.website: "https://github.com/homarr-labs/homarr"
+      yantr.name: "Homarr"
+      yantr.logo: "QmXrjcV7SukGrmAgqF3tHVCu2LTYYGkhADumKY74AHzLf4"
+      yantr.description: "Modern customizable dashboard with 30+ integrations and 10K+ icons"
+      yantr.category: "dashboard,tools"
+      yantr.port: "7575 (HTTP - Web UI)"
+      yantr.website: "https://github.com/homarr-labs/homarr"
 
 volumes:
   homarr_data:

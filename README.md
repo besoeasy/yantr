@@ -1,18 +1,18 @@
 <div align="center">
 
-# ⚙️ Yantra
+# ⚙️ Yantr
 
 **Turn any server, PC, laptop, or Mac into your own self-hosted homelab**
 
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/besoeasy/yantra/pkgs/container/yantra)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
 [![Vue](https://img.shields.io/badge/Vue-3-42b883?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](LICENSE)
 
 [![Join Telegram](https://img.shields.io/badge/Join%20Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+h4RvCk63PxUyODQ1)
 
-Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantra turns the machine you already have into a self-hosted homelab, while keeping every app isolated: it never touches your host filesystem and stores data only in Docker volumes. **First platform to ship a complete AI agent suite** with Ollama, Open WebUI, Perplexica, OpenCode, and more—each in its own isolated environment. If you like Umbrel but do not want an OS takeover, Yantra gives you the same app-store flow on the machine you already use.
+Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantr turns the machine you already have into a self-hosted homelab, while keeping every app isolated: it never touches your host filesystem and stores data only in Docker volumes. **First platform to ship a complete AI agent suite** with Ollama, Open WebUI, Perplexica, OpenCode, and more—each in its own isolated environment. If you like Umbrel but do not want an OS takeover, Yantr gives you the same app-store flow on the machine you already use.
 
-[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🤖 AI Agents](#-complete-ai-agent-ecosystem) • [🛠️ Apps](#%EF%B8%8F-app-catalog) • [🎥 Demo Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [💬 Issues](https://github.com/besoeasy/yantra/issues)
+[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🤖 AI Agents](#-complete-ai-agent-ecosystem) • [🛠️ Apps](#%EF%B8%8F-app-catalog) • [🎥 Demo Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [💬 Issues](https://github.com/besoeasy/yantr/issues)
 
 </div>
 
@@ -20,16 +20,16 @@ Run 100+ powerful applications on-demand, without buying extra hardware or repla
 
 ## 🚀 Quick Start
 
-Launch Yantra in seconds with a single Docker command and access it at http://localhost.
+Launch Yantr in seconds with a single Docker command and access it at http://localhost.
 
 ```bash
 docker run -d \
-  --name yantra \
+  --name yantr \
   -p 80:5252 \
   -p 443:5252 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --restart unless-stopped \
-  ghcr.io/besoeasy/yantra
+  ghcr.io/besoeasy/yantr
 ```
 
 **✅ That’s it!** Open your browser and navigate to http://localhost to start deploying apps.
@@ -119,7 +119,7 @@ Modern Vue.js interface that feels fast and polished.
 
 ### 🧩 Filesystem Safe
 
-Yantra never modifies your host filesystem. App data lives in isolated Docker volumes and is removed when you uninstall an app.
+Yantr never modifies your host filesystem. App data lives in isolated Docker volumes and is removed when you uninstall an app.
 
 </td>
 <td width="33%" valign="top">
@@ -133,7 +133,7 @@ Automatic port mapping and smart defaults so you can launch apps without spendin
 
 ### 🆕 Always Latest Apps
 
-Always ships the newest app releases regardless of your Yantra version—updates come directly from the software source.
+Always ships the newest app releases regardless of your Yantr version—updates come directly from the software source.
 
 </td>
 </tr>
@@ -143,7 +143,7 @@ Always ships the newest app releases regardless of your Yantra version—updates
 
 ## 🤖 Complete AI Agent Ecosystem
 
-**Yantra is the first platform to ship a complete suite of AI agents**, each running in its own isolated environment with zero conflicts. No dependency hell. No version mismatches. Just pure, isolated AI power.
+**Yantr is the first platform to ship a complete suite of AI agents**, each running in its own isolated environment with zero conflicts. No dependency hell. No version mismatches. Just pure, isolated AI power.
 
 <table>
 <tr>
@@ -213,9 +213,9 @@ Each AI agent runs in **its own isolated Docker container**:
 
 ![dark mode](https://github.com/user-attachments/assets/e5dc0ad8-0181-4676-b7b1-1cc961a6b1ed)
 
-## 🧭 Why Yantra
+## 🧭 Why Yantr
 
-Most homelab platforms treat your hardware like an **OS replacement**. Yantra is different: it is a lightweight app store that runs **alongside** your existing system. Your laptop stays yours. Install once, run what you need, and shut it down when you are done.
+Most homelab platforms treat your hardware like an **OS replacement**. Yantr is different: it is a lightweight app store that runs **alongside** your existing system. Your laptop stays yours. Install once, run what you need, and shut it down when you are done.
 
 ### Built for daily machines
 
@@ -225,7 +225,7 @@ Most homelab platforms treat your hardware like an **OS replacement**. Yantra is
 
 ### Feature Comparison
 
-| Feature            | 🔧 Yantra                                 | 🚫 Others (Umbrel/CasaOS)              |
+| Feature            | 🔧 Yantr                                 | 🚫 Others (Umbrel/CasaOS)              |
 | :----------------- | :---------------------------------------- | :------------------------------------- |
 | **Philosophy**     | App Store (Runs _on_ your OS)             | Operating System (Taking over your OS) |
 | **Hardware**       | Your existing Laptop/PC                   | Dedicated Pi/Server                    |
@@ -241,7 +241,7 @@ Most homelab platforms treat your hardware like an **OS replacement**. Yantra is
 
 ## 🛠️ App Catalog
 
-Yantra ships with 100+ pre-configured apps. Here are popular picks by use case:
+Yantr ships with 100+ pre-configured apps. Here are popular picks by use case:
 
 ### 🤖 AI & Machine Learning
 
@@ -304,7 +304,7 @@ Yantra ships with 100+ pre-configured apps. Here are popular picks by use case:
 
 ## 💾 Volume Management & WebDAV
 
-Yantra gives you **direct access** to your data with built-in WebDAV support.
+Yantr gives you **direct access** to your data with built-in WebDAV support.
 
 1. **Browse Volumes**: Go to the **Volumes** tab and click **Browse** on any volume.
 2. **WebDAV Access**: The browser uses `dufs`, which inherently supports WebDAV.
@@ -321,11 +321,11 @@ rclone sync :webdav:http://localhost:5001 :webdav:http://localhost:5002 --webdav
 
 ## 💾 Volume Backup & Restore
 
-Yantra makes it easy to backup and restore Docker volumes to S3-compatible storage (MinIO), perfect for migrating data or creating snapshots.
+Yantr makes it easy to backup and restore Docker volumes to S3-compatible storage (MinIO), perfect for migrating data or creating snapshots.
 
 ### Backup a Volume
 
-1. Navigate to the **Volumes** tab in the Yantra UI
+1. Navigate to the **Volumes** tab in the Yantr UI
 2. Click the **Backup** button next to any volume
 3. The volume will be backed up as a `.tar.gz` archive to your configured S3/MinIO storage
 
@@ -341,16 +341,16 @@ Yantra makes it easy to backup and restore Docker volumes to S3-compatible stora
 - 📦 Migrate data between machines
 - 🔄 Create snapshots before major changes
 - 💿 Archive app data for long-term storage
-- 🚚 Move volumes to a new Yantra installation
+- 🚚 Move volumes to a new Yantr installation
 - ☁️ Store backups in the cloud or self-hosted S3 storage
 
 ---
 
 ## 🔒 Remote Access with Tailscale
 
-Want to access your Yantra apps from anywhere securely? **We recommend [Tailscale](https://tailscale.com)** — it creates a private network between your devices.
+Want to access your Yantr apps from anywhere securely? **We recommend [Tailscale](https://tailscale.com)** — it creates a private network between your devices.
 
-- ✅ Access Yantra from any device, anywhere
+- ✅ Access Yantr from any device, anywhere
 - ✅ No port forwarding or firewall configuration needed
 - ✅ End-to-end encrypted
 - ✅ Free tier available
@@ -362,8 +362,8 @@ Want to access your Yantra apps from anywhere securely? **We recommend [Tailscal
 Have ideas for new apps or improvements? Contributions are welcome!
 
 - **Add a new app**: Follow the [Apps Template Standards](apps/apps.md)
-- **Report issues**: [GitHub Issues](https://github.com/besoeasy/yantra/issues)
-- **Share feedback**: Help shape the future of Yantra
+- **Report issues**: [GitHub Issues](https://github.com/besoeasy/yantr/issues)
+- **Share feedback**: Help shape the future of Yantr
 
 ---
 
@@ -376,4 +376,4 @@ Have ideas for new apps or improvements? Contributions are welcome!
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=besoeasy/yantra&type=date&legend=top-left)](https://www.star-history.com/#besoeasy/yantra&type=date&legend=top-left)
+[![Star History Chart](https://api.star-history.com/svg?repos=besoeasy/yantr&type=date&legend=top-left)](https://www.star-history.com/#besoeasy/yantr&type=date&legend=top-left)

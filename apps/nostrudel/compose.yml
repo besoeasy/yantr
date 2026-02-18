@@ -3,12 +3,12 @@ services:
     image: ghcr.io/hzrd149/nostrudel:0.46.1
     container_name: nostrudel
     labels:
-      yantra.name: "noStrudel"
-      yantra.logo: "QmQd78JBNgAnVAAk6Ux6Jo3tHUXLyzjYeaRZ1EXwMFzHNe"
-      yantra.category: "social"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "A nostr web client sandbox for exploring and learning the inner workings of the nostr network"
-      yantra.website: "https://github.com/hzrd149/nostrudel"
+      yantr.name: "noStrudel"
+      yantr.logo: "QmQd78JBNgAnVAAk6Ux6Jo3tHUXLyzjYeaRZ1EXwMFzHNe"
+      yantr.category: "social"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "A nostr web client sandbox for exploring and learning the inner workings of the nostr network"
+      yantr.website: "https://github.com/hzrd149/nostrudel"
     ports:
       - "80"
     environment:

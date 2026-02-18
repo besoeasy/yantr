@@ -138,8 +138,8 @@ async function fetchVolumes() {
       if (containersData.success) {
         const newPorts = {}
         containersData.containers.forEach(container => {
-          if (container.labels && container.labels['yantra.volume-browser']) {
-            const volumeName = container.labels['yantra.volume-browser']
+          if (container.labels && container.labels['yantr.volume-browser']) {
+            const volumeName = container.labels['yantr.volume-browser']
             const port = container.ports?.find(p => p.privatePort === 5000)?.publicPort
             if (port) {
               newPorts[volumeName] = port

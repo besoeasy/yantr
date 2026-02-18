@@ -14,12 +14,12 @@ services:
       - "51413/udp"
     restart: unless-stopped
     labels:
-      yantra.name: "Transmission"
-      yantra.logo: "QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ"
-      yantra.category: "download,network"
-      yantra.port: "9091 (HTTP - Web Interface)"
-      yantra.description: "Fast, easy BitTorrent client with web interface"
-      yantra.website: "https://transmissionbt.com/"
+      yantr.name: "Transmission"
+      yantr.logo: "QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ"
+      yantr.category: "download,network"
+      yantr.port: "9091 (HTTP - Web Interface)"
+      yantr.description: "Fast, easy BitTorrent client with web interface"
+      yantr.website: "https://transmissionbt.com/"
 
 volumes:
   transmission_config:

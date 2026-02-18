@@ -3,12 +3,12 @@ services:
     image: mongo:latest
     container_name: mongodb
     labels:
-      yantra.name: "MongoDB"
-      yantra.logo: "QmZYsae4jNFSyXC696vjkyiqSAR6DBGo4zKSgMGdE7ZSzy"
-      yantra.category: "database,storage"
-      yantra.port: "27017 (TCP - Database)"
-      yantra.description: "NoSQL document database for flexible data storage and management"
-      yantra.website: "https://github.com/mongodb/mongo"
+      yantr.name: "MongoDB"
+      yantr.logo: "QmZYsae4jNFSyXC696vjkyiqSAR6DBGo4zKSgMGdE7ZSzy"
+      yantr.category: "database,storage"
+      yantr.port: "27017 (TCP - Database)"
+      yantr.description: "NoSQL document database for flexible data storage and management"
+      yantr.website: "https://github.com/mongodb/mongo"
     ports:
       - "27017"
     volumes:

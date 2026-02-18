@@ -3,12 +3,12 @@ services:
     image: traggo/server:latest
     container_name: traggo
     labels:
-      yantra.name: "Traggo"
-      yantra.logo: "QmTiS72Uz3JSJUmXTcx9GmPUnfABX5jFVEn2rMBCYzhhMj"
-      yantra.category: "productivity,time-tracking"
-      yantra.port: "3030 (HTTP - Web UI)"
-      yantra.description: "Simple and lightweight time tracking application for personal productivity"
-      yantra.website: "https://github.com/traggo/server"
+      yantr.name: "Traggo"
+      yantr.logo: "QmTiS72Uz3JSJUmXTcx9GmPUnfABX5jFVEn2rMBCYzhhMj"
+      yantr.category: "productivity,time-tracking"
+      yantr.port: "3030 (HTTP - Web UI)"
+      yantr.description: "Simple and lightweight time tracking application for personal productivity"
+      yantr.website: "https://github.com/traggo/server"
     ports:
       - "3030"
     environment:

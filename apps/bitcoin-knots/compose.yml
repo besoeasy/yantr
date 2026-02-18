@@ -18,19 +18,19 @@ services:
       - "8333" # P2P
     restart: unless-stopped
     labels:
-      yantra.name: "Bitcoin Knots"
-      yantra.logo: "QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ"
-      yantra.category: "cryptocurrency"
-      yantra.port: "8332 (HTTP - Web UI)"
-      yantra.description: "Bitcoin full node with enhanced features and privacy focus."
-      yantra.website: "https://bitcoinknots.org"
+      yantr.name: "Bitcoin Knots"
+      yantr.logo: "QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ"
+      yantr.category: "cryptocurrency"
+      yantr.port: "8332 (HTTP - Web UI)"
+      yantr.description: "Bitcoin full node with enhanced features and privacy focus."
+      yantr.website: "https://bitcoinknots.org"
     networks:
-      - yantra_network
+      - yantr_network
 
 volumes:
   bitcoin_knots_data:
 
 networks:
-  yantra_network:
-    name: yantra_network
+  yantr_network:
+    name: yantr_network
     external: true

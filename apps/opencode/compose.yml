@@ -4,12 +4,12 @@ services:
     command: ["web", "--hostname", "0.0.0.0", "--port", "4096"]
     container_name: opencode
     labels:
-      yantra.name: "OpenCode"
-      yantra.logo: "Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA"
-      yantra.category: "development,productivity,ai"
-      yantra.port: "4096 (HTTP - Web UI)"
-      yantra.description: "Open source AI coding agent for terminal, IDE, and desktop"
-      yantra.website: "https://github.com/anomalyco/opencode"
+      yantr.name: "OpenCode"
+      yantr.logo: "Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA"
+      yantr.category: "development,productivity,ai"
+      yantr.port: "4096 (HTTP - Web UI)"
+      yantr.description: "Open source AI coding agent for terminal, IDE, and desktop"
+      yantr.website: "https://github.com/anomalyco/opencode"
     ports:
       - "4096"
     stdin_open: true

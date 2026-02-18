@@ -13,12 +13,12 @@ services:
       - "4001/udp" # Swarm UDP
     restart: unless-stopped
     labels:
-      yantra.name: "Originless"
-      yantra.logo: "QmWMCDAFxDjqfYRjjaqRx4UCt7ZF9TK6r5SpZEWWko9c63"
-      yantra.category: "utility,tools"
-      yantra.port: "3232 (HTTP - Web UI)"
-      yantra.description: "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting"
-      yantra.website: "https://github.com/besoeasy/originless"
+      yantr.name: "Originless"
+      yantr.logo: "QmWMCDAFxDjqfYRjjaqRx4UCt7ZF9TK6r5SpZEWWko9c63"
+      yantr.category: "utility,tools"
+      yantr.port: "3232 (HTTP - Web UI)"
+      yantr.description: "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting"
+      yantr.website: "https://github.com/besoeasy/originless"
 
 volumes:
   originless:

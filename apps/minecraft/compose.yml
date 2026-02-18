@@ -19,12 +19,12 @@ services:
       - minecraft-data:/data
     restart: unless-stopped
     labels:
-      yantra.name: "Minecraft Server"
-      yantra.logo: "QmPB7iXHMAu3Wor5jiEsoifm5tZyMEUojhbj6TJJefsY7s"
-      yantra.category: "gaming"
-      yantra.port: "25565 (TCP - Game Server)"
-      yantra.description: "Open-source sandbox game server with endless possibilities"
-      yantra.website: "https://docker-minecraft-server.readthedocs.io/"
+      yantr.name: "Minecraft Server"
+      yantr.logo: "QmPB7iXHMAu3Wor5jiEsoifm5tZyMEUojhbj6TJJefsY7s"
+      yantr.category: "gaming"
+      yantr.port: "25565 (TCP - Game Server)"
+      yantr.description: "Open-source sandbox game server with endless possibilities"
+      yantr.website: "https://docker-minecraft-server.readthedocs.io/"
 
 volumes:
   minecraft-data:

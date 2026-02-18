@@ -3,12 +3,12 @@ services:
     image: rotki/rotki:latest
     container_name: rotki
     labels:
-      yantra.name: "Rotki"
-      yantra.logo: "QmXg6Zmw6rFktbgFCFkuEA15BfK3fJGLUTuZqm53GwWa1z"
-      yantra.category: "productivity,security,utility"
-      yantra.port: "80 (HTTP - Web UI)"
-      yantra.description: "Privacy-focused portfolio tracker and analytics for crypto"
-      yantra.website: "https://rotki.com/"
+      yantr.name: "Rotki"
+      yantr.logo: "QmXg6Zmw6rFktbgFCFkuEA15BfK3fJGLUTuZqm53GwWa1z"
+      yantr.category: "productivity,security,utility"
+      yantr.port: "80 (HTTP - Web UI)"
+      yantr.description: "Privacy-focused portfolio tracker and analytics for crypto"
+      yantr.website: "https://rotki.com/"
     ports:
       - "80"
     volumes:

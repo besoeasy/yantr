@@ -13,12 +13,12 @@ services:
     volumes:
       - minio_data:/data
     labels:
-      yantra.name: "MinIO"
-      yantra.logo: "QmWgS8CxKS7UYSgNNp6nqsTLYwMF5tk8cQfroTgyvxsbQ7"
-      yantra.category: "utility,tools"
-      yantra.port: "9001 (HTTP - Console), 9000 (HTTP - API)"
-      yantra.description: "High Performance Object Storage compatible with Amazon S3 API"
-      yantra.website: "https://min.io"
+      yantr.name: "MinIO"
+      yantr.logo: "QmWgS8CxKS7UYSgNNp6nqsTLYwMF5tk8cQfroTgyvxsbQ7"
+      yantr.category: "utility,tools"
+      yantr.port: "9001 (HTTP - Console), 9000 (HTTP - API)"
+      yantr.description: "High Performance Object Storage compatible with Amazon S3 API"
+      yantr.website: "https://min.io"
 
 volumes:
   minio_data:

@@ -80,7 +80,7 @@ const externalItems = [
   {
     title: "Sponsor",
     href: "https://sponsor.besoeasy.com/",
-    description: "Support Yantra development",
+    description: "Support Yantr development",
     icon: Heart,
     accent: {
       ring: "focus:ring-red-500",
@@ -95,7 +95,7 @@ const externalItems = [
   },
   {
     title: "GitHub",
-    href: "https://github.com/besoeasy/Yantra",
+    href: "https://github.com/besoeasy/Yantr",
     description: "Source code, issues, and releases",
     icon: Github,
     accent: {
@@ -111,7 +111,7 @@ const externalItems = [
   },
   {
     title: "Report Issue",
-    href: "https://github.com/besoeasy/yantra/issues",
+    href: "https://github.com/besoeasy/yantr/issues",
     description: "Open a bug report or request a feature",
     icon: Bug,
     accent: {
@@ -226,7 +226,7 @@ const externalItems = [
       <!-- Build Version -->
       <section aria-label="Build Information" class="w-full">
         <div class="bg-white dark:bg-gray-900 rounded-3xl border border-slate-200 dark:border-gray-700 p-8 flex flex-col gap-3">
-          <div class="text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Yantra build</div>
+          <div class="text-sm uppercase tracking-[0.2em] text-slate-500 dark:text-gray-400">Yantr build</div>
           <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ buildTimestamp }}</div>
           <div class="text-sm text-slate-600 dark:text-gray-300">Generated at image build time (UTC), {{ buildRelative }}.</div>
         </div>

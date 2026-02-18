@@ -10,12 +10,12 @@ services:
       - "8989"
     restart: unless-stopped
     labels:
-      yantra.name: "Sonarr"
-      yantra.logo: "QmSH43o5suJ8UUngEiPGFWedxTdDk9SFDe2GVLNqSkFhJb"
-      yantra.category: "media,tools"
-      yantra.port: "8989 (HTTP - Web UI)"
-      yantra.description: "Smart PVR for TV show monitoring and automated downloading with Usenet and BitTorrent"
-      yantra.website: "https://github.com/linuxserver/docker-sonarr"
+      yantr.name: "Sonarr"
+      yantr.logo: "QmSH43o5suJ8UUngEiPGFWedxTdDk9SFDe2GVLNqSkFhJb"
+      yantr.category: "media,tools"
+      yantr.port: "8989 (HTTP - Web UI)"
+      yantr.description: "Smart PVR for TV show monitoring and automated downloading with Usenet and BitTorrent"
+      yantr.website: "https://github.com/linuxserver/docker-sonarr"
 
 volumes:
   sonarr_config:
