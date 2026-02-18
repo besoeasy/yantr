@@ -51,8 +51,15 @@
         border: 1px solid rgba(255, 255, 255, 0.5);
       }
       @keyframes twinkle {
-        0%, 100% { opacity: 0.1; transform: scale(0.8); }
-        50% { opacity: 0.4; transform: scale(1.1); }
+        0%,
+        100% {
+          opacity: 0.1;
+          transform: scale(0.8);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(1.1);
+        }
       }
       .star-icon {
         position: absolute;
@@ -69,30 +76,60 @@
         z-index: 20;
         animation-play-state: paused;
         background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        box-shadow:
+          0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
       }
       @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .animate-fade-in-up {
         animation: fadeInUp 0.8s ease-out forwards;
         opacity: 0; /* Start hidden */
       }
-      .delay-100 { animation-delay: 100ms; }
-      .delay-200 { animation-delay: 200ms; }
-      .delay-300 { animation-delay: 300ms; }
+      .delay-100 {
+        animation-delay: 100ms;
+      }
+      .delay-200 {
+        animation-delay: 200ms;
+      }
+      .delay-300 {
+        animation-delay: 300ms;
+      }
       @keyframes slideInSoft {
-        from { opacity: 0; transform: translateY(14px) scale(0.98); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
+        from {
+          opacity: 0;
+          transform: translateY(14px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
       @keyframes pulseGlow {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06); }
-        50% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
+        }
       }
       @keyframes floatY {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-4px); }
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
       }
       .animate-slide-in-soft {
         animation: slideInSoft 700ms ease-out forwards;
@@ -107,9 +144,9 @@
   </head>
   <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
     <div class="absolute inset-0 -z-10 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] h-[900px] pointer-events-none"></div>
-    
+
     <!-- Full-page Background Animation Container -->
-    <div id="hero-stars" class="absolute top-0 left-0 w-full overflow-hidden -z-10 pointer-events-none" style="height: 100%;"></div>
+    <div id="hero-stars" class="absolute top-0 left-0 w-full overflow-hidden -z-10 pointer-events-none" style="height: 100%"></div>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass-effect border-b border-gray-100/50">
@@ -128,7 +165,9 @@
             class="hidden sm:flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 text-sm font-bold hover:bg-gray-50 transition-colors"
           >
             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              <path
+                d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"
+              />
             </svg>
             Telegram
           </a>
@@ -150,24 +189,13 @@
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-24">
-      <!-- Badge -->
-      <div class="mb-8 animate-fade-in-up">
-        <a
-          href="https://github.com/besoeasy/yantr/pkgs/container/yantr"
-          target="_blank"
-          class="inline-flex items-center gap-3 text-sm text-gray-600 hover:text-black transition-colors group"
-        >
-          <span class="bg-black text-white text-xs px-1.5 py-0.5 font-bold uppercase">New</span>
-          <span class="border-b border-transparent group-hover:border-gray-300"> Beta is now available for Linux, macOS and Windows.</span>
-          <span class="text-gray-400 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-        </a>
-      </div>
-
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-24 relative bg-white">
       <!-- Hero -->
       <div class="mb-32 flex flex-col items-center text-center relative z-10">
         <div class="max-w-4xl mx-auto">
-          <div class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur px-3 py-1.5 mb-6 text-xs font-semibold tracking-wide text-gray-600 uppercase animate-fade-in-up">
+          <div
+            class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 backdrop-blur px-3 py-1.5 mb-6 text-xs font-semibold tracking-wide text-gray-600 uppercase animate-fade-in-up"
+          >
             <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
             Docker-native self-hosting
           </div>
@@ -175,15 +203,20 @@
             id="hero-title"
             class="text-5xl sm:text-7xl font-bold tracking-tight mb-6 font-sans text-black leading-[0.95] transition-opacity duration-500 ease-in-out animate-fade-in-up delay-100"
           >
-            Self-host
-            open source apps.
+            Self-host open source apps.
           </h1>
-          <p id="hero-desc" class="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10 font-sans transition-opacity duration-500 ease-in-out animate-fade-in-up delay-200">
-            Turn any device into a private cloud with one command. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure. No OS replacement needed.
+          <p
+            id="hero-desc"
+            class="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto mb-10 font-sans transition-opacity duration-500 ease-in-out animate-fade-in-up delay-200"
+          >
+            Turn any device into a private cloud with one command. Run 100+ apps like Ollama, Open WebUI, and Perplexica on your own infrastructure. No OS
+            replacement needed.
           </p>
 
           <!-- Install Widget -->
-          <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-2xl bg-white max-w-2xl mx-auto text-left ring-1 ring-gray-900/5 animate-fade-in-up delay-300">
+          <div
+            class="border border-gray-200 rounded-2xl overflow-hidden shadow-2xl bg-white max-w-2xl mx-auto text-left ring-1 ring-gray-900/5 animate-fade-in-up delay-300"
+          >
             <div class="p-5 sm:p-6 bg-zinc-950 space-y-4">
               <div class="rounded-xl border border-zinc-800 bg-zinc-900/80 p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -195,7 +228,9 @@
                   <span class="relative inline-flex h-6 w-11 items-center">
                     <input id="docker-installed" type="checkbox" class="peer sr-only" />
                     <span class="h-6 w-11 rounded-full bg-zinc-700 transition-colors duration-300 peer-checked:bg-emerald-500"></span>
-                    <span class="pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5"></span>
+                    <span
+                      class="pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-300 peer-checked:translate-x-5"
+                    ></span>
                   </span>
                 </label>
               </div>
@@ -207,8 +242,7 @@
                 </div>
                 <div class="flex items-start justify-between gap-3">
                   <code class="text-xs sm:text-sm text-zinc-300 font-mono overflow-x-auto whitespace-pre hide-scrollbar pr-4 leading-relaxed"
-                    >curl -fsSL https://get.docker.com | sudo sh
-sudo usermod -aG docker $USER && newgrp docker</code
+                    >curl -fsSL https://get.docker.com | sudo sh sudo usermod -aG docker $USER && newgrp docker</code
                   >
                   <button
                     onclick="navigator.clipboard.writeText('curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker')"
@@ -234,12 +268,15 @@ sudo usermod -aG docker $USER && newgrp docker</code
                 </div>
                 <div class="flex items-start justify-between gap-3">
                   <code class="text-xs sm:text-sm text-zinc-200 font-mono overflow-x-auto whitespace-pre hide-scrollbar pr-4 leading-relaxed"
-                    >docker run -d --name yantr -p 80:5252 -p 443:5252 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  --restart unless-stopped ghcr.io/besoeasy/yantr</code
+                    >docker run -d --name yantr -p 80:5252 -p 443:5252 \ -v /var/run/docker.sock:/var/run/docker.sock \ --restart unless-stopped
+                    ghcr.io/besoeasy/yantr</code
                   >
                   <button
-                    onclick="navigator.clipboard.writeText('docker run -d --name yantr -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')"
+                    onclick="
+                      navigator.clipboard.writeText(
+                        'docker run -d --name yantr -p 80:5252 -p 443:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr',
+                      )
+                    "
                     class="text-zinc-500 hover:text-white transition-colors p-1.5 rounded hover:bg-white/10 shrink-0"
                     title="Copy Yantr install"
                   >
@@ -257,7 +294,6 @@ sudo usermod -aG docker $USER && newgrp docker</code
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- What is Yantr Section (Features in list style) -->
@@ -280,7 +316,6 @@ sudo usermod -aG docker $USER && newgrp docker</code
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
           <!-- Featured App — left column -->
           <div
             id="featured-app-card"
@@ -320,7 +355,6 @@ sudo usermod -aG docker $USER && newgrp docker</code
           <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4" id="app-grid">
             <!-- Apps loaded via JS -->
           </div>
-
         </div>
       </div>
 
@@ -452,7 +486,8 @@ sudo usermod -aG docker $USER && newgrp docker</code
           } else {
             categories.forEach((category, idx) => {
               const tag = document.createElement("span");
-              tag.className = "text-[10px] font-mono uppercase tracking-wider border border-gray-100 text-gray-400 px-1.5 py-0.5 opacity-0 translate-y-2 transition-all duration-500";
+              tag.className =
+                "text-[10px] font-mono uppercase tracking-wider border border-gray-100 text-gray-400 px-1.5 py-0.5 opacity-0 translate-y-2 transition-all duration-500";
               tag.textContent = category;
               categoriesEl.appendChild(tag);
               setTimeout(() => {
@@ -956,8 +991,8 @@ sudo usermod -aG docker $USER && newgrp docker</code
 
             const size = Math.floor(Math.random() * 8) + 16; // 16px - 24px icon size
 
-            el.style.animationDelay = (Math.random() * 5) + "s";
-            el.style.animationDuration = (Math.random() * 3 + 3) + "s";
+            el.style.animationDelay = Math.random() * 5 + "s";
+            el.style.animationDuration = Math.random() * 3 + 3 + "s";
             el.innerHTML = `
               <img src="${logoUrl}" style="width:${size}px; height:${size}px;" class="object-contain shrink-0" alt="${app.name}">
               <span class="text-xs font-semibold text-gray-700 whitespace-nowrap">${app.name}</span>
@@ -1005,7 +1040,7 @@ sudo usermod -aG docker $USER && newgrp docker</code
         loadRandomScreenshot();
         initHeroAnimation();
         initDockerStepToggle();
-        
+
         // Cleanup entrance animations on rotator elements to allow transitions to work later
         setTimeout(() => {
           const title = document.getElementById("hero-title");
@@ -1013,7 +1048,7 @@ sudo usermod -aG docker $USER && newgrp docker</code
           if (title) {
             title.classList.remove("animate-fade-in-up", "delay-100", "opacity-0");
             title.style.opacity = ""; // Ensure it stays visible
-          } 
+          }
           if (desc) {
             desc.classList.remove("animate-fade-in-up", "delay-200", "opacity-0");
             desc.style.opacity = "";
