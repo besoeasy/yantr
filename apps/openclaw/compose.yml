@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
     environment:
       HOME: /home/node
-      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-}
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-yantrxxxxxopenclaw}
     ports:
       - "18789"
       - "18790"
