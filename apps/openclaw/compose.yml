@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
     environment:
       HOME: /home/node
-      OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:-openclawonyantr9}
+      OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:-yantrclaw8}
     ports:
       - "18789"
       - "18790"
