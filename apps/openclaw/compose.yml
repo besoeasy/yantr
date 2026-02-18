@@ -1,6 +1,7 @@
 services:
   openclaw:
     image: ghcr.io/openclaw/openclaw:latest
+    command: ["node", "openclaw.mjs", "gateway", "--allow-unconfigured", "--bind", "lan"]
     container_name: openclaw
     labels:
       yantr.name: "OpenClaw"
@@ -13,20 +14,12 @@ services:
     restart: unless-stopped
     environment:
       HOME: /home/node
-      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-yantrxxxxxopenclaw}
+      OPENCLAW_GATEWAY_TOKEN: ${OPENCLAW_GATEWAY_TOKEN:-openclaw-change-this-token}
     ports:
       - "18789"
       - "18790"
     volumes:
       - openclahome:/home/node/
-    command:
-      - node
-      - dist/index.js
-      - gateway
-      - --bind
-      - lan
-      - --port
-      - "18789"
 
 volumes:
   openclahome:
