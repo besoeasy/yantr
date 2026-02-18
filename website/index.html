@@ -108,8 +108,8 @@
   <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
     <div class="absolute inset-0 -z-10 bg-grid-pattern [mask-image:linear-gradient(to_bottom,white,transparent)] h-[900px] pointer-events-none"></div>
     
-    <!-- Hero Background Animation Container -->
-    <div id="hero-stars" class="absolute top-0 left-0 w-full h-[1000px] overflow-hidden -z-10 [mask-image:linear-gradient(to_bottom,black_20%,transparent)] pointer-events-none"></div>
+    <!-- Full-page Background Animation Container -->
+    <div id="hero-stars" class="absolute top-0 left-0 w-full overflow-hidden -z-10 pointer-events-none" style="height: 100%;"></div>
 
     <!-- Header -->
     <header class="sticky top-0 z-50 glass-effect border-b border-gray-100/50">
@@ -122,6 +122,16 @@
           </nav>
         </div>
         <div class="flex items-center gap-4">
+          <a
+            href="https://t.me/+h4RvCk63PxUyODQ1"
+            target="_blank"
+            class="hidden sm:flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 text-sm font-bold hover:bg-gray-50 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            Telegram
+          </a>
           <a
             href="https://github.com/besoeasy/yantr"
             target="_blank"
@@ -925,33 +935,34 @@ sudo usermod -aG docker $USER && newgrp docker</code
           const apps = data.apps;
           if (!apps || !apps.length) return;
 
-          const starCount = 35;
+          const starCount = 60;
           const appsWithLogo = apps.filter((app) => app.logo);
           const selectedApps = getRandomUniqueItems(appsWithLogo, starCount);
 
-          for (const app of selectedApps) {
-            const logoUrl = app.logo
-              ? getLogoUrl(app)
-              : null;
+          // Match container height to full document height
+          const docHeight = document.documentElement.scrollHeight;
+          container.style.height = docHeight + "px";
 
+          for (const app of selectedApps) {
+            const logoUrl = app.logo ? getLogoUrl(app) : null;
             if (!logoUrl) continue;
 
             const el = document.createElement("div");
             el.className = "star-icon absolute flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/40 backdrop-blur-md shadow-sm border border-white/20";
-            
-            // Random positioning constrained to viewport width
-            el.style.left = Math.floor(Math.random() * 90) + 5 + "%"; 
-            el.style.top = Math.floor(Math.random() * 90) + 5 + "%";
-            
+
+            // Spread icons across full document width and height
+            el.style.left = Math.floor(Math.random() * 88) + 2 + "%";
+            el.style.top = Math.floor(Math.random() * docHeight) + "px";
+
             const size = Math.floor(Math.random() * 8) + 16; // 16px - 24px icon size
-            
+
             el.style.animationDelay = (Math.random() * 5) + "s";
             el.style.animationDuration = (Math.random() * 3 + 3) + "s";
             el.innerHTML = `
               <img src="${logoUrl}" style="width:${size}px; height:${size}px;" class="object-contain shrink-0" alt="${app.name}">
               <span class="text-xs font-semibold text-gray-700 whitespace-nowrap">${app.name}</span>
             `;
-            
+
             container.appendChild(el);
           }
         } catch (e) {

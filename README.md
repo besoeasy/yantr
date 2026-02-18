@@ -8,8 +8,6 @@
 [![Vue](https://img.shields.io/badge/Vue-3-42b883?style=for-the-badge&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![License](https://img.shields.io/badge/License-ISC-blue.svg?style=for-the-badge)](LICENSE)
 
-[![Join Telegram](https://img.shields.io/badge/Join%20Telegram-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/+h4RvCk63PxUyODQ1)
-
 Run 100+ powerful applications on-demand, without buying extra hardware or replacing your OS. Yantr turns the machine you already have into a self-hosted homelab, while keeping every app isolated: it never touches your host filesystem and stores data only in Docker volumes. **First platform to ship a complete AI agent suite** with Ollama, Open WebUI, Perplexica, OpenCode, and more—each in its own isolated environment. If you like Umbrel but do not want an OS takeover, Yantr gives you the same app-store flow on the machine you already use.
 
 [🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🤖 AI Agents](#-complete-ai-agent-ecosystem) • [🛠️ Apps](#%EF%B8%8F-app-catalog) • [🎥 Demo Video](https://media.primal.net/uploads2/4/88/71/4887131c91f8868696e1b899085481bd22b016f6a7f936fb3f76e746d63fc119.mp4) • [💬 Issues](https://github.com/besoeasy/yantr/issues)
