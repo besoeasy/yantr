@@ -1,7 +1,6 @@
 services:
   openclaw:
-    image: ghcr.io/openclaw/openclaw:latest
-    command: ["node", "openclaw.mjs", "gateway", "--allow-unconfigured", "--bind", "lan"]
+    image: ghcr.io/getumbrel/openclaw-umbrel:2026.2.17
     container_name: openclaw
     labels:
       yantr.name: "OpenClaw"
@@ -12,14 +11,13 @@ services:
       yantr.website: "https://openclaw.ai"
     init: true
     restart: unless-stopped
-    environment:
-      HOME: /home/node
-      OPENCLAW_GATEWAY_PASSWORD: ${OPENCLAW_GATEWAY_PASSWORD:-yantrclaw8}
     ports:
       - "18789"
       - "18790"
     volumes:
-      - openclahome:/home/node/
+      - openclawdata:/data
+      - openclawlinuxbrew:/home/linuxbrew
 
 volumes:
-  openclahome:
+  openclawdata:
+  openclawlinuxbrew:
