@@ -133,11 +133,6 @@ onMounted(() => {
                 style="transition-delay: 140ms"
                 >R</span
               >
-              <span
-                class="block will-change-transform transition-transform duration-300 ease-out group-hover:-translate-y-[calc(var(--sidebar-size)*0.03)] group-hover:scale-110 group-hover:rotate-6 group-focus-visible:-translate-y-[calc(var(--sidebar-size)*0.03)] group-focus-visible:scale-110 group-focus-visible:rotate-6"
-                style="transition-delay: 175ms"
-                >A</span
-              >
             </span>
           </a>
         </div>
