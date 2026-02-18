@@ -5,7 +5,7 @@ import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from
 import { formatDuration } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
-import YantrContainersGrid from "../components/home/YantrContainersGrid.vue";
+import YantraContainersGrid from "../components/home/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
 import SystemCleaner from "../components/SystemCleaner.vue";
@@ -334,7 +334,7 @@ onUnmounted(() => {
               <MinioStatusCard />
             </div>
 
-            <YantrContainersGrid
+            <YantraContainersGrid
               v-if="showYantrApps && yantrContainers.length > 0"
               :containers="yantrContainers"
               :format-uptime="formatUptime"
