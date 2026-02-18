@@ -228,9 +228,10 @@
                   <div class="text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">Step 1</div>
                   <div class="text-xs sm:text-sm text-zinc-200 font-semibold">Install Docker</div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
-                  <code class="block w-full max-w-full min-w-0 text-xs sm:text-sm text-zinc-300 font-mono overflow-x-auto whitespace-pre hide-scrollbar pr-0 sm:pr-4 leading-relaxed"
-                    >curl -fsSL https://get.docker.com | sudo sh sudo usermod -aG docker $USER && newgrp docker</code
+                <div class="flex flex-col sm:flex-row items-start justify-between gap-3 min-w-0">
+                  <code class="block w-full max-w-full min-w-0 text-xs sm:text-sm text-zinc-300 font-mono whitespace-pre-wrap break-all leading-relaxed pr-0 sm:pr-4"
+                    >curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker $USER && newgrp docker</code
                   >
                   <button
                     onclick="navigator.clipboard.writeText('curl -fsSL https://get.docker.com | sudo sh\nsudo usermod -aG docker $USER && newgrp docker')"
@@ -254,10 +255,11 @@
                   <div class="text-[11px] uppercase tracking-[0.18em] text-zinc-500 font-semibold">Step 2</div>
                   <div class="text-xs sm:text-sm text-zinc-100 font-semibold">Run Yantr</div>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start justify-between gap-3">
-                  <code class="block w-full max-w-full min-w-0 text-xs sm:text-sm text-zinc-200 font-mono overflow-x-auto whitespace-pre hide-scrollbar pr-0 sm:pr-4 leading-relaxed"
-                    >docker run -d --name yantr -p 80:5252 -p 443:5252 \ -v /var/run/docker.sock:/var/run/docker.sock \ --restart unless-stopped
-                    ghcr.io/besoeasy/yantr</code
+                <div class="flex flex-col sm:flex-row items-start justify-between gap-3 min-w-0">
+                  <code class="block w-full max-w-full min-w-0 text-xs sm:text-sm text-zinc-200 font-mono whitespace-pre-wrap break-all leading-relaxed pr-0 sm:pr-4"
+                    >docker run -d --name yantr -p 80:5252 -p 443:5252 \
+-v /var/run/docker.sock:/var/run/docker.sock \
+--restart unless-stopped ghcr.io/besoeasy/yantr</code
                   >
                   <button
                     onclick="
