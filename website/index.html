@@ -82,6 +82,27 @@
       .delay-100 { animation-delay: 100ms; }
       .delay-200 { animation-delay: 200ms; }
       .delay-300 { animation-delay: 300ms; }
+      @keyframes slideInSoft {
+        from { opacity: 0; transform: translateY(14px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes pulseGlow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06); }
+        50% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+      }
+      @keyframes floatY {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-4px); }
+      }
+      .animate-slide-in-soft {
+        animation: slideInSoft 700ms ease-out forwards;
+      }
+      .animate-pulse-glow {
+        animation: pulseGlow 2.6s ease-in-out infinite;
+      }
+      .animate-float-y {
+        animation: floatY 3.2s ease-in-out infinite;
+      }
     </style>
   </head>
   <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
@@ -224,6 +245,52 @@ sudo usermod -aG docker $USER && newgrp docker</code
         </div>
       </div>
 
+      <!-- Today's Featured App -->
+      <div class="pt-24" id="featured-app">
+        <div class="mb-8 border-b border-gray-200 pb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <p class="text-xs uppercase tracking-[0.2em] text-gray-500 mb-2 font-bold">Daily Spotlight</p>
+            <h2 class="text-3xl sm:text-4xl font-bold font-sans tracking-tight">Today's Featured App</h2>
+          </div>
+          <p class="text-sm text-gray-500 font-mono" id="featured-app-date">Loading today's date...</p>
+        </div>
+
+        <div
+          id="featured-app-card"
+          class="opacity-0 translate-y-4 transition-all duration-700 border border-gray-200 bg-white rounded-2xl p-6 sm:p-8 shadow-xl ring-1 ring-gray-900/5 overflow-hidden relative"
+        >
+          <div class="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-gray-100 blur-3xl animate-pulse"></div>
+          <div class="relative z-10 space-y-5">
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-2xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden animate-float-y">
+                  <img id="featured-app-logo" alt="Featured app logo" class="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h3 id="featured-app-name" class="text-2xl sm:text-3xl font-bold font-sans tracking-tight">Loading...</h3>
+                  <p id="featured-app-id" class="text-xs text-gray-500 font-mono uppercase tracking-wider mt-1"></p>
+                </div>
+              </div>
+
+              <p id="featured-app-description" class="text-gray-600 text-base leading-relaxed font-sans"></p>
+
+              <div class="flex flex-wrap items-center gap-2" id="featured-app-categories"></div>
+
+              <div class="flex flex-wrap gap-3">
+                <a
+                  id="featured-app-website"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 bg-black text-white px-4 py-2 text-sm font-bold rounded-lg hover:bg-gray-800 transition-all duration-300 animate-pulse-glow"
+                >
+                  Visit Website
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Apps Section -->
       <div class="pt-32" id="apps">
         <div class="flex items-end justify-between mb-8 border-b border-gray-200 pb-4">
@@ -295,6 +362,93 @@ sudo usermod -aG docker $USER && newgrp docker</code
         return shuffled.slice(0, Math.min(count, shuffled.length));
       }
 
+      function getLogoUrl(app) {
+        return app.logo
+          ? app.logo.startsWith("http")
+            ? app.logo
+            : `https://ipfs.io/ipfs/${app.logo}`
+          : `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
+      }
+
+      function formatLocalDateKey(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      async function sha256Hex(value) {
+        const bytes = new TextEncoder().encode(value);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
+        return Array.from(new Uint8Array(hashBuffer))
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      function computeDeterministicIndex(hashHex, length) {
+        if (!length) return 0;
+        const hashChunk = hashHex.slice(0, 12);
+        const numeric = Number.parseInt(hashChunk, 16);
+        return numeric % length;
+      }
+
+      async function loadFeaturedApp() {
+        try {
+          const response = await fetch("./apps.json");
+          const data = await response.json();
+          const apps = data.apps;
+          if (!apps || apps.length === 0) return;
+
+          const dateKey = formatLocalDateKey(new Date());
+          const hash = await sha256Hex(dateKey);
+          const index = computeDeterministicIndex(hash, apps.length);
+          const featuredApp = apps[index];
+
+          const dateEl = document.getElementById("featured-app-date");
+          const cardEl = document.getElementById("featured-app-card");
+          const logoEl = document.getElementById("featured-app-logo");
+          const nameEl = document.getElementById("featured-app-name");
+          const idEl = document.getElementById("featured-app-id");
+          const descEl = document.getElementById("featured-app-description");
+          const categoriesEl = document.getElementById("featured-app-categories");
+          const websiteEl = document.getElementById("featured-app-website");
+
+          dateEl.textContent = `Date: ${dateKey}`;
+          logoEl.src = getLogoUrl(featuredApp);
+          nameEl.textContent = featuredApp.name || "Unknown app";
+          idEl.textContent = featuredApp.id ? `ID: ${featuredApp.id}` : "";
+          descEl.textContent = featuredApp.description || "No description available.";
+          websiteEl.href = featuredApp.website || "#";
+          websiteEl.classList.toggle("pointer-events-none", !featuredApp.website);
+          websiteEl.classList.toggle("opacity-60", !featuredApp.website);
+
+          categoriesEl.innerHTML = "";
+          const categories = Array.isArray(featuredApp.category) ? featuredApp.category : [];
+          if (categories.length === 0) {
+            const emptyCategory = document.createElement("span");
+            emptyCategory.className = "text-xs text-gray-500 font-mono";
+            emptyCategory.textContent = "No category labels";
+            categoriesEl.appendChild(emptyCategory);
+          } else {
+            categories.forEach((category, idx) => {
+              const tag = document.createElement("span");
+              tag.className = "text-xs font-mono uppercase tracking-wider border border-gray-200 bg-gray-50 rounded-full px-3 py-1 opacity-0 translate-y-2 transition-all duration-500";
+              tag.textContent = category;
+              categoriesEl.appendChild(tag);
+              setTimeout(() => {
+                tag.classList.remove("opacity-0", "translate-y-2");
+              }, idx * 80);
+            });
+          }
+
+          requestAnimationFrame(() => {
+            cardEl.classList.remove("opacity-0", "translate-y-4");
+          });
+        } catch (error) {
+          console.error("Failed to load featured app:", error);
+        }
+      }
+
       async function loadApps() {
         try {
           const response = await fetch("./apps.json");
@@ -315,11 +469,7 @@ sudo usermod -aG docker $USER && newgrp docker</code
             card.className =
               "border border-gray-200 bg-white p-5 hover:border-black transition-all duration-1000 group flex flex-col h-full opacity-0 -translate-y-4 cursor-pointer";
 
-            const logoUrl = app.logo
-              ? app.logo.startsWith("http")
-                ? app.logo
-                : `https://ipfs.io/ipfs/${app.logo}`
-              : `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
+            const logoUrl = getLogoUrl(app);
 
             card.innerHTML = `
                         <div class="flex items-center gap-3 mb-3">
@@ -771,9 +921,7 @@ sudo usermod -aG docker $USER && newgrp docker</code
 
           for (const app of selectedApps) {
             const logoUrl = app.logo
-              ? app.logo.startsWith("http")
-                ? app.logo
-                : `https://ipfs.io/ipfs/${app.logo}`
+              ? getLogoUrl(app)
               : null;
 
             if (!logoUrl) continue;
@@ -802,6 +950,7 @@ sudo usermod -aG docker $USER && newgrp docker</code
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        loadFeaturedApp();
         loadApps();
         loadStars();
         animateFeatures();
