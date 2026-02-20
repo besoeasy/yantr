@@ -322,31 +322,6 @@
         </div>
       </div>
 
-      <!-- App Catalog + Featured App (combined) -->
-      <div class="pt-12 sm:pt-24" id="apps">
-        <div class="flex flex-wrap items-end justify-between gap-3 mb-8 border-b border-gray-200 pb-4">
-          <h2 class="text-2xl font-bold font-sans">App Catalog</h2>
-          <a href="./catalog/" class="text-sm font-medium hover:underline">View all apps -></a>
-        </div>
-
-        <div class="space-y-4">
-          <div class="overflow-hidden py-2">
-            <div class="flex items-center gap-3 px-3 app-marquee-track app-marquee-left" id="app-marquee-top"></div>
-          </div>
-
-          <!-- App of the Day -->
-          <div id="featured-app-card" class="opacity-0 translate-y-4 transition-all duration-700 w-full px-3">
-            <div class="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 lg:p-6 shadow-sm hover:shadow-xl transition-all duration-500">
-              <div id="app-of-day"></div>
-            </div>
-          </div>
-
-          <div class="overflow-hidden py-2">
-            <div class="flex items-center gap-3 px-3 app-marquee-track app-marquee-right" id="app-marquee-bottom"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Screenshot Section -->
       <div class="py-12 sm:py-20 border-t border-gray-100" id="screenshots">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
@@ -412,82 +387,6 @@
         `;
       }
 
-      function formatLocalDateKey(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      }
-
-      async function sha256Hex(value) {
-        const bytes = new TextEncoder().encode(value);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
-        return Array.from(new Uint8Array(hashBuffer))
-          .map((byte) => byte.toString(16).padStart(2, "0"))
-          .join("");
-      }
-
-      function computeDeterministicIndex(hashHex, length) {
-        if (!length) return 0;
-        const hashChunk = hashHex.slice(0, 12);
-        const numeric = Number.parseInt(hashChunk, 16);
-        return numeric % length;
-      }
-
-      async function loadFeaturedApp() {
-        try {
-          const response = await fetch("./apps.json");
-          const data = await response.json();
-          const apps = data.apps;
-          if (!apps || apps.length === 0) return;
-
-          const dateKey = formatLocalDateKey(new Date());
-          const hash = await sha256Hex(`${dateKey}-app-of-the-day`);
-          const index = computeDeterministicIndex(hash, apps.length);
-          const featuredApp = apps[index];
-
-          const cardEl = document.getElementById("featured-app-card");
-          const contentEl = document.getElementById("app-of-day");
-          if (!cardEl || !contentEl) return;
-
-          const logoUrl = getLogoUrl(featuredApp);
-          const categories = Array.isArray(featuredApp.category) ? featuredApp.category : [];
-          const categoryTags = categories
-            .slice(0, 3)
-            .map((item) => {
-              return `<span class="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md border border-gray-200 text-gray-600">${item}</span>`;
-            })
-            .join("");
-
-          contentEl.innerHTML = `
-            <div class="flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
-              <div class="flex items-start gap-4 sm:gap-5 min-w-0 flex-1">
-                <div class="relative shrink-0">
-                  <span class="absolute -top-2 -right-2 text-[10px] uppercase tracking-widest bg-black text-white px-2 py-1 rounded-md">Today</span>
-                  <img src="${logoUrl}" alt="${featuredApp.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-gray-200 bg-gray-50" />
-                </div>
-                <div class="min-w-0">
-                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">App of the day</p>
-                  <h3 class="text-2xl sm:text-3xl font-bold font-sans leading-tight truncate">${featuredApp.name || "Unknown app"}</h3>
-                  <p class="text-sm sm:text-base text-gray-500 mt-2 leading-relaxed">${featuredApp.description || "No description available."}</p>
-                  ${categoryTags ? `<div class="flex flex-wrap gap-2 mt-3">${categoryTags}</div>` : ""}
-                </div>
-              </div>
-              <div class="flex flex-col items-start lg:items-end gap-3 shrink-0">
-                <p class="text-xs text-gray-500">Rotates daily based on your local date.</p>
-                <a href="./apps/${featuredApp.id}/" class="inline-flex items-center gap-2 text-sm font-semibold bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">Explore app →</a>
-              </div>
-            </div>
-          `;
-
-          requestAnimationFrame(() => {
-            cardEl.classList.remove("opacity-0", "translate-y-4");
-          });
-        } catch (error) {
-          console.error("Failed to load featured app:", error);
-        }
-      }
-
       async function loadHeroAppShowcase() {
         try {
           const response = await fetch("./apps.json");
@@ -520,33 +419,6 @@
           renderMarqueeRow(rowTwo, rows[1]);
         } catch (error) {
           console.error("Failed to load hero app showcase:", error);
-        }
-      }
-
-      async function loadApps() {
-        try {
-          const response = await fetch("./apps.json");
-          const data = await response.json();
-          const apps = data.apps;
-          if (!apps || apps.length === 0) return;
-
-          const topRow = document.getElementById("app-marquee-top");
-          const bottomRow = document.getElementById("app-marquee-bottom");
-          if (!topRow || !bottomRow) return;
-
-          const rowSize = Math.min(14, apps.length);
-          const topApps = getRandomUniqueItems(apps, rowSize);
-          const bottomApps = getRandomUniqueItems(apps, rowSize);
-
-          const renderMarqueeRow = (element, list) => {
-            const singleSet = list.map((app) => createAppPillMarkup(app)).join("");
-            element.innerHTML = singleSet + singleSet;
-          };
-
-          renderMarqueeRow(topRow, topApps);
-          renderMarqueeRow(bottomRow, bottomApps);
-        } catch (error) {
-          console.error("Failed to load apps:", error);
         }
       }
 
@@ -1018,8 +890,6 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadHeroAppShowcase();
-        loadFeaturedApp();
-        loadApps();
         loadStars();
         loadContributors();
         animateFeatures();
