@@ -309,10 +309,10 @@
             <div class="flex items-center gap-3 px-3 app-marquee-track app-marquee-left" id="app-marquee-top"></div>
           </div>
 
-          <!-- Today's picks -->
+          <!-- App of the Day -->
           <div id="featured-app-card" class="opacity-0 translate-y-4 transition-all duration-700 w-full px-3">
-            <div class="overflow-hidden border-y border-gray-200 py-2">
-              <div id="todays-picks-list" class="flex items-stretch gap-3 app-marquee-track app-marquee-left"></div>
+            <div class="rounded-2xl border border-gray-200 bg-white p-4 sm:p-5 lg:p-6 shadow-sm hover:shadow-xl transition-all duration-500">
+              <div id="app-of-day"></div>
             </div>
           </div>
 
@@ -404,46 +404,43 @@
           if (!apps || apps.length === 0) return;
 
           const dateKey = formatLocalDateKey(new Date());
-          const pickCount = Math.min(3, apps.length);
-          const usedIndexes = new Set();
-          const picks = [];
-
-          for (let i = 0; i < pickCount; i++) {
-            const hash = await sha256Hex(`${dateKey}-pick-${i}`);
-            let index = computeDeterministicIndex(hash, apps.length);
-
-            while (usedIndexes.has(index)) {
-              index = (index + 1) % apps.length;
-            }
-
-            usedIndexes.add(index);
-            picks.push(apps[index]);
-          }
+          const hash = await sha256Hex(`${dateKey}-app-of-the-day`);
+          const index = computeDeterministicIndex(hash, apps.length);
+          const featuredApp = apps[index];
 
           const cardEl = document.getElementById("featured-app-card");
-          const listEl = document.getElementById("todays-picks-list");
-          if (!cardEl || !listEl) return;
+          const contentEl = document.getElementById("app-of-day");
+          if (!cardEl || !contentEl) return;
 
-          const createPickMarkup = (app) => {
-            const logoUrl = getLogoUrl(app);
-            return `
-                <a href="./apps/${app.id}/" class="group inline-flex items-start gap-3 border border-gray-100 bg-white rounded-2xl px-4 py-3 sm:px-5 sm:py-4 hover:border-black transition-all duration-500 hover:shadow-xl hover:-translate-y-1 min-w-[240px] max-w-[280px] sm:min-w-[300px] sm:max-w-[360px] lg:min-w-[380px] lg:max-w-[460px]">
-                  <img src="${logoUrl}" alt="${app.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-gray-100" />
-                  <span class="min-w-0">
-                    <span class="block text-base font-bold font-sans text-gray-900 group-hover:text-black truncate">${app.name || "Unknown app"}</span>
-                    <span class="block text-sm text-gray-500 leading-relaxed mt-1 app-description-clamp">${app.description || "No description available."}</span>
-                  </span>
-                </a>
-              `;
-          };
-
-          const singleSet = picks
-            .map((app) => {
-              return createPickMarkup(app);
+          const logoUrl = getLogoUrl(featuredApp);
+          const categories = Array.isArray(featuredApp.category) ? featuredApp.category : [];
+          const categoryTags = categories
+            .slice(0, 3)
+            .map((item) => {
+              return `<span class="text-[10px] uppercase tracking-wider px-2 py-1 rounded-md border border-gray-200 text-gray-600">${item}</span>`;
             })
             .join("");
 
-          listEl.innerHTML = singleSet + singleSet + singleSet;
+          contentEl.innerHTML = `
+            <div class="flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
+              <div class="flex items-start gap-4 sm:gap-5 min-w-0 flex-1">
+                <div class="relative shrink-0">
+                  <span class="absolute -top-2 -right-2 text-[10px] uppercase tracking-widest bg-black text-white px-2 py-1 rounded-md">Today</span>
+                  <img src="${logoUrl}" alt="${featuredApp.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-gray-200 bg-gray-50" />
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 mb-2">App of the day</p>
+                  <h3 class="text-2xl sm:text-3xl font-bold font-sans leading-tight truncate">${featuredApp.name || "Unknown app"}</h3>
+                  <p class="text-sm sm:text-base text-gray-500 mt-2 leading-relaxed">${featuredApp.description || "No description available."}</p>
+                  ${categoryTags ? `<div class="flex flex-wrap gap-2 mt-3">${categoryTags}</div>` : ""}
+                </div>
+              </div>
+              <div class="flex flex-col items-start lg:items-end gap-3 shrink-0">
+                <p class="text-xs text-gray-500">Rotates daily based on your local date.</p>
+                <a href="./apps/${featuredApp.id}/" class="inline-flex items-center gap-2 text-sm font-semibold bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">Explore app →</a>
+              </div>
+            </div>
+          `;
 
           requestAnimationFrame(() => {
             cardEl.classList.remove("opacity-0", "translate-y-4");
