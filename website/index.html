@@ -291,6 +291,18 @@
         transform: translateX(-50%);
         animation: archFlowVertical 3.4s linear infinite;
       }
+      .perspective-1000 {
+        perspective: 1000px;
+      }
+      .preserve-3d {
+        transform-style: preserve-3d;
+      }
+      .backface-hidden {
+        backface-visibility: hidden;
+      }
+      .rotate-y-180 {
+        transform: rotateY(180deg);
+      }
     </style>
   </head>
   <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white relative">
@@ -423,13 +435,16 @@
       </div>
 
       <!-- Features Section -->
-      <div class="max-w-6xl pt-8 sm:pt-12" id="features">
-        <h2 class="text-2xl font-bold font-sans mb-6">Features</h2>
-        <p class="text-gray-600 mb-10 max-w-2xl font-sans">
-          Yantr is an open source control plane that helps you manage self-hosted applications on your server, laptop, or cloud instance.
-        </p>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-12 sm:pb-20" id="features">
+        <div class="text-center mb-16 sm:mb-20">
+          <span class="text-blue-600 font-bold tracking-wider uppercase text-xs mb-2 block">Powerful Capabilities</span>
+          <h2 class="text-3xl sm:text-5xl font-bold font-sans mb-6 text-gray-900 tracking-tight">Everything you need to run a homelab</h2>
+          <p class="text-lg text-gray-500 max-w-2xl mx-auto font-sans leading-relaxed">
+            Yantr gives you the power of a cloud platform on your own hardware. No PhD in Kubernetes required.
+          </p>
+        </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5" id="features-list">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8" id="features-grid-container">
           <!-- Features loaded via JS -->
         </div>
       </div>
@@ -734,169 +749,8 @@
         }
       }
 
-      function animateFeatures() {
-        const allFeatures = [
-          {
-            emoji: "🐳",
-            title: "Docker Native",
-            description: "Runs alongside your OS. No custom ISO or system takeover required.",
-          },
-          {
-            emoji: "⚡",
-            title: "One-Click Deploys",
-            description: "Instant access to popular self-hosted apps with clean defaults and smart presets.",
-          },
-          {
-            emoji: "⏳",
-            title: "Temporary Installations",
-            description: "Set expiration times and auto-delete apps when you're done testing.",
-          },
-          {
-            emoji: "🧩",
-            title: "Multiple Instances",
-            description: "Run the same app multiple times with different configurations.",
-          },
-          {
-            emoji: "📁",
-            title: "Direct Volume Access",
-            description: "Browse and manage app data files directly from the UI with built-in file browser.",
-          },
-          {
-            emoji: "💾",
-            title: "Volume Backup & Restore",
-            description: "Backup and restore Docker volumes to S3/MinIO with a single click for easy data migration.",
-          },
-          {
-            emoji: "🧹",
-            title: "Auto-Cleanup",
-            description: "Automatically removes old unused Docker images (10+ days) to free disk space.",
-          },
-          {
-            emoji: "✨",
-            title: "Premium UI",
-            description: "Modern Vue.js interface that feels fast and polished with dark mode support.",
-          },
-          {
-            emoji: "🛡️",
-            title: "Filesystem Safe",
-            description: "Never modifies your host filesystem. App data lives in isolated Docker volumes.",
-          },
-          {
-            emoji: "🧠",
-            title: "Auto Configuration",
-            description: "Automatic port mapping and smart defaults—launch apps without spending 10 minutes on setup.",
-          },
-          {
-            emoji: "🆕",
-            title: "Always Latest Apps",
-            description: "Ships the newest app releases regardless of your Yantr version—updates from source.",
-          },
-          {
-            emoji: "🗑️",
-            title: "Zero Commitment",
-            description: "Install, use, and delete with no residue. Zero modification to your host system.",
-          },
-          {
-            emoji: "🖥️",
-            title: "No OS Replacement",
-            description: "Lightweight app store that runs alongside your existing operating system.",
-          },
-          {
-            emoji: "📦",
-            title: "100% Docker Compose",
-            description: "Generates standard Docker Compose files you can take anywhere. No vendor lock-in.",
-          },
-          {
-            emoji: "🎛️",
-            title: "On-Demand Resources",
-            description: "Nothing runs unless you start it. Only use resources for apps you actually need.",
-          },
-          {
-            emoji: "🤖",
-            title: "Complete AI Agent Suite",
-            description: "First platform to ship isolated AI agents: Ollama, Open WebUI, Perplexica, OpenCode, and more.",
-          },
-          {
-            emoji: "🧠",
-            title: "GPU Passthrough",
-            description: "First-class support for local LLMs with GPU acceleration for Ollama and AI workloads.",
-          },
-          {
-            emoji: "🔗",
-            title: "WebDAV Support",
-            description: "Built-in WebDAV access for syncing files between volumes or machines using rclone.",
-          },
-          {
-            emoji: "🚀",
-            title: "Single Docker Command",
-            description: "Launch Yantr in seconds with one command. Access at http://localhost immediately.",
-          },
-          {
-            emoji: "🔒",
-            title: "Isolated Containers",
-            description: "No Python environment conflicts, CUDA version mismatches, or shared dependency hell.",
-          },
-          {
-            emoji: "🧭",
-            title: "100+ App Catalog",
-            description: "Curated catalog of high-quality self-hosted tools across AI, media, privacy, and more.",
-          },
-          {
-            emoji: "🌍",
-            title: "Remote Access Ready",
-            description: "Works seamlessly with Tailscale for secure remote access from anywhere.",
-          },
-          {
-            emoji: "🗂️",
-            title: "Volume Browser",
-            description: "Browse and manage persistent data directly in your browser with integrated dufs server.",
-          },
-          {
-            emoji: "🔄",
-            title: "Data Migration",
-            description: "Easy backup and restore for moving volumes between machines or creating snapshots.",
-          },
-          {
-            emoji: "🧬",
-            title: "Cross-Platform",
-            description: "Runs on Linux, macOS, and Windows with Docker Desktop. Use your existing hardware.",
-          },
-        ];
-
-        const featuresList = document.getElementById("features-list");
-        if (!featuresList) return;
-        featuresList.innerHTML = "";
-
-        const createFeature = (feature) => {
-          const div = document.createElement("div");
-          div.className =
-            "group border border-gray-200 bg-white p-5 sm:p-6 rounded-2xl hover:border-black hover:shadow-xl transition-all duration-500 opacity-0 translate-y-4";
-          div.innerHTML = `
-            <div class="flex items-start gap-3">
-              <span class="text-2xl leading-none">${feature.emoji || "✨"}</span>
-              <div>
-                <h3 class="font-bold text-black font-sans mb-1">${feature.title}</h3>
-                <p class="text-sm text-gray-600 font-sans leading-relaxed">${feature.description}</p>
-              </div>
-            </div>
-          `;
-
-          requestAnimationFrame(() => {
-            div.classList.remove("opacity-0", "translate-y-4");
-          });
-
-          return div;
-        };
-
-        allFeatures.forEach((feature, index) => {
-          setTimeout(() => {
-            featuresList.appendChild(createFeature(feature));
-          }, index * 40);
-        });
-      }
-
-      function loadDetailedFeatures() {
-        const features = [
+      function initFeatures() {
+        const svgFeatures = [
           {
             icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>`,
             title: "Zero OS Lock-in",
@@ -913,7 +767,7 @@
             desc: "Set expiration timers for apps. Great for testing tools without cluttering your system.",
           },
           {
-            icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`,
+            icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>`,
             title: "Isolated AI Stack",
             desc: "First-class support for AI agents. No Python conflicts, no CUDA version mismatches.",
           },
@@ -944,55 +798,226 @@
           },
         ];
 
+        // Extended pool of features using emojis
+        const emojiFeatures = [
+          {
+            emoji: "🐳",
+            title: "Docker Native",
+            desc: "Runs alongside your OS. No custom ISO or system takeover required.",
+          },
+          {
+            emoji: "🧩",
+            title: "Multiple Instances",
+            desc: "Run the same app multiple times with different configurations.",
+          },
+          {
+            emoji: "✨",
+            title: "Premium UI",
+            desc: "Modern Vue.js interface that feels fast and polished with dark mode support.",
+          },
+          {
+            emoji: "🧠",
+            title: "Auto Configuration",
+            desc: "Automatic port mapping and smart defaults—launch apps without spending 10 minutes on setup.",
+          },
+          {
+            emoji: "🆕",
+            title: "Always Latest Apps",
+            desc: "Ships the newest app releases regardless of your Yantr version—updates from source.",
+          },
+          {
+            emoji: "🗑️",
+            title: "Zero Commitment",
+            desc: "Install, use, and delete with no residue. Zero modification to your host system.",
+          },
+          {
+            emoji: "📦",
+            title: "100% Docker Compose",
+            desc: "Generates standard Docker Compose files you can take anywhere. No vendor lock-in.",
+          },
+          {
+            emoji: "🎛️",
+            title: "On-Demand Resources",
+            desc: "Nothing runs unless you start it. Only use resources for apps you actually need.",
+          },
+          {
+            emoji: "🤖",
+            title: "Complete AI Agent Suite",
+            desc: "First platform to ship isolated AI agents: Ollama, Open WebUI, Perplexica, OpenCode, and more.",
+          },
+          {
+            emoji: "🔗",
+            title: "WebDAV Support",
+            desc: "Built-in WebDAV access for syncing files between volumes or machines using rclone.",
+          },
+          {
+            emoji: "🚀",
+            title: "Single Docker Command",
+            desc: "Launch Yantr in seconds with one command. Access at http://localhost immediately.",
+          },
+          {
+            emoji: "🔒",
+            title: "Isolated Containers",
+            desc: "No Python environment conflicts, CUDA version mismatches, or shared dependency hell.",
+          },
+          {
+            emoji: "🧭",
+            title: "100+ App Catalog",
+            desc: "Curated catalog of high-quality self-hosted tools across AI, media, privacy, and more.",
+          },
+          {
+            emoji: "🌍",
+            title: "Remote Access Ready",
+            desc: "Works seamlessly with Tailscale or Cloudflare Tunnels for secure remote access.",
+          },
+          {
+            emoji: "🔄",
+            title: "Data Migration",
+            desc: "Easy backup and restore for moving volumes between machines or creating snapshots.",
+          },
+          {
+            emoji: "🧬",
+            title: "Cross-Platform",
+            desc: "Runs on Linux, macOS, and Windows with Docker Desktop. Use your existing hardware.",
+          },
+        ];
+
+        // Format emoji features to match svg features structure (using emoji as icon)
+        const formattedEmojiFeatures = emojiFeatures.map(f => ({
+          icon: `<span class="text-2xl">${f.emoji}</span>`,
+          title: f.title,
+          desc: f.desc,
+          isEmoji: true
+        }));
+
+        // Initial set of features (mix of SVG and emoji ones)
+        const allFeatures = [...svgFeatures, ...formattedEmojiFeatures];
+        
+        // Shuffle all features to get random initial set
+        for (let i = allFeatures.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allFeatures[i], allFeatures[j]] = [allFeatures[j], allFeatures[i]];
+        }
+
+        // Visible features (first 9)
+        const visibleFeatures = allFeatures.slice(0, 9);
+        // Hidden features (pool)
+        const hiddenFeatures = allFeatures.slice(9);
+
         const container = document.getElementById("features-grid-container");
         if (!container) return;
+        
+        container.innerHTML = "";
 
-        features.forEach((feature, index) => {
-          const card = document.createElement("div");
-          card.className =
-            "group relative p-8 bg-white border border-gray-100 rounded-2xl hover:border-black transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 opacity-0 translate-y-8";
-          card.innerHTML = `
-                <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6 group-hover:bg-black group-hover:text-white transition-colors duration-500 group-hover:scale-110 transform">
-                    ${feature.icon}
+        const FeatureCard = (feature, index) => {
+          const cardContainer = document.createElement("div");
+          cardContainer.className = "perspective-1000 group h-full";
+          cardContainer.setAttribute("data-index", index);
+          
+          // Inner container for flip effect
+          const inner = document.createElement("div");
+          inner.className = "relative w-full h-full duration-700 preserve-3d transition-all duration-500 opacity-0 translate-y-8 feature-card-inner";
+          
+          // Helper to create card face content
+          // We need at least one face to be relative to give the container height, 
+          // but for a flip card usually both need to be absolute to overlap perfectly.
+          // Solution: Set a min-h on the container or make the front face relative and the back absolute.
+          // However, for 3D flip, typically both are absolute occupying the same space.
+          // We will make the container have a fixed aspect ratio or min-height.
+          
+          const createFace = (feat, isBack = false) => `
+            <div class="${isBack ? 'absolute inset-0' : 'relative'} w-full h-full p-8 bg-white border border-gray-100 rounded-2xl hover:border-black transition-colors shadow-sm hover:shadow-xl backface-hidden flex flex-col ${isBack ? 'rotate-y-180 bg-gray-50' : ''}">
+                <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-black group-hover:scale-110 transform transition-transform duration-500">
+                    ${feat.icon}
                 </div>
-                <h3 class="text-xl font-bold font-sans mb-3 group-hover:text-black transition-colors">${feature.title}</h3>
-                <p class="text-sm text-gray-500 leading-relaxed font-sans group-hover:text-gray-700 transition-colors">${feature.desc}</p>
-                <!-- Decorative element -->
-                <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <h3 class="text-xl font-bold font-sans mb-3 text-black">${feat.title}</h3>
+                <p class="text-sm text-gray-500 leading-relaxed font-sans flex-grow">${feat.desc}</p>
+                 <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                 </div>
-            `;
-          container.appendChild(card);
+            </div>
+          `;
 
-          // Staggered Animation
-          setTimeout(() => {
-            requestAnimationFrame(() => {
-              card.classList.remove("opacity-0", "translate-y-8");
-            });
-          }, index * 100);
+          // Front Face (Initially Visible)
+          inner.innerHTML = createFace(feature) + createFace(feature, true); // Prepare back face structure
+          
+          cardContainer.appendChild(inner);
+          return { element: cardContainer, feature: feature, inner: inner };
+        };
+
+        const activeCards = visibleFeatures.map((feature, index) => {
+           const cardObj = FeatureCard(feature, index);
+           container.appendChild(cardObj.element);
+           return cardObj;
         });
-      }
 
-      function initScrollAnimations() {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                if (entry.target.id === "detailed-features") {
-                  const header = document.getElementById("features-header");
-                  if (header) header.classList.remove("opacity-0", "translate-y-4");
+        // Entrance Animation
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              activeCards.forEach((card, index) => {
+                setTimeout(() => {
+                  requestAnimationFrame(() => {
+                    card.inner.classList.remove("opacity-0", "translate-y-8");
+                  });
+                }, index * 100);
+              });
+              
+              // Start flipping after entrance
+              startFlipping();
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
 
-                  loadDetailedFeatures();
-                  observer.unobserve(entry.target);
-                }
-              }
-            });
-          },
-          { threshold: 0.1 },
-        );
+        observer.observe(container);
 
-        const section = document.getElementById("detailed-features");
-        if (section) observer.observe(section);
+        function startFlipping() {
+          setInterval(() => {
+             if (document.hidden || hiddenFeatures.length === 0) return;
+
+             // Pick a random noticeable card to flip
+             const cardIndex = Math.floor(Math.random() * activeCards.length);
+             const cardObj = activeCards[cardIndex];
+             
+             // Pick a new feature from hidden pool
+             const newFeatureIndex = Math.floor(Math.random() * hiddenFeatures.length);
+             const newFeature = hiddenFeatures[newFeatureIndex]; // Get feature
+             
+             // Swap features in pools
+             hiddenFeatures[newFeatureIndex] = cardObj.feature; // Put old feature back in pool
+             cardObj.feature = newFeature; // Update card with new feature
+
+             // Perform Flip
+             const inner = cardObj.inner;
+             const isFlipped = inner.classList.contains("rotate-y-180");
+             
+             // Update the "back" face (the one we are flipping TO)
+             const frontFace = inner.children[0];
+             const backFace = inner.children[1];
+             const nextFace = isFlipped ? frontFace : backFace;
+             
+             // Update content of the next face
+             nextFace.innerHTML = `
+                <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6 text-black group-hover:scale-110 transform transition-transform duration-500">
+                    ${newFeature.icon}
+                </div>
+                <h3 class="text-xl font-bold font-sans mb-3 text-black">${newFeature.title}</h3>
+                <p class="text-sm text-gray-500 leading-relaxed font-sans flex-grow">${newFeature.desc}</p>
+                 <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </div>
+             `;
+             
+             // Trigger rotation
+             if (isFlipped) {
+                inner.classList.remove("rotate-y-180");
+             } else {
+                inner.classList.add("rotate-y-180");
+             }
+             
+          }, 4000); // Flip every 4 seconds
+        }
       }
 
       function loadRandomScreenshot() {
@@ -1105,8 +1130,7 @@
         loadHeroAppShowcase();
         loadStars();
         loadContributors();
-        animateFeatures();
-        initScrollAnimations();
+        initFeatures();
         loadRandomScreenshot();
         initHeroAnimation();
       });
