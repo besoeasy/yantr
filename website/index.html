@@ -309,35 +309,10 @@
             <div class="flex items-center gap-3 px-3 app-marquee-track app-marquee-left" id="app-marquee-top"></div>
           </div>
 
-          <!-- Featured App -->
-          <div
-            id="featured-app-card"
-            class="group relative opacity-0 translate-y-4 transition-all duration-700 border border-gray-100 bg-white p-8 rounded-2xl flex flex-col hover:border-black hover:shadow-2xl hover:-translate-y-2 max-w-3xl mx-auto"
-          >
-            <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 font-semibold mb-6">Today's pick</p>
-
-            <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-6 overflow-hidden shrink-0 border border-gray-100">
-              <img id="featured-app-logo" alt="Featured app logo" class="w-full h-full object-cover" />
-            </div>
-
-            <h3 id="featured-app-name" class="text-xl font-bold font-sans mb-3 group-hover:text-black transition-colors">Loading...</h3>
-            <p id="featured-app-description" class="text-sm text-gray-500 leading-relaxed font-sans group-hover:text-gray-700 transition-colors flex-grow"></p>
-
-            <div class="flex flex-wrap gap-1.5 mt-4" id="featured-app-categories"></div>
-
-            <div class="mt-6 flex items-center justify-between">
-              <a
-                id="featured-app-website"
-                href="#"
-                class="inline-flex items-center gap-1.5 text-xs font-semibold font-mono uppercase tracking-wider text-gray-500 hover:text-black border border-gray-200 hover:border-gray-400 px-3 py-1.5 transition-colors"
-              >
-                Open Details <span aria-hidden="true">→</span>
-              </a>
-              <p class="text-[10px] text-gray-300 font-mono" id="featured-app-date"></p>
-            </div>
-
-            <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-              <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+          <!-- Today's picks -->
+          <div id="featured-app-card" class="opacity-0 translate-y-4 transition-all duration-700 w-full px-3">
+            <div class="overflow-hidden border-y border-gray-200 py-2">
+              <div id="todays-picks-list" class="flex items-stretch gap-3 app-marquee-track app-marquee-left"></div>
             </div>
           </div>
 
@@ -429,46 +404,46 @@
           if (!apps || apps.length === 0) return;
 
           const dateKey = formatLocalDateKey(new Date());
-          const hash = await sha256Hex(dateKey);
-          const index = computeDeterministicIndex(hash, apps.length);
-          const featuredApp = apps[index];
+          const pickCount = Math.min(3, apps.length);
+          const usedIndexes = new Set();
+          const picks = [];
 
-          const dateEl = document.getElementById("featured-app-date");
-          const cardEl = document.getElementById("featured-app-card");
-          const logoEl = document.getElementById("featured-app-logo");
-          const nameEl = document.getElementById("featured-app-name");
-          const idEl = document.getElementById("featured-app-id");
-          const descEl = document.getElementById("featured-app-description");
-          const categoriesEl = document.getElementById("featured-app-categories");
-          const websiteEl = document.getElementById("featured-app-website");
+          for (let i = 0; i < pickCount; i++) {
+            const hash = await sha256Hex(`${dateKey}-pick-${i}`);
+            let index = computeDeterministicIndex(hash, apps.length);
 
-          dateEl.textContent = dateKey;
-          logoEl.src = getLogoUrl(featuredApp);
-          nameEl.textContent = featuredApp.name || "Unknown app";
-          idEl && (idEl.textContent = featuredApp.id ? `ID: ${featuredApp.id}` : "");
-          descEl.textContent = featuredApp.description || "No description available.";
-          websiteEl.href = `./apps/${featuredApp.id}/`;
-          websiteEl.classList.remove("pointer-events-none", "opacity-60");
+            while (usedIndexes.has(index)) {
+              index = (index + 1) % apps.length;
+            }
 
-          categoriesEl.innerHTML = "";
-          const categories = Array.isArray(featuredApp.category) ? featuredApp.category : [];
-          if (categories.length === 0) {
-            const emptyCategory = document.createElement("span");
-            emptyCategory.className = "text-[10px] text-gray-300 font-mono";
-            emptyCategory.textContent = "No categories";
-            categoriesEl.appendChild(emptyCategory);
-          } else {
-            categories.forEach((category, idx) => {
-              const tag = document.createElement("span");
-              tag.className =
-                "text-[10px] font-mono uppercase tracking-wider border border-gray-100 text-gray-400 px-1.5 py-0.5 opacity-0 translate-y-2 transition-all duration-500";
-              tag.textContent = category;
-              categoriesEl.appendChild(tag);
-              setTimeout(() => {
-                tag.classList.remove("opacity-0", "translate-y-2");
-              }, idx * 80);
-            });
+            usedIndexes.add(index);
+            picks.push(apps[index]);
           }
+
+          const cardEl = document.getElementById("featured-app-card");
+          const listEl = document.getElementById("todays-picks-list");
+          if (!cardEl || !listEl) return;
+
+          const createPickMarkup = (app) => {
+            const logoUrl = getLogoUrl(app);
+            return `
+                <a href="./apps/${app.id}/" class="group inline-flex items-start gap-3 border border-gray-100 bg-white rounded-2xl px-4 py-3 sm:px-5 sm:py-4 hover:border-black transition-all duration-500 hover:shadow-xl hover:-translate-y-1 min-w-[240px] max-w-[280px] sm:min-w-[300px] sm:max-w-[360px] lg:min-w-[380px] lg:max-w-[460px]">
+                  <img src="${logoUrl}" alt="${app.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-gray-100" />
+                  <span class="min-w-0">
+                    <span class="block text-base font-bold font-sans text-gray-900 group-hover:text-black truncate">${app.name || "Unknown app"}</span>
+                    <span class="block text-sm text-gray-500 leading-relaxed mt-1 app-description-clamp">${app.description || "No description available."}</span>
+                  </span>
+                </a>
+              `;
+          };
+
+          const singleSet = picks
+            .map((app) => {
+              return createPickMarkup(app);
+            })
+            .join("");
+
+          listEl.innerHTML = singleSet + singleSet + singleSet;
 
           requestAnimationFrame(() => {
             cardEl.classList.remove("opacity-0", "translate-y-4");
