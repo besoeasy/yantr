@@ -167,10 +167,10 @@
         will-change: transform;
       }
       .app-marquee-left {
-        animation: marquee-left 55s linear infinite;
+        animation: marquee-left 200s linear infinite;
       }
       .app-marquee-right {
-        animation: marquee-right 55s linear infinite;
+        animation: marquee-right 200s linear infinite;
       }
       .app-description-clamp {
         display: -webkit-box;
@@ -285,6 +285,31 @@
         </div>
       </div>
 
+      <!-- Full-width App Showcase -->
+      <div id="hero-apps-showcase" class="relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-8 sm:py-10 border-y border-gray-100 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 mb-5 sm:mb-6">
+        </div>
+
+        <div class="space-y-3 sm:space-y-4">
+          <div class="overflow-hidden py-1.5 sm:py-2">
+            <div class="flex items-center gap-3 px-3 sm:px-4 app-marquee-track app-marquee-left" id="hero-app-marquee-1"></div>
+          </div>
+          <div class="overflow-hidden py-1.5 sm:py-2">
+            <div class="flex items-center gap-3 px-3 sm:px-4 app-marquee-track app-marquee-right" id="hero-app-marquee-2"></div>
+          </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 mt-6 sm:mt-8 flex justify-center">
+          <a
+            href="./catalog/"
+            class="inline-flex items-center gap-2 rounded-xl border border-black bg-black text-white px-5 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base font-semibold hover:bg-white hover:text-black transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
+          >
+            Open catalog
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+
       <!-- What is Yantr Section -->
       <div class="max-w-4xl pt-8 sm:pt-12" id="features">
         <h2 class="text-2xl font-bold font-sans mb-6">What is Yantr?</h2>
@@ -374,6 +399,19 @@
           : `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
       }
 
+      function createAppPillMarkup(app) {
+        const logoUrl = getLogoUrl(app);
+        return `
+          <a href="./apps/${app.id}/" class="group relative inline-flex items-start gap-3 border border-gray-100 bg-white rounded-2xl px-4 py-3 sm:px-5 sm:py-4 hover:border-black transition-all duration-500 hover:shadow-xl hover:-translate-y-1 min-w-[240px] max-w-[280px] sm:min-w-[300px] sm:max-w-[360px] lg:min-w-[380px] lg:max-w-[460px]">
+            <img src="${logoUrl}" alt="${app.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-gray-100" />
+            <span class="min-w-0 leading-tight">
+              <span class="block text-base font-bold font-sans text-gray-900 truncate">${app.name}</span>
+              <span class="block text-sm leading-5 font-sans text-gray-500 mt-1 app-description-clamp">${app.description || "No description available."}</span>
+            </span>
+          </a>
+        `;
+      }
+
       function formatLocalDateKey(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -450,6 +488,41 @@
         }
       }
 
+      async function loadHeroAppShowcase() {
+        try {
+          const response = await fetch("./apps.json");
+          const data = await response.json();
+          const apps = data.apps;
+          if (!apps || apps.length === 0) return;
+
+          const rowOne = document.getElementById("hero-app-marquee-1");
+          const rowTwo = document.getElementById("hero-app-marquee-2");
+          if (!rowOne || !rowTwo) return;
+
+          const shuffled = [...apps];
+          for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+          }
+
+          const rows = [[], []];
+          shuffled.forEach((app, index) => {
+            rows[index % 2].push(app);
+          });
+
+          const renderMarqueeRow = (element, list) => {
+            if (!list.length) return;
+            const singleSet = list.map((app) => createAppPillMarkup(app)).join("");
+            element.innerHTML = singleSet + singleSet;
+          };
+
+          renderMarqueeRow(rowOne, rows[0]);
+          renderMarqueeRow(rowTwo, rows[1]);
+        } catch (error) {
+          console.error("Failed to load hero app showcase:", error);
+        }
+      }
+
       async function loadApps() {
         try {
           const response = await fetch("./apps.json");
@@ -465,21 +538,8 @@
           const topApps = getRandomUniqueItems(apps, rowSize);
           const bottomApps = getRandomUniqueItems(apps, rowSize);
 
-          const createPillMarkup = (app) => {
-            const logoUrl = getLogoUrl(app);
-            return `
-              <a href="./apps/${app.id}/" class="group relative inline-flex items-start gap-3 border border-gray-100 bg-white rounded-2xl px-4 py-3 sm:px-5 sm:py-4 hover:border-black transition-all duration-500 hover:shadow-xl hover:-translate-y-1 min-w-[240px] max-w-[280px] sm:min-w-[300px] sm:max-w-[360px] lg:min-w-[380px] lg:max-w-[460px]">
-                <img src="${logoUrl}" alt="${app.name}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-gray-100" />
-                <span class="min-w-0 leading-tight">
-                  <span class="block text-base font-bold font-sans text-gray-900 truncate">${app.name}</span>
-                  <span class="block text-sm leading-5 font-sans text-gray-500 mt-1 app-description-clamp">${app.description || "No description available."}</span>
-                </span>
-              </a>
-            `;
-          };
-
           const renderMarqueeRow = (element, list) => {
-            const singleSet = list.map((app) => createPillMarkup(app)).join("");
+            const singleSet = list.map((app) => createAppPillMarkup(app)).join("");
             element.innerHTML = singleSet + singleSet;
           };
 
@@ -957,6 +1017,7 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+        loadHeroAppShowcase();
         loadFeaturedApp();
         loadApps();
         loadStars();
