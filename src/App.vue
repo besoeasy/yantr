@@ -1,11 +1,14 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass } from "lucide-vue-next";
+import { Box, Boxes, Layers, HardDrive, ClipboardList, Send, Github, Heart, Home, Moon, Sun, Compass, Languages, Check, ChevronDown } from "lucide-vue-next";
 import NotificationBanner from './components/NotificationBanner.vue';
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
+const { locale, t } = useI18n();
 const theme = ref("light");
+const showLanguageMenu = ref(false);
 
 const isActive = (name) => route.name === name;
 
@@ -23,6 +26,21 @@ const setTheme = (nextTheme) => {
 const toggleTheme = () => {
   setTheme(theme.value === "dark" ? "light" : "dark");
 };
+
+const toggleLanguageMenu = () => {
+  showLanguageMenu.value = !showLanguageMenu.value;
+};
+
+const setLocale = (newLocale) => {
+  locale.value = newLocale;
+  localStorage.setItem("yantr-locale", newLocale);
+  showLanguageMenu.value = false;
+};
+
+const languages = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' }
+];
 
 onMounted(() => {
   const stored = localStorage.getItem("yantr-theme");
@@ -50,12 +68,12 @@ onMounted(() => {
               : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:shadow-black/40'
           "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Home"
+          :title="t('nav.home')"
         >
           <Home :size="20" class="group-hover:scale-110 transition-transform duration-300" />
           <span
             class="absolute left-full ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-white dark:text-black"
-            >Home</span
+            >{{ t('nav.home') }}</span
           >
         </router-link>
 
@@ -68,12 +86,12 @@ onMounted(() => {
               : 'text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:shadow-black/40'
           "
           class="nav-item group relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ease-out smooth-shadow"
-          title="Apps"
+          :title="t('nav.apps')"
         >
           <Box :size="20" class="group-hover:scale-110 transition-transform duration-300" />
           <span
             class="absolute left-full ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-white dark:text-black"
-            >Apps</span
+            >{{ t('nav.apps') }}</span
           >
         </router-link>
 
@@ -139,18 +157,52 @@ onMounted(() => {
             Telegram
           </span>
         </a>
+        <!-- Language Toggle -->
+        <div class="relative">
+          <button
+            type="button"
+            @click="toggleLanguageMenu"
+            class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-zinc-300 dark:hover:bg-zinc-800/50 dark:hover:shadow-black/40 transition-all duration-300 ease-out"
+            :title="t('nav.language')"
+          >
+            <Languages :size="20" class="group-hover:scale-110 transition-transform duration-300" />
+            <span
+              class="absolute left-full ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-white dark:text-black"
+            >
+              {{ t('nav.language') }}
+            </span>
+          </button>
+          
+          <!-- Language Dropdown Menu -->
+          <div
+            v-if="showLanguageMenu"
+            class="absolute left-full ml-3 top-0 bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-gray-200 dark:border-zinc-700 py-2 min-w-[160px] z-50"
+          >
+            <button
+              v-for="lang in languages"
+              :key="lang.code"
+              @click="setLocale(lang.code)"
+              class="w-full px-4 py-2 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+              :class="locale === lang.code ? 'bg-gray-50 dark:bg-zinc-800' : ''"
+            >
+              <span class="text-xl">{{ lang.flag }}</span>
+              <span class="flex-1 text-left text-sm font-medium">{{ lang.name }}</span>
+              <Check v-if="locale === lang.code" :size="16" class="text-blue-600 dark:text-blue-400" />
+            </button>
+          </div>
+        </div>
         <!-- Theme Toggle -->
         <button
           type="button"
           @click="toggleTheme"
           class="action-btn group relative w-12 h-12 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:shadow-md hover:shadow-gray-900/10 dark:text-zinc-300 dark:hover:bg-zinc-800/50 dark:hover:shadow-black/40 transition-all duration-300 ease-out"
-          :title="`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`"
+          :title="theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')"
         >
           <component :is="theme === 'dark' ? Sun : Moon" :size="20" class="group-hover:scale-110 transition-transform duration-300" />
           <span
             class="absolute left-full ml-3 px-3 py-1.5 bg-black text-white text-xs font-semibold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none dark:bg-white dark:text-black"
           >
-            {{ theme === "dark" ? "Light mode" : "Dark mode" }}
+            {{ theme === "dark" ? t('nav.lightMode') : t('nav.darkMode') }}
           </span>
         </button>
       </div>
@@ -163,20 +215,20 @@ onMounted(() => {
           to="/home"
           :class="isActive('home') ? 'bg-black text-white shadow-lg shadow-black/10 dark:bg-white dark:text-black dark:shadow-white/10' : 'text-gray-600 dark:text-zinc-400'"
           class="flex flex-col items-center gap-1 min-w-[64px] min-h-[52px] px-3 py-2 rounded-xl transition-all active:scale-95 justify-center"
-          title="Home"
+          :title="t('nav.home')"
         >
           <Home :size="22" />
-          <span class="text-xs font-medium">Home</span>
+          <span class="text-xs font-medium">{{ t('nav.home') }}</span>
         </router-link>
 
         <router-link
           to="/apps"
           :class="isActive('apps') ? 'bg-black text-white shadow-lg shadow-black/10 dark:bg-white dark:text-black dark:shadow-white/10' : 'text-gray-600 dark:text-zinc-400'"
           class="flex flex-col items-center gap-1 min-w-[64px] min-h-[52px] px-3 py-2 rounded-xl transition-all active:scale-95 justify-center"
-          title="Apps"
+          :title="t('nav.apps')"
         >
           <Box :size="22" />
-          <span class="text-xs font-medium">Apps</span>
+          <span class="text-xs font-medium">{{ t('nav.apps') }}</span>
         </router-link>
 
         <a
@@ -184,20 +236,50 @@ onMounted(() => {
           target="_blank"
           rel="noopener noreferrer"
           class="flex flex-col items-center gap-1 min-w-[64px] min-h-[52px] px-3 py-2 rounded-xl transition-all active:scale-95 text-gray-600 dark:text-zinc-400 justify-center"
-          title="Join Telegram"
+          :title="t('nav.telegram')"
         >
           <Send :size="22" />
-          <span class="text-xs font-medium">Telegram</span>
+          <span class="text-xs font-medium">{{ t('nav.telegram') }}</span>
         </a>
+
+        <div class="relative">
+          <button
+            type="button"
+            @click="toggleLanguageMenu"
+            class="flex flex-col items-center gap-1 min-w-[64px] min-h-[52px] px-3 py-2 rounded-xl transition-all active:scale-95 text-gray-600 dark:text-zinc-400 justify-center"
+            :title="t('nav.language')"
+          >
+            <Languages :size="22" />
+            <span class="text-xs font-medium">{{ t('nav.language') }}</span>
+          </button>
+          
+          <!-- Mobile Language Dropdown Menu -->
+          <div
+            v-if="showLanguageMenu"
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-gray-200 dark:border-zinc-700 py-2 min-w-[160px] z-50"
+          >
+            <button
+              v-for="lang in languages"
+              :key="lang.code"
+              @click="setLocale(lang.code)"
+              class="w-full px-4 py-2 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+              :class="locale === lang.code ? 'bg-gray-50 dark:bg-zinc-800' : ''"
+            >
+              <span class="text-xl">{{ lang.flag }}</span>
+              <span class="flex-1 text-left text-sm font-medium">{{ lang.name }}</span>
+              <Check v-if="locale === lang.code" :size="16" class="text-blue-600 dark:text-blue-400" />
+            </button>
+          </div>
+        </div>
 
         <button
           type="button"
           @click="toggleTheme"
           class="flex flex-col items-center gap-1 min-w-[64px] min-h-[52px] px-3 py-2 rounded-xl transition-all active:scale-95 text-gray-600 dark:text-zinc-400 justify-center"
-          :title="`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`"
+          :title="theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')"
         >
           <component :is="theme === 'dark' ? Sun : Moon" :size="22" />
-          <span class="text-xs font-medium">Theme</span>
+          <span class="text-xs font-medium">{{ t('nav.theme') }}</span>
         </button>
       </div>
     </nav>

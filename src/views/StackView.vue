@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
@@ -13,6 +14,7 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 const { currentTime } = useCurrentTime();
 const toast = useNotification();
@@ -135,16 +137,16 @@ let refreshInterval = null;
 function formatUptime(service) {
   if (service.state !== "running" || !service.created) return null;
   const uptime = currentTime.value - service.created * 1000;
-  if (uptime <= 0) return "Just started";
+  if (uptime <= 0) return t('stackView.justStarted');
   return formatDuration(uptime);
 }
 
 const overallState = computed(() => {
   if (!stack.value) return "unknown";
   const states = stack.value.services.map((s) => s.state);
-  if (states.every((s) => s === "running")) return "running";
-  if (states.some((s) => s === "running")) return "partial";
-  return "stopped";
+  if (states.every((s) => s === "running")) return t('stackView.running');
+  if (states.some((s) => s === "running")) return t('stackView.partial');
+  return t('stackView.stopped');
 });
 
 const stateClass = computed(() => {
@@ -164,12 +166,12 @@ async function fetchStack() {
     if (data.success) {
       stack.value = data.stack;
     } else {
-      toast.error("Stack not found");
+      toast.error(t('stackView.stackNotFound'));
       router.push("/");
     }
   } catch (e) {
     console.error("Failed to load stack:", e);
-    toast.error("Failed to load stack");
+    toast.error(t('stackView.failedToLoadStack'));
   } finally {
     loading.value = false;
   }
@@ -178,27 +180,26 @@ async function fetchStack() {
 async function removeStack() {
   if (removing.value) return;
   const name = stack.value?.app?.name || projectId.value;
-  if (!confirm(`Remove the entire "${name}" stack? This will stop and delete all its containers.`)) return;
+  if (!confirm(t('stackView.removeStackConfirm', { name }))) return;
 
   removing.value = true;
-  toast.info(`Removing ${name}…`);
+  toast.info(t('stackView.removingStack', { name }));
 
   try {
-    // Use any one container from the stack as the handle for removal
     const firstId = stack.value?.services?.[0]?.id;
-    if (!firstId) throw new Error("No container found to remove");
+    if (!firstId) throw new Error(t('stackView.noContainerFound'));
 
     const res = await fetch(`${apiUrl.value}/api/containers/${firstId}`, { method: "DELETE" });
     const data = await res.json();
     if (data.success) {
-      toast.success(`${name} removed`);
+      toast.success(t('stackView.stackRemoved', { name }));
       router.push("/");
     } else {
-      throw new Error(data.message || "Removal failed");
+      throw new Error(data.message || t('stackView.removalFailed'));
     }
   } catch (e) {
     console.error("Remove error:", e);
-    toast.error(`Failed to remove: ${e.message}`);
+    toast.error(t('stackView.failedToRemove', { error: e.message }));
   } finally {
     removing.value = false;
   }
@@ -219,12 +220,12 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     });
     const data = await response.json();
     if (data.success) {
-      const expiryText = expiryMinutes > 0 ? ` (expires in ${expiryMinutes}m)` : ' (no expiry)';
-      toast.success(`Volume browser started${expiryText}`);
+      const expiryText = expiryMinutes > 0 ? ` (${t('stackView.expiresIn', { minutes: expiryMinutes })})` : ` (${t('stackView.noExpiry')})`;
+      toast.success(t('stackView.volumeBrowserStarted', { expiry: expiryText }));
       window.open(`/browse/${volumeName}/`, '_blank');
     }
   } catch (e) {
-    toast.error('Failed to start volume browser');
+    toast.error(t('stackView.failedToStartVolumeBrowser'));
   } finally {
     delete browsingVolume.value[volumeName];
   }
@@ -266,13 +267,13 @@ async function backupVolume(svcId) {
     });
     const data = await res.json();
     if (data.success) {
-      toast.success('Backup started');
+      toast.success(t('stackView.backupStarted'));
       pollBackupJob(data.jobId);
     } else {
-      toast.error(data.error || 'Failed to start backup');
+      toast.error(data.error || t('stackView.failedToStartBackup'));
     }
   } catch (e) {
-    toast.error('Failed to start backup');
+    toast.error(t('stackView.failedToStartBackup'));
   } finally {
     backingUp.value = false;
   }
@@ -292,11 +293,11 @@ function pollBackupJob(jobId) {
       if (data.success && data.job) {
         if (data.job.status === 'completed') {
           clearInterval(iv);
-          toast.success('Backup completed');
+          toast.success(t('stackView.backupCompleted'));
           await fetchVolumeBackups();
         } else if (data.job.status === 'failed') {
           clearInterval(iv);
-          toast.error(`Backup failed: ${data.job.error}`);
+          toast.error(t('stackView.backupFailed', { error: data.job.error }));
         }
       }
     } catch (e) { clearInterval(iv); }
@@ -304,7 +305,7 @@ function pollBackupJob(jobId) {
 }
 
 async function restoreBackup(volumeName, snapshotId) {
-  if (!confirm(`Restore ${volumeName} from backup?\n\nThis will overwrite current data.`)) return;
+  if (!confirm(t('stackView.restoreConfirm', { volume }))) return;
   try {
     const res = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/restore`, {
       method: 'POST',
@@ -313,13 +314,13 @@ async function restoreBackup(volumeName, snapshotId) {
     });
     const data = await res.json();
     if (data.success) {
-      toast.success('Restore started');
+      toast.success(t('stackView.restoreStarted'));
       pollRestoreJob(data.jobId);
     } else {
-      toast.error(data.error || 'Failed to start restore');
+      toast.error(data.error || t('stackView.failedToStartRestore'));
     }
   } catch (e) {
-    toast.error('Failed to start restore');
+    toast.error(t('stackView.failedToStartRestore'));
   }
   showRestoreMenu.value[volumeName] = false;
 }
@@ -330,22 +331,22 @@ function pollRestoreJob(jobId) {
       const res = await fetch(`${apiUrl.value}/api/restore/jobs/${jobId}`);
       const data = await res.json();
       if (data.success && data.job) {
-        if (data.job.status === 'completed') { clearInterval(iv); toast.success('Restore completed'); }
-        else if (data.job.status === 'failed') { clearInterval(iv); toast.error(`Restore failed: ${data.job.error}`); }
+        if (data.job.status === 'completed') { clearInterval(iv); toast.success(t('stackView.restoreCompleted')); }
+        else if (data.job.status === 'failed') { clearInterval(iv); toast.error(t('stackView.restoreFailed', { error: data.job.error })); }
       }
     } catch (e) { clearInterval(iv); }
   }, 2000);
 }
 
 async function deleteBackupFile(volumeName, snapshotId) {
-  if (!confirm('Delete this backup?')) return;
+  if (!confirm(t('stackView.deleteBackupConfirm'))) return;
   try {
     const res = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/backup/${snapshotId}`, { method: 'DELETE' });
     const data = await res.json();
-    if (data.success) { toast.success('Backup deleted'); await fetchVolumeBackups(); }
-    else toast.error(data.error || 'Failed to delete backup');
+    if (data.success) { toast.success(t('stackView.backupDeleted')); await fetchVolumeBackups(); }
+    else toast.error(data.error || t('stackView.failedToDeleteBackup'));
   } catch (e) {
-    toast.error('Failed to delete backup');
+    toast.error(t('stackView.failedToDeleteBackup'));
   }
 }
 
@@ -401,7 +402,7 @@ onUnmounted(() => {
           </button>
           <div class="h-4 w-px bg-gray-300 dark:bg-zinc-800"></div>
           <div class="flex items-center gap-2.5 text-sm min-w-0">
-            <button @click="router.push('/')" class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors">Dashboard</button>
+            <button @click="router.push('/')" class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors">{{ t('stackView.dashboard') }}</button>
             <span class="hidden sm:inline text-gray-300 dark:text-zinc-700">/</span>
             <span class="font-semibold tracking-tight text-gray-900 dark:text-white truncate max-w-xs">
               {{ stack?.app?.name || projectId }}
@@ -414,7 +415,7 @@ onUnmounted(() => {
           <button
             @click="fetchStack"
             class="inline-flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-900 transition-all text-gray-500 dark:text-zinc-400"
-            title="Refresh"
+            :title="t('stackView.refresh')"
           >
             <RefreshCw :size="14" />
           </button>
@@ -499,7 +500,7 @@ onUnmounted(() => {
             class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
           >
             <Globe :size="12" />
-            Website
+            {{ t('stackView.website') }}
           </a>
           <button
             v-if="stack.app"
@@ -507,7 +508,7 @@ onUnmounted(() => {
             class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
           >
             <ExternalLink :size="12" />
-            App Page
+            {{ t('stackView.appPage') }}
           </button>
           <button
             @click="removeStack"
@@ -515,7 +516,7 @@ onUnmounted(() => {
             class="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white dark:bg-[#0A0A0A] border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Trash2 :size="12" />
-            {{ removing ? "Removing…" : "Remove Stack" }}
+            {{ removing ? t('stackView.removing') : t('stackView.removeStack') }}
           </button>
         </div>
       </div>
@@ -525,7 +526,7 @@ onUnmounted(() => {
         <div class="flex items-center justify-between">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 flex items-center gap-2">
             <Network :size="12" />
-            Network Access
+            {{ t('stackView.networkAccess') }}
           </h2>
           <!-- Toggle only shown when there are described ports -->
           <div v-if="hasDescribedPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
@@ -533,12 +534,12 @@ onUnmounted(() => {
               @click="showOnlyDescribedPorts = false"
               :class="!showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
               class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-            >All Ports</button>
+            >{{ t('stackView.allPorts') }}</button>
             <button
               @click="showOnlyDescribedPorts = true"
               :class="showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
               class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-            >Described</button>
+            >{{ t('stackView.described') }}</button>
           </div>
         </div>
 
@@ -565,15 +566,15 @@ onUnmounted(() => {
 
             <div class="space-y-2 mb-5">
               <div class="flex items-center justify-between text-[11px]">
-                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Host Port</span>
+                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('stackView.hostPort') }}</span>
                 <span class="font-mono font-bold text-gray-900 dark:text-white">{{ p.hostPort }}</span>
               </div>
               <div class="flex items-center justify-between text-[11px]">
-                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Container Port</span>
+                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('stackView.containerPort') }}</span>
                 <span class="font-mono font-medium text-gray-700 dark:text-zinc-300">{{ p.containerPort }}</span>
               </div>
               <div class="flex items-center justify-between text-[11px]">
-                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Service</span>
+                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('stackView.service') }}</span>
                 <span class="font-mono text-gray-500 dark:text-zinc-400">{{ p.service }}</span>
               </div>
             </div>
@@ -585,10 +586,10 @@ onUnmounted(() => {
               class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-[11px] font-bold uppercase tracking-wider"
             >
               <ExternalLink :size="12" />
-              Open
+              {{ t('stackView.open') }}
             </a>
             <div v-else class="w-full flex items-center justify-center px-3 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 rounded-lg text-[11px] font-bold uppercase tracking-wider">
-              {{ p.protocol.toUpperCase() }} Port
+              {{ p.protocol.toUpperCase() }} {{ t('stackView.port') }}
             </div>
           </div>
         </div>
@@ -596,7 +597,7 @@ onUnmounted(() => {
 
       <div v-else class="bg-gray-50 dark:bg-zinc-900/40 border border-dashed border-gray-200 dark:border-zinc-800 rounded-xl px-6 py-5 flex items-center gap-3 text-gray-400 dark:text-zinc-500">
         <Network :size="16" class="shrink-0" />
-        <span class="text-xs font-medium">No ports published to host — all services communicate internally.</span>
+        <span class="text-xs font-medium">{{ t('stackView.noPortsPublished') }}</span>
       </div>
 
       <!-- ── Storage (Named Volumes) ────────────────────────────────────── -->
@@ -604,22 +605,22 @@ onUnmounted(() => {
         <div class="flex items-center justify-between">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 flex items-center gap-2">
             <HardDrive :size="12" />
-            Storage Volumes
+            {{ t('stackView.storageVolumes') }}
           </h2>
           <button
             v-if="s3Configured && namedVolumes.length > 0"
             @click="backupAll"
             :disabled="backingUp"
             class="text-[10px] uppercase tracking-wider px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-bold"
-          >{{ backingUp ? 'Backing up…' : 'Backup All' }}</button>
+          >{{ backingUp ? t('stackView.backingUp') : t('stackView.backupAll') }}</button>
         </div>
 
         <!-- S3 warning -->
         <div v-if="!s3Configured" class="bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-4 flex items-start gap-3">
           <AlertCircle :size="14" class="text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
           <p class="text-xs text-amber-900 dark:text-amber-200">
-            <span class="font-bold">S3 storage not configured.</span>
-            <router-link to="/backup-config" class="underline hover:text-amber-700 font-semibold ml-1">Configure now</router-link> to enable backups.
+            <span class="font-bold">{{ t('stackView.s3NotConfigured') }}</span>
+            <router-link to="/backup-config" class="underline hover:text-amber-700 font-semibold ml-1">{{ t('stackView.configureNow') }}</router-link> {{ t('stackView.toEnableBackups') }}
           </p>
         </div>
 
@@ -637,8 +638,8 @@ onUnmounted(() => {
                 <div class="font-bold text-sm text-gray-900 dark:text-white truncate tracking-tight" :title="vol.name">{{ vol.name }}</div>
                 <div class="text-[11px] text-gray-500 dark:text-zinc-400 font-mono truncate mt-1">{{ vol.destination }}</div>
                 <div class="text-[10px] text-gray-400 dark:text-zinc-500 mt-2 font-bold uppercase tracking-wider">
-                  Service: <span class="font-medium text-gray-600 dark:text-zinc-300">{{ vol.svcName }}</span>
-                  <span v-if="s3Configured" class="ml-3">Backup: <span class="font-medium text-gray-600 dark:text-zinc-300">{{ getLatestBackupAge(vol.name) }}</span></span>
+                  {{ t('stackView.serviceLabel') }} <span class="font-medium text-gray-600 dark:text-zinc-300">{{ vol.svcName }}</span>
+                  <span v-if="s3Configured" class="ml-3">{{ t('stackView.backupLabel') }} <span class="font-medium text-gray-600 dark:text-zinc-300">{{ getLatestBackupAge(vol.name) }}</span></span>
                 </div>
               </div>
             </div>
@@ -646,7 +647,7 @@ onUnmounted(() => {
             <div class="flex items-center gap-2 flex-wrap pt-4 border-t border-gray-100 dark:border-zinc-800">
               <!-- Browse -->
               <div v-if="browsingVolume[vol.name]" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 animate-pulse px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-                Starting WebDAV server…
+                {{ t('stackView.startingWebDAV') }}
               </div>
               <button
                 v-else-if="!showVolumeMenu[vol.name]"
@@ -654,24 +655,24 @@ onUnmounted(() => {
                 class="flex items-center gap-1.5 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
               >
                 <FolderOpen :size="12" />
-                Browse Files
+                {{ t('stackView.browseFiles') }}
               </button>
               <div v-else class="flex items-center gap-1.5">
-                <button @click="browseVolume(vol.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" title="1 Hour Access">1H</button>
-                <button @click="browseVolume(vol.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" title="Permanent Access">Perm</button>
+                <button @click="browseVolume(vol.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" :title="t('stackView.oneHourAccess')">1H</button>
+                <button @click="browseVolume(vol.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" :title="t('stackView.permanentAccess')">Perm</button>
               </div>
               <!-- Backup -->
               <button
                 @click="backupVolume(vol.svcId)"
                 :disabled="backingUp || !s3Configured"
                 class="flex items-center gap-1.5 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              >Backup</button>
+              >{{ t('stackView.backup') }}</button>
               <!-- Restore -->
               <button
                 @click="toggleRestoreMenu(vol.name)"
                 :disabled="!hasBackups(vol.name) || !s3Configured"
                 class="flex items-center gap-1.5 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-              >Restore</button>
+              >{{ t('stackView.restore') }}</button>
             </div>
 
             <!-- Restore dropdown -->
@@ -679,7 +680,7 @@ onUnmounted(() => {
               v-if="showRestoreMenu[vol.name] && hasBackups(vol.name)"
               class="mt-4 pt-4 border-t border-gray-200 dark:border-zinc-800"
             >
-              <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">Available Backups</div>
+              <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">{{ t('stackView.availableBackups') }}</div>
               <div class="space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
                 <div
                    v-for="backup in volumeBackups[vol.name]"
@@ -691,8 +692,8 @@ onUnmounted(() => {
                      <div class="text-gray-500 dark:text-zinc-400 text-[10px] mt-0.5 font-bold uppercase tracking-wider">{{ backup.sizeMB != null ? backup.sizeMB + ' MB' : '' }}</div>
                    </div>
                    <div class="flex gap-2 ml-3">
-                     <button @click="restoreBackup(vol.name, backup.snapshotId)" class="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 bg-white dark:bg-[#0A0A0A] rounded-md hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all text-[10px] font-bold uppercase tracking-wider">Restore</button>
-                     <button @click="deleteBackupFile(vol.name, backup.snapshotId)" class="px-2.5 py-1.5 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 transition-all text-[10px] font-bold uppercase tracking-wider">Delete</button>
+                     <button @click="restoreBackup(vol.name, backup.snapshotId)" class="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 bg-white dark:bg-[#0A0A0A] rounded-md hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all text-[10px] font-bold uppercase tracking-wider">{{ t('stackView.restore') }}</button>
+                     <button @click="deleteBackupFile(vol.name, backup.snapshotId)" class="px-2.5 py-1.5 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 transition-all text-[10px] font-bold uppercase tracking-wider">{{ t('common.delete') }}</button>
                    </div>
                  </div>
               </div>
@@ -705,15 +706,15 @@ onUnmounted(() => {
       <div v-if="otherMounts.length > 0" class="space-y-4">
         <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 flex items-center gap-2">
           <HardDrive :size="12" />
-          Bind Mounts
+          {{ t('stackView.bindMounts') }}
         </h2>
         <div class="overflow-x-auto bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800">
           <table class="w-full text-left min-w-[480px]">
             <thead>
               <tr class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
-                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Type</th>
-                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Host Path</th>
-                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">Container Path</th>
+                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ t('stackView.type') }}</th>
+                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ t('stackView.hostPath') }}</th>
+                <th class="px-5 py-3 text-[9px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">{{ t('stackView.containerPath') }}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-zinc-800">
@@ -736,7 +737,7 @@ onUnmounted(() => {
         <div class="flex items-center justify-between">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 flex items-center gap-2">
             <Server :size="12" />
-            Containers
+            {{ t('stackView.containers') }}
           </h2>
           <span class="text-[10px] font-mono text-gray-500 bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
             {{ stack.services.length }}
@@ -782,17 +783,17 @@ onUnmounted(() => {
                   <span
                     v-if="svc.hasYantrLabel"
                     class="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded-md border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20"
-                  >primary</span>
+                  >{{ t('stackView.primary') }}</span>
                 </div>
                 <div class="font-mono text-[11px] text-gray-500 dark:text-zinc-400 truncate" :title="svc.image">{{ svc.image }}</div>
               </div>
 
               <!-- Uptime -->
               <div v-if="formatUptime(svc)" class="text-right shrink-0 hidden sm:block">
-                <div class="text-[9px] uppercase font-bold text-gray-400 dark:text-zinc-500 tracking-wider mb-0.5">Uptime</div>
+                <div class="text-[9px] uppercase font-bold text-gray-400 dark:text-zinc-500 tracking-wider mb-0.5">{{ t('stackView.uptime') }}</div>
                 <div class="font-mono font-medium text-xs tabular-nums text-gray-700 dark:text-zinc-300">{{ formatUptime(svc) }}</div>
               </div>
-              <div v-else-if="svc.state !== 'running'" class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-600 hidden sm:block self-center">Stopped</div>
+              <div v-else-if="svc.state !== 'running'" class="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-600 hidden sm:block self-center">{{ t('stackView.stopped') }}</div>
             </div>
 
             <!-- Bottom row: ports + logs button -->
@@ -816,7 +817,7 @@ onUnmounted(() => {
                     v-for="p in [...new Map(svc.rawPorts.map(rp => [`${rp.PrivatePort}:${rp.Type}`, rp])).values()]"
                     :key="`internal-${p.PrivatePort}-${p.Type}`"
                     class="inline-flex items-center gap-1.5 text-[10px] font-mono px-2 py-1 rounded-md bg-gray-50 dark:bg-zinc-900 text-gray-500 dark:text-zinc-400 border border-gray-200 dark:border-zinc-800"
-                    title="Internal port (not published to host)"
+                    :title="t('stackView.internalPort')"
                   >
                     <Network :size="10" />
                     {{ p.PrivatePort }}/{{ p.Type }}
@@ -830,7 +831,7 @@ onUnmounted(() => {
                 class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 hover:bg-gray-200 dark:hover:bg-zinc-700 hover:text-gray-900 dark:hover:text-white transition-all shrink-0"
               >
                 <Terminal :size="12" />
-                Logs
+                {{ t('stackView.logs') }}
               </button>
             </div>
           </div>
@@ -842,7 +843,7 @@ onUnmounted(() => {
         <div class="flex items-center justify-between">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 flex items-center gap-2">
             <Settings2 :size="12" />
-            Configuration Variables
+            {{ t('stackView.configurationVariables') }}
           </h2>
           <span class="text-[10px] font-mono text-gray-500 bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded">{{ stackEnvVars.length }}</span>
         </div>
@@ -873,7 +874,7 @@ onUnmounted(() => {
                 v-if="isSensitive(v.key)"
                 @click="toggleReveal(v.key)"
                 class="shrink-0 p-1.5 rounded-md text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
-                :title="revealedVars.has(v.key) ? 'Hide' : 'Show'"
+                :title="revealedVars.has(v.key) ? t('stackView.hide') : t('stackView.show')"
               >
                 <EyeOff v-if="revealedVars.has(v.key)" :size="14" />
                 <Eye v-else :size="14" />

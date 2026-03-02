@@ -1,8 +1,10 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useI18n } from 'vue-i18n'
 import { Boxes, HardDrive, Database, RefreshCw, Layers } from "lucide-vue-next";
 import { formatBytes } from "../../utils/metrics.js";
 
+const { t } = useI18n()
 const props = defineProps({
   images: { type: Array, default: () => [] },
   volumes: { type: Array, default: () => [] },
@@ -126,7 +128,7 @@ const theme = computed(() => {
       progress: 'bg-blue-500/80',
       hoverGlow: 'bg-gradient-to-r from-transparent via-blue-500 to-transparent',
       icon: Layers,
-      label: 'Container Images'
+      label: t('quickMetrics.rotatingDiskUsage.containerImages')
     };
   }
   return {
@@ -136,7 +138,7 @@ const theme = computed(() => {
     progress: 'bg-violet-500/80',
     hoverGlow: 'bg-gradient-to-r from-transparent via-violet-500 to-transparent',
     icon: Database,
-    label: 'Data Volumes'
+    label: t('quickMetrics.rotatingDiskUsage.dataVolumes')
   };
 });
 </script>
@@ -167,7 +169,7 @@ const theme = computed(() => {
         
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
-            Storage
+            {{ t('quickMetrics.rotatingDiskUsage.title') }}
           </h3>
           <div class="mt-1 flex items-center gap-1.5">
              <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider transition-colors duration-300">
@@ -198,7 +200,7 @@ const theme = computed(() => {
           <!-- Big Metric -->
           <div class="mb-5">
              <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2 flex justify-between">
-               <span>Used Space</span>
+               <span>{{ t('quickMetrics.rotatingDiskUsage.usedSpace') }}</span>
              </div>
              
              <div class="flex items-baseline gap-2">
@@ -223,7 +225,7 @@ const theme = computed(() => {
             <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-zinc-500">
               <span>0%</span>
               <span class="flex items-center gap-1.5">
-                 Total: <span class="text-gray-900 dark:text-white font-mono">{{ formatBytes(metrics.total) }}</span>
+                 {{ t('quickMetrics.rotatingDiskUsage.total') }}: <span class="text-gray-900 dark:text-white font-mono">{{ formatBytes(metrics.total) }}</span>
               </span>
             </div>
           </div>

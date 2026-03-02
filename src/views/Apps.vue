@@ -1,9 +1,12 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import AppCard from "../components/AppCard.vue";
 import { Tag, Search, LayoutGrid, X, Command } from "lucide-vue-next";
+
+const { t } = useI18n();
 
 const searchInput = ref(null);
 
@@ -203,8 +206,8 @@ onUnmounted(() => {
 
         <!-- Header -->
         <div class="mb-4 lg:mb-8">
-          <h2 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Categories</h2>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mt-1.5">{{ allAppsCount }} total apps</p>
+          <h2 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('apps.categories') }}</h2>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mt-1.5">{{ allAppsCount }} {{ t('apps.totalApps') }}</p>
         </div>
 
         <!-- All button -->
@@ -219,7 +222,7 @@ onUnmounted(() => {
         >
           <div class="flex items-center gap-3">
             <LayoutGrid :size="15" :class="selectedTag === null ? 'opacity-100' : 'opacity-70'" />
-            All apps
+            {{ t('apps.allAppsLabel') }}
           </div>
           <span :class="[
             'text-[10px] font-bold tracking-widest tabular-nums px-2 py-0.5 rounded-full',
@@ -272,7 +275,7 @@ onUnmounted(() => {
               ref="searchInput"
               v-model="appSearch"
               type="text"
-              placeholder="Search applications..."
+              :placeholder="t('apps.searchPlaceholder')"
               class="w-full bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-xl pl-11 pr-24 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-zinc-500 focus:outline-none focus:border-gray-300 dark:focus:border-zinc-700 focus:bg-white dark:focus:bg-[#0A0A0A] focus:shadow-sm transition-all duration-300"
             />
             <!-- Kbd hint -->
@@ -295,7 +298,7 @@ onUnmounted(() => {
           <!-- Active filters + result count -->
           <div class="mt-3 flex items-center gap-2 flex-wrap min-h-[24px]">
             <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-500">
-              {{ combinedApps.length }} app{{ combinedApps.length === 1 ? '' : 's' }}
+              {{ combinedApps.length }} {{ combinedApps.length === 1 ? t('apps.app') : t('apps.apps') }}
             </span>
             <span
               v-if="selectedTag"
@@ -313,16 +316,16 @@ onUnmounted(() => {
         <div class="p-4 sm:p-6">
             <div v-if="loading" class="flex flex-col items-center justify-center py-32">
                <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin mb-6"></div>
-               <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Loading catalog...</div>
+               <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('apps.loadingCatalog') }}</div>
             </div>
 
             <div v-else-if="combinedApps.length === 0" class="flex flex-col items-center justify-center py-32 text-center">
                 <div class="bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-2xl p-5 mb-5">
                    <Search :size="28" class="text-gray-400 dark:text-zinc-500" />
                 </div>
-                <h3 class="text-base font-semibold text-gray-900 dark:text-white tracking-tight">No apps found</h3>
-                <p class="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto leading-relaxed">We couldn't find any applications matching your search criteria.</p>
-                <button @click="appSearch = ''; selectedTag = null" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">Clear all filters</button>
+                <h3 class="text-base font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('apps.noAppsFound') }}</h3>
+                <p class="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto leading-relaxed">{{ t('apps.noAppsFoundDesc') }}</p>
+                <button @click="appSearch = ''; selectedTag = null" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">{{ t('apps.clearAllFilters') }}</button>
             </div>
 
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">

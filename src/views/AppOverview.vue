@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { formatDuration } from "../utils/metrics";
@@ -10,6 +11,7 @@ import {
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 const { currentTime } = useCurrentTime();
 
@@ -43,17 +45,16 @@ function stackUptime(stack) {
   if (!running.length) return null;
   const oldest = Math.min(...running.map((s) => s.created * 1000));
   const delta = currentTime.value - oldest;
-  if (delta <= 0) return "Just started";
+  if (delta <= 0) return t('appOverview.justStarted');
   return formatDuration(delta);
 }
 
 function stackExpiry(stack) {
-  // Find first temporary container in the stack
   for (const svc of stack.services) {
     const expireAt = svc.labels?.["yantr.expireAt"];
     if (expireAt) {
       const remaining = parseInt(expireAt, 10) * 1000 - currentTime.value;
-      if (remaining <= 0) return { label: 'Expired', expired: true, soon: false };
+      if (remaining <= 0) return { label: t('appOverview.expired'), expired: true, soon: false };
       const totalSeconds = Math.floor(remaining / 1000);
       const totalMinutes = Math.floor(totalSeconds / 60);
       const hours = Math.floor(totalMinutes / 60);
@@ -107,7 +108,7 @@ onUnmounted(() => clearInterval(interval));
         class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition-colors mb-6 group"
       >
         <ArrowLeft :size="14" class="group-hover:-translate-x-0.5 transition-transform" />
-        Back
+        {{ t('appOverview.back') }}
       </button>
 
       <!-- Loading skeleton -->
@@ -145,7 +146,7 @@ onUnmounted(() => clearInterval(interval));
       <section>
         <div class="flex items-center gap-2 mb-5">
           <Activity :size="14" class="text-gray-400 dark:text-zinc-500" />
-          <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Running Instances</h2>
+          <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appOverview.runningInstances') }}</h2>
           <span
             v-if="runningStacks.length"
             class="text-[10px] font-mono px-2 py-0.5 rounded bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20"
@@ -158,7 +159,7 @@ onUnmounted(() => clearInterval(interval));
           class="flex items-center justify-center gap-3 p-8 rounded-xl border border-dashed border-gray-300 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 text-sm"
         >
           <Server :size="16" />
-          <span>No running instances. Deploy from the app page below.</span>
+          <span>{{ t('appOverview.noRunningInstances') }}</span>
         </div>
 
         <!-- Stack cards -->
@@ -221,15 +222,14 @@ onUnmounted(() => clearInterval(interval));
             <!-- Footer: uptime + expiry + service count -->
             <div class="pt-4 border-t border-gray-100 dark:border-zinc-800/80 space-y-2.5 relative z-10">
               <div class="flex items-center justify-between text-[10px] font-mono text-gray-400 dark:text-zinc-500">
-                <span>{{ stack.services.length }} service{{ stack.services.length !== 1 ? 's' : '' }}</span>
+                <span>{{ stack.services.length }} {{ stack.services.length !== 1 ? t('appOverview.services') : t('appOverview.service') }}</span>
                 <span v-if="stackUptime(stack)" class="flex items-center gap-1.5">
                   <Clock :size="10" />
                   {{ stackUptime(stack) }}
                 </span>
               </div>
-              <!-- Expiry timer -->
               <div v-if="stackExpiry(stack)" class="flex items-center justify-between">
-                <span class="text-[9px] uppercase font-bold tracking-wider text-amber-600 dark:text-amber-500">Expires in</span>
+                <span class="text-[9px] uppercase font-bold tracking-wider text-amber-600 dark:text-amber-500">{{ t('appOverview.expiresIn') }}</span>
                 <span
                   class="text-[10px] font-mono font-bold tabular-nums"
                   :class="stackExpiry(stack).expired
@@ -248,7 +248,7 @@ onUnmounted(() => clearInterval(interval));
       <section>
         <div class="flex items-center gap-2 mb-5">
           <Package :size="14" class="text-gray-400 dark:text-zinc-500" />
-          <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Application Configuration</h2>
+          <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appOverview.appDetails') }}</h2>
         </div>
 
         <div
@@ -264,14 +264,14 @@ onUnmounted(() => clearInterval(interval));
               <Package v-else :size="20" class="text-gray-400 dark:text-zinc-500" />
             </div>
             <div>
-              <div class="text-sm font-semibold text-gray-900 dark:text-white mb-0.5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">App Details &amp; Installation</div>
-              <div class="text-xs text-gray-500 dark:text-zinc-400">Documentation, environment variables, port requirements, deploy options</div>
-            </div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-white mb-0.5 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ t('appOverview.appDetails') }}</div>
+            <div class="text-xs text-gray-500 dark:text-zinc-400">{{ t('appOverview.appDetailsDesc') }}</div>
+          </div>
           </div>
           <div class="flex items-center gap-3 shrink-0">
             <span class="hidden sm:flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg bg-black dark:bg-white text-white dark:text-black group-hover:bg-gray-800 dark:group-hover:bg-gray-200 transition-colors">
               <Play :size="10" />
-              Deploy
+              {{ t('appOverview.deploy') }}
             </span>
             <ExternalLink :size="14" class="text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
           </div>

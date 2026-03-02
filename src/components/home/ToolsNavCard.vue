@@ -1,30 +1,32 @@
 <script setup>
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { Layers, HardDrive, ClipboardList, ChevronRight, Wrench } from "lucide-vue-next";
 
 const router = useRouter();
+const { t } = useI18n();
 
 const tools = [
   {
-    title: "Images",
+    title: t("home.toolsNavCard.images"),
     path: "/images",
-    description: "Manage local Docker images",
+    description: t("home.toolsNavCard.imagesDesc"),
     icon: Layers,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
   },
   {
-    title: "Volumes",
+    title: t("home.toolsNavCard.volumes"),
     path: "/volumes",
-    description: "View and manage named volumes",
+    description: t("home.toolsNavCard.volumesDesc"),
     icon: HardDrive,
     color: "text-violet-500",
     bg: "bg-violet-500/10",
   },
   {
-    title: "Logs",
+    title: t("home.toolsNavCard.logs"),
     path: "/logs",
-    description: "Read container output",
+    description: t("home.toolsNavCard.logsDesc"),
     icon: ClipboardList,
     color: "text-green-500",
     bg: "bg-green-500/10",
@@ -44,8 +46,8 @@ const tools = [
            <Wrench class="w-5 h-5 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
         </div>
         <div>
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">System Tools</h3>
-          <div class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">Management & Logs</div>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ t("home.toolsNavCard.systemTools") }}</h3>
+          <div class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">{{ t("home.toolsNavCard.managementLogs") }}</div>
         </div>
       </div>
 

@@ -1,6 +1,9 @@
 <script setup>
+import { useI18n } from "vue-i18n";
 import { useCurrentTime } from "../../composables/useCurrentTime";
 import { FolderOpen, ExternalLink, EyeOff } from "lucide-vue-next";
+
+const { t } = useI18n();
 
 const emit = defineEmits(['stop-browser'])
 
@@ -34,10 +37,12 @@ function formatTimeRemaining(expireAt) {
 
 function getExpirationInfo(browser) {
   if (!browser.expireAt) return null;
+  const remaining = parseInt(browser.expireAt, 10) * 1000 - currentTime.value;
   return {
     expireAt: browser.expireAt,
     timeRemaining: formatTimeRemaining(browser.expireAt),
-    isExpiringSoon: parseInt(browser.expireAt, 10) * 1000 - currentTime.value < 60 * 60 * 1000,
+    isExpired: remaining <= 0,
+    isExpiringSoon: remaining > 0 && remaining < 60 * 60 * 1000,
   };
 }
 </script>
@@ -67,19 +72,19 @@ function getExpirationInfo(browser) {
                   class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-violet-50/50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400 hover:bg-violet-100/50 dark:hover:bg-violet-500/20 transition-colors"
                 >
                   <ExternalLink :size="10" />
-                  Browse
+                  {{ t("home.volumeContainersGrid.browse") }}
                 </button>
                 <button
                   @click.stop="emit('stop-browser', browser.volumeName)"
                   class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-red-50/50 text-red-500 dark:bg-red-500/10 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-red-500/20 transition-colors"
                 >
                   <EyeOff :size="10" />
-                  Stop
+                  {{ t("home.volumeContainersGrid.stop") }}
                 </button>
                 
                 <span v-if="isTemporary(browser)" 
                       class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-50/50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-500">
-                  Temp
+                  {{ t("home.volumeContainersGrid.temp") }}
                 </span>
              </div>
           </div>
@@ -95,10 +100,10 @@ function getExpirationInfo(browser) {
 
         <div v-if="isTemporary(browser)" class="mb-4">
            <div class="flex items-baseline gap-1.5">
-             <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">Expires In:</span>
+             <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">{{ t("home.volumeContainersGrid.expiresIn") }}</span>
              <span class="font-mono text-sm font-semibold tracking-tighter"
                 :class="[
-                    getExpirationInfo(browser).timeRemaining === 'Expired'
+                    getExpirationInfo(browser).isExpired
                       ? 'text-red-600 dark:text-red-500'
                       : getExpirationInfo(browser).isExpiringSoon
                         ? 'text-amber-600 dark:text-amber-500 animate-pulse'
@@ -109,14 +114,14 @@ function getExpirationInfo(browser) {
         </div>
         <div v-else class="mb-4">
            <div class="flex items-baseline gap-1.5">
-             <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">Status:</span>
-             <span class="font-mono text-sm font-semibold tracking-tighter text-gray-700 dark:text-gray-300">Active</span>
+             <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">{{ t("home.volumeContainersGrid.status") }}</span>
+             <span class="font-mono text-sm font-semibold tracking-tighter text-gray-700 dark:text-gray-300">{{ t("home.volumeContainersGrid.active") }}</span>
            </div>
         </div>
 
         <div class="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between overflow-hidden">
           <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500">
-            <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">Volume Browser</span>
+            <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">{{ t("home.volumeContainersGrid.volumeBrowser") }}</span>
           </div>
           <span class="font-mono text-xs text-violet-500 dark:text-violet-400">/browse/{{ browser.volumeName }}/</span>
         </div>

@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RefreshCw, Clock, PauseCircle, AlertCircle, Zap } from 'lucide-vue-next'
 import { formatDuration } from '../../utils/metrics.js'
 
+const { t } = useI18n()
 const props = defineProps({
   containers: { type: Array, default: () => [] },
   currentTime: { type: Number, default: () => Date.now() }
@@ -107,9 +109,9 @@ const intervalHours = computed(() => INTERVAL_HOURS)
 
 const status = computed(() => {
   const c = watchtowerContainer.value
-  if (!c) return { state: 'missing', label: 'Missing', icon: AlertCircle }
-  if (c.state !== 'running') return { state: 'stopped', label: 'Paused', icon: PauseCircle }
-  return { state: 'running', label: 'Active', icon: Clock }
+  if (!c) return { state: 'missing', label: t('quickMetrics.watchtowerNextCheck.missing'), icon: AlertCircle }
+  if (c.state !== 'running') return { state: 'stopped', label: t('quickMetrics.watchtowerNextCheck.paused'), icon: PauseCircle }
+  return { state: 'running', label: t('quickMetrics.watchtowerNextCheck.active'), icon: Clock }
 })
 </script>
 
@@ -134,7 +136,7 @@ const status = computed(() => {
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight transition-colors"
               :class="status.state === 'running' ? 'group-hover:text-green-600 dark:group-hover:text-green-400' : 'group-hover:text-amber-600 dark:group-hover:text-amber-400'">
-            Watchtower
+            {{ t('quickMetrics.watchtowerNextCheck.title') }}
           </h3>
           <div class="flex items-center gap-2 mt-1">
              <div class="w-1.5 h-1.5 rounded-full"
@@ -153,23 +155,23 @@ const status = computed(() => {
       <!-- Big Timer -->
       <div class="flex-1 min-w-0">
          <div v-if="status.state === 'running'">
-           <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Next Run In</div>
+           <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">{{ t('quickMetrics.watchtowerNextCheck.nextRunIn') }}</div>
            <div class="text-4xl font-bold tabular-nums tracking-tighter text-gray-900 dark:text-white leading-none">
              {{ formatDuration(remainingMs) }}
            </div>
            <div class="mt-3 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-zinc-400">
              <Clock class="w-3.5 h-3.5" />
-             <span>at {{ nextCheckTime }}</span>
+             <span>{{ t('quickMetrics.watchtowerNextCheck.at') }} {{ nextCheckTime }}</span>
            </div>
          </div>
          
          <div v-else>
-            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600/80 dark:text-amber-500/60 mb-2">Action Required</div>
+            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-600/80 dark:text-amber-500/60 mb-2">{{ t('quickMetrics.watchtowerNextCheck.actionRequired') }}</div>
             <div class="text-2xl font-bold tracking-tighter text-gray-900 dark:text-white leading-none">
-              Setup Updates
+              {{ t('quickMetrics.watchtowerNextCheck.setupUpdates') }}
             </div>
             <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded bg-amber-50/50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-               Updates Paused
+               {{ t('quickMetrics.watchtowerNextCheck.updatesPaused') }}
             </div>
          </div>
       </div>
@@ -180,7 +182,7 @@ const status = computed(() => {
          <div class="h-1.5 w-full bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden flex">
             <div class="h-full bg-green-500 transition-all duration-1000 ease-out" :style="{ width: `${progressPct}%` }"></div>
          </div>
-         <div class="text-[9px] text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-0.5">Interval {{ intervalHours }}h</div>
+         <div class="text-[9px] text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-0.5">{{ t('quickMetrics.watchtowerNextCheck.interval') }} {{ intervalHours }}h</div>
       </div>
       <div v-else class="shrink-0 w-12 h-12 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800">
          <component :is="status.icon" class="w-6 h-6 text-gray-400 dark:text-zinc-500" />

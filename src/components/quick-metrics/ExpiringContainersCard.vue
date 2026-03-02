@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Timer, Hourglass, Zap } from 'lucide-vue-next'
 import { formatDuration } from '../../utils/metrics.js'
 
+const { t } = useI18n()
 const props = defineProps({
   containers: { type: Array, default: () => [] },
   currentTime: { type: Number, default: () => Date.now() }
@@ -41,10 +43,10 @@ const isCritical = computed(() => stats.value.next?.isUrgent || stats.value.next
 
 const urgencyLabel = computed(() => {
   const next = stats.value.next
-  if (!next) return 'Safe'
-  if (next.isExpired) return 'Expired'
-  if (next.isUrgent) return 'Critical'
-  return 'Upcoming'
+  if (!next) return t('quickMetrics.expiringContainers.safe')
+  if (next.isExpired) return t('quickMetrics.expiringContainers.expired')
+  if (next.isUrgent) return t('quickMetrics.expiringContainers.critical')
+  return t('quickMetrics.expiringContainers.upcoming')
 })
 </script>
 
@@ -70,7 +72,7 @@ const urgencyLabel = computed(() => {
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors"
               :class="{'group-hover:text-red-600 dark:group-hover:text-red-500': isCritical}">
-            Expirations
+            {{ t('quickMetrics.expiringContainers.title') }}
           </h3>
           <div class="flex items-center gap-2 mt-1">
             <div class="w-1.5 h-1.5 rounded-full"
@@ -85,7 +87,7 @@ const urgencyLabel = computed(() => {
       
       <div class="px-2 py-1 rounded-md bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 flex items-center gap-1.5">
          <span class="text-[11px] font-bold text-gray-900 dark:text-white">{{ stats.count }}</span>
-         <span class="text-[10px] font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wider">Tracking</span>
+         <span class="text-[10px] font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wider">{{ t('quickMetrics.expiringContainers.tracking') }}</span>
       </div>
     </div>
 
@@ -95,7 +97,7 @@ const urgencyLabel = computed(() => {
       <div class="flex-1 min-w-0">
          <div class="text-[10px] font-bold uppercase tracking-[0.2em] mb-2"
               :class="isCritical ? 'text-red-500/80 dark:text-red-500/60' : 'text-gray-400 dark:text-zinc-500'">
-           {{ stats.next?.isExpired ? 'Expired For' : 'Expires In' }}
+           {{ stats.next?.isExpired ? t('quickMetrics.expiringContainers.expiredFor') : t('quickMetrics.expiringContainers.expiresIn') }}
          </div>
          
          <div class="text-4xl font-bold tabular-nums tracking-tighter leading-none" 
@@ -108,7 +110,7 @@ const urgencyLabel = computed(() => {
          
          <div class="mt-3 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-zinc-400 truncate">
            <Hourglass class="w-3.5 h-3.5" :class="isCritical ? 'text-red-500' : 'text-amber-500'" />
-           <span class="truncate">Next: <span class="font-semibold" :class="isCritical ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'">{{ stats.next?.name }}</span></span>
+           <span class="truncate">{{ t('quickMetrics.expiringContainers.next') }} <span class="font-semibold" :class="isCritical ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'">{{ stats.next?.name }}</span></span>
          </div>
       </div>
 
@@ -126,7 +128,7 @@ const urgencyLabel = computed(() => {
          </div>
          
          <div v-if="stats.count > 3" class="text-[10px] text-right font-medium text-gray-400 dark:text-zinc-600 pt-1">
-           +{{ stats.count - 3 }} more
+           {{ t('quickMetrics.expiringContainers.more', { count: stats.count - 3 }) }}
          </div>
       </div>
     </div>

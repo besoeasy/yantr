@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useApiUrl } from '../composables/useApiUrl'
 import { FileText, AlertCircle, Info, RefreshCw, Terminal, Pause, Play, Trash2, Search, ArrowDown } from 'lucide-vue-next'
 
+const { t } = useI18n()
 const { apiUrl } = useApiUrl()
 const logsData = ref({})
 const logFilter = ref('all')
@@ -82,7 +84,7 @@ onUnmounted(() => {
        <div class="flex items-center gap-4">
           <div class="flex items-center gap-2 text-gray-900 dark:text-white">
              <Terminal class="w-4 h-4" />
-             <span class="font-bold uppercase tracking-[0.2em] text-[10px]">System Output</span>
+             <span class="font-bold uppercase tracking-[0.2em] text-[10px]">{{ t('logs.systemOutput') }}</span>
           </div>
           <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-zinc-700"></div>
           
@@ -90,26 +92,26 @@ onUnmounted(() => {
              <button @click="logFilter = 'all'; fetchLogs()" 
                 :class="logFilter === 'all' ? 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white font-medium' : 'text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1.5 text-xs transition-colors">
-                All
+                {{ t('logs.all') }}
              </button>
              <div class="w-px bg-gray-200 dark:bg-zinc-800"></div>
              <button @click="logFilter = 'info'; fetchLogs()" 
                 :class="logFilter === 'info' ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium' : 'text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1.5 text-xs transition-colors">
-                Info
+                {{ t('logs.info') }}
              </button>
              <div class="w-px bg-gray-200 dark:bg-zinc-800"></div>
              <button @click="logFilter = 'error'; fetchLogs()" 
                 :class="logFilter === 'error' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium' : 'text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1.5 text-xs transition-colors">
-                Errors
+                {{ t('logs.errors') }}
              </button>
           </div>
        </div>
 
        <div class="flex items-center gap-2">
           <div class="relative group">
-             <input v-model="searchQuery" type="text" placeholder="Filter logs..." class="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
+             <input v-model="searchQuery" type="text" :placeholder="t('logs.filterLogs')" class="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
           </div>
           
           <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-zinc-700 mx-2"></div>
@@ -117,12 +119,12 @@ onUnmounted(() => {
           <button @click="autoRefresh = !autoRefresh" 
              :class="autoRefresh ? 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-500/10 border-green-200 dark:border-green-500/20' : 'text-gray-500 border-gray-200 hover:bg-gray-100 dark:text-zinc-400 dark:border-zinc-800 dark:hover:bg-zinc-800'"
              class="p-1.5 rounded-md border transition-colors shadow-sm" 
-             :title="autoRefresh ? 'Pause Auto-scroll' : 'Resume Auto-scroll'">
+             :title="autoRefresh ? t('logs.pauseAutoScroll') : t('logs.resumeAutoScroll')">
              <Pause v-if="autoRefresh" class="w-4 h-4" />
              <Play v-else class="w-4 h-4" />
           </button>
           
-          <button @click="clearLogs" class="p-1.5 text-gray-500 border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:text-zinc-400 dark:border-zinc-800 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-900/30 rounded-md transition-colors shadow-sm" title="Clear Console">
+          <button @click="clearLogs" class="p-1.5 text-gray-500 border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:text-zinc-400 dark:border-zinc-800 dark:hover:bg-red-900/20 dark:hover:text-red-400 dark:hover:border-red-900/30 rounded-md transition-colors shadow-sm" :title="t('logs.clearConsole')">
              <Trash2 class="w-4 h-4" />
           </button>
        </div>
@@ -132,12 +134,12 @@ onUnmounted(() => {
     <div ref="logContainer" class="flex-1 overflow-y-auto p-2 scrollbar-thin bg-gray-50/50 dark:bg-[#050505]">
        <div v-if="loading && !logsData.logs" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600 gap-3">
           <RefreshCw class="w-6 h-6 animate-spin" />
-          <span class="text-xs font-semibold uppercase tracking-widest">Connecting stream...</span>
+          <span class="text-xs font-semibold uppercase tracking-widest">{{ t('logs.connectingStream') }}</span>
        </div>
 
        <div v-else-if="!logsData.logs || logsData.logs.length === 0" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600 gap-3">
           <Terminal class="w-8 h-8 opacity-50" />
-          <span class="text-xs font-semibold uppercase tracking-widest">No output to display</span>
+          <span class="text-xs font-semibold uppercase tracking-widest">{{ t('logs.noOutputToDisplay') }}</span>
        </div>
 
        <div v-else class="font-mono">
@@ -166,10 +168,10 @@ onUnmounted(() => {
     <!-- Status Bar Footer -->
     <div class="bg-gray-100 dark:bg-zinc-900 border-t border-gray-200 dark:border-zinc-800 text-gray-600 dark:text-zinc-400 px-4 py-2 text-[10px] font-bold uppercase tracking-wider flex justify-between items-center shrink-0">
        <div class="flex gap-6">
-          <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-green-500" :class="{'animate-pulse': autoRefresh}"></div> LN {{ logsData.count || 0 }}</span>
-          <span>UTF-8</span>
+          <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-green-500" :class="{'animate-pulse': autoRefresh}"></div> {{ t('logs.ln') }} {{ logsData.count || 0 }}</span>
+          <span>{{ t('logs.utf8') }}</span>
        </div>
-       <div class="flex gap-2 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer" @click="scrollToBottom" title="Scroll to bottom">
+       <div class="flex gap-2 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer" @click="scrollToBottom" :title="t('logs.scrollToBottom')">
           <ArrowDown class="w-3.5 h-3.5" />
        </div>
     </div>

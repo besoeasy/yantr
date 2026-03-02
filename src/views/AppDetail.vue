@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useNotification } from '../composables/useNotification';
 import { useApiUrl } from "../composables/useApiUrl";
 import { usePortConflict } from "../composables/usePortConflict";
+import { useI18n } from "vue-i18n";
 import { Globe, FileCode, ArrowLeft, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, RotateCcw, Download } from "lucide-vue-next";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
@@ -11,6 +12,7 @@ const route = useRoute();
 const router = useRouter();
 const toast = useNotification();
 const { apiUrl } = useApiUrl();
+const { t } = useI18n();
 
 // State
 const app = ref(null);
@@ -134,15 +136,15 @@ async function fetchApp() {
       app.value = data.apps.find((a) => a.id === route.params.appname);
 
       if (!app.value) {
-        toast.error("App not found");
+        toast.error(t('appDetail.appNotFound'));
         router.push("/apps");
       }
     } else {
-      throw new Error("Failed to load apps");
+      throw new Error(t('appDetail.failedToLoadApps'));
     }
   } catch (error) {
     console.error("Error fetching app:", error);
-    toast.error("Failed to load app details");
+    toast.error(t('appDetail.failedToLoadAppDetails'));
   }
 }
 
@@ -236,7 +238,7 @@ function autoFillEnvFromDependencies() {
 
 async function fillFromDependencies() {
   if (!app.value || !dependencies.value.length) {
-    toast.info("No dependencies to fill from");
+    toast.info(t('appDetail.noDependenciesToFill'));
     return;
   }
 
@@ -295,14 +297,15 @@ async function fillFromDependencies() {
       }
 
       if (filledCount > 0) {
-        toast.success(`Filled ${filledCount} variable${filledCount > 1 ? 's' : ''} from dependencies`);
+        const plural = filledCount > 1 ? 's' : '';
+        toast.success(t('appDetail.filledVariables', { count: filledCount, plural }));
       } else {
-        toast.info("No matching variables found in dependencies");
+        toast.info(t('appDetail.noMatchingVariables'));
       }
     }
   } catch (error) {
     console.error("Error fetching dependency environment variables:", error);
-    toast.error("Failed to fetch dependency variables");
+    toast.error(t('appDetail.failedToFetchDependencyVariables'));
   } finally {
     loadingDependencyEnv.value = false;
   }
@@ -333,18 +336,18 @@ async function deployApp() {
   if (missingDependencies.value.length > 0) {
     const depApps = missingDependencies.value.join(", ");
     const proceed = confirm(
-      `Missing dependencies: ${depApps}.\n\nYou can deploy anyway, but the app may not work correctly until they are running.\n\nDeploy anyway?`
+      t('appDetail.missingDependenciesConfirm', { deps: depApps })
     );
 
     if (!proceed) {
-      toast.info("Deployment cancelled. Start required apps first to avoid issues.", {
+      toast.info(t('appDetail.deploymentCancelled'), {
         timeout: 4000
       });
       return;
     }
 
     allowMissingDependencies = true;
-    toast.warning(`Deploying without dependencies: ${depApps}`, {
+    toast.warning(t('appDetail.deployingWithoutDependencies', { deps: depApps }), {
       timeout: 5000
     });
   }
@@ -360,7 +363,7 @@ async function deployApp() {
     });
 
     if (conflicts.length > 0) {
-      toast.error(`Port conflicts detected:\n${conflicts.join("\n")}`);
+      toast.error(t('appDetail.portConflictsDetected', { conflicts: conflicts.join("\n") }));
       return;
     }
   }
@@ -368,7 +371,7 @@ async function deployApp() {
   deploying.value = true;
   const instanceNum = nextInstanceNumber.value;
   const instanceSuffix = instanceNum > 1 ? ` #${instanceNum}` : "";
-  toast.info(`Deploying ${app.value.name}${instanceSuffix}... This may take a few minutes.`);
+  toast.info(t('appDetail.deployingApp', { name: app.value.name, suffix: instanceSuffix }));
 
   try {
     const requestBody = {
@@ -399,9 +402,9 @@ async function deployApp() {
 
     if (result.success) {
       if (result.temporary) {
-        toast.success(`${app.value.name} deployed as temporary (expires in ${expirationHours.value}h)! 🎉`);
+        toast.success(t('appDetail.deployedAsTemporary', { name: app.value.name, hours: expirationHours.value }));
       } else {
-        toast.success(`${app.value.name} installed successfully! 🎉`);
+        toast.success(t('appDetail.installedSuccessfully', { name: app.value.name }));
       }
 
       // Wait a moment then redirect to containers
@@ -412,19 +415,19 @@ async function deployApp() {
       // Check if it's a dependency error
       if (result.missingDependencies && result.missingDependencies.length > 0) {
         const deps = result.missingDependencies.join(", ");
-        toast.error(`Missing dependencies: ${deps}. Click dependency badges below to deploy them first.`, {
+        toast.error(t('appDetail.missingDependenciesDeployFirst', { deps }), {
           timeout: 5000
         });
       } else {
-        throw new Error(result.message || result.error || "Deployment failed");
+        throw new Error(result.message || result.error || t('appDetail.deploymentFailed'));
       }
     }
   } catch (error) {
     console.error("Deployment error:", error);
     if (error.message.includes("timeout")) {
-      toast.error(`Deployment timeout - ${app.value.name} is taking longer than expected`);
+      toast.error(t('appDetail.deploymentTimeout', { name: app.value.name }));
     } else {
-      toast.error(`Deployment failed: ${error.message}`);
+      toast.error(t('appDetail.deploymentFailedMessage', { message: error.message }));
     }
   } finally {
     deploying.value = false;
@@ -454,7 +457,7 @@ onMounted(async () => {
           <div class="h-4 w-px bg-gray-300 dark:bg-zinc-800"></div>
 
           <div class="flex items-center gap-2.5 text-sm min-w-0">
-            <span class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Catalog</span>
+            <span class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('appDetail.catalog') }}</span>
             <span class="hidden sm:inline text-gray-300 dark:text-zinc-700">/</span>
             <span class="font-semibold tracking-tight text-gray-900 dark:text-white truncate" v-if="app">{{ app.name }}</span>
             <span v-else class="w-24 h-4 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded"></span>
@@ -463,7 +466,7 @@ onMounted(async () => {
 
         <div v-if="isInstalled" class="flex items-center gap-2 px-2.5 py-1 rounded-md border border-green-200 dark:border-green-500/20 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">
           <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-          <span>Installed</span>
+          <span>{{ t('appDetail.installed') }}</span>
         </div>
       </div>
     </header>
@@ -471,7 +474,7 @@ onMounted(async () => {
     <!-- Loading State -->
     <div v-if="loading" class="flex flex-col items-center justify-center min-h-[60vh]">
       <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin mb-6"></div>
-      <div class="font-bold text-[10px] tracking-widest text-gray-400 dark:text-zinc-500 uppercase">Retrieving Manifest...</div>
+      <div class="font-bold text-[10px] tracking-widest text-gray-400 dark:text-zinc-500 uppercase">{{ t('appDetail.retrievingManifest') }}</div>
     </div>
 
     <div v-else-if="app" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -503,7 +506,7 @@ onMounted(async () => {
               </div>
 
               <p class="text-gray-500 dark:text-zinc-400 text-sm leading-relaxed mb-6">
-                {{ app.description || "No description available for this application." }}
+                {{ app.description || t('appDetail.noDescription') }}
               </p>
 
               <!-- Action Links -->
@@ -514,21 +517,21 @@ onMounted(async () => {
                   target="_blank"
                   class="inline-flex items-center gap-1.5 text-gray-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-[11px] font-bold uppercase tracking-wider"
                 >
-                  <Globe :size="14" /> Website
+                  <Globe :size="14" /> {{ t('appDetail.website') }}
                 </a>
                 <a
                   :href="`https://github.com/besoeasy/yantr/blob/main/apps/${app.id}/compose.yml`"
                   target="_blank"
                   class="inline-flex items-center gap-1.5 text-gray-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-[11px] font-bold uppercase tracking-wider"
                 >
-                  <FileCode :size="14" /> Source
+                  <FileCode :size="14" /> {{ t('appDetail.source') }}
                 </a>
                 <a
                   :href="chatGptUrl"
                   target="_blank"
                   class="inline-flex items-center gap-1.5 text-gray-500 dark:text-zinc-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors text-[11px] font-bold uppercase tracking-wider"
                 >
-                  <Info :size="14" /> Explain
+                  <Info :size="14" /> {{ t('appDetail.explain') }}
                 </a>
               </div>
             </div>
@@ -536,15 +539,15 @@ onMounted(async () => {
 
           <!-- Network Requirements (from info.json ports) -->
           <div v-if="infoPorts.length > 0" class="space-y-4">
-            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Network Requirements</h3>
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appDetail.networkRequirements') }}</h3>
 
             <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden">
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">
-                            <th class="px-4 py-3">Port</th>
-                            <th class="px-4 py-3">Protocol</th>
-                            <th class="px-4 py-3">Label</th>
+                            <th class="px-4 py-3">{{ t('appDetail.port') }}</th>
+                            <th class="px-4 py-3">{{ t('appDetail.protocol') }}</th>
+                            <th class="px-4 py-3">{{ t('appDetail.label') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-zinc-800">
@@ -563,7 +566,7 @@ onMounted(async () => {
           <!-- Image Details -->
           <div v-if="imageDetails && imageDetails.length > 0" class="space-y-4">
              <div class="flex items-center justify-between">
-                <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Dependent Images</h3>
+                <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appDetail.dependentImages') }}</h3>
                 <span class="text-[10px] font-mono text-gray-500 bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded">{{ imageDetails.length }}</span>
              </div>
 
@@ -581,19 +584,19 @@ onMounted(async () => {
 
                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                       <div>
-                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">Platform</div>
+                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">{{ t('appDetail.platform') }}</div>
                          <div class="font-mono text-gray-900 dark:text-zinc-200">{{ img.architecture }} / {{ img.os }}</div>
                       </div>
                       <div>
-                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">Size</div>
+                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">{{ t('appDetail.size') }}</div>
                          <div class="font-mono text-gray-900 dark:text-zinc-200">{{ img.size }} MB</div>
                       </div>
                       <div>
-                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">Created</div>
+                         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">{{ t('appDetail.created') }}</div>
                          <div class="font-mono text-gray-900 dark:text-zinc-200 truncate" :title="img.createdDate">{{ img.relativeTime }}</div>
                       </div>
                       <div>
-                          <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">Digest</div>
+                          <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-1">{{ t('appDetail.digest') }}</div>
                           <div class="font-mono text-gray-900 dark:text-zinc-200 truncate" :title="img.digest">{{ img.digest.substring(7, 19) }}...</div>
                       </div>
                    </div>
@@ -611,12 +614,12 @@ onMounted(async () => {
             <div v-if="dependencies.length > 0" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-5">
               <div class="flex items-center justify-between mb-5">
                 <div class="flex items-center gap-2">
-                  <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Dependencies</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appDetail.dependencies') }}</div>
                 </div>
 
                 <div class="text-[9px] font-bold uppercase tracking-wider">
-                  <span v-if="missingDependencies.length === 0" class="text-green-600 dark:text-green-500">All running</span>
-                  <span v-else class="text-amber-600 dark:text-amber-500">{{ missingDependencies.length }} missing</span>
+                  <span v-if="missingDependencies.length === 0" class="text-green-600 dark:text-green-500">{{ t('appDetail.allRunning') }}</span>
+                  <span v-else class="text-amber-600 dark:text-amber-500">{{ missingDependencies.length }} {{ t('appDetail.missing') }}</span>
                 </div>
               </div>
 
@@ -644,7 +647,7 @@ onMounted(async () => {
 
               <div v-if="missingDependencies.length > 0" class="mt-4 rounded-lg border border-amber-200/50 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10 px-3 py-2 text-[10px] text-amber-700 dark:text-amber-400 flex items-start gap-2">
                 <AlertTriangle :size="12" class="mt-0.5 shrink-0" />
-                <span>Some dependencies are missing. App may malfunction until deployed.</span>
+                <span>{{ t('appDetail.missingDependenciesWarning') }}</span>
               </div>
             </div>
 
@@ -652,7 +655,7 @@ onMounted(async () => {
             <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-5">
               <div class="flex items-center justify-between mb-5">
                 <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
-                  Configuration
+                  {{ t('appDetail.configuration') }}
                 </h2>
                 <button
                   v-if="dependencies.length > 0 && app.environment?.length > 0"
@@ -665,7 +668,7 @@ onMounted(async () => {
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   <Download v-else :size="12" />
-                  <span>Autofill Env</span>
+                  <span>{{ t('appDetail.autofillEnv') }}</span>
                 </button>
               </div>
 
@@ -680,7 +683,7 @@ onMounted(async () => {
                   <input
                     v-model="envValues[env.envVar]"
                     type="text"
-                    :placeholder="env.default || 'Value'"
+                    :placeholder="env.default || t('appDetail.value')"
                     class="w-full bg-transparent border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                   <p v-if="env.description" class="text-[10px] text-gray-500 dark:text-zinc-500 leading-tight">{{ env.description }}</p>
@@ -695,21 +698,21 @@ onMounted(async () => {
                     <div class="flex items-start gap-3">
                         <input type="checkbox" id="temp-install" v-model="temporaryInstall" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
                         <div class="flex-1">
-                            <label for="temp-install" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">Temporary Install</label>
-                            <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">Expires and auto-deletes.</p>
+                            <label for="temp-install" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">{{ t('appDetail.temporaryInstall') }}</label>
+                            <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">{{ t('appDetail.temporaryInstallDesc') }}</p>
                         </div>
                     </div>
                     
                     <div v-if="temporaryInstall" class="mt-3 pl-6">
                         <select v-model.number="expirationHours" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg p-2 text-[11px] font-bold uppercase tracking-wider text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
-                            <option :value="1">1 Hour</option>
-                            <option :value="6">6 Hours</option>
-                            <option :value="12">12 Hours</option>
-                            <option :value="24">1 Day</option>
-                            <option :value="72">3 Days</option>
-                            <option :value="168">1 Week</option>
-                            <option :value="336">2 Weeks</option>
-                            <option :value="720">1 Month</option>
+                            <option :value="1">{{ t('appDetail.1hour') }}</option>
+                            <option :value="6">{{ t('appDetail.6hours') }}</option>
+                            <option :value="12">{{ t('appDetail.12hours') }}</option>
+                            <option :value="24">{{ t('appDetail.1day') }}</option>
+                            <option :value="72">{{ t('appDetail.3days') }}</option>
+                            <option :value="168">{{ t('appDetail.1week') }}</option>
+                            <option :value="336">{{ t('appDetail.2weeks') }}</option>
+                            <option :value="720">{{ t('appDetail.1month') }}</option>
                         </select>
                     </div>
                 </div>
@@ -719,15 +722,15 @@ onMounted(async () => {
                    <div class="flex items-start gap-3">
                         <input type="checkbox" id="custom-ports" v-model="customizePorts" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
                         <div class="flex-1">
-                            <label for="custom-ports" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">Port Mapping</label>
-                            <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">Advanced Configuration</p>
+                            <label for="custom-ports" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">{{ t('appDetail.portMapping') }}</label>
+                            <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">{{ t('appDetail.advancedConfig') }}</p>
                         </div>
                    </div>
 
                     <div v-if="customizePorts" class="mt-4 pl-1 space-y-4">
                         <div v-for="port in allPorts" :key="port.hostPort + '/' + port.protocol" class="space-y-1.5">
                             <div class="flex items-center justify-between text-[10px] font-mono font-medium text-gray-500 uppercase tracking-wider">
-                                <span>INTERNAL: {{ port.containerPort }} ({{ port.protocol }})</span>
+                                <span>{{ t('appDetail.internal') }}: {{ port.containerPort }} ({{ port.protocol }})</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-400 text-sm">→</span>
@@ -746,8 +749,8 @@ onMounted(async () => {
                                         'text-yellow-500': getPortStatus(port).status === 'warning',
                                         'text-green-500': getPortStatus(port).status === 'available'
                                     }">
-                                      <span v-if="getPortStatus(port).status === 'conflict'" class="flex items-center gap-1"><AlertTriangle :size="10" /> {{ getPortStatus(port).message }}</span>
-                                      <span v-else-if="getPortStatus(port).status === 'available'" class="flex items-center gap-1"><Check :size="10" /> {{ getPortStatus(port).message }}</span>
+                                      <span v-if="getPortStatus(port).status === 'conflict'" class="flex items-center gap-1"><AlertTriangle :size="10" /> {{ t('appDetail.portConflict') }}</span>
+                                      <span v-else-if="getPortStatus(port).status === 'available'" class="flex items-center gap-1"><Check :size="10" /> {{ t('appDetail.portAvailable') }}</span>
                                       <span v-else>{{ getPortStatus(port).message }}</span>
                                     </span>
                                 </div>
@@ -767,15 +770,15 @@ onMounted(async () => {
                  >
                     <span v-if="deploying" class="flex items-center justify-center gap-2">
                        <span class="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
-                       Initializing...
+                       {{ t('appDetail.initializing') }}
                     </span>
                     <span v-else class="flex items-center justify-center gap-2">
                        <Play :size="14" fill="currentColor" />
-                       {{ instanceCount > 0 ? 'Deploy Another Instance' : 'Install Application' }}
+                       {{ instanceCount > 0 ? t('appDetail.deployAnother') : t('appDetail.installApp') }}
                     </span>
                  </button>
                  <div v-if="instanceCount > 0" class="text-center mt-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
-                    {{ instanceCount }} Active Instance{{ instanceCount !== 1 ? 's' : '' }} running
+                    {{ instanceCount }} {{ instanceCount !== 1 ? t('appDetail.activeInstancesPlural') : t('appDetail.activeInstances') }} {{ t('appDetail.running') }}
                  </div>
               </div>
 

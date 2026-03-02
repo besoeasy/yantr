@@ -1,7 +1,9 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-vue-next'
 import { notificationState, useNotification } from '../composables/useNotification'
 
+const { t } = useI18n()
 const { dismiss } = useNotification()
 
 const iconMap = {
@@ -69,7 +71,7 @@ const colorMap = {
         <button
           @click="dismiss"
           class="shrink-0 flex items-center justify-center w-10 h-10 rounded-md text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors -mr-1"
-          aria-label="Dismiss"
+          :aria-label="t('notificationBanner.dismiss')"
         >
           <X :size="14" />
         </button>

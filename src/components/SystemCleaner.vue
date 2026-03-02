@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { 
   Trash2, 
   RefreshCw, 
@@ -14,6 +15,7 @@ import {
 import { useNotification } from '../composables/useNotification'
 import { formatBytes } from '../utils/metrics'
 
+const { t } = useI18n()
 const toast = useNotification()
 
 // Props
@@ -69,7 +71,7 @@ watch(() => props.initialVolumeStats, (newStats) => {
 
 // Methods
 async function cleanSystem() {
-  if (!confirm(`Are you sure you want to reclaim ${totalReclaimableFormatted.value}?\n\nThis will permanently delete:\n- ${imageStats.value.unusedCount} unused images\n- ${volumeStats.value.unusedCount} unused volumes`)) {
+  if (!confirm(`${t('systemCleaner.confirmCleanup', { size: totalReclaimableFormatted.value })}\n\n${t('systemCleaner.willDelete')}\n- ${t('systemCleaner.unusedImages')}: ${imageStats.value.unusedCount}\n- ${t('systemCleaner.danglingVolumes')}: ${volumeStats.value.unusedCount}`)) {
     return
   }
 
@@ -96,21 +98,19 @@ async function cleanSystem() {
       cleaned.value = true
       
       const totalReclaimed = (data.results.images?.spaceReclaimed || 0) + (data.results.volumes?.spaceReclaimed || 0)
-      toast.success(`System cleaned! Reclaimed ${formatBytes(totalReclaimed)}`)
+      toast.success(`${t('systemCleaner.systemCleaned')} ${formatBytes(totalReclaimed)}`)
       
-      // Emit event so parent can refresh stats
       emit('cleaned')
       
-      // Reset success state after a delay
       setTimeout(() => {
         cleaned.value = false
       }, 5000)
     } else {
-      throw new Error(data.error || 'Clean failed')
+      throw new Error(data.error || t('systemCleaner.cleanFailed'))
     }
   } catch (err) {
     console.error('Clean failed:', err)
-    toast.error(`Clean failed: ${err.message}`)
+    toast.error(`${t('systemCleaner.cleanFailed')}: ${err.message}`)
     error.value = err.message
   } finally {
     cleaning.value = false
@@ -132,11 +132,11 @@ async function cleanSystem() {
            <Trash2 class="w-5 h-5 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
         </div>
         <div>
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">System Prune</h3>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{{ t('systemCleaner.title') }}</h3>
           <div class="flex items-center gap-2 mt-1">
              <div class="w-1.5 h-1.5 rounded-full" :class="hasReclaimable ? 'bg-amber-500 animate-pulse' : 'bg-green-500'"></div>
              <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-               {{ hasReclaimable ? 'Optimization Needed' : 'System Healthy' }}
+               {{ hasReclaimable ? t('systemCleaner.optimizationNeeded') : t('systemCleaner.systemHealthy') }}
              </span>
           </div>
         </div>
@@ -167,9 +167,9 @@ async function cleanSystem() {
         <div v-if="cleaned" class="mb-6 flex items-start gap-3 p-3 bg-green-50/50 dark:bg-green-500/10 border border-green-100 dark:border-green-500/20 rounded-lg">
            <CheckCircle2 class="w-4 h-4 text-green-600 dark:text-green-500 mt-0.5 shrink-0" />
            <div>
-              <div class="text-[11px] font-bold text-green-800 dark:text-green-400 uppercase tracking-wider mb-0.5">Cleanup Complete</div>
+              <div class="text-[11px] font-bold text-green-800 dark:text-green-400 uppercase tracking-wider mb-0.5">{{ t('systemCleaner.cleanupComplete') }}</div>
               <div class="text-[11px] text-green-700/80 dark:text-green-500/80 font-medium">
-                 Successfully recovered space from system.
+                 {{ t('systemCleaner.cleanupCompleteDesc') }}
               </div>
            </div>
         </div>
@@ -177,7 +177,7 @@ async function cleanSystem() {
 
       <!-- Primary Metric Display -->
       <div class="flex-1 flex flex-col justify-center py-4 mb-6 relative">
-         <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-3">Reclaimable Storage</div>
+         <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-3">{{ t('systemCleaner.reclaimableStorage') }}</div>
          
          <div class="flex items-baseline gap-2">
            <span class="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white tracking-tighter tabular-nums" :class="{'opacity-50': !hasReclaimable}">
@@ -201,24 +201,24 @@ async function cleanSystem() {
         <div class="flex flex-col p-3 rounded-lg bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 transition-colors group-hover:border-gray-200 dark:group-hover:border-zinc-700/50">
            <div class="flex items-center gap-2 mb-2">
               <Package class="w-3.5 h-3.5 text-gray-400 dark:text-zinc-500" />
-              <span class="text-[10px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Unused Images</span>
+              <span class="text-[10px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">{{ t('systemCleaner.unusedImages') }}</span>
            </div>
            <div class="flex items-baseline gap-1.5">
              <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">{{ formatBytes(imageStats?.unusedSize || 0) }}</span>
            </div>
-           <span class="text-[10px] text-gray-400 dark:text-zinc-500 mt-0.5">{{ imageStats?.unusedCount || 0 }} detected items</span>
+           <span class="text-[10px] text-gray-400 dark:text-zinc-500 mt-0.5">{{ t('systemCleaner.detectedItems', { count: imageStats?.unusedCount || 0 }) }}</span>
         </div>
 
         <!-- Volumes Stat -->
         <div class="flex flex-col p-3 rounded-lg bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 transition-colors group-hover:border-gray-200 dark:group-hover:border-zinc-700/50">
            <div class="flex items-center gap-2 mb-2">
               <Database class="w-3.5 h-3.5 text-gray-400 dark:text-zinc-500" />
-              <span class="text-[10px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Dangling Volumes</span>
+              <span class="text-[10px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider">{{ t('systemCleaner.danglingVolumes') }}</span>
            </div>
            <div class="flex items-baseline gap-1.5">
              <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">{{ formatBytes(volumeStats?.unusedSize || 0) }}</span>
            </div>
-           <span class="text-[10px] text-gray-400 dark:text-zinc-500 mt-0.5">{{ volumeStats?.unusedCount || 0 }} detected items</span>
+           <span class="text-[10px] text-gray-400 dark:text-zinc-500 mt-0.5">{{ t('systemCleaner.detectedItems', { count: volumeStats?.unusedCount || 0 }) }}</span>
         </div>
       </div>
 
@@ -233,15 +233,15 @@ async function cleanSystem() {
       >
          <span v-if="cleaning" class="flex items-center gap-2 relative z-10">
             <RefreshCw class="w-4 h-4 animate-spin" />
-            Executing Purge...
+            {{ t('systemCleaner.executingPurge') }}
          </span>
          <span v-else-if="!hasReclaimable" class="flex items-center gap-2 relative z-10">
             <ShieldCheck class="w-4 h-4" />
-            System Optimized
+            {{ t('systemCleaner.systemOptimized') }}
          </span>
          <span v-else class="flex items-center gap-2 relative z-10">
             <Zap class="w-4 h-4" :class="{'text-amber-400': hasReclaimable}" />
-            Execute Cleanup
+            {{ t('systemCleaner.executeCleanup') }}
          </span>
       </button>
     </div>

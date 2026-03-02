@@ -1,5 +1,8 @@
 <script setup>
+import { useI18n } from "vue-i18n";
 import { ArrowRight, Box } from "lucide-vue-next";
+
+const { t } = useI18n();
 
 const { containers } = defineProps({
   containers: { type: Array, default: () => [] },
@@ -57,12 +60,12 @@ const emit = defineEmits(["select"]);
 
         <div class="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between overflow-hidden">
           <div class="flex flex-col min-w-0 pr-4">
-             <span class="text-[9px] uppercase font-bold text-gray-400 dark:text-zinc-500 tracking-[0.15em] mb-0.5">Image</span>
+             <span class="text-[9px] uppercase font-bold text-gray-400 dark:text-zinc-500 tracking-[0.15em] mb-0.5">{{ t("home.otherContainersGrid.image") }}</span>
              <span class="font-mono text-xs text-gray-600 dark:text-gray-400 truncate" :title="container.image">{{ container.image.split(":")[0] }}</span>
           </div>
           
           <div class="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)">
-            <span>Inspect</span>
+            <span>{{ t("home.otherContainersGrid.inspect") }}</span>
             <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform duration-300" />
           </div>
         </div>

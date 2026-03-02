@@ -1,13 +1,15 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
-import { ArrowLeft, ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, AlertCircle } from 'lucide-vue-next'
+import { ArrowLeft, ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, AlertCircle, Package } from 'lucide-vue-next'
 import { formatBytes } from '../utils/metrics'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 const toast = useNotification()
 const { apiUrl } = useApiUrl()
 
@@ -24,17 +26,14 @@ const currentTime = ref(Date.now())
 const activeTab = ref('resources')
 const showOnlyDescribedPorts = ref(true)
 
-// Backup state
 const s3Configured = ref(false)
 const volumeBackups = ref({})
 const backingUp = ref(false)
 const showRestoreMenu = ref({})
 const backupJobId = ref(null)
 
-// Update current time every second for live countdown
 let timeUpdateInterval = null
 
-// Extract volume names from container mounts
 const containerVolumes = computed(() => {
   if (!selectedContainer.value?.mounts) return []
   
@@ -47,13 +46,11 @@ const containerVolumes = computed(() => {
     }))
 })
 
-// Get all port mappings from the container with labels
 const allPortMappings = computed(() => {
   if (!selectedContainer.value || !selectedContainer.value.ports) {
     return []
   }
   
-  // Build port-number → {label, protocol} lookup from info.json ports array
   const portLabels = {}
   for (const p of (selectedContainer.value.app?.ports || [])) {
     if (p.port != null) {
@@ -72,7 +69,6 @@ const allPortMappings = computed(() => {
     const bindings = selectedContainer.value.ports[key]
     
     if (bindings && bindings.length > 0) {
-      // Deduplicate by HostPort — Docker reports both 0.0.0.0 and :: bindings for the same port
       const seenHostPorts = new Set()
       bindings.forEach(binding => {
         if (binding.HostPort && !seenHostPorts.has(binding.HostPort)) {
@@ -89,7 +85,6 @@ const allPortMappings = computed(() => {
         }
       })
     } else {
-      // Port exposed but not bound to host
       const label = portLabels[privatePort]
       mappings.push({
         containerPort: privatePort,
@@ -102,7 +97,6 @@ const allPortMappings = computed(() => {
     }
   })
   
-  // Sort by host port, then by container port
   return mappings.sort((a, b) => {
     if (a.hostPort && b.hostPort) {
       return parseInt(a.hostPort) - parseInt(b.hostPort)
@@ -113,11 +107,9 @@ const allPortMappings = computed(() => {
   })
 })
 
-// Filtered port mappings based on description availability
 const hasDescribedPorts = computed(() => allPortMappings.value.some(m => m.label))
 
 const filteredPortMappings = computed(() => {
-  // If no ports have labels at all, always show everything regardless of toggle
   if (!hasDescribedPorts.value) {
     return allPortMappings.value
   }
@@ -127,7 +119,6 @@ const filteredPortMappings = computed(() => {
   return allPortMappings.value.filter(mapping => mapping.label)
 })
 
-// Check if container has expiration
 const expirationInfo = computed(() => {
   if (!selectedContainer.value?.expireAt) return null
   
@@ -140,7 +131,7 @@ const expirationInfo = computed(() => {
   if (timeLeftMs <= 0) {
     return {
       expired: true,
-      timeLeft: 'Expired',
+      timeLeft: t('containerDetail.expired'),
       urgency: 'critical',
       percentage: 0
     }
@@ -151,8 +142,6 @@ const expirationInfo = computed(() => {
   const days = Math.floor(hours / 24)
   const minutes = totalMinutes % 60
   
-  // Calculate percentage (assuming max lifetime is from creation to expiration)
-  // For now, we'll calculate based on the remaining time
   const oneDayMs = 86400000
   const percentage = Math.min(100, Math.max(0, (timeLeftMs / oneDayMs) * 100))
   
@@ -160,16 +149,16 @@ const expirationInfo = computed(() => {
   let urgency = 'normal'
   
   if (days > 0) {
-    timeLeft = `${days} ${days === 1 ? 'day' : 'days'}${hours % 24 > 0 ? `, ${hours % 24} ${hours % 24 === 1 ? 'hour' : 'hours'}` : ''}`
+    timeLeft = `${days} ${days === 1 ? t('containerDetail.day') : t('containerDetail.days')}${hours % 24 > 0 ? `, ${hours % 24} ${hours % 24 === 1 ? t('containerDetail.hour') : t('containerDetail.hours')}` : ''}`
     urgency = days < 1 ? 'warning' : 'normal'
   } else if (hours > 0) {
-    timeLeft = `${hours} ${hours === 1 ? 'hour' : 'hours'}${minutes > 0 ? `, ${minutes} ${minutes === 1 ? 'minute' : 'minutes'}` : ''}`
+    timeLeft = `${hours} ${hours === 1 ? t('containerDetail.hour') : t('containerDetail.hours')}${minutes > 0 ? `, ${minutes} ${minutes === 1 ? t('containerDetail.minute') : t('containerDetail.minutes')}` : ''}`
     urgency = hours < 2 ? 'critical' : 'warning'
   } else if (totalMinutes > 0) {
-    timeLeft = `${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`
+    timeLeft = `${totalMinutes} ${totalMinutes === 1 ? t('containerDetail.minute') : t('containerDetail.minutes')}`
     urgency = 'critical'
   } else {
-    timeLeft = 'Less than a minute'
+    timeLeft = t('containerDetail.lessThanMinute')
     urgency = 'critical'
   }
   
@@ -208,12 +197,12 @@ async function fetchContainerDetail() {
     if (data.success) {
       selectedContainer.value = data.container
     } else {
-      toast.error('Container not found')
+      toast.error(t('containerDetail.error.containerNotFound'))
       router.push('/')
     }
   } catch (error) {
     console.error('Failed to fetch container details:', error)
-    toast.error('Failed to load container details')
+    toast.error(t('containerDetail.error.failedToLoadDetails'))
   }
 }
 
@@ -263,7 +252,7 @@ const scrollToBottom = () => {
 }
 
 async function deleteContainer() {
-  if (!confirm(`Delete ${selectedContainer.value.name}?\n\nThis will remove the container and all its volumes permanently.`)) return
+  if (!confirm(`${t('containerDetail.terminateContainer')} ${selectedContainer.value.name}?\n\n${t('containerDetail.warning')}`)) return
 
   deleting.value = true
   try {
@@ -273,17 +262,17 @@ async function deleteContainer() {
     const data = await response.json()
 
     if (data.success) {
-      let message = `${selectedContainer.value.name} deleted successfully!`
+      let message = t('containerDetail.success.deletedSuccessfully', { name: selectedContainer.value.name })
       if (data.volumesRemoved.length > 0) {
-        message += `\n\nVolumes removed: ${data.volumesRemoved.join(', ')}`
+        message += `\n\n${t('containerDetail.success.volumesRemoved', { volumes: data.volumesRemoved.join(', ') })}`
       }
       toast.success(message)
       router.push('/home')
     } else {
-      toast.error(`Deletion failed: ${data.error}`)
+      toast.error(t('containerDetail.error.deletionFailed', { error: data.error }))
     }
   } catch (error) {
-    toast.error(`Deletion failed: ${error.message}`)
+    toast.error(t('containerDetail.error.deletionFailed', { error: error.message }))
   } finally {
     deleting.value = false
   }
@@ -302,19 +291,18 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     })
     const data = await response.json()
     if (data.success) {
-      const expiryText = expiryMinutes > 0 ? ` (expires in ${expiryMinutes}m)` : ' (no expiry)'
-      toast.success(`Volume browser started${expiryText}`)
+      const expiryText = expiryMinutes > 0 ? ` (${expiryMinutes}m)` : ' (no expiry)'
+      toast.success(t('containerDetail.success.volumeBrowserStarted', { expiry: expiryText }))
       window.open(`/browse/${volumeName}/`, '_blank')
     }
   } catch (error) {
-    toast.error('Failed to start volume browser')
+    toast.error(t('containerDetail.error.failedToStartVolumeBrowser'))
     console.error(error)
   } finally {
     delete browsingVolume.value[volumeName]
   }
 }
 
-// Check S3 configuration
 async function checkS3Config() {
   try {
     const response = await fetch(`${apiUrl.value}/api/backup/config`)
@@ -325,7 +313,6 @@ async function checkS3Config() {
   }
 }
 
-// Fetch backups for container volumes
 async function fetchVolumeBackups() {
   if (!selectedContainer.value) return
 
@@ -344,7 +331,6 @@ async function fetchVolumeBackups() {
   }
 }
 
-// Backup all volumes
 async function backupAllVolumes() {
   if (!selectedContainer.value) return
 
@@ -360,20 +346,19 @@ async function backupAllVolumes() {
     const data = await response.json()
 
     if (data.success) {
-      toast.success('Backup started for all volumes')
+      toast.success(t('containerDetail.success.backupStarted'))
       backupJobId.value = data.jobId
       pollBackupJob(data.jobId)
     } else {
-      toast.error(data.error || 'Failed to start backup')
+      toast.error(data.error || t('containerDetail.error.failedToStartBackup'))
     }
   } catch (error) {
-    toast.error('Failed to start backup')
+    toast.error(t('containerDetail.error.failedToStartBackup'))
   } finally {
     backingUp.value = false
   }
 }
 
-// Poll backup job status
 async function pollBackupJob(jobId) {
   const pollInterval = setInterval(async () => {
     try {
@@ -383,11 +368,11 @@ async function pollBackupJob(jobId) {
       if (data.success && data.job) {
         if (data.job.status === 'completed') {
           clearInterval(pollInterval)
-          toast.success('Backup completed successfully')
+          toast.success(t('containerDetail.success.backupCompleted'))
           await fetchVolumeBackups()
         } else if (data.job.status === 'failed') {
           clearInterval(pollInterval)
-          toast.error(`Backup failed: ${data.job.error}`)
+          toast.error(t('containerDetail.error.backupFailed', { error: data.job.error }))
         }
       }
     } catch (error) {
@@ -397,9 +382,8 @@ async function pollBackupJob(jobId) {
   }, 2000)
 }
 
-// Restore backup
 async function restoreBackup(volumeName, snapshotId) {
-  if (!confirm(`Restore ${volumeName} from backup?\n\nThis will overwrite current data.`)) return
+  if (!confirm(`${t('backupVolumes.confirmRestore', { volume: volumeName })}`)) return
 
   try {
     const response = await fetch(
@@ -413,19 +397,18 @@ async function restoreBackup(volumeName, snapshotId) {
     const data = await response.json()
 
     if (data.success) {
-      toast.success('Restore started')
+      toast.success(t('containerDetail.success.restoreStarted'))
       pollRestoreJob(data.jobId)
     } else {
-      toast.error(data.error || 'Failed to start restore')
+      toast.error(data.error || t('containerDetail.error.failedToStartRestore'))
     }
   } catch (error) {
-    toast.error('Failed to start restore')
+    toast.error(t('containerDetail.error.failedToStartRestore'))
   }
 
   showRestoreMenu.value[volumeName] = false
 }
 
-// Poll restore job status
 async function pollRestoreJob(jobId) {
   const pollInterval = setInterval(async () => {
     try {
@@ -435,10 +418,10 @@ async function pollRestoreJob(jobId) {
       if (data.success && data.job) {
         if (data.job.status === 'completed') {
           clearInterval(pollInterval)
-          toast.success('Restore completed successfully')
+          toast.success(t('containerDetail.success.restoreCompleted'))
         } else if (data.job.status === 'failed') {
           clearInterval(pollInterval)
-          toast.error(`Restore failed: ${data.job.error}`)
+          toast.error(t('containerDetail.error.restoreFailed', { error: data.job.error }))
         }
       }
     } catch (error) {
@@ -448,9 +431,8 @@ async function pollRestoreJob(jobId) {
   }, 2000)
 }
 
-// Delete backup
 async function deleteBackupFile(volumeName, snapshotId) {
-  if (!confirm('Delete this backup?')) return
+  if (!confirm(t('backupVolumes.confirmDelete'))) return
 
   try {
     const response = await fetch(
@@ -460,30 +442,27 @@ async function deleteBackupFile(volumeName, snapshotId) {
     const data = await response.json()
 
     if (data.success) {
-      toast.success('Backup deleted')
+      toast.success(t('containerDetail.success.backupDeleted'))
       await fetchVolumeBackups()
     } else {
-      toast.error(data.error || 'Failed to delete backup')
+      toast.error(data.error || t('containerDetail.error.failedToDeleteBackup'))
     }
   } catch (error) {
-    toast.error('Failed to delete backup')
+    toast.error(t('containerDetail.error.failedToDeleteBackup'))
   }
 }
 
-// Toggle restore menu
 function toggleRestoreMenu(volumeName) {
   showRestoreMenu.value[volumeName] = !showRestoreMenu.value[volumeName]
 }
 
-// Check if volume has backups
 function hasBackups(volumeName) {
   return volumeBackups.value[volumeName]?.length > 0
 }
 
-// Get latest backup age
 function getLatestBackupAge(volumeName) {
   const backups = volumeBackups.value[volumeName]
-  if (!backups || backups.length === 0) return 'Never'
+  if (!backups || backups.length === 0) return t('containerDetail.never')
 
   const latest = backups[0]
   const date = new Date(latest.timestamp)
@@ -496,10 +475,9 @@ function getLatestBackupAge(volumeName) {
   if (diffDays > 0) return `${diffDays}d ago`
   if (diffHours > 0) return `${diffHours}h ago`
   if (diffMins > 0) return `${diffMins}m ago`
-  return 'Just now'
+  return t('containerDetail.justNow')
 }
 
-// Format backup date
 function formatBackupDate(timestamp) {
   return new Date(timestamp).toLocaleString()
 }
@@ -513,12 +491,10 @@ onMounted(async () => {
     fetchVolumeBackups()
   ])
   
-  // Start polling stats every 2 seconds
   statsInterval = setInterval(() => {
     fetchContainerStats()
   }, 2000)
   
-  // Update current time every second for expiration countdown
   timeUpdateInterval = setInterval(() => {
     currentTime.value = Date.now()
   }, 1000)
@@ -536,7 +512,6 @@ onUnmounted(() => {
 
 <template>
   <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-zinc-100 font-sans selection:bg-blue-500/30">
-     <!-- Header -->
      <header class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-30">
        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
          <div class="flex items-center gap-2 sm:gap-4 min-w-0">
@@ -547,7 +522,7 @@ onUnmounted(() => {
            <div class="h-4 w-px bg-gray-300 dark:bg-zinc-800 shrink-0"></div>
 
            <div class="flex items-center gap-1.5 sm:gap-2.5 text-sm min-w-0">
-             <span class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Containers</span>
+             <span class="hidden sm:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('containerDetail.containers') }}</span>
              <span class="hidden sm:inline text-gray-300 dark:text-zinc-700">/</span>
              <span class="font-semibold tracking-tight text-gray-900 dark:text-white truncate" v-if="selectedContainer">{{ selectedContainer.name }}</span>
              <span v-else class="w-32 h-4 bg-gray-200 dark:bg-zinc-800 animate-pulse rounded"></span>
@@ -555,7 +530,6 @@ onUnmounted(() => {
          </div>
 
         <div v-if="selectedContainer" class="flex items-center gap-2">
-          <!-- Expiration Badge -->
           <div v-if="expirationInfo" 
                class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider"
                :class="{
@@ -563,12 +537,11 @@ onUnmounted(() => {
                  'bg-orange-50 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400': expirationInfo.urgency === 'warning',
                  'bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400': expirationInfo.urgency === 'normal'
                }"
-               :title="`Expires at: ${expirationInfo.expireAt}`">
+               :title="`${t('containerDetail.expiresAt')}: ${expirationInfo.expireAt}`">
             <Clock :size="12" :class="expirationInfo.urgency === 'critical' ? 'animate-pulse' : ''" />
             <span>{{ expirationInfo.timeLeft }}</span>
           </div>
           
-          <!-- Running State Badge -->
           <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider"
             :class="selectedContainer.state === 'running' 
               ? 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20 text-green-600 dark:text-green-400' 
@@ -586,9 +559,7 @@ onUnmounted(() => {
 
     <main v-else class="max-w-7xl mx-auto px-6 py-8 space-y-6">
         
-        <!-- Info Card -->
         <div class="group relative bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
-           <!-- Glow Accent -->
            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
            <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
@@ -599,7 +570,7 @@ onUnmounted(() => {
            <div class="flex-1 space-y-3">
               <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ selectedContainer.name }}</h1>
               <p class="text-gray-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl">
-                 {{ selectedContainer.app.description || "Container usage description not available." }}
+                 {{ selectedContainer.app.description || t('containerDetail.descriptionNotAvailable') }}
               </p>
               <div class="pt-2 flex flex-wrap gap-2">
                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-[10px] font-bold tracking-widest text-gray-600 dark:text-zinc-400 rounded-md uppercase">
@@ -607,30 +578,29 @@ onUnmounted(() => {
                     {{ selectedContainer.image }}
                  </div>
                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-[10px] font-bold tracking-widest text-gray-600 dark:text-zinc-400 rounded-md uppercase">
-                    <span class="opacity-60">ID:</span> {{ selectedContainer.id.substring(0, 12) }}
+                    <span class="opacity-60">{{ t('containerDetail.id') }}:</span> {{ selectedContainer.id.substring(0, 12) }}
                  </div>
               </div>
            </div>
         </div>
 
-        <!-- Network Access -->
         <div v-if="allPortMappings.length > 0" class="space-y-4">
            <div class="flex items-center justify-between">
-             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Network Access</h3>
+             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.networkAccess') }}</h3>
              <div v-if="hasDescribedPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
                <button
                  @click="showOnlyDescribedPorts = false"
                  :class="!showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                  class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
                >
-                 All Ports
+                 {{ t('containerDetail.allPorts') }}
                </button>
                <button
                  @click="showOnlyDescribedPorts = true"
                  :class="showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                  class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
                >
-                 Described
+                 {{ t('containerDetail.described') }}
                </button>
              </div>
            </div>
@@ -649,7 +619,7 @@ onUnmounted(() => {
                        <span v-if="mapping.labeledProtocol" class="text-[9px] px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 rounded-md uppercase font-bold tracking-widest border border-gray-200 dark:border-zinc-700">{{ mapping.labeledProtocol }}</span>
                      </div>
                      <div class="text-[11px] text-gray-500 dark:text-zinc-400 truncate" :title="mapping.label">
-                       {{ mapping.label || 'Network Port' }}
+                       {{ mapping.label || t('containerDetail.networkPort') }}
                      </div>
                    </div>
                  </div>
@@ -657,12 +627,12 @@ onUnmounted(() => {
 
                <div class="space-y-2 mb-5">
                  <div class="flex items-center justify-between text-[11px]">
-                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Host Port</span>
+                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('containerDetail.hostPort') }}</span>
                    <span v-if="mapping.hostPort" class="font-mono font-bold text-gray-900 dark:text-white">{{ mapping.hostPort }}</span>
-                   <span v-else class="text-gray-400 italic">Internal</span>
+                   <span v-else class="text-gray-400 italic">{{ t('containerDetail.internal') }}</span>
                  </div>
                  <div class="flex items-center justify-between text-[11px]">
-                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Container Port</span>
+                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('containerDetail.containerPort') }}</span>
                    <span class="font-mono font-medium text-gray-700 dark:text-zinc-300">{{ mapping.containerPort }}</span>
                  </div>
                </div>
@@ -673,26 +643,25 @@ onUnmounted(() => {
                   class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-[11px] font-bold uppercase tracking-wider"
                >
                   <ExternalLink :size="12" />
-                  Open
+                  {{ t('containerDetail.open') }}
                </a>
                <div v-else class="w-full flex items-center justify-center px-3 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 rounded-lg text-[11px] font-bold uppercase tracking-wider">
-                 Internal Only
+                 {{ t('containerDetail.internalOnly') }}
                </div>
              </div>
            </div>
         </div>
 
-        <!-- Storage (Attached + Backups) -->
         <div v-if="containerVolumes.length > 0" class="space-y-4">
            <div class="flex items-center justify-between">
-             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Storage Volumes</h3>
+             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.storageVolumes') }}</h3>
              <button
                v-if="s3Configured"
                @click="backupAllVolumes"
                :disabled="backingUp"
                class="text-[10px] uppercase tracking-wider px-3 py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-bold"
              >
-               {{ backingUp ? 'Backing up...' : 'Backup All' }}
+               {{ backingUp ? t('containerDetail.backingUp') : t('containerDetail.backupAll') }}
              </button>
            </div>
 
@@ -701,8 +670,8 @@ onUnmounted(() => {
                <AlertCircle :size="14" />
              </div>
              <p class="text-xs text-amber-900 dark:text-amber-200">
-               <span class="font-bold">S3 storage not configured.</span>
-               <router-link to="/backup-config" class="underline hover:text-amber-700 font-semibold ml-1">Configure now</router-link> to enable backups.
+               <span class="font-bold">{{ t('containerDetail.s3NotConfigured') }}</span>
+               <router-link to="/backup-config" class="underline hover:text-amber-700 font-semibold ml-1">{{ t('containerDetail.configureNow') }}</router-link> {{ t('containerDetail.toEnableBackups') }}
              </p>
            </div>
 
@@ -719,7 +688,7 @@ onUnmounted(() => {
                       <div class="font-bold text-sm text-gray-900 dark:text-white truncate tracking-tight" :title="volume.name">{{ volume.name }}</div>
                       <div class="text-[11px] text-gray-500 dark:text-zinc-400 font-mono truncate mt-1">{{ volume.destination }}</div>
                       <div class="text-[10px] text-gray-400 dark:text-zinc-500 mt-2 font-bold uppercase tracking-wider">
-                        Latest backup: <span class="text-gray-600 dark:text-zinc-300">{{ getLatestBackupAge(volume.name) }}</span>
+                        {{ t('containerDetail.latestBackup') }}: <span class="text-gray-600 dark:text-zinc-300">{{ getLatestBackupAge(volume.name) }}</span>
                       </div>
                     </div>
                   </div>
@@ -727,7 +696,7 @@ onUnmounted(() => {
 
                 <div class="flex items-center gap-2 flex-wrap pt-4 border-t border-gray-100 dark:border-zinc-800">
                   <div v-if="browsingVolume[volume.name]" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 animate-pulse px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-                    Starting WebDAV server...
+                    {{ t('containerDetail.startingWebDAV') }}
                   </div>
                   
                   <button 
@@ -735,14 +704,14 @@ onUnmounted(() => {
                     @click="showVolumeMenu[volume.name] = true"
                     class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
                   >
-                    Browse Files
+                    {{ t('containerDetail.browseFiles') }}
                   </button>
                        
                   <div v-else class="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-200">
-                    <button @click="browseVolume(volume.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" title="1 Hour Access">
+                    <button @click="browseVolume(volume.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" :title="t('containerDetail.oneHourAccess')">
                       1H
                     </button>
-                    <button @click="browseVolume(volume.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" title="Permanent Access">
+                    <button @click="browseVolume(volume.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" :title="t('containerDetail.permanentAccess')">
                       Perm
                     </button>
                   </div>
@@ -751,16 +720,16 @@ onUnmounted(() => {
                     @click="backupAllVolumes"
                     :disabled="backingUp || !s3Configured"
                     class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                    title="Backup this volume"
+                    :title="t('containerDetail.backup')"
                   >
-                    Backup
+                    {{ t('containerDetail.backup') }}
                   </button>
                   <button
                     @click="toggleRestoreMenu(volume.name)"
                     :disabled="!hasBackups(volume.name) || !s3Configured"
                     class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                   >
-                    Restore
+                    {{ t('containerDetail.restore') }}
                   </button>
                 </div>
 
@@ -768,7 +737,7 @@ onUnmounted(() => {
                   v-if="showRestoreMenu[volume.name] && hasBackups(volume.name)"
                   class="mt-4 pt-4 border-t border-gray-200 dark:border-zinc-800"
                 >
-                  <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">Available Backups</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-3">{{ t('containerDetail.availableBackups') }}</div>
                   <div class="space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
                     <div
                       v-for="backup in volumeBackups[volume.name]"
@@ -787,13 +756,13 @@ onUnmounted(() => {
                           @click="restoreBackup(volume.name, backup.snapshotId)"
                           class="px-2.5 py-1.5 border border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 bg-white dark:bg-[#0A0A0A] rounded-md hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all text-[10px] font-bold uppercase tracking-wider"
                         >
-                          Restore
+                          {{ t('containerDetail.restore') }}
                         </button>
                         <button
                           @click="deleteBackupFile(volume.name, backup.snapshotId)"
                           class="px-2.5 py-1.5 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 bg-red-50 dark:bg-red-500/10 rounded-md hover:bg-red-100 dark:hover:bg-red-500/20 transition-all text-[10px] font-bold uppercase tracking-wider"
                         >
-                          Delete
+                          {{ t('containerDetail.delete') }}
                         </button>
                       </div>
                     </div>
@@ -804,12 +773,11 @@ onUnmounted(() => {
              </div>
         </div>
 
-        <!-- System Panel (Tabs) -->
         <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
           <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-zinc-800">
             <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
               <ShieldCheck :size="14" />
-              System Diagnostics
+              {{ t('containerDetail.systemDiagnostics') }}
             </div>
             <div class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
               <button
@@ -817,32 +785,31 @@ onUnmounted(() => {
                 :class="activeTab === 'resources' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
               >
-                Resources
+                {{ t('containerDetail.resources') }}
               </button>
               <button
                 @click="activeTab = 'output'"
                 :class="activeTab === 'output' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
               >
-                Output
+                {{ t('containerDetail.output') }}
               </button>
               <button
                 @click="activeTab = 'env'"
                 :class="activeTab === 'env' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
               >
-                Env
+                {{ t('containerDetail.env') }}
               </button>
             </div>
           </div>
 
           <div class="p-6">
-            <!-- Resources Tab -->
             <div v-if="activeTab === 'resources'">
               <div v-if="containerStats" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl">
                   <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-3">
-                    <Cpu :size="12" /> CPU
+                    <Cpu :size="12" /> {{ t('containerDetail.cpu') }}
                   </div>
                   <div class="text-3xl font-mono font-bold tracking-tighter text-gray-900 dark:text-white">
                     {{ containerStats.cpu.percent }}%
@@ -851,7 +818,7 @@ onUnmounted(() => {
                 
                 <div class="bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl">
                   <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-3">
-                    <Activity :size="12" /> RAM
+                    <Activity :size="12" /> {{ t('containerDetail.ram') }}
                   </div>
                   <div class="text-3xl font-mono font-bold tracking-tighter text-gray-900 dark:text-white">
                     {{ containerStats.memory.percent }}%
@@ -860,7 +827,7 @@ onUnmounted(() => {
                 
                 <div class="md:col-span-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                   <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">Network I/O</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">{{ t('containerDetail.networkIO') }}</div>
                     <div class="text-sm font-mono font-semibold text-gray-900 dark:text-white">
                       <span class="text-green-600 dark:text-green-500">↓ {{ formatBytes(containerStats.network.rx) }}</span>
                       <span class="text-gray-300 dark:text-zinc-700 mx-3">|</span>
@@ -868,27 +835,26 @@ onUnmounted(() => {
                     </div>
                   </div>
                   <div class="sm:text-right">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">Block I/O</div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">{{ t('containerDetail.blockIO') }}</div>
                     <div class="text-sm font-mono font-semibold text-gray-900 dark:text-white">
                       {{ formatBytes(containerStats.blockIO.read) }} / {{ formatBytes(containerStats.blockIO.write) }}
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">No resource data available.</div>
+              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.noResourceData') }}</div>
             </div>
 
-            <!-- Output Tab -->
             <div v-else-if="activeTab === 'output'" class="space-y-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
-                  <Terminal :size="12" /> Output Console
+                  <Terminal :size="12" /> {{ t('containerDetail.outputConsole') }}
                 </div>
                 <div class="flex items-center gap-2">
-                  <button @click="autoScrollLogs = !autoScrollLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="autoScrollLogs ? 'Pause Auto-Scroll' : 'Enable Auto-Scroll'">
+                  <button @click="autoScrollLogs = !autoScrollLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="autoScrollLogs ? t('containerDetail.pauseAutoScroll') : t('containerDetail.enableAutoScroll')">
                     <component :is="autoScrollLogs ? Pause : Play" :size="14" />
                   </button>
-                  <button @click="fetchContainerLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="refreshingLogs ? 'Refreshing...' : 'Refresh'">
+                  <button @click="fetchContainerLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="refreshingLogs ? t('containerDetail.refreshing') : t('common.refresh')">
                     <RefreshCw :size="14" :class="{ 'animate-spin': refreshingLogs }" />
                   </button>
                 </div>
@@ -899,7 +865,7 @@ onUnmounted(() => {
                 class="h-96 overflow-y-auto p-4 font-mono text-[11px] leading-5 text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent"
               >
                 <div v-if="containerLogs.length === 0" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600">
-                  <div class="mb-2 text-[10px] font-bold uppercase tracking-widest">No output logs found</div>
+                  <div class="mb-2 text-[10px] font-bold uppercase tracking-widest">{{ t('containerDetail.noOutputLogs') }}</div>
                 </div>
                 <div v-else class="space-y-0.5">
                   <div v-for="(log, i) in containerLogs" :key="i" class="break-all whitespace-pre-wrap hover:bg-gray-100 dark:hover:bg-zinc-900 px-1 -mx-1 rounded-sm">
@@ -909,10 +875,9 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <!-- Environment Tab -->
             <div v-else class="space-y-4">
               <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
-                <Lock :size="12" /> Environment Variables
+                <Lock :size="12" /> {{ t('containerDetail.environmentVariables') }}
               </div>
               <div v-if="selectedContainer.env && selectedContainer.env.length > 0" class="bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 max-h-80 overflow-y-auto custom-scrollbar">
                 <div v-for="(envVar, i) in selectedContainer.env" :key="i" class="font-mono text-[11px] mb-3 last:mb-0 break-all flex flex-col sm:flex-row gap-1 sm:gap-4">
@@ -920,14 +885,13 @@ onUnmounted(() => {
                   <div class="text-gray-900 dark:text-zinc-300 flex-1">{{ envVar.split('=').slice(1).join('=') }}</div>
                 </div>
               </div>
-              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">No environment variables available.</div>
+              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.noEnvVars') }}</div>
             </div>
           </div>
         </div>
 
-        <!-- Actions -->
         <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
-           <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">Control</h3>
+           <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.control') }}</h3>
            
            <button 
               @click="deleteContainer"
@@ -935,11 +899,11 @@ onUnmounted(() => {
               class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-wider"
            >
               <Trash2 :size="14" />
-              {{ deleting ? 'Terminating...' : 'Terminate Container' }}
+              {{ deleting ? t('containerDetail.terminating') : t('containerDetail.terminateContainer') }}
            </button>
            
            <p class="text-[10px] text-gray-500 dark:text-zinc-500 text-center px-4 leading-relaxed font-medium">
-              Warning: This action is irreversible. All associated volumes and data will be permanently destroyed.
+              {{ t('containerDetail.warning') }}
            </p>
         </div>
 

@@ -1,7 +1,9 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useI18n } from 'vue-i18n'
 import { Globe, MapPin, Network, RefreshCw, Server, ShieldCheck, AlertCircle } from "lucide-vue-next";
 
+const { t } = useI18n()
 const props = defineProps({
   refreshMs: { type: Number, default: 5 * 60_000 },
 });
@@ -90,14 +92,14 @@ const displayLocation = computed(() => {
         
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            Identity
+            {{ t('quickMetrics.machineIdentity.title') }}
           </h3>
           <div class="flex items-center gap-2 mt-1">
              <div class="w-1.5 h-1.5 rounded-full"
                   :class="error ? 'bg-red-500' : loading ? 'bg-amber-500 animate-pulse' : 'bg-green-500'">
              </div>
              <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-               {{ loading ? 'Updating' : error ? 'Offline' : 'Connected' }}
+               {{ loading ? t('quickMetrics.machineIdentity.updating') : error ? t('quickMetrics.machineIdentity.offline') : t('quickMetrics.machineIdentity.connected') }}
              </span>
           </div>
         </div>
@@ -118,7 +120,7 @@ const displayLocation = computed(() => {
       <div v-if="error" class="bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-lg p-3 flex items-start gap-3">
         <AlertCircle class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <div>
-          <div class="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Connection Failed</div>
+          <div class="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">{{ t('quickMetrics.machineIdentity.connectionFailed') }}</div>
           <div class="text-[11px] leading-tight text-red-500/80 dark:text-red-400/80 mt-1 line-clamp-2">{{ error }}</div>
         </div>
       </div>
@@ -128,7 +130,7 @@ const displayLocation = computed(() => {
          <!-- IP Address -->
          <div class="group/ip" @mouseenter="isIpHovered = true" @mouseleave="isIpHovered = false">
            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2 flex items-center gap-2">
-             Public Endpoint
+             {{ t('quickMetrics.machineIdentity.publicEndpoint') }}
              <ShieldCheck v-if="identity?.ip" class="w-3.5 h-3.5 text-green-500" />
            </div>
            
@@ -146,7 +148,7 @@ const displayLocation = computed(() => {
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
-                   <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Location</span>
+                   <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('quickMetrics.machineIdentity.location') }}</span>
                    <div v-if="loading && !identity" class="h-3 w-16 bg-gray-100 dark:bg-zinc-800 rounded animate-pulse"></div>
                    <span v-else class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate transition-colors duration-300 group-hover/location:text-gray-900 dark:group-hover/location:text-white" :title="locationText">{{ displayLocation }}</span>
                 </div>
@@ -159,7 +161,7 @@ const displayLocation = computed(() => {
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
-                   <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">Provider</span>
+                   <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('quickMetrics.machineIdentity.provider') }}</span>
                    <div v-if="loading && !identity" class="h-3 w-16 bg-gray-100 dark:bg-zinc-800 rounded animate-pulse"></div>
                    <span v-else class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">{{ ispText }}</span>
                 </div>

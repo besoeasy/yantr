@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Clock, Activity, Zap } from 'lucide-vue-next'
 import { formatDuration } from '../../utils/metrics'
 
+const { t } = useI18n()
 const props = defineProps({
   containers: { type: Array, default: () => [] },
   currentTime: { type: Number, default: () => Date.now() }
@@ -48,12 +50,12 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-            Avg. Uptime
+            {{ t('quickMetrics.averageUptime.title') }}
           </h3>
           <div class="flex items-center gap-2 mt-1 text-gray-500 dark:text-zinc-400">
              <Activity class="w-3 h-3" />
              <span class="text-[11px] font-medium uppercase tracking-wider">
-               System Stability
+               {{ t('quickMetrics.averageUptime.systemStability') }}
              </span>
           </div>
         </div>
@@ -65,23 +67,23 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
       <!-- Big Metric -->
       <div class="flex-1 min-w-0">
         <div v-if="stats.count > 0">
-           <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Time Active</div>
+           <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">{{ t('quickMetrics.averageUptime.timeActive') }}</div>
            <div class="text-4xl font-bold text-gray-900 dark:text-white tabular-nums tracking-tighter leading-none">
              {{ stats.formatted }}
            </div>
            <div class="mt-3 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-zinc-400">
              <Zap class="w-3.5 h-3.5 text-violet-500" />
-             <span>Across {{ stats.count }} containers</span>
+             <span>{{ t('quickMetrics.averageUptime.acrossContainers', { count: stats.count }) }}</span>
            </div>
          </div>
          
          <div v-else>
-            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Time Active</div>
+            <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">{{ t('quickMetrics.averageUptime.timeActive') }}</div>
             <div class="text-3xl font-bold text-gray-400 dark:text-zinc-600 tracking-tighter leading-none">
               0m
             </div>
             <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
-               System Idle
+               {{ t('quickMetrics.averageUptime.systemIdle') }}
             </div>
          </div>
       </div>

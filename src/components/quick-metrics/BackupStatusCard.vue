@@ -1,18 +1,20 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Cloud, CheckCircle2, AlertCircle, Settings, ArrowRight, ShieldCheck, Zap } from 'lucide-vue-next'
 
 const router = useRouter()
+const { t } = useI18n()
 const apiUrl = ref('')
 const configured = ref(false)
 const loading = ref(true)
 const config = ref(null)
 
 const status = computed(() => {
-  if (loading.value) return { type: 'loading', text: 'Checking', color: 'slate' }
-  if (configured.value) return { type: 'configured', text: 'Active', color: 'green' }
-  return { type: 'not-configured', text: 'Setup Required', color: 'yellow' }
+  if (loading.value) return { type: 'loading', text: t('quickMetrics.backupStatus.checking'), color: 'slate' }
+  if (configured.value) return { type: 'configured', text: t('quickMetrics.backupStatus.active'), color: 'green' }
+  return { type: 'not-configured', text: t('quickMetrics.backupStatus.setupRequired'), color: 'yellow' }
 })
 
 const isConfigured = computed(() => status.value.type === 'configured')
@@ -67,7 +69,7 @@ onMounted(() => {
         
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            S3 Backups
+            {{ t('quickMetrics.backupStatus.title') }}
           </h3>
           <div class="flex items-center gap-2 mt-1">
              <div class="w-1.5 h-1.5 rounded-full"
@@ -115,24 +117,24 @@ onMounted(() => {
       <!-- Not Configured State -->
       <div v-else class="pt-4 border-t border-gray-100 dark:border-zinc-800/80">
         <p class="text-sm font-medium text-gray-500 dark:text-zinc-400 leading-relaxed mb-4">
-          Configure S3-compatible storage to enable restic volume backups.
+          {{ t('quickMetrics.backupStatus.description') }}
         </p>
         <div class="flex items-center gap-1.5 text-amber-600 dark:text-amber-500 transition-colors duration-300">
           <Zap class="w-3.5 h-3.5" />
           <span class="text-[11px] font-bold uppercase tracking-wider">
-            Recommended
+            {{ t('quickMetrics.backupStatus.recommended') }}
           </span>
         </div>
       </div>
 
       <div class="mt-4 pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between overflow-hidden">
         <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500 group-hover:text-gray-600 dark:group-hover:text-zinc-300 transition-colors duration-300">
-          <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">Configuration</span>
+          <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">{{ t('quickMetrics.backupStatus.configuration') }}</span>
         </div>
         
         <div class="flex items-center gap-1 font-semibold text-xs transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)"
              :class="isConfigured ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600 dark:text-amber-500'">
-          <span>Manage</span>
+          <span>{{ t('quickMetrics.backupStatus.manage') }}</span>
           <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform duration-300" />
         </div>
       </div>

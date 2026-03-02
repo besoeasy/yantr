@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import { Box, Layers, ArrowRight } from "lucide-vue-next";
 
+const { t } = useI18n();
 const props = defineProps({
   containers: { type: Array, default: () => [] },
 });
@@ -78,7 +80,7 @@ function navigate(group) {
                     :class="groupState(group) === 'running' ? 'bg-green-50/50 dark:bg-green-500/10 text-green-600 dark:text-green-500' : 
                             groupState(group) === 'partial' ? 'bg-amber-50/50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500' : 
                             'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400'">
-                {{ groupState(group) === 'partial' ? 'partial' : groupState(group) }}
+                {{ groupState(group) === 'partial' ? t("stackView.partial") : t("stackView." + groupState(group)) }}
               </span>
 
               <span v-if="group.containers.length > 1" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-50 dark:bg-zinc-900 text-gray-500 dark:text-zinc-400 flex items-center gap-1">
@@ -87,7 +89,7 @@ function navigate(group) {
               </span>
 
               <span v-if="hasTemporary(group)" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-50/50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500">
-                Temp
+                {{ t("appOverview.expiresIn") }}
               </span>
             </div>
           </div>
@@ -116,11 +118,11 @@ function navigate(group) {
         <!-- Bottom Action -->
         <div class="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between overflow-hidden">
           <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500 group-hover:text-gray-600 dark:group-hover:text-zinc-300 transition-colors duration-300">
-            <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">Stack View</span>
+            <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">{{ t("home.yantraContainersGrid.stackView") }}</span>
           </div>
           
           <div class="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)">
-            <span>Open</span>
+            <span>{{ t("home.yantraContainersGrid.open") }}</span>
             <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform duration-300" />
           </div>
         </div>

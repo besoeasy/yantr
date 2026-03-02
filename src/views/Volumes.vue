@@ -2,8 +2,10 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check, Search } from 'lucide-vue-next'
 import { useNotification } from '../composables/useNotification'
+import { useI18n } from 'vue-i18n'
 
 const toast = useNotification()
+const { t } = useI18n()
 
 const volumesData = ref({})
 const loading = ref(false)
@@ -87,12 +89,12 @@ async function startBrowsing(volumeName) {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'POST' })
     const data = await response.json()
     if (data.success) {
-      toast.success(`Browser started`)
+      toast.success(t('volumes.browserStarted'))
       await fetchVolumes()
       window.open(`/browse/${volumeName}/`, '_blank')
     }
   } catch (error) {
-    toast.error('Failed to start browser')
+    toast.error(t('volumes.failedToStartBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
   }
@@ -104,31 +106,31 @@ async function stopBrowsing(volumeName) {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'DELETE' })
     const data = await response.json()
     if (data.success) {
-      toast.success('Browser stopped')
+      toast.success(t('volumes.browserStopped'))
       await fetchVolumes()
     }
   } catch (error) {
-    toast.error('Failed to stop browser')
+    toast.error(t('volumes.failedToStopBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
   }
 }
 
 async function deleteVolume(volumeName) {
-  if (!confirm(`Delete volume ${volumeName}?`)) return
+  if (!confirm(t('volumes.deleteVolume', { name: volumeName }))) return
 
   deletingVolume.value = volumeName
   try {
     const response = await fetch(`/api/volumes/${volumeName}`, { method: 'DELETE' })
     const data = await response.json()
     if (data.success) {
-      toast.success(`Volume deleted`)
+      toast.success(t('volumes.volumeDeleted'))
       await fetchVolumes()
     } else {
-      toast.error(`Deletion failed: ${data.message}`)
+      toast.error(t('volumes.deletionFailed', { message: data.message }))
     }
   } catch (error) {
-    toast.error(error.message)
+    toast.error(t('volumes.deletionFailed', { message: error.message }))
   } finally {
     deletingVolume.value = null
   }
@@ -137,7 +139,7 @@ async function deleteVolume(volumeName) {
 async function deleteAllUnusedVolumes() {
   const count = volumesData.value.unusedVolumes?.length || 0
   if (!count) return
-  if (!confirm(`Delete all ${count} unused volumes?`)) return
+  if (!confirm(t('volumes.deleteAllUnused', { count }))) return
 
   deletingAllVolumes.value = true
   let deleted = 0
@@ -149,17 +151,17 @@ async function deleteAllUnusedVolumes() {
         if (data.success) deleted++
       } catch (error) {}
     }
-    toast.success(`Cleaned up ${deleted} volumes`)
+    toast.success(t('volumes.cleanedUp', { count: deleted }))
     await fetchVolumes()
   } catch (error) {
-    toast.error(error.message)
+    toast.error(t('volumes.deletionFailed', { message: error.message }))
   } finally {
     deletingAllVolumes.value = false
   }
 }
 
 function formatDate(dateString) {
-  if (!dateString) return 'N/A'
+  if (!dateString) return t('volumes.notAvailable')
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -189,8 +191,8 @@ onUnmounted(() => {
               <HardDrive class="w-5 h-5 text-gray-700 dark:text-zinc-300" />
             </div>
             <div>
-              <h1 class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">Volumes</h1>
-              <p class="text-xs font-medium text-gray-500 dark:text-zinc-500">Manage persistent data</p>
+              <h1 class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('volumes.title') }}</h1>
+              <p class="text-xs font-medium text-gray-500 dark:text-zinc-500">{{ t('volumes.subtitle') }}</p>
             </div>
           </div>
           
@@ -200,7 +202,7 @@ onUnmounted(() => {
               <input 
                 v-model="searchQuery" 
                 type="text" 
-                placeholder="Search volumes..." 
+                :placeholder="t('volumes.searchPlaceholder')" 
                 class="w-full sm:w-64 pl-9 pr-4 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
             </div>
@@ -219,7 +221,7 @@ onUnmounted(() => {
         <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
           <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">Total Volumes</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.totalVolumes') }}</span>
             <Box class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
           </div>
           <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.total || 0 }}</span>
@@ -228,7 +230,7 @@ onUnmounted(() => {
         <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
           <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">In Use</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.inUse') }}</span>
             <Check class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-green-500 transition-colors" />
           </div>
           <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.used || 0 }}</span>
@@ -237,7 +239,7 @@ onUnmounted(() => {
         <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
           <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">Unused</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.unused') }}</span>
             <AlertCircle class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-amber-500 transition-colors" />
           </div>
           <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.unused || 0 }}</span>
@@ -246,7 +248,7 @@ onUnmounted(() => {
         <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
           <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">Browsing</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.browsing') }}</span>
             <Eye class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-blue-400 transition-colors" />
           </div>
           <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ browsingVolumes.length || 0 }}</span>
@@ -256,10 +258,10 @@ onUnmounted(() => {
       <!-- Volume Size Distribution -->
       <div v-if="chartItems.length > 0" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
         <div class="flex items-center justify-between mb-5">
-          <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">Volume Size Distribution</h3>
+          <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('volumes.volumeSizeDistribution') }}</h3>
           <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500 dark:text-zinc-500">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>In Use</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>Unused</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>{{ t('volumes.inUse') }}</span>
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>{{ t('volumes.unused') }}</span>
           </div>
         </div>
         <div class="space-y-2.5">
@@ -268,7 +270,7 @@ onUnmounted(() => {
             <div class="flex-1 bg-gray-100 dark:bg-zinc-900 rounded-full h-1.5 overflow-hidden">
               <div class="h-full rounded-full transition-all duration-500" :style="{ width: item.pct + '%', backgroundColor: item.color }"></div>
             </div>
-            <div class="w-16 shrink-0 text-xs tabular-nums text-gray-500 dark:text-zinc-500 text-right">{{ item.size }} MB</div>
+            <div class="w-16 shrink-0 text-xs tabular-nums text-gray-500 dark:text-zinc-500 text-right">{{ item.size }} {{ t('volumes.mb') }}</div>
           </div>
         </div>
       </div>
@@ -278,19 +280,19 @@ onUnmounted(() => {
          <div v-if="browsingVolumes.length > 0" class="space-y-4">
            <div class="flex items-center gap-2 text-blue-600 dark:text-blue-500">
                <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-               <h3 class="text-sm font-bold uppercase tracking-wider">Active Sessions</h3>
+               <h3 class="text-sm font-bold uppercase tracking-wider">{{ t('volumes.activeSessions') }}</h3>
            </div>
            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div v-for="volume in browsingVolumes" :key="volume.name" 
                    class="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 rounded-xl p-5 flex flex-col">
                   <div class="flex justify-between items-start mb-3">
-                      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Browsing</span>
+                      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">{{ t('volumes.browsingLabel') }}</span>
                       <button @click="stopBrowsing(volume.name)"
                           :disabled="actionLoading[volume.name]"
                           class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-red-200 dark:border-red-900/40 text-red-500 hover:text-red-600 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 text-[10px] font-bold uppercase tracking-wider transition-colors">
                           <Loader2 v-if="actionLoading[volume.name]" class="w-3 h-3 animate-spin" />
                           <EyeOff v-else class="w-3 h-3" />
-                          Stop
+                          {{ t('volumes.stop') }}
                       </button>
                   </div>
                   <h4 class="font-mono font-medium text-sm text-gray-900 dark:text-white truncate mb-4" :title="volume.name">{{ volume.name }}</h4>
@@ -299,7 +301,7 @@ onUnmounted(() => {
                          target="_blank"
                          class="flex-1 flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors shadow-sm">
                          <ExternalLink class="w-4 h-4" />
-                         Open Finder
+                         {{ t('volumes.openFinder') }}
                       </a>
                   </div>
               </div>
@@ -315,14 +317,14 @@ onUnmounted(() => {
               @click="currentTab = 'active'"
               :class="currentTab === 'active' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 dark:text-zinc-500 border-transparent hover:text-gray-700 dark:hover:text-zinc-300'"
               class="pb-3 text-sm font-semibold tracking-tight border-b-2 transition-colors flex items-center gap-2">
-              Active Volumes
+              {{ t('volumes.activeVolumes') }}
               <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 text-xs px-2 py-0.5 rounded-full font-bold tabular-nums">{{ filteredUsed.length }}</span>
             </button>
             <button 
               @click="currentTab = 'unused'"
               :class="currentTab === 'unused' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 dark:text-zinc-500 border-transparent hover:text-gray-700 dark:hover:text-zinc-300'"
               class="pb-3 text-sm font-semibold tracking-tight border-b-2 transition-colors flex items-center gap-2">
-              Unused Volumes
+              {{ t('volumes.unusedVolumes') }}
               <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 text-xs px-2 py-0.5 rounded-full font-bold tabular-nums">{{ filteredUnused.length }}</span>
             </button>
           </div>
@@ -332,7 +334,7 @@ onUnmounted(() => {
             :disabled="deletingAllVolumes"
             class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
              <Trash2 class="w-3 h-3" />
-             {{ deletingAllVolumes ? 'Cleaning...' : 'Prune All' }}
+             {{ deletingAllVolumes ? t('volumes.cleaning') : t('volumes.pruneAll') }}
            </button>
         </div>
 
@@ -343,37 +345,37 @@ onUnmounted(() => {
              <table class="w-full text-left border-collapse">
                 <thead>
                    <tr class="text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-[0.2em] border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/20">
-                      <th class="px-6 py-4 w-1/3">Name</th>
-                      <th class="px-6 py-4">Driver</th>
-                      <th class="px-6 py-4">Size</th>
-                      <th class="px-6 py-4">Created</th>
-                      <th class="px-4 py-4 w-32 text-right">Actions</th>
+                      <th class="px-6 py-4 w-1/3">{{ t('volumes.name') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.driver') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.size') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.created') }}</th>
+                      <th class="px-4 py-4 w-32 text-right">{{ t('volumes.actions') }}</th>
                    </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-zinc-800 text-sm font-medium">
                    <tr v-if="filteredUsed.length === 0">
-                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">No active/mounted volumes found</td>
+                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">{{ t('volumes.noActiveVolumes') }}</td>
                    </tr>
                    <tr v-for="volume in filteredUsed" :key="volume.name" class="group hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
                       <td class="px-6 py-4">
                           <div class="font-mono text-gray-900 dark:text-white truncate max-w-[250px] text-xs" :title="volume.name">{{ volume.name }}</div>
                       </td>
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-400">{{ volume.driver }}</td>
-                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ volume.size }} MB</td>
+                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ volume.size }} {{ t('volumes.mb') }}</td>
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ formatDate(volume.createdAt) }}</td>
                       <td class="px-4 py-4 text-right">
                          <div v-if="volume.isBrowsing" class="inline-flex items-center gap-1.5">
                             <a :href="`/browse/${volume.name}/`" target="_blank"
                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm">
                                <ExternalLink class="w-3 h-3" />
-                               Open
+                               {{ t('volumes.open') }}
                             </a>
                             <button @click="stopBrowsing(volume.name)"
                                :disabled="actionLoading[volume.name]"
                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-zinc-900 border border-red-200 dark:border-red-900/40 hover:border-red-400 text-red-500 hover:text-red-600 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm">
                                <Loader2 v-if="actionLoading[volume.name]" class="w-3 h-3 animate-spin" />
                                <EyeOff v-else class="w-3 h-3" />
-                               Stop
+                               {{ t('volumes.stop') }}
                             </button>
                          </div>
                          <button v-else @click="startBrowsing(volume.name)" 
@@ -381,7 +383,7 @@ onUnmounted(() => {
                             class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:text-gray-900 dark:hover:text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm">
                             <Loader2 v-if="actionLoading[volume.name]" class="w-3 h-3 animate-spin text-blue-500" />
                             <Eye v-else class="w-3 h-3" />
-                            Browse
+                            {{ t('volumes.browse') }}
                          </button>
                       </td>
                    </tr>
@@ -396,23 +398,23 @@ onUnmounted(() => {
              <table class="w-full text-left border-collapse">
                 <thead>
                    <tr class="text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-[0.2em] border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/20">
-                      <th class="px-6 py-4 w-1/3">Name</th>
-                      <th class="px-6 py-4">Driver</th>
-                      <th class="px-6 py-4">Size</th>
-                      <th class="px-6 py-4">Created</th>
-                      <th class="px-4 py-4 w-32 text-right">Actions</th>
+                      <th class="px-6 py-4 w-1/3">{{ t('volumes.name') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.driver') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.size') }}</th>
+                      <th class="px-6 py-4">{{ t('volumes.created') }}</th>
+                      <th class="px-4 py-4 w-32 text-right">{{ t('volumes.actions') }}</th>
                    </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 dark:divide-zinc-800 text-sm font-medium">
                    <tr v-if="filteredUnused.length === 0">
-                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">No unused volumes found</td>
+                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">{{ t('volumes.noUnusedVolumes') }}</td>
                    </tr>
                    <tr v-for="volume in filteredUnused" :key="volume.name" class="group hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
                       <td class="px-6 py-4">
                           <div class="font-mono text-gray-900 dark:text-white truncate max-w-[250px] text-xs" :title="volume.name">{{ volume.name }}</div>
                       </td>
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-400">{{ volume.driver }}</td>
-                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ volume.size }} MB</td>
+                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ volume.size }} {{ t('volumes.mb') }}</td>
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ formatDate(volume.createdAt) }}</td>
                       <td class="px-4 py-4 text-right flex items-center justify-end gap-2">
                          <a v-if="volume.isBrowsing" :href="`/browse/${volume.name}/`" target="_blank"

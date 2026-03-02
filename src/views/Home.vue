@@ -5,6 +5,7 @@ import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from
 import { formatDuration } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
+import { useI18n } from "vue-i18n";
 import YantraContainersGrid from "../components/home/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
@@ -26,6 +27,7 @@ import SponsorCard from "../components/home/SponsorCard.vue";
 
 const { apiUrl } = useApiUrl();
 const { currentTime } = useCurrentTime();
+const { t } = useI18n();
 const router = useRouter();
 
 function viewContainerDetail(container) {
@@ -242,7 +244,7 @@ onUnmounted(() => {
         <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-32">
           <div class="w-8 h-8 border-2 border-gray-200 dark:border-zinc-800 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-          <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500 animate-pulse">Syncing environment...</div>
+          <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500 animate-pulse">{{ t('home.syncing') }}</div>
         </div>
 
         <!-- Content -->
@@ -259,7 +261,7 @@ onUnmounted(() => {
               ]"
             >
               <LayoutGrid :size="14" />
-              <span>All</span>
+              <span>{{ t('home.all') }}</span>
             </button>
             <button
               v-if="yantrContainers.length > 0"
@@ -272,7 +274,7 @@ onUnmounted(() => {
               ]"
             >
               <PackageCheck :size="14" />
-              <span>Yantr Apps</span>
+              <span>{{ t('home.yantrApps') }}</span>
             </button>
             <button
               v-if="otherContainers.length > 0"
@@ -285,7 +287,7 @@ onUnmounted(() => {
               ]"
             >
               <Container :size="14" />
-              <span>Docker Apps</span>
+              <span>{{ t('home.dockerApps') }}</span>
             </button>
             <button
               v-if="volumeContainers.length > 0"
@@ -298,7 +300,7 @@ onUnmounted(() => {
               ]"
             >
               <FolderOpen :size="14" />
-              <span>Volume Browsers</span>
+              <span>{{ t('home.volumeBrowsers') }}</span>
             </button>
             <button
               @click="activeFilter = 'metrics'"
@@ -310,7 +312,7 @@ onUnmounted(() => {
               ]"
             >
               <Activity :size="14" />
-              <span>Metrics</span>
+              <span>{{ t('home.metrics') }}</span>
             </button>
           </div>
 
@@ -319,14 +321,14 @@ onUnmounted(() => {
             <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-2xl flex items-center justify-center mb-6">
               <Store :size="32" class="text-gray-400 dark:text-zinc-500" />
             </div>
-            <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-2">No Apps Running</h3>
-            <p class="text-sm font-medium text-gray-500 dark:text-zinc-400 max-w-md mx-auto mb-8">Your dashboard is looking empty. Visit the App Store to get started.</p>
+            <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-2">{{ t('home.noAppsRunning') }}</h3>
+            <p class="text-sm font-medium text-gray-500 dark:text-zinc-400 max-w-md mx-auto mb-8">{{ t('home.dashboardEmpty') }}</p>
             <router-link
               to="/apps"
               class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white dark:bg-white dark:text-gray-900 rounded-lg text-xs font-bold uppercase tracking-wider transition-all hover:-translate-y-0.5 shadow-sm"
             >
               <Store :size="16" />
-              <span>Browse App Store</span>
+              <span>{{ t('home.browseAppStore') }}</span>
             </router-link>
           </div>
 
