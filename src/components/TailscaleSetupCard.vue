@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Wifi } from 'lucide-vue-next'
+import { Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Lock, Globe } from 'lucide-vue-next'
 import { useApiUrl } from '../composables/useApiUrl'
 
 const router = useRouter()
@@ -12,15 +12,10 @@ const deploying = ref(false)
 const deployError = ref('')
 const deploySuccess = ref(false)
 
-// Tailscale auth key validation
-// Valid formats:
-//   tskey-auth-<nodekey>-<secret>  (newer ephemeral / reusable keys)
-//   tskey-<secret>                 (legacy keys)
 const isValidToken = computed(() => {
   const k = authKey.value.trim()
   if (!k.startsWith('tskey-')) return false
   if (k.length < 30) return false
-  // No whitespace inside
   if (/\s/.test(k)) return false
   return true
 })
@@ -32,11 +27,10 @@ const tokenState = computed(() => {
   return 'invalid'
 })
 
-const perks = [
-  'No port forwarding or firewall rules',
-  'End-to-end WireGuard encryption',
-  'Access all services by hostname',
-  'Works behind CGNAT & double NAT',
+const features = [
+  { icon: Lock, label: 'WireGuard E2E' },
+  { icon: Globe, label: 'Zero Port-Forward' },
+  { icon: Shield, label: 'Works behind CGNAT' },
 ]
 
 async function deploy() {
@@ -67,10 +61,10 @@ async function deploy() {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-gray-300 dark:hover:border-zinc-600">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:border-gray-300 dark:hover:border-zinc-600 hover:-translate-y-0.5">
 
     <!-- Hover accent line -->
-    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-violet-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
     <!-- Dot-grid pattern -->
     <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMTUwLCAxNTAsIDE1MCwgMC4xKSIvPjwvc3ZnPg==')] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
 
@@ -80,149 +74,145 @@ async function deploy() {
       enter-from-class="opacity-0 scale-95"
       enter-to-class="opacity-100 scale-100"
     >
-      <div v-if="deploySuccess" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 dark:bg-[#0A0A0A]/95 rounded-xl">
-        <div class="w-12 h-12 rounded-full bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 flex items-center justify-center mb-3">
+      <div v-if="deploySuccess" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 dark:bg-[#0A0A0A]/95 rounded-xl gap-3">
+        <div class="w-12 h-12 rounded-full bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 flex items-center justify-center">
           <CheckCircle class="w-6 h-6 text-green-600 dark:text-green-500" />
         </div>
-        <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tailscale Deployed</p>
-        <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-wider font-medium">Container starting…</p>
+        <div class="text-center">
+          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tailscale Deployed</p>
+          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">Container starting…</p>
+        </div>
       </div>
     </transition>
 
-    <!-- Header -->
-    <div class="relative z-10 flex items-start justify-between mb-5">
-      <div class="flex items-center gap-4">
-        <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-500">
-          <Wifi class="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        </div>
-        <div>
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            Tailscale VPN
-          </h3>
-          <div class="flex items-center gap-2 mt-1">
-            <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-            <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">Not Installed</span>
+    <div class="relative z-10 p-6 flex flex-col h-full gap-5">
+
+      <!-- Header -->
+      <div class="flex items-start justify-between">
+        <div class="min-w-0 pr-3">
+          <div class="flex items-center gap-2 mb-1">
+            <Shield class="w-3.5 h-3.5 text-violet-500" />
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">Mesh VPN</span>
+          </div>
+          <div class="text-base font-semibold tracking-tight text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors duration-300">
+            Tailscale
           </div>
         </div>
-      </div>
-      <div class="shrink-0 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Recommended</span>
-      </div>
-    </div>
-
-    <!-- Two-col body: description left, form right -->
-    <div class="relative z-10 flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-      <!-- Left: description + perks -->
-      <div class="flex flex-col justify-between">
-        <div>
-          <p class="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed mb-5">
-            Secure remote access to your homelab from anywhere — zero port forwarding, zero firewall rules. Uses WireGuard under the hood.
-          </p>
-          <ul class="space-y-2.5">
-            <li v-for="perk in perks" :key="perk.text" class="flex items-center gap-2.5">
-              <div class="w-1.5 h-1.5 rounded-full bg-blue-400 dark:bg-blue-500 shrink-0"></div>
-              <span class="text-[12px] font-medium text-gray-600 dark:text-zinc-300">{{ perk }}</span>
-            </li>
-          </ul>
+        <div class="shrink-0 flex items-center gap-1.5">
+          <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Not installed</span>
         </div>
+      </div>
+
+      <!-- Feature pills — stagger-reveal on hover -->
+      <div class="flex flex-wrap gap-2">
+        <div
+          v-for="(feat, i) in features"
+          :key="feat.label"
+          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/60 text-[10px] font-semibold text-gray-500 dark:text-zinc-400 uppercase tracking-wider transition-all duration-300 group-hover:border-violet-200 dark:group-hover:border-violet-500/30 group-hover:text-violet-600 dark:group-hover:text-violet-400"
+          :style="{ transitionDelay: `${i * 60}ms` }"
+        >
+          <component :is="feat.icon" class="w-2.5 h-2.5 shrink-0" />
+          {{ feat.label }}
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="flex flex-col gap-3 flex-1">
+        <!-- Input -->
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Auth Key</label>
+          <div class="relative">
+            <input
+              v-model="authKey"
+              type="text"
+              placeholder="tskey-auth-…"
+              autocomplete="off"
+              spellcheck="false"
+              class="w-full bg-gray-50 dark:bg-zinc-900 border rounded-lg px-3 py-2.5 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 outline-none transition-all duration-200 pr-8"
+              :class="{
+                'border-gray-200 dark:border-zinc-800 focus:border-violet-400 dark:focus:border-violet-500 focus:ring-1 focus:ring-violet-400/20': tokenState === 'empty',
+                'border-green-300 dark:border-green-600 focus:border-green-400': tokenState === 'valid',
+                'border-red-300 dark:border-red-700 focus:border-red-400': tokenState === 'invalid',
+              }"
+            />
+            <div class="absolute right-2.5 top-1/2 -translate-y-1/2 transition-all duration-200">
+              <CheckCircle v-if="tokenState === 'valid'" class="w-3.5 h-3.5 text-green-500" />
+              <AlertCircle v-else-if="tokenState === 'invalid'" class="w-3.5 h-3.5 text-red-400" />
+            </div>
+          </div>
+
+          <!-- Sliding validation hint -->
+          <div class="overflow-hidden">
+            <transition
+              enter-active-class="transition-all duration-200 ease-out"
+              enter-from-class="opacity-0 -translate-y-2 max-h-0"
+              enter-to-class="opacity-100 translate-y-0 max-h-6"
+              leave-active-class="transition-all duration-150 ease-in"
+              leave-from-class="opacity-100 translate-y-0 max-h-6"
+              leave-to-class="opacity-0 -translate-y-2 max-h-0"
+            >
+              <p v-if="tokenState === 'invalid'" class="mt-1.5 text-[11px] text-red-500 dark:text-red-400 font-medium">
+                Must start with <span class="font-mono">tskey-</span> and be ≥ 30 chars
+              </p>
+              <p v-else-if="tokenState === 'valid'" class="mt-1.5 text-[11px] text-green-600 dark:text-green-400 font-medium">
+                Key looks valid
+              </p>
+            </transition>
+          </div>
+        </div>
+
+        <!-- Error banner -->
+        <transition
+          enter-active-class="transition-all duration-300 ease-out"
+          enter-from-class="opacity-0 translate-y-1"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition-all duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 translate-y-1"
+        >
+          <div v-if="deployError" class="flex items-center gap-2 p-2.5 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20">
+            <AlertCircle class="w-3.5 h-3.5 text-red-500 shrink-0" />
+            <p class="text-[11px] text-red-600 dark:text-red-400 font-medium">{{ deployError }}</p>
+          </div>
+        </transition>
+
+        <!-- Deploy button -->
+        <button
+          @click="deploy"
+          :disabled="!isValidToken || deploying"
+          class="mt-auto w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-200"
+          :class="isValidToken && !deploying
+            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 cursor-pointer'
+            : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500 cursor-not-allowed'"
+        >
+          <Loader v-if="deploying" class="w-3.5 h-3.5 animate-spin" />
+          <Shield v-else class="w-3.5 h-3.5 transition-transform duration-200" :class="isValidToken ? 'group-hover:scale-110' : ''" />
+          <span>{{ deploying ? 'Deploying…' : 'Deploy Tailscale' }}</span>
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="pt-4 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between">
         <a
           href="https://login.tailscale.com/admin/settings/keys"
           target="_blank"
           rel="noopener noreferrer"
-          class="mt-5 inline-flex items-center gap-1.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+          class="group/link inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors duration-200"
         >
           <Key class="w-3 h-3" />
-          Generate auth key at login.tailscale.com ↗
+          <span>Get auth key</span>
+          <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
         </a>
-      </div>
-
-      <!-- Right: form -->
-      <div class="flex flex-col justify-between">
-        <div class="space-y-3">
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Auth Key</label>
-            <div class="relative">
-              <input
-                v-model="authKey"
-                type="text"
-                placeholder="tskey-auth-…"
-                autocomplete="off"
-                spellcheck="false"
-                class="w-full bg-gray-50 dark:bg-zinc-900 border rounded-lg px-3 py-2.5 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 outline-none transition-all duration-200 pr-8"
-                :class="{
-                  'border-gray-200 dark:border-zinc-800 focus:border-blue-400 dark:focus:border-blue-500': tokenState === 'empty',
-                  'border-green-300 dark:border-green-600 focus:border-green-400 dark:focus:border-green-500': tokenState === 'valid',
-                  'border-red-300 dark:border-red-700 focus:border-red-400 dark:focus:border-red-600': tokenState === 'invalid',
-                }"
-              />
-              <div class="absolute right-2.5 top-1/2 -translate-y-1/2">
-                <CheckCircle v-if="tokenState === 'valid'" class="w-3.5 h-3.5 text-green-500" />
-                <AlertCircle v-else-if="tokenState === 'invalid'" class="w-3.5 h-3.5 text-red-400" />
-              </div>
-            </div>
-            <!-- Validation hint -->
-            <div class="mt-1.5 h-4">
-              <transition
-                enter-active-class="transition-all duration-200 ease-out"
-                enter-from-class="opacity-0 -translate-y-1"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition-all duration-150 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-1"
-              >
-                <p v-if="tokenState === 'invalid'" class="text-[11px] text-red-500 dark:text-red-400 font-medium">
-                  Must start with <span class="font-mono">tskey-</span> and be ≥ 30 chars
-                </p>
-                <p v-else-if="tokenState === 'valid'" class="text-[11px] text-green-600 dark:text-green-400 font-medium">
-                  Token looks valid
-                </p>
-              </transition>
-            </div>
-          </div>
-
-          <!-- Error message -->
-          <transition
-            enter-active-class="transition-all duration-300 ease-out"
-            enter-from-class="opacity-0 translate-y-1"
-            enter-to-class="opacity-100 translate-y-0"
-          >
-            <div v-if="deployError" class="flex items-center gap-2 p-2.5 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20">
-              <AlertCircle class="w-3.5 h-3.5 text-red-500 shrink-0" />
-              <p class="text-[11px] text-red-600 dark:text-red-400 font-medium">{{ deployError }}</p>
-            </div>
-          </transition>
-        </div>
-
-        <!-- Deploy button pushed to bottom -->
         <button
-          @click="deploy"
-          :disabled="!isValidToken || deploying"
-          class="mt-5 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all duration-200"
-          :class="isValidToken && !deploying
-            ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:-translate-y-0.5 hover:shadow-lg cursor-pointer'
-            : 'bg-gray-100 dark:bg-zinc-800 text-gray-400 dark:text-zinc-500 cursor-not-allowed'"
+          @click="router.push('/apps/tailscale')"
+          class="group/link inline-flex items-center gap-1 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors duration-200"
         >
-          <Loader v-if="deploying" class="w-3.5 h-3.5 animate-spin" />
-          <Shield v-else class="w-3.5 h-3.5" />
-          <span>{{ deploying ? 'Deploying…' : 'Deploy Tailscale' }}</span>
+          <span class="translate-y-0 group-hover/link:-translate-y-0.5 transition-transform duration-200">View app</span>
+          <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
         </button>
       </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="relative z-10 mt-5 pt-4 border-t border-gray-100 dark:border-zinc-800 flex items-center justify-between">
-      <div class="flex items-center gap-1.5 text-blue-600 dark:text-blue-500">
-        <Shield class="w-3.5 h-3.5" />
-        <span class="text-[11px] font-bold uppercase tracking-wider">Essential for Remote Access</span>
-      </div>
-      <button
-        @click="router.push('/apps/tailscale')"
-        class="flex items-center gap-1 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors group/link"
-      >
-        <span>View App</span>
-        <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
-      </button>
     </div>
   </div>
 </template>
