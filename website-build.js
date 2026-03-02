@@ -228,21 +228,34 @@ function httpsGet(url) {
   });
 }
 
+async function fetchAllContributors() {
+  const allContributors = [];
+  let page = 1;
+  while (true) {
+    const data = await httpsGet(`https://api.github.com/repos/besoeasy/yantr/contributors?per_page=100&page=${page}`);
+    if (!Array.isArray(data) || data.length === 0) break;
+    allContributors.push(...data);
+    if (data.length < 100) break;
+    page++;
+  }
+  return allContributors;
+}
+
 async function fetchGitHubData() {
   const githubDataPath = path.join(websiteDir, 'github-data.json');
   console.log('\n🐙 Fetching GitHub data...');
 
   try {
-    const [repoData, contribData] = await Promise.all([
+    const [repoData, allContributors] = await Promise.all([
       httpsGet('https://api.github.com/repos/besoeasy/yantr'),
-      httpsGet('https://api.github.com/repos/besoeasy/yantr/contributors?per_page=100'),
+      fetchAllContributors(),
     ]);
 
     const output = {
       fetchedAt: new Date().toISOString(),
       stars: repoData.stargazers_count || 0,
       forks: repoData.forks_count || 0,
-      contributors: Array.isArray(contribData) ? contribData : [],
+      contributors: allContributors,
     };
 
     fs.writeFileSync(githubDataPath, JSON.stringify(output, null, 2), 'utf8');
