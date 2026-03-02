@@ -10,6 +10,8 @@ import VolumeContainersGrid from "../components/home/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/home/OtherContainersGrid.vue";
 import SystemCleaner from "../components/SystemCleaner.vue";
 import WatchtowerAlert from "../components/WatchtowerAlert.vue";
+import TailscaleSetupCard from "../components/TailscaleSetupCard.vue";
+import TailscaleStatusCard from "../components/quick-metrics/TailscaleStatusCard.vue";
 import OverviewPulseCard from "../components/home/OverviewPulseCard.vue";
 import MachineIdentityCard from "../components/quick-metrics/MachineIdentityCard.vue";
 import RotatingDiskUsageCard from "../components/quick-metrics/RotatingDiskUsageCard.vue";
@@ -35,6 +37,7 @@ const images = ref([]);
 const volumeBrowsers = ref([]);
 const loading = ref(false);
 const watchtowerInstalled = ref(false);
+const tailscaleInstalled = ref(false);
 const activeFilter = ref("all");
 
 let containersRefreshInterval = null;
@@ -74,6 +77,9 @@ const reclaimableStats = computed(() => {
 
 // Watchtower Visibility
 const showWatchtowerAlert = computed(() => !watchtowerInstalled.value);
+
+// Tailscale Visibility
+const showTailscaleSetup = computed(() => !tailscaleInstalled.value);
 
 // Container Grouping
 const volumeContainers = computed(() => volumeBrowsers.value);
@@ -155,6 +161,9 @@ async function fetchContainers() {
 
       watchtowerInstalled.value = data.containers.some(
         (c) => c.name?.toLowerCase().includes("watchtower") || c.Names?.some((name) => name.toLowerCase().includes("watchtower")),
+      );
+      tailscaleInstalled.value = data.containers.some(
+        (c) => c.name?.toLowerCase().includes("tailscale") || c.Names?.some((name) => name.toLowerCase().includes("tailscale")),
       );
     }
   } catch (error) {
@@ -342,6 +351,14 @@ onUnmounted(() => {
 
             <div v-if="showMetrics">
               <HostMetricsCard :api-url="apiUrl" />
+            </div>
+
+            <!-- Tailscale: setup (2-col) or status card -->
+            <div v-if="showMetrics && showTailscaleSetup" class="sm:col-span-2 h-full">
+              <TailscaleSetupCard />
+            </div>
+            <div v-else-if="showMetrics">
+              <TailscaleStatusCard :containers="containers" :current-time="currentTime" />
             </div>
 
             <div v-if="showMetrics">
