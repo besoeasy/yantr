@@ -3,18 +3,20 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ShieldAlert, ArrowRight, Shield, CheckCircle, Loader, RefreshCw, Bell, Trash2 } from 'lucide-vue-next'
 import { useApiUrl } from '../composables/useApiUrl'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const { apiUrl } = useApiUrl()
+const { t } = useI18n()
 
 const deploying = ref(false)
 const deployError = ref('')
 const deploySuccess = ref(false)
 
 const features = [
-  { icon: RefreshCw, label: 'Auto-updates' },
-  { icon: Bell, label: 'Notifications' },
-  { icon: Trash2, label: 'Image cleanup' },
+  { icon: RefreshCw, label: t('watchtowerAlert.autoUpdates') },
+  { icon: Bell, label: t('watchtowerAlert.notifications') },
+  { icon: Trash2, label: t('watchtowerAlert.imageCleanup') },
 ]
 
 async function deploy() {
@@ -60,8 +62,8 @@ async function deploy() {
           <CheckCircle class="w-6 h-6 text-green-600 dark:text-green-500" />
         </div>
         <div class="text-center">
-          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Watchtower Deployed</p>
-          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">Container starting…</p>
+          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('watchtowerAlert.deployed') }}</p>
+          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">{{ t('watchtowerAlert.containerStarting') }}</p>
         </div>
       </div>
     </transition>
@@ -73,7 +75,7 @@ async function deploy() {
         <div class="min-w-0 pr-3">
           <div class="flex items-center gap-2 mb-1">
             <ShieldAlert class="w-3.5 h-3.5 text-amber-500" />
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">Security</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">{{ t('watchtowerAlert.security') }}</span>
           </div>
           <div class="text-base font-semibold tracking-tight text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300">
             Watchtower
@@ -81,7 +83,7 @@ async function deploy() {
         </div>
         <div class="shrink-0 flex items-center gap-1.5">
           <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Not installed</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">{{ t('watchtowerAlert.notInstalled') }}</span>
         </div>
       </div>
 
@@ -121,7 +123,7 @@ async function deploy() {
       >
         <Loader v-if="deploying" class="w-3.5 h-3.5 animate-spin" />
         <Shield v-else class="w-3.5 h-3.5 transition-transform duration-200 group-hover:scale-110" />
-        <span>{{ deploying ? 'Deploying…' : 'Deploy Watchtower' }}</span>
+        <span>{{ deploying ? t('watchtowerAlert.deploying') : t('watchtowerAlert.deployWatchtower') }}</span>
       </button>
 
       <!-- Footer -->
@@ -130,7 +132,7 @@ async function deploy() {
           @click="router.push('/apps/watchtower')"
           class="group/link inline-flex items-center gap-1 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors duration-200"
         >
-          <span class="group-hover/link:-translate-y-0.5 transition-transform duration-200">View app</span>
+          <span class="group-hover/link:-translate-y-0.5 transition-transform duration-200">{{ t('watchtowerAlert.viewApp') }}</span>
           <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
         </button>
       </div>

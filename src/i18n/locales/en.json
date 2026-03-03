@@ -596,10 +596,11 @@
   "appCard": {
     "active": "Active ({count})",
     "ready": "Ready",
+    "notRunning": "Not running",
+    "manage": "Manage",
     "unknownApp": "Unknown App",
     "noDescription": "No description available. Click to view configuration and details.",
-    "application": "Application",
-    "manage": "Manage"
+    "application": "Application"
   },
   "systemCleaner": {
     "title": "System Prune",
@@ -627,7 +628,17 @@
     "watchtowerMissing": "Watchtower Missing",
     "description": "Automate your container updates to keep your system secure and up-to-date.",
     "recommended": "Recommended",
-    "installNow": "Install Now"
+    "installNow": "Install Now",
+    "security": "Security",
+    "autoUpdates": "Auto-updates",
+    "notifications": "Notifications",
+    "imageCleanup": "Image cleanup",
+    "deployed": "Watchtower Deployed",
+    "containerStarting": "Container starting…",
+    "notInstalled": "Not installed",
+    "deploying": "Deploying…",
+    "deployWatchtower": "Deploy Watchtower",
+    "viewApp": "View app"
   },
   "quickMetrics": {
     "averageUptime": {
@@ -698,6 +709,22 @@
       "setupUpdates": "Setup Updates",
       "updatesPaused": "Updates Paused",
       "interval": "Interval"
+    },
+    "tailscaleStatusCard": {
+      "meshVpn": "Mesh VPN",
+      "active": "Active",
+      "down": "Down",
+      "uptime": "Uptime",
+      "status": "Status",
+      "offline": "Offline",
+      "wireGuardMeshActive": "WireGuard mesh active",
+      "remoteAccessUnavailable": "Remote access unavailable",
+      "encryption": "Encryption",
+      "wireGuard": "WireGuard",
+      "ports": "Ports",
+      "version": "Version",
+      "connected": "Connected",
+      "stopped": "Stopped"
     }
   }
 }

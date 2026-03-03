@@ -1,7 +1,9 @@
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { Wifi, WifiOff, Shield, Lock, Globe, Clock } from 'lucide-vue-next'
 
+const { t } = useI18n()
 const props = defineProps({
   containers: { type: Array, default: () => [] },
   currentTime: { type: Number, default: () => Date.now() },
@@ -88,7 +90,7 @@ function formatUptime(ms) {
         <div class="min-w-0 pr-2">
           <div class="flex items-center gap-2 mb-1">
             <Shield class="w-3.5 h-3.5 text-violet-500" />
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">Mesh VPN</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">{{ t('tailscaleStatusCard.meshVpn') }}</span>
           </div>
           <div
             class="text-base font-semibold tracking-tight truncate transition-colors"
@@ -111,7 +113,7 @@ function formatUptime(ms) {
             class="text-[10px] font-bold uppercase tracking-wider"
             :class="isRunning ? 'text-green-600 dark:text-green-500' : 'text-red-600 dark:text-red-400'"
           >
-            {{ isRunning ? 'Active' : 'Down' }}
+            {{ isRunning ? t('tailscaleStatusCard.active') : t('tailscaleStatusCard.down') }}
           </span>
         </div>
       </div>
@@ -119,13 +121,13 @@ function formatUptime(ms) {
       <!-- Primary metric — uptime -->
       <div>
         <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-1.5">
-          {{ isRunning ? 'Uptime' : 'Status' }}
+          {{ isRunning ? t('tailscaleStatusCard.uptime') : t('tailscaleStatusCard.status') }}
         </div>
         <div class="text-4xl font-bold tabular-nums tracking-tighter text-gray-900 dark:text-white leading-none">
-          {{ isRunning ? formatUptime(uptimeMs) : 'Offline' }}
+          {{ isRunning ? formatUptime(uptimeMs) : t('tailscaleStatusCard.offline') }}
         </div>
         <div class="mt-2 text-[11px] font-medium text-gray-500 dark:text-zinc-400">
-          {{ isRunning ? 'WireGuard mesh active' : 'Remote access unavailable' }}
+          {{ isRunning ? t('tailscaleStatusCard.wireGuardMeshActive') : t('tailscaleStatusCard.remoteAccessUnavailable') }}
         </div>
       </div>
 
@@ -136,7 +138,7 @@ function formatUptime(ms) {
         <div class="flex flex-col p-3 rounded-lg bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 group-hover:border-gray-200 dark:group-hover:border-zinc-700/50 transition-colors">
           <div class="flex items-center gap-1.5 mb-2 text-gray-500 dark:text-zinc-400">
             <Lock class="w-3 h-3" />
-            <span class="text-[9px] font-bold uppercase tracking-widest">Encryption</span>
+            <span class="text-[9px] font-bold uppercase tracking-widest">{{ t('tailscaleStatusCard.encryption') }}</span>
           </div>
           <div class="mt-auto text-sm font-semibold text-gray-800 dark:text-zinc-200 tracking-tight">
             WireGuard
@@ -148,7 +150,7 @@ function formatUptime(ms) {
           <div class="flex items-center gap-1.5 mb-2 text-gray-500 dark:text-zinc-400">
             <Globe class="w-3 h-3" />
             <span class="text-[9px] font-bold uppercase tracking-widest">
-              {{ exposedPorts ? 'Ports' : 'Version' }}
+              {{ exposedPorts ? t('tailscaleStatusCard.ports') : t('tailscaleStatusCard.version') }}
             </span>
           </div>
           <div class="mt-auto text-sm font-semibold text-gray-800 dark:text-zinc-200 tracking-tight font-mono truncate">
@@ -168,13 +170,13 @@ function formatUptime(ms) {
           class="ml-auto shrink-0 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-500/20"
         >
           <Clock class="w-2.5 h-2.5" />
-          Connected
+          {{ t('tailscaleStatusCard.connected') }}
         </span>
         <span
           v-else
           class="ml-auto shrink-0 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-100 dark:border-red-500/20"
         >
-          Stopped
+          {{ t('tailscaleStatusCard.stopped') }}
         </span>
       </div>
 

@@ -1,5 +1,6 @@
 <script setup>
 import { toRefs, computed, ref } from "vue";
+import { useI18n } from 'vue-i18n'
 import { 
   Bot, 
   ArrowRight, 
@@ -9,6 +10,7 @@ import {
   Layers
 } from "lucide-vue-next";
 
+const { t } = useI18n()
 const props = defineProps({
   app: {
     type: Object,
@@ -90,7 +92,7 @@ function handleClick() {
         <div v-if="appState === 'running'" class="flex items-center gap-2 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20 px-2 py-1.5 rounded-full">
           <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0"></div>
           <span class="text-[11px] font-bold tracking-wide uppercase whitespace-nowrap">
-            Active ({{ instanceCount }})
+            {{ t('appCard.active') }} ({{ instanceCount }})
           </span>
         </div>
         
@@ -98,7 +100,7 @@ function handleClick() {
         <div v-else-if="appState === 'installed'" class="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-500/20 px-2 py-1.5 rounded-full">
           <div class="w-2 h-2 rounded-full bg-yellow-500 shrink-0"></div>
           <span class="text-[11px] font-bold tracking-wide uppercase whitespace-nowrap">
-            Ready
+            {{ t('appCard.ready') }}
           </span>
         </div>
       </div>
@@ -108,11 +110,11 @@ function handleClick() {
     <div class="relative z-10 flex-1 flex flex-col">
       <!-- Clean Typography -->
       <h3 :class="['text-lg font-semibold text-gray-900 dark:text-white mb-1.5 tracking-tight transition-colors duration-300', appState !== 'installed' ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400' : '']">
-        {{ app?.name || 'Unknown App' }}
+        {{ app?.name || t('appCard.unknownApp') }}
       </h3>
 
       <p class="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed line-clamp-2 mb-6 font-medium">
-        {{ app?.description || 'No description available. Click to view configuration and details.' }}
+        {{ app?.description || t('appCard.noDescription') }}
       </p>
 
       <div class="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center justify-between overflow-hidden">
@@ -120,17 +122,17 @@ function handleClick() {
         <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500 group-hover:text-gray-600 dark:group-hover:text-zinc-300 transition-colors duration-300">
           <Layers :size="14" />
           <span class="text-[11px] font-semibold uppercase tracking-wider">
-            {{ app?.tags?.[0] || 'Application' }}
+            {{ app?.tags?.[0] || t('appCard.application') }}
           </span>
         </div>
         
         <!-- Action hint -->
         <div v-if="appState !== 'installed'" class="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs">
-          <span>Manage</span>
+          <span>{{ t('appCard.manage') }}</span>
           <ArrowRight :size="14" class="group-hover:translate-x-1 transition-transform duration-300" />
         </div>
         <div v-else class="flex items-center gap-1 text-yellow-500 dark:text-yellow-400 font-semibold text-xs opacity-60">
-          <span>Not running</span>
+          <span>{{ t('appCard.notRunning') }}</span>
         </div>
       </div>
     </div>

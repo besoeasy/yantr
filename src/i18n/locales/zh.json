@@ -596,10 +596,11 @@
   "appCard": {
     "active": "活动 ({count})",
     "ready": "就绪",
+    "notRunning": "未运行",
+    "manage": "管理",
     "unknownApp": "未知应用",
     "noDescription": "没有可用描述。点击查看配置和详情。",
-    "application": "应用",
-    "manage": "管理"
+    "application": "应用"
   },
   "systemCleaner": {
     "title": "系统清理",
@@ -627,7 +628,17 @@
     "watchtowerMissing": "Watchtower 未安装",
     "description": "自动化容器更新，保持系统安全与最新。",
     "recommended": "推荐",
-    "installNow": "立即安装"
+    "installNow": "立即安装",
+    "security": "安全",
+    "autoUpdates": "自动更新",
+    "notifications": "通知",
+    "imageCleanup": "镜像清理",
+    "deployed": "Watchtower 已部署",
+    "containerStarting": "容器启动中…",
+    "notInstalled": "未安装",
+    "deploying": "部署中…",
+    "deployWatchtower": "部署 Watchtower",
+    "viewApp": "查看应用"
   },
   "quickMetrics": {
     "averageUptime": {
@@ -698,6 +709,22 @@
       "setupUpdates": "设置更新",
       "updatesPaused": "更新已暂停",
       "interval": "间隔"
+    },
+    "tailscaleStatusCard": {
+      "meshVpn": "网格 VPN",
+      "active": "活动",
+      "down": "离线",
+      "uptime": "运行时间",
+      "status": "状态",
+      "offline": "离线",
+      "wireGuardMeshActive": "WireGuard 网格活动",
+      "remoteAccessUnavailable": "远程访问不可用",
+      "encryption": "加密",
+      "wireGuard": "WireGuard",
+      "ports": "端口",
+      "version": "版本",
+      "connected": "已连接",
+      "stopped": "已停止"
     }
   }
 }
