@@ -38,9 +38,8 @@
     "dashboardEmpty": "ダッシュボードが空です。アプリストアにアクセスして始めましょう。",
     "browseAppStore": "アプリストアを見る",
     "externalLinks": {
-      "resources": "リソース",
-      "communitySupport": "コミュニティ & サポート",
-      "sponsor": "スポンサー",
+      "resources": "Source",
+      "buildData": "ビルドデータ",
       "github": "GitHub",
       "reportIssue": "問題を報告",
       "buildInfo": "ビルド情報"

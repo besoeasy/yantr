@@ -1,16 +1,10 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { Github, Heart, Bug, ExternalLink, Link2, GitBranch } from "lucide-vue-next";
+import { Github, Bug, ExternalLink, Link2, GitBranch } from "lucide-vue-next";
 
 const { t } = useI18n();
 
 const links = [
-  {
-    title: t("home.externalLinks.sponsor"),
-    href: "https://sponsor.besoeasy.com/",
-    icon: Heart,
-    color: "text-rose-500",
-  },
   {
     title: t("home.externalLinks.github"),
     href: "https://github.com/besoeasy/Yantr",
@@ -45,7 +39,7 @@ const buildTimestamp = buildDate && !Number.isNaN(buildDate.getTime())
         </div>
         <div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ t("home.externalLinks.resources") }}</h3>
-          <div class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">{{ t("home.externalLinks.communitySupport") }}</div>
+          <div class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">{{ t("home.externalLinks.buildData") }}</div>
         </div>
       </div>
 

@@ -38,9 +38,8 @@
     "dashboardEmpty": "Your dashboard is looking empty. Visit the App Store to get started.",
     "browseAppStore": "Browse App Store",
     "externalLinks": {
-      "resources": "Resources",
-      "communitySupport": "Community & Support",
-      "sponsor": "Sponsor",
+      "resources": "Source",
+      "buildData": "Build Data",
       "github": "GitHub",
       "reportIssue": "Report Issue",
       "buildInfo": "Build Info"

@@ -38,9 +38,8 @@
     "dashboardEmpty": "Панель управления пуста. Посетите магазин приложений, чтобы начать.",
     "browseAppStore": "Открыть магазин приложений",
     "externalLinks": {
-      "resources": "Ресурсы",
-      "communitySupport": "Сообщество и поддержка",
-      "sponsor": "Спонсор",
+      "resources": "Source",
+      "buildData": "Данные сборки",
       "github": "GitHub",
       "reportIssue": "Сообщить о проблеме",
       "buildInfo": "Информация о сборке"

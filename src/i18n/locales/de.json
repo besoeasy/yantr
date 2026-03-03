@@ -38,9 +38,8 @@
     "dashboardEmpty": "Ihr Dashboard ist leer. Besuchen Sie den App-Store, um zu beginnen.",
     "browseAppStore": "App-Store durchsuchen",
     "externalLinks": {
-      "resources": "Ressourcen",
-      "communitySupport": "Community & Support",
-      "sponsor": "Sponsor",
+      "resources": "Source",
+      "buildData": "Build-Daten",
       "github": "GitHub",
       "reportIssue": "Problem melden",
       "buildInfo": "Build-Info"

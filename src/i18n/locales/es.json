@@ -38,9 +38,8 @@
     "dashboardEmpty": "Tu panel está vacío. Visita la tienda de aplicaciones para comenzar.",
     "browseAppStore": "Explorar tienda",
     "externalLinks": {
-      "resources": "Recursos",
-      "communitySupport": "Comunidad y soporte",
-      "sponsor": "Patrocinar",
+      "resources": "Source",
+      "buildData": "Datos de compilación",
       "github": "GitHub",
       "reportIssue": "Reportar problema",
       "buildInfo": "Info de compilación"

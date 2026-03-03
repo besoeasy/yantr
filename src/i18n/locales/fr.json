@@ -38,9 +38,8 @@
     "dashboardEmpty": "Votre tableau de bord est vide. Visitez l'App Store pour commencer.",
     "browseAppStore": "Parcourir l'App Store",
     "externalLinks": {
-      "resources": "Ressources",
-      "communitySupport": "Communauté & Support",
-      "sponsor": "Sponsor",
+      "resources": "Source",
+      "buildData": "Données de build",
       "github": "GitHub",
       "reportIssue": "Signaler un problème",
       "buildInfo": "Infos de build"

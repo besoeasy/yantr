@@ -38,9 +38,8 @@
     "dashboardEmpty": "您的仪表板看起来是空的。访问应用商店开始使用。",
     "browseAppStore": "浏览应用商店",
     "externalLinks": {
-      "resources": "资源",
-      "communitySupport": "社区与支持",
-      "sponsor": "赞助",
+      "resources": "Source",
+      "buildData": "构建数据",
       "github": "GitHub",
       "reportIssue": "报告问题",
       "buildInfo": "构建信息"
