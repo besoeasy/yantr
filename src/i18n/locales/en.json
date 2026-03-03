@@ -640,6 +640,27 @@
     "deployWatchtower": "Deploy Watchtower",
     "viewApp": "View app"
   },
+  "tailscaleSetupCard": {
+    "meshVpn": "Mesh VPN",
+    "tailscale": "Tailscale",
+    "notInstalled": "Not installed",
+    "wireGuardE2E": "WireGuard E2E",
+    "zeroPortForward": "Zero Port-Forward",
+    "worksBehindCgnat": "Works behind CGNAT",
+    "tailscaleDeployed": "Tailscale Deployed",
+    "containerStarting": "Container starting…",
+    "authKey": "Auth Key",
+    "authKeyPlaceholder": "tskey-auth-…",
+    "mustStartWith": "Must start with",
+    "andBeChars": "and be ≥ 30 chars",
+    "keyLooksValid": "Key looks valid",
+    "deploying": "Deploying…",
+    "deployTailscale": "Deploy Tailscale",
+    "getAuthKey": "Get auth key",
+    "viewApp": "View app",
+    "deploymentFailed": "Deployment failed",
+    "networkError": "Network error"
+  },
   "quickMetrics": {
     "averageUptime": {
       "title": "Avg. Uptime",

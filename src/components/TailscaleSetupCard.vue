@@ -1,11 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Lock, Globe } from 'lucide-vue-next'
 import { useApiUrl } from '../composables/useApiUrl'
 
 const router = useRouter()
 const { apiUrl } = useApiUrl()
+const { t } = useI18n()
 
 const authKey = ref('')
 const deploying = ref(false)
@@ -28,9 +30,9 @@ const tokenState = computed(() => {
 })
 
 const features = [
-  { icon: Lock, label: 'WireGuard E2E' },
-  { icon: Globe, label: 'Zero Port-Forward' },
-  { icon: Shield, label: 'Works behind CGNAT' },
+  { icon: Lock, label: t('tailscaleSetupCard.wireGuardE2E') },
+  { icon: Globe, label: t('tailscaleSetupCard.zeroPortForward') },
+  { icon: Shield, label: t('tailscaleSetupCard.worksBehindCgnat') },
 ]
 
 async function deploy() {
@@ -48,12 +50,12 @@ async function deploy() {
     })
     const data = await res.json()
     if (!res.ok || !data.success) {
-      deployError.value = data.error || data.message || 'Deployment failed'
+      deployError.value = data.error || data.message || t('tailscaleSetupCard.deploymentFailed')
     } else {
       deploySuccess.value = true
     }
   } catch (e) {
-    deployError.value = e.message || 'Network error'
+    deployError.value = e.message || t('tailscaleSetupCard.networkError')
   } finally {
     deploying.value = false
   }
@@ -79,8 +81,8 @@ async function deploy() {
           <CheckCircle class="w-6 h-6 text-green-600 dark:text-green-500" />
         </div>
         <div class="text-center">
-          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tailscale Deployed</p>
-          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">Container starting…</p>
+          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('tailscaleSetupCard.tailscaleDeployed') }}</p>
+          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">{{ t('tailscaleSetupCard.containerStarting') }}</p>
         </div>
       </div>
     </transition>
@@ -92,15 +94,15 @@ async function deploy() {
         <div class="min-w-0 pr-3">
           <div class="flex items-center gap-2 mb-1">
             <Shield class="w-3.5 h-3.5 text-violet-500" />
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">Mesh VPN</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">{{ t('tailscaleSetupCard.meshVpn') }}</span>
           </div>
           <div class="text-base font-semibold tracking-tight text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors duration-300">
-            Tailscale
+            {{ t('tailscaleSetupCard.tailscale') }}
           </div>
         </div>
         <div class="shrink-0 flex items-center gap-1.5">
           <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Not installed</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">{{ t('tailscaleSetupCard.notInstalled') }}</span>
         </div>
       </div>
 
@@ -121,12 +123,12 @@ async function deploy() {
       <div class="flex flex-col gap-3 flex-1">
         <!-- Input -->
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">Auth Key</label>
+          <label class="block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-2">{{ t('tailscaleSetupCard.authKey') }}</label>
           <div class="relative">
             <input
               v-model="authKey"
               type="text"
-              placeholder="tskey-auth-…"
+              :placeholder="t('tailscaleSetupCard.authKeyPlaceholder')"
               autocomplete="off"
               spellcheck="false"
               class="w-full bg-gray-50 dark:bg-zinc-900 border rounded-lg px-3 py-2.5 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 outline-none transition-all duration-200 pr-8"
@@ -153,10 +155,10 @@ async function deploy() {
               leave-to-class="opacity-0 -translate-y-2 max-h-0"
             >
               <p v-if="tokenState === 'invalid'" class="mt-1.5 text-[11px] text-red-500 dark:text-red-400 font-medium">
-                Must start with <span class="font-mono">tskey-</span> and be ≥ 30 chars
+                {{ t('tailscaleSetupCard.mustStartWith') }} <span class="font-mono">tskey-</span> {{ t('tailscaleSetupCard.andBeChars') }}
               </p>
               <p v-else-if="tokenState === 'valid'" class="mt-1.5 text-[11px] text-green-600 dark:text-green-400 font-medium">
-                Key looks valid
+                {{ t('tailscaleSetupCard.keyLooksValid') }}
               </p>
             </transition>
           </div>
@@ -188,7 +190,7 @@ async function deploy() {
         >
           <Loader v-if="deploying" class="w-3.5 h-3.5 animate-spin" />
           <Shield v-else class="w-3.5 h-3.5 transition-transform duration-200" :class="isValidToken ? 'group-hover:scale-110' : ''" />
-          <span>{{ deploying ? 'Deploying…' : 'Deploy Tailscale' }}</span>
+          <span>{{ deploying ? t('tailscaleSetupCard.deploying') : t('tailscaleSetupCard.deployTailscale') }}</span>
         </button>
       </div>
 
@@ -201,14 +203,14 @@ async function deploy() {
           class="group/link inline-flex items-center gap-1.5 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors duration-200"
         >
           <Key class="w-3 h-3" />
-          <span>Get auth key</span>
+          <span>{{ t('tailscaleSetupCard.getAuthKey') }}</span>
           <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
         </a>
         <button
           @click="router.push('/apps/tailscale')"
           class="group/link inline-flex items-center gap-1 text-[11px] font-semibold text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300 transition-colors duration-200"
         >
-          <span class="translate-y-0 group-hover/link:-translate-y-0.5 transition-transform duration-200">View app</span>
+          <span class="translate-y-0 group-hover/link:-translate-y-0.5 transition-transform duration-200">{{ t('tailscaleSetupCard.viewApp') }}</span>
           <ArrowRight class="w-3 h-3 transition-transform duration-200 group-hover/link:translate-x-0.5" />
         </button>
       </div>

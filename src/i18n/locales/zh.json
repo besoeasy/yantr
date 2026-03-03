@@ -640,6 +640,27 @@
     "deployWatchtower": "部署 Watchtower",
     "viewApp": "查看应用"
   },
+  "tailscaleSetupCard": {
+    "meshVpn": "网格 VPN",
+    "tailscale": "Tailscale",
+    "notInstalled": "未安装",
+    "wireGuardE2E": "WireGuard 端到端加密",
+    "zeroPortForward": "零端口转发",
+    "worksBehindCgnat": "支持 CGNAT",
+    "tailscaleDeployed": "Tailscale 已部署",
+    "containerStarting": "容器启动中…",
+    "authKey": "认证密钥",
+    "authKeyPlaceholder": "tskey-auth-…",
+    "mustStartWith": "必须以",
+    "andBeChars": "开头且 ≥ 30 个字符",
+    "keyLooksValid": "密钥看起来有效",
+    "deploying": "部署中…",
+    "deployTailscale": "部署 Tailscale",
+    "getAuthKey": "获取认证密钥",
+    "viewApp": "查看应用",
+    "deploymentFailed": "部署失败",
+    "networkError": "网络错误"
+  },
   "quickMetrics": {
     "averageUptime": {
       "title": "平均运行时间",
