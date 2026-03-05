@@ -5,6 +5,7 @@ import { MessageCircle, Zap, GitPullRequest, ShieldCheck, ArrowUpRight } from "l
 
 const { t } = useI18n();
 
+// Eye tracking
 const leftEyeRef = ref(null);
 const rightEyeRef = ref(null);
 const leftPupil = ref({ x: 0, y: 0 });
@@ -17,7 +18,7 @@ function calcOffset(el, mx, my) {
   const dx = mx - cx;
   const dy = my - cy;
   const angle = Math.atan2(dy, dx);
-  const dist = Math.min(3.5, Math.hypot(dx, dy) * 0.1);
+  const dist = Math.min(4, Math.hypot(dx, dy) * 0.1);
   return { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist };
 }
 
@@ -26,8 +27,9 @@ function onMouseMove(e) {
   if (rightEyeRef.value) rightPupil.value = calcOffset(rightEyeRef.value, e.clientX, e.clientY);
 }
 
-onMounted(() => document.addEventListener("mousemove", onMouseMove));
-onUnmounted(() => document.removeEventListener("mousemove", onMouseMove));
+// Perk cycling
+const currentIndex = ref(0);
+let perkInterval = null;
 
 const benefits = computed(() => [
   { icon: MessageCircle, title: t("sponsorCard.benefits.devAccess.title"), desc: t("sponsorCard.benefits.devAccess.desc") },
@@ -35,6 +37,20 @@ const benefits = computed(() => [
   { icon: GitPullRequest, title: t("sponsorCard.benefits.earlyBuilds.title"), desc: t("sponsorCard.benefits.earlyBuilds.desc") },
   { icon: ShieldCheck, title: t("sponsorCard.benefits.badge.title"), desc: t("sponsorCard.benefits.badge.desc") },
 ]);
+
+const activeBenefit = computed(() => benefits.value[currentIndex.value]);
+
+onMounted(() => {
+  document.addEventListener("mousemove", onMouseMove);
+  perkInterval = setInterval(() => {
+    currentIndex.value = (currentIndex.value + 1) % benefits.value.length;
+  }, 2800);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("mousemove", onMouseMove);
+  clearInterval(perkInterval);
+});
 </script>
 
 <template>
@@ -46,8 +62,8 @@ const benefits = computed(() => [
     <div class="relative z-10 flex flex-col h-full p-5">
 
       <!-- Mascot -->
-      <div class="flex items-center gap-4 mb-4">
-        <svg viewBox="0 0 60 64" class="w-14 h-14 shrink-0 mascot-float" xmlns="http://www.w3.org/2000/svg">
+      <div class="flex flex-col items-center mb-4">
+        <svg viewBox="0 0 60 64" class="w-28 h-28 mascot-float" xmlns="http://www.w3.org/2000/svg">
           <!-- Antenna -->
           <line x1="30" y1="14" x2="30" y2="6" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round"/>
           <circle cx="30" cy="4" r="3.5" fill="#fcd34d"/>
@@ -65,7 +81,7 @@ const benefits = computed(() => [
           <!-- Pupils -->
           <circle cx="21" cy="36" r="4.5" fill="#111827" :transform="`translate(${leftPupil.x}, ${leftPupil.y})`"/>
           <circle cx="39" cy="36" r="4.5" fill="#111827" :transform="`translate(${rightPupil.x}, ${rightPupil.y})`"/>
-          <!-- Eye shine (moves subtly with pupil) -->
+          <!-- Eye shine -->
           <circle cx="24" cy="33" r="2" fill="white" opacity="0.9" :transform="`translate(${leftPupil.x * 0.5}, ${leftPupil.y * 0.5})`"/>
           <circle cx="42" cy="33" r="2" fill="white" opacity="0.9" :transform="`translate(${rightPupil.x * 0.5}, ${rightPupil.y * 0.5})`"/>
           <!-- Blush -->
@@ -74,29 +90,44 @@ const benefits = computed(() => [
           <!-- Smile -->
           <path d="M 22 47 Q 30 54 38 47" stroke="#92400e" stroke-width="2" fill="none" stroke-linecap="round"/>
         </svg>
-        <div>
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{{ t('sponsorCard.title') }}</h3>
-          <div class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">{{ t('sponsorCard.label') }}</div>
-        </div>
+
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors mt-1">{{ t('sponsorCard.title') }}</h3>
+        <div class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-[0.2em] mt-0.5">{{ t('sponsorCard.label') }}</div>
       </div>
 
-      <!-- Benefits 2x2 -->
-      <div class="grid grid-cols-2 gap-2">
-        <div
-          v-for="b in benefits"
-          :key="b.title"
-          class="flex items-start gap-2 p-2.5 rounded-lg bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50"
-        >
-          <component :is="b.icon" class="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-          <div class="flex flex-col">
-            <span class="text-[11px] font-semibold text-gray-900 dark:text-white">{{ b.title }}</span>
-            <span class="text-[10px] text-gray-500 dark:text-zinc-400 leading-snug mt-0.5">{{ b.desc }}</span>
+      <!-- Cycling perk -->
+      <div class="flex-1 flex flex-col justify-center">
+        <transition name="perk" mode="out-in">
+          <div
+            :key="currentIndex"
+            class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50"
+          >
+            <div class="w-7 h-7 rounded-md bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center shrink-0">
+              <component :is="activeBenefit.icon" class="w-3.5 h-3.5 text-amber-500" />
+            </div>
+            <div class="flex flex-col min-w-0">
+              <span class="text-xs font-semibold text-gray-900 dark:text-white">{{ activeBenefit.title }}</span>
+              <span class="text-[10px] text-gray-500 dark:text-zinc-400 leading-snug mt-0.5">{{ activeBenefit.desc }}</span>
+            </div>
           </div>
+        </transition>
+
+        <!-- Dot indicators -->
+        <div class="flex items-center justify-center gap-1.5 mt-3">
+          <button
+            v-for="(_, i) in benefits"
+            :key="i"
+            @click="currentIndex = i"
+            class="transition-all duration-300 rounded-full"
+            :class="i === currentIndex
+              ? 'w-4 h-1.5 bg-amber-400'
+              : 'w-1.5 h-1.5 bg-gray-200 dark:bg-zinc-700 hover:bg-amber-300 dark:hover:bg-amber-600'"
+          />
         </div>
       </div>
 
       <!-- CTA -->
-      <div class="mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800/80">
+      <div class="mt-4 pt-3 border-t border-gray-100 dark:border-zinc-800/80">
         <a
           href="https://sponsor.besoeasy.com/"
           target="_blank"
@@ -118,6 +149,21 @@ const benefits = computed(() => [
 
 @keyframes mascotFloat {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-6px); }
+}
+
+.perk-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.perk-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.perk-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.perk-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 </style>
