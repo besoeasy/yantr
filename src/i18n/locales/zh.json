@@ -746,5 +746,30 @@
       "connected": "已连接",
       "stopped": "已停止"
     }
+  },
+  "sponsorCard": {
+    "label": "赞助",
+    "perksIncluded": "含专属权益",
+    "title": "您将获得真实的回馈。",
+    "description": "不只是一种好感 — 赞助让您直接参与并影响 Yantr 的发展方向。",
+    "cta": "成为赞助者",
+    "benefits": {
+      "devAccess": {
+        "title": "直接开发者通道",
+        "desc": "与核心团队的私人频道 — 不是工单队列。"
+      },
+      "roadmap": {
+        "title": "参与路线图规划",
+        "desc": "您的功能需求每个冲刺优先处理。"
+      },
+      "earlyBuilds": {
+        "title": "提前获取版本",
+        "desc": "在公开发布前访问预发布版本。"
+      },
+      "badge": {
+        "title": "赞助者徽章",
+        "desc": "在 README 和发布记录中作为核心支持者被致谢。"
+      }
+    }
   }
 }

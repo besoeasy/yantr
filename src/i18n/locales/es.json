@@ -746,5 +746,30 @@
       "connected": "Conectado",
       "stopped": "Detenido"
     }
+  },
+  "sponsorCard": {
+    "label": "Patrocinador",
+    "perksIncluded": "Beneficios incluidos",
+    "title": "Obtienes beneficios reales.",
+    "description": "No solo una buena sensación — patrocinar te da acceso directo e influencia sobre la dirección de Yantr.",
+    "cta": "Conviértete en Patrocinador",
+    "benefits": {
+      "devAccess": {
+        "title": "Acceso directo al equipo",
+        "desc": "Canal privado con el equipo principal — no una cola de tickets."
+      },
+      "roadmap": {
+        "title": "Dar forma al Roadmap",
+        "desc": "Tus solicitudes de funciones se priorizan primero, cada sprint."
+      },
+      "earlyBuilds": {
+        "title": "Builds anticipados",
+        "desc": "Acceso a versiones previas antes del anuncio público."
+      },
+      "badge": {
+        "title": "Insignia de Patrocinador",
+        "desc": "Acreditado en el README y en los lanzamientos como patrocinador principal."
+      }
+    }
   }
 }

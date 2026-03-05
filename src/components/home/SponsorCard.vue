@@ -1,28 +1,32 @@
 <script setup>
+import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { ArrowUpRight, MessageCircle, Zap, GitPullRequest, ShieldCheck } from "lucide-vue-next";
 
-const benefits = [
+const { t } = useI18n();
+
+const benefits = computed(() => [
   {
     icon: MessageCircle,
-    title: "Direct Dev Access",
-    desc: "Private channel with the core team — not a ticket queue.",
+    title: t("sponsorCard.benefits.devAccess.title"),
+    desc: t("sponsorCard.benefits.devAccess.desc"),
   },
   {
     icon: Zap,
-    title: "Shape the Roadmap",
-    desc: "Your feature requests get triaged first, every sprint.",
+    title: t("sponsorCard.benefits.roadmap.title"),
+    desc: t("sponsorCard.benefits.roadmap.desc"),
   },
   {
     icon: GitPullRequest,
-    title: "Early Builds",
-    desc: "Access pre-release versions before public announcement.",
+    title: t("sponsorCard.benefits.earlyBuilds.title"),
+    desc: t("sponsorCard.benefits.earlyBuilds.desc"),
   },
   {
     icon: ShieldCheck,
-    title: "Sponsor Badge",
-    desc: "Credited in the README and releases as a core backer.",
+    title: t("sponsorCard.benefits.badge.title"),
+    desc: t("sponsorCard.benefits.badge.desc"),
   },
-];
+]);
 </script>
 
 <template>
@@ -40,14 +44,14 @@ const benefits = [
       <div class="flex flex-col justify-between p-6 sm:w-64 shrink-0 sm:border-r border-gray-100 dark:border-zinc-800/80">
         <div>
           <div class="flex items-center gap-2 mb-2">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 dark:text-amber-400">Sponsor</span>
-            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">Perks included</span>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 dark:text-amber-400">{{ $t('sponsorCard.label') }}</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">{{ $t('sponsorCard.perksIncluded') }}</span>
           </div>
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-snug mb-1.5">
-            You get real benefits.
+            {{ $t('sponsorCard.title') }}
           </h3>
           <p class="text-[11px] text-gray-500 dark:text-zinc-500 leading-relaxed">
-            Not just a good feeling — sponsoring gets you direct access and influence over Yantr's direction.
+            {{ $t('sponsorCard.description') }}
           </p>
         </div>
 
@@ -58,7 +62,7 @@ const benefits = [
           class="group/cta mt-5 flex items-center justify-between w-full px-4 py-3 rounded-lg bg-gray-950 dark:bg-white text-white dark:text-gray-950 transition-all duration-300 hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-[0.98]"
         >
           <div>
-            <span class="text-xs font-bold tracking-tight">Become a Sponsor</span>
+            <span class="text-xs font-bold tracking-tight">{{ $t('sponsorCard.cta') }}</span>
           </div>
           <ArrowUpRight class="w-4 h-4 opacity-50 transition-all duration-300 group-hover/cta:opacity-100 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
         </a>
