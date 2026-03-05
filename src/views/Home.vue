@@ -415,7 +415,7 @@ onUnmounted(() => {
               <ExternalLinksCard />
             </div>
 
-            <div class="sm:col-span-2">
+            <div v-if="activeFilter === 'all'">
               <SponsorCard />
             </div>
 
