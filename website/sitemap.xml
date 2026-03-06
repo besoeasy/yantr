@@ -2,685 +2,685 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://yantr.org/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://yantr.org/catalog/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://yantr.org/install-docker/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/actual-budget/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/adguard-home/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/airsonic/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/appsmith/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/bitcoin-knots/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/bitcoin-knots-vm/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/bitmagnet/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/bitwatch/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/cloud-torrent/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/cloudflared/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/convertx/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/cryptofolio/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/dashmachine/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/davos/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/deluge/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/dockge/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/domain-locker/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/dropgate-server/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/droppy/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/drupal/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/duplicati/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/element/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/emby/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/fireshare/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/fossflow/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/freshrss/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/ghostfolio/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/gitea-mirror/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/glances/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/gotify/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/heimdall/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/homarr/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/invio/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/jackett/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/jellyfin/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/jotty/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/just-download/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/kokoro/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/libreddit/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/librespeed/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/linkwarden/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/mariadb/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/maybe/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/memos/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/metube/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/minecraft/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/minio/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/moltis/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/monerod/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/mongodb/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/moviepilot/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/myspeed/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/n8n/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/nano/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/networking-toolbox/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/nextcloud/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/nostrudel/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/ollama/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/open-webui/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/openclaw/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/opencode/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/opnform/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/originless/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/pastefy/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/perplexica/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/pi-alert/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/pihole/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/portainer/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/postgresql/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/privatebin/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/prowlarr/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/qbittorrent/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/radarr/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/remote-torrent-downloader/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/rotki/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/rutorrent/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/samba/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/scality-s3/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/searxng/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/shugur-relay/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/smokeping/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/snort/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/solidtime/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/sonarr/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/specter-desktop/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/stirling-pdf/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/stremio/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/strfry/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/swingmusic/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/syncthing/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/tabby/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/tailscale/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/tor-browser/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/traggo/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/transmission/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/trip/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/ttyd-alphine/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/ttyd-ubuntu/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/uptime-kuma/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/urlwatch/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/vaultwarden/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/watchtower/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/web-check/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/whoami/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/whoogle/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/wiki-js/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/wireguard/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/wordpress/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/youtubedl-material/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/zeroclaw/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://yantr.org/apps/zeronote/</loc>
-    <lastmod>2026-03-06T16:19:57.131Z</lastmod>
+    <lastmod>2026-03-06T16:22:29.609Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
