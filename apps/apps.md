@@ -122,6 +122,16 @@ In practice, `info.json` is used to describe the ports that matter to the user.
 
 Yantr apps commonly persist data with named volumes, but the exact style is not fully uniform across the repo.
 
+Persistent Docker app data should be stored in Docker volumes, not in host-path bind mounts.
+
+Use host bind mounts only for narrow special cases such as:
+
+- local helper files that ship with the app folder
+- Docker socket access
+- device access such as `/dev/net/tun`
+
+Do not use host filesystem paths for normal application state such as databases, uploads, media libraries, or config that should survive container replacement.
+
 Current patterns already present:
 
 - top-level named volumes without an explicit `name:` field
