@@ -15,7 +15,6 @@ import TailscaleSetupCard from "../components/TailscaleSetupCard.vue";
 import TailscaleStatusCard from "../components/quick-metrics/TailscaleStatusCard.vue";
 import OverviewPulseCard from "../components/home/OverviewPulseCard.vue";
 import MachineIdentityCard from "../components/quick-metrics/MachineIdentityCard.vue";
-import RotatingDiskUsageCard from "../components/quick-metrics/RotatingDiskUsageCard.vue";
 import AverageUptimeCard from "../components/quick-metrics/AverageUptimeCard.vue";
 import ExpiringContainersCard from "../components/quick-metrics/ExpiringContainersCard.vue";
 import WatchtowerNextCheckCard from "../components/quick-metrics/WatchtowerNextCheckCard.vue";
@@ -397,10 +396,6 @@ onUnmounted(() => {
 
             <div v-if="showMetrics && temporaryContainersCount > 0">
               <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
-            </div>
-
-            <div v-if="showMetrics && (images.length > 0 || volumes.length > 0)">
-              <RotatingDiskUsageCard :images="images" :volumes="volumes" :interval-ms="10000" />
             </div>
 
             <div v-if="showMetrics">
