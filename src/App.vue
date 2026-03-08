@@ -10,6 +10,7 @@ const { locale, t } = useI18n();
 const theme = ref("light");
 const showLanguageMenu = ref(false);
 const languageMenuRef = ref(null);
+const mobileLanguageMenuRef = ref(null);
 
 const isActive = (name) => route.name === name;
 
@@ -51,7 +52,9 @@ const languages = [
 const activeLanguage = computed(() => languages.find(l => l.code === locale.value) || languages[0]);
 
 const handleOutsideClick = (e) => {
-  if (languageMenuRef.value && !languageMenuRef.value.contains(e.target)) {
+  const inDesktop = languageMenuRef.value && languageMenuRef.value.contains(e.target);
+  const inMobile = mobileLanguageMenuRef.value && mobileLanguageMenuRef.value.contains(e.target);
+  if (!inDesktop && !inMobile) {
     showLanguageMenu.value = false;
   }
 };
@@ -259,7 +262,7 @@ onUnmounted(() => {
           <span class="text-xs font-medium">{{ t('nav.apps') }}</span>
         </router-link>
 
-        <div class="relative">
+        <div class="relative" ref="mobileLanguageMenuRef">
           <button
             type="button"
             @click="toggleLanguageMenu"
