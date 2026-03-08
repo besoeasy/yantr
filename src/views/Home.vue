@@ -339,6 +339,10 @@ onUnmounted(() => {
               <HostMetricsCard :api-url="apiUrl" />
             </div>
 
+            <div v-if="showMetrics">
+              <MachineIdentityCard />
+            </div>
+
             <!-- Tailscale: setup (2-col) or status card -->
             <div v-if="showMetrics && showTailscaleSetup" class="sm:col-span-2 h-full">
               <TailscaleSetupCard />
@@ -379,10 +383,6 @@ onUnmounted(() => {
 
             <div v-if="showMetrics && temporaryContainersCount > 0">
               <ExpiringContainersCard :containers="containers" :current-time="currentTime" />
-            </div>
-
-            <div v-if="showMetrics">
-              <MachineIdentityCard />
             </div>
 
             <div v-if="showMetrics">
