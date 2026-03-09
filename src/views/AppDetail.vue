@@ -516,7 +516,7 @@ onMounted(async () => {
                     v-if="app.customapp"
                     class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 shrink-0"
                   >
-                    Built by Yantr
+                    Custom App by Yantr
                   </span>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -680,8 +680,8 @@ onMounted(async () => {
             <div v-if="app.customapp" class="flex items-start gap-3 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 px-4 py-3">
               <div class="w-2 h-2 rounded-full bg-purple-500 shrink-0 mt-1"></div>
               <div>
-                <div class="text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-0.5">Built by Yantr</div>
-                <p class="text-[11px] text-purple-700 dark:text-purple-300 leading-relaxed">This app is custom-built and maintained by the Yantr team. It uses a locally-built image and does not support automatic updates.</p>
+                <div class="text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-0.5">Custom App Built by Yantr Team</div>
+                <p class="text-[11px] text-purple-700 dark:text-purple-300 leading-relaxed">This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled.</p>
               </div>
             </div>
 
