@@ -510,7 +510,15 @@ onMounted(async () => {
 
             <div class="flex-1 flex flex-col">
               <div class="flex flex-col mb-3">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-2">{{ app.name }}</h1>
+                <div class="flex items-center gap-3 mb-2">
+                  <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ app.name }}</h1>
+                  <span
+                    v-if="app.customapp"
+                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 shrink-0"
+                  >
+                    Built by Yantr
+                  </span>
+                </div>
                 <div class="flex flex-wrap gap-2">
                   <span
                     v-for="tag in appTags"
@@ -665,6 +673,15 @@ onMounted(async () => {
               <div v-if="missingDependencies.length > 0" class="mt-4 rounded-lg border border-amber-200/50 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10 px-3 py-2 text-[10px] text-amber-700 dark:text-amber-400 flex items-start gap-2">
                 <AlertTriangle :size="12" class="mt-0.5 shrink-0" />
                 <span>{{ t('appDetail.missingDependenciesWarning') }}</span>
+              </div>
+            </div>
+
+            <!-- Custom App Notice -->
+            <div v-if="app.customapp" class="flex items-start gap-3 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 px-4 py-3">
+              <div class="w-2 h-2 rounded-full bg-purple-500 shrink-0 mt-1"></div>
+              <div>
+                <div class="text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-0.5">Built by Yantr</div>
+                <p class="text-[11px] text-purple-700 dark:text-purple-300 leading-relaxed">This app is custom-built and maintained by the Yantr team. It uses a locally-built image and does not support automatic updates.</p>
               </div>
             </div>
 
