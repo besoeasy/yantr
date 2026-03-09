@@ -201,65 +201,64 @@ onUnmounted(() => {
   <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-zinc-100 font-sans flex flex-col lg:flex-row selection:bg-blue-500/30">
     
     <!-- Sidebar / Filters — appears ABOVE main content on mobile, right panel on desktop -->
-    <aside class="w-full lg:w-64 shrink-0 bg-white dark:bg-[#0A0A0A] border-b lg:border-b-0 lg:border-l border-gray-200 dark:border-zinc-800 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-1 lg:order-2 scrollbar-none">
-      <div class="p-4 lg:p-6">
+    <aside class="w-full lg:w-72 shrink-0 border-b lg:border-b-0 lg:border-l border-gray-200/80 dark:border-zinc-800/80 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-1 lg:order-2 scrollbar-none">
+      <div class="px-4 py-5 lg:px-6 lg:py-8">
 
         <!-- Header -->
-        <div class="mb-4 lg:mb-8">
-          <h2 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('apps.categories') }}</h2>
-          <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mt-1.5">{{ allAppsCount }} {{ t('apps.totalApps') }}</p>
+        <div class="flex items-end justify-between gap-4 pb-4 mb-4 border-b border-gray-100 dark:border-zinc-900">
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-gray-400 dark:text-zinc-500">{{ t('apps.categories') }}</p>
+            <h2 class="mt-2 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Browse</h2>
+          </div>
+          <p class="text-[11px] font-semibold tabular-nums text-gray-400 dark:text-zinc-500 whitespace-nowrap">{{ allAppsCount }} {{ t('apps.totalApps') }}</p>
         </div>
 
-        <!-- All button -->
-        <button
-          @click="selectedTag = null"
-          :class="[
-            'w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition-all duration-200 mb-2',
-            selectedTag === null
-              ? 'bg-black dark:bg-white text-white dark:text-black font-semibold shadow-md'
-              : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-900 font-medium'
-          ]"
-        >
-          <div class="flex items-center gap-3">
-            <LayoutGrid :size="15" :class="selectedTag === null ? 'opacity-100' : 'opacity-70'" />
-            {{ t('apps.allAppsLabel') }}
-          </div>
-          <span :class="[
-            'text-[10px] font-bold tracking-widest tabular-nums px-2 py-0.5 rounded-full',
-            selectedTag === null
-              ? 'bg-white/20 text-white dark:bg-black/10 dark:text-black'
-              : 'bg-gray-100 dark:bg-zinc-800/80 text-gray-500 dark:text-zinc-400'
-          ]">{{ allAppsCount }}</span>
-        </button>
+        <!-- Filter navigation -->
+        <nav class="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-3 lg:grid-cols-1" :aria-label="t('apps.categories')">
+          <button
+            @click="selectedTag = null"
+            :class="[
+              'group flex items-center justify-between gap-3 border-l-2 py-2 pl-3 pr-1 text-left text-sm transition-colors duration-200 lg:w-full',
+              selectedTag === null
+                ? 'border-black text-black dark:border-white dark:text-white'
+                : 'border-transparent text-gray-500 dark:text-zinc-500 hover:border-gray-300 hover:text-gray-900 dark:hover:border-zinc-700 dark:hover:text-zinc-200'
+            ]"
+          >
+            <span class="flex items-center gap-2 min-w-0 font-medium">
+              <LayoutGrid :size="14" class="shrink-0 opacity-70 transition-opacity group-hover:opacity-100" />
+              <span class="truncate">{{ t('apps.allAppsLabel') }}</span>
+            </span>
+            <span :class="[
+              'shrink-0 text-[11px] font-semibold tabular-nums transition-colors duration-200',
+              selectedTag === null
+                ? 'text-black dark:text-white'
+                : 'text-gray-400 dark:text-zinc-600 group-hover:text-gray-700 dark:group-hover:text-zinc-300'
+            ]">{{ allAppsCount }}</span>
+          </button>
 
-        <!-- Divider -->
-        <div class="my-3 border-t border-gray-100 dark:border-zinc-800"></div>
-
-        <!-- Category list — horizontal scroll on mobile, vertical on desktop -->
-        <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-1 lg:pb-0 scrollbar-none lg:space-y-0">
           <button
             v-for="cat in tags"
             :key="cat.name"
             @click="selectedTag = cat.name"
             :class="[
-              'flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-200 group shrink-0 lg:w-full',
+              'group flex items-center justify-between gap-3 border-l-2 py-2 pl-3 pr-1 text-left text-sm transition-colors duration-200 lg:w-full',
               selectedTag === cat.name
-                ? 'bg-black dark:bg-white text-white dark:text-black font-semibold shadow-md'
-                : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-900 font-medium'
+                ? 'border-black text-black dark:border-white dark:text-white'
+                : 'border-transparent text-gray-500 dark:text-zinc-500 hover:border-gray-300 hover:text-gray-900 dark:hover:border-zinc-700 dark:hover:text-zinc-200'
             ]"
           >
-            <div class="flex items-center gap-2 min-w-0">
-              <Tag :size="14" class="shrink-0 transition-opacity" :class="selectedTag === cat.name ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'" />
-              <span class="whitespace-nowrap lg:truncate">{{ cat.name }}</span>
-            </div>
+            <span class="flex items-center gap-2 min-w-0 font-medium">
+              <Tag :size="13" class="shrink-0 opacity-45 transition-opacity group-hover:opacity-80" />
+              <span class="truncate">{{ cat.name }}</span>
+            </span>
             <span :class="[
-              'text-[10px] font-bold tracking-widest tabular-nums px-2 py-0.5 rounded-full shrink-0 ml-2',
+              'shrink-0 text-[11px] font-semibold tabular-nums transition-colors duration-200',
               selectedTag === cat.name
-                ? 'bg-white/20 text-white dark:bg-black/10 dark:text-black'
-                : 'bg-gray-100 dark:bg-zinc-800/80 text-gray-500 dark:text-zinc-400 group-hover:bg-gray-200 dark:group-hover:bg-zinc-700'
+                ? 'text-black dark:text-white'
+                : 'text-gray-400 dark:text-zinc-600 group-hover:text-gray-700 dark:group-hover:text-zinc-300'
             ]">{{ cat.count }}</span>
           </button>
-        </div>
+        </nav>
       </div>
     </aside>
 
