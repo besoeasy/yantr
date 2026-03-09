@@ -30,6 +30,38 @@ const buildDate = rawBuildTimestamp ? new Date(rawBuildTimestamp) : null;
 const buildTimestamp = buildDate && !Number.isNaN(buildDate.getTime())
   ? buildDate.toISOString().replace("T", " ").replace("Z", " UTC")
   : "Unknown";
+
+function formatTimeAgo(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "Unknown";
+
+  const diffMs = Date.now() - date.getTime();
+  const future = diffMs < 0;
+  const diffSeconds = Math.abs(Math.round(diffMs / 1000));
+
+  if (diffSeconds < 60) return future ? "in a few seconds" : "just now";
+
+  const units = [
+    { seconds: 60 * 60 * 24 * 365, label: "year" },
+    { seconds: 60 * 60 * 24 * 30, label: "month" },
+    { seconds: 60 * 60 * 24, label: "day" },
+    { seconds: 60 * 60, label: "hour" },
+    { seconds: 60, label: "minute" },
+  ];
+
+  for (const unit of units) {
+    if (diffSeconds >= unit.seconds) {
+      const value = Math.floor(diffSeconds / unit.seconds);
+      const plural = value === 1 ? "" : "s";
+      return future
+        ? `in ${value} ${unit.label}${plural}`
+        : `${value} ${unit.label}${plural} ago`;
+    }
+  }
+
+  return future ? "in a few seconds" : "just now";
+}
+
+const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
@@ -69,8 +101,13 @@ const buildTimestamp = buildDate && !Number.isNaN(buildDate.getTime())
           <GitBranch class="w-3.5 h-3.5" />
           <span class="text-[10px] font-bold uppercase tracking-wider">{{ t("home.externalLinks.buildInfo") }}</span>
         </div>
-        <div class="text-[10px] font-mono text-gray-600 dark:text-zinc-300 tracking-tighter bg-gray-50 dark:bg-zinc-900/80 px-2 py-1 rounded">
-          {{ buildTimestamp }}
+        <div class="text-right" :title="buildTimestamp">
+          <div class="text-[10px] font-semibold text-gray-700 dark:text-zinc-200 tracking-tight">
+            {{ buildTimeAgo }}
+          </div>
+          <div class="mt-1 text-[10px] font-mono text-gray-500 dark:text-zinc-400 tracking-tighter bg-gray-50 dark:bg-zinc-900/80 px-2 py-1 rounded">
+            {{ buildTimestamp }}
+          </div>
         </div>
       </div>
     </div>
