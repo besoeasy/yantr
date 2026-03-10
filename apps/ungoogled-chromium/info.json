@@ -1,0 +1,11 @@
+{
+  "name": "Ungoogled Chromium",
+  "logo": "QmdLAeb991RKKxSK13JEJHFHHkAC9GBPRbuP7XUFA2nSij",
+  "tags": ["utility", "browser", "network"],
+  "ports": [{ "port": 3001, "protocol": "HTTPS", "label": "Web UI" }],
+  "short_description": "Google Chromium, sans dependency on Google web services.",
+  "description": "Ungoogled Chromium is a community fork of the Chromium web browser that removes all connections to Google services. This is a container of Ungoogled Chromium built by linuxserver.io that allows running a sandboxed instance of it in another browser.",
+  "usecases": ["Visit websites you aren't sure about in a sandbox", "Use the same session on multiple devices", "Sign into alternate accounts without altering your main browser"],
+  "website": "https://docs.linuxserver.io/images/docker-ungoogled-chromium",
+  "notes": ["Exposing this container to the Internet is not recommended.", "Using the `jpeg` encoder setting in the Selkies sidebar under Video Options is recommended for smoother video."]
+}

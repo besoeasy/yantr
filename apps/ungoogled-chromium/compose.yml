@@ -1,0 +1,21 @@
+services:
+  ungoogled-chromium:
+    image: lscr.io/linuxserver/ungoogled-chromium:latest
+    container_name: ungoogled-chromium
+    labels:
+      yantr.app: "ungoogled-chromium"
+      yantr.service: "Web Browser"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - CHROME_CLI=${CHROME_CLI:-https://duckduckgo.com}
+    volumes:
+      - config:/config
+    ports:
+      - 3001:3001
+    shm_size: "1gb"
+    restart: unless-stopped
+
+volumes:
+  config:
