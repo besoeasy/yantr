@@ -3,9 +3,11 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "lucide-vue-next";
 
-// Auto-load all widget .vue files from src/Widgets/
+// Auto-load all widget .vue files from src/Widgets/, shuffle order
 const widgetModules = import.meta.glob("../Widgets/*.vue", { eager: true });
-const widgets = Object.values(widgetModules).map((m) => m.default);
+const widgets = Object.values(widgetModules)
+  .map((m) => m.default)
+  .sort(() => Math.random() - 0.5);
 import { useApiUrl } from "../composables/useApiUrl";
 import { useI18n } from "vue-i18n";
 import YantraContainersGrid from "../components/YantraContainersGrid.vue";
