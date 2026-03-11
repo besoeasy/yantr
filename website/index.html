@@ -909,18 +909,39 @@
       </div>
 
       <!-- Remote Access Section -->
-      <section id="remote-access" class="py-16 sm:py-24 border-t border-gray-100 bg-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="max-w-3xl mb-10 sm:mb-14">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">Remote Access</p>
-            <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900">Make self-hosting reachable without making it fragile.</h2>
-            <p class="mt-5 text-base sm:text-lg text-gray-600 leading-relaxed font-sans">
-              The hard part is not running the app. The hard part is reaching it safely from outside your home network. Yantr bundles the three pieces most homelabs miss: private access, public ingress, and an auth layer in front of everything.
-            </p>
+      <section
+        id="remote-access"
+        class="relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-16 sm:py-24 border-t border-gray-100 bg-white overflow-hidden"
+      >
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div class="grid grid-cols-1 xl:grid-cols-[1.1fr_0.9fr] gap-8 xl:gap-16 mb-12 sm:mb-16 items-end">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">Remote Access</p>
+              <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold font-sans tracking-tight text-gray-900 max-w-4xl">Make self-hosting reachable without making it fragile.</h2>
+            </div>
+            <div class="xl:pb-2">
+              <p class="text-base sm:text-lg text-gray-600 leading-relaxed font-sans max-w-2xl">
+                The hard part is not running the app. The hard part is reaching it safely from outside your home network. Yantr bundles the three pieces most homelabs miss: private access, public ingress, and an auth layer in front of everything.
+              </p>
+              <div class="mt-6 flex flex-wrap gap-6 text-sm text-gray-500">
+                <div>
+                  <p class="text-2xl font-bold tracking-tight text-gray-900">3</p>
+                  <p>tools, one access story</p>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold tracking-tight text-gray-900">0</p>
+                  <p>private-access ports exposed</p>
+                </div>
+                <div>
+                  <p class="text-2xl font-bold tracking-tight text-gray-900">1</p>
+                  <p>shared auth edge</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-10 items-start">
-              <div class="lg:pr-4">
+          <div class="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-8 xl:gap-12 items-start">
+              <div class="xl:pr-2">
                 <div class="flex items-center justify-between gap-4 mb-6">
                   <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Pick the job</p>
@@ -1003,17 +1024,17 @@
                 </div>
               </div>
 
-              <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 lg:p-10 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
+              <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 lg:p-10 xl:p-12 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
                 <div id="remote-access-panel" class="remote-panel-swap">
                   <div class="flex items-start justify-between gap-4 flex-wrap mb-6">
                     <div>
                       <p id="remote-panel-kicker" class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-2">Private access</p>
-                      <h3 id="remote-panel-title" class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Reach your homelab like it lives on your own LAN.</h3>
+                      <h3 id="remote-panel-title" class="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-gray-900 max-w-3xl">Reach your homelab like it lives on your own LAN.</h3>
                     </div>
                     <span id="remote-panel-badge" class="inline-flex items-center rounded-full bg-gray-900 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-white">Tailscale</span>
                   </div>
 
-                  <p id="remote-panel-summary" class="text-base text-gray-600 leading-relaxed max-w-2xl">
+                  <p id="remote-panel-summary" class="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl">
                     Instead of exposing services publicly, create a private encrypted network between your laptop, phone, and server. The service stays private, but still feels local.
                   </p>
 
@@ -1042,16 +1063,16 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6 mt-10 pt-10 border-t border-gray-200/80">
-              <div class="rounded-2xl border border-gray-200 bg-white p-6">
+            <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.2fr)_360px] gap-6 mt-12 pt-10 border-t border-gray-200/80">
+              <div class="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
                 <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400 mb-4">How they fit together</p>
-                <div class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div class="flex gap-4">
                     <div class="flex flex-col items-center">
                       <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-gray-200 text-sm font-bold text-gray-900">1</span>
-                      <span class="mt-2 h-full w-px bg-gray-200"></span>
+                      <span class="mt-2 h-full w-px bg-gray-200 md:hidden"></span>
                     </div>
-                    <div class="pb-4">
+                    <div>
                       <p class="text-sm font-semibold text-gray-900">Use Tailscale for private operator access</p>
                       <p class="text-sm text-gray-600 mt-1">Admin dashboards, SSH, and internal tools stay off the public internet entirely.</p>
                     </div>
@@ -1059,9 +1080,9 @@
                   <div class="flex gap-4">
                     <div class="flex flex-col items-center">
                       <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-white border border-gray-200 text-sm font-bold text-gray-900">2</span>
-                      <span class="mt-2 h-full w-px bg-gray-200"></span>
+                      <span class="mt-2 h-full w-px bg-gray-200 md:hidden"></span>
                     </div>
-                    <div class="pb-4">
+                    <div>
                       <p class="text-sm font-semibold text-gray-900">Use Cloudflare Tunnel when something must be public</p>
                       <p class="text-sm text-gray-600 mt-1">Share a site, webhook endpoint, or client portal without touching router rules or ISP constraints.</p>
                     </div>
@@ -1103,6 +1124,139 @@
               </div>
             </div>
           </div>
+      </section>
+
+      <!-- Unlimited Linux Boxes Section -->
+      <section
+        id="linux-boxes"
+        class="relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-16 sm:py-24 border-t border-gray-100 bg-white overflow-hidden"
+      >
+        <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+          <div class="grid grid-cols-1 xl:grid-cols-[1.05fr_0.95fr] gap-10 xl:gap-16 items-end mb-12 sm:mb-16">
+            <div>
+              <p class="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-3">Unlimited Linux Boxes</p>
+              <h2 class="text-3xl sm:text-5xl lg:text-6xl font-bold font-sans tracking-tight text-gray-900 max-w-4xl">Deploy Debian or Alpine in one click. SSH into it whenever you want.</h2>
+            </div>
+            <div>
+              <p class="text-base sm:text-lg text-gray-600 leading-relaxed font-sans max-w-2xl">
+                Most people do not need a full provisioning workflow just to get a clean Linux machine. Yantr gives you instant Debian and Alpine environments with SSH built in, so a fresh box is always one click away.
+              </p>
+              <p class="mt-4 text-sm text-gray-500 max-w-2xl">
+                On your laptop, on your homelab, or from anywhere through Yantr's remote-access stack, the shell is ready when you need it.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr)_360px] gap-8 xl:gap-12 items-start">
+            <div class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
+                  <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4">
+                      <div class="flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-900 shrink-0">
+                        <svg class="h-8 w-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M24 8C16.5 8 11 14.1 11 21.6c0 8.6 7.4 12.5 11.2 16.8.9 1.1 2.7 1.1 3.6 0C29.6 34.1 37 30.2 37 21.6 37 14.1 31.5 8 24 8Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M24 14.5c-4.7 0-8.5 3.8-8.5 8.5 0 5.1 4.3 7.8 7 10.7.8.8 2.2.8 3 0 2.7-2.9 7-5.6 7-10.7 0-4.7-3.8-8.5-8.5-8.5Z" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M20 22.5c1.3-2.2 4.2-3.4 7-2.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                      <div>
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-2">One-click box</p>
+                      <h3 class="text-2xl font-bold tracking-tight text-gray-900">Debian Linux</h3>
+                      </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-gray-600">SSH Ready</span>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                    A clean Debian environment with SSH built in. Good for scripts, testing packages, running tools, or keeping a remote shell ready without setting up a separate machine first.
+                  </p>
+                  <ul class="space-y-3 text-sm text-gray-600">
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Deploy in one click from the Yantr catalog</span></li>
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Connect with any SSH client using your mapped port</span></li>
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Use it as a sandbox, toolbox, or permanent remote shell</span></li>
+                  </ul>
+                </div>
+
+                <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
+                  <div class="flex items-center justify-between gap-4 mb-6">
+                    <div class="flex items-center gap-4">
+                      <div class="flex h-14 w-14 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-900 shrink-0">
+                        <svg class="h-8 w-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                          <path d="M8 33 18.5 14.5 24 24l5.5-7.5L40 33" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M13.5 33h21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                          <path d="M18 29.5h12" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                          <path d="M23 18.5h2" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                      <div>
+                      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-2">Minimal footprint</p>
+                      <h3 class="text-2xl font-bold tracking-tight text-gray-900">Alpine Linux</h3>
+                      </div>
+                    </div>
+                    <span class="inline-flex items-center rounded-full border border-gray-200 px-3 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-gray-600">SSH Ready</span>
+                  </div>
+                  <p class="text-sm text-gray-600 leading-relaxed mb-6">
+                    A tiny Linux environment you can spin up fast and throw away just as fast. Perfect for quick tasks, debugging, experiments, and lightweight automation.
+                  </p>
+                  <ul class="space-y-3 text-sm text-gray-600">
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Minimal overhead for disposable Linux workspaces</span></li>
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Fast enough to create whenever you need a clean shell</span></li>
+                    <li class="flex items-start gap-3"><span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 text-gray-700 text-[11px] font-bold shrink-0">✓</span><span>Ideal for scripts, troubleshooting, and isolated tasks</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 lg:p-10 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
+                <div class="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-8 lg:gap-10 items-start">
+                  <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-3">Why this is a big deal</p>
+                    <h3 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">You stop treating a fresh Linux machine like an infrastructure project.</h3>
+                    <p class="mt-4 text-sm sm:text-base text-gray-600 leading-relaxed">
+                      Normally, getting a new Linux environment means renting something, imaging something, or hand-rolling a container and wiring access yourself. Yantr collapses all of that into a button: deploy, get a port, SSH in, and start working.
+                    </p>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="rounded-2xl border border-gray-200 p-5">
+                      <p class="text-sm font-semibold text-gray-900">Disposable by default</p>
+                      <p class="mt-2 text-sm text-gray-600">Need a clean place to test a script, package, or config? Create one instantly instead of polluting your main machine.</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-5">
+                      <p class="text-sm font-semibold text-gray-900">Reachable from anywhere</p>
+                      <p class="mt-2 text-sm text-gray-600">Pair it with Tailscale or Cloudflare Tunnel and your shell is no longer tied to your local network.</p>
+                    </div>
+                    <div class="rounded-2xl border border-gray-200 p-5">
+                      <p class="text-sm font-semibold text-gray-900">Zero setup tax</p>
+                      <p class="mt-2 text-sm text-gray-600">No ISO, no VM wizard, no manual SSH configuration. Yantr handles the boring parts so the box is ready when you are.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-6 xl:sticky xl:top-24">
+              <div class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_20px_60px_-45px_rgba(15,23,42,0.16)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-4">SSH into it</p>
+                <div class="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4 font-mono text-sm text-gray-900 overflow-x-auto">
+                  ssh yantr@localhost -p XXXX
+                </div>
+                <p class="mt-4 text-sm text-gray-600 leading-relaxed">
+                  Replace <span class="font-mono text-gray-900">XXXX</span> with the mapped SSH port Yantr gives your Debian or Alpine box.
+                </p>
+                <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+                  Locally, that gets you into the box immediately. Remotely, the same workflow works through Yantr's remote-access tools.
+                </p>
+              </div>
+
+              <div class="rounded-3xl border border-gray-200 bg-gray-900 p-6 sm:p-8 text-white shadow-[0_20px_60px_-45px_rgba(15,23,42,0.36)]">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 mb-4">Powered by Yantr</p>
+                <p class="text-lg font-bold tracking-tight">A fresh Linux box becomes another app you can deploy on demand.</p>
+                <p class="mt-3 text-sm text-gray-300 leading-relaxed">
+                  That is the real shift: Linux environments stop being rare, precious machines and become cheap, repeatable tools you can spin up whenever a job needs one.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- FAQ Section -->
@@ -1526,27 +1680,30 @@
           const isActive = button.dataset.remoteScenario === id;
           button.setAttribute("aria-pressed", String(isActive));
           button.classList.toggle("border-gray-900", isActive);
-          button.classList.toggle("bg-gray-900", isActive);
-          button.classList.toggle("text-white", isActive);
+          button.classList.toggle("bg-gray-50", isActive);
           button.classList.toggle("shadow-lg", isActive);
           button.classList.toggle("shadow-gray-900/10", isActive);
+          button.classList.toggle("-translate-y-0.5", isActive);
+          button.classList.toggle("border-gray-200", !isActive);
+          button.classList.toggle("bg-white", !isActive);
 
           const icon = button.querySelector("span.inline-flex");
           const eyebrow = button.querySelector("p.text-xs");
           const heading = button.querySelector("p.text-base");
           const desc = button.querySelector("p.text-sm");
           if (icon) {
-            icon.classList.toggle("bg-white/10", isActive);
+            icon.classList.toggle("bg-gray-900", isActive);
             icon.classList.toggle("text-white", isActive);
             icon.classList.toggle("bg-gray-100", !isActive);
             icon.classList.toggle("text-gray-700", !isActive);
           }
           if (eyebrow) eyebrow.classList.toggle("text-gray-400", !isActive);
-          if (eyebrow) eyebrow.classList.toggle("text-gray-300", isActive);
-          if (heading) heading.classList.toggle("text-gray-900", !isActive);
-          if (heading) heading.classList.toggle("text-white", isActive);
+          if (eyebrow) eyebrow.classList.toggle("text-gray-500", isActive);
+          if (heading) heading.classList.toggle("text-gray-900", true);
+          if (heading) heading.classList.remove("text-white");
           if (desc) desc.classList.toggle("text-gray-500", !isActive);
-          if (desc) desc.classList.toggle("text-gray-300", isActive);
+          if (desc) desc.classList.toggle("text-gray-600", isActive);
+          if (desc) desc.classList.remove("text-gray-300");
         });
 
         panel.classList.remove("remote-panel-swap");
