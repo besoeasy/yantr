@@ -1,3 +1,13 @@
+import { runSelfInstallIfNeeded } from "./selfinstall.js";
+
+// ─── Self-install bootstrap ───────────────────────────────────────────────────
+// When the user runs the minimal install command (docker run -v /var/run/docker.sock:...)
+// we detect the missing configuration, re-launch yantr with the full production
+// flags (host network, volumes mount, restart policy, name), then exit this
+// ephemeral bootstrap container.  If already fully configured, this is a no-op.
+const bootstrapped = await runSelfInstallIfNeeded();
+if (bootstrapped) process.exit(0);
+
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
 import fastifyStatic from "@fastify/static";
