@@ -87,6 +87,10 @@ async function stopBrowser(volumeName) {
   }
 }
 
+function viewContainerDetail(container) {
+  router.push(`/containers/${container.id}`);
+}
+
 async function refreshAll() {
   await Promise.all([fetchContainers(), fetchVolumes(), fetchVolumeBrowsers()]);
 }
