@@ -268,14 +268,14 @@ onUnmounted(() => {
         <div class="sticky top-0 z-30 bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 px-6 py-4">
 
           <!-- Search input -->
-          <div class="relative group max-w-2xl">
+          <div class="relative group w-full">
             <Search :size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-colors group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400" />
             <input
               ref="searchInput"
               v-model="appSearch"
               type="text"
               :placeholder="t('apps.searchPlaceholder')"
-              class="w-full bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-xl pl-11 pr-24 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-zinc-500 focus:outline-none focus:border-gray-300 dark:focus:border-zinc-700 focus:bg-white dark:focus:bg-[#0A0A0A] focus:shadow-sm transition-all duration-300"
+              class="w-full bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-xl pl-11 pr-24 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-zinc-500 focus:outline-none focus:border-gray-300 dark:focus:border-zinc-700 focus:bg-white dark:focus:bg-[#0A0A0A] focus:shadow-sm transition-all duration-300"
             />
             <!-- Kbd hint -->
             <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none" :class="appSearch ? 'hidden' : ''">
