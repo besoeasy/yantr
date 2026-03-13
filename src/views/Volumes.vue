@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check, Search } from 'lucide-vue-next'
+import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check } from 'lucide-vue-next'
+import StatCard from '../components/StatCard.vue'
+import SizeDistributionChart from '../components/SizeDistributionChart.vue'
+import SearchInput from '../components/SearchInput.vue'
+import UnderlineTabBar from '../components/UnderlineTabBar.vue'
 import { useNotification } from '../composables/useNotification'
 import { useI18n } from 'vue-i18n'
 
@@ -197,15 +201,7 @@ onUnmounted(() => {
           </div>
           
           <div class="flex items-center gap-3">
-            <div class="relative flex-1 sm:flex-initial group">
-              <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-zinc-500 group-focus-within:text-blue-500 transition-colors" />
-              <input 
-                v-model="searchQuery" 
-                type="text" 
-                :placeholder="t('volumes.searchPlaceholder')" 
-                class="w-full sm:w-64 pl-9 pr-4 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              />
-            </div>
+            <SearchInput v-model="searchQuery" :placeholder="t('volumes.searchPlaceholder')" />
             <button @click="fetchVolumes" class="p-2 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 rounded-lg transition-colors shrink-0 group">
               <RefreshCw class="w-4 h-4 text-gray-600 dark:text-zinc-400 group-hover:text-blue-500 transition-colors" :class="{ 'animate-spin text-blue-500': loading }" />
             </button>
@@ -218,62 +214,19 @@ onUnmounted(() => {
       
       <!-- Stats Overview -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
-          <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.totalVolumes') }}</span>
-            <Box class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
-          </div>
-          <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.total || 0 }}</span>
-        </div>
-
-        <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
-          <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-green-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.inUse') }}</span>
-            <Check class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-green-500 transition-colors" />
-          </div>
-          <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.used || 0 }}</span>
-        </div>
-
-        <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
-          <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-amber-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.unused') }}</span>
-            <AlertCircle class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-amber-500 transition-colors" />
-          </div>
-          <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ volumesData.unused || 0 }}</span>
-        </div>
-
-        <div class="group relative overflow-hidden bg-white dark:bg-[#0A0A0A] p-5 rounded-xl border border-gray-200 dark:border-zinc-800 flex flex-col justify-between h-32 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
-          <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div class="flex justify-between items-start z-10">
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ t('volumes.browsing') }}</span>
-            <Eye class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-blue-400 transition-colors" />
-          </div>
-          <span class="text-4xl font-bold tracking-tighter tabular-nums text-gray-900 dark:text-white z-10">{{ browsingVolumes.length || 0 }}</span>
-        </div>
+        <StatCard :label="t('volumes.totalVolumes')" :value="volumesData.total || 0" :icon="Box" accent="blue" />
+        <StatCard :label="t('volumes.inUse')" :value="volumesData.used || 0" :icon="Check" accent="green" />
+        <StatCard :label="t('volumes.unused')" :value="volumesData.unused || 0" :icon="AlertCircle" accent="amber" />
+        <StatCard :label="t('volumes.browsing')" :value="browsingVolumes.length || 0" :icon="Eye" accent="blue-light" />
       </div>
 
       <!-- Volume Size Distribution -->
-      <div v-if="chartItems.length > 0" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6">
-        <div class="flex items-center justify-between mb-5">
-          <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('volumes.volumeSizeDistribution') }}</h3>
-          <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500 dark:text-zinc-500">
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>{{ t('volumes.inUse') }}</span>
-            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>{{ t('volumes.unused') }}</span>
-          </div>
-        </div>
-        <div class="space-y-2.5">
-          <div v-for="item in chartItems" :key="item.name" class="flex items-center gap-3">
-            <div class="w-36 shrink-0 text-xs font-mono text-gray-500 dark:text-zinc-400 truncate text-right" :title="item.name">{{ item.name }}</div>
-            <div class="flex-1 bg-gray-100 dark:bg-zinc-900 rounded-full h-1.5 overflow-hidden">
-              <div class="h-full rounded-full transition-all duration-500" :style="{ width: item.pct + '%', backgroundColor: item.color }"></div>
-            </div>
-            <div class="w-16 shrink-0 text-xs tabular-nums text-gray-500 dark:text-zinc-500 text-right">{{ item.size }} {{ t('volumes.mb') }}</div>
-          </div>
-        </div>
-      </div>
+      <SizeDistributionChart
+        :items="chartItems"
+        :title="t('volumes.volumeSizeDistribution')"
+        :legend="[{ color: '#10b981', label: t('volumes.inUse') }, { color: '#ef4444', label: t('volumes.unused') }]"
+        :unit="t('volumes.mb')"
+      />
 
        <!-- Browsing Section - Show prominent if active -->
        <transition name="fade">
@@ -311,32 +264,23 @@ onUnmounted(() => {
 
       <!-- Main Tabs -->
       <div class="space-y-4">
-        <div class="flex items-center justify-between border-b border-gray-200 dark:border-zinc-800 pb-1">
-          <div class="flex gap-6">
-            <button 
-              @click="currentTab = 'active'"
-              :class="currentTab === 'active' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 dark:text-zinc-500 border-transparent hover:text-gray-700 dark:hover:text-zinc-300'"
-              class="pb-3 text-sm font-semibold tracking-tight border-b-2 transition-colors flex items-center gap-2">
-              {{ t('volumes.activeVolumes') }}
-              <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 text-xs px-2 py-0.5 rounded-full font-bold tabular-nums">{{ filteredUsed.length }}</span>
+        <UnderlineTabBar
+          v-model="currentTab"
+          :tabs="[
+            { key: 'active', label: t('volumes.activeVolumes'), count: filteredUsed.length },
+            { key: 'unused', label: t('volumes.unusedVolumes'), count: filteredUnused.length }
+          ]"
+        >
+          <template #action>
+            <button v-if="currentTab === 'unused' && filteredUnused.length > 0"
+              @click="deleteAllUnusedVolumes"
+              :disabled="deletingAllVolumes"
+              class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
+              <Trash2 class="w-3 h-3" />
+              {{ deletingAllVolumes ? t('volumes.cleaning') : t('volumes.pruneAll') }}
             </button>
-            <button 
-              @click="currentTab = 'unused'"
-              :class="currentTab === 'unused' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 dark:text-zinc-500 border-transparent hover:text-gray-700 dark:hover:text-zinc-300'"
-              class="pb-3 text-sm font-semibold tracking-tight border-b-2 transition-colors flex items-center gap-2">
-              {{ t('volumes.unusedVolumes') }}
-              <span class="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-400 text-xs px-2 py-0.5 rounded-full font-bold tabular-nums">{{ filteredUnused.length }}</span>
-            </button>
-          </div>
-          
-           <button v-if="currentTab === 'unused' && filteredUnused.length > 0"
-            @click="deleteAllUnusedVolumes"
-            :disabled="deletingAllVolumes"
-            class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
-             <Trash2 class="w-3 h-3" />
-             {{ deletingAllVolumes ? t('volumes.cleaning') : t('volumes.pruneAll') }}
-           </button>
-        </div>
+          </template>
+        </UnderlineTabBar>
 
         <!-- Active Grid -->
         <transition name="fade" mode="out-in">
