@@ -20,3 +20,7 @@ services:
 volumes:
   ollama-nvidia-models:
     name: ollama-nvidia-models
+
+networks:
+  ollama_network:
+    name: ollama_network
