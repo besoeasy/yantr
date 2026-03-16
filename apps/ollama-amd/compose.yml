@@ -1,26 +1,26 @@
-version: '3.8'
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:rocm
     container_name: ollama-amd
-    environment:
-      - OLLAMA_HOST=0.0.0.0:11434
-      - TZ=${TZ:-UTC}
-    volumes:
-      - ollama-amd-models:/root/.ollama
-    ports:
-      - "11434:11434"
-    restart: unless-stopped
     labels:
       yantr.app: "ollama-amd"
       yantr.service: "Ollama with AMD GPU"
+    environment:
+      OLLAMA_HOST: "0.0.0.0"
+      OLLAMA_NUM_GPU: "999"
     devices:
       - /dev/kfd
       - /dev/dri
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - ollama_network
 
 volumes:
-  ollama-amd-models:
-    name: ollama-amd-models
+  ollama_data:
 
 networks:
   ollama_network:
