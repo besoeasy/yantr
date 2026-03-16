@@ -21,3 +21,7 @@ services:
 volumes:
   ollama-amd-models:
     name: ollama-amd-models
+
+networks:
+  ollama_network:
+    name: ollama_network
