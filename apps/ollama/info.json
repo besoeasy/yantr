@@ -1,0 +1,32 @@
+{
+  "name": "Ollama",
+  "logo": "QmdJujFNrnbZ8Z9SVzrZGoUEvcxg5TQqizNg51nUcwcp5Z",
+  "tags": [
+    "ai",
+    "backend",
+    "gaming",
+    "server",
+    "self-hosted",
+    "homelab",
+    "llm",
+    "machine-learning"
+  ],
+  "ports": [
+    { "port": 11434, "protocol": "HTTP", "label": "API" }
+  ],
+  "short_description": "Run large language models locally - Llama, Mistral, CodeLlama, and hundreds more.",
+  "description": "Ollama is a powerful platform for running large language models locally on your own hardware. It supports hundreds of models including Llama 2/3, Mistral, CodeLlama, Phi, and many more. Just download a model and start chatting or integrate via API. It handles model downloading, memory management, and inference optimization. Perfect for privacy-conscious AI enthusiasts who want to run their own AI without cloud dependencies. Models run entirely on your GPU (or CPU), and your conversations never leave your machine.",
+  "usecases": [
+    "Run Llama 2, Mistral, or other open-source LLMs completely offline.",
+    "Build AI-powered applications that use local models via REST API.",
+    "Experiment with different AI models without API costs.",
+    "Create a private AI assistant for coding, writing, or analysis."
+  ],
+  "website": "https://ollama.ai",
+  "dependencies": [],
+  "notes": [
+    "Requires adequate GPU (VRAM) or CPU for acceptable performance",
+    "Models downloaded on first use - expect several GB per model",
+    "API available at port 11434 for integration with other apps"
+  ]
+}
