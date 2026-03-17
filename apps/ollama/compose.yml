@@ -7,7 +7,7 @@ services:
       yantr.logo: "QmdJujFNrnbZ8Z9SVzrZGoUEvcxg5TQqizNg51nUcwcp5Z"
       yantr.category: "ai,backend"
       yantr.port: "11434 (HTTP - API)"
-      yantr.description: "Local LLM inference server - run models like Llama, Mistral, and more. Uses GPU if available."
+      yantr.description: "Local LLM inference server - run models like Llama, Mistral, and more. Automatically uses GPU when available."
       yantr.website: "https://ollama.ai"
     ports:
       - "11434"
@@ -15,7 +15,6 @@ services:
       - ollama_data:/root/.ollama
     restart: unless-stopped
 
-    # Keep existing memory config (even if ignored)
     deploy:
       resources:
         limits:
@@ -26,12 +25,6 @@ services:
 
     environment:
       - OLLAMA_PREFER_GPU=true
-
-    # Optional GPU support (safe)
-    device_requests:
-      - driver: nvidia
-        count: -1
-        capabilities: ["gpu"]
 
     networks:
       - yantr_network
