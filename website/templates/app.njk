@@ -93,230 +93,312 @@
     <link rel="stylesheet" href="../../tailwind.css" />
   </head>
 
-  <body class="bg-white text-black dark:bg-zinc-950 dark:text-zinc-100 font-mono antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black">
+  <body class="bg-white text-black font-mono antialiased selection:bg-black selection:text-white">
     <main class="w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-      <div class="w-full max-w-4xl mx-auto">
-
-        <!-- Breadcrumb -->
+      <div class="w-full max-w-6xl mx-auto">
         <a
           href="../../catalog/"
-          class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
+          class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-all duration-300 hover:-translate-x-0.5"
         >
           <span>←</span>
           <span>Back to catalog</span>
         </a>
 
-        <!-- Hero card -->
-        <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-          <div class="flex flex-col sm:flex-row sm:items-start gap-6">
-            <div class="w-20 h-20 rounded-xl border border-gray-100 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 flex items-center justify-center overflow-hidden shrink-0">
-              <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo" class="w-full h-full object-cover" loading="eager" />
+        <div class="mt-6 space-y-6 sm:space-y-8">
+          <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 lg:p-10 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_28px_90px_-55px_rgba(15,23,42,0.22)]">
+            <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div class="flex flex-col sm:flex-row sm:items-start gap-6 min-w-0">
+                <div class="w-20 h-20 rounded-2xl border border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden shrink-0 transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-lg">
+                  <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo" class="w-full h-full object-cover" loading="eager" />
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Self-Host with Docker · Yantr</p>
+                  <h1 class="mt-2 text-3xl sm:text-5xl font-bold font-sans tracking-tight break-words transition-transform duration-500 group-hover:translate-x-1">{{ app.name }}</h1>
+                  {% if app.short_description %}
+                    <p class="mt-4 max-w-3xl text-base sm:text-lg text-gray-600 leading-relaxed">{{ app.short_description }}</p>
+                  {% endif %}
+
+                  {% if app.tags.length %}
+                    <div class="mt-5 flex flex-wrap gap-2">
+                      {% for tag in app.tags %}
+                        <a
+                          href="../../catalog/?tag={{ tag }}"
+                          class="text-[10px] uppercase tracking-wider px-3 py-1.5 border border-gray-200 text-gray-500 hover:-translate-y-0.5 hover:border-black hover:text-black transition-all duration-300 rounded-full"
+                        >{{ tag }}</a>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 lg:w-[360px] shrink-0">
+                <div class="rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg">
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Ports</p>
+                  <p class="mt-2 text-2xl font-bold font-sans text-gray-900">{{ app.ports.length }}</p>
+                </div>
+                <div class="rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg">
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Deps</p>
+                  <p class="mt-2 text-2xl font-bold font-sans text-gray-900">{{ app.dependencies.length }}</p>
+                </div>
+                <div class="rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg col-span-2 sm:col-span-1">
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Use Cases</p>
+                  <p class="mt-2 text-2xl font-bold font-sans text-gray-900">{{ app.usecases.length }}</p>
+                </div>
+              </div>
             </div>
 
-            <div class="min-w-0 flex-1">
-              <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500">Self-Host with Docker · Yantr</p>
-              <h1 class="text-2xl sm:text-4xl font-bold font-sans mt-1 break-words">{{ app.name }}</h1>
-              {% if app.short_description %}
-                <p class="mt-3 text-base text-gray-600 dark:text-zinc-400 leading-relaxed">{{ app.short_description }}</p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              {% if app.website %}
+                <a
+                  href="{{ app.website }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 justify-center px-5 py-3 text-sm font-semibold rounded-2xl bg-black text-white hover:-translate-y-1 hover:shadow-xl transition-all duration-300"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  Official Website
+                </a>
               {% endif %}
+              <a
+                href="{{ app.sourceAppFolderUrl }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 justify-center px-5 py-3 text-sm font-semibold rounded-2xl border border-gray-200 hover:-translate-y-1 hover:border-black hover:shadow-lg transition-all duration-300"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                View on GitHub
+              </a>
+              <a
+                href="{{ app.sourceComposeUrl }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 justify-center px-5 py-3 text-sm font-semibold rounded-2xl border border-gray-200 hover:-translate-y-1 hover:border-black hover:shadow-lg transition-all duration-300"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 12h8m-8 5h5" /></svg>
+                View compose.yml
+              </a>
+            </div>
+          </section>
 
-              <!-- Tags -->
-              {% if app.tags.length %}
-                <div class="mt-4 flex flex-wrap gap-1.5">
-                  {% for tag in app.tags %}
-                    <a
-                      href="../../catalog/?tag={{ tag }}"
-                      class="text-[10px] uppercase tracking-wider px-2.5 py-1 border border-gray-200 dark:border-zinc-700 text-gray-500 dark:text-zinc-400 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors rounded"
-                    >{{ tag }}</a>
-                  {% endfor %}
+          {% if app.description %}
+            <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-transform duration-300 group-hover:rotate-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" /></svg>
+                </span>
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">About</p>
+                  <h2 class="text-xl font-bold font-sans text-gray-900">What {{ app.name }} does</h2>
+                </div>
+              </div>
+              <p class="text-sm sm:text-base text-gray-700 leading-relaxed">{{ app.description }}</p>
+            </section>
+          {% endif %}
+
+          <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-blue-700 transition-transform duration-300 group-hover:-rotate-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3M12 3l7.794 4.5v9L12 21l-7.794-4.5v-9L12 3z" /></svg>
+              </span>
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Install Flow</p>
+                <h2 class="text-xl font-bold font-sans text-gray-900">How to self-host {{ app.name }}</h2>
+              </div>
+            </div>
+            <div class="space-y-4 text-sm sm:text-base text-gray-700 leading-relaxed">
+              <p>{{ app.name }} can be deployed with standard Docker Compose using the Yantr app catalog. This page collects the basic information searchers usually need first: what {{ app.name }} does, which Docker image Yantr uses, default ports, dependencies, and where to find the original compose template.</p>
+              <p>If you searched for {{ app.name }} Docker, {{ app.name }} Docker Compose, or self-host {{ app.name }}, this page is the direct landing page for that app in Yantr's catalog.</p>
+              <p>After deployment, Yantr also lets you publish additional ports later from the stack page using Docker-style syntax. Use mappings like <span class="font-mono text-black">8080:8080</span> for a fixed host port or just <span class="font-mono text-black">8080</span> to let Docker assign a random host port for container port 8080.</p>
+            </div>
+          </section>
+
+          {% if app.usecases.length %}
+            <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+              <div class="flex items-center gap-3 mb-5">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 transition-transform duration-300 group-hover:rotate-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                </span>
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Use Cases</p>
+                  <h2 class="text-xl font-bold font-sans text-gray-900">What people run it for</h2>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for uc in app.usecases %}
+                  <div class="rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg">
+                    <div class="flex items-start gap-3 text-sm text-gray-700">
+                      <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl bg-gray-50 border border-gray-200 text-gray-700">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                      </span>
+                      <span>{{ uc }}</span>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </section>
+          {% endif %}
+
+          <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+            <div class="flex items-center gap-3 mb-5">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-transform duration-300 group-hover:-rotate-3">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6m3 6V7m3 10v-4M5 21h14" /></svg>
+              </span>
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Technical Details</p>
+                <h2 class="text-xl font-bold font-sans text-gray-900">Ports, image, and service metadata</h2>
+              </div>
+            </div>
+
+            {% if app.ports.length %}
+              <div class="mb-6">
+                <p class="text-xs font-semibold text-gray-500 mb-2">Ports</p>
+                <p class="text-xs text-gray-500 mb-3 leading-relaxed">These are the standard container ports Yantr knows about for {{ app.name }}. You can keep the default mapping, remap them, or publish extra ports later after deployment with Docker syntax such as <span class="font-mono text-black">3000:3000</span> or <span class="font-mono text-black">3000</span>.</p>
+                <div class="overflow-x-auto rounded-2xl border border-gray-200 transition-all duration-300 hover:border-gray-300 hover:shadow-lg">
+                  <table class="w-full text-sm border-collapse">
+                    <thead>
+                      <tr class="border-b border-gray-200 bg-gray-50">
+                        <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-3 font-medium">Port</th>
+                        <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-3 font-medium">Protocol</th>
+                        <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-3 font-medium">Label</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for p in app.ports %}
+                        <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                          <td class="px-4 py-3 font-mono font-bold text-black">{{ p.port }}</td>
+                          <td class="px-4 py-3">
+                            <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-gray-200 text-gray-500 rounded-full">{{ p.protocol }}</span>
+                          </td>
+                          <td class="px-4 py-3 text-gray-600">{{ p.label }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              {% if app.image %}
+                <div class="rounded-2xl border border-gray-200 p-4 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg">
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-1.5">Docker Image</p>
+                  <p class="font-mono font-semibold text-xs break-all text-black">{{ app.image }}</p>
+                </div>
+              {% endif %}
+              {% if app.serviceName %}
+                <div class="rounded-2xl border border-gray-200 p-4 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-lg">
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-1.5">Service Name</p>
+                  <p class="font-mono font-semibold text-xs break-all text-black">{{ app.serviceName }}</p>
                 </div>
               {% endif %}
             </div>
-          </div>
-
-          <!-- CTA buttons -->
-          <div class="mt-8 flex flex-wrap gap-3">
-            {% if app.website %}
-              <a
-                href="{{ app.website }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-semibold rounded-xl bg-black text-white dark:bg-white dark:text-black hover:opacity-80 transition-opacity"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                Official Website
-              </a>
-            {% endif %}
-            <a
-              href="{{ app.sourceAppFolderUrl }}"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-semibold rounded-xl border border-gray-200 dark:border-zinc-700 hover:border-black dark:hover:border-white transition-colors"
-            >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-              View on GitHub
-            </a>
-          </div>
-        </section>
-
-        <!-- Description -->
-        {% if app.description %}
-          <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-3">About</h2>
-            <p class="text-sm sm:text-base text-gray-700 dark:text-zinc-300 leading-relaxed">{{ app.description }}</p>
           </section>
-        {% endif %}
 
-        <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-          <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-3">How to Self-Host {{ app.name }}</h2>
-          <div class="space-y-4 text-sm sm:text-base text-gray-700 dark:text-zinc-300 leading-relaxed">
-            <p>{{ app.name }} can be deployed with standard Docker Compose using the Yantr app catalog. This page collects the basic information searchers usually need first: what {{ app.name }} does, which Docker image Yantr uses, default ports, dependencies, and where to find the original compose template.</p>
-            <p>If you searched for {{ app.name }} Docker, {{ app.name }} Docker Compose, or self-host {{ app.name }}, this page is the direct landing page for that app in Yantr's catalog.</p>
-            <p>After deployment, Yantr also lets you publish additional ports later from the stack page using Docker-style syntax. Use mappings like <span class="font-mono text-black dark:text-white">8080:8080</span> for a fixed host port or just <span class="font-mono text-black dark:text-white">8080</span> to let Docker assign a random host port for container port 8080.</p>
-          </div>
-        </section>
-
-        <!-- Use Cases -->
-        {% if app.usecases.length %}
-          <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-4">Use Cases</h2>
-            <ul class="space-y-3">
-              {% for uc in app.usecases %}
-                <li class="flex items-start gap-3 text-sm text-gray-700 dark:text-zinc-300">
-                  <span class="mt-1 w-4 h-4 shrink-0 rounded-full border border-gray-300 dark:border-zinc-600 flex items-center justify-center">
-                    <svg class="w-2.5 h-2.5 text-gray-500 dark:text-zinc-400" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="2"/></svg>
-                  </span>
-                  <span>{{ uc }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          </section>
-        {% endif %}
-
-        <!-- Ports & Technical Info -->
-        <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-          <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-4">Technical Details</h2>
-
-          {% if app.ports.length %}
-            <div class="mb-6">
-              <p class="text-xs font-semibold text-gray-500 dark:text-zinc-400 mb-2">Ports</p>
-              <p class="text-xs text-gray-500 dark:text-zinc-400 mb-3 leading-relaxed">These are the standard container ports Yantr knows about for {{ app.name }}. You can keep the default mapping, remap them, or publish extra ports later after deployment with Docker syntax such as <span class="font-mono text-black dark:text-white">3000:3000</span> or <span class="font-mono text-black dark:text-white">3000</span>.</p>
-              <div class="overflow-x-auto rounded-xl border border-gray-100 dark:border-zinc-800">
-                <table class="w-full text-sm border-collapse">
-                  <thead>
-                    <tr class="border-b border-gray-100 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-800/50">
-                      <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 dark:text-zinc-500 px-4 py-2.5 font-medium">Port</th>
-                      <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 dark:text-zinc-500 px-4 py-2.5 font-medium">Protocol</th>
-                      <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 dark:text-zinc-500 px-4 py-2.5 font-medium">Label</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for p in app.ports %}
-                      <tr class="border-b border-gray-50 dark:border-zinc-800/50 last:border-0">
-                        <td class="px-4 py-3 font-mono font-bold text-black dark:text-white">{{ p.port }}</td>
-                        <td class="px-4 py-3">
-                          <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 border border-gray-200 dark:border-zinc-700 text-gray-500 dark:text-zinc-400 rounded">{{ p.protocol }}</span>
-                        </td>
-                        <td class="px-4 py-3 text-gray-600 dark:text-zinc-400">{{ p.label }}</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+          {% if app.dependencies.length %}
+            <section class="group rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-blue-200 bg-blue-50 text-blue-700 transition-transform duration-300 group-hover:rotate-3">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </span>
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">Dependencies</p>
+                  <h2 class="text-xl font-bold font-sans text-gray-900">What {{ app.name }} depends on</h2>
+                </div>
               </div>
-            </div>
+              <p class="text-xs text-gray-500 mb-4">These services must be running before starting {{ app.name }}.</p>
+              <div class="flex flex-wrap gap-2">
+                {% for dep in app.dependencies %}
+                  <a
+                    href="../{{ dep }}/"
+                    class="inline-flex items-center gap-1.5 text-xs px-3 py-2 border border-gray-200 text-gray-700 hover:-translate-y-0.5 hover:border-black hover:text-black transition-all duration-300 rounded-2xl"
+                  >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    {{ dep }}
+                  </a>
+                {% endfor %}
+              </div>
+            </section>
           {% endif %}
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-            {% if app.image %}
-              <div class="rounded-xl border border-gray-100 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-800/40">
-                <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500 mb-1.5">Docker Image</p>
-                <p class="font-mono font-semibold text-xs break-all text-black dark:text-white">{{ app.image }}</p>
+          {% if app.notes and app.notes.length %}
+            <section class="group rounded-3xl border border-amber-200 bg-amber-50 p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-200 bg-white text-amber-700 transition-transform duration-300 group-hover:-rotate-3">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                </span>
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-amber-700">Notes</p>
+                  <h2 class="text-xl font-bold font-sans text-gray-900">Things to know before you deploy</h2>
+                </div>
               </div>
-            {% endif %}
-            {% if app.serviceName %}
-              <div class="rounded-xl border border-gray-100 dark:border-zinc-800 p-4 bg-gray-50 dark:bg-zinc-800/40">
-                <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500 mb-1.5">Service Name</p>
-                <p class="font-mono font-semibold text-xs break-all text-black dark:text-white">{{ app.serviceName }}</p>
-              </div>
-            {% endif %}
-          </div>
-        </section>
-
-        <!-- Dependencies -->
-        {% if app.dependencies.length %}
-          <section class="mt-6 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-4">Dependencies</h2>
-            <p class="text-xs text-gray-500 dark:text-zinc-400 mb-3">These services must be running before starting {{ app.name }}.</p>
-            <div class="flex flex-wrap gap-2">
-              {% for dep in app.dependencies %}
-                <a
-                  href="../{{ dep }}/"
-                  class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors rounded-lg"
-                >
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                  {{ dep }}
-                </a>
-              {% endfor %}
-            </div>
-          </section>
-        {% endif %}
-
-        <!-- Notes -->
-        {% if app.notes and app.notes.length %}
-          <section class="mt-6 rounded-2xl border border-amber-100 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 p-8">
-            <h2 class="text-[10px] uppercase tracking-[0.2em] text-amber-600 dark:text-amber-400 mb-4 flex items-center gap-2">
-              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-              Notes
-            </h2>
-            <ul class="space-y-2">
-              {% for note in app.notes %}
-                <li class="text-sm text-amber-800 dark:text-amber-300 leading-relaxed flex items-start gap-2">
-                  <span class="shrink-0 mt-1 text-amber-500">→</span>
-                  <span>{{ note }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          </section>
-        {% endif %}
-
-        <!-- Related Apps -->
-        {% if relatedApps.length %}
-          <section class="mt-8">
-            <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500 mb-4">Related Apps</p>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {% for related in relatedApps %}
-                <a
-                  href="../{{ related.id }}/"
-                  class="group flex flex-col p-5 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-2xl hover:border-black dark:hover:border-zinc-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                >
-                  <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 bg-gray-50 dark:bg-zinc-800 rounded-xl flex items-center justify-center overflow-hidden shrink-0 border border-gray-100 dark:border-zinc-700">
-                      <img src="{{ related.logoUrl }}" alt="{{ related.name }} logo" class="w-full h-full object-cover" loading="lazy" />
+              <div class="space-y-3">
+                {% for note in app.notes %}
+                  <div class="rounded-2xl border border-amber-200 bg-white p-4 transition-all duration-300 hover:translate-x-1 hover:shadow-lg">
+                    <div class="text-sm text-amber-900 leading-relaxed flex items-start gap-3">
+                      <span class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 border border-amber-200">!</span>
+                      <span>{{ note }}</span>
                     </div>
-                    <p class="text-sm font-bold font-sans group-hover:text-black dark:group-hover:text-white transition-colors truncate">{{ related.name }}</p>
                   </div>
-                  <p class="text-xs text-gray-500 dark:text-zinc-500 leading-relaxed group-hover:text-gray-700 dark:group-hover:text-zinc-300 transition-colors line-clamp-2">{{ related.short_description or related.description }}</p>
-                  {% if related.tags.length %}
-                    <div class="mt-3 flex flex-wrap gap-1">
-                      {% for tag in related.tags %}{% if loop.index0 < 3 %}<span class="text-[9px] uppercase tracking-wider px-1.5 py-0.5 border border-gray-100 dark:border-zinc-700 text-gray-400 dark:text-zinc-500 rounded">{{ tag }}</span>{% endif %}{% endfor %}
+                {% endfor %}
+              </div>
+            </section>
+          {% endif %}
+
+          {% if relatedApps.length %}
+            <section class="mt-8">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4-4m4 4l-4 4" /></svg>
+                </span>
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400">Related Apps</p>
+                  <h2 class="text-xl font-bold font-sans text-gray-900">More tools you might pair with {{ app.name }}</h2>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for related in relatedApps %}
+                  <a
+                    href="../{{ related.id }}/"
+                    class="group flex flex-col p-5 bg-white border border-gray-200 rounded-3xl hover:-translate-y-1 hover:border-black/20 hover:shadow-xl transition-all duration-300"
+                  >
+                    <div class="flex items-center gap-3 mb-3">
+                      <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border border-gray-200 transition-transform duration-300 group-hover:rotate-3">
+                        <img src="{{ related.logoUrl }}" alt="{{ related.name }} logo" class="w-full h-full object-cover" loading="lazy" />
+                      </div>
+                      <p class="text-sm font-bold font-sans transition-transform duration-300 group-hover:translate-x-1 truncate">{{ related.name }}</p>
                     </div>
-                  {% endif %}
-                </a>
-              {% endfor %}
+                    <p class="text-xs text-gray-500 leading-relaxed group-hover:text-gray-700 transition-colors line-clamp-2">{{ related.short_description or related.description }}</p>
+                    {% if related.tags.length %}
+                      <div class="mt-3 flex flex-wrap gap-1.5">
+                        {% for tag in related.tags %}{% if loop.index0 < 3 %}<span class="text-[9px] uppercase tracking-wider px-2 py-0.5 border border-gray-200 text-gray-400 rounded-full">{{ tag }}</span>{% endif %}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </a>
+                {% endfor %}
+              </div>
+            </section>
+          {% endif %}
+
+          <section class="rounded-3xl border border-gray-200 bg-white p-6 sm:p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_24px_70px_-50px_rgba(15,23,42,0.22)]">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h10" /></svg>
+              </span>
+              <div>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400">More App Pages</p>
+                <h2 class="text-xl font-bold font-sans text-gray-900">Keep browsing the Yantr catalog</h2>
+              </div>
+            </div>
+            <p class="text-sm text-gray-600 leading-relaxed">Explore the full app catalog for more self-hosted services, alternatives, and dependencies that work alongside {{ app.name }}.</p>
+            <div class="mt-4 flex flex-wrap gap-3">
+              <a href="../../catalog/" class="inline-flex items-center gap-2 justify-center px-5 py-3 text-sm font-semibold rounded-2xl border border-gray-200 hover:-translate-y-1 hover:border-black hover:shadow-lg transition-all duration-300">Browse the catalog</a>
+              <a href="{{ app.sourceComposeUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 justify-center px-5 py-3 text-sm font-semibold rounded-2xl border border-gray-200 hover:-translate-y-1 hover:border-black hover:shadow-lg transition-all duration-300">View compose.yml</a>
             </div>
           </section>
-        {% endif %}
 
-        <section class="mt-8 rounded-2xl border border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
-          <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 dark:text-zinc-500 mb-4">More App Pages</h2>
-          <p class="text-sm text-gray-600 dark:text-zinc-400 leading-relaxed">Explore the full app catalog for more self-hosted services, alternatives, and dependencies that work alongside {{ app.name }}.</p>
-          <div class="mt-4 flex flex-wrap gap-3">
-            <a href="../../catalog/" class="inline-flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-semibold rounded-xl border border-gray-200 dark:border-zinc-700 hover:border-black dark:hover:border-white transition-colors">Browse the catalog</a>
-            <a href="{{ app.sourceComposeUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 justify-center px-5 py-2.5 text-sm font-semibold rounded-xl border border-gray-200 dark:border-zinc-700 hover:border-black dark:hover:border-white transition-colors">View compose.yml</a>
-          </div>
-        </section>
-
-        <p class="mt-8 text-xs text-gray-400 dark:text-zinc-600">Page generated {{ nowIso }}</p>
+          <p class="text-xs text-gray-400">Page generated {{ nowIso }}</p>
+        </div>
       </div>
     </main>
   </body>
