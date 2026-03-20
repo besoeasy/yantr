@@ -1,0 +1,20 @@
+services:
+  tor-onion:
+    image: goldy/tor:latest
+    container_name: tor-onion-service
+    labels:
+      yantr.app: "tor-onion-service"
+      yantr.service: "Tor Onion Service"
+    ports:
+      - "9050:9050"
+      - "9051:9051"
+    volumes:
+      - tor_config:/etc/tor
+      - tor_state:/var/lib/tor
+    environment:
+      TOR_CONTROL_PORT_PASSWORD: ${TOR_CONTROL_PORT_PASSWORD:-changeme}
+    restart: unless-stopped
+
+volumes:
+  tor_config:
+  tor_state:
