@@ -1,0 +1,33 @@
+{
+  "name": "Tor Onion Service",
+  "logo": "QmTXkGMa8gn9aHA9tuywRnn15DvxhSz4hVZQjMSUWbR2Mz",
+  "tags": [
+    "network",
+    "security",
+    "privacy",
+    "tor",
+    "onion",
+    "self-hosted",
+    "homelab",
+    "remote-access"
+  ],
+  "ports": [
+    { "port": 9050, "protocol": "TCP", "label": "Tor SOCKS Proxy" },
+    { "port": 9051, "protocol": "TCP", "label": "Tor Control Port" }
+  ],
+  "short_description": "Host your apps as Tor hidden services with dedicated .onion addresses.",
+  "description": "The Tor Onion Service app provides a dedicated Tor daemon for creating anonymous hidden services. Each app you deploy can get its own private .onion address, enabling truly private remote access without exposing ports or relying on third-party services. Perfect for privacy-conscious users who want to access their self-hosted apps exclusively over the Tor network.",
+  "usecases": [
+    "Create dedicated .onion addresses for each self-hosted app for anonymous access.",
+    "Access your homelab apps without port forwarding or exposing services to the internet.",
+    "Provide privacy-preserving access to services using end-to-end encryption.",
+    "Set up anonymous services that cannot be traced back to your IP address."
+  ],
+  "website": "https://torproject.org",
+  "dependencies": [],
+  "notes": [
+    "Install this app first to enable onion service support for other apps.",
+    "Access Tor Browser at http://127.0.0.1:9050 to use as a SOCKS proxy.",
+    "Onion addresses are only accessible within the Tor network."
+  ]
+}
