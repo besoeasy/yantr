@@ -7,7 +7,7 @@ services:
       API_KEY: ${API_KEY:-}
       PROVIDER: ${PROVIDER:-openrouter}
     ports:
-      - "3000"
+      - "3000:42617"
     volumes:
       - zeroclaw_data:/data
     labels:
