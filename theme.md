@@ -12,7 +12,7 @@ CSS custom properties defined in `src/assets/main.css`.
 
 | Token            | Value                        | Usage                     |
 |------------------|------------------------------|---------------------------|
-| `--bg-body`      | `#f8fafc`                    | Page background           |
+| `--bg-body`      | `#ffffff`                    | Page background           |
 | `--bg-glass`     | `rgba(255,255,255,0.78)`     | Frosted glass surfaces    |
 | `--border-glass` | `rgba(15,23,42,0.08)`        | Glass element borders     |
 | `--text-primary` | `#0f172a`                    | Headings and body text    |
@@ -44,6 +44,7 @@ The following are **absolutely forbidden** in all components, views, and utiliti
 |------|----------------|
 | **No gradients** | `background: linear-gradient(…)`, `background: radial-gradient(…)`, `background: conic-gradient(…)`, `bg-gradient-*` Tailwind classes, `from-*`/`via-*`/`to-*` Tailwind utilities, `border-image` gradients — all banned without exception. Use flat `--surface`, `--surface-muted`, or a single solid color instead. |
 | **No glass morphism** | See [Glass Morphism](#glass-morphism) section — `.glass`, `.glass-dark`, `backdrop-filter`, `backdrop-blur` are banned. |
+| **No borders on sections or cards** | Do not add `border`, `border-*`, `ring`, or `ring-*` to section wrappers or card containers unless a border is explicitly required by the design spec for that component. Use `.smooth-shadow` / `.smooth-shadow-lg` for elevation instead. |
 
 > **Rule:** Never use a gradient for any purpose — backgrounds, borders, text, overlays, or decorative elements. Flat color is always the correct choice.
 
