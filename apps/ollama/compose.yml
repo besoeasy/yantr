@@ -35,3 +35,4 @@ volumes:
 networks:
   ollama_network:
     name: ollama_network
+    external: true
