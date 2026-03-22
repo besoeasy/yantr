@@ -7,7 +7,8 @@
     "docker",
     "containers",
     "devops",
-    "gaming"
+    "gaming",
+    "self-hosted"
   ],
   "short_description": "Self-hosted Moltis server with web UI and Docker access.",
   "description": "Self-hosted Moltis server with web UI and Docker access. Moltis is a self-hosted application focused on ai, tools, docker, containers. It can be deployed on any device via Docker Compose. It supports a wide range of use cases for homelabs and self-hosted infrastructure.",
@@ -17,10 +18,14 @@
   ],
   "website": "https://github.com/moltis-org/moltis",
   "dependencies": [],
+  "notes": [
+    "Authentication setup is required on first access via the onboarding flow.",
+    "MOLTIS_BEHIND_PROXY is set to ensure proper auth when accessed through reverse proxy."
+  ],
   "ports": [
     {
       "port": 13131,
-      "protocol": "HTTPS",
+      "protocol": "HTTP",
       "label": "Web UI"
     }
   ]

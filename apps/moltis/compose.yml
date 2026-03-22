@@ -5,6 +5,9 @@ services:
     labels:
       yantr.app: "moltis"
       yantr.service: "Moltis Server"
+    environment:
+      TZ: ${TZ:-UTC}
+      MOLTIS_BEHIND_PROXY: "true"
     ports:
       - "13131"
     volumes:
