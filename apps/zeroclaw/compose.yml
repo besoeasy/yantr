@@ -4,15 +4,23 @@ services:
     container_name: zeroclaw
     restart: unless-stopped
     environment:
+      TZ: ${TZ:-UTC}
       API_KEY: ${API_KEY:-}
       PROVIDER: ${PROVIDER:-openrouter}
+      ZEROCLAW_ALLOW_PUBLIC_BIND: "true"
+      ZEROCLAW_GATEWAY_PORT: ${ZEROCLAW_GATEWAY_PORT:-42617}
     ports:
-      - "3000"
+      - "${HOST_PORT:-42617}:42617"
     volumes:
       - zeroclaw_data:/data
     labels:
       yantr.app: "zeroclaw"
-      yantr.service: "AI Assistant"
+      yantr.service: "Gateway API"
+    healthcheck:
+      test: ["CMD", "zeroclaw", "status"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
 
 volumes:
   zeroclaw_data:

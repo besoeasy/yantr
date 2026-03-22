@@ -11,10 +11,10 @@
     "assistant"
   ],
   "ports": [
-    { "port": 3000, "protocol": "HTTP", "label": "Gateway API" }
+    { "port": 42617, "protocol": "HTTP", "label": "Gateway API" }
   ],
   "short_description": "AI assistant gateway with pluggable LLM providers and secure local execution.",
-  "description": "ZeroClaw is an autonomous AI assistant runtime written in Rust. It provides a gateway for connecting to various LLM providers with support for multiple AI backends. Features include pluggable providers (OpenAI, local LLMs, etc.), secure local execution, tool calling, memory management, and API for building AI agents.",
+  "description": "ZeroClaw is an autonomous AI assistant runtime written in Rust. It provides a gateway for connecting to various LLM providers with support for multiple AI backends. Features pluggable providers (OpenAI, local LLMs, etc.), secure local execution, tool calling, memory management, and API for building AI agents.",
   "usecases": [
     "Build AI agents with tool access.",
     "Connect to various LLM providers.",
@@ -25,6 +25,7 @@
   "notes": [
     "Multiple LLM provider support",
     "Tool calling capability",
-    "Rust-based runtime"
+    "Rust-based runtime",
+    "Requires API_KEY environment variable"
   ]
 }
