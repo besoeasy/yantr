@@ -1,0 +1,122 @@
+services:
+  admin:
+    image: ghcr.io/crosstalk-solutions/project-nomad:latest
+    container_name: nomad_admin
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Command Center"
+    ports:
+      - "8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - project_nomad_storage:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - nomad_update_shared:/app/update-shared
+    environment:
+      TZ: ${TZ:-UTC}
+      NODE_ENV: production
+      PORT: 8080
+      LOG_LEVEL: info
+      APP_KEY: ${NOMAD_APP_KEY:-changemechangeme123}
+      HOST: 0.0.0.0
+      URL: ${NOMAD_URL:-http://localhost:8080}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: nomad
+      DB_USER: nomad_user
+      DB_PASSWORD: ${NOMAD_DB_PASSWORD:-changeme}
+      DB_NAME: nomad
+      DB_SSL: false
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mysql:
+    image: mysql:8.0
+    container_name: nomad_mysql
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Database"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NOMAD_MYSQL_ROOT_PASSWORD:-changeme}
+      MYSQL_DATABASE: nomad
+      MYSQL_USER: nomad_user
+      MYSQL_PASSWORD: ${NOMAD_DB_PASSWORD:-changeme}
+    volumes:
+      - project_nomad_mysql:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: nomad_redis
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Cache"
+    volumes:
+      - project_nomad_redis:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  dozzle:
+    image: amir20/dozzle:v10.0
+    container_name: nomad_dozzle
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Container Logs"
+    ports:
+      - "9999"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_ENABLE_ACTIONS: "false"
+      DOZZLE_ENABLE_SHELL: "false"
+    restart: unless-stopped
+
+  updater:
+    image: ghcr.io/crosstalk-solutions/project-nomad-sidecar-updater:latest
+    container_name: nomad_updater
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Updater"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - project_nomad_storage:/opt/project-nomad
+      - nomad_update_shared:/shared
+    restart: unless-stopped
+
+  disk-collector:
+    image: ghcr.io/crosstalk-solutions/project-nomad-disk-collector:latest
+    container_name: nomad_disk_collector
+    labels:
+      yantr.app: "project-nomad"
+      yantr.service: "Disk Collector"
+    volumes:
+      - /:/host:ro,rslave
+      - project_nomad_storage:/storage
+    restart: unless-stopped
+
+volumes:
+  project_nomad_storage:
+  project_nomad_mysql:
+  project_nomad_redis:
+  nomad_update_shared:
