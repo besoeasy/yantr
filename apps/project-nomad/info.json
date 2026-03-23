@@ -1,0 +1,34 @@
+{
+  "name": "Project N.O.M.A.D.",
+  "logo": "QmTWne8qF7iFEo6oG3VJaUXY5veCD9Q7aDXSg1V5Jyz2Ai",
+  "tags": [
+    "offline",
+    "survival",
+    "self-hosted",
+    "docker",
+    "ai",
+    "knowledge",
+    "education",
+    "tools"
+  ],
+  "ports": [
+    { "port": 8080, "protocol": "HTTP", "label": "Command Center" },
+    { "port": 9999, "protocol": "HTTP", "label": "Container Logs" }
+  ],
+  "short_description": "Self-contained offline survival computer with AI, knowledge base, and essential tools.",
+  "description": "Project N.O.M.A.D. is a self-contained offline survival computer with AI chat, offline Wikipedia (Kiwix), Khan Academy courses (Kolibri), maps, data tools, notes, and system benchmarking. Perfect for offline use.",
+  "usecases": [
+    "Run AI chat and document search completely offline with local LLMs.",
+    "Access Wikipedia, medical references, and educational content without internet.",
+    "Use as a self-contained survival computer for emergency preparedness.",
+    "Host a private, secure knowledge base for offline use."
+  ],
+  "website": "https://www.projectnomad.us",
+  "dependencies": [],
+  "notes": [
+    "Requires Docker socket access for container orchestration.",
+    "Minimum 4GB RAM for base installation; 32GB recommended for AI tools.",
+    "Contains no telemetry - fully offline capable after initial install.",
+    "No built-in authentication - use network-level controls for multi-user access."
+  ]
+}
