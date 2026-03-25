@@ -1,0 +1,22 @@
+{
+  "name": "Cashu.me",
+  "logo": "bafkreiaqtmpl4vcfsjrtipeays5lgvy2cmehq5y2ggs46g7jzsdpfa76jq",
+  "tags": ["bitcoin", "ecash", "wallet", "lightning", "privacy", "self-hosted", "webui", "pwa"],
+  "ports": [
+    { "port": 3000, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Chaumian ecash wallet for Bitcoin with Lightning support",
+  "description": "Cashu.me is a modern, privacy-focused ecash wallet for Bitcoin. Built as a Progressive Web App (PWA), it supports multi-mint management, Nostr Wallet Connect, seed phrase backups, and offline token send/receive. Ecash provides near-perfect privacy - no one knows who you are, how much you have, or with whom you transact.",
+  "usecases": [
+    "Send and receive ecash tokens with Bitcoin-backed privacy",
+    "Manage multiple mints from a single interface",
+    "Connect to Lightning Network via Nostr Wallet Connect"
+  ],
+  "website": "https://cashu.me",
+  "dependencies": [],
+  "notes": [
+    "Ecash is a bearer asset - backup your seed phrase",
+    "Uses browser localStorage for token storage",
+    "Connect to public mints or run your own mint (nutshell)"
+  ]
+}
