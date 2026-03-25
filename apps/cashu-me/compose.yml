@@ -1,6 +1,6 @@
 services:
   tor:
-    image: petee/doonion:latest
+    image: containers.torproject.org/tpo/onion-services/onimages/tor:alpine
     container_name: cashu-me-tor
     labels:
       yantr.app: "cashu-me"
@@ -9,8 +9,13 @@ services:
     volumes:
       - tor-keys:/var/lib/tor
     environment:
-      - SERVICE_HOST=0.0.0.0
-      - SERVICE_PORT=3000
+      - TOR_ORPORT_PORT=0
+      - TOR_CONTROL_PORT=9051
+      - TOR_DNS_PORT=53
+    command: |
+      SOCKSPort 0.0.0.0:9050
+      HiddenServiceDir /var/lib/tor/onion_service
+      HiddenServicePort 80 127.0.0.1:3000
 
   web:
     build:
