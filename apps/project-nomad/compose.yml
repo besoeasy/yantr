@@ -1,6 +1,6 @@
 services:
   admin:
-    image: ghcr.io/crosstalk-solutions/project-nomad:latest
+    image: ghcr.io/crosstalk-solutions/project-nomad:v1.30.2
     container_name: nomad_admin
     labels:
       yantr.app: "project-nomad"
@@ -92,7 +92,7 @@ services:
     restart: unless-stopped
 
   updater:
-    image: ghcr.io/crosstalk-solutions/project-nomad-sidecar-updater:latest
+    image: ghcr.io/crosstalk-solutions/project-nomad-sidecar-updater:v1.30.2
     container_name: nomad_updater
     labels:
       yantr.app: "project-nomad"
