@@ -2,7 +2,6 @@
   "name": "yantr",
   "type": "module",
   "scripts": {
-    "server": "node daemon/index.js",
     "check": "node check.js",
     "dev": "vite",
     "build": "vite build",
