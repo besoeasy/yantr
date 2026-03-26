@@ -101,7 +101,7 @@ volumes:
 ```json
 {
   "name": "My App",
-  "logo": "QmExampleCid",
+  "logo": "IPFS CID",
   "tags": ["productivity", "self-hosted", "webapp"],
   "ports": [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Self-hosted note-taking app.",
