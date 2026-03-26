@@ -10,7 +10,7 @@ services:
       ZEROCLAW_ALLOW_PUBLIC_BIND: "true"
       ZEROCLAW_GATEWAY_PORT: ${ZEROCLAW_GATEWAY_PORT:-42617}
     ports:
-      - "${HOST_PORT:-42617}:42617"
+      - "42617/tcp"
     volumes:
       - zeroclaw_data:/data
     labels:
