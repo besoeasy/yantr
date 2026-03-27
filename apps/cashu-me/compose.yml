@@ -11,9 +11,6 @@ services:
     networks:
       cashu-me:
         ipv4_address: 172.28.0.2
-    environment:
-      - TOR_SERVICE=true
-      - TOR_SERVICE_HOSTS=cashu=80:172.28.0.3:80
     volumes:
       - tor-keys:/var/lib/tor
 
