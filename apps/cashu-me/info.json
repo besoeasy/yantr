@@ -18,7 +18,8 @@
     "Ecash is a bearer asset - backup your seed phrase",
     "Uses browser localStorage for token storage",
     "Connect to public mints or run your own mint (nutshell)",
-    "All external traffic routed through Tor SOCKS proxy for enhanced privacy"
+    "All external traffic routed through Tor for enhanced privacy",
+    "Onion address available at /var/lib/tor/onion_service/hostname"
   ],
   "customapp": true
 }

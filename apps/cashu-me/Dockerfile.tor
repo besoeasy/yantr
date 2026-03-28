@@ -1,0 +1,5 @@
+FROM containers.torproject.org/tpo/onion-services/onimages/tor:alpine
+
+COPY tor-entrypoint.sh /tor-entrypoint.sh
+
+ENTRYPOINT ["/tor-entrypoint.sh"]

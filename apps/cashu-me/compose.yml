@@ -1,19 +1,19 @@
 services:
   tor:
-    image: containers.torproject.org/tpo/onion-services/onimages/tor:alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.tor
     container_name: cashu-me-tor
     labels:
       yantr.app: "cashu-me"
-      yantr.service: "Tor SOCKS Proxy"
+      yantr.service: "Tor Onion Service"
     restart: unless-stopped
     networks:
       - cashu-me
     volumes:
       - tor-keys:/var/lib/tor
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        echo "SOCKSPort 0.0.0.0:9050" > /tmp/torrc && exec tor -f /tmp/torrc
+    depends_on:
+      - web
 
   web:
     build:
@@ -31,8 +31,6 @@ services:
     environment:
       - HTTP_PROXY=socks5://tor:9050
       - HTTPS_PROXY=socks5://tor:9050
-    depends_on:
-      - tor
 
 networks:
   cashu-me:
