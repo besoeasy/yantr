@@ -13,8 +13,8 @@
   "ports": [
     { "port": 3000, "protocol": "HTTP", "label": "Web UI" }
   ],
-  "short_description": "Collection of 100+ networking utilities - port scanner, IP info, DNS tools, and more.",
-  "description": "Networking Toolbox bundles 100+ offline networking utilities such as port scanner, IP lookup, DNS checker, traceroute, ping, HTTP header viewer, and SSL certificate inspector. Useful for troubleshooting, verifying configurations, and learning network diagnostics.",
+  "short_description": "Collection of many networking utilities - port scanner, IP info, DNS tools, and more.",
+  "description": "Networking Toolbox bundles offline networking utilities such as port scanner, IP lookup, DNS checker, traceroute, ping, HTTP header viewer, and SSL certificate inspector. Useful for troubleshooting, verifying configurations, and learning network diagnostics.",
   "usecases": [
     "Check your public IP and location info.",
     "Scan ports on a server.",
@@ -24,7 +24,7 @@
   "website": "https://networking-toolbox.as93.net",
   "dependencies": [],
   "notes": [
-    "100+ networking tools included",
+    "Extensive collection of networking tools",
     "All tools work offline",
     "Great for troubleshooting"
   ]

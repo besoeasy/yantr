@@ -51,7 +51,7 @@ Navigate to `http://localhost:5252` in your browser. You are ready to go.
 | Platform | Zero OS Footprint | Runs alongside your existing OS in Docker without taking over the machine. |
 | Platform | No Lock-In | Keeps everything in standard Docker Compose and Docker volumes so you retain full control outside Yantr. |
 | Deployment | One-Command Install | Starts Yantr itself with a single `docker run` command. |
-| Deployment | App Catalog | Ships 100+ curated app templates across AI, media, finance, networking, databases, and developer tools. |
+| Deployment | App Catalog | Ships curated app templates across AI, media, finance, networking, databases, and developer tools. |
 | Deployment | One-Click App Deploys | Launches catalog apps instantly without manually wiring compose files and dependencies. |
 | Deployment | Latest Upstream Versions | Tracks current upstream app versions through maintained catalog templates. |
 | Interface | Web UI | Provides a fast Vue-based UI with real-time status, dense operations, and dark mode support. |
