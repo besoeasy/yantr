@@ -1,6 +1,6 @@
 services:
   remote-torrent-downloader:
-    image: ghcr.io/besoeasy/UniDL:latest
+    image: ghcr.io/besoeasy/unidl:latest
     container_name: unidl
     labels:
       yantr.app: "unidl"
