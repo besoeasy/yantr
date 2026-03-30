@@ -60,7 +60,7 @@ function getExpirationInfo(browser) {
       v-for="(browser, index) in containers"
       :key="browser.volumeName"
       :style="{ animationDelay: `${index * 50}ms` }"
-      class="group relative h-full flex flex-col bg-[var(--surface)] rounded-xl overflow-hidden transition-all duration-300 smooth-shadow hover:smooth-shadow-lg hover:-translate-y-0.5 animate-fadeIn"
+      class="group relative h-full flex flex-col bg-[var(--surface)] border border-gray-200 dark:border-zinc-800 rounded-xl overflow-hidden transition-all duration-300 smooth-shadow hover:smooth-shadow-lg hover:-translate-y-0.5 animate-fadeIn"
     >
 
       <div class="relative z-10 flex flex-col h-full p-5">

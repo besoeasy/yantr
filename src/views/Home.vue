@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "lucide-vue-next";
+import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity, Eye, EyeOff } from "lucide-vue-next";
 
 // Auto-load all widget .vue files from src/Widgets/, shuffle once per day
 const widgetModules = import.meta.glob("../Widgets/*.vue", { eager: true });
@@ -47,6 +47,9 @@ const otherContainers = computed(() => {
 });
 
 const temporaryContainersCount = computed(() => volumeBrowsers.value.filter((b) => b.expireAt).length);
+
+const showWidgetBorders = ref(true);
+const widgetBorderClasses = computed(() => showWidgetBorders.value ? "border border-gray-200 dark:border-zinc-800 rounded-xl" : "");
 
 // Filter visibility computed properties
 const showYantrApps = computed(() => activeFilter.value === "all" || activeFilter.value === "yantr");
@@ -134,7 +137,14 @@ onUnmounted(() => {
         <!-- Content -->
         <div v-else class="animate-fadeIn">
           <!-- Filter Tabs -->
-          <div v-if="containers.length > 0" class="flex gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
+          <div v-if="containers.length > 0" class="flex flex-wrap items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
+            <button
+              @click="showWidgetBorders = !showWidgetBorders"
+              :aria-label="showWidgetBorders ? 'Hide borders' : 'Show borders'"
+              class="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow"
+            >
+              <component :is="showWidgetBorders ? EyeOff : Eye" :size="14" />
+            </button>
             <button
               @click="activeFilter = 'all'"
               :class="[
@@ -234,7 +244,7 @@ onUnmounted(() => {
                 v-for="(widget, i) in widgets"
                 :key="i"
                 :is="widget"
-                class="h-full"
+                :class="['h-full', widgetBorderClasses]"
               />
             </template>
           </div>
