@@ -1,0 +1,12 @@
+{
+  "name": "Matrix Synapse",
+  "logo": "QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111", 
+  "tags": ["chat", "messaging", "matrix", "social", "privacy", "self-hosted", "homelab"],
+  "ports": [{ "port": 8008, "protocol": "HTTP", "label": "Client API" }, { "port": 8448, "protocol": "HTTPS", "label": "Federation" }],
+  "short_description": "Open-source Matrix homeserver for chat and real-time communication.",
+  "description": "Matrix Synapse is the reference Matrix homeserver implementation that enables secure, decentralized chat and federated real-time communication for teams and communities.",
+  "usecases": ["Host your own chat and rooms.", "Federate with other Matrix servers."],
+  "website": "https://matrix.org/docs/projects/server/synapse",
+  "dependencies": [],
+  "notes": ["Set SYNAPSE_SERVER_NAME and TLS correctly before production use."]
+}

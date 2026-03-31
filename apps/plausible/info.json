@@ -1,0 +1,12 @@
+{
+  "name": "Plausible Analytics",
+  "logo": "QmVZ2pFMQpdg5xVFoM8h7zn7pQoSRx3NtnS2222222222",
+  "tags": ["analytics", "privacy", "dashboard", "web", "self-hosted", "homelab", "tracking"],
+  "ports": [{ "port": 8000, "protocol": "HTTP", "label": "Web UI" }],
+  "short_description": "Lightweight privacy-first web analytics for self-hosted sites and GDPR-safe reporting.",
+  "description": "Plausible provides simple, open-source website analytics with no cookies and full privacy compliance, hosted by you for fast results and control over data.",
+  "usecases": ["Track website visits and goals.", "Keep analytics GDPR-friendly without third-party scripts."],
+  "website": "https://plausible.io/docs/self-hosting",
+  "dependencies": [],
+  "notes": ["Change SECRET_KEY_BASE and database credentials before going public."]
+}

@@ -1,0 +1,23 @@
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: unless-stopped
+    labels:
+      yantr.app: "synapse"
+      yantr.service: "Matrix Synapse"
+    environment:
+      - TZ=${TZ:-UTC}
+      - SYNAPSE_SERVER_NAME=${SYNAPSE_SERVER_NAME:-matrix.local}
+      - SYNAPSE_REPORT_STATS=no
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    ports:
+      - "8008"
+      - "8448"
+    volumes:
+      - synapse_data:/data
+      - synapse_media:/data/media
+
+volumes:
+  synapse_data:
+  synapse_media:

@@ -29,8 +29,8 @@ services:
     ports:
       - "3000:80"
     environment:
-      - HTTP_PROXY=socks5://tor:9050
-      - HTTPS_PROXY=socks5://tor:9050
+      HTTP_PROXY: "socks5://tor:9050"
+      HTTPS_PROXY: "socks5://tor:9050"
 
 networks:
   cashu-me:

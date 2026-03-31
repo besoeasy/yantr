@@ -1,0 +1,38 @@
+services:
+  kimai-db:
+    image: mysql:8.0
+    container_name: kimai-db
+    restart: unless-stopped
+    labels:
+      yantr.app: "kimai"
+      yantr.service: "Database"
+    environment:
+      MYSQL_ROOT_PASSWORD: "changeme"
+      MYSQL_DATABASE: "kimai"
+      MYSQL_USER: "kimai"
+      MYSQL_PASSWORD: "changeme"
+    volumes:
+      - kimai_db:/var/lib/mysql
+
+  kimai:
+    image: kimai/kimai2:latest
+    container_name: kimai
+    restart: unless-stopped
+    labels:
+      yantr.app: "kimai"
+      yantr.service: "Kimai"
+    ports:
+      - "8001"
+    environment:
+      DATABASE_URL: "mysql://kimai:changeme@kimai-db:3306/kimai"
+      TRUSTED_PROXIES: "127.0.0.1"
+      ADMINMAIL: "admin@example.com"
+      ADMINPASS: "changeMe"
+    volumes:
+      - kimai_data:/opt/kimai/var
+    depends_on:
+      - kimai-db
+
+volumes:
+  kimai_db:
+  kimai_data:

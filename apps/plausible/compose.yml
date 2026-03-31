@@ -1,0 +1,35 @@
+services:
+  plausible-db:
+    image: postgres:15-alpine
+    container_name: plausible-db
+    restart: unless-stopped
+    labels:
+      yantr.app: "plausible"
+      yantr.service: "Database"
+    environment:
+      - POSTGRES_USER=plausible
+      - POSTGRES_PASSWORD=changeme
+      - POSTGRES_DB=plausible
+    volumes:
+      - plausible_db:/var/lib/postgresql/data
+
+  plausible:
+    image: plausible/analytics:latest
+    container_name: plausible
+    restart: unless-stopped
+    labels:
+      yantr.app: "plausible"
+      yantr.service: "Plausible Analytics"
+    environment:
+      - TZ=${TZ:-UTC}
+      - DATABASE_URL=postgres://plausible:changeme@plausible-db:5432/plausible
+      - SECRET_KEY_BASE=changeme
+      - BASE_URL=http://localhost:8000
+      - SMTP_ENABLED=false
+    ports:
+      - "8000"
+    depends_on:
+      - plausible-db
+
+volumes:
+  plausible_db:
