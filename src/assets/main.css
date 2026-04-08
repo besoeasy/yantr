@@ -185,3 +185,14 @@ svg.lucide {
 .animate-fadeIn {
     animation: fadeIn var(--yantra-dur-enter) var(--yantra-ease) forwards;
 }
+
+/* Prominent link style using design tokens */
+.prominent-link {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+.prominent-link:hover,
+.prominent-link:focus {
+    text-decoration: underline;
+    color: var(--text-primary);
+}
