@@ -42,6 +42,10 @@ docker run -d \
 
 Navigate to `http://localhost:5252` in your browser. You are ready to go.
 
+If you need step-by-step instructions to install Docker on your host, see the official Yantr Docker installation guide:
+
+- https://yantr.org/install-docker.html
+
 <br/>
 
 ## Core Features
