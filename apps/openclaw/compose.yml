@@ -38,14 +38,6 @@ services:
     user: "1000:1000"   # node user
     read_only: false    # set true if you fully externalize writes
 
-    # Resource limits (prevents runaway memory usage)
-    deploy:
-      resources:
-        limits:
-          memory: 2g
-        reservations:
-          memory: 512m
-
     # Better logging control
     logging:
       driver: "json-file"
