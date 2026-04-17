@@ -1,0 +1,75 @@
+services:
+  monetr:
+    image: ghcr.io/monetr/monetr:latest
+    container_name: monetr
+    user: "1000:1000"
+    labels:
+      yantr.app: "monetr"
+      yantr.service: "Web UI"
+    command:
+      - serve
+      - --migrate
+      - --generate-certificates
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    ports:
+      - "4000"
+    volumes:
+      - monetr_app_data:/etc/monetr
+    environment:
+      MONETR_ALLOW_SIGN_UP: ${MONETR_ALLOW_SIGN_UP:-true}
+      MONETR_PG_USERNAME: postgres
+      MONETR_PG_PASSWORD: ${MONETR_DB_PASSWORD:-m0netrPass123}
+      MONETR_PG_DATABASE: monetr
+      MONETR_PG_ADDRESS: db
+      MONETR_PG_PORT: 5432
+      MONETR_REDIS_ENABLED: "true"
+      MONETR_REDIS_ADDRESS: valkey
+      MONETR_REDIS_PORT: 6379
+      MONETR_STORAGE_ENABLED: ${MONETR_STORAGE_ENABLED:-true}
+      MONETR_STORAGE_PROVIDER: ${MONETR_STORAGE_PROVIDER:-filesystem}
+
+  db:
+    image: postgres:latest
+    container_name: monetr-db
+    user: "1000:1000"
+    labels:
+      yantr.app: "monetr"
+      yantr.service: "Database"
+    environment:
+      POSTGRES_PASSWORD: ${MONETR_DB_PASSWORD:-m0netrPass123}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: monetr
+    volumes:
+      - monetr_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+
+  valkey:
+    image: valkey/valkey:latest
+    container_name: monetr-valkey
+    user: "1000:1000"
+    labels:
+      yantr.app: "monetr"
+      yantr.service: "Cache"
+    volumes:
+      - monetr_valkey_data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+
+volumes:
+  monetr_app_data:
+  monetr_db_data:
+  monetr_valkey_data:

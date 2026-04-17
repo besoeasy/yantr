@@ -1,0 +1,30 @@
+{
+  "name": "Monetr",
+  "logo": "QmcCMxEJW5eKHx5f8J9bB65P56A5yqHqdBpvCQtPujMVru",
+  "tags": [
+    "finance",
+    "budgeting",
+    "self-hosted",
+    "docker",
+    "productivity",
+    "homelab",
+    "accounting",
+    "tools"
+  ],
+  "ports": [
+    { "port": 4000, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Self-hosted personal finance app with budgeting, bank sync, and spending insights.",
+  "description": "Monetr is a self-hosted personal finance app for envelope budgeting and expense tracking. It supports optional bank sync via Plaid for automatic transaction import, detailed spending reports, and local file storage — running privately on your own hardware with PostgreSQL and Valkey.",
+  "usecases": [
+    "Create envelope budgets to allocate income across categories like groceries, rent, and subscriptions, and track spending against each envelope in real time.",
+    "Connect bank accounts via Plaid to automatically import transactions and keep your budget reconciled without manual entry.",
+    "Self-host your entire financial data stack — Monetr, its database, and cache — so no financial information ever leaves your own server."
+  ],
+  "website": "https://github.com/monetr/monetr",
+  "dependencies": [],
+  "notes": [
+    "Set MONETR_DB_PASSWORD to a strong secret before first run — both the monetr app and the postgres container must share the same value.",
+    "Bank account sync requires a Plaid API key; set MONETR_ALLOW_SIGN_UP=false after creating your account to lock registration."
+  ]
+}
