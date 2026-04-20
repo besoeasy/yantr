@@ -8,11 +8,17 @@ services:
     ports:
       - "52443"
     environment:
+      SERVER_PORT: ${SERVER_PORT:-52443}
+      SERVER_NAME: ${SERVER_NAME:-Dropgate Server}
+      ENABLE_WEB_UI: ${ENABLE_WEB_UI:-true}
       ENABLE_UPLOAD: ${ENABLE_UPLOAD:-false}
-      ENABLE_P2P: ${ENABLE_P2P:-true}
-      UPLOAD_PRESERVE_UPLOADS: "true"
+      UPLOAD_ENABLE_E2EE: ${UPLOAD_ENABLE_E2EE:-true}
+      UPLOAD_PRESERVE_UPLOADS: ${UPLOAD_PRESERVE_UPLOADS:-false}
       UPLOAD_MAX_FILE_SIZE_MB: ${UPLOAD_MAX_FILE_SIZE_MB:-100}
       UPLOAD_MAX_STORAGE_GB: ${UPLOAD_MAX_STORAGE_GB:-10}
+      UPLOAD_MAX_FILE_LIFETIME_HOURS: ${UPLOAD_MAX_FILE_LIFETIME_HOURS:-24}
+      UPLOAD_MAX_FILE_DOWNLOADS: ${UPLOAD_MAX_FILE_DOWNLOADS:-1}
+      ENABLE_P2P: ${ENABLE_P2P:-true}
     volumes:
       - dropgate_uploads:/usr/src/app/uploads
     restart: unless-stopped
