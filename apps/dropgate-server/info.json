@@ -6,22 +6,23 @@
     "privacy",
     "storage",
     "files",
-    "utility",
-    "gaming"
+    "utility"
   ],
-  "short_description": "Privacy-first file sharing solution with end-to-end encryption, supporting hosted uploads and P2P...",
-  "description": "Privacy-first file sharing solution with end-to-end encryption, supporting hosted uploads and P2P... Dropgate Server is a self-hosted application focused on tools, privacy, storage, files. It can be deployed on any device via Docker Compose.",
+  "short_description": "A self-hosted, privacy-first file sharing system with both hosted upload and direct P2P transfer capabilities.",
+  "description": "Dropgate Server is the official backend and reference implementation for secure, privacy-focused file sharing using Dropgate (DGUP and DGDTP) protocols.",
   "usecases": [
-    "Self-host Dropgate Server on your home server to privacy-first file sharing solution with end-to-end encryption, supporting hosted uploads and p2p.. without depending on third-party cloud services.",
-    "Use Dropgate Server to manage your tools workflows privately, keeping all data under your control on local infrastructure."
+    "Create your own private and secure self-hosted file transfer system that you run on your own terms.",
+    "Access the Web UI to use Dropgate in your browser, or download the official native Dropgate Client app to connect to Dropgate Servers from Windows, Mac, and Linux.",
+    "Set up a reverse proxy or tunnel to allow global access to your Dropgate Server from anywhere.",
+    "Harness the power of the @dropgate/core TypeScript library to integrate Dropgate into your own IT infrastructure and workflows."
   ],
-  "website": "https://github.com/WillTDA/Dropgate",
+  "website": "https://diamonddigital.dev/projects/dropgate",
   "dependencies": [],
   "ports": [
     {
       "port": 52443,
       "protocol": "HTTP",
-      "label": "Web UI"
+      "label": "Dropgate Server Backend"
     }
   ]
 }
