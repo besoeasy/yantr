@@ -49,7 +49,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
-  <div class="group flex h-full flex-col rounded-[1.4rem] bg-(--surface) p-5 text-(--text-primary) smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg sm:p-6">
+  <div class="group flex h-full flex-col rounded-[1.4rem] bg-white p-5 text-(--text-primary) smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg dark:bg-[#0A0A0A] sm:p-6">
     <div class="flex items-start justify-between gap-4">
       <div class="min-w-0">
         <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
@@ -61,7 +61,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
           {{ t("sponsorCard.title") }}
         </h3>
       </div>
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-(--surface-muted) text-(--text-primary) transition-all duration-300 group-hover:scale-105 group-hover:-rotate-3">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-(--text-primary) transition-all duration-300 group-hover:scale-105 group-hover:-rotate-3 dark:bg-zinc-900">
         <Github class="h-5 w-5" />
       </div>
     </div>
@@ -92,7 +92,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
         :href="link.href"
         target="_blank"
         rel="noopener noreferrer"
-        class="group/link flex min-h-11 items-center justify-between rounded-2xl bg-(--surface-muted) px-3.5 py-3 text-(--text-primary) transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow"
+        class="group/link flex min-h-11 items-center justify-between rounded-2xl bg-gray-50 px-3.5 py-3 text-(--text-primary) transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow dark:bg-zinc-900/70"
       >
         <span class="flex min-w-0 items-center gap-2.5">
           <component :is="link.icon" class="h-4 w-4 shrink-0 text-(--text-secondary) transition-colors duration-300 group-hover/link:text-(--text-primary)" />
@@ -107,7 +107,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
       <div
         v-for="benefit in benefits"
         :key="benefit.title"
-        class="rounded-2xl bg-(--surface-muted) px-3 py-3 sm:px-3.5"
+        class="rounded-2xl bg-gray-50 px-3 py-3 dark:bg-zinc-900/70 sm:px-3.5"
       >
         <component :is="benefit.icon" class="h-4 w-4 text-amber-500" />
         <p class="mt-2 text-[11px] font-medium leading-snug text-(--text-secondary) sm:text-xs">
@@ -117,7 +117,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
     </div>
 
     <div class="mt-auto pt-5">
-      <div class="flex items-center justify-between gap-3 rounded-2xl bg-(--surface-muted) px-3.5 py-3 sm:px-4">
+      <div class="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-3.5 py-3 dark:bg-zinc-900/70 sm:px-4">
         <div class="min-w-0">
           <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
             <GitBranch class="h-3.5 w-3.5 shrink-0" />
