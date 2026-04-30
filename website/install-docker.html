@@ -3,15 +3,82 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Install Docker | Yantr</title>
-    <meta name="description" content="Learn what Docker is and how to install it on Windows 11, macOS, Linux, and Raspberry Pi to run Yantr." />
+    <title>Install Docker on Windows, macOS, Linux & Raspberry Pi | Yantr</title>
+    <meta name="description" content="Step-by-step guide to install Docker on Windows 11, macOS, Linux, and Raspberry Pi so you can run self-hosted apps with Yantr. Includes Docker Compose verification commands." />
+    <meta name="keywords" content="install docker, docker compose, docker windows 11, docker macos, docker linux, docker raspberry pi, self-hosted, homelab, yantr" />
     <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
     <link rel="canonical" href="https://yantr.org/install-docker/" />
+    <link rel="icon" type="image/png" href="/yantr.png" />
+    <link rel="apple-touch-icon" href="/yantr.png" />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="article" />
     <meta property="og:url" content="https://yantr.org/install-docker/" />
-    <meta property="og:title" content="Install Docker | Yantr" />
-    <meta property="og:description" content="Learn what Docker is and how to install it on Windows 11, macOS, Linux, and Raspberry Pi to run Yantr." />
+    <meta property="og:title" content="Install Docker on Windows, macOS, Linux & Raspberry Pi | Yantr" />
+    <meta property="og:description" content="Step-by-step guide to install Docker so you can run self-hosted apps with Yantr." />
+    <meta property="og:image" content="https://yantr.org/banner.png" />
+    <meta property="og:image:alt" content="Install Docker — Yantr guide" />
+    <meta property="og:site_name" content="Yantr" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://yantr.org/install-docker/" />
+    <meta name="twitter:title" content="Install Docker on Windows, macOS, Linux & Raspberry Pi | Yantr" />
+    <meta name="twitter:description" content="Step-by-step guide to install Docker so you can run self-hosted apps with Yantr." />
+    <meta name="twitter:image" content="https://yantr.org/banner.png" />
+
+    <!-- Structured data: HowTo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "Install Docker for Yantr",
+      "description": "Install Docker on your operating system so you can run self-hosted apps with Yantr.",
+      "image": "https://yantr.org/banner.png",
+      "totalTime": "PT10M",
+      "supply": [
+        { "@type": "HowToSupply", "name": "A computer running Windows 11, macOS, Linux, or Raspberry Pi OS" },
+        { "@type": "HowToSupply", "name": "An internet connection" }
+      ],
+      "tool": [
+        { "@type": "HowToTool", "name": "Docker Engine or Docker Desktop" }
+      ],
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Choose your platform",
+          "text": "Pick Windows 11, macOS, Linux, or Raspberry Pi based on the device you'll use to run Yantr."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Install Docker",
+          "text": "Follow the platform-specific commands to install Docker Engine or Docker Desktop."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Verify the install",
+          "text": "Run 'docker --version' and 'docker compose version' to confirm Docker is installed correctly."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Install Yantr",
+          "text": "Once Docker is running, deploy Yantr or any app from the Yantr catalog with a single Docker Compose command."
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured data: Breadcrumbs -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Yantr", "item": "https://yantr.org/" },
+        { "@type": "ListItem", "position": 2, "name": "Install Docker", "item": "https://yantr.org/install-docker/" }
+      ]
+    }
+    </script>
 
     <link rel="stylesheet" href="./tailwind.css" />
     <style>
