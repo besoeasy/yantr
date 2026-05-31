@@ -35,6 +35,8 @@ const appState = computed(() => {
   return 'available';
 });
 
+const isInteractive = computed(() => appState.value !== 'installed');
+
 const rippling = ref(false);
 
 function handleClick() {
@@ -54,10 +56,10 @@ function handleClick() {
     @keydown.enter.prevent="handleClick"
     @keydown.space.prevent="handleClick"
     :class="[
-      'group relative flex flex-col h-full bg-white dark:bg-[#0A0A0A] rounded-xl p-5 overflow-hidden transition-all duration-300',
-      appState === 'installed'
-        ? 'cursor-default'
-        : 'cursor-pointer hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:-translate-y-1'
+      'group relative flex h-full flex-col overflow-hidden rounded-xl bg-(--surface) p-5 smooth-shadow transition-all duration-300',
+      isInteractive
+        ? 'cursor-pointer hover:-translate-y-0.5'
+        : 'cursor-default'
     ]"
     role="button"
     tabindex="0"
@@ -68,65 +70,55 @@ function handleClick() {
       v-if="rippling"
       class="absolute inset-0 rounded-xl pointer-events-none z-20 border-2 border-yellow-400 dark:border-yellow-500 animate-ripple-ping"
     ></div>
-    <!-- Subtle Top Accent Line that reveals on hover (not for installed state) -->
-    <div v-if="appState !== 'installed'" class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-    <!-- Background Pattern (Subtle grid that animates on hover) -->
-    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMTUwLCAxNTAsIDE1MCwgMC4xKSIvPjwvc3ZnPg==')] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
-
-    <!-- Top row: Logo & Status -->
-    <div class="relative z-10 flex items-start justify-between mb-5">
-      <!-- Minimalist Logo Container -->
-      <div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center p-2.5 shrink-0 transition-all duration-500 group-hover:scale-105 group-hover:shadow-md">
+    <div class="relative z-10 flex items-start justify-between gap-4">
+      <div class="h-12 w-12 shrink-0 text-gray-400 transition-transform duration-300 group-hover:scale-105 dark:text-zinc-500">
         <AppLogo
           :logo="app?.logo"
           :name="app?.name"
           :seed="app?.id || app?.name"
-          img-class="w-full h-full object-contain filter group-hover:brightness-110 transition-all"
-          icon-class="w-6 h-6 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors"
+          img-class="h-full w-full object-contain transition-all duration-300 group-hover:brightness-110"
+          icon-class="h-full w-full text-gray-400 transition-colors duration-300 group-hover:text-blue-500 dark:text-zinc-500"
         />
       </div>
 
-      <!-- Status Indicator (always expanded on mobile, expands on hover on desktop) -->
-      <div class="flex items-center justify-end gap-2">
-        <!-- Custom / Yantr-built badge -->
-        <div v-if="app?.customapp" class="flex items-center gap-1 bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20 px-2 py-1.5 rounded-full">
-          <span class="text-[11px] font-bold tracking-wide uppercase whitespace-nowrap">Yantr</span>
-        </div>
-        <!-- Running -->
-        <div v-if="appState === 'running'" class="flex items-center gap-2 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-500/20 px-2 py-1.5 rounded-full">
-          <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shrink-0"></div>
-          <span class="text-[11px] font-bold tracking-wide uppercase whitespace-nowrap">
-            {{ t('appCard.active') }} ({{ instanceCount }})
-          </span>
-        </div>
-        
-        <!-- Installed / Ready -->
-        <div v-else-if="appState === 'installed'" class="flex items-center gap-2 bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-500 border border-yellow-200 dark:border-yellow-500/20 px-2 py-1.5 rounded-full">
-          <div class="w-2 h-2 rounded-full bg-yellow-500 shrink-0"></div>
-          <span class="text-[11px] font-bold tracking-wide uppercase whitespace-nowrap">
-            {{ t('appCard.ready') }}
-          </span>
-        </div>
+      <div class="flex min-h-12 flex-col items-end justify-start gap-1 text-right">
+        <span
+          v-if="appState === 'running'"
+          class="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400"
+        >
+          <span class="status-dot h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+          {{ t('appCard.active') }}<span v-if="instanceCount > 1"> · {{ instanceCount }}</span>
+        </span>
+        <span
+          v-else-if="appState === 'installed'"
+          class="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+          {{ t('appCard.ready') }}
+        </span>
+        <span
+          v-if="app?.customapp"
+          class="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400"
+        >
+          Yantr built
+        </span>
       </div>
     </div>
 
-    <!-- Content -->
-    <div class="relative z-10 flex-1 flex flex-col">
-      <!-- Clean Typography -->
-      <h3 :class="['text-lg font-semibold text-gray-900 dark:text-white mb-1.5 tracking-tight transition-colors duration-300', appState !== 'installed' ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400' : '']">
+    <div class="relative z-10 flex flex-1 flex-col pt-5">
+      <h3 :class="['text-lg font-semibold tracking-tight text-(--text-primary) transition-colors duration-300', isInteractive ? 'group-hover:text-blue-600 dark:group-hover:text-blue-400' : '']">
         {{ app?.name || t('appCard.unknownApp') }}
       </h3>
 
-      <p class="text-sm text-gray-500 dark:text-zinc-400 leading-relaxed line-clamp-2 mb-6 font-medium">
+      <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-(--text-secondary)">
         {{ app?.description || t('appCard.noDescription') }}
       </p>
 
-      <div class="mt-auto pt-4 border-t border-gray-100 dark:border-zinc-800/80 flex items-center overflow-hidden">
-        <!-- Category tag -->
-        <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500 group-hover:text-gray-600 dark:group-hover:text-zinc-300 transition-colors duration-300">
+      <div class="mt-auto flex items-center gap-3 pt-6 text-(--text-secondary) transition-colors duration-300">
+        <div class="flex min-w-0 items-center gap-1.5 group-hover:text-(--text-primary)">
           <Layers :size="14" />
-          <span class="text-[11px] font-semibold uppercase tracking-wider">
+          <span class="line-clamp-1 text-[11px] font-semibold uppercase tracking-[0.18em]">
             {{ randomTag || t('appCard.application') }}
           </span>
         </div>
