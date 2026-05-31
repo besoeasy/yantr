@@ -147,6 +147,17 @@
         0%, 100% { opacity: 0.1; }
         50%       { opacity: 0.32; }
       }
+      @keyframes orbitChipPulse {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+          box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.18);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.1);
+          box-shadow: 0 18px 38px -24px rgba(15, 23, 42, 0.32);
+        }
+      }
       .orbit-chip {
         position: absolute;
         top: 0;
@@ -154,23 +165,39 @@
         transform: translate(-50%, -50%);
         display: flex;
         align-items: center;
-        gap: 5px;
-        padding: 4px 9px 4px 5px;
+        gap: 8px;
+        padding: 7px 14px 7px 9px;
         border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.75);
-        border: 1px solid rgba(0, 0, 0, 0.05);
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(0, 0, 0, 0.06);
         white-space: nowrap;
         pointer-events: auto;
         cursor: default;
         filter: grayscale(100%);
-        transition: filter 0.25s ease, opacity 0.25s ease;
-        animation: orbitPulse var(--fade-dur, 4s) ease-in-out infinite var(--fade-delay, 0s);
+        transform-origin: center;
+        transition: filter 0.25s ease, opacity 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+        animation:
+          orbitPulse var(--fade-dur, 4s) ease-in-out infinite var(--fade-delay, 0s),
+          orbitChipPulse var(--pulse-dur, 5.4s) ease-in-out infinite var(--pulse-delay, 0s);
       }
       .orbit-chip:hover {
         filter: grayscale(0%);
         opacity: 1 !important;
+        transform: translate(-50%, -50%) scale(1.08);
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(0, 0, 0, 0.12);
         animation-play-state: paused;
         z-index: 20;
+      }
+      .orbit-chip-logo {
+        width: 22px;
+        height: 22px;
+      }
+      .orbit-chip-label {
+        font-size: 0.85rem;
+        line-height: 1;
+        font-weight: 700;
+        color: #4b5563;
       }
       #hero-stars {
         overflow: clip;
@@ -600,7 +627,12 @@
           transform: none;
         }
         .orbit-chip {
-          padding: 4px;
+          gap: 0;
+          padding: 7px;
+        }
+        .orbit-chip-logo {
+          width: 21px;
+          height: 21px;
         }
         .orbit-chip span {
           display: none;
@@ -1405,6 +1437,8 @@
               const delay = -((i / ring.count) * ring.dur).toFixed(2);
               const fadeDur  = (3.5 + Math.random() * 3).toFixed(1);
               const fadeDelay = (Math.random() * 6).toFixed(1);
+              const pulseDur = (4.8 + Math.random() * 2.4).toFixed(1);
+              const pulseDelay = (Math.random() * 4).toFixed(1);
 
               const arm = document.createElement("div");
               arm.className = "orbit-arm";
@@ -1414,9 +1448,11 @@
               chip.className = "orbit-chip";
               chip.style.setProperty("--fade-dur",   fadeDur  + "s");
               chip.style.setProperty("--fade-delay", fadeDelay + "s");
+              chip.style.setProperty("--pulse-dur", pulseDur + "s");
+              chip.style.setProperty("--pulse-delay", pulseDelay + "s");
               chip.innerHTML = isCompactHero
-                ? `<img src="${logoUrl}" style="width:17px;height:17px;" class="object-contain shrink-0" alt="${app.name}">`
-                : `<img src="${logoUrl}" style="width:17px;height:17px;" class="object-contain shrink-0" alt="${app.name}"><span class="text-xs font-semibold text-gray-600 whitespace-nowrap">${app.name}</span>`;
+                ? `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}">`
+                : `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}"><span class="orbit-chip-label whitespace-nowrap">${app.name}</span>`;
 
               arm.appendChild(chip);
               container.appendChild(arm);
