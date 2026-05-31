@@ -701,11 +701,11 @@
               <code
                 id="install-cmd"
                 class="flex-1 min-w-0 block overflow-visible whitespace-pre-wrap break-all text-left text-[12px] sm:text-[13px] text-gray-100 sm:overflow-x-auto sm:whitespace-nowrap sm:break-normal bg-transparent px-4 py-3.5 sm:px-5 font-mono leading-relaxed hide-scrollbar"
-              ><span class="text-pink-400">run</span> -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes -v yantr-data:/data --restart unless-stopped ghcr.io/besoeasy/yantr</code>
+              ><span class="text-pink-400">run</span> -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr</code>
               <button
                 id="copy-install"
                 onclick="
-                  navigator.clipboard.writeText('docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes -v yantr-data:/data --restart unless-stopped ghcr.io/besoeasy/yantr').then(() => {
+                  navigator.clipboard.writeText('docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr').then(() => {
                     const b = document.getElementById('copy-install');
                     b.classList.add('copied');
                     setTimeout(() => b.classList.remove('copied'), 2000);
