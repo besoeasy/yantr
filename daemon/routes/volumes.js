@@ -1,6 +1,18 @@
 import { docker, log } from "../shared.js";
 import http from "node:http";
 import { startBrowser, stopBrowser, isBrowsing, getBrowserPort, listBrowsers } from "../dufs.js";
+import { nameParamsSchema, nonNegativeIntegerSchema, sendError } from "../api.js";
+
+const browseVolumeSchema = {
+  params: nameParamsSchema,
+  body: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      expiryMinutes: nonNegativeIntegerSchema,
+    },
+  },
+};
 
 export default async function volumesRoutes(fastify) {
 
@@ -51,7 +63,7 @@ export default async function volumesRoutes(fastify) {
   });
 
   // POST /api/volumes/:name/browse
-  fastify.post("/api/volumes/:name/browse", async (request, reply) => {
+  fastify.post("/api/volumes/:name/browse", { schema: browseVolumeSchema }, async (request, reply) => {
     const volumeName = request.params.name;
     const expiryMinutes = parseInt(request.body?.expiryMinutes) || 0;
     log("info", `🔍 [POST /api/volumes/${volumeName}/browse] Starting volume browser`);
@@ -59,44 +71,47 @@ export default async function volumesRoutes(fastify) {
     try {
       const volumes = await docker.listVolumes();
       if (!volumes.Volumes?.find(v => v.Name === volumeName)) {
-        return reply.code(404).send({ success: false, error: "Volume not found" });
+        return sendError(reply, 404, { code: "VOLUME_NOT_FOUND", message: "Volume not found" });
       }
 
       const port = await startBrowser(volumeName, expiryMinutes);
       return reply.send({ success: true, port, message: "Volume browser started successfully" });
     } catch (error) {
       log("error", `❌ [POST /api/volumes/${volumeName}/browse] Error:`, error.message);
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "VOLUME_BROWSER_START_FAILED", message: error.message });
     }
   });
 
   // DELETE /api/volumes/:name/browse
-  fastify.delete("/api/volumes/:name/browse", async (request, reply) => {
+  fastify.delete("/api/volumes/:name/browse", { schema: { params: nameParamsSchema } }, async (request, reply) => {
     const volumeName = request.params.name;
     log("info", `🛑 [DELETE /api/volumes/${volumeName}/browse] Stopping volume browser`);
     try {
       const stopped = stopBrowser(volumeName);
-      if (!stopped) return reply.code(404).send({ success: false, error: "No active browser for this volume" });
+      if (!stopped) return sendError(reply, 404, { code: "VOLUME_BROWSER_NOT_FOUND", message: "No active browser for this volume" });
       return reply.send({ success: true, message: "Volume browser stopped" });
     } catch (error) {
       log("error", `❌ [DELETE /api/volumes/${volumeName}/browse] Error:`, error.message);
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "VOLUME_BROWSER_STOP_FAILED", message: error.message });
     }
   });
 
   // DELETE /api/volumes/:name
-  fastify.delete("/api/volumes/:name", async (request, reply) => {
+  fastify.delete("/api/volumes/:name", { schema: { params: nameParamsSchema } }, async (request, reply) => {
     const volumeName = request.params.name;
     log("info", `🗑️  [DELETE /api/volumes/:name] Remove request for volume: ${volumeName}`);
     try {
       const volume = docker.getVolume(volumeName);
       try { await volume.inspect(); }
-      catch { return reply.code(404).send({ success: false, error: "Volume not found", message: `Volume '${volumeName}' does not exist` }); }
+      catch { return sendError(reply, 404, { code: "VOLUME_NOT_FOUND", message: `Volume '${volumeName}' does not exist` }); }
       await volume.remove();
       return reply.send({ success: true, message: `Volume '${volumeName}' removed successfully`, volume: volumeName });
     } catch (error) {
       const isInUseError = error.message?.includes("in use");
-      return reply.code(500).send({ success: false, error: isInUseError ? "Volume is in use" : "Failed to remove volume", message: isInUseError ? `Volume '${volumeName}' is currently in use by a container and cannot be deleted` : error.message });
+      return sendError(reply, isInUseError ? 409 : 500, {
+        code: isInUseError ? "VOLUME_IN_USE" : "VOLUME_REMOVE_FAILED",
+        message: isInUseError ? `Volume '${volumeName}' is currently in use by a container and cannot be deleted` : error.message,
+      });
     }
   });
 

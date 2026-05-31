@@ -1,4 +1,17 @@
 import { extractBearerToken, loadAuthConfig, saveAuthConfig, verifyYantrAuthToken } from "../auth.js";
+import { nonEmptyStringSchema, publicKeySchema, sendError } from "../api.js";
+
+const setupAdminSchema = {
+  body: {
+    type: "object",
+    required: ["username", "publicKey"],
+    additionalProperties: false,
+    properties: {
+      username: nonEmptyStringSchema,
+      publicKey: publicKeySchema,
+    },
+  },
+};
 
 export default async function authRoutes(fastify) {
   fastify.get("/api/setup/status", async (_request, reply) => {
@@ -6,10 +19,10 @@ export default async function authRoutes(fastify) {
     return reply.send({ success: true, configured: !!config });
   });
 
-  fastify.post("/api/setup/admin", async (request, reply) => {
+  fastify.post("/api/setup/admin", { schema: setupAdminSchema }, async (request, reply) => {
     const existing = await loadAuthConfig();
     if (existing) {
-      return reply.code(409).send({ success: false, error: "Yantr is already configured" });
+      return sendError(reply, 409, { code: "SETUP_ALREADY_CONFIGURED", message: "Yantr is already configured" });
     }
 
     const { username, publicKey } = request.body || {};
@@ -17,7 +30,7 @@ export default async function authRoutes(fastify) {
       const config = await saveAuthConfig({ username, publicKey });
       return reply.code(201).send({ success: true, configured: true, username: config.username });
     } catch (error) {
-      return reply.code(400).send({ success: false, error: error.message });
+      return sendError(reply, 400, { code: "INVALID_SETUP_ADMIN_REQUEST", message: error.message });
     }
   });
 
@@ -25,11 +38,11 @@ export default async function authRoutes(fastify) {
     const result = await verifyYantrAuthToken(extractBearerToken(request));
 
     if (!result.config) {
-      return reply.code(409).send({ success: false, error: "Setup required", code: "SETUP_REQUIRED" });
+      return sendError(reply, 409, { code: "SETUP_REQUIRED", message: "Setup required" });
     }
 
     if (!result.ok) {
-      return reply.code(401).send({ success: false, error: "Unauthorized", code: result.reason || "UNAUTHORIZED" });
+      return sendError(reply, 401, { code: String(result.reason || "UNAUTHORIZED").toUpperCase(), message: "Unauthorized" });
     }
 
     return reply.send({

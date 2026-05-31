@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package } from 'lucide-vue-next'
 import { formatBytes } from '../utils/metrics'
 
@@ -25,6 +26,20 @@ const autoScrollLogs = ref(true)
 const currentTime = ref(Date.now())
 const activeTab = ref('resources')
 const showOnlyDescribedPorts = ref(true)
+const loadErrorState = {
+  stats: false,
+  logs: false,
+}
+
+function notifyLoadErrorOnce(key, message) {
+  if (loadErrorState[key]) return
+  loadErrorState[key] = true
+  toast.error(message)
+}
+
+function clearLoadError(key) {
+  loadErrorState[key] = false
+}
 
 let timeUpdateInterval = null
 
@@ -186,17 +201,11 @@ function appUrl(port, protocol = 'http') {
 async function fetchContainerDetail() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers/${route.params.id}`)
-    const data = await response.json()
-    
-    if (data.success) {
-      selectedContainer.value = data.container
-    } else {
-      toast.error(t('containerDetail.error.containerNotFound'))
-      router.push('/')
-    }
+    const data = await expectApiSuccess(response, t('containerDetail.error.containerNotFound'))
+    selectedContainer.value = data.container
   } catch (error) {
-    console.error('Failed to fetch container details:', error)
-    toast.error(t('containerDetail.error.failedToLoadDetails'))
+    toast.error(error.message || t('containerDetail.error.failedToLoadDetails'))
+    router.push('/')
   }
 }
 
@@ -205,13 +214,11 @@ async function fetchContainerStats() {
   
   try {
     const response = await fetch(`${apiUrl.value}/api/containers/${selectedContainer.value.id}/stats`)
-    const data = await response.json()
-    
-    if (data.success) {
-      containerStats.value = data.stats
-    }
+    const data = await expectApiSuccess(response, 'Failed to load container stats')
+    containerStats.value = data.stats
+    clearLoadError('stats')
   } catch (error) {
-    console.error('Failed to fetch container stats:', error)
+    notifyLoadErrorOnce('stats', error.message || 'Failed to load container stats')
   }
 }
 
@@ -221,16 +228,14 @@ async function fetchContainerLogs() {
   refreshingLogs.value = true
   try {
     const response = await fetch(`${apiUrl.value}/api/containers/${selectedContainer.value.id}/logs?tail=200`)
-    const data = await response.json()
-    
-    if (data.success) {
-      containerLogs.value = data.logs
-      if (autoScrollLogs.value) {
-        scrollToBottom()
-      }
+    const data = await expectApiSuccess(response, 'Failed to load container logs')
+    containerLogs.value = Array.isArray(data.logs) ? data.logs : []
+    clearLoadError('logs')
+    if (autoScrollLogs.value) {
+      scrollToBottom()
     }
   } catch (error) {
-    console.error('Failed to fetch container logs:', error)
+    notifyLoadErrorOnce('logs', error.message || 'Failed to load container logs')
   } finally {
     setTimeout(() => {
       refreshingLogs.value = false
@@ -253,17 +258,18 @@ async function deleteContainer() {
     const response = await fetch(`${apiUrl.value}/api/containers/${selectedContainer.value.id}`, {
       method: 'DELETE'
     })
-    const data = await response.json()
+    const data = await readJsonResponse(response)
 
-    if (data.success) {
+    if (response.ok && data.success) {
       let message = t('containerDetail.success.deletedSuccessfully', { name: selectedContainer.value.name })
-      if (data.volumesRemoved.length > 0) {
+      const removedVolumes = Array.isArray(data.volumesRemoved) ? data.volumesRemoved : []
+      if (removedVolumes.length > 0) {
         message += `\n\n${t('containerDetail.success.volumesRemoved', { volumes: data.volumesRemoved.join(', ') })}`
       }
       toast.success(message)
       router.push('/home')
     } else {
-      toast.error(t('containerDetail.error.deletionFailed', { error: data.error }))
+      throw new Error(getApiErrorMessage(data, t('containerDetail.error.deletionFailed', { error: t('common.error') })))
     }
   } catch (error) {
     toast.error(t('containerDetail.error.deletionFailed', { error: error.message }))
@@ -283,15 +289,12 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
       },
       body: JSON.stringify({ expiryMinutes }),
     })
-    const data = await response.json()
-    if (data.success) {
-      const expiryText = expiryMinutes > 0 ? ` (${expiryMinutes}m)` : ' (no expiry)'
-      toast.success(t('containerDetail.success.volumeBrowserStarted', { expiry: expiryText }))
-      window.open(`/browse/${volumeName}/`, '_blank')
-    }
+    await expectApiSuccess(response, t('containerDetail.error.failedToStartVolumeBrowser'))
+    const expiryText = expiryMinutes > 0 ? ` (${expiryMinutes}m)` : ' (no expiry)'
+    toast.success(t('containerDetail.success.volumeBrowserStarted', { expiry: expiryText }))
+    window.open(`/browse/${volumeName}/`, '_blank')
   } catch (error) {
-    toast.error(t('containerDetail.error.failedToStartVolumeBrowser'))
-    console.error(error)
+    toast.error(error.message || t('containerDetail.error.failedToStartVolumeBrowser'))
   } finally {
     delete browsingVolume.value[volumeName]
   }

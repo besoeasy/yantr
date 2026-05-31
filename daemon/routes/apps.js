@@ -2,12 +2,41 @@ import path from "path";
 import { readFile, access } from "fs/promises";
 import YAML from "yaml";
 import {
+  booleanSchema,
+  nonEmptyStringSchema,
+  positiveIntegerSchema,
+  scalarMapSchema,
+  sendError,
+  stringOrIntegerSchema,
+} from "../api.js";
+import {
   docker, log, appsDir, socketPath,
   getAppsCatalogCached, checkImageArchitectureSupport, getImageFromCompose,
 } from "../shared.js";
 import { spawnProcess, NotFoundError, BadRequestError } from "../utils.js";
 import { resolveComposeCommand } from "../compose.js";
 import { buildProjectComposeContent, getComposeProcessEnv, writeProjectCompose, writeProjectEnv } from "../stack-compose.js";
+
+const deploySchema = {
+  body: {
+    type: "object",
+    required: ["appId"],
+    additionalProperties: false,
+    properties: {
+      appId: nonEmptyStringSchema,
+      environment: scalarMapSchema,
+      extraEnv: scalarMapSchema,
+      expiresIn: positiveIntegerSchema,
+      instanceId: positiveIntegerSchema,
+      allowMissingDependencies: booleanSchema,
+      masterApp: nonEmptyStringSchema,
+      customPortMappings: {
+        type: "object",
+        additionalProperties: stringOrIntegerSchema,
+      },
+    },
+  },
+};
 
 export default async function appsRoutes(fastify) {
 
@@ -70,15 +99,11 @@ export default async function appsRoutes(fastify) {
   });
 
   // POST /api/deploy
-  fastify.post("/api/deploy", async (request, reply) => {
+  fastify.post("/api/deploy", { schema: deploySchema }, async (request, reply) => {
     log("info", "🚀 [POST /api/deploy] Deploy request received");
     try {
       const { appId, environment, extraEnv, expiresIn, customPortMappings, instanceId, allowMissingDependencies, masterApp } = request.body;
       log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}${instanceId > 1 ? ` (Instance #${instanceId})` : ""}`);
-
-      if (!appId) {
-        return reply.code(400).send({ success: false, error: "appId is required" });
-      }
 
     const appPath = path.join(appsDir, appId);
     const composePath = path.join(appPath, "compose.yml");
@@ -87,7 +112,7 @@ export default async function appsRoutes(fastify) {
       try {
         composeContent = await readFile(composePath, "utf-8");
       } catch {
-        return reply.code(404).send({ success: false, error: `App '${appId}' not found or has no compose.yml` });
+        return sendError(reply, 404, { code: "APP_NOT_FOUND", message: `App '${appId}' not found or has no compose.yml` });
       }
 
     // Architecture check
@@ -95,7 +120,11 @@ export default async function appsRoutes(fastify) {
       if (imageName) {
         const archCheck = await checkImageArchitectureSupport(imageName);
         if (archCheck.supported === false) {
-          return reply.code(400).send({ success: false, error: "Architecture not supported", message: `The image '${imageName}' does not support your system architecture (${archCheck.systemArch}). Image supports: ${archCheck.imageArch}`, details: { image: imageName, systemArch: archCheck.systemArch, imageArch: archCheck.imageArch } });
+          return sendError(reply, 400, {
+            code: "ARCHITECTURE_NOT_SUPPORTED",
+            message: `The image '${imageName}' does not support your system architecture (${archCheck.systemArch}). Image supports: ${archCheck.imageArch}`,
+            details: { image: imageName, systemArch: archCheck.systemArch, imageArch: archCheck.imageArch },
+          });
         }
       }
 
@@ -113,7 +142,11 @@ export default async function appsRoutes(fastify) {
       }
           if (missingNetworks.length > 0) {
           const needed = missingNetworks.map(n => n.replace(/_network$/, "")).join(", ");
-          return reply.code(400).send({ success: false, error: "Missing networks", message: `Required network(s) ${missingNetworks.join(", ")} do not exist. Deploy ${needed} first.`, missingNetworks });
+          return sendError(reply, 400, {
+            code: "MISSING_NETWORKS",
+            message: `Required network(s) ${missingNetworks.join(", ")} do not exist. Deploy ${needed} first.`,
+            details: { missingNetworks },
+          });
         }
     }
 
@@ -132,7 +165,11 @@ export default async function appsRoutes(fastify) {
       const missingDeps = deployDeps.filter(dep => !([...runningProjects].some(p => p === dep || new RegExp(`^${dep}-\\d+$`).test(p))));
           if (missingDeps.length > 0) {
         if (!allowMissingDependencies) {
-          return reply.code(400).send({ success: false, error: "Missing dependencies", message: `This app requires the following apps to be running: ${missingDeps.join(", ")}. Please deploy ${missingDeps.length === 1 ? "it" : "them"} first.`, missingDependencies: missingDeps });
+          return sendError(reply, 400, {
+            code: "MISSING_DEPENDENCIES",
+            message: `This app requires the following apps to be running: ${missingDeps.join(", ")}. Please deploy ${missingDeps.length === 1 ? "it" : "them"} first.`,
+            details: { missingDependencies: missingDeps },
+          });
         }
         dependencyWarnings = missingDeps;
       }
@@ -166,11 +203,15 @@ export default async function appsRoutes(fastify) {
       return reply.send({ success: true, message: `App '${appId}' deployed successfully`, appId, output: stdout, warnings: stderr || null, dependencyWarnings, temporary: !!expiresIn });
     } catch (error) {
       const isArchError = error.message?.includes("no matching manifest") || error.message?.includes("platform") || error.message?.includes("architecture");
-      return reply.code(500).send({ success: false, error: isArchError ? "Architecture not supported" : "Deployment failed", message: isArchError ? "This image does not support your system architecture" : error.message, stderr: error.stderr });
+      return sendError(reply, isArchError ? 400 : 500, {
+        code: isArchError ? "ARCHITECTURE_NOT_SUPPORTED" : "DEPLOYMENT_FAILED",
+        message: isArchError ? "This image does not support your system architecture" : error.message,
+        details: error.stderr ? { stderr: error.stderr } : null,
+      });
     }
   } catch (error) {
     log("error", "❌ [POST /api/deploy] Unexpected error:", error.message);
-    return reply.code(500).send({ success: false, error: error.message });
+    return sendError(reply, 500, { code: "DEPLOYMENT_UNEXPECTED_ERROR", message: error.message });
   }
   });
 }

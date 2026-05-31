@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useNotification } from '../composables/useNotification';
 import { useApiUrl } from "../composables/useApiUrl";
+import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from "../composables/useApiResponse";
 import { usePortConflict } from "../composables/usePortConflict";
 import { useI18n } from "vue-i18n";
 import { Globe, FileCode, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, Download, Plus, X } from "lucide-vue-next";
@@ -37,6 +38,21 @@ function removeExtraEnvRow(index) {
 }
 const imageDetails = ref(null);
 const loadingImages = ref(false);
+const loadErrorState = {
+  app: false,
+  containers: false,
+  images: false,
+};
+
+function notifyLoadErrorOnce(key, message) {
+  if (loadErrorState[key]) return;
+  loadErrorState[key] = true;
+  toast.error(message);
+}
+
+function clearLoadError(key) {
+  loadErrorState[key] = false;
+}
 
 // Port conflict detection
 const { checkPortConflict, getPortStatus: getPortStatusFn } = usePortConflict(containers);
@@ -242,33 +258,30 @@ function getSuggestedValue(envVar) {
 async function fetchApp() {
   try {
     const response = await fetch(`${apiUrl.value}/api/apps`);
-    const data = await response.json();
+    const data = await expectApiSuccess(response, t('appDetail.failedToLoadApps'));
 
-    if (data.success && data.apps) {
+    if (data.apps) {
       app.value = data.apps.find((a) => a.id === route.params.appname);
 
       if (!app.value) {
         toast.error(t('appDetail.appNotFound'));
         router.push("/apps");
       }
-    } else {
-      throw new Error(t('appDetail.failedToLoadApps'));
+      clearLoadError('app');
     }
   } catch (error) {
-    console.error("Error fetching app:", error);
-    toast.error(t('appDetail.failedToLoadAppDetails'));
+    notifyLoadErrorOnce('app', error.message || t('appDetail.failedToLoadAppDetails'));
   }
 }
 
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`);
-    const data = await response.json();
-    if (data.success) {
-      containers.value = data.containers;
-    }
+    const data = await expectApiSuccess(response, "Failed to load app containers");
+    containers.value = Array.isArray(data.containers) ? data.containers : [];
+    clearLoadError('containers');
   } catch (error) {
-    console.error("Error fetching containers:", error);
+    notifyLoadErrorOnce('containers', error.message || "Failed to load app containers");
   }
 }
 
@@ -358,9 +371,9 @@ async function fillFromDependencies() {
 
   try {
     const response = await fetch(`${apiUrl.value}/api/apps/${app.value.id}/dependency-env`);
-    const data = await response.json();
+    const data = await expectApiSuccess(response, t('appDetail.failedToFetchDependencyVariables'));
 
-    if (data.success && data.environmentVariables) {
+    if (data.environmentVariables) {
       let filledCount = 0;
 
       // Fill environment variables using smart matching
@@ -416,8 +429,7 @@ async function fillFromDependencies() {
       }
     }
   } catch (error) {
-    console.error("Error fetching dependency environment variables:", error);
-    toast.error(t('appDetail.failedToFetchDependencyVariables'));
+    toast.error(error.message || t('appDetail.failedToFetchDependencyVariables'));
   } finally {
     loadingDependencyEnv.value = false;
   }
@@ -429,13 +441,11 @@ async function fetchImageDetails() {
   try {
     loadingImages.value = true;
     const response = await fetch(`${apiUrl.value}/api/image-details/${app.value.id}`);
-    const data = await response.json();
-
-    if (data.success) {
-      imageDetails.value = data.images;
-    }
+    const data = await expectApiSuccess(response, "Failed to load image details");
+    imageDetails.value = Array.isArray(data.images) ? data.images : [];
+    clearLoadError('images');
   } catch (error) {
-    console.error("Error fetching image details:", error);
+    notifyLoadErrorOnce('images', error.message || "Failed to load image details");
   } finally {
     loadingImages.value = false;
   }
@@ -518,9 +528,9 @@ async function deployApp() {
       body: JSON.stringify(requestBody),
     });
 
-    const result = await response.json();
+    const result = await readJsonResponse(response);
 
-    if (result.success) {
+    if (response.ok && result.success) {
       if (result.temporary) {
         toast.success(t('appDetail.deployedAsTemporary', { name: app.value.name, hours: expirationHours.value }));
       } else {
@@ -533,17 +543,17 @@ async function deployApp() {
       }, 1500);
     } else {
       // Check if it's a dependency error
-      if (result.missingDependencies && result.missingDependencies.length > 0) {
-        const deps = result.missingDependencies.join(", ");
+      const missingDependenciesList = result.details?.missingDependencies || result.missingDependencies || [];
+      if (missingDependenciesList.length > 0) {
+        const deps = missingDependenciesList.join(", ");
         toast.error(t('appDetail.missingDependenciesDeployFirst', { deps }), {
           timeout: 5000
         });
       } else {
-        throw new Error(result.message || result.error || t('appDetail.deploymentFailed'));
+        throw new Error(getApiErrorMessage(result, t('appDetail.deploymentFailed')));
       }
     }
   } catch (error) {
-    console.error("Deployment error:", error);
     if (error.message.includes("timeout")) {
       toast.error(t('appDetail.deploymentTimeout', { name: app.value.name }));
     } else {

@@ -18,6 +18,8 @@ function dailyShuffle(arr) {
 // All dashboard cards now use 1 column only.
 const widgets = dailyShuffle(Object.values(widgetModules).map((m) => m.default));
 import { useApiUrl } from "../composables/useApiUrl";
+import { expectApiSuccess } from "../composables/useApiResponse";
+import { useNotification } from "../composables/useNotification";
 import { useI18n } from "vue-i18n";
 import YantraContainersGrid from "../components/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/VolumeContainersGrid.vue";
@@ -25,6 +27,7 @@ import OtherContainersGrid from "../components/OtherContainersGrid.vue";
 
 const { apiUrl } = useApiUrl();
 const { t } = useI18n();
+const toast = useNotification();
 const router = useRouter();
 
 const containers = ref([]);
@@ -34,6 +37,21 @@ const loading = ref(false);
 const activeFilter = ref("all");
 
 let containersRefreshInterval = null;
+const loadErrorState = {
+  containers: false,
+  volumes: false,
+  volumeBrowsers: false,
+};
+
+function notifyLoadErrorOnce(key, message) {
+  if (loadErrorState[key]) return;
+  loadErrorState[key] = true;
+  toast.error(message);
+}
+
+function clearLoadError(key) {
+  loadErrorState[key] = false;
+}
 
 // Container Grouping
 const volumeContainers = computed(() => volumeBrowsers.value);
@@ -60,42 +78,44 @@ const showMetrics = computed(() => activeFilter.value === "all" || activeFilter.
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`);
-    const data = await response.json();
-    if (data.success) {
-      containers.value = data.containers;
-    }
+    const data = await expectApiSuccess(response, "Failed to load containers");
+    containers.value = Array.isArray(data.containers) ? data.containers : [];
+    clearLoadError("containers");
   } catch (error) {
-    console.error("Failed to fetch containers:", error);
+    notifyLoadErrorOnce("containers", error.message || "Failed to load containers");
   }
 }
 
 async function fetchVolumes() {
   try {
     const response = await fetch(`${apiUrl.value}/api/volumes`);
-    const data = await response.json();
-    if (data.success) {
-      volumes.value = data.volumes || [];
-    }
+    const data = await expectApiSuccess(response, "Failed to load volumes");
+    volumes.value = Array.isArray(data.volumes) ? data.volumes : [];
+    clearLoadError("volumes");
   } catch (error) {
-    console.error("Failed to fetch volumes:", error);
+    notifyLoadErrorOnce("volumes", error.message || "Failed to load volumes");
   }
 }
 
 async function fetchVolumeBrowsers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/volumes/browsers`);
-    volumeBrowsers.value = await response.json();
+    const data = await response.json().catch(() => []);
+    volumeBrowsers.value = Array.isArray(data) ? data : [];
+    clearLoadError("volumeBrowsers");
   } catch (error) {
-    console.error("Failed to fetch volume browsers:", error);
+    notifyLoadErrorOnce("volumeBrowsers", error.message || "Failed to load volume browsers");
   }
 }
 
 async function stopBrowser(volumeName) {
   try {
-    await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, { method: "DELETE" });
+    const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, { method: "DELETE" });
+    await expectApiSuccess(response, t("volumes.failedToStopBrowser"));
     await fetchVolumeBrowsers();
+    toast.success(t("volumes.browserStopped"));
   } catch (error) {
-    console.error("Failed to stop browser:", error);
+    toast.error(error.message || t("volumes.failedToStopBrowser"));
   }
 }
 
@@ -141,7 +161,7 @@ onUnmounted(() => {
             <button
               @click="showWidgetBorders = !showWidgetBorders"
               :aria-label="showWidgetBorders ? 'Hide borders' : 'Show borders'"
-              class="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow"
+              class="px-3 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow"
             >
               <component :is="showWidgetBorders ? EyeOff : Eye" :size="14" />
             </button>
@@ -151,7 +171,7 @@ onUnmounted(() => {
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
                 activeFilter === 'all'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow',
+                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
             >
               <LayoutGrid :size="14" />
@@ -164,7 +184,7 @@ onUnmounted(() => {
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
                 activeFilter === 'yantr'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow',
+                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
             >
               <PackageCheck :size="14" />
@@ -177,7 +197,7 @@ onUnmounted(() => {
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
                 activeFilter === 'docker'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow',
+                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
             >
               <Container :size="14" />
@@ -190,7 +210,7 @@ onUnmounted(() => {
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
                 activeFilter === 'volumes'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow',
+                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
             >
               <FolderOpen :size="14" />
@@ -202,7 +222,7 @@ onUnmounted(() => {
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
                 activeFilter === 'metrics'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-[var(--surface-muted)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:smooth-shadow',
+                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
             >
               <Activity :size="14" />
@@ -230,7 +250,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Unified grid: all cards are single-column on mobile, 2 columns on medium, 3 on large -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 [grid-auto-flow:dense]">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 grid-flow-dense">
             <YantraContainersGrid v-if="showYantrApps && yantrContainers.length > 0" :containers="yantrContainers" :show-header="activeFilter !== 'all'" />
             <VolumeContainersGrid v-if="showVolumeBrowsers && volumeContainers.length > 0" :containers="volumeContainers" :show-header="activeFilter !== 'all'" @stop-browser="stopBrowser" />
             <OtherContainersGrid v-if="showDockerApps && otherContainers.length > 0" :containers="otherContainers" :show-header="activeFilter !== 'all'" @select="viewContainerDetail" />
@@ -238,7 +258,7 @@ onUnmounted(() => {
             <template v-if="showMetrics">
               <!-- Section header only when metrics filter is active (not "all") -->
               <div v-if="activeFilter === 'metrics'" class="col-span-full flex items-center gap-2 pb-1">
-                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)]">{{ t("home.metrics") }}</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-(--text-secondary)">{{ t("home.metrics") }}</span>
               </div>
               <component
                 v-for="(widget, i) in widgets"

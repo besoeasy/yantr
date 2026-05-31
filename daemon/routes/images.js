@@ -1,6 +1,7 @@
 import path from "path";
 import { readFile } from "fs/promises";
 import { docker, log, appsDir } from "../shared.js";
+import { idParamsSchema, sendError } from "../api.js";
 
 export default async function imagesRoutes(fastify) {
   // GET /api/images
@@ -94,7 +95,7 @@ export default async function imagesRoutes(fastify) {
   });
 
   // DELETE /api/images/:id
-  fastify.delete("/api/images/:id", async (request, reply) => {
+  fastify.delete("/api/images/:id", { schema: { params: idParamsSchema } }, async (request, reply) => {
     log("info", `🗑️  [DELETE /api/images/:id] Remove request for image: ${request.params.id}`);
     try {
       const image = docker.getImage(request.params.id);
@@ -103,7 +104,7 @@ export default async function imagesRoutes(fastify) {
       return reply.send({ success: true, message: "Image removed successfully", imageId: request.params.id, tags: info.RepoTags });
     } catch (error) {
       log("error", `❌ [DELETE /api/images/:id] Error:`, error.message);
-      return reply.code(500).send({ success: false, error: "Failed to remove image", message: error.message });
+      return sendError(reply, 500, { code: "IMAGE_REMOVE_FAILED", message: "Failed to remove image", details: { cause: error.message } });
     }
   });
 }

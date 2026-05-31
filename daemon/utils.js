@@ -1,4 +1,5 @@
 import { spawn } from "child_process";
+import { sendError } from "./api.js";
 
 /**
  * Helper function to spawn a process and capture output
@@ -62,10 +63,11 @@ export function spawnProcess(command, args, options = {}) {
  * Base application error class
  */
 export class AppError extends Error {
-  constructor(message, statusCode = 500, details = null) {
+  constructor(message, statusCode = 500, code = "INTERNAL_SERVER_ERROR", details = null) {
     super(message);
     this.name = this.constructor.name;
     this.statusCode = statusCode;
+    this.code = code;
     this.details = details;
     this.isOperational = true; // Distinguish operational errors from programming errors
     Error.captureStackTrace(this, this.constructor);
@@ -76,8 +78,8 @@ export class AppError extends Error {
  * Bad request error (400)
  */
 export class BadRequestError extends AppError {
-  constructor(message, details = null) {
-    super(message, 400, details);
+  constructor(message, details = null, code = "BAD_REQUEST") {
+    super(message, 400, code, details);
   }
 }
 
@@ -85,8 +87,8 @@ export class BadRequestError extends AppError {
  * Not found error (404)
  */
 export class NotFoundError extends AppError {
-  constructor(message, details = null) {
-    super(message, 404, details);
+  constructor(message, details = null, code = "NOT_FOUND") {
+    super(message, 404, code, details);
   }
 }
 
@@ -94,8 +96,8 @@ export class NotFoundError extends AppError {
  * Conflict error (409)
  */
 export class ConflictError extends AppError {
-  constructor(message, details = null) {
-    super(message, 409, details);
+  constructor(message, details = null, code = "CONFLICT") {
+    super(message, 409, code, details);
   }
 }
 
@@ -103,8 +105,8 @@ export class ConflictError extends AppError {
  * Docker-specific error
  */
 export class DockerError extends AppError {
-  constructor(message, details = null) {
-    super(message, 500, details);
+  constructor(message, details = null, code = "DOCKER_ERROR") {
+    super(message, 500, code, details);
   }
 }
 
@@ -119,28 +121,42 @@ export function errorHandler(err, request, reply) {
   console.error(`[${timestamp}] ❌ [ERROR] ${request.method} ${request.url}`);
   console.error(`[${timestamp}] ❌ [ERROR] ${err.stack || err.message}`);
 
+  if (err.validation) {
+    return sendError(reply, 400, {
+      code: "VALIDATION_ERROR",
+      message: "Request validation failed",
+      details: err.validation.map((issue) => ({
+        instancePath: issue.instancePath || "",
+        schemaPath: issue.schemaPath || "",
+        keyword: issue.keyword || "validation",
+        message: issue.message || "Invalid value",
+        params: issue.params || {},
+      })),
+    });
+  }
+
   // Operational errors (AppError subclasses)
   if (err.isOperational) {
-    return reply.code(err.statusCode).send({
-      success: false,
-      error: err.message,
+    return sendError(reply, err.statusCode, {
+      code: err.code || "OPERATIONAL_ERROR",
+      message: err.message,
       details: err.details,
     });
   }
 
   // Docker API errors
   if (err.statusCode && err.reason) {
-    return reply.code(err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500).send({
-      success: false,
-      error: err.reason || err.message,
+    return sendError(reply, err.statusCode >= 400 && err.statusCode < 600 ? err.statusCode : 500, {
+      code: "DOCKER_API_ERROR",
+      message: err.reason || err.message,
       details: err.json || null,
     });
   }
 
   const isDevelopment = process.env.NODE_ENV === 'development';
-  return reply.code(500).send({
-    success: false,
-    error: "Internal server error",
+  return sendError(reply, 500, {
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Internal server error",
     details: isDevelopment ? { message: err.message, stack: err.stack } : null,
   });
 }

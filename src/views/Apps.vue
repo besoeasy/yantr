@@ -3,10 +3,13 @@ import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
+import { expectApiSuccess } from "../composables/useApiResponse";
+import { useNotification } from "../composables/useNotification";
 import AppCard from "../components/AppCard.vue";
 import { Tag, Search, LayoutGrid, X, Command } from "lucide-vue-next";
 
 const { t } = useI18n();
+const toast = useNotification();
 
 const searchInput = ref(null);
 
@@ -30,6 +33,20 @@ const selectedTag = ref(null);
 const hourSeed = ref(getDateHourSeed());
 let refreshInterval = null;
 let seedInterval = null;
+const loadErrorState = {
+  apps: false,
+  containers: false,
+};
+
+function notifyLoadErrorOnce(key, message) {
+  if (loadErrorState[key]) return;
+  loadErrorState[key] = true;
+  toast.error(message);
+}
+
+function clearLoadError(key) {
+  loadErrorState[key] = false;
+}
 
 // Computed
 const installedAppIds = computed(() => {
@@ -144,33 +161,29 @@ function shuffleWithSeed(array) {
 async function fetchApps() {
   try {
     const response = await fetch(`${apiUrl.value}/api/apps`);
-    const data = await response.json();
-    if (data.success) {
-      apps.value = data.apps;
-    }
+    const data = await expectApiSuccess(response, "Failed to load apps");
+    apps.value = Array.isArray(data.apps) ? data.apps : [];
+    clearLoadError("apps");
   } catch (error) {
-    console.error("Failed to fetch apps:", error);
+    notifyLoadErrorOnce("apps", error.message || "Failed to load apps");
   }
 }
 
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`);
-    const data = await response.json();
-    if (data.success) {
-      containers.value = data.containers.filter((c) => c.state === "running");
-    }
+    const data = await expectApiSuccess(response, "Failed to load running containers");
+    containers.value = Array.isArray(data.containers)
+      ? data.containers.filter((c) => c.state === "running")
+      : [];
+    clearLoadError("containers");
   } catch (error) {
-    console.error("Failed to fetch containers:", error);
+    notifyLoadErrorOnce("containers", error.message || "Failed to load running containers");
   }
 }
 
 function viewAppDetail(appId) {
-  if (appInstanceCounts.value[appId] > 0) {
-    router.push(`/app/${appId}`);
-  } else {
-    router.push(`/apps/${appId}`);
-  }
+  router.push(`/apps/${appId}`);
 }
 
 // Lifecycle
@@ -295,7 +308,7 @@ onUnmounted(() => {
           </div>
 
           <!-- Active filters + result count -->
-          <div class="mt-3 flex items-center gap-2 flex-wrap min-h-[24px]">
+          <div class="mt-3 flex items-center gap-2 flex-wrap min-h-6">
             <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-zinc-500">
               {{ combinedApps.length }} {{ combinedApps.length === 1 ? t('apps.app') : t('apps.apps') }}
             </span>

@@ -1,6 +1,12 @@
 import path from 'path'
 import { readFile } from 'fs/promises'
 import { docker, appsDir, socketPath, log } from '../shared.js'
+import {
+  nonEmptyStringSchema,
+  optionalStringSchema,
+  positiveIntegerSchema,
+  sendError,
+} from '../api.js'
 import { getBaseAppId } from '../utils.js'
 import { resolveComposeCommand } from '../compose.js'
 import { spawnProcess } from '../utils.js'
@@ -13,6 +19,34 @@ import {
   getComposeProcessEnv,
 } from '../stack-compose.js'
 import { hashPassword, reloadCaddyConfig, isRunning, getCaddyProxies, startCaddy } from '../caddy.js'
+
+const enableProxySchema = {
+  body: {
+    type: 'object',
+    required: ['projectId', 'servePort', 'targetPort'],
+    additionalProperties: false,
+    properties: {
+      projectId: nonEmptyStringSchema,
+      serviceName: optionalStringSchema,
+      servePort: positiveIntegerSchema,
+      targetPort: positiveIntegerSchema,
+      authUser: optionalStringSchema,
+      authPass: optionalStringSchema,
+    },
+  },
+}
+
+const disableProxySchema = {
+  body: {
+    type: 'object',
+    required: ['projectId'],
+    additionalProperties: false,
+    properties: {
+      projectId: nonEmptyStringSchema,
+      serviceName: optionalStringSchema,
+    },
+  },
+}
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 
@@ -61,7 +95,7 @@ export default async function proxyRoutes(fastify) {
 
   // POST /api/proxy/enable
   // Body: { projectId, servePort, targetPort, serviceName?, authUser?, authPass? }
-  fastify.post('/api/proxy/enable', async (request, reply) => {
+  fastify.post('/api/proxy/enable', { schema: enableProxySchema }, async (request, reply) => {
     const {
       projectId,
       serviceName: requestedService,
@@ -71,17 +105,14 @@ export default async function proxyRoutes(fastify) {
       authPass,
     } = request.body || {}
 
-    if (!projectId || !servePort || !targetPort) {
-      return reply.code(400).send({ success: false, error: 'projectId, servePort, and targetPort are required' })
-    }
     if (!!authUser !== !!authPass) {
-      return reply.code(400).send({ success: false, error: 'Both authUser and authPass must be provided together, or neither' })
+      return sendError(reply, 400, { code: 'PROXY_AUTH_FIELDS_MISMATCH', message: 'Both authUser and authPass must be provided together, or neither' })
     }
 
     const allContainers = await docker.listContainers({ all: false })
     const projectContainers = allContainers.filter(c => c.Labels?.['com.docker.compose.project'] === projectId)
     if (!projectContainers.length) {
-      return reply.code(404).send({ success: false, error: 'Stack not found or not running' })
+      return sendError(reply, 404, { code: 'STACK_NOT_FOUND', message: 'Stack not found or not running' })
     }
 
     const availableServices = [...new Set(
@@ -89,7 +120,7 @@ export default async function proxyRoutes(fastify) {
     )]
     const serviceName = requestedService || availableServices[0]
     if (!serviceName) {
-      return reply.code(400).send({ success: false, error: 'Cannot determine a service name for this stack' })
+      return sendError(reply, 400, { code: 'SERVICE_NAME_UNRESOLVED', message: 'Cannot determine a service name for this stack' })
     }
 
     let passHash = null
@@ -97,7 +128,7 @@ export default async function proxyRoutes(fastify) {
       try {
         passHash = await hashPassword(authPass)
       } catch (err) {
-        return reply.code(500).send({ success: false, error: `Failed to hash password: ${err.message}` })
+        return sendError(reply, 500, { code: 'PROXY_PASSWORD_HASH_FAILED', message: `Failed to hash password: ${err.message}` })
       }
     }
 
@@ -105,14 +136,14 @@ export default async function proxyRoutes(fastify) {
     const compose = parseCompose(composeContent)
     const service = compose.services?.[serviceName]
     if (!service) {
-      return reply.code(400).send({ success: false, error: `Service '${serviceName}' not found in compose` })
+      return sendError(reply, 400, { code: 'SERVICE_NOT_FOUND_IN_COMPOSE', message: `Service '${serviceName}' not found in compose` })
     }
 
     // Validate the container port exists on the service
     const serviceContainer = projectContainers.find(c => c.Labels?.['com.docker.compose.service'] === serviceName)
     const portBinding = (serviceContainer?.Ports || []).find(p => p.PrivatePort === Number(targetPort))
     if (!portBinding) {
-      return reply.code(400).send({ success: false, error: `Container port ${targetPort} not found on service '${serviceName}'` })
+      return sendError(reply, 400, { code: 'TARGET_PORT_NOT_FOUND', message: `Container port ${targetPort} not found on service '${serviceName}'` })
     }
 
     // Apply caddy labels — convert array labels to map if needed
@@ -132,7 +163,7 @@ export default async function proxyRoutes(fastify) {
     const { composeFile } = await writeProjectCompose(appPath, projectId, stringifyCompose(compose))
     const { stdout, stderr, exitCode } = await redeployStack(appPath, projectId, composeFile)
     if (exitCode !== 0) {
-      return reply.code(500).send({ success: false, error: `docker compose failed: ${stderr || stdout}` })
+      return sendError(reply, 500, { code: 'PROXY_REDEPLOY_FAILED', message: `docker compose failed: ${stderr || stdout}` })
     }
 
     if (!isRunning()) await startCaddy()
@@ -154,16 +185,13 @@ export default async function proxyRoutes(fastify) {
 
   // POST /api/proxy/disable
   // Body: { projectId, serviceName? }
-  fastify.post('/api/proxy/disable', async (request, reply) => {
+  fastify.post('/api/proxy/disable', { schema: disableProxySchema }, async (request, reply) => {
     const { projectId, serviceName: requestedService } = request.body || {}
-    if (!projectId) {
-      return reply.code(400).send({ success: false, error: 'projectId is required' })
-    }
 
     const allContainers = await docker.listContainers({ all: false })
     const projectContainers = allContainers.filter(c => c.Labels?.['com.docker.compose.project'] === projectId)
     if (!projectContainers.length) {
-      return reply.code(404).send({ success: false, error: 'Stack not found or not running' })
+      return sendError(reply, 404, { code: 'STACK_NOT_FOUND', message: 'Stack not found or not running' })
     }
 
     const availableServices = [...new Set(
@@ -186,7 +214,7 @@ export default async function proxyRoutes(fastify) {
     const { composeFile } = await writeProjectCompose(appPath, projectId, stringifyCompose(compose))
     const { stdout, stderr, exitCode } = await redeployStack(appPath, projectId, composeFile)
     if (exitCode !== 0) {
-      return reply.code(500).send({ success: false, error: `docker compose failed: ${stderr || stdout}` })
+      return sendError(reply, 500, { code: 'PROXY_DISABLE_REDEPLOY_FAILED', message: `docker compose failed: ${stderr || stdout}` })
     }
 
     await reloadCaddyConfig()

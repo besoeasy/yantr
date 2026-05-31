@@ -2,10 +2,13 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useApiUrl } from '../composables/useApiUrl'
+import { useNotification } from '../composables/useNotification'
+import { expectApiSuccess } from '../composables/useApiResponse'
 import { FileText, AlertCircle, Info, RefreshCw, Terminal, Pause, Play, Trash2, Search, ArrowDown } from 'lucide-vue-next'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
+const toast = useNotification()
 const logsData = ref({})
 const logFilter = ref('all')
 const loading = ref(false)
@@ -13,6 +16,7 @@ const autoRefresh = ref(true)
 const searchQuery = ref('')
 let refreshInterval = null
 const logContainer = ref(null)
+const loadErrorShown = ref(false)
 
 function formatTimestamp(timestamp) {
   const date = new Date(timestamp)
@@ -32,20 +36,22 @@ async function fetchLogs() {
     const level = logFilter.value === 'all' ? '' : logFilter.value
     const url = level ? `${apiUrl.value}/api/logs?level=${level}` : `${apiUrl.value}/api/logs`
     const response = await fetch(url)
-    const data = await response.json()
+    const data = await expectApiSuccess(response, 'Failed to load logs')
     
     // Only update if changes detected (naive check) or initial load
-    if (data.success) {
-      const currentLen = logsData.value.logs?.length || 0
-      if (!logsData.value.logs || data.logs.length !== currentLen || (data.logs.length > 0 && data.logs[0].timestamp !== logsData.value.logs[0].timestamp)) {
-        logsData.value = data
-        if (autoRefresh.value) {
-            scrollToBottom()
-        }
+    const currentLen = logsData.value.logs?.length || 0
+    if (!logsData.value.logs || data.logs.length !== currentLen || (data.logs.length > 0 && data.logs[0].timestamp !== logsData.value.logs[0].timestamp)) {
+      logsData.value = data
+      if (autoRefresh.value) {
+          scrollToBottom()
       }
     }
+    loadErrorShown.value = false
   } catch (error) {
-    console.error('Failed to fetch logs:', error)
+    if (!loadErrorShown.value) {
+      toast.error(error.message || 'Failed to load logs')
+      loadErrorShown.value = true
+    }
   } finally {
     loading.value = false
   }

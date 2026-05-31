@@ -1,5 +1,6 @@
 import path from "path";
 import { readFile } from "fs/promises";
+import { nonEmptyStringSchema, projectIdParamsSchema, sendError } from "../api.js";
 import { docker, getAppsCatalogCached, parseAppLabels, appsDir, socketPath, log } from "../shared.js";
 import { getBaseAppId } from "../utils.js";
 import { resolveComposeCommand } from "../compose.js";
@@ -15,6 +16,16 @@ import {
   getProjectComposeRef,
   writeProjectCompose,
 } from "../stack-compose.js";
+
+const stackPortBodySchema = {
+  type: "object",
+  required: ["portMapping"],
+  additionalProperties: false,
+  properties: {
+    serviceName: { type: "string" },
+    portMapping: nonEmptyStringSchema,
+  },
+};
 
 export default async function stacksRoutes(fastify) {
   async function listProjectContainers(projectId) {
@@ -107,13 +118,13 @@ export default async function stacksRoutes(fastify) {
 
     // Derive caddy proxy info from labels on the project containers themselves
     const caddyProxies = projectContainers
-      .filter(c => c.Labels?.['yantr.caddy.enabled'] === 'true')
+      .filter(c => c.Labels?.["yantr.caddy.enabled"] === "true")
       .map(c => ({
-        servePort: Number(c.Labels['yantr.caddy.serve.port']) || null,
-        targetPort: Number(c.Labels['yantr.caddy.target.port']) || null,
-        authEnabled: !!(c.Labels['yantr.caddy.auth.user']),
-        authUser: c.Labels['yantr.caddy.auth.user'] || null,
-        service: c.Labels?.['com.docker.compose.service'] || null,
+        servePort: Number(c.Labels["yantr.caddy.serve.port"]) || null,
+        targetPort: Number(c.Labels["yantr.caddy.target.port"]) || null,
+        authEnabled: !!(c.Labels["yantr.caddy.auth.user"]),
+        authUser: c.Labels["yantr.caddy.auth.user"] || null,
+        service: c.Labels?.["com.docker.compose.service"] || null,
       }))
       .filter(p => p.servePort);
 
@@ -130,18 +141,18 @@ export default async function stacksRoutes(fastify) {
     });
   });
 
-  fastify.post("/api/stacks/:projectId/ports", async (request, reply) => {
+  fastify.post("/api/stacks/:projectId/ports", { schema: { params: projectIdParamsSchema, body: stackPortBodySchema } }, async (request, reply) => {
     const { projectId } = request.params;
     const requestedServiceName = String(request.body?.serviceName || "").trim();
     const parsedPort = parseDockerPortInput(request.body?.portMapping);
 
     if (!parsedPort) {
-      return reply.code(400).send({ success: false, error: "portMapping must be a valid Docker port format like 9000, 9000:9000, or 53:53/udp" });
+      return sendError(reply, 400, { code: "INVALID_PORT_MAPPING", message: "portMapping must be a valid Docker port format like 9000, 9000:9000, or 53:53/udp" });
     }
 
     const projectContainers = await listProjectContainers(projectId);
     if (projectContainers.length === 0) {
-      return reply.code(404).send({ success: false, error: "Stack not found or no containers" });
+      return sendError(reply, 404, { code: "STACK_NOT_FOUND", message: "Stack not found or no containers" });
     }
 
     const availableServices = [...new Set(projectContainers.map((container) => container.Labels?.["com.docker.compose.service"]).filter(Boolean))];
@@ -150,10 +161,10 @@ export default async function stacksRoutes(fastify) {
       serviceName = availableServices[0];
     }
     if (!serviceName) {
-      return reply.code(400).send({ success: false, error: "serviceName is required for multi-service stacks" });
+      return sendError(reply, 400, { code: "SERVICE_NAME_REQUIRED", message: "serviceName is required for multi-service stacks" });
     }
     if (!availableServices.includes(serviceName)) {
-      return reply.code(400).send({ success: false, error: `Service '${serviceName}' is not part of this stack` });
+      return sendError(reply, 400, { code: "SERVICE_NOT_IN_STACK", message: `Service '${serviceName}' is not part of this stack` });
     }
 
     const { containerPort, hostPort, protocol, hasExplicitHostPort } = parsedPort;
@@ -175,7 +186,7 @@ export default async function stacksRoutes(fastify) {
     const compose = parseCompose(composeContent);
     const service = compose.services?.[serviceName];
     if (!service) {
-      return reply.code(400).send({ success: false, error: `Service '${serviceName}' not found in stack compose` });
+      return sendError(reply, 400, { code: "SERVICE_NOT_FOUND_IN_COMPOSE", message: `Service '${serviceName}' not found in stack compose` });
     }
 
     if (hasExplicitHostPort) {
@@ -191,9 +202,9 @@ export default async function stacksRoutes(fastify) {
       );
 
       if (conflictingContainer) {
-        return reply.code(409).send({
-          success: false,
-          error: `Port ${hostPort}/${protocol} is already in use by ${conflictingContainer.Names?.[0]?.replace("/", "") || "another container"}`,
+        return sendError(reply, 409, {
+          code: "PORT_ALREADY_IN_USE",
+          message: `Port ${hostPort}/${protocol} is already in use by ${conflictingContainer.Names?.[0]?.replace("/", "") || "another container"}`,
         });
       }
     }
@@ -215,7 +226,7 @@ export default async function stacksRoutes(fastify) {
     );
 
     if (exitCode !== 0) {
-      return reply.code(500).send({ success: false, error: `docker compose failed: ${stderr || stdout}` });
+      return sendError(reply, 500, { code: "STACK_REDEPLOY_FAILED", message: `docker compose failed: ${stderr || stdout}` });
     }
 
     const updatedContainers = await listProjectContainers(projectId);

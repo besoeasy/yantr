@@ -3,14 +3,62 @@ import {
   getPublicIpIdentityCached,
 } from "../shared.js";
 import { runUpdate, runSelfUpdate } from "../autoupdate.js";
+import { booleanSchema, nonEmptyStringSchema, sendError } from "../api.js";
+
+const autoupdateRunSchema = {
+  body: {
+    type: "object",
+    required: ["containerIds"],
+    additionalProperties: false,
+    properties: {
+      containerIds: {
+        type: "array",
+        minItems: 1,
+        items: nonEmptyStringSchema,
+      },
+    },
+  },
+};
+
+const portSuggestSchema = {
+  body: {
+    type: "object",
+    required: ["appId", "ports"],
+    additionalProperties: false,
+    properties: {
+      appId: nonEmptyStringSchema,
+      ports: {
+        type: "array",
+        minItems: 1,
+        items: {
+          type: "object",
+          required: ["isNamed"],
+          properties: {
+            isNamed: booleanSchema,
+          },
+          additionalProperties: true,
+        },
+      },
+    },
+  },
+};
+
+const systemPruneSchema = {
+  body: {
+    type: "object",
+    additionalProperties: false,
+    properties: {
+      images: booleanSchema,
+      volumes: booleanSchema,
+    },
+  },
+};
 
 export default async function systemRoutes(fastify) {
 
   // POST /api/autoupdate/run  — update specific containers by ID (per-stack)
-  fastify.post("/api/autoupdate/run", async (request, reply) => {
+  fastify.post("/api/autoupdate/run", { schema: autoupdateRunSchema }, async (request, reply) => {
     const { containerIds } = request.body || {};
-    if (!Array.isArray(containerIds) || containerIds.length === 0)
-      return reply.code(400).send({ success: false, error: "containerIds array is required" });
 
     // Resolve IDs to current names via Docker API — never trust client-supplied names
     let containerNames;
@@ -22,21 +70,21 @@ export default async function systemRoutes(fastify) {
         .map(c => c.Names?.[0]?.replace(/^\//, ""))
         .filter(Boolean);
     } catch (e) {
-      return reply.code(500).send({ success: false, error: `Failed to resolve container IDs: ${e.message}` });
+      return sendError(reply, 500, { code: "CONTAINER_ID_RESOLUTION_FAILED", message: `Failed to resolve container IDs: ${e.message}` });
     }
 
     if (!containerNames.length)
-      return reply.code(404).send({ success: false, error: "None of the provided container IDs are currently running" });
+      return sendError(reply, 404, { code: "CONTAINERS_NOT_RUNNING", message: "None of the provided container IDs are currently running" });
 
     const result = await runUpdate(containerNames);
-    if (result.error) return reply.code(500).send({ success: false, error: result.error });
+    if (result.error) return sendError(reply, 500, { code: "AUTOUPDATE_FAILED", message: result.error });
     return reply.send({ success: true, exitCode: result.exitCode, updatedCount: result.updatedCount, output: result.stdout, warnings: result.stderr });
   });
 
   // POST /api/autoupdate/self  — update yantr itself
   fastify.post("/api/autoupdate/self", async (request, reply) => {
     const result = await runSelfUpdate();
-    if (result.error) return reply.code(500).send({ success: false, error: result.error });
+    if (result.error) return sendError(reply, 500, { code: "SELF_UPDATE_FAILED", message: result.error });
     return reply.send({ success: true, exitCode: result.exitCode, output: result.stdout, warnings: result.stderr });
   });
 
@@ -78,18 +126,15 @@ export default async function systemRoutes(fastify) {
       return reply.send({ success: true, count: portArray.length, ports: portArray });
     } catch (error) {
       log("error", "❌ [GET /api/ports/used] Error:", error.message);
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "USED_PORTS_FETCH_FAILED", message: error.message });
     }
   });
 
   // POST /api/ports/suggest
-  fastify.post("/api/ports/suggest", async (request, reply) => {
+  fastify.post("/api/ports/suggest", { schema: portSuggestSchema }, async (request, reply) => {
     log("info", "💡 [POST /api/ports/suggest] Suggesting ports for app");
     try {
       const { appId, ports: appPorts } = request.body;
-      if (!appId || !appPorts || !Array.isArray(appPorts)) {
-        return reply.code(400).send({ success: false, error: "appId and ports array are required" });
-      }
 
       const containers = await docker.listContainers({ all: false });
       const usedPorts = new Set();
@@ -110,7 +155,7 @@ export default async function systemRoutes(fastify) {
       return reply.send({ success: true, appId, suggestions: suggestedPorts });
     } catch (error) {
       log("error", "❌ [POST /api/ports/suggest] Error:", error.message);
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "PORT_SUGGESTION_FAILED", message: error.message });
     }
   });
 
@@ -149,7 +194,7 @@ export default async function systemRoutes(fastify) {
         },
       });
     } catch (error) {
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "SYSTEM_INFO_FETCH_FAILED", message: error.message });
     }
   });
 
@@ -166,10 +211,13 @@ function extractStorageInfo(driverStatus, key) {
 }
 
   // POST /api/system/prune
-  fastify.post("/api/system/prune", async (request, reply) => {
+  fastify.post("/api/system/prune", { schema: systemPruneSchema }, async (request, reply) => {
     log("info", "🧹 [POST /api/system/prune] Prune request received");
     try {
       const { images, volumes } = request.body;
+      if (!images && !volumes) {
+        return sendError(reply, 400, { code: "PRUNE_TARGET_REQUIRED", message: "At least one prune target must be selected" });
+      }
       const results = {
         images: { count: 0, spaceReclaimed: 0 },
         volumes: { count: 0, spaceReclaimed: 0 },
@@ -211,7 +259,7 @@ function extractStorageInfo(driverStatus, key) {
       return reply.send({ success: true, results });
     } catch (error) {
       log("error", "❌ [POST /api/system/prune] Error:", error.message);
-      return reply.code(500).send({ success: false, error: error.message });
+      return sendError(reply, 500, { code: "SYSTEM_PRUNE_FAILED", message: error.message });
     }
   });
 }

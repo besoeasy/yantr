@@ -90,7 +90,11 @@ async function fetchVolumes() {
 async function startBrowsing(volumeName) {
   actionLoading.value[volumeName] = true
   try {
-    const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'POST' })
+    const response = await fetch(`/api/volumes/${volumeName}/browse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ expiryMinutes: 0 }),
+    })
     const data = await response.json()
     if (data.success) {
       toast.success(t('volumes.browserStarted'))

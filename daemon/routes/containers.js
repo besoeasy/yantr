@@ -1,5 +1,6 @@
 import path from "path";
 import { access } from "fs/promises";
+import { idParamsSchema, sendError } from "../api.js";
 import {
   docker, log, appsDir, socketPath,
   getAppsCatalogCached, getContainerEnv, mapWithConcurrency, parseAppLabels,
@@ -174,7 +175,7 @@ export default async function containersRoutes(fastify) {
   });
 
   // DELETE /api/containers/:id
-  fastify.delete("/api/containers/:id", async (request, reply) => {
+  fastify.delete("/api/containers/:id", { schema: { params: idParamsSchema } }, async (request, reply) => {
     log("info", `🗑️  [DELETE /api/containers/:id] Remove request for: ${request.params.id}`);
     try {
       const container = docker.getContainer(request.params.id);
@@ -212,7 +213,7 @@ export default async function containersRoutes(fastify) {
       return reply.send({ success: true, message: `Container '${containerName}' removed successfully`, container: containerName, volumesPreserved: volumeNames });
     } catch (error) {
       log("error", `❌ [DELETE /api/containers/:id] Error:`, error.message);
-      return reply.code(500).send({ success: false, error: "Failed to remove container", message: error.message });
+      return sendError(reply, 500, { code: "CONTAINER_REMOVE_FAILED", message: "Failed to remove container", details: { cause: error.message } });
     }
   });
 

@@ -1,10 +1,10 @@
 <script setup>
-import { ref, computed, onMounted} from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-({ colSpan: 1 });
 import { useI18n } from "vue-i18n";
 import { ArrowRight, Bot, Layers, Sparkles } from "lucide-vue-next";
 import { useApiUrl } from "../composables/useApiUrl";
+import { expectApiSuccess } from "../composables/useApiResponse";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -12,6 +12,7 @@ const { apiUrl } = useApiUrl();
 
 const apps = ref([]);
 const containers = ref([]);
+const loadFailed = ref(false);
 
 function getDateDaySeed() {
   const now = new Date();
@@ -69,20 +70,22 @@ async function fetchData() {
       fetch(`${apiUrl.value}/api/apps`),
       fetch(`${apiUrl.value}/api/containers`),
     ]);
-    const appsData = await appsRes.json();
-    const containersData = await containersRes.json();
-    if (appsData.success) apps.value = Array.isArray(appsData.apps) ? appsData.apps : [];
-    if (containersData.success) containers.value = containersData.containers;
-  } catch {}
+    const [appsData, containersData] = await Promise.all([
+      expectApiSuccess(appsRes, "Failed to load apps"),
+      expectApiSuccess(containersRes, "Failed to load containers"),
+    ]);
+
+    apps.value = Array.isArray(appsData.apps) ? appsData.apps : [];
+    containers.value = Array.isArray(containersData.containers) ? containersData.containers : [];
+    loadFailed.value = false;
+  } catch (error) {
+    loadFailed.value = true;
+  }
 }
 
 function handleSelect() {
   if (!dailyApp.value?.id) return;
-  if ((dailyApp.value.instanceCount || 0) > 0) {
-    router.push(`/app/${dailyApp.value.id}`);
-  } else {
-    router.push(`/apps/${dailyApp.value.id}`);
-  }
+  router.push(`/apps/${dailyApp.value.id}`);
 }
 
 onMounted(fetchData);
@@ -207,4 +210,34 @@ const stateLabel = computed(() => {
       </div>
     </div>
   </button>
+
+  <div
+    v-else-if="loadFailed"
+    class="relative h-full w-full flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#0A0A0A] text-left"
+  >
+    <div class="relative z-10 flex h-full flex-col p-6">
+      <div class="flex items-start justify-between gap-3 mb-5">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+            <Sparkles class="h-3.5 w-3.5" />
+            <span>{{ t("home.dailyAppCard.featuredToday") }}</span>
+          </div>
+          <h3 class="mt-4 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            {{ t("common.error") }}
+          </h3>
+          <p class="mt-1 text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500">
+            {{ t("home.dailyAppCard.subtitle") }}
+          </p>
+        </div>
+
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+          <Bot class="h-6 w-6 text-gray-400 dark:text-zinc-500" />
+        </div>
+      </div>
+
+      <p class="text-sm font-medium leading-relaxed text-gray-500 dark:text-zinc-400 line-clamp-3">
+        Failed to load featured app.
+      </p>
+    </div>
+  </div>
 </template>
