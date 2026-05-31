@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { Clock, Activity, Zap } from 'lucide-vue-next'
 import { formatDuration } from '../utils/metrics'
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 
 const { t } = useI18n()
@@ -16,8 +17,8 @@ let refreshInterval = null
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await response.json()
-    if (data.success) containers.value = data.containers
+    const data = await expectApiSuccess(response, 'Failed to load containers')
+    containers.value = Array.isArray(data.containers) ? data.containers : []
   } catch {}
 }
 
@@ -58,7 +59,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
   <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40">
     
     <!-- Hover Accents -->
-    <div class="absolute top-0 left-0 w-full h-[2px] bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
     <div class="relative z-10 flex items-start justify-between mb-6">
       <div class="flex items-center gap-4">

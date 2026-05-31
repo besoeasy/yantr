@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-({ colSpan: 1 });
 import { 
   Trash2, 
   RefreshCw, 
@@ -16,6 +15,7 @@ import {
 import { useNotification } from '../composables/useNotification'
 import { formatBytes } from '../utils/metrics'
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 
 const { t } = useI18n()
 const toast = useNotification()
@@ -41,23 +41,27 @@ async function fetchStats() {
       fetch(`${apiUrl.value}/api/images`),
       fetch(`${apiUrl.value}/api/volumes`),
     ])
-    const [iData, vData] = await Promise.all([iRes.json(), vRes.json()])
-    if (iData.success) {
-      const unused = (iData.images || []).filter(i => !i.isUsed)
-      imageStats.value = {
-        unusedCount: unused.length,
-        unusedSize: unused.reduce((s, i) => s + (i.sizeBytes || 0), 0),
-        totalSize: (iData.images || []).reduce((s, i) => s + (i.sizeBytes || 0), 0),
-      }
+    const [iData, vData] = await Promise.all([
+      expectApiSuccess(iRes, 'Failed to load images'),
+      expectApiSuccess(vRes, 'Failed to load volumes'),
+    ])
+
+    const images = Array.isArray(iData.images) ? iData.images : []
+    const volumes = Array.isArray(vData.volumes) ? vData.volumes : []
+    const unusedImages = images.filter(i => !i.isUsed)
+    const unusedVolumes = volumes.filter(v => !v.isUsed)
+
+    imageStats.value = {
+      unusedCount: unusedImages.length,
+      unusedSize: unusedImages.reduce((sum, image) => sum + (image.sizeBytes || 0), 0),
+      totalSize: images.reduce((sum, image) => sum + (image.sizeBytes || 0), 0),
     }
-    if (vData.success) {
-      const unused = (vData.volumes || []).filter(v => !v.isUsed)
-      volumeStats.value = {
-        unusedCount: unused.length,
-        unusedSize: unused.reduce((s, v) => s + (v.sizeBytes || 0), 0),
-        totalSize: (vData.volumes || []).reduce((s, v) => s + (v.sizeBytes || 0), 0),
-      }
+    volumeStats.value = {
+      unusedCount: unusedVolumes.length,
+      unusedSize: unusedVolumes.reduce((sum, volume) => sum + (volume.sizeBytes || 0), 0),
+      totalSize: volumes.reduce((sum, volume) => sum + (volume.sizeBytes || 0), 0),
     }
+
     const total = (imageStats.value.unusedSize || 0) + (volumeStats.value.unusedSize || 0)
     show.value = total > 100 * 1024 * 1024
   } catch {}
@@ -109,26 +113,20 @@ async function cleanSystem() {
       })
     })
 
-    const data = await response.json()
-
-    if (data.success) {
-      lastCleanResult.value = data.results
-      cleaned.value = true
-      
-      const totalReclaimed = (data.results.images?.spaceReclaimed || 0) + (data.results.volumes?.spaceReclaimed || 0)
-      toast.success(`${t('systemCleaner.systemCleaned')} ${formatBytes(totalReclaimed)}`)
-      
-      emit('cleaned')
-      await fetchStats()
-      
-      setTimeout(() => {
-        cleaned.value = false
-      }, 5000)
-    } else {
-      throw new Error(data.error || t('systemCleaner.cleanFailed'))
-    }
+    const data = await expectApiSuccess(response, t('systemCleaner.cleanFailed'))
+    lastCleanResult.value = data.results
+    cleaned.value = true
+    
+    const totalReclaimed = (data.results.images?.spaceReclaimed || 0) + (data.results.volumes?.spaceReclaimed || 0)
+    toast.success(`${t('systemCleaner.systemCleaned')} ${formatBytes(totalReclaimed)}`)
+    
+    emit('cleaned')
+    await fetchStats()
+    
+    setTimeout(() => {
+      cleaned.value = false
+    }, 5000)
   } catch (err) {
-    console.error('Clean failed:', err)
     toast.error(`${t('systemCleaner.cleanFailed')}: ${err.message}`)
     error.value = err.message
   } finally {
@@ -139,9 +137,9 @@ async function cleanSystem() {
 
 <template>
   <div v-if="show" class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40">
-    
+
     <!-- Hover Accents -->
-    <div class="absolute top-0 left-0 w-full h-[2px] bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
     <!-- Header Section -->
     <div class="relative z-10 flex items-start justify-between mb-8">

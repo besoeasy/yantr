@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-({ colSpan: 1 });
 import { Cpu, Server, Activity } from "lucide-vue-next";
 import { formatBytes } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
+import { expectApiSuccess } from "../composables/useApiResponse";
 
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
@@ -169,22 +169,17 @@ async function fetchData() {
     ]);
 
     const [systemData, containerData, volumeData, imageData] = await Promise.all([
-      systemRes.json(),
-      containerRes.json(),
-      volumeRes.json(),
-      imageRes.json(),
+      expectApiSuccess(systemRes, "Failed to fetch system info"),
+      expectApiSuccess(containerRes, "Failed to fetch containers"),
+      expectApiSuccess(volumeRes, "Failed to fetch volumes"),
+      expectApiSuccess(imageRes, "Failed to fetch images"),
     ]);
 
-    if (systemData.success) {
-      systemInfo.value = systemData.info;
-      error.value = null;
-    } else {
-      error.value = systemData.error || "Failed to fetch system info";
-    }
-
-    if (containerData.success) containers.value = containerData.containers;
-    if (volumeData.success) volumes.value = volumeData.volumes || [];
-    if (imageData.success) images.value = imageData.images || [];
+    systemInfo.value = systemData.info;
+    containers.value = Array.isArray(containerData.containers) ? containerData.containers : [];
+    volumes.value = Array.isArray(volumeData.volumes) ? volumeData.volumes : [];
+    images.value = Array.isArray(imageData.images) ? imageData.images : [];
+    error.value = null;
   } catch (err) {
     error.value = err.message;
   } finally {

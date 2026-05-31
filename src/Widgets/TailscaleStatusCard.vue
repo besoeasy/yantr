@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-({ colSpan: 1 });
 import { Wifi, WifiOff, Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader } from 'lucide-vue-next'
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 
 const { t } = useI18n()
@@ -17,8 +17,8 @@ let refreshInterval = null
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await response.json()
-    if (data.success) containers.value = data.containers
+    const data = await expectApiSuccess(response, 'Failed to load containers')
+    containers.value = Array.isArray(data.containers) ? data.containers : []
   } catch {}
 }
 
@@ -111,13 +111,9 @@ async function deploy() {
         environment: { TAILSCALE_AUTH_KEY: authKey.value.trim() },
       }),
     })
-    const data = await res.json()
-    if (!res.ok || !data.success) {
-      deployError.value = data.error || data.message || t('tailscaleSetupCard.deploymentFailed')
-    } else {
-      deploySuccess.value = true
-      setTimeout(fetchContainers, 3000)
-    }
+    await expectApiSuccess(res, t('tailscaleSetupCard.deploymentFailed'))
+    deploySuccess.value = true
+    setTimeout(fetchContainers, 3000)
   } catch (e) {
     deployError.value = e.message || t('tailscaleSetupCard.networkError')
   } finally {

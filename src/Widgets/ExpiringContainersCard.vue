@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-({ colSpan: 1 });
 import { Timer, Hourglass, Zap } from 'lucide-vue-next'
 import { formatDuration } from '../utils/metrics.js'
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 
 const { t } = useI18n()
@@ -17,8 +17,8 @@ let refreshInterval = null
 async function fetchContainers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await response.json()
-    if (data.success) containers.value = data.containers
+    const data = await expectApiSuccess(response, 'Failed to load containers')
+    containers.value = Array.isArray(data.containers) ? data.containers : []
   } catch {}
 }
 
@@ -77,7 +77,7 @@ const urgencyLabel = computed(() => {
     class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
   >
     <!-- Hover Accents -->
-    <div class="absolute top-0 left-0 w-full h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+    <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         :class="isCritical ? 'bg-red-500' : 'bg-amber-500'">
     </div>
 

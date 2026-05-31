@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, onUnmounted} from 'vue'
 import { ShieldCheck, Trash2, Loader, Globe, User, RefreshCw } from 'lucide-vue-next'
-({ colSpan: 1 });
 import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 
 const { apiUrl } = useApiUrl()
 
@@ -15,11 +15,9 @@ let refreshInterval = null
 async function fetchProxies() {
   try {
     const res = await fetch(`${apiUrl.value}/api/proxy`)
-    const data = await res.json()
-    if (data.success) {
-      proxies.value = data.proxies
-      caddyRunning.value = data.caddyRunning
-    }
+    const data = await expectApiSuccess(res, 'Failed to load proxies')
+    proxies.value = Array.isArray(data.proxies) ? data.proxies : []
+    caddyRunning.value = !!data.caddyRunning
   } catch {}
 }
 
@@ -36,11 +34,12 @@ async function disable(proxy) {
   if (disabling.value) return
   disabling.value = proxy.projectId
   try {
-    await fetch(`${apiUrl.value}/api/proxy/disable`, {
+    const response = await fetch(`${apiUrl.value}/api/proxy/disable`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ projectId: proxy.projectId }),
     })
+    await expectApiSuccess(response, 'Failed to disable proxy')
     await fetchProxies()
   } catch {}
   finally {
@@ -51,7 +50,8 @@ async function disable(proxy) {
 async function reload() {
   loading.value = true
   try {
-    await fetch(`${apiUrl.value}/api/proxy/reload`, { method: 'POST' })
+    const response = await fetch(`${apiUrl.value}/api/proxy/reload`, { method: 'POST' })
+    await expectApiSuccess(response, 'Failed to reload proxy config')
     await fetchProxies()
   } catch {}
   finally {
