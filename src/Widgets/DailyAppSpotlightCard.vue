@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowRight, Layers, Sparkles } from "lucide-vue-next";
+import { AlertCircle, ArrowRight, CalendarDays, Layers, Sparkles } from "lucide-vue-next";
 import AppLogo from "../components/AppLogo.vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
@@ -122,122 +122,104 @@ const stateLabel = computed(() => {
     v-if="dailyApp"
     type="button"
     @click="handleSelect"
-    class="relative group h-full w-full flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#0A0A0A] text-left transition-all duration-400 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
+    class="group flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg sm:p-6"
+    style="background: var(--surface); color: var(--text-primary)"
   >
-    <div class="absolute inset-x-0 top-0 h-0.5 bg-amber-500 opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-
-    <div class="relative z-10 flex h-full flex-col p-6">
-      <div class="flex items-start justify-between gap-3 mb-5">
-        <div>
-          <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-            <Sparkles class="h-3.5 w-3.5" />
-            <span>{{ t("home.dailyAppCard.featuredToday") }}</span>
-          </div>
-          <h3 class="mt-4 text-xl font-semibold tracking-tight text-gray-900 transition-colors group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-300">
-            {{ dailyApp?.name }}
-          </h3>
-          <p class="mt-1 text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500">
-            {{ t("home.dailyAppCard.subtitle") }}
-          </p>
+    <div class="flex h-full flex-col gap-5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex min-w-0 items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
+          <Sparkles class="h-3.5 w-3.5 shrink-0 text-amber-500" />
+          <span class="truncate">{{ t("home.dailyAppCard.featuredToday") }}</span>
         </div>
 
-        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div
+          :class="[
+            'inline-flex shrink-0 items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em]',
+            appState === 'running'
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : appState === 'installed'
+                ? 'text-blue-600 dark:text-blue-400'
+                : 'text-amber-600 dark:text-amber-400'
+          ]"
+        >
+          <span class="h-1.5 w-1.5 rounded-full bg-current"></span>
+          <span>{{ stateLabel }}</span>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl p-3 transition-transform duration-300 group-hover:scale-105" style="background: var(--surface-muted)">
           <AppLogo
             :logo="dailyApp?.logo"
             :name="dailyApp?.name"
             :seed="dailyApp?.id || dailyApp?.name"
             img-class="h-full w-full object-contain"
-            icon-class="h-6 w-6 text-gray-400 dark:text-zinc-500"
+            icon-class="h-7 w-7 text-[var(--text-secondary)]"
           />
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <h3 class="text-2xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-amber-600 dark:group-hover:text-amber-300">
+            {{ dailyApp?.name }}
+          </h3>
+          <p class="mt-1 text-xs font-medium leading-relaxed" style="color: var(--text-secondary)">
+            {{ t("home.dailyAppCard.subtitle") }}
+          </p>
         </div>
       </div>
 
-      <p class="text-sm font-medium leading-relaxed text-gray-500 dark:text-zinc-400 line-clamp-3">
+      <p class="line-clamp-3 text-sm font-medium leading-relaxed" style="color: var(--text-secondary)">
         {{ dailyApp?.description || t("home.dailyAppCard.noDescription") }}
       </p>
 
-      <div class="mt-5 flex flex-wrap gap-2">
+      <div class="mt-auto grid gap-3 text-xs font-medium" style="color: var(--text-secondary)">
         <div
           v-if="primaryTag"
-          class="inline-flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900/70"
+          class="flex min-w-0 items-center gap-2"
         >
-          <Layers class="h-3.5 w-3.5 text-gray-400 dark:text-zinc-500" />
-          <span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-zinc-300">{{ primaryTag }}</span>
+          <Layers class="h-3.5 w-3.5 shrink-0 text-blue-500" />
+          <span class="truncate">{{ primaryTag }}</span>
         </div>
-        <div
-          :class="[
-            'inline-flex items-center gap-2 rounded-md border px-3 py-1.5',
-            appState === 'running'
-              ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-500/10'
-              : appState === 'installed'
-                ? 'border-blue-200 bg-blue-50 dark:border-blue-500/20 dark:bg-blue-500/10'
-                : 'border-gray-200 bg-gray-50 dark:border-zinc-800 dark:bg-zinc-900/70'
-          ]"
-        >
-          <span
-            :class="[
-              'h-2 w-2 rounded-full',
-              appState === 'running'
-                ? 'bg-emerald-500'
-                : appState === 'installed'
-                  ? 'bg-blue-500'
-                  : 'bg-gray-400 dark:bg-zinc-500'
-            ]"
-          ></span>
-          <span
-            :class="[
-              'text-[11px] font-semibold uppercase tracking-wider',
-              appState === 'running'
-                ? 'text-emerald-700 dark:text-emerald-300'
-                : appState === 'installed'
-                  ? 'text-blue-700 dark:text-blue-300'
-                  : 'text-gray-600 dark:text-zinc-300'
-            ]"
-          >
-            {{ stateLabel }}
-          </span>
+        <div class="flex min-w-0 items-center gap-2">
+          <CalendarDays class="h-3.5 w-3.5 shrink-0 text-amber-500" />
+          <span class="truncate">{{ t("home.dailyAppCard.rotatesDaily") }}</span>
         </div>
       </div>
 
-      <div class="mt-auto pt-5 flex items-center justify-between gap-3 border-t border-gray-100 dark:border-zinc-800/80">
-        <div>
-          <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500">{{ t("home.dailyAppCard.rotatesDaily") }}</p>
-          <p class="mt-1 text-xs font-semibold text-gray-600 dark:text-zinc-300">{{ actionLabel }}</p>
-        </div>
-        <div class="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-700 transition-all group-hover:translate-x-0.5 group-hover:border-gray-300 group-hover:text-black dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:group-hover:border-zinc-600 dark:group-hover:text-white">
-          <ArrowRight class="h-4 w-4" />
-        </div>
+      <div class="flex items-center justify-between gap-3 pt-1">
+        <span class="text-sm font-semibold transition-colors duration-300 group-hover:text-amber-600 dark:group-hover:text-amber-300">
+          {{ actionLabel }}
+        </span>
+        <ArrowRight class="h-4 w-4 shrink-0 text-amber-500 transition-transform duration-300 group-hover:translate-x-1" />
       </div>
     </div>
   </button>
 
   <div
     v-else-if="loadFailed"
-    class="relative h-full w-full flex flex-col overflow-hidden rounded-xl bg-white dark:bg-[#0A0A0A] text-left"
+    class="flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow sm:p-6"
+    style="background: var(--surface); color: var(--text-primary)"
   >
-    <div class="relative z-10 flex h-full flex-col p-6">
-      <div class="flex items-start justify-between gap-3 mb-5">
-        <div>
-          <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-            <Sparkles class="h-3.5 w-3.5" />
-            <span>{{ t("home.dailyAppCard.featuredToday") }}</span>
-          </div>
-          <h3 class="mt-4 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-            {{ t("common.error") }}
-          </h3>
-          <p class="mt-1 text-[11px] font-medium uppercase tracking-[0.18em] text-gray-400 dark:text-zinc-500">
-            {{ t("home.dailyAppCard.subtitle") }}
-          </p>
-        </div>
-
-        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <Bot class="h-6 w-6 text-gray-400 dark:text-zinc-500" />
-        </div>
+    <div class="flex h-full flex-col gap-5">
+      <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
+        <Sparkles class="h-3.5 w-3.5 shrink-0 text-amber-500" />
+        <span>{{ t("home.dailyAppCard.featuredToday") }}</span>
       </div>
 
-      <p class="text-sm font-medium leading-relaxed text-gray-500 dark:text-zinc-400 line-clamp-3">
-        Failed to load featured app.
-      </p>
+      <div class="flex items-start gap-4">
+        <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl" style="background: var(--surface-muted)">
+          <AlertCircle class="h-7 w-7 text-amber-500" />
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <h3 class="text-2xl font-semibold tracking-tight">
+            {{ t("common.error") }}
+          </h3>
+          <p class="mt-1 text-sm font-medium leading-relaxed" style="color: var(--text-secondary)">
+            Failed to load featured app.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
