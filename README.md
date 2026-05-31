@@ -24,13 +24,26 @@
 
 ---
 
-## The Problem with Other Homelab Platforms
+## Why Yantr Over Umbrel?
 
-Umbrel, CasaOS, Proxmox — they all want to **be your operating system**. You have to wipe a machine, hand it over entirely, and fight to get your workflow back if anything goes wrong.
+Umbrel and similar homelab platforms want to **be your operating system**. You have to dedicate a machine, hand over the environment, and work around their platform rules when you want something custom.
 
 **Yantr takes a different approach.**
 
-It runs **as a container** on the machine you already have. Daily-driver laptop, gaming PC, old server — it doesn't matter. Install it in 30 seconds, deploy 130+ apps from the catalog, and remove it just as cleanly when you're done. Your OS stays exactly as you left it.
+Yantr is **an app, not an OS**. It runs as a lightweight container on the machine you already have: daily-driver laptop, Raspberry Pi, old PC, new workstation, home server, or anything else with Docker. Your host keeps running normally, your existing files and services stay in place, and Yantr manages apps alongside them instead of taking over the whole machine.
+
+| What you need | Yantr approach |
+|---|---|
+| Latest app versions | Pull current upstream images and update apps when you choose |
+| No OS takeover | Install Yantr as a container on your existing OS |
+| Custom configuration | Edit environment variables per deployment instead of accepting fixed presets |
+| Multiple instances | Deploy the same app more than once for testing, family, clients, or separate workspaces |
+| Update control | Self-update Yantr, check for app updates, and update apps on demand |
+| System isolation | Keep using your server, laptop, or old PC normally while apps run in Docker stacks |
+| Lightweight runtime | No dedicated appliance layer, no full platform OS, just a small app manager |
+| Runs almost anywhere | Works wherever you already have an OS and Docker: laptop, Raspberry Pi, old PC, new PC, or server |
+
+Install it in 30 seconds, deploy 130+ apps from the catalog, customize the environment when needed, and remove it just as cleanly when you're done. Your OS stays exactly as you left it.
 
 ```
 ┌─────────────────────────────────────────┐
