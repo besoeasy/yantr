@@ -31,7 +31,6 @@ const toast = useNotification();
 const router = useRouter();
 
 const containers = ref([]);
-const volumes = ref([]);
 const volumeBrowsers = ref([]);
 const loading = ref(false);
 const activeFilter = ref("all");
@@ -39,7 +38,6 @@ const activeFilter = ref("all");
 let containersRefreshInterval = null;
 const loadErrorState = {
   containers: false,
-  volumes: false,
   volumeBrowsers: false,
 };
 
@@ -64,8 +62,6 @@ const otherContainers = computed(() => {
   return containers.value.filter((c) => !c.appLabels?.app);
 });
 
-const temporaryContainersCount = computed(() => volumeBrowsers.value.filter((b) => b.expireAt).length);
-
 const showWidgetBorders = ref(true);
 const widgetBorderClasses = computed(() => showWidgetBorders.value ? "border border-gray-200 dark:border-zinc-800 rounded-xl" : "");
 
@@ -83,17 +79,6 @@ async function fetchContainers() {
     clearLoadError("containers");
   } catch (error) {
     notifyLoadErrorOnce("containers", error.message || "Failed to load containers");
-  }
-}
-
-async function fetchVolumes() {
-  try {
-    const response = await fetch(`${apiUrl.value}/api/volumes`);
-    const data = await expectApiSuccess(response, "Failed to load volumes");
-    volumes.value = Array.isArray(data.volumes) ? data.volumes : [];
-    clearLoadError("volumes");
-  } catch (error) {
-    notifyLoadErrorOnce("volumes", error.message || "Failed to load volumes");
   }
 }
 
@@ -124,7 +109,7 @@ function viewContainerDetail(container) {
 }
 
 async function refreshAll() {
-  await Promise.all([fetchContainers(), fetchVolumes(), fetchVolumeBrowsers()]);
+  await Promise.all([fetchContainers(), fetchVolumeBrowsers()]);
 }
 
 onMounted(async () => {

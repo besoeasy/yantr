@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-import { Box, Boxes, Layers, HardDrive, ClipboardList, Github, Heart, Home, Moon, Sun, Compass, Check, ChevronDown } from "lucide-vue-next";
+import { Box, Home, Moon, Sun, Check } from "lucide-vue-next";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
 import { onMounted, onUnmounted, ref, computed } from "vue";

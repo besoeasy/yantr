@@ -21,7 +21,6 @@ const containers = ref([]);
 const loading = ref(true);
 const deploying = ref(false);
 const envValues = ref({});
-const dependencyEnvSuggestions = ref({});
 const loadingDependencyEnv = ref(false);
 const temporaryInstall = ref(false);
 const expirationHours = ref(24);
@@ -55,7 +54,7 @@ function clearLoadError(key) {
 }
 
 // Port conflict detection
-const { checkPortConflict, getPortStatus: getPortStatusFn } = usePortConflict(containers);
+const { getPortStatus: getPortStatusFn } = usePortConflict(containers);
 
 function getPortStatus(port) {
   return getPortStatusFn(port, customPortMappings.value);
@@ -213,47 +212,6 @@ function generateEnvValue(envVar) {
   }
 }
 
-// Get suggested value from dependency containers with smart matching
-function getSuggestedValue(envVar) {
-  // First try direct match
-  for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
-    if (depEnv[envVar]) {
-      return depEnv[envVar];
-    }
-  }
-
-  // Try smart matching for common patterns
-  const matchPatterns = {
-    'BTCEXP_BITCOIND_USER': ['BITCOIN_RPC_USER', 'RPC_USER', 'RPCUSER'],
-    'BTCEXP_BITCOIND_PASS': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
-    'BTCEXP_BITCOIND_PASSWORD': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
-  };
-
-  // Check if we have a pattern for this env var
-  if (matchPatterns[envVar]) {
-    for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
-      for (const pattern of matchPatterns[envVar]) {
-        if (depEnv[pattern]) {
-          return depEnv[pattern];
-        }
-      }
-    }
-  }
-
-  // Generic smart matching: try to find similar variable names
-  const cleanEnvVar = envVar.toLowerCase().replace(/^[a-z]+_/, ''); // Remove prefix like BTCEXP_
-  for (const [depId, depEnv] of Object.entries(dependencyEnvSuggestions.value)) {
-    for (const [key, value] of Object.entries(depEnv)) {
-      const cleanKey = key.toLowerCase().replace(/^[a-z]+_/, '');
-      if (cleanKey === cleanEnvVar || cleanKey.includes(cleanEnvVar) || cleanEnvVar.includes(cleanKey)) {
-        return value;
-      }
-    }
-  }
-
-  return null;
-}
-
 // Functions
 async function fetchApp() {
   try {
@@ -283,82 +241,6 @@ async function fetchContainers() {
   } catch (error) {
     notifyLoadErrorOnce('containers', error.message || "Failed to load app containers");
   }
-}
-
-function parseContainerEnv(envList) {
-  const envMap = {};
-  if (!Array.isArray(envList)) return envMap;
-
-  envList.forEach((entry) => {
-    const idx = entry.indexOf("=");
-    if (idx <= 0) return;
-    const key = entry.slice(0, idx).trim();
-    if (!key) return;
-    envMap[key] = entry.slice(idx + 1);
-  });
-
-  return envMap;
-}
-
-function extractEnvVarTokens(value) {
-  if (!value || typeof value !== "string") return [];
-  const matches = [...value.matchAll(/\$\{([A-Z0-9_]+)(?::?-?[^}]*)?\}/g)];
-  return matches.map((match) => match[1]);
-}
-
-function buildDependencyEnvIndex() {
-  const envIndex = {};
-  const sourceIndex = {};
-
-  dependencies.value.forEach((dep) => {
-    const runningContainer = containers.value.find(
-      (container) => container.app?.id === dep && container.state === "running"
-    );
-    const fallbackContainer = containers.value.find(
-      (container) => container.app?.id === dep
-    );
-    const container = runningContainer || fallbackContainer;
-    if (!container) return;
-
-    const envMap = parseContainerEnv(container.env);
-    Object.entries(envMap).forEach(([key, value]) => {
-      if (envIndex[key] === undefined) {
-        envIndex[key] = value;
-        sourceIndex[key] = dep;
-      }
-    });
-  });
-
-  return { envIndex, sourceIndex };
-}
-
-function autoFillEnvFromDependencies() {
-  if (!app.value?.environment?.length || !dependencies.value.length) return;
-
-  const { envIndex, sourceIndex } = buildDependencyEnvIndex();
-  const nextSources = {};
-  const nextValues = { ...envValues.value };
-
-  app.value.environment.forEach((env) => {
-    if (nextValues[env.envVar]) return;
-
-    if (envIndex[env.envVar] !== undefined) {
-      nextValues[env.envVar] = envIndex[env.envVar];
-      nextSources[env.envVar] = sourceIndex[env.envVar];
-      return;
-    }
-
-    const tokens = extractEnvVarTokens(env.default);
-    for (const token of tokens) {
-      if (envIndex[token] !== undefined) {
-        nextValues[env.envVar] = envIndex[token];
-        nextSources[env.envVar] = sourceIndex[token];
-        break;
-      }
-    }
-  });
-
-  envValues.value = nextValues;
 }
 
 async function fillFromDependencies() {
