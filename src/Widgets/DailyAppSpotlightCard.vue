@@ -2,7 +2,8 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowRight, Bot, Layers, Sparkles } from "lucide-vue-next";
+import { ArrowRight, Layers, Sparkles } from "lucide-vue-next";
+import AppLogo from "../components/AppLogo.vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 
@@ -141,14 +142,13 @@ const stateLabel = computed(() => {
         </div>
 
         <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50 p-3 dark:border-zinc-800 dark:bg-zinc-900">
-          <img
-            v-if="dailyApp?.logo"
-            :src="dailyApp.logo"
-            :alt="dailyApp.name"
-            class="h-full w-full object-contain"
-            loading="lazy"
+          <AppLogo
+            :logo="dailyApp?.logo"
+            :name="dailyApp?.name"
+            :seed="dailyApp?.id || dailyApp?.name"
+            img-class="h-full w-full object-contain"
+            icon-class="h-6 w-6 text-gray-400 dark:text-zinc-500"
           />
-          <Bot v-else class="h-6 w-6 text-gray-400 dark:text-zinc-500" />
         </div>
       </div>
 

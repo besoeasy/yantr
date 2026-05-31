@@ -6,10 +6,10 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
 import { formatDuration, formatBytes } from "../utils/metrics";
+import AppLogo from "../components/AppLogo.vue";
 import {
   Globe,
   ExternalLink,
-  Bot,
   Activity,
   Terminal,
   Server,
@@ -436,8 +436,13 @@ onUnmounted(() => {
             class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl shrink-0 flex items-center justify-center overflow-hidden border border-gray-100 dark:border-zinc-800 hover:scale-105 transition-transform"
             style="background: var(--surface-muted)"
           >
-            <img v-if="stack.app?.logo" :src="stack.app.logo" :alt="stack.app.name" class="w-full h-full object-contain" loading="lazy" />
-            <Bot v-else :size="34" class="text-gray-400 dark:text-zinc-500" />
+            <AppLogo
+              :logo="stack.app?.logo"
+              :name="stack.app?.name || stack.appId"
+              :seed="stack.app?.id || stack.projectId || stack.appId"
+              img-class="w-full h-full object-contain"
+              icon-class="w-full h-full text-gray-400 dark:text-zinc-500"
+            />
           </div>
 
           <!-- Info -->

@@ -7,6 +7,7 @@ import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from "../compo
 import { usePortConflict } from "../composables/usePortConflict";
 import { useI18n } from "vue-i18n";
 import { Globe, FileCode, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, Download, Plus, X } from "lucide-vue-next";
+import AppLogo from "../components/AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
 const route = useRoute();
@@ -475,7 +476,13 @@ onMounted(async () => {
             <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
             <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
-              <img :src="app.logo" :alt="app.name" loading="lazy" class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all" />
+              <AppLogo
+                :logo="app.logo"
+                :name="app.name"
+                :seed="app.id || app.name"
+                img-class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all"
+                icon-class="w-full h-full text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors"
+              />
             </div>
 
             <div class="flex-1 flex flex-col">

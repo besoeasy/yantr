@@ -1,8 +1,8 @@
 <script setup>
 import { toRefs, computed, ref } from "vue";
 import { useI18n } from 'vue-i18n'
+import AppLogo from "./AppLogo.vue";
 import { 
-  Bot,
   Layers
 } from "lucide-vue-next";
 
@@ -78,14 +78,13 @@ function handleClick() {
     <div class="relative z-10 flex items-start justify-between mb-5">
       <!-- Minimalist Logo Container -->
       <div class="w-12 h-12 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center p-2.5 shrink-0 transition-all duration-500 group-hover:scale-105 group-hover:shadow-md">
-        <img
-          v-if="app?.logo"
-          :src="app.logo"
-          :alt="app.name"
-          class="w-full h-full object-contain filter group-hover:brightness-110 transition-all"
-          loading="lazy"
+        <AppLogo
+          :logo="app?.logo"
+          :name="app?.name"
+          :seed="app?.id || app?.name"
+          img-class="w-full h-full object-contain filter group-hover:brightness-110 transition-all"
+          icon-class="w-6 h-6 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors"
         />
-        <Bot v-else :size="24" class="text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
       </div>
 
       <!-- Status Indicator (always expanded on mobile, expands on hover on desktop) -->

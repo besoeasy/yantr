@@ -6,6 +6,7 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package } from 'lucide-vue-next'
+import AppLogo from '../components/AppLogo.vue'
 import { formatBytes } from '../utils/metrics'
 
 const route = useRoute()
@@ -338,8 +339,13 @@ onUnmounted(() => {
            <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
            <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
-              <img v-if="selectedContainer.app.logo" :src="selectedContainer.app.logo" loading="lazy" class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all" />
-              <Package v-else :size="32" class="text-gray-400 dark:text-zinc-600" />
+          <AppLogo
+           :logo="selectedContainer.app.logo"
+           :name="selectedContainer.app?.name || selectedContainer.name"
+           :seed="selectedContainer.app?.id || selectedContainer.name"
+           img-class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all"
+           icon-class="w-full h-full text-gray-400 dark:text-zinc-600"
+          />
            </div>
            
            <div class="flex-1 space-y-3">

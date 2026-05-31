@@ -48,6 +48,18 @@ export function nowMs() {
   return Date.now();
 }
 
+function isLikelyIpfsCid(value) {
+  return /^Qm[1-9A-HJ-NP-Za-km-z]{44}$/.test(value) || /^b[a-z2-7]{20,}$/.test(value);
+}
+
+function normalizeAppLogo(logoRaw) {
+  if (typeof logoRaw !== "string") return null;
+  const trimmed = logoRaw.trim();
+  if (!trimmed) return null;
+  if (trimmed.includes("://")) return trimmed;
+  return isLikelyIpfsCid(trimmed) ? `https://ipfs.io/ipfs/${trimmed}` : null;
+}
+
 // ── Concurrency helper ─────────────────────────────────────────────────────────
 export async function mapWithConcurrency(items, limit, mapper) {
   const results = new Array(items.length);
@@ -148,9 +160,7 @@ export async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: fa
         }
 
         const logoRaw = info.logo || null;
-        const logoUrl = logoRaw
-          ? logoRaw.includes("://") ? logoRaw : `https://ipfs.io/ipfs/${logoRaw}`
-          : "https://ipfs.io/ipfs/QmVdbRUyvZpXCsVJAs7fo1PJPXaPHnWRtSCFx6jFTGaG5i";
+        const logoUrl = normalizeAppLogo(logoRaw);
 
         const envGeneratorsRaw =
           info.env_generators && typeof info.env_generators === "object"

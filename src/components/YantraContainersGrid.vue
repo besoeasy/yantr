@@ -2,7 +2,8 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Box, Layers, ArrowRight } from "lucide-vue-next";
+import { Layers, ArrowRight } from "lucide-vue-next";
+import AppLogo from "./AppLogo.vue";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -51,8 +52,8 @@ function navigate(group) {
   <div style="display: contents">
     <!-- Section Header -->
     <div v-if="props.showHeader" class="col-span-full flex items-center gap-2 pt-2 pb-1">
-      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)]">{{ t("home.yantrApps") }}</span>
-      <span class="text-[10px] font-bold text-[var(--text-secondary)] opacity-50">{{ appGroups.length }}</span>
+      <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-(--text-secondary)">{{ t("home.yantrApps") }}</span>
+      <span class="text-[10px] font-bold text-(--text-secondary) opacity-50">{{ appGroups.length }}</span>
     </div>
 
     <div
@@ -96,9 +97,14 @@ function navigate(group) {
           </div>
 
           <!-- Logo Container -->
-          <div class="w-12 h-12 rounded-lg bg-[var(--surface-muted)] flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-300 relative">
-            <img v-if="group.logo" :src="group.logo" :alt="group.name" class="w-7 h-7 object-contain group-hover:brightness-110 transition-all" loading="lazy" />
-            <Box v-else class="w-6 h-6 text-[var(--text-secondary)] group-hover:text-blue-500 transition-colors" />
+          <div class="w-12 h-12 rounded-lg bg-(--surface-muted) flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-300 relative">
+            <AppLogo
+              :logo="group.logo"
+              :name="group.name"
+              :seed="group.appId || group.projectId"
+              img-class="w-7 h-7 object-contain group-hover:brightness-110 transition-all"
+              icon-class="w-6 h-6 text-(--text-secondary) group-hover:text-blue-500 transition-colors"
+            />
             
             <div class="absolute -top-1 -right-1 w-2 h-2 rounded-full"
                  :class="groupState(group) === 'running' ? 'bg-green-500' : groupState(group) === 'partial' ? 'bg-amber-500' : 'bg-gray-400 dark:bg-zinc-600'">
@@ -109,10 +115,10 @@ function navigate(group) {
         <!-- Services -->
         <div class="flex flex-wrap gap-1.5 mb-6">
           <span v-for="c in group.containers" :key="c.id" 
-                class="text-[10px] font-mono px-2 py-1 rounded-md flex items-center gap-1.5 bg-[var(--surface-muted)]"
+                class="text-[10px] font-mono px-2 py-1 rounded-md flex items-center gap-1.5 bg-(--surface-muted)"
                 :class="c.state === 'running' ? 'text-gray-600 dark:text-zinc-300' : 'text-gray-400 dark:text-zinc-500'">
             <span class="w-1.5 h-1.5 rounded-full shrink-0" :class="c.state === 'running' ? 'bg-green-500' : 'bg-gray-300 dark:bg-zinc-600'"></span>
-            <span class="truncate max-w-[120px]">{{ c.app?.service || c.name }}</span>
+            <span class="truncate max-w-30">{{ c.app?.service || c.name }}</span>
           </span>
         </div>
 
