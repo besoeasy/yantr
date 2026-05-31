@@ -1,0 +1,38 @@
+{
+  "name": "Paperclip",
+  "logo": "QmX3V7CtDqjmf4TirrT8D67RnXK41g7fbgjJJYqRH5UCrR",
+  "tags": [
+    "ai",
+    "agents",
+    "orchestration",
+    "self-hosted",
+    "docker",
+    "automation",
+    "productivity",
+    "dashboard"
+  ],
+  "ports": [
+    { "port": 3100, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Self-hosted control center for coordinating teams of AI agents.",
+  "description": "Paperclip is a self-hosted control center for running AI agents like a team. It gives you an org chart, task system, budgets, approvals, routines, and audit history so you can coordinate multiple agents from one private dashboard while keeping control of provider keys and costs.",
+  "usecases": [
+    "Run a private AI operations dashboard where multiple agents can be assigned roles, goals, and reporting lines across ongoing projects.",
+    "Track agent work, approvals, budgets, and activity history from one place instead of juggling separate terminals and ad hoc scripts.",
+    "Coordinate coding, research, and operational agents with recurring routines and governance controls before they run unattended."
+  ],
+  "website": "https://paperclip.ing/",
+  "dependencies": [],
+  "notes": [
+    "Paperclip does not include AI models or provider credits; connect your own providers or agent runtimes after deployment.",
+    "The embedded database and uploaded data are stored in the named Docker volume mounted at /paperclip.",
+    "If you later place Paperclip behind a custom reverse proxy, set its public URL and allowed hostnames to match that external address."
+  ],
+  "env_generators": {
+    "BETTER_AUTH_SECRET": {
+      "length": 48,
+      "charset": "alnum_symbols",
+      "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{32,}$"
+    }
+  }
+}

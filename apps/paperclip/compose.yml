@@ -1,0 +1,21 @@
+services:
+  paperclip:
+    image: ghcr.io/paperclipai/paperclip:latest
+    container_name: paperclip
+    labels:
+      yantr.app: "paperclip"
+      yantr.service: "Web UI"
+    ports:
+      - "3100"
+    environment:
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      PAPERCLIP_DEPLOYMENT_MODE: authenticated
+      PAPERCLIP_DEPLOYMENT_EXPOSURE: private
+      PAPERCLIP_TELEMETRY_DISABLED: "1"
+      DO_NOT_TRACK: "1"
+    volumes:
+      - paperclip_data:/paperclip
+    restart: unless-stopped
+
+volumes:
+  paperclip_data:
