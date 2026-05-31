@@ -1,0 +1,20 @@
+{
+  "name": "Seerr",
+  "logo": "",
+  "tags": ["media", "requests", "jellyfin", "sonarr", "radarr", "self-hosted"],
+  "ports": [{ "port": 5055, "protocol": "HTTP", "label": "Web UI" }],
+  "short_description": "Media request manager for Jellyfin, Emby, and Plex.",
+  "description": "Seerr is the official successor to Overseerr and Jellyseerr. It lets users browse and request movies and TV shows, which are automatically routed to Radarr and Sonarr for download. Supports Jellyfin, Emby, and Plex as media backends.",
+  "usecases": [
+    "Let users request movies and TV shows without exposing Radarr or Sonarr directly.",
+    "Automatically route approved requests to Radarr or Sonarr for download.",
+    "Discover trending content via built-in TMDB browsing."
+  ],
+  "website": "https://docs.seerr.dev",
+  "dependencies": [],
+  "notes": [
+    "Seerr is the unified successor to both Overseerr and Jellyseerr — existing installs auto-migrate on first run.",
+    "Requires at least one media backend (Jellyfin, Emby, or Plex) and Radarr or Sonarr to handle requests.",
+    "Seerr does not download media itself."
+  ]
+}
