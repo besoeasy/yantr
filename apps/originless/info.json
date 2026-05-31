@@ -1,21 +1,15 @@
 {
   "name": "Originless",
   "logo": "QmWMCDAFxDjqfYRjjaqRx4UCt7ZF9TK6r5SpZEWWko9c63",
-  "tags": [
-    "utility",
-    "tools",
-    "privacy",
-    "anonymous",
-    "security",
-    "tor"
-  ],
-  "short_description": "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting.",
-  "description": "All-in-one anonymous storage backend for apps, screenshot tools, and file hosting. Originless is a self-hosted application focused on utility, tools, privacy, anonymous. It can be deployed on any device via Docker Compose.",
+  "tags": ["storage", "files", "privacy", "ipfs", "self-hosted"],
+  "short_description": "Self-hosted anonymous file storage backend built on IPFS.",
+  "description": "Originless is a self-hosted storage backend built on IPFS. It lets you upload and share files anonymously with no accounts, no tracking, and no logs. Works as a drop-in backend for apps, screenshot tools, pastebin-style pastes, Nostr clients, and anything else that needs durable file hosting.",
   "usecases": [
-    "Self-host Originless on your home server to all-in-one anonymous storage backend for apps, screenshot tools, and file hosting without depending on third-party cloud services.",
-    "Use Originless to manage your utility workflows privately, keeping all data under your control on local infrastructure."
+    "Use as a self-hosted image and file host for your apps without relying on third-party cloud storage.",
+    "Host files anonymously on IPFS — content persists across the network even if your node goes offline.",
+    "Drop it into any tool or platform via the simple REST API in minutes."
   ],
-  "website": "https://github.com/besoeasy/originless",
+  "website": "https://github.com/besoeasy/Originless",
   "dependencies": [],
   "ports": [
     {
@@ -23,5 +17,10 @@
       "protocol": "HTTP",
       "label": "Web UI"
     }
+  ],
+  "notes": [
+    "Set STORAGE_MAX to control how much disk space IPFS can use — defaults to 200GB.",
+    "Port 4001 is used for IPFS swarm connections — keep it open if you want peers to find your node.",
+    "Replace https://originless.besoeasy.com with http://localhost:3232 in API calls if using self-hosted."
   ]
 }
