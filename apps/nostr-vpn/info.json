@@ -21,7 +21,6 @@
     "Use Nostr identity keys to authenticate and establish VPN connections with other Nostr users."
   ],
   "website": "https://github.com/mmalmi/nostr-vpn",
-  "dependencies": [],
   "notes": [
     "The daemon requires NET_ADMIN capability and access to /dev/net/tun for creating VPN tunnel interfaces.",
     "The daemon runs in host network mode to manage system-level routing.",

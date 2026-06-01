@@ -6,7 +6,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from "../composables/useApiResponse";
 import { usePortConflict } from "../composables/usePortConflict";
 import { useI18n } from "vue-i18n";
-import { Globe, FileCode, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, Download, Plus, X } from "lucide-vue-next";
+import { Globe, FileCode, Package, Clock, Tag, ExternalLink, Activity, Info, AlertTriangle, Check, Terminal, Play, CreditCard, Plus, X } from "lucide-vue-next";
 import AppLogo from "../components/AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
@@ -22,7 +22,6 @@ const containers = ref([]);
 const loading = ref(true);
 const deploying = ref(false);
 const envValues = ref({});
-const loadingDependencyEnv = ref(false);
 const temporaryInstall = ref(false);
 const expirationHours = ref(24);
 const customizePorts = ref(false);
@@ -86,18 +85,6 @@ const allPorts = computed(() => {
 
 const appTags = computed(() => {
   return Array.isArray(app.value?.tags) ? app.value.tags : [];
-});
-
-const dependencies = computed(() => {
-  return Array.isArray(app.value?.dependencies) ? app.value.dependencies : [];
-});
-
-const runningAppIds = computed(() => {
-  return new Set(containers.value.filter((c) => c.state === "running").map((c) => c.app?.id).filter(Boolean));
-});
-
-const missingDependencies = computed(() => {
-  return dependencies.value.filter((dep) => !runningAppIds.value.has(dep));
 });
 
 const canDeploy = computed(() => {
@@ -244,80 +231,6 @@ async function fetchContainers() {
   }
 }
 
-async function fillFromDependencies() {
-  if (!app.value || !dependencies.value.length) {
-    toast.info(t('appDetail.noDependenciesToFill'));
-    return;
-  }
-
-  loadingDependencyEnv.value = true;
-
-  try {
-    const response = await fetch(`${apiUrl.value}/api/apps/${app.value.id}/dependency-env`);
-    const data = await expectApiSuccess(response, t('appDetail.failedToFetchDependencyVariables'));
-
-    if (data.environmentVariables) {
-      let filledCount = 0;
-
-      // Fill environment variables using smart matching
-      if (app.value.environment) {
-        app.value.environment.forEach(env => {
-          const envVar = env.envVar;
-
-          // Skip if already filled
-          if (envValues.value[envVar]) return;
-
-          // Try direct match first
-          for (const [depId, depEnv] of Object.entries(data.environmentVariables)) {
-            if (depEnv[envVar]) {
-              envValues.value[envVar] = depEnv[envVar];
-              filledCount++;
-              return;
-            }
-          }
-
-          // Try smart matching patterns
-          const matchPatterns = {
-            'BTCEXP_BITCOIND_USER': ['BITCOIN_RPC_USER', 'RPC_USER', 'RPCUSER'],
-            'BTCEXP_BITCOIND_PASS': ['BITCOIN_RPC_PASSWORD', 'RPC_PASSWORD', 'RPCPASSWORD'],
-          };
-
-          if (matchPatterns[envVar]) {
-            for (const [depId, depEnv] of Object.entries(data.environmentVariables)) {
-              for (const pattern of matchPatterns[envVar]) {
-                if (depEnv[pattern]) {
-                  envValues.value[envVar] = depEnv[pattern];
-                  filledCount++;
-                  return;
-                }
-              }
-            }
-          }
-
-          // Fall back: if the var has a literal default (not a ${...} reference) and at least
-          // one dependency is present in the response, the default is the correct value to use.
-          const literalDefault = env.default && !env.default.includes('${') ? env.default.trim() : null;
-          if (literalDefault && Object.keys(data.environmentVariables).length > 0) {
-            envValues.value[envVar] = literalDefault;
-            filledCount++;
-          }
-        });
-      }
-
-      if (filledCount > 0) {
-        const plural = filledCount > 1 ? 's' : '';
-        toast.success(t('appDetail.filledVariables', { count: filledCount, plural }));
-      } else {
-        toast.info(t('appDetail.noMatchingVariables'));
-      }
-    }
-  } catch (error) {
-    toast.error(error.message || t('appDetail.failedToFetchDependencyVariables'));
-  } finally {
-    loadingDependencyEnv.value = false;
-  }
-}
-
 async function fetchImageDetails() {
   if (!app.value) return;
 
@@ -336,26 +249,6 @@ async function fetchImageDetails() {
 
 async function deployApp() {
   if (deploying.value) return;
-
-  let allowMissingDependencies = false;
-  if (missingDependencies.value.length > 0) {
-    const depApps = missingDependencies.value.join(", ");
-    const proceed = confirm(
-      t('appDetail.missingDependenciesConfirm', { deps: depApps })
-    );
-
-    if (!proceed) {
-      toast.info(t('appDetail.deploymentCancelled'), {
-        timeout: 4000
-      });
-      return;
-    }
-
-    allowMissingDependencies = true;
-    toast.warning(t('appDetail.deployingWithoutDependencies', { deps: depApps }), {
-      timeout: 5000
-    });
-  }
 
   // Check for port conflicts if customizing ports
   if (customizePorts.value) {
@@ -393,10 +286,6 @@ async function deployApp() {
       instanceId: instanceNum, // Pass instance number to backend
     };
 
-    if (allowMissingDependencies) {
-      requestBody.allowMissingDependencies = true;
-    }
-
     if (temporaryInstall.value) {
       requestBody.expiresIn = expirationHours.value;
     }
@@ -425,16 +314,7 @@ async function deployApp() {
         router.push("/");
       }, 1500);
     } else {
-      // Check if it's a dependency error
-      const missingDependenciesList = result.details?.missingDependencies || result.missingDependencies || [];
-      if (missingDependenciesList.length > 0) {
-        const deps = missingDependenciesList.join(", ");
-        toast.error(t('appDetail.missingDependenciesDeployFirst', { deps }), {
-          timeout: 5000
-        });
-      } else {
-        throw new Error(getApiErrorMessage(result, t('appDetail.deploymentFailed')));
-      }
+      throw new Error(getApiErrorMessage(result, t('appDetail.deploymentFailed')));
     }
   } catch (error) {
     if (error.message.includes("timeout")) {
@@ -612,47 +492,6 @@ onMounted(async () => {
         <div class="lg:col-span-4">
           <div class="space-y-6 sticky top-24">
             
-            <!-- Dependencies -->
-            <div v-if="dependencies.length > 0" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-5">
-              <div class="flex items-center justify-between mb-5">
-                <div class="flex items-center gap-2">
-                  <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appDetail.dependencies') }}</div>
-                </div>
-
-                <div class="text-[9px] font-bold uppercase tracking-wider">
-                  <span v-if="missingDependencies.length === 0" class="text-green-600 dark:text-green-500">{{ t('appDetail.allRunning') }}</span>
-                  <span v-else class="text-amber-600 dark:text-amber-500">{{ missingDependencies.length }} {{ t('appDetail.missing') }}</span>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <button
-                  v-for="dep in dependencies"
-                  :key="dep"
-                  @click="router.push(`/apps/${dep}`)"
-                  class="group w-full flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition-all bg-gray-50 dark:bg-zinc-900/30"
-                  :class="missingDependencies.includes(dep)
-                    ? 'border-amber-200 dark:border-amber-900/50 hover:border-amber-300 dark:hover:border-amber-700/50'
-                    : 'border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600'"
-                >
-                  <div class="flex items-center gap-2">
-                    <span class="h-2 w-2 rounded-full"
-                      :class="missingDependencies.includes(dep)
-                        ? 'bg-amber-500 animate-pulse'
-                        : 'bg-green-500'"
-                    ></span>
-                    <span class="text-xs font-mono uppercase tracking-wider text-gray-900 dark:text-white">{{ dep }}</span>
-                  </div>
-                  <ExternalLink :size="12" class="text-gray-400 group-hover:text-gray-700 dark:group-hover:text-white transition-colors" />
-                </button>
-              </div>
-
-              <div v-if="missingDependencies.length > 0" class="mt-4 rounded-lg border border-amber-200/50 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10 px-3 py-2 text-[10px] text-amber-700 dark:text-amber-400 flex items-start gap-2">
-                <AlertTriangle :size="12" class="mt-0.5 shrink-0" />
-                <span>{{ t('appDetail.missingDependenciesWarning') }}</span>
-              </div>
-            </div>
-
             <!-- Custom App Notice -->
             <div v-if="app.customapp" class="flex items-start gap-3 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 px-4 py-3">
               <div class="w-2 h-2 rounded-full bg-purple-500 shrink-0 mt-1"></div>
@@ -668,21 +507,6 @@ onMounted(async () => {
                 <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
                   {{ t('appDetail.configuration') }}
                 </h2>
-                <div class="flex items-center gap-3">
-                  <button
-                    v-if="dependencies.length > 0 && app.environment?.length > 0"
-                    @click="fillFromDependencies"
-                    :disabled="loadingDependencyEnv || missingDependencies.length > 0"
-                    class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <svg v-if="loadingDependencyEnv" class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <Download v-else :size="12" />
-                    <span>{{ t('appDetail.autofillEnv') }}</span>
-                  </button>
-                </div>
               </div>
 
               <div class="space-y-6">
@@ -826,7 +650,6 @@ onMounted(async () => {
                  <button
                    @click="deployApp"
                    :disabled="!canDeploy"
-                   :title="missingDependencies.length > 0 ? `Missing dependencies: ${missingDependencies.join(', ')} (deploy anyway)` : ''"
                    class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 rounded-xl text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                  >
                     <span v-if="deploying" class="flex items-center justify-center gap-2">

@@ -88,6 +88,7 @@ export default async function stacksRoutes(fastify) {
 
     const services = await Promise.all(projectContainers.map(async c => {
       const appLabels = parseAppLabels(c.Labels);
+      const inspect = await docker.getContainer(c.Id).inspect();
 
       const mountsMap = new Map();
       for (const m of (c.Mounts || [])) {
@@ -95,6 +96,15 @@ export default async function stacksRoutes(fastify) {
           mountsMap.set(m.Destination, { type: m.Type, source: m.Source || "", destination: m.Destination, mode: m.Mode || "", name: m.Name || null });
         }
       }
+
+      const networks = Object.entries(inspect.NetworkSettings?.Networks || {})
+        .map(([networkName, networkConfig]) => ({
+          name: networkName,
+          ipAddress: networkConfig?.IPAddress || null,
+          gateway: networkConfig?.Gateway || null,
+          aliases: Array.isArray(networkConfig?.Aliases) ? networkConfig.Aliases.filter(Boolean) : [],
+        }))
+        .filter((network) => network.ipAddress);
 
       return {
         id: c.Id,
@@ -106,6 +116,7 @@ export default async function stacksRoutes(fastify) {
         created: c.Created,
         rawPorts: c.Ports || [],
         mounts: [...mountsMap.values()],
+        networks,
         service: c.Labels["yantr.service"] || appLabels.service || c.Names[0]?.replace("/", "") || "unknown",
         hasYantrLabel: !!(appLabels.app),
       };

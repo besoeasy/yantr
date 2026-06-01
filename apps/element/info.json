@@ -23,7 +23,6 @@
     "Use bridges to connect with Slack, Discord, Telegram, and other platforms."
   ],
   "website": "https://element.io",
-  "dependencies": [],
   "notes": [
     "This is just the web client - requires a Matrix homeserver (Synapse) for full functionality",
     "End-to-end encrypted by default for direct messages and group chats",

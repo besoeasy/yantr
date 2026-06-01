@@ -22,7 +22,6 @@
     "Preserve important web resources that might disappear from the internet."
   ],
   "website": "https://github.com/linkwarden/linkwarden",
-  "dependencies": [],
   "notes": [
     "Uses PostgreSQL database for storage",
     "Web pages are archived for offline access",

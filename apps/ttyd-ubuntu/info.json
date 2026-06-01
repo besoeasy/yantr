@@ -26,7 +26,6 @@
     "Quick remote access without key management."
   ],
   "website": "https://github.com/tsl0922/ttyd",
-  "dependencies": [],
   "notes": [
     "Full Ubuntu environment in the browser",
     "Can add authentication for security",

@@ -11,7 +11,6 @@
     "Discover trending content via built-in TMDB browsing."
   ],
   "website": "https://docs.seerr.dev",
-  "dependencies": [],
   "notes": [
     "Seerr is the unified successor to both Overseerr and Jellyseerr — existing installs auto-migrate on first run.",
     "Requires at least one media backend (Jellyfin, Emby, or Plex) and Radarr or Sonarr to handle requests.",

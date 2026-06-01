@@ -7,6 +7,5 @@
   "description": "L-Town is a lightweight, self-hosted server for the L-Town project. It exposes a single network port for web and websocket connections, is easy to deploy via Docker, and is intended for small self-hosted multiplayer/web apps. Configure volumes if you need to persist state.",
   "usecases": ["Self-host multiplayer demos.", "Host lightweight web/socket apps."],
   "website": "https://github.com/besoeasy/l-town",
-  "dependencies": [],
   "notes": ["No persistent volumes configured by default.", "Expose port 30300 as shown in the compose file."]
 }

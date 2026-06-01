@@ -22,7 +22,6 @@
     "Share a private speed test with your ISP for troubleshooting."
   ],
   "website": "https://github.com/librespeed/speedtest",
-  "dependencies": [],
   "notes": [
     "No tracking or data collection - runs entirely locally",
     "Works on desktop and mobile browsers",

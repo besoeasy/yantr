@@ -16,7 +16,6 @@
     "Use Drupal to manage your cms workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/drupal/drupal",
-  "dependencies": [],
   "ports": [
     {
       "port": 80,

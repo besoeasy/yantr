@@ -16,7 +16,6 @@
     "Use Nano to manage your cryptocurrency workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/linuxserver/docker-nano",
-  "dependencies": [],
   "ports": [
     {
       "port": 8075,

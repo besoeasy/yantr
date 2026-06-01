@@ -23,7 +23,6 @@
     "Use as your browser's start page for quick access to frequently used services and bookmarks."
   ],
   "website": "https://github.com/homarr-labs/homarr",
-  "dependencies": [],
   "notes": [
     "Docker integration available for showing container status",
     "Easy drag-and-drop layout customization through the UI",

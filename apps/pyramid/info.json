@@ -19,7 +19,6 @@
   ],
   "description": "pyramid is a Nostr service suite for small community or personal relays. It includes a Nostr relay, Blossom file server, NIP-29 chat rooms, and GRASP Git hosting. Invite friends to your relay and control how many users they can further invite.",
   "website": "https://github.com/fiatjaf/pyramid",
-  "dependencies": [],
   "usecases": [
     "Small-scale community Nostr relay for yourself and friends",
     "Group chats for your friends or the public",

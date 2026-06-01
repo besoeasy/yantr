@@ -26,7 +26,6 @@
     "Prove internet issues to your ISP with historical data."
   ],
   "website": "https://github.com/linuxserver/docker-smokeping",
-  "dependencies": [],
   "notes": [
     "Requires ICMP ping access (may need CAP_NET_RAW)",
     "Configure targets via config file",

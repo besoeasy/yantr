@@ -22,7 +22,6 @@
     "View historical data by exporting to time-series databases."
   ],
   "website": "https://nicolargo.github.io/glances/",
-  "dependencies": [],
   "notes": [
     "Requires host PID namespace for full process monitoring",
     "Docker socket mount needed for container stats",

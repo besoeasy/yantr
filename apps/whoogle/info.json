@@ -26,7 +26,6 @@
     "Customize search appearance with themes and filters."
   ],
   "website": "https://github.com/benbusby/whoogle",
-  "dependencies": [],
   "notes": [
     "Proxies Google search - results come from Google's algorithm",
     "No tracking cookies or IP logging",

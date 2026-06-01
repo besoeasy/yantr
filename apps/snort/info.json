@@ -26,7 +26,6 @@
     "Send and receive direct messages on the Nostr network."
   ],
   "website": "https://git.v0l.io/Kieran/snort",
-  "dependencies": [],
   "notes": [
     "Works with any Nostr relay",
     "Can connect to multiple relays simultaneously",

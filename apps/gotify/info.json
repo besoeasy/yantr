@@ -22,7 +22,6 @@
     "Use as a simple messaging system for family or team."
   ],
   "website": "https://github.com/gotify/server",
-  "dependencies": [],
   "notes": [
     "Simple REST API for sending messages",
     "WebSocket for real-time delivery",

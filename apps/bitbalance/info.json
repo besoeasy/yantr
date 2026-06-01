@@ -25,7 +25,6 @@
     "Replace block explorer balance lookups with a fully self-hosted alternative."
   ],
   "website": "https://github.com/egzola/bitbalance",
-  "dependencies": [],
   "notes": [
     "Set ELECTRUM_HOST and ELECTRUM_PORT environment variables to point to your Electrs or Electrum server for full privacy. Without these, the app falls back to public servers."
   ]

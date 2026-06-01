@@ -16,7 +16,6 @@
     "Use Trip to manage your productivity workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/itskovacs/trip",
-  "dependencies": [],
   "ports": [
     {
       "port": 8000,

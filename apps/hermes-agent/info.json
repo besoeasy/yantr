@@ -22,7 +22,6 @@
     "Use the health-check API to monitor gateway status from the web dashboard and ensure agent services are always running."
   ],
   "website": "https://github.com/NousResearch/hermes",
-  "dependencies": [],
   "notes": [
     "Set HERMES_API_KEY to a strong secret before exposing the gateway — both the web and gateway services must share the same value.",
     "The gateway API server binds to 0.0.0.0 inside the container; it is not exposed to the host but is reachable by the web service on the internal Docker network."

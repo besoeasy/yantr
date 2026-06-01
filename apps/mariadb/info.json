@@ -23,7 +23,6 @@
     "Build analytics databases with ColumnStore for real-time aggregations."
   ],
   "website": "https://github.com/MariaDB/server",
-  "dependencies": [],
   "notes": [
     "MySQL-compatible - most MySQL clients and tools work directly",
     "Set MYSQL_ROOT_PASSWORD environment variable for root access",

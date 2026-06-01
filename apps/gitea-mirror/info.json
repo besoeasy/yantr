@@ -22,7 +22,6 @@
     "Use as a disaster-recovery solution so your code remains accessible even if GitHub is unavailable."
   ],
   "website": "https://giteamirror.com/",
-  "dependencies": [],
   "env_generators": {
     "BETTER_AUTH_SECRET": {
       "length": 48,

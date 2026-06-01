@@ -11,7 +11,6 @@
     "Share feeds and integrations with automation pipelines."  
   ],
   "website": "https://miniflux.app/",
-  "dependencies": [],
   "notes": [
     "Set a secure ADMIN_PASSWORD before public exposure.",
     "Store feed database backups from Postgres data volume."

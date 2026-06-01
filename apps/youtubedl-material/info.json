@@ -26,7 +26,6 @@
     "Build a personal video archive of your favorite content."
   ],
   "website": "https://github.com/Tzahi12345/YoutubeDL-Material",
-  "dependencies": [],
   "notes": [
     "Uses yt-dlp for downloading - supports 1700+ sites",
     "Subscription checking runs on a schedule",

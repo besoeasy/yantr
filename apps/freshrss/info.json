@@ -22,7 +22,6 @@
     "Use filters and categories to organize feeds by topic or priority."
   ],
   "website": "https://github.com/FreshRSS/FreshRSS",
-  "dependencies": [],
   "notes": [
     "Supports OPML import for migrating from other feed readers",
     "Can refresh feeds automatically on a schedule",

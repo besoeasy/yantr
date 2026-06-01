@@ -21,7 +21,6 @@
     "Simple file hosting for small groups."
   ],
   "website": "https://github.com/silverwind/droppy",
-  "dependencies": [],
   "notes": [
     "User authentication available",
     "Share links with expiration",

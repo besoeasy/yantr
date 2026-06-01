@@ -22,7 +22,6 @@
     "Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for automated media acquisition."
   ],
   "website": "https://bitmagnet.io",
-  "dependencies": [],
   "notes": [
     "Bitmagnet bundles its own PostgreSQL instance — no separate database setup is required.",
     "The Web UI runs on port 3333 but is not published to the host by default. Access it via a reverse proxy or change the port mapping in compose.yml.",

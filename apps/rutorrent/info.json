@@ -29,7 +29,6 @@
     "Advanced torrent management."
   ],
   "website": "https://github.com/linuxserver/docker-rutorrent",
-  "dependencies": [],
   "notes": [
     "Frontend for rtorrent",
     "Many plugins available",

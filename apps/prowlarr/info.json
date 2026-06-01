@@ -27,7 +27,6 @@
     "Auto-discover new releases across all your indexers."
   ],
   "website": "https://github.com/linuxserver/docker-prowlarr",
-  "dependencies": [],
   "notes": [
     "Supports both Usenet (NZB) and BitTorrent protocols",
     "Replaces both NZBHydra2 and Jackett",

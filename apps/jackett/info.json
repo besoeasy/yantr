@@ -23,7 +23,6 @@
     "Use with multiple PVR apps (TV, movies, music) through one integration."
   ],
   "website": "https://github.com/Jackett/Jackett",
-  "dependencies": [],
   "notes": [
     "API key required for connecting PVR apps",
     "Supports 500+ torrent trackers",

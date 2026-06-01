@@ -26,7 +26,6 @@
     "Check if websites are down."
   ],
   "website": "https://github.com/thp/urlwatch",
-  "dependencies": [],
   "notes": [
     "Diff highlighting shows changes",
     "Multiple notification options",

@@ -23,7 +23,6 @@
     "Integrate with image generation models for a complete AI experience."
   ],
   "website": "https://github.com/open-webui/open-webui",
-  "dependencies": [],
   "notes": [
     "Requires Ollama to be running with models downloaded",
     "Connects to Ollama on internal Docker network",

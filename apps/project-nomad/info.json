@@ -24,7 +24,6 @@
     "Host a private, secure knowledge base for offline use."
   ],
   "website": "https://www.projectnomad.us",
-  "dependencies": [],
   "notes": [
     "Requires Docker socket access for container orchestration.",
     "Minimum 4GB RAM for base installation; 32GB recommended for AI tools.",

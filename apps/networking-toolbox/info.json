@@ -22,7 +22,6 @@
     "Check SSL certificate details."
   ],
   "website": "https://networking-toolbox.as93.net",
-  "dependencies": [],
   "notes": [
     "Extensive collection of networking tools",
     "All tools work offline",

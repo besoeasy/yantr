@@ -16,7 +16,6 @@
     "Use UniDL to manage your media workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/besoeasy/UniDL",
-  "dependencies": [],
   "ports": [
     {
       "port": 6798,

@@ -186,7 +186,6 @@ export async function getAppsCatalogCached({ forceRefresh } = { forceRefresh: fa
           description: info.description || info.short_description || "",
           usecases: Array.isArray(info.usecases) ? info.usecases : [],
           website: info.website || null,
-          dependencies: Array.isArray(info.dependencies) ? info.dependencies : [],
           customapp: !!info.customapp,
           path: appPath,
           composePath,

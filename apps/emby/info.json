@@ -23,7 +23,6 @@
     "Use theater mode for an immersive viewing experience."
   ],
   "website": "https://emby.media/",
-  "dependencies": [],
   "notes": [
     "Some features require Emby Premiere subscription",
     "Hardware transcoding available with proper GPU setup",

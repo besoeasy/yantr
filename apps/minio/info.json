@@ -24,7 +24,6 @@
     "Run AI/ML workloads that need S3-compatible storage for datasets."
   ],
   "website": "https://min.io",
-  "dependencies": [],
   "notes": [
     "Console runs on port 9001, API on port 9000",
     "Default credentials are minioadmin/minioadmin - change in production",

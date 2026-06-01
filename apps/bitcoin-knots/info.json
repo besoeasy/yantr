@@ -23,7 +23,6 @@
     "Support the Bitcoin network by relaying transactions."
   ],
   "website": "https://bitcoinknots.org",
-  "dependencies": [],
   "notes": [
     "Full sync requires ~600GB+ and growing",
     "Port 8332 for RPC, 8333 for P2P networking",

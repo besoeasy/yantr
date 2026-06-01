@@ -18,7 +18,6 @@
     "Harness the power of the @dropgate/core TypeScript library to integrate Dropgate into your own IT infrastructure and workflows."
   ],
   "website": "https://diamonddigital.dev/projects/dropgate",
-  "dependencies": [],
   "ports": [
     {
       "port": 52443,

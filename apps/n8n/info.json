@@ -23,7 +23,6 @@
     "Build AI workflows - chain LLM calls, vector databases, and other AI services for document processing or chatbots."
   ],
   "website": "https://docs.n8n.io",
-  "dependencies": [],
   "notes": [
     "Data stays on your server - no cloud dependency for automation logic",
     "Webhooks can trigger workflows in real-time",

@@ -21,7 +21,6 @@
     "Basic torrent management without bloat."
   ],
   "website": "https://github.com/jpillora/cloud-torrent",
-  "dependencies": [],
   "notes": [
     "Magnet link support",
     "Streaming while downloading",

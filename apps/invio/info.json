@@ -16,7 +16,6 @@
     "Use Invio to manage your productivity workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/kittendevv/Invio/wiki",
-  "dependencies": [],
   "ports": [
     {
       "port": 3000,

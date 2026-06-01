@@ -22,7 +22,6 @@
     "Organize multiple compose projects in one place."
   ],
   "website": "https://github.com/louislam/dockge",
-  "dependencies": [],
   "notes": [
     "Requires Docker socket access",
     "Stores compose files in configurable directory",

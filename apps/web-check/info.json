@@ -26,7 +26,6 @@
     "Get detailed DNS and WHOIS information for any domain."
   ],
   "website": "https://github.com/lissy93/web-check",
-  "dependencies": [],
   "notes": [
     "Runs 30+ checks on any URL you provide",
     "All analysis done locally - no data sent to third parties",

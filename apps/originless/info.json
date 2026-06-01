@@ -10,7 +10,6 @@
     "Drop it into any tool or platform via the simple REST API in minutes."
   ],
   "website": "https://github.com/besoeasy/Originless",
-  "dependencies": [],
   "ports": [
     {
       "port": 3232,

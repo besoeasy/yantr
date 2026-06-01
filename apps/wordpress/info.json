@@ -27,9 +27,8 @@
     "Create a multi-author blog or news site with user registration and roles."
   ],
   "website": "https://github.com/WordPress/WordPress",
-  "dependencies": [],
   "notes": [
-    "Includes MySQL database as dependency",
+    "Requires a MySQL-compatible database connection during setup; pair it with a separate database stack if needed.",
     "Initial setup via web interface - set admin user and password there",
     "Keep WordPress and plugins updated for security"
   ]

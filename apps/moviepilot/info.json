@@ -24,7 +24,6 @@
     "Manage running download tasks across qBittorrent, Transmission, or rTorrent from a single unified dashboard."
   ],
   "website": "https://movie-pilot.org/",
-  "dependencies": [],
   "notes": [
     "Default Web UI is on port 3000; API backend listens on port 3001",
     "Set SUPERUSER and SUPERUSER_PASSWORD environment variables before first launch",

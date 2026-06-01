@@ -22,7 +22,6 @@
     "Use deduplication to minimize storage requirements."
   ],
   "website": "https://www.duplicati.com",
-  "dependencies": [],
   "notes": [
     "Supports SFTP, FTP, WebDAV, B2, S3, and many cloud backends",
     "AES-256 encryption keeps backups secure",

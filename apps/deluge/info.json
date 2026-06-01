@@ -20,7 +20,6 @@
     "Remote torrent management."
   ],
   "website": "https://deluge-torrent.org/",
-  "dependencies": [],
   "notes": [
     "Web UI on port 8112",
     "Default password is 'deluge'",

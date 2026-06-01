@@ -2,7 +2,6 @@ import path from "path";
 import { readFile, access } from "fs/promises";
 import YAML from "yaml";
 import {
-  booleanSchema,
   nonEmptyStringSchema,
   positiveIntegerSchema,
   scalarMapSchema,
@@ -28,7 +27,6 @@ const deploySchema = {
       extraEnv: scalarMapSchema,
       expiresIn: positiveIntegerSchema,
       instanceId: positiveIntegerSchema,
-      allowMissingDependencies: booleanSchema,
       masterApp: nonEmptyStringSchema,
       customPortMappings: {
         type: "object",
@@ -60,49 +58,11 @@ export default async function appsRoutes(fastify) {
     return reply.send({ success: true, appId, image: imageName, supported: archCheck.supported, systemArch: archCheck.systemArch, imageArch: archCheck.imageArch });
   });
 
-  // GET /api/apps/:id/dependency-env
-  fastify.get("/api/apps/:id/dependency-env", async (request, reply) => {
-    const appId = request.params.id;
-    const appPath = path.join(appsDir, appId);
-
-    try { await readFile(path.join(appPath, "compose.yml"), "utf-8"); }
-    catch { throw new NotFoundError(`App '${appId}' not found or has no compose.yml`); }
-
-    let dependencies = [];
-    try {
-      const info = JSON.parse(await readFile(path.join(appPath, "info.json"), "utf-8"));
-      dependencies = Array.isArray(info.dependencies) ? info.dependencies : [];
-    } catch {}
-
-    if (dependencies.length === 0) return reply.send({ success: true, dependencies: [], environmentVariables: {} });
-
-    log("info", `[GET /api/apps/:id/dependency-env] Found dependencies for ${appId}: ${dependencies.join(", ")}`);
-
-    const environmentVariables = {};
-    for (const depAppId of dependencies) {
-      try {
-        const containers = await docker.listContainers({ all: false, filters: { label: [`com.docker.compose.project=${depAppId}`] } });
-        if (containers.length === 0) continue;
-        const inspect = await docker.getContainer(containers[0].Id).inspect();
-        environmentVariables[depAppId] = {};
-        (inspect.Config.Env || []).forEach(envVar => {
-          const [key, ...valueParts] = envVar.split("=");
-          const value = valueParts.join("=");
-          if (value && !value.match(/^\$\{.*\}$/)) environmentVariables[depAppId][key] = value;
-        });
-      } catch (err) {
-        log("error", `[GET /api/apps/:id/dependency-env] Error fetching env from ${depAppId}:`, err.message);
-      }
-    }
-
-    return reply.send({ success: true, dependencies, environmentVariables });
-  });
-
   // POST /api/deploy
   fastify.post("/api/deploy", { schema: deploySchema }, async (request, reply) => {
     log("info", "🚀 [POST /api/deploy] Deploy request received");
     try {
-      const { appId, environment, extraEnv, expiresIn, customPortMappings, instanceId, allowMissingDependencies, masterApp } = request.body;
+      const { appId, environment, extraEnv, expiresIn, customPortMappings, instanceId, masterApp } = request.body;
       log("info", `🚀 [POST /api/deploy] Deploying app: ${appId}${instanceId > 1 ? ` (Instance #${instanceId})` : ""}`);
 
     const appPath = path.join(appsDir, appId);
@@ -150,31 +110,6 @@ export default async function appsRoutes(fastify) {
         }
     }
 
-    // Check dependencies
-    let deployDeps = [];
-    try {
-      const infoData = JSON.parse(await readFile(path.join(appPath, "info.json"), "utf-8"));
-      deployDeps = Array.isArray(infoData.dependencies) ? infoData.dependencies : [];
-    } catch {}
-
-    let dependencyWarnings = null;
-    if (deployDeps.length > 0) {
-      const runningContainers = await docker.listContainers({ all: false });
-      const runningProjects = new Set(runningContainers.map(c => c.Labels?.["com.docker.compose.project"]).filter(Boolean));
-      // Match base dep ID or any numbered instance (e.g. "postgresql" or "postgresql-2")
-      const missingDeps = deployDeps.filter(dep => !([...runningProjects].some(p => p === dep || new RegExp(`^${dep}-\\d+$`).test(p))));
-          if (missingDeps.length > 0) {
-        if (!allowMissingDependencies) {
-          return sendError(reply, 400, {
-            code: "MISSING_DEPENDENCIES",
-            message: `This app requires the following apps to be running: ${missingDeps.join(", ")}. Please deploy ${missingDeps.length === 1 ? "it" : "them"} first.`,
-            details: { missingDependencies: missingDeps },
-          });
-        }
-        dependencyWarnings = missingDeps;
-      }
-    }
-
     const extraEnvEntries = extraEnv && typeof extraEnv === 'object'
       ? Object.entries(extraEnv).filter(([k, v]) => k.trim() && v !== null && v !== undefined && String(v).trim() !== '')
       : [];
@@ -200,7 +135,7 @@ export default async function appsRoutes(fastify) {
       );
       if (exitCode !== 0) throw new Error(`docker compose failed with exit code ${exitCode}: ${stderr}`);
 
-      return reply.send({ success: true, message: `App '${appId}' deployed successfully`, appId, output: stdout, warnings: stderr || null, dependencyWarnings, temporary: !!expiresIn });
+      return reply.send({ success: true, message: `App '${appId}' deployed successfully`, appId, output: stdout, warnings: stderr || null, temporary: !!expiresIn });
     } catch (error) {
       const isArchError = error.message?.includes("no matching manifest") || error.message?.includes("platform") || error.message?.includes("architecture");
       return sendError(reply, isArchError ? 400 : 500, {

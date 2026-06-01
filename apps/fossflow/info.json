@@ -21,7 +21,6 @@
     "Build isometric flowcharts."
   ],
   "website": "https://github.com/stan-smith/FossFLOW",
-  "dependencies": [],
   "notes": [
     "Auto-save enabled",
     "Export to PNG/SVG",

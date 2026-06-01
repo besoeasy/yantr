@@ -21,7 +21,6 @@
     "Dashboard for homelab services."
   ],
   "website": "https://github.com/rmountjoy92/dashmachine",
-  "dependencies": [],
   "notes": [
     "Media discovery features",
     "Bookmark organization",

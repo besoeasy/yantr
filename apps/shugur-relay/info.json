@@ -16,7 +16,6 @@
     "Use Shugur Relay to manage your network workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/Shugur-Network/relay",
-  "dependencies": [],
   "ports": [
     {
       "port": 8080,

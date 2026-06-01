@@ -22,7 +22,6 @@
     "Make data-driven investment decisions with portfolio analysis tools."
   ],
   "website": "https://ghostfol.io",
-  "dependencies": [],
   "notes": [
     "Supports real-time price updates from public APIs",
     "Redis used for caching price data",

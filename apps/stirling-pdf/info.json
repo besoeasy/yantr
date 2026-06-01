@@ -26,7 +26,6 @@
     "Add or remove password protection from PDFs."
   ],
   "website": "https://github.com/Stirling-Tools/Stirling-PDF",
-  "dependencies": [],
   "notes": [
     "All processing done locally - no data leaves your server",
     "Supports batch processing for multiple files",

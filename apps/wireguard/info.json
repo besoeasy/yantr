@@ -32,7 +32,6 @@
     "Create site-to-site VPNs to connect multiple locations (home office, parent's house) into one network."
   ],
   "website": "https://www.wireguard.com",
-  "dependencies": [],
   "notes": [
     "Requires UDP port 51820 open in your firewall for VPN connections",
     "Admin panel runs on port 51821 (HTTPS recommended in production)",

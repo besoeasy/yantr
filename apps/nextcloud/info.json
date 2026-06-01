@@ -25,9 +25,8 @@
     "Collaborate on documents in real-time with Nextcloud Office without sending data to third parties."
   ],
   "website": "https://github.com/nextcloud/server",
-  "dependencies": ["mariadb"],
   "notes": [
-    "Requires a database (MariaDB included as dependency)",
+    "Requires a database connection during setup; point it at a MariaDB stack if you want to pair one manually.",
     "First-time setup requires web interface configuration",
     "External storage support for mounting S3, FTP, SMB, and other backends"
   ]

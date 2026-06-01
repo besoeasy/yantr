@@ -16,7 +16,6 @@
     "Use Scality S3 to manage your storage workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://www.zenko.io/cloudserver/",
-  "dependencies": [],
   "ports": [
     {
       "port": 8000,

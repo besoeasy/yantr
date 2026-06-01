@@ -27,7 +27,6 @@
     "Analyze your trading history and profit/loss over time."
   ],
   "website": "https://rotki.com/",
-  "dependencies": [],
   "notes": [
     "API integration with major exchanges for automatic updates",
     "Supports hardware wallets (Ledger, Trezor)",

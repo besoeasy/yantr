@@ -26,7 +26,6 @@
     "Display weather and time at a glance."
   ],
   "website": "https://github.com/parksauce/tabby",
-  "dependencies": [],
   "notes": [
     "Uses MariaDB for database storage",
     "Customizable backgrounds and themes",

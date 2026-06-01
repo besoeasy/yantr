@@ -22,7 +22,6 @@
     "Offline-first personal knowledge base."
   ],
   "website": "https://github.com/besoeasy/zeronote",
-  "dependencies": [],
   "notes": [
     "Server cannot read your notes",
     "Offline-first design",

@@ -22,7 +22,6 @@
     "Self-host your entire financial data stack — Monetr, its database, and cache — so no financial information ever leaves your own server."
   ],
   "website": "https://github.com/monetr/monetr",
-  "dependencies": [],
   "notes": [
     "Set MONETR_DB_PASSWORD to a strong secret before first run — both the monetr app and the postgres container must share the same value.",
     "Bank account sync requires a Plaid API key; set MONETR_ALLOW_SIGN_UP=false after creating your account to lock registration."

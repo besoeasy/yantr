@@ -16,7 +16,6 @@
     "Use Just. Download. to manage your media workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://codeberg.org/highghlow/just-download",
-  "dependencies": [],
   "ports": [
     {
       "port": 5000,

@@ -25,7 +25,6 @@
     "Export data for invoicing."
   ],
   "website": "https://github.com/traggo/server",
-  "dependencies": [],
   "notes": [
     "Tag-based - no rigid project structure",
     "API available for automation",

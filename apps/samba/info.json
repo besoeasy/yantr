@@ -27,7 +27,6 @@
     "Share media files for Plex/Jellyfin to scan."
   ],
   "website": "https://github.com/dockur/samba",
-  "dependencies": [],
   "notes": [
     "SMB port 445 - no need for older NetBIOS",
     "Configure username and password via environment variables",

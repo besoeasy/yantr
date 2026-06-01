@@ -22,7 +22,6 @@
     "Use as a minimalist knowledge base with tags for organization."
   ],
   "website": "https://github.com/usememos/memos",
-  "dependencies": [],
   "notes": [
     "Very lightweight - runs well on minimal hardware",
     "SQLite database for simple deployment",

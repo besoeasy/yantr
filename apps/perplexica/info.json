@@ -21,7 +21,6 @@
     "Private AI search."
   ],
   "website": "https://github.com/ItzCrazyKns/Perplexica",
-  "dependencies": [],
   "notes": [
     "Requires Ollama or OpenAI API",
     "Uses SearXNG for search",

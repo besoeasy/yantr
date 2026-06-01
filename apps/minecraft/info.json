@@ -22,7 +22,6 @@
     "Automate backups of your world data."
   ],
   "website": "https://docker-minecraft-server.readthedocs.io/",
-  "dependencies": [],
   "notes": [
     "Set EULA=true to accept Minecraft EULA",
     "Memory allocated via MEMORY environment variable",

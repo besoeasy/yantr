@@ -223,6 +223,11 @@ const visiblePorts = computed(() => {
 
 const hasDescribedPorts = computed(() => enrichedPorts.value.some((p) => p.label));
 
+const servicesWithNetworks = computed(() => {
+  if (!stack.value?.services) return [];
+  return stack.value.services.filter((service) => Array.isArray(service.networks) && service.networks.length > 0);
+});
+
 const portServices = computed(() => {
   if (!stack.value?.services) return [];
   const seen = new Set();
@@ -617,6 +622,75 @@ onUnmounted(() => {
           <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.noPortsPublished") }}</span>
         </div>
       </div>
+
+        <div class="space-y-4 animate-fadeIn">
+          <div class="flex items-center justify-between gap-3 mb-1">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">
+                {{ t("stackView.internalAddresses") }}
+              </div>
+              <span
+                v-if="servicesWithNetworks.length > 0"
+                class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] border border-gray-200 dark:border-zinc-800"
+                style="background: var(--surface-muted); color: var(--text-secondary)"
+              >
+                {{ servicesWithNetworks.length }}
+              </span>
+            </div>
+            <div class="text-[11px]" style="color: var(--text-secondary)">
+              {{ t("stackView.internalAddressesHint") }}
+            </div>
+          </div>
+
+          <div v-if="servicesWithNetworks.length > 0" class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div
+              v-for="svc in servicesWithNetworks"
+              :key="`${svc.id}-networks`"
+              class="rounded-2xl p-4 transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg"
+              style="background: var(--surface)"
+            >
+              <div class="flex items-start justify-between gap-3 mb-4">
+                <div>
+                  <div class="text-sm font-semibold" style="color: var(--text-primary)">
+                    {{ svc.service }}
+                  </div>
+                  <div class="mt-1 text-[11px] uppercase tracking-[0.2em]" style="color: var(--text-secondary)">
+                    {{ svc.composeService || svc.name }}
+                  </div>
+                </div>
+                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] border border-gray-200 dark:border-zinc-800" style="background: var(--surface-muted); color: var(--text-secondary)">
+                  {{ svc.networks.length }}
+                </span>
+              </div>
+
+              <div class="space-y-2.5">
+                <div
+                  v-for="network in svc.networks"
+                  :key="`${svc.id}-${network.name}`"
+                  class="rounded-xl px-3.5 py-3"
+                  style="background: var(--surface-muted)"
+                >
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
+                      {{ network.name }}
+                    </span>
+                    <span class="font-mono font-bold text-sm" style="color: var(--text-primary)">
+                      {{ network.ipAddress }}
+                    </span>
+                  </div>
+                  <div v-if="network.aliases?.length" class="mt-2 text-[11px]" style="color: var(--text-secondary)">
+                    {{ t("stackView.networkAliases") }} {{ network.aliases.join(", ") }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="rounded-2xl p-10 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 dark:border-zinc-800">
+            <Network :size="28" class="text-gray-300 dark:text-zinc-700" />
+            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.noInternalAddresses") }}</span>
+          </div>
+        </div>
 
       <!-- ── Section Navigation ───────────────────────────────────────────────────────── -->
       <div class="grid gap-2 rounded-2xl p-2" :class="sectionTabsGridClass" style="background: var(--surface-muted)">

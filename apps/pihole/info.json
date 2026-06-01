@@ -32,7 +32,6 @@
     "Speed up your network and reduce bandwidth usage by blocking tracking and advertising domains before they load."
   ],
   "website": "https://docs.pi-hole.net",
-  "dependencies": [],
   "notes": [
     "Requires port 53 (DNS) to be available on the host",
     "Configure your router's DHCP to point to Pi-hole as DNS server for network-wide protection",

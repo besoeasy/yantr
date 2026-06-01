@@ -22,7 +22,6 @@
     "Access your music library remotely via the web interface."
   ],
   "website": "https://github.com/airsonic/airsonic",
-  "dependencies": [],
   "notes": [
     "Supports transcoding for format compatibility",
     "Android app available for mobile listening",

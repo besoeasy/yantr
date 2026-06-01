@@ -26,7 +26,6 @@
     "Debug Docker networking and port forwarding."
   ],
   "website": "https://github.com/traefik/whoami",
-  "dependencies": [],
   "notes": [
     "Tiny image - only displays request info",
     "Useful for testing but not much else",

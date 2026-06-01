@@ -21,7 +21,6 @@
     "Team time management."
   ],
   "website": "https://www.solidtime.io/",
-  "dependencies": [],
   "notes": [
     "Uses PostgreSQL database",
     "Invoice generation included",

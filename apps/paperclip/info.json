@@ -22,7 +22,6 @@
     "Coordinate coding, research, and operational agents with recurring routines and governance controls before they run unattended."
   ],
   "website": "https://paperclip.ing/",
-  "dependencies": [],
   "notes": [
     "Paperclip does not include AI models or provider credits; connect your own providers or agent runtimes after deployment.",
     "The embedded database and uploaded data are stored in the named Docker volume mounted at /paperclip.",

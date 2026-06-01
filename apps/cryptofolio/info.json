@@ -16,7 +16,6 @@
     "Use Cryptofolio to manage your finance workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/xtrendence/cryptofolio",
-  "dependencies": [],
   "ports": [
     {
       "port": 80,

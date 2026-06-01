@@ -27,7 +27,6 @@
     "Monitor Docker containers without installing agents - uses Docker socket for native container health checks."
   ],
   "website": "https://github.com/louislam/uptime-kuma/wiki",
-  "dependencies": [],
   "notes": [
     "Supports over 30 monitoring types including HTTP, TCP, Ping, DNS, and more",
     "Can monitor Docker containers directly via socket mount",

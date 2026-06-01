@@ -27,7 +27,6 @@
     "Access your passwords from any device using official Bitwarden apps while keeping your data on your own server."
   ],
   "website": "https://github.com/dani-garcia/vaultwarden/wiki",
-  "dependencies": [],
   "notes": [
     "Requires HTTPS for browser extensions to work properly",
     "All data is encrypted client-side - server never sees your master password",

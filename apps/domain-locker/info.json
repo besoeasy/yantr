@@ -16,7 +16,6 @@
     "Use Domain Locker to manage your security workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://domain-locker.com",
-  "dependencies": [],
   "ports": [
     {
       "port": 3000,

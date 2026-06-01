@@ -11,7 +11,6 @@
     "Host your own file collaboration server with audit logging and backup support."
   ],
   "website": "https://www.seafile.com/en/home/",
-  "dependencies": ["mariadb"],
   "notes": [
     "Change defaults for database and admin password after first login.",
     "Use external storage volumes for large libraries."

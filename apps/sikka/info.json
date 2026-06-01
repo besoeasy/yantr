@@ -25,7 +25,6 @@
     "Join the Sikka network with a self-hosted node instead of depending on shared public infrastructure."
   ],
   "website": "https://github.com/sikkacrypto/sikka",
-  "dependencies": [],
   "notes": [
     "Set miner to a valid lower-case sikka1... bech32m address to enable the built-in miner (optional).",
     "Set SIKKA_PUBLIC_URL if this node should advertise a public URL to other Sikka peers.",

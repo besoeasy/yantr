@@ -21,7 +21,6 @@
     "Keep budgeting data local and back it up from the named Docker volume used by the app."
   ],
   "website": "https://simonwep.github.io/ocular/",
-  "dependencies": [],
   "notes": [
     "Ocular expects HTTPS by default for secure cookies; set GENESIS_JWT_COOKIE_ALLOW_HTTP=true only on trusted plain HTTP networks.",
     "The first admin account is created from OCULAR_ADMIN_USERNAME and OCULAR_ADMIN_PASSWORD during initial deployment.",

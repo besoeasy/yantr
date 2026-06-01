@@ -22,7 +22,6 @@
     "Add custom links to external services, bookmarks, or frequently visited sites."
   ],
   "website": "https://github.com/linuxserver/Heimdall",
-  "dependencies": [],
   "notes": [
     "Simple YAML-based configuration for adding apps",
     "Built-in icons for 200+ popular applications",

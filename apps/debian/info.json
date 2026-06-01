@@ -22,7 +22,6 @@
   ],
   "website": "https://www.debian.org",
   "customapp": true,
-  "dependencies": [],
   "notes": [
     "Set SSH_USER and SSH_PASSWORD env vars before deploying",
     "Default credentials are admin / changeme — change before exposing to the network",

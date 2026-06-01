@@ -27,7 +27,6 @@
     "Use as an intranet for your homelab with access controlled by your preferred auth provider."
   ],
   "website": "https://github.com/requarks/wiki",
-  "dependencies": [],
   "notes": [
     "Requires PostgreSQL, MySQL, or MariaDB for data storage",
     "Supports LDAP and SAML for enterprise authentication",

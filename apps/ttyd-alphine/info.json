@@ -25,7 +25,6 @@
     "Lightweight alternative to full Ubuntu for simple tasks."
   ],
   "website": "https://github.com/tsl0922/ttyd",
-  "dependencies": [],
   "notes": [
     "Lightweight Alpine Linux base",
     "Authentication can be enabled",

@@ -66,7 +66,6 @@ Required fields:
 - `description` - 200-300 characters
 - `usecases` - at least 2 entries
 - `website` - `https://` docs/homepage/repo URL
-- `dependencies` - array of app IDs (can be empty)
 - `notes` - optional array of operational caveats
 - `customapp` - optional boolean, set to `true` for apps custom-built by the Yantr team (e.g. apps with a `Dockerfile` in the folder). Custom apps show a "Built by Yantr" badge in the UI and have the auto-update button disabled since they use a locally-built image that watchtower cannot update.
 - `env_generators` - optional map of env var names to generation rules used by each env field in the deploy UI
@@ -103,7 +102,7 @@ Supported rule fields:
 - [ ] valid, deployable compose file
 - [ ] required credential/secret env vars have no placeholder defaults in `compose.yml`
 - [ ] required credential/secret env vars are covered by `env_generators` in `info.json`
-- [ ] declare dependencies in `info.json`
+- [ ] keep `info.json` self-contained; use `notes` to explain any manual app-to-app setup
 - [ ] document unusual host access in `notes`
 - [ ] describe user-facing ports in `info.json`
 
@@ -141,7 +140,6 @@ volumes:
   "description": "A self-hosted note-taking service.",
   "usecases": ["Capture notes.", "Organize docs.", "Share with team."],
   "website": "https://example.com/docs",
-  "dependencies": [],
   "notes": ["Change default admin password."]
 }
 ```

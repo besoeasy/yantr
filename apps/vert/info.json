@@ -24,7 +24,6 @@
     "Self-host your own instance for your team or homelab to ensure all file conversions remain private and on your own infrastructure."
   ],
   "website": "https://github.com/VERT-sh/VERT",
-  "dependencies": [],
   "notes": [
     "Video conversion requires the optional vertd daemon for local processing; otherwise it uses the official vert.sh instance",
     "All other conversions (images, audio, documents) run fully in-browser via WebAssembly"

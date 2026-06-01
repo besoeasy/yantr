@@ -16,7 +16,6 @@
     "Use MySpeed to manage your network workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://myspeed.dev",
-  "dependencies": [],
   "ports": [
     {
       "port": 5216,

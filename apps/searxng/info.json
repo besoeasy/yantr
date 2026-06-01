@@ -27,7 +27,6 @@
     "Block annoying ads and tracking parameters from URLs automatically."
   ],
   "website": "https://docs.searxng.org",
-  "dependencies": [],
   "notes": [
     "No tracking or logging of search queries by default",
     "Can be customized with themes and engine preferences",

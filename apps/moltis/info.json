@@ -16,7 +16,6 @@
     "Use Moltis to manage your ai workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/moltis-org/moltis",
-  "dependencies": [],
   "ports": [
     {
       "port": 13131,

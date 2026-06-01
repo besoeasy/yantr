@@ -16,7 +16,6 @@
     "Use Bitcoin Knots VM to manage your cryptocurrency workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://bitcoinknots.org",
-  "dependencies": [],
   "ports": [
     {
       "port": 3000,

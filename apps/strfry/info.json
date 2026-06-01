@@ -26,7 +26,6 @@
     "Use as a personal relay for your own notes."
   ],
   "website": "https://github.com/hoytech/strfry",
-  "dependencies": [],
   "notes": [
     "Uses LMDB for fast, high-capacity storage",
     "Connects to other relays to share events",

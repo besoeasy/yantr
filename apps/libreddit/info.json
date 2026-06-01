@@ -21,7 +21,6 @@
     "Use as alternative to official Reddit."
   ],
   "website": "https://github.com/spikecodes/libreddit",
-  "dependencies": [],
   "notes": [
     "No JavaScript - works without it",
     "Zero tracking",

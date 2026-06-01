@@ -26,7 +26,6 @@
     "Improve network performance and reduce bandwidth usage by blocking requests to ad and tracking servers before they load."
   ],
   "website": "https://adguard.com/en/adguard-home/overview.html",
-  "dependencies": [],
   "notes": [
     "Requires port 53 (DNS) to be available on the host",
     "For full network coverage, configure your router's DHCP to point to AdGuard Home as the DNS server",

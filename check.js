@@ -122,19 +122,9 @@ async function checkInfoJson(appName, infoPath) {
     fail(appName, `info.json "website" must start with https://`, `Got: "${info.website}"`);
   }
 
-  // dependencies — must be array of valid app ID strings
-  if (!Array.isArray(info.dependencies)) {
-    fail(appName, 'info.json "dependencies" must be an array', "Use [] if there are none.");
-  } else {
-    for (const dep of info.dependencies) {
-      if (typeof dep !== "string" || !dep.trim()) {
-        fail(
-          appName,
-          `info.json "dependencies" contains an invalid entry: ${JSON.stringify(dep)}`,
-          "Each dependency must be a non-empty string matching an app directory name.",
-        );
-      }
-    }
+  // dependencies — removed; app metadata should stay self-contained
+  if ("dependencies" in info) {
+    fail(appName, 'info.json uses removed "dependencies" field', 'Remove the field and describe any manual app-to-app wiring in "notes".');
   }
 
   // notes — if present must be array of strings
@@ -282,13 +272,6 @@ for (const appName of apps) {
 
   const info = await checkInfoJson(appName, infoPath);
   const compose = await checkCompose(appName, composePath);
-
-  // Validate dependency IDs reference real app directories
-  for (const dep of info.dependencies ?? []) {
-    if (!apps.includes(dep)) {
-      fail(appName, `info.json "dependencies" references unknown app: "${dep}"`, `No directory found at apps/${dep}/. Must match an existing app folder name.`);
-    }
-  }
 
   // Track published ports for conflict detection
   for (const port of extractPublishedPorts(compose)) {

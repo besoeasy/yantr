@@ -27,7 +27,6 @@
     "Share files with family members using device-to-device synchronization."
   ],
   "website": "https://syncthing.net/",
-  "dependencies": [],
   "notes": [
     "Uses ports 22000 (TCP) and 21027 (UDP) for synchronization",
     "Works behind NAT with proper configuration",

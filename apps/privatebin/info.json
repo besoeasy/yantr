@@ -27,7 +27,6 @@
     "Use as a private alternative to public pastebin services for sharing confidential work documents."
   ],
   "website": "https://github.com/PrivateBin/PrivateBin",
-  "dependencies": [],
   "notes": [
     "The encryption key is in the URL anchor (#), which is never sent to the server",
     "Set a password for additional security beyond the URL-based encryption",

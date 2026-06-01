@@ -23,7 +23,6 @@
     "Use as the database for analytics applications requiring flexible schemas."
   ],
   "website": "https://github.com/mongodb/mongo",
-  "dependencies": [],
   "notes": [
     "Default port is 27017 for client connections",
     "Data stored in /data/db directory in the container",

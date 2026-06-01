@@ -16,7 +16,6 @@
     "Use OpnForm to manage your productivity workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/JhumanJ/opnform",
-  "dependencies": [],
   "ports": [
     {
       "port": 80,

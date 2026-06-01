@@ -24,7 +24,6 @@
     "Make encrypted WebRTC voice and video calls directly from the browser without installing any native app."
   ],
   "website": "https://gupt.app",
-  "dependencies": [],
   "notes": [
     "No backend required — the app connects directly to public or private Nostr relays."
   ]

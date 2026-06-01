@@ -16,7 +16,6 @@
     "Use Kokoro to manage your ai workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/remsky/Kokoro-FastAPI",
-  "dependencies": [],
   "ports": [
     {
       "port": 8880,

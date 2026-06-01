@@ -26,7 +26,6 @@
     "Integrate with Sonarr/Radarr for automated media downloading."
   ],
   "website": "https://transmissionbt.com/",
-  "dependencies": [],
   "notes": [
     "Web interface runs on port 9091 by default",
     "Peer port is 51413 - needs to be accessible for optimal downloads",

@@ -23,7 +23,6 @@
     "Share media with family members through user accounts with parental controls and access restrictions."
   ],
   "website": "https://jellyfin.org/",
-  "dependencies": [],
   "notes": [
     "Hardware transcoding requires appropriate GPU drivers (Intel Quick Sync, NVIDIA, or VA-API)",
     "Media folders must be mounted with read access for the container",

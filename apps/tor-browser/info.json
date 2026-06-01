@@ -26,7 +26,6 @@
     "Use as a privacy-focused browsing solution on headless servers."
   ],
   "website": "https://github.com/domistyle/docker-tor-browser",
-  "dependencies": [],
   "notes": [
     "Accessed via VNC in browser - no local installation needed",
     "Slow due to Tor network routing - not for streaming",

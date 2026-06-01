@@ -27,7 +27,6 @@
     "Manage Docker images - pull, build, tag, and push to registries."
   ],
   "website": "https://docs.portainer.io",
-  "dependencies": [],
   "notes": [
     "Requires access to Docker socket (/var/run/docker.sock)",
     "First access requires setting up an admin user",

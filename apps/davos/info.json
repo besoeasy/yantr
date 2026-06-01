@@ -21,7 +21,6 @@
     "Schedule downloads for off-peak hours."
   ],
   "website": "https://github.com/linuxserver/docker-davos",
-  "dependencies": [],
   "notes": [
     "Supports FTP and SFTP",
     "Download queue management",

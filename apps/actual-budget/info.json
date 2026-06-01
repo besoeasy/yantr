@@ -23,7 +23,6 @@
     "Use end-to-end encryption to keep your financial data private even when using the sync feature."
   ],
   "website": "https://actualbudget.org",
-  "dependencies": [],
   "notes": [
     "Requires a sync server to share data between multiple devices",
     "Bank sync is optional and requires goCardless or SimpleFIN accounts",

@@ -23,7 +23,6 @@
     "Avoid using public RPC nodes that could deanonymize you."
   ],
   "website": "https://github.com/sethforprivacy/simple-monerod",
-  "dependencies": [],
   "notes": [
     "Pruned mode uses less disk space (~50GB vs 100GB+)",
     "Restricted RPC prevents unauthorized spending",

@@ -21,7 +21,6 @@
     "Set up zero-trust access - require login before reaching your services."
   ],
   "website": "https://github.com/cloudflare/cloudflared",
-  "dependencies": [],
   "notes": [
     "Requires a Cloudflare account and tunnel token",
     "No ports need to be opened on your firewall",

@@ -25,7 +25,6 @@
     "Air-gapped transaction signing."
   ],
   "website": "https://specter.solutions/desktop",
-  "dependencies": [],
   "notes": [
     "Requires Bitcoin node connection",
     "Hardware wallet support",

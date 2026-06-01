@@ -23,7 +23,6 @@
     "Stream live content from Zap.Stream directly within the client interface."
   ],
   "website": "https://github.com/hzrd149/nostrudel",
-  "dependencies": [],
   "notes": [
     "Requires a CORS proxy service for full functionality",
     "Supports NIP-49 encrypted private key storage with password protection",

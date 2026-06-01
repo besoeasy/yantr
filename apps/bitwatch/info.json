@@ -16,7 +16,6 @@
     "Use Bitwatch to manage your tools workflows privately, keeping all data under your control on local infrastructure."
   ],
   "website": "https://github.com/zapomatic/bitwatch",
-  "dependencies": [],
   "ports": [
     {
       "port": 3117,

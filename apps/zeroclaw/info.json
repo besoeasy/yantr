@@ -25,7 +25,6 @@
     "Private AI assistant gateway."
   ],
   "website": "https://github.com/zeroclaw-labs/zeroclaw",
-  "dependencies": [],
   "notes": [
     "Multiple LLM provider support",
     "Tool calling capability",

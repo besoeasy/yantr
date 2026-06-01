@@ -19,7 +19,6 @@
     "Keep yourself and players informed with public status pages, live player tracking, resource monitoring, and event history."
   ],
   "website": "https://diamonddigital.dev/projects/craftbox",
-  "dependencies": [],
   "ports": [
     {
       "port": 6464,

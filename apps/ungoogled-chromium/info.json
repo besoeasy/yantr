@@ -7,6 +7,5 @@
   "description": "Ungoogled Chromium is a community fork of the Chromium web browser that removes all connections to Google services. This is a container of Ungoogled Chromium built by linuxserver.io that allows running a sandboxed instance of it in another browser.",
   "usecases": ["Visit websites you aren't sure about in a sandbox", "Use the same session on multiple devices", "Sign into alternate accounts without altering your main browser"],
   "website": "https://docs.linuxserver.io/images/docker-ungoogled-chromium",
-  "dependencies": [],
   "notes": ["Exposing this container to the Internet is not recommended.", "Using the `jpeg` encoder setting in the Selkies sidebar under Video Options is recommended for smoother video."]
 }

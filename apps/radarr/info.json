@@ -27,7 +27,6 @@
     "Get notified when movies are available in your wanted quality profile."
   ],
   "website": "https://github.com/linuxserver/docker-radarr",
-  "dependencies": [],
   "notes": [
     "Requires a download client (qBittorrent, Transmission, or Usenet)",
     "Integrates with Plex/Emby/Jellyfin for library refresh after download",

@@ -30,7 +30,6 @@
     "Track what you've watched."
   ],
   "website": "https://github.com/Stremio/stremio-web",
-  "dependencies": [],
   "notes": [
     "Requires addon configuration",
     "HTTPS available on port 12470",

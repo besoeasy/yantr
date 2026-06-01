@@ -22,7 +22,6 @@
     "Add observability, caching, and failover to self-hosted AI workloads."
   ],
   "website": "https://docs.getbifrost.ai/",
-  "dependencies": [],
   "notes": [
     "Provider API keys still need to be configured after deployment.",
     "App data is stored in a Docker volume mounted at /app/data.",

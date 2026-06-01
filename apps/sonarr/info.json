@@ -27,7 +27,6 @@
     "Use the calendar view to see when your shows are airing and plan your watching."
   ],
   "website": "https://github.com/linuxserver/docker-sonarr",
-  "dependencies": [],
   "notes": [
     "Requires a download client (Usenet or BitTorrent)",
     "Integrates with Plex/Emby/Jellyfin for library updates",

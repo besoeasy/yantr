@@ -21,7 +21,6 @@
     "Convert images to different formats."
   ],
   "website": "https://github.com/C4illin/ConvertX",
-  "dependencies": [],
   "notes": [
     "Multiple format support",
     "Local processing only",

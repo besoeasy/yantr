@@ -25,7 +25,6 @@
     "Enjoy gapless playback with modern UI."
   ],
   "website": "https://swingmusic.vercel.app/",
-  "dependencies": [],
   "notes": [
     "Mount music folder for library",
     "Reads metadata automatically",
