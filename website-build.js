@@ -57,7 +57,6 @@ function parseAppFolder(appId, appPath) {
       description: info.description || info.short_description || '',
       usecases: Array.isArray(info.usecases) ? info.usecases : [],
       website: info.website || null,
-      dependencies: Array.isArray(info.dependencies) ? info.dependencies : [],
       notes: Array.isArray(info.notes) ? info.notes : [],
       image,
       serviceName,
@@ -145,7 +144,6 @@ function getLogoUrl(app) {
 function toAppViewModel(app) {
   const id = app?.id || 'unknown-app';
   const name = app?.name || id;
-  const dependencies = Array.isArray(app?.dependencies) ? app.dependencies : [];
   const tags = Array.isArray(app?.tags) ? app.tags : [];
   const primaryTag = tags[0] || 'self-hosted';
   const summary = app?.short_description || app?.description || 'No description available.';
@@ -155,7 +153,6 @@ function toAppViewModel(app) {
     ...app,
     id,
     name,
-    dependencies,
     tags,
     notes: Array.isArray(app?.notes) ? app.notes : [],
     short_description: app?.short_description || '',
