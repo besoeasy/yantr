@@ -624,6 +624,7 @@
           width: auto;
           margin-left: -1rem;
           margin-right: -1rem;
+          translate: none;
           transform: none;
         }
         .orbit-chip {
@@ -1391,6 +1392,12 @@
         const container = document.getElementById("hero-stars");
         if (!container) return;
 
+        container.replaceChildren();
+
+        if (window.innerWidth < 640) {
+          return;
+        }
+
         try {
           const response = await fetch("./apps.json");
           const data = await response.json();
@@ -1403,19 +1410,12 @@
           const minDim = Math.min(window.innerWidth, window.innerHeight);
           const scale = Math.max(0.45, Math.min(1, minDim / 700));
 
-          const isCompactHero = window.innerWidth < 640;
-          const rings = isCompactHero
-            ? [
-                { r: Math.round(100 * scale), count: 5, dur: 34, dir: "CW" },
-                { r: Math.round(175 * scale), count: 7, dur: 54, dir: "CCW" },
-                { r: Math.round(245 * scale), count: 8, dur: 76, dir: "CW" },
-              ]
-            : [
-                { r: Math.round(145 * scale), count: 6,  dur: 38,  dir: "CW"  },
-                { r: Math.round(265 * scale), count: 10, dur: 62,  dir: "CCW" },
-                { r: Math.round(390 * scale), count: 13, dur: 88,  dir: "CW"  },
-                { r: Math.round(520 * scale), count: 13, dur: 115, dir: "CCW" },
-              ];
+          const rings = [
+            { r: Math.round(145 * scale), count: 6, dur: 38, dir: "CW" },
+            { r: Math.round(265 * scale), count: 10, dur: 62, dir: "CCW" },
+            { r: Math.round(390 * scale), count: 13, dur: 88, dir: "CW" },
+            { r: Math.round(520 * scale), count: 13, dur: 115, dir: "CCW" },
+          ];
 
           const totalNeeded = rings.reduce((s, ring) => s + ring.count, 0);
           const selectedApps = getRandomUniqueItems(appsWithLogo, totalNeeded);
@@ -1450,9 +1450,7 @@
               chip.style.setProperty("--fade-delay", fadeDelay + "s");
               chip.style.setProperty("--pulse-dur", pulseDur + "s");
               chip.style.setProperty("--pulse-delay", pulseDelay + "s");
-              chip.innerHTML = isCompactHero
-                ? `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}">`
-                : `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}"><span class="orbit-chip-label whitespace-nowrap">${app.name}</span>`;
+              chip.innerHTML = `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}"><span class="orbit-chip-label whitespace-nowrap">${app.name}</span>`;
 
               arm.appendChild(chip);
               container.appendChild(arm);
@@ -1562,6 +1560,15 @@
         loadContributors();
         loadRandomScreenshot();
         initHeroAnimation();
+
+        let heroResizeTimer;
+        window.addEventListener("resize", () => {
+          clearTimeout(heroResizeTimer);
+          heroResizeTimer = setTimeout(() => {
+            initHeroAnimation();
+          }, 120);
+        });
+
         initArchDiagram();
         loadAllApps();
       });
