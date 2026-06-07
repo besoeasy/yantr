@@ -1,14 +1,18 @@
 services:
   debian:
-    build: .
-    image: debian-ssh:latest
+    image: lscr.io/linuxserver/openssh-server:latest
     container_name: debian
     labels:
       yantr.app: "debian"
       yantr.service: "SSH Server"
     environment:
-      SSH_USER: ${SSH_USER}
-      SSH_PASSWORD: ${SSH_PASSWORD}
+      PUID: 1000
+      PGID: 1000
+      USER_NAME: ${SSH_USER}
+      USER_PASSWORD: ${SSH_PASSWORD}
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "true"
     ports:
-      - "22"
+      - "2222"
     restart: unless-stopped
+

@@ -8,31 +8,31 @@
     "server",
     "self-hosted",
     "utility",
-    "development"
+    "development",
+    "shell"
   ],
   "ports": [
-    { "port": 22, "protocol": "TCP", "label": "SSH" }
+    { "port": 2222, "protocol": "TCP", "label": "SSH" }
   ],
-  "short_description": "Debian Linux container accessible over SSH with custom credentials.",
-  "description": "A clean Debian Linux container with an SSH server. Set your username and password via environment variables to connect from any SSH client. Useful as a remote shell, development sandbox, or lightweight Linux environment accessible from anywhere on your network.",
+  "short_description": "Debian Linux container with SSH access via username and password.",
+  "description": "A clean Debian Linux container running an SSH server via the LinuxServer openssh-server image. Set your username and password using environment variables and connect from any SSH client. Ideal as a remote shell, development sandbox, or isolated Linux environment accessible over your network.",
   "usecases": [
-    "Remote shell access over SSH.",
-    "Lightweight Linux development sandbox.",
-    "Run scripts and tools in an isolated Debian environment."
+    "Remote shell access over SSH from any device on the network.",
+    "Lightweight Linux development sandbox for running scripts and tools.",
+    "Isolated Debian environment for testing and experimentation."
   ],
-  "website": "https://www.debian.org",
-  "customapp": true,
+  "website": "https://docs.linuxserver.io/images/docker-openssh-server/",
   "notes": [
-    "Set SSH_USER and SSH_PASSWORD env vars before deploying",
-    "Default credentials are admin / changeme — change before exposing to the network",
-    "Connect with: ssh SSH_USER@<host> -p <mapped-port>"
+    "Connect with: ssh <USER_NAME>@<host> -p <mapped-port>",
+    "SSH listens on port 2222 inside the container",
+    "Password authentication and sudo access are enabled by default"
   ],
   "env_generators": {
-    "SSH_USER": {
+    "USER_NAME": {
       "length": 8,
       "charset": "alpha"
     },
-    "SSH_PASSWORD": {
+    "USER_PASSWORD": {
       "length": 32,
       "charset": "alnum_symbols"
     }
