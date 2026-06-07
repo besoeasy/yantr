@@ -8,6 +8,8 @@ services:
       yantr.service: "Node API and Wallet"
     environment:
       nodeprivatekey: ${nodeprivatekey:-}
+      nodeaddress: ${nodeaddress:-}
+      nodemessage: ${nodemessage:-}
     ports:
       - "8080"
     volumes:
