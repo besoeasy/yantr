@@ -11,7 +11,7 @@ services:
       nodeaddress: ${nodeaddress:-}
       nodemessage: ${nodemessage:-}
     ports:
-      - "8080"
+      - "64552"
     volumes:
       - sikka-data:/home/sikka/data
 
