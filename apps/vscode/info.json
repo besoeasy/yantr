@@ -24,5 +24,12 @@
     "The default password is set to 'password' - change it immediately after first login for security.",
     "Data persistence is handled through a named Docker volume to preserve settings and installed extensions.",
     "Access the interface at https://your-domain:8443 or http://your-server-ip:8443 in your browser."
-  ]
+  ],
+  "env_generators": {
+    "PASSWORD": {
+      "length": 16,
+      "charset": "alnum_symbols",
+      "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{12,}$"
+    }
+  }
 }

@@ -3,7 +3,7 @@ services:
     image: lscr.io/linuxserver/code-server:latest
     container_name: vscode
     environment:
-      PASSWORD: "password"
+      PASSWORD: ${PASSWORD}
     ports:
       - "8443"
     volumes:
