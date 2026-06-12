@@ -1,9 +1,9 @@
 services:
-  linux-box-web:
+  shellbox:
     image: lscr.io/linuxserver/openssh-server:latest
-    container_name: linux-box-web
+    container_name: shellbox
     labels:
-      yantr.app: "linux-box-web"
+      yantr.app: "shellbox"
       yantr.service: "SSH Server"
     environment:
       USER_NAME: ${USER_NAME}
@@ -13,24 +13,24 @@ services:
     ports:
       - "2222"
     volumes:
-      - linuxbox-data:/config
+      - shellbox-data:/config
     restart: unless-stopped
 
   wetty:
     image: wettyoss/wetty:latest
-    container_name: linux-box-web-web
+    container_name: shellbox-web
     labels:
-      yantr.app: "linux-box-web"
+      yantr.app: "shellbox"
       yantr.service: "Web Terminal"
     environment:
-      SSHHOST: linux-box-web
+      SSHHOST: shellbox
       SSHPORT: 2222
     ports:
       - "3000"
     depends_on:
-      - linux-box-web
+      - shellbox
     restart: unless-stopped
 
 volumes:
-  linuxbox-data:
-    name: linuxbox-data
+  shellbox-data:
+    name: shellbox-data
