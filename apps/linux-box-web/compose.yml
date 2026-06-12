@@ -1,0 +1,36 @@
+services:
+  linux-box-web:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: linux-box-web
+    labels:
+      yantr.app: "linux-box-web"
+      yantr.service: "SSH Server"
+    environment:
+      USER_NAME: ${USER_NAME}
+      USER_PASSWORD: ${USER_PASSWORD}
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "true"
+    ports:
+      - "2222"
+    volumes:
+      - linuxbox-data:/config
+    restart: unless-stopped
+
+  wetty:
+    image: wettyoss/wetty:latest
+    container_name: linux-box-web-web
+    labels:
+      yantr.app: "linux-box-web"
+      yantr.service: "Web Terminal"
+    environment:
+      SSHHOST: linux-box-web
+      SSHPORT: 2222
+    ports:
+      - "3000"
+    depends_on:
+      - linux-box-web
+    restart: unless-stopped
+
+volumes:
+  linuxbox-data:
+    name: linuxbox-data

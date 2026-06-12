@@ -1,0 +1,41 @@
+{
+  "name": "Linux Box Web",
+  "logo": "QmRBnPQrx3BfAUDeCB7Y5Qcy5zp2a1XAFVuZ6Ek2RHro89",
+  "tags": [
+    "linux",
+    "ssh",
+    "terminal",
+    "server",
+    "self-hosted",
+    "utility",
+    "development",
+    "shell"
+  ],
+  "ports": [
+    { "port": 2222, "protocol": "SSH", "label": "SSH" },
+    { "port": 3000, "protocol": "HTTP", "label": "Web Terminal" }
+  ],
+  "short_description": "Linux container with SSH and web terminal access using username and password.",
+  "description": "A clean Linux container running an OpenSSH server (from linuxserver.io) with Wetty providing a web-based terminal. Username and password are set using environment variables. Connect from SSH clients or via the web terminal. Ideal as remote shell, development sandbox or isolated Linux environment.",
+  "usecases": [
+    "Remote shell access over SSH or web terminal from any device on the network.",
+    "Lightweight Linux development sandbox for running scripts and tools.",
+    "Isolated Linux environment for testing and experimentation."
+  ],
+  "website": "https://docs.linuxserver.io/images/docker-openssh-server/",
+  "notes": [
+    "Web terminal available via the HTTP port; use SSH on the TCP port for native clients.",
+    "Connect via SSH: ssh <USER_NAME>@<host> -p <mapped-port>",
+    "Password authentication and sudo access are enabled by default."
+  ],
+  "env_generators": {
+    "USER_NAME": {
+      "length": 8,
+      "charset": "alpha"
+    },
+    "USER_PASSWORD": {
+      "length": 12,
+      "charset": "alnum_symbols"
+    }
+  }
+}
