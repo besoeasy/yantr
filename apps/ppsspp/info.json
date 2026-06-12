@@ -1,0 +1,20 @@
+{
+  "name": "PPSSPP",
+  "tags": ["gaming", "emulator", "self-hosted", "webui", "docker", "tools"],
+  "ports": [
+    { "port": 3000, "protocol": "HTTP", "label": "Web UI" },
+    { "port": 3001, "protocol": "HTTP", "label": "API" }
+  ],
+  "short_description": "Self-hosted PSP emulator with web UI for remote gaming and game management.",
+  "description": "PPSSPP is a self-hosted PSP emulator powered by LinuxServer.io, providing a full emulation experience in the browser. Play your PSP game library from any device with save state support, controller configuration, and graphics scaling.",
+  "usecases": [
+    "Play PSP games remotely through a browser without needing a local emulator install.",
+    "Manage game ROMs, save states, and emulator configuration from any device.",
+    "Access your gaming library on-the-go with synchronized settings and progress."
+  ],
+  "website": "https://github.com/linuxserver/docker-ppsspp",
+  "notes": [
+    "Data persistence is handled through a named Docker volume to preserve game saves and settings.",
+    "You will need to provide your own PSP firmware files and game ROMs."
+  ]
+}

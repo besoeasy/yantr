@@ -1,0 +1,17 @@
+services:
+  ppsspp:
+    image: lscr.io/linuxserver/ppsspp:latest
+    container_name: ppsspp
+    volumes:
+      - ppsspp-data:/config
+    ports:
+      - "3000"
+      - "3001"
+    restart: unless-stopped
+    labels:
+      yantr.app: "ppsspp"
+      yantr.service: "PPSSPP"
+
+volumes:
+  ppsspp-data:
+    name: ppsspp-data
