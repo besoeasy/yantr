@@ -1,5 +1,5 @@
 {
-  "name": "Debian Linux",
+  "name": "linux-box",
   "logo": "QmRBnPQrx3BfAUDeCB7Y5Qcy5zp2a1XAFVuZ6Ek2RHro89",
   "tags": [
     "linux",
@@ -14,17 +14,16 @@
   "ports": [
     { "port": 2222, "protocol": "TCP", "label": "SSH" }
   ],
-  "short_description": "Debian Linux container with SSH access via username and password.",
-  "description": "A clean Debian Linux container running an SSH server via the LinuxServer openssh-server image. Set your username and password using environment variables and connect from any SSH client. Ideal as a remote shell, development sandbox, or isolated Linux environment accessible over your network.",
+  "short_description": "Linux container with SSH access via username and password.",
+  "description": "A clean Linux container running an SSH server via the LinuxServer openssh-server image. Set your username and password using environment variables and connect from any SSH client. Ideal as a remote shell, development sandbox, or isolated Linux environment accessible over your network.",
   "usecases": [
     "Remote shell access over SSH from any device on the network.",
     "Lightweight Linux development sandbox for running scripts and tools.",
-    "Isolated Debian environment for testing and experimentation."
+    "Isolated Linux environment for testing and experimentation."
   ],
   "website": "https://docs.linuxserver.io/images/docker-openssh-server/",
   "notes": [
     "Connect with: ssh <USER_NAME>@<host> -p <mapped-port>",
-    "SSH listens on port 2222 inside the container",
     "Password authentication and sudo access are enabled by default"
   ],
   "env_generators": {
@@ -33,7 +32,7 @@
       "charset": "alpha"
     },
     "USER_PASSWORD": {
-      "length": 32,
+      "length": 12,
       "charset": "alnum_symbols"
     }
   }

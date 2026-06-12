@@ -1,13 +1,11 @@
 services:
-  debian:
+  linux-box:
     image: lscr.io/linuxserver/openssh-server:latest
-    container_name: debian
+    container_name: linux-box
     labels:
-      yantr.app: "debian"
+      yantr.app: "linux-box"
       yantr.service: "SSH Server"
     environment:
-      PUID: 1000
-      PGID: 1000
       USER_NAME: ${SSH_USER}
       USER_PASSWORD: ${SSH_PASSWORD}
       PASSWORD_ACCESS: "true"
