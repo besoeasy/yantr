@@ -557,9 +557,14 @@
     "label": "社区",
     "badge": "社区",
     "title": "加入讨论。",
-    "description": "与其他 Yantr 用户交流，分享配置，获取社区帮助。",
+    "description": "与其他 Yantr 用户交流，申请新应用，分享配置，获取社区帮助。",
+    "cta": "加入 Discord",
     "footer": "社区讨论",
     "links": {
+      "discord": {
+        "label": "Discord",
+        "desc": "申请应用、获取帮助并与社区交流。"
+      },
       "telegram": {
         "label": "Telegram",
         "desc": "与社区实时交流。"

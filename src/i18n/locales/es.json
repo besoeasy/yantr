@@ -557,9 +557,14 @@
     "label": "Comunidades",
     "badge": "Comunidad",
     "title": "Únete a la conversación.",
-    "description": "Conéctate con otros usuarios de Yantr, comparte configuraciones y obtén ayuda de la comunidad.",
+    "description": "Conéctate con otros usuarios de Yantr, solicita nuevas apps, comparte configuraciones y obtén ayuda de la comunidad.",
+    "cta": "Unirse a Discord",
     "footer": "Discusión de la comunidad",
     "links": {
+      "discord": {
+        "label": "Discord",
+        "desc": "Solicita apps, obtén ayuda y chatea con la comunidad."
+      },
       "telegram": {
         "label": "Telegram",
         "desc": "Chatea con la comunidad en tiempo real."
