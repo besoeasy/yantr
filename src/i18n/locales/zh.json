@@ -41,6 +41,7 @@
       "resources": "Source",
       "buildData": "构建数据",
       "github": "GitHub",
+      "discord": "Discord",
       "reportIssue": "报告问题",
       "buildInfo": "构建信息",
       "telegram": "Telegram"
@@ -552,27 +553,5 @@
     "title": "资助 Yantr，让它永久免费。",
     "description": "通过 GitHub Sponsors 支持 Yantr — 保持项目免费，并直接影响其发展方向。",
     "cta": "在 GitHub 上赞助"
-  },
-  "communitiesCard": {
-    "label": "社区",
-    "badge": "社区",
-    "title": "加入讨论。",
-    "description": "与其他 Yantr 用户交流，申请新应用，分享配置，获取社区帮助。",
-    "cta": "加入 Discord",
-    "footer": "社区讨论",
-    "links": {
-      "discord": {
-        "label": "Discord",
-        "desc": "申请应用、获取帮助并与社区交流。"
-      },
-      "telegram": {
-        "label": "Telegram",
-        "desc": "与社区实时交流。"
-      },
-      "github": {
-        "label": "GitHub Discussions",
-        "desc": "在 GitHub 上提问并分享想法。"
-      }
-    }
   }
 }

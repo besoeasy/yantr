@@ -41,6 +41,7 @@
       "resources": "Source",
       "buildData": "Datos de compilación",
       "github": "GitHub",
+      "discord": "Discord",
       "reportIssue": "Reportar problema",
       "buildInfo": "Info de compilación",
       "telegram": "Telegram"
@@ -552,27 +553,5 @@
     "title": "Financia Yantr. Libre para siempre.",
     "description": "Apoya Yantr en GitHub Sponsors — mantén el proyecto gratuito e influye directamente en su dirección.",
     "cta": "Patrocinar en GitHub"
-  },
-  "communitiesCard": {
-    "label": "Comunidades",
-    "badge": "Comunidad",
-    "title": "Únete a la conversación.",
-    "description": "Conéctate con otros usuarios de Yantr, solicita nuevas apps, comparte configuraciones y obtén ayuda de la comunidad.",
-    "cta": "Unirse a Discord",
-    "footer": "Discusión de la comunidad",
-    "links": {
-      "discord": {
-        "label": "Discord",
-        "desc": "Solicita apps, obtén ayuda y chatea con la comunidad."
-      },
-      "telegram": {
-        "label": "Telegram",
-        "desc": "Chatea con la comunidad en tiempo real."
-      },
-      "github": {
-        "label": "GitHub Discussions",
-        "desc": "Haz preguntas y comparte ideas en GitHub."
-      }
-    }
   }
 }

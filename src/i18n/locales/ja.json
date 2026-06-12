@@ -41,6 +41,7 @@
       "resources": "Source",
       "buildData": "ビルドデータ",
       "github": "GitHub",
+      "discord": "Discord",
       "reportIssue": "問題を報告",
       "buildInfo": "ビルド情報",
       "telegram": "Telegram"
@@ -552,27 +553,5 @@
     "title": "Yantr を支援して、永遠に無料で。",
     "description": "GitHub Sponsors で Yantr を支援 — プロジェクトを無料に保ち、その方向性に直接影響を与えましょう。",
     "cta": "GitHub でスポンサーになる"
-  },
-  "communitiesCard": {
-    "label": "コミュニティ",
-    "badge": "コミュニティ",
-    "title": "会話に参加しましょう。",
-    "description": "他の Yantr ユーザーとつながり、新しいアプリをリクエストし、設定を共有し、コミュニティからサポートを受けましょう。",
-    "cta": "Discord に参加",
-    "footer": "コミュニティディスカッション",
-    "links": {
-      "discord": {
-        "label": "Discord",
-        "desc": "アプリをリクエストし、ヘルプを受け、コミュニティとチャットしましょう。"
-      },
-      "telegram": {
-        "label": "Telegram",
-        "desc": "コミュニティとリアルタイムでチャットしましょう。"
-      },
-      "github": {
-        "label": "GitHub Discussions",
-        "desc": "GitHub で質問したりアイデアを共有しましょう。"
-      }
-    }
   }
 }

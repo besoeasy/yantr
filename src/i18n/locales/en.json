@@ -41,6 +41,7 @@
       "resources": "Source",
       "buildData": "Build Data",
       "github": "GitHub",
+      "discord": "Discord",
       "reportIssue": "Report Issue",
       "buildInfo": "Build Info",
       "telegram": "Telegram"
@@ -602,28 +603,6 @@
     "title": "Fund Yantr. Keep it free forever.",
     "description": "Support Yantr on GitHub Sponsors — keeps the project free and gives you direct influence over its direction.",
     "cta": "Sponsor on GitHub"
-  },
-  "communitiesCard": {
-    "label": "Communities",
-    "badge": "Community",
-    "title": "Join the conversation.",
-    "description": "Connect with other Yantr users, request new apps, share setups, and get help from the community.",
-    "cta": "Join Discord",
-    "footer": "Community discussion",
-    "links": {
-      "discord": {
-        "label": "Discord",
-        "desc": "Request apps, get help, and chat with the community."
-      },
-      "telegram": {
-        "label": "Telegram",
-        "desc": "Chat with the community in real time."
-      },
-      "github": {
-        "label": "GitHub Discussions",
-        "desc": "Ask questions and share ideas on GitHub."
-      }
-    }
   },
   "authGate": {
     "badge": "Operator Access",
