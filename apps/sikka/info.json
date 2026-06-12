@@ -12,7 +12,7 @@
   ],
   "ports": [
     {
-      "port": 8080,
+      "port": 64552,
       "protocol": "HTTP",
       "label": "Node API and Wallet"
     }
