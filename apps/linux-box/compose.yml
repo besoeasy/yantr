@@ -12,5 +12,10 @@ services:
       SUDO_ACCESS: "true"
     ports:
       - "2222"
+    volumes:
+      - linuxbox-data:/config
     restart: unless-stopped
 
+volumes:
+  linuxbox-data:
+    name: linuxbox-data
