@@ -1,0 +1,127 @@
+# Yantr — Agent Instructions
+
+## Project Overview
+Self-hosted app store running as a Docker container alongside existing OS. Vue 3 frontend + Fastify API backend managing Docker Compose stacks via Docker socket.
+
+## Commands
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Start Vite dev server (proxies `/api` to `localhost:5252`) |
+| `npm run build` | Build production Vue app to `dist/` |
+| `npm run preview` | Preview production build |
+| `npm run docker` | Build & run Docker image with host network + Docker socket |
+| `npm run website` | Build static website to `website/` |
+| `node check.js` | Validate all apps in `apps/` (run after any app changes) |
+
+## Architecture
+
+**Frontend** (`src/`): Vue 3 + Vue Router + Pinia (implicit), Tailwind CSS v4
+- Entry: `src/main.js` → `App.vue`
+- Views: `src/views/` (Home, Apps, StackView, Volumes, Images, ContainerDetail, AppDetail, Logs)
+- Components: `src/components/`
+- Composables: `src/composables/` (useYantrAuth, useApiUrl, useApiResponse, usePortConflict, useNotification, useCurrentTime)
+
+**Backend** (`daemon/`): Fastify API server on port 5252
+- Entry: `daemon/index.js` (self-install bootstrap → Fastify → routes → cleanup/autoupdate/Caddy)
+- Routes: `daemon/routes/` (auth, system, containers, stacks, apps, images, volumes, proxy)
+- Key modules: `shared.js` (Docker socket, logging), `stack-compose.js` (compose ops), `auth.js` (daku token auth), `caddy.js` (embedded reverse proxy), `cleanup.js`, `autoupdate.js`, `dufs.js` (volume browser)
+
+**Apps Catalog** (`apps/`): 130+ apps, each with:
+- `compose.yml` — Docker Compose with `yantr.app` + `yantr.service` labels
+- `info.json` — metadata (name, logo CID, tags ≥6, ports[], short_description 50-100, description 200-300, usecases ≥2, website https, notes[], env_generators)
+
+## Critical Conventions
+
+### App Development
+- **Always run `node check.js` after editing `apps/`** — validates info.json/compose.yml format, port conflicts, required fields
+- **Hard rules** (from `apps/apps.md`):
+  - Never touch host filesystem — all persistent data uses Docker volumes
+  - Never use host bind mounts except `/var/run/docker.sock`, `/dev/net/tun`, local helper files
+  - Always use named Docker volumes for databases, config, uploads, media, logs, caches
+- `compose.yml` requirements:
+  - Valid YAML, deployable with `docker compose`
+  - Required labels: `yantr.app` (folder name), `yantr.service` (display label)
+  - Environment: key-value format preferred (not list)
+  - Credentials/secrets: no placeholder defaults (avoid `:-admin`, `:-password`); use `ADMIN_PASSWORD: ${ADMIN_PASSWORD}`
+  - Ports: container-only format (`"8096"` not `"8096:8096"`)
+  - Prefer `:latest` image tags
+  - Volumes: named Docker volumes only
+- `info.json` required fields:
+  - `name`, `logo` (IPFS CID — upload at `https://originless.besoeasy.com/upload`), `tags` (≥6 lowercase), `ports[]` (port/protocol/label), `short_description` (50-100 chars), `description` (200-300 chars), `usecases` (≥2), `website` (https://)
+  - Optional: `notes[]`, `customapp` (boolean — true for Yantr-built apps with Dockerfile; shows "Built by Yantr" badge, disables auto-update), `env_generators`
+  - `env_generators`: map env var → generation rules (`length`, `charset`: `alnum`/`hex`/`numeric`/`alpha`/`base64url`/`alnum_symbols`, optional `characters`, `regex`)
+  - Required credential/secret vars in compose.yml must have `env_generators` entry
+- Checklist: `yantr.app` = folder name, valid compose, no placeholder defaults for secrets, `env_generators` covers required secrets, `notes` explains manual setup, ports documented
+
+### Minimal App Example
+```yaml
+# compose.yml
+services:
+  my-app:
+    image: ghcr.io/example/my-app:latest
+    container_name: my-app
+    labels:
+      yantr.app: "my-app"
+      yantr.service: "Web UI"
+    environment:
+      TZ: ${TZ:-UTC}
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+    ports:
+      - "8080"
+    volumes:
+      - my_app_data:/data
+    restart: unless-stopped
+
+volumes:
+  my_app_data:
+```
+
+```json
+// info.json
+{
+  "name": "My App",
+  "logo": "IPFS CID",
+  "tags": ["productivity", "self-hosted", "webapp"],
+  "ports": [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }],
+  "short_description": "Self-hosted note-taking app.",
+  "description": "A self-hosted note-taking service.",
+  "usecases": ["Capture notes.", "Organize docs.", "Share with team."],
+  "website": "https://example.com/docs",
+  "notes": ["Change default admin password."]
+}
+```
+
+### Frontend (from `.github/copilot-instructions.md`)
+- CSS tokens: `--bg-body`, `--text-primary`, `--text-secondary`, `--surface`, `--surface-muted`
+- Flat surfaces only — no gradients, glass morphism, backdrop-filter
+- No borders/rings unless required; use `smooth-shadow`/`smooth-shadow-lg` for elevation
+- Mobile-first, no horizontal scroll, 44x44 tap targets
+- Lucide icons only; every interactive element needs hover state
+- Buttons: leading Lucide icon unless space constrained
+- Animations: subtle, use existing motion tokens
+- Compact card/list layouts over dense tables
+- Dashboard cards: minimal identity-card style (quiet header, one strong focal line, ≤2 detail rows, clear bottom action); no nested backgrounds, pills, borders, rings, or dividers; emphasis via spacing/typography/icons/hover motion
+
+### Backend
+- Auth: daku public key → stateless in-memory by default; set `dakupublickey` env to persist
+- API: all `/api/*` and `/browse/*` require bearer token after setup
+- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`
+- Docker socket: `/var/run/docker.sock` (mounted in container)
+
+## Docker Build
+- Multi-stage: Node LTS builder → Node Alpine final
+- Final image installs: `docker-cli`, `docker-cli-compose`, `wget`, `dufs`, `caddy`
+- Copies: `dist/`, `daemon/`, `apps/`
+- Healthcheck: `wget http://127.0.0.1:5252/api/health`
+- Runs: `node daemon/index.js`
+
+## Testing / Validation
+- No formal test suite — `node check.js` is the primary validation
+- Manual verification: `npm run docker` → open `http://localhost:5252`
+
+## Key Files to Reference
+- `check.js` — validation rules (run after app changes)
+- `daemon/shared.js` — Docker socket path, logging, shared constants
+- `daemon/auth.js` — daku token verification
