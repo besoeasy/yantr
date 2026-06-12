@@ -17,10 +17,6 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 ## Architecture
 
 **Frontend** (`src/`): Vue 3 + Vue Router + Pinia (implicit), Tailwind CSS v4
-- Entry: `src/main.js` → `App.vue`
-- Views: `src/views/` (Home, Apps, StackView, Volumes, Images, ContainerDetail, AppDetail, Logs)
-- Components: `src/components/`
-- Composables: `src/composables/` (useYantrAuth, useApiUrl, useApiResponse, usePortConflict, useNotification, useCurrentTime)
 
 **Backend** (`daemon/`): Fastify API server on port 5252
 - Entry: `daemon/index.js` (self-install bootstrap → Fastify → routes → cleanup/autoupdate/Caddy)
