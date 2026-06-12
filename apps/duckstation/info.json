@@ -1,0 +1,21 @@
+{
+  "name": "DuckStation",
+  "tags": ["gaming", "emulator", "self-hosted", "webui", "docker", "tools"],
+  "ports": [
+    { "port": 3000, "protocol": "HTTP", "label": "Web UI" },
+    { "port": 3001, "protocol": "HTTP", "label": "API" }
+  ],
+  "short_description": "Self-hosted PS1 emulator with web UI for remote gaming and game management.",
+  "description": "DuckStation is a self-hosted PlayStation 1 emulator powered by LinuxServer.io, providing a full emulation experience in the browser. Play your PS1 game library from any device with save state support, controller configuration, and graphics enhancements.",
+  "usecases": [
+    "Play PlayStation 1 games remotely through a browser without needing a local emulator install.",
+    "Manage game ROMs, save states, and emulator configuration from any device.",
+    "Access your gaming library on-the-go with synchronized settings and progress."
+  ],
+  "website": "https://github.com/linuxserver/docker-duckstation",
+  "notes": [
+    "Shared memory size is set to 1GB which is required for the emulator.",
+    "Data persistence is handled through a named Docker volume to preserve game saves and settings.",
+    "You will need to provide your own PS1 BIOS files and game ROMs."
+  ]
+}
