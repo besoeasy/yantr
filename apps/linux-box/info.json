@@ -35,5 +35,6 @@
       "length": 12,
       "charset": "alnum_symbols"
     }
-  }
+  },
+  "customapp": true
 }
