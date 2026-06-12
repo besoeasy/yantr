@@ -1,0 +1,28 @@
+{
+  "name": "VS Code",
+  "tags": [
+    "development",
+    "terminal",
+    "ide",
+    "self-hosted",
+    "homelab",
+    "docker"
+  ],
+  "ports": [
+    { "port": 8443, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Web-based VS Code IDE accessible via browser for remote development and server management.",
+  "description": "A self-hosted VS Code IDE powered by code-server, providing a full VS Code experience in the browser. Access your development environment from any device with features like syntax highlighting, debugging, Git integration, and extension support. Ideal for remote development, server management, and coding on the go.",
+  "usecases": [
+    "Develop and debug applications remotely using a full-featured IDE accessible through any modern web browser.",
+    "Manage servers and configure systems via a secure web-based terminal with root access to your Docker host.",
+    "Collaborate with team members by sharing access to your development environment without requiring local IDE installations.",
+    "Work consistently across devices with synchronized settings, extensions, and workspace configurations."
+  ],
+  "website": "https://github.com/coder/code-server",
+  "notes": [
+    "The default password is set to 'password' - change it immediately after first login for security.",
+    "Data persistence is handled through a named Docker volume to preserve settings and installed extensions.",
+    "Access the interface at https://your-domain:8443 or http://your-server-ip:8443 in your browser."
+  ]
+}

@@ -1,0 +1,18 @@
+services:
+  vscode:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: vscode
+    environment:
+      PASSWORD: "password"
+    ports:
+      - "8443"
+    volumes:
+      - vscode-data:/config
+    restart: unless-stopped
+    labels:
+      yantr.app: "vscode"
+      yantr.service: "VS Code"
+
+volumes:
+  vscode-data:
+    name: vscode-data
