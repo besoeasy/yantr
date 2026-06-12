@@ -1,0 +1,34 @@
+{
+  "name": "WUD",
+  "tags": [
+    "tools",
+    "docker",
+    "containers",
+    "updates",
+    "monitoring",
+    "utility",
+    "self-hosted",
+    "notifications"
+  ],
+  "ports": [
+    {
+      "port": 3000,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Docker container update watcher that monitors and notifies about available image updates.",
+  "description": "WUD (What's Up Docker) watches your running Docker containers and notifies you when updated images are available. It supports multiple notification methods including webhooks, email, Slack, Discord, Telegram, and more. It can also auto-update containers using watchtower-style triggers or custom scripts.",
+  "usecases": [
+    "Monitor all running containers and get notified when updated images are available.",
+    "Receive notifications via Discord, Slack, Telegram, email, or webhooks when updates are detected.",
+    "Track update history and see which containers need attention at a glance.",
+    "Integrate with watchtower or custom scripts to trigger automatic container updates."
+  ],
+  "website": "https://github.com/getwud/wud",
+  "notes": [
+    "Requires access to Docker socket (/var/run/docker.sock) to inspect running containers",
+    "Supports multiple notification channels: Discord, Slack, Telegram, email, Gotify, and more",
+    "Web UI provides a dashboard showing all containers and their update status"
+  ]
+}

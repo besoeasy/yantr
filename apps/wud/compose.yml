@@ -1,0 +1,12 @@
+services:
+  wud:
+    image: getwud/wud
+    container_name: wud
+    labels:
+      yantr.app: "wud"
+      yantr.service: "Docker Update Watcher"
+    ports:
+      - "3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
