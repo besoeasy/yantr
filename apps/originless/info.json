@@ -1,7 +1,7 @@
 {
   "name": "Originless",
   "logo": "QmWMCDAFxDjqfYRjjaqRx4UCt7ZF9TK6r5SpZEWWko9c63",
-  "tags": ["storage", "files", "privacy", "ipfs", "self-hosted"],
+  "tags": ["storage", "files", "privacy", "ipfs", "self-hosted", "hosting"],
   "short_description": "Self-hosted anonymous file storage backend built on IPFS.",
   "description": "Originless is a self-hosted storage backend built on IPFS. It lets you upload and share files anonymously with no accounts, no tracking, and no logs. Works as a drop-in backend for apps, screenshot tools, pastebin-style pastes, Nostr clients, and anything else that needs durable file hosting.",
   "usecases": [

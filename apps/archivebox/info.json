@@ -19,7 +19,7 @@
     }
   ],
   "short_description": "Self-hosted internet archiving solution for saving web pages, bookmarks, and content.",
-  "description": "ArchiveBox is a powerful self-hosted internet archiving solution that lets you save web pages, bookmarks, and online content for offline access. It supports multiple output formats including HTML, PDF, screenshots, WARC, and text. You can import bookmarks from browsers, Pocket, Pinboard, and RSS feeds, then browse your archive through a clean web UI.",
+  "description": "ArchiveBox is a self-hosted internet archiving solution to save web pages, bookmarks, and content offline. Supports HTML, PDF, screenshots, WARC, and text formats. Import from browsers, Pocket, Pinboard or RSS feeds then browse your archive through the web UI.",
   "usecases": [
     "Archive bookmarks and web pages to preserve content before it disappears or changes.",
     "Import from browsers, Pocket, Pinboard, RSS feeds, or the CLI for bulk archiving.",

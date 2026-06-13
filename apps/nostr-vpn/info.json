@@ -14,7 +14,7 @@
   "ports": [
     { "port": 38080, "protocol": "HTTP", "label": "Web UI" }
   ],
-  "short_description": "Decentralized VPN built on the Nostr protocol.",
+  "short_description": "Decentralized VPN daemon and web UI built on the Nostr protocol for P2P tunnels.",
   "description": "Nostr VPN is a decentralized VPN daemon and web UI built on the Nostr protocol. It creates peer-to-peer encrypted tunnels without central servers, using Nostr relays for peer discovery and key exchange. Manage connections and monitor status via the built-in web interface.",
   "usecases": [
     "Create encrypted peer-to-peer tunnels between devices without relying on centralized VPN servers.",

@@ -1,5 +1,6 @@
 {
   "name": "Bambu Studio",
+  "logo": "Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA",
   "tags": ["3d-printing", "slicer", "self-hosted", "webui", "docker", "tools"],
   "ports": [
     { "port": 3000, "protocol": "HTTP", "label": "Web UI" },

@@ -1,6 +1,6 @@
 {
   "name": "Seerr",
-  "logo": "",
+  "logo": "QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX",
   "tags": ["media", "requests", "jellyfin", "sonarr", "radarr", "self-hosted"],
   "ports": [{ "port": 5055, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Media request manager for Jellyfin, Emby, and Plex.",

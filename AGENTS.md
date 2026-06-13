@@ -76,6 +76,7 @@ volumes:
 
 ```json
 // info.json
+// logo feild is optional
 {
   "name": "My App",
   "logo": "IPFS CID",

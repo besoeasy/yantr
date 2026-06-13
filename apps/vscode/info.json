@@ -1,5 +1,6 @@
 {
   "name": "VS Code",
+  "logo": "QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX",
   "tags": [
     "development",
     "terminal",
@@ -12,7 +13,7 @@
     { "port": 8443, "protocol": "HTTP", "label": "Web UI" }
   ],
   "short_description": "Web-based VS Code IDE accessible via browser for remote development and server management.",
-  "description": "A self-hosted VS Code IDE powered by code-server, providing a full VS Code experience in the browser. Access your development environment from any device with features like syntax highlighting, debugging, Git integration, and extension support. Ideal for remote development, server management, and coding on the go.",
+  "description": "A self-hosted VS Code IDE powered by code-server. Full VS Code experience in the browser with syntax highlighting, debugging, Git, and extensions. Ideal for remote development and server management from any device.",
   "usecases": [
     "Develop and debug applications remotely using a full-featured IDE accessible through any modern web browser.",
     "Manage servers and configure systems via a secure web-based terminal (use sudo with the install password to become root inside the container).",
