@@ -1,6 +1,6 @@
 {
   "name": "Supabase",
-  "logo": "QmSupabaseExampleLogo1234567890abcdef12345678",
+  "logo": "QmSupabaseLogoCID1234567890abcdef1234567890abc",
   "tags": ["database", "backend", "developer", "api", "self-hosted", "auth", "realtime"],
   "ports": [{ "port": 54321, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Open-source Firebase alternative with Postgres, auth, storage, and realtime APIs.",

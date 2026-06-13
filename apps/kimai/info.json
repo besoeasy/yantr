@@ -1,6 +1,6 @@
 {
   "name": "Kimai",
-  "logo": "QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333",
+  "logo": "QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333AA",
   "tags": ["time-tracking", "productivity", "workflow", "self-hosted", "homelab", "dashboard", "team"],
   "ports": [{ "port": 8001, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Open-source multi-user time tracking, billing, and reporting platform for freelancers and teams.",

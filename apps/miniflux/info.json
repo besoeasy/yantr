@@ -1,6 +1,6 @@
 {
   "name": "Miniflux",
-  "logo": "QmMinifluxExampleLogo1234567890abcdef12345678",
+  "logo": "QmMinifluxLogoCID1234567890abcdef1234567890abc",
   "tags": ["rss", "news", "reading", "utility", "productivity", "self-hosted"],
   "ports": [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Minimalist self-hosted RSS reader with focus mode and keyboard navigation.",

@@ -1,6 +1,6 @@
 {
   "name": "Matrix Synapse",
-  "logo": "QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111", 
+  "logo": "QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111AA", 
   "tags": ["chat", "messaging", "matrix", "social", "privacy", "self-hosted", "homelab"],
   "ports": [{ "port": 8008, "protocol": "HTTP", "label": "Client API" }, { "port": 8448, "protocol": "HTTPS", "label": "Federation" }],
   "short_description": "Open-source Matrix homeserver for chat and real-time communication.",

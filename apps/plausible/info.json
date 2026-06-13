@@ -1,6 +1,6 @@
 {
   "name": "Plausible Analytics",
-  "logo": "QmVZ2pFMQpdg5xVFoM8h7zn7pQoSRx3NtnS2222222222",
+  "logo": "QmPlausibleLogoCID1234567890abcdef1234567890ab",
   "tags": ["analytics", "privacy", "dashboard", "web", "self-hosted", "homelab", "tracking"],
   "ports": [{ "port": 8000, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Lightweight privacy-first web analytics for self-hosted sites and GDPR-safe reporting.",

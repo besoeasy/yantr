@@ -1,6 +1,6 @@
 {
   "name": "Seafile",
-  "logo": "QmSeafileExampleLogo1234567890abcdef12345678",
+  "logo": "QmSeafileLogoCID1234567890abcdef1234567890abcd",
   "tags": ["storage", "sync", "files", "productivity", "self-hosted", "cloud"],
   "ports": [{ "port": 8002, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Fast, reliable file syncing and sharing platform for self-hosted team collaboration.",
