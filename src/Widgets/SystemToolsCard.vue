@@ -28,8 +28,7 @@ const tools = [
 
 <template>
   <div
-    class="flex h-full flex-col rounded-2xl p-6 smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg"
-    style="background: var(--surface); color: var(--text-primary)"
+    class="flex h-full flex-col rounded-2xl p-6 smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg bg-white dark:bg-[#0A0A0A] text-(--text-primary)"
   >
     <div class="flex items-start gap-3.5">
       <div

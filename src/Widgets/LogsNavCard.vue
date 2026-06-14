@@ -11,8 +11,7 @@ const { t } = useI18n();
   <button
     type="button"
     @click="router.push('/logs')"
-    class="group flex h-full w-full flex-col rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg"
-    style="background: var(--surface); color: var(--text-primary)"
+    class="group flex h-full w-full flex-col rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg bg-white dark:bg-[#0A0A0A] text-(--text-primary)"
   >
     <div class="flex h-full flex-col gap-6">
       <div class="flex items-start justify-between gap-4">

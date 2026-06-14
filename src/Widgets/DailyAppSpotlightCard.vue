@@ -122,8 +122,7 @@ const stateLabel = computed(() => {
     v-if="dailyApp"
     type="button"
     @click="handleSelect"
-    class="group flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg sm:p-6"
-    style="background: var(--surface); color: var(--text-primary)"
+    class="group flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg sm:p-6 bg-white dark:bg-[#0A0A0A] text-(--text-primary)"
   >
     <div class="flex h-full flex-col gap-5">
       <div class="flex items-center justify-between gap-3">
@@ -197,8 +196,7 @@ const stateLabel = computed(() => {
 
   <div
     v-else-if="loadFailed"
-    class="flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow sm:p-6"
-    style="background: var(--surface); color: var(--text-primary)"
+    class="flex h-full min-h-72 w-full flex-col rounded-xl p-5 text-left smooth-shadow sm:p-6 bg-white dark:bg-[#0A0A0A] text-(--text-primary)"
   >
     <div class="flex h-full flex-col gap-5">
       <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
