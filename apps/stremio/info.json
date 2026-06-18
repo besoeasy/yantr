@@ -12,12 +12,12 @@
   ],
   "ports": [
     {
-      "port": 11470,
+      "port": 80,
       "protocol": "HTTP",
       "label": "HTTP"
     },
     {
-      "port": 12470,
+      "port": 443,
       "protocol": "HTTPS",
       "label": "HTTPS"
     }
@@ -31,8 +31,8 @@
   ],
   "website": "https://github.com/Stremio/stremio-web",
   "notes": [
-    "Requires addon configuration",
-    "HTTPS available on port 12470",
-    "Use responsibly"
+    "Requires addon configuration.",
+    "HTTP and HTTPS are served by the bundled Caddy reverse proxy.",
+    "Use responsibly."
   ]
 }
