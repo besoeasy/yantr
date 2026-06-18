@@ -6,13 +6,8 @@ services:
     ports:
       - "11470"
       - "12470"
-    volumes:
-      - stremio-data:/root/.stremio-server
     environment:
       NO_CORS: "1"
     labels:
       yantr.app: "stremio"
       yantr.service: "Media Center"
-
-volumes:
-  stremio-data:
