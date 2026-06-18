@@ -3,8 +3,9 @@ services:
     image: stremio/server:latest
     container_name: stremio
     restart: unless-stopped
-    expose:
+    ports:
       - "11470"
+      - "12470"
     volumes:
       - stremio-data:/root/.stremio-server
     environment:
@@ -13,37 +14,5 @@ services:
       yantr.app: "stremio"
       yantr.service: "Media Center"
 
-  caddy:
-    image: caddy:latest
-    container_name: stremio-caddy
-    restart: unless-stopped
-    ports:
-      - "80"
-      - "443"
-    volumes:
-      - caddy-data:/data
-      - caddy-config:/config
-    configs:
-      - source: stremio-caddyfile
-        target: /etc/caddy/Caddyfile
-    depends_on:
-      - stremio
-    labels:
-      yantr.app: "stremio"
-      yantr.service: "Reverse Proxy"
-
-configs:
-  stremio-caddyfile:
-    content: |
-      :80 {
-        reverse_proxy stremio:11470
-      }
-
-      :443 {
-        reverse_proxy stremio:11470
-      }
-
 volumes:
   stremio-data:
-  caddy-data:
-  caddy-config:

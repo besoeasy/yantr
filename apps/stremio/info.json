@@ -12,14 +12,14 @@
   ],
   "ports": [
     {
-      "port": 80,
+      "port": 11470,
       "protocol": "HTTP",
-      "label": "HTTP"
+      "label": "Streaming Server"
     },
     {
-      "port": 443,
+      "port": 12470,
       "protocol": "HTTPS",
-      "label": "HTTPS"
+      "label": "Streaming Server (TLS)"
     }
   ],
   "short_description": "Media center for streaming with addons - movies, shows, and video content.",
@@ -31,8 +31,11 @@
   ],
   "website": "https://github.com/Stremio/stremio-web",
   "notes": [
-    "Requires addon configuration.",
-    "HTTP and HTTPS are served by the bundled Caddy reverse proxy.",
+    "This deploys the Stremio streaming server only (not the web UI). Use with the Stremio desktop app or web.stremio.com.",
+    "HTTP is on port 11470, HTTPS on 12470. These are separate services — do not reverse-proxy both to the HTTP port.",
+    "HTTPS needs a Stremio-issued certificate. In the Stremio app, open Settings → Streaming and set your LAN/public IP as the HTTPS endpoint so the server can fetch a cert from api.strem.io.",
+    "For web.stremio.com, paste the HTTPS streaming URL (https://your-host:12470-port) into Settings → Streaming → URL. Accept the browser certificate warning on first visit.",
+    "NO_CORS is enabled so web.stremio.com can reach your server across origins.",
     "Use responsibly."
   ]
 }
