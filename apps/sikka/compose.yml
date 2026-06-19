@@ -1,6 +1,6 @@
 services:
   sikka:
-    image: besoeasy/sikka:latest
+    image: ghcr.io/sikkalabs/sikka:latest
     container_name: sikka
     restart: unless-stopped
     labels:
