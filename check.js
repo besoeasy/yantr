@@ -144,7 +144,7 @@ async function checkInfoJson(appName, infoPath) {
 
 // ── compose.yml rules ──────────────────────────────────────────────────────────
 
-async function checkCompose(appName, composePath) {
+async function checkCompose(appName, composePath, info) {
   let raw;
   try {
     raw = await readFile(composePath, "utf-8");
@@ -186,6 +186,26 @@ async function checkCompose(appName, composePath) {
         `compose.yml service "${svcName}" uses list format for environment variables`,
         'Use key-value format: "VAR: ${VAR:-default}" not "- VAR=${VAR:-default}"',
       );
+    } else if (svc.environment && typeof svc.environment === "object") {
+      // Enforce env_generators for required variables
+      for (const [key, val] of Object.entries(svc.environment)) {
+        if (typeof val === "string") {
+          // Look for strictly required variables like ${ADMIN_PASSWORD} (no :- fallback)
+          const reqMatch = val.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/);
+          if (reqMatch) {
+            const varName = reqMatch[1];
+            // Some common vars are system-provided or external tokens that users must provide manually
+            const systemVars = ["TZ", "PUID", "PGID", "TUNNEL_TOKEN", "TAILSCALE_AUTH_KEY", "TELEGRAM_BOT_TOKEN", "NOSTR_NSEC", "AUTHCODE"];
+            if (!systemVars.includes(varName) && !info?.env_generators?.[varName] && !info?.envGenerators?.[varName]) {
+              fail(
+                appName,
+                `compose.yml requires secret/variable "${varName}" without a default, but it's missing from info.json env_generators`,
+                `Add an env_generators entry for "${varName}" in info.json so Yantr can securely generate it.`
+              );
+            }
+          }
+        }
+      }
     }
 
     // Ports must use container-only format — no fixed host:container bindings
@@ -271,7 +291,7 @@ for (const appName of apps) {
   const composePath = path.join(appDir, "compose.yml");
 
   const info = await checkInfoJson(appName, infoPath);
-  const compose = await checkCompose(appName, composePath);
+  const compose = await checkCompose(appName, composePath, info);
 
   // Track published ports for conflict detection
   for (const port of extractPublishedPorts(compose)) {
