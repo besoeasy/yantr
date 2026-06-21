@@ -1,71 +1,47 @@
 <div align="center">
 
-<h1>⚡ Yantr</h1>
+# ⚡ Yantr
 
-<p><strong>Your self-hosted app store — runs alongside your existing OS, no hardware takeover required.</strong></p>
+**A self-hosted app store that runs alongside your OS — not instead of it.**
 
-<p>
-  <a href="https://github.com/besoeasy/yantr/pkgs/container/yantr"><img src="https://img.shields.io/badge/Docker-ghcr.io-0db7ed?style=flat-square&logo=docker&logoColor=white" alt="Docker"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-ISC-blue?style=flat-square" alt="License"></a>
-  <img src="https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white" alt="Vue 3">
-  <img src="https://img.shields.io/badge/Fastify-5-000000?style=flat-square&logo=fastify&logoColor=white" alt="Fastify">
-  <a href="https://yantr.org"><img src="https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square" alt="Website"></a>
-</p>
+[![Docker](https://img.shields.io/badge/Docker-ghcr.io-0db7ed?style=flat-square&logo=docker&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
+[![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](LICENSE)
+[![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
+[![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
 
-<p>
-  <a href="#-quick-start">Quick Start</a> ·
-  <a href="#-app-catalog">App Catalog</a> ·
-  <a href="#-features">Features</a> ·
-  <a href="https://yantr.org">Website</a> ·
-  <a href="https://github.com/besoeasy/yantr/issues">Report a Bug</a>
-</p>
+[Quick Start](#-quick-start) · [App Catalog](#-app-catalog) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
 
 </div>
 
 ---
 
-## Why Yantr Over Umbrel?
+## The Problem with Umbrel & Friends
 
-Umbrel and similar homelab platforms want to **be your operating system**. You have to dedicate a machine, hand over the environment, and work around their platform rules when you want something custom.
+Platforms like Umbrel want to **be your OS**. Dedicate a machine, surrender the environment, live by their rules.
 
-**Yantr takes a different approach.**
-
-Yantr is **an app, not an OS**. It runs as a lightweight container on the machine you already have: daily-driver laptop, Raspberry Pi, old PC, new workstation, home server, or anything else with Docker. Your host keeps running normally, your existing files and services stay in place, and Yantr manages apps alongside them instead of taking over the whole machine.
-
-| What you need | Yantr approach |
-|---|---|
-| Latest app versions | Pull current upstream images and update apps when you choose |
-| No OS takeover | Install Yantr as a container on your existing OS |
-| Custom configuration | Edit environment variables per deployment instead of accepting fixed presets |
-| Multiple instances | Deploy the same app more than once for testing, family, clients, or separate workspaces |
-| Update control | Self-update Yantr, check for app updates, and update apps on demand |
-| System isolation | Keep using your server, laptop, or old PC normally while apps run in Docker stacks |
-| Lightweight runtime | No dedicated appliance layer, no full platform OS, just a small app manager |
-| Runs almost anywhere | Works wherever you already have an OS and Docker: laptop, Raspberry Pi, old PC, new PC, or server |
-
-Install it in 30 seconds, deploy 130+ apps from the catalog, customize the environment when needed, and remove it just as cleanly when you're done. Your OS stays exactly as you left it.
+**Yantr is an app, not an OS.** It runs as a single container on the machine you already have — laptop, Raspberry Pi, old PC, home server. Your host stays untouched. Your files stay put. Yantr manages Docker stacks alongside everything else.
 
 ```
-┌─────────────────────────────────────────┐
-│           Your Operating System         │
-│                                         │
-│  ┌─────────────┐   ┌─────────────────┐  │
-│  │    Yantr    │   │  Your existing  │  │
-│  │  container  │   │   apps & files  │  │
-│  └──────┬──────┘   └─────────────────┘  │
-│         │ Docker API                    │
-│  ┌──────▼──────────────────────────┐    │
-│  │  Jellyfin · n8n · Nextcloud ...  │   │
-│  │     (isolated Docker stacks)     │   │
-│  └──────────────────────────────────┘   │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────┐
+│            Your Operating System         │
+│                                          │
+│  ┌──────────────┐   ┌─────────────────┐  │
+│  │    Yantr     │   │   Your existing │  │
+│  │  (container) │   │   apps & files  │  │
+│  └──────┬───────┘   └─────────────────┘  │
+│         │ Docker socket                  │
+│  ┌──────▼────────────────────────────┐   │
+│  │  Jellyfin · n8n · Nextcloud · …   │   │
+│  │      (isolated Docker stacks)     │   │
+│  └───────────────────────────────────┘   │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
 ## 🚀 Quick Start
 
-> **Requires:** Docker — [install guide](https://yantr.org/install.html)
+> **Requires Docker** — [install guide](https://yantr.org/install.html)
 
 ```bash
 docker run -d \
@@ -77,100 +53,73 @@ docker run -d \
   ghcr.io/besoeasy/yantr
 ```
 
-Open **http://localhost:5252** and create the local operator account on first visit.
+Open **http://localhost:5252** and create your operator account on first visit.
 
-> **macOS / Windows?** Host networking and the volumes path are Linux-only. See the [platform-specific install guide](https://yantr.org/install.html) for the correct command on your OS.
-
-Authentication is stateless by default: if you do not set a public key env var, Yantr keeps the configured operator key only in memory and clears it on restart or self-update. To pin one operator identity across restarts, pass a daku public key such as `-e dakupublickey=<66-char-hex-public-key>`.
+> **macOS / Windows?** Host networking is Linux-only. See the [platform install guide](https://yantr.org/install.html).
 
 ---
 
 ## 📦 App Catalog
 
-130+ curated apps, all ready to deploy in one click.
+130+ curated apps, one-click deploy.
 
 | Category | Apps |
 |---|---|
-| 🤖 AI & Agents | Open WebUI, Perplexica, Agent Zero, Hermes Agent, Kokoro |
-| 🎬 Media | Jellyfin, Emby, Airsonic, Fireshare, Metube, Stremio, Swingmusic |
-| 📥 Downloads | qBittorrent, Transmission, Deluge, Radarr, Sonarr, Jackett, Prowlarr |
-| 💰 Finance | Actual Budget, Maybe, Ghostfolio, Rotki, Cryptofolio, Monetr |
-| ☁️ Cloud & Files | Nextcloud, Seafile, Syncthing, MinIO, Droppy, Samba |
-| 🔐 Privacy & Security | Vaultwarden, AdGuard Home, Pi-hole, WireGuard, Tor Browser |
-| 🛠️ Dev Tools | Supabase, PostgreSQL, MariaDB, MongoDB, n8n, Dockge, Gitea Mirror |
-| 📡 Networking | Tailscale, Cloudflared, Glances, Smokeping, Snort, Librespeed |
-| 📝 Productivity | Memos, Jotty, Wiki.js, Linkwarden, Miniflux, FreshRSS |
-| 💬 Comms | Element (Matrix), Synapse, Nostr relay (strfry), Gotify |
-| ⛓️ Bitcoin | Bitcoin Knots, Monerod, Specter Desktop, Cashu.me |
-| 🐧 Linux Boxes | Debian + SSH, Alpine + SSH (disposable or long-lived) |
+| 🤖 AI & Agents | Open WebUI, Perplexica, Agent Zero, Kokoro |
+| 🎬 Media | Jellyfin, Emby, Stremio, Swingmusic, Metube |
+| 📥 Downloads | qBittorrent, Radarr, Sonarr, Jackett, Prowlarr |
+| ☁️ Cloud & Files | Nextcloud, Seafile, Syncthing, MinIO |
+| 🔐 Security | Vaultwarden, AdGuard Home, Pi-hole, WireGuard |
+| 🛠️ Dev Tools | Supabase, PostgreSQL, MongoDB, n8n, Gitea |
+| 📡 Networking | Tailscale, Cloudflare Tunnel, Glances |
+| 📝 Productivity | Memos, Wiki.js, Linkwarden, FreshRSS |
+| 💰 Finance | Actual Budget, Ghostfolio, Rotki |
+| ⛓️ Bitcoin | Bitcoin Knots, Monerod, Cashu.me |
 
-> Browse the full list in [apps/](apps/) · Contribute a new app via [apps/apps.md](apps/apps.md)
+> Browse all in [`apps/`](apps/) · Add your own via [`apps/apps.md`](apps/apps.md)
 
 ---
 
-## ✨ Features
+## ✨ What Makes It Different
 
-### Zero OS Footprint
-Yantr never touches your host filesystem. Every app lives in its own Docker stack with isolated volumes. Remove an app and nothing is left behind — no registry keys, no background services, no scattered config files.
+**Zero OS footprint** — Yantr never writes to your host. Every app is a Docker Compose stack with named volumes. Uninstall and nothing is left behind.
 
-### One-Click Deploys
-Pick an app from the catalog, click deploy. Yantr handles compose file wiring, port allocation, and volume setup automatically.
+**Full environment control** — Edit env vars per deployment. No fixed presets, no platform lock-in. Deploy the same app twice for testing, family, or clients.
 
-### No Dependency Hell
-AI models, media servers, and databases run side-by-side without version conflicts. Python, Node, CUDA — each app brings its own runtime inside its container.
+**No dependency hell** — Python, Node, CUDA, whatever — each app brings its own runtime inside its container. Nothing conflicts.
 
-### Full Lifecycle Control
+**Built-in networking** — Port conflict detection, Tailscale for private access, Cloudflare Tunnel for public exposure, Caddy reverse proxy with HTTPS.
 
-| Action | What happens |
-|---|---|
-| **Install** | Pulls images, starts the stack, registers ports |
-| **Update** | Pulls latest images, recreates containers |
-| **Remove** | Stops stack, removes containers, cleans volumes |
+**Volume browser** — Inspect and manage your app data directly from the browser.
 
-### Networking & Remote Access
-
-- **Port conflict detection** — Yantr tracks every allocated host port to prevent collisions
-- **Tailscale** — private operator access without port forwarding
-- **Cloudflare Tunnel** — publish services publicly without opening your router
-- **Caddy reverse proxy** — add auth and HTTPS in front of any internal app
-
-### Storage
-- Browse and manage volume data directly from the browser
-
-### REST API + CLI-Friendly
-
-Every operation — install, remove, logs, status — is available as a JSON endpoint. After first-run setup, the API requires a signed bearer token from the configured operator identity.
+**REST API** — Every action (install, update, remove, logs) is a JSON endpoint. Scriptable and CLI-friendly.
 
 ---
 
 ## 🏗️ How It Works
 
-Yantr is a single Docker container that:
+One container. No database. No external dependencies.
 
-1. **Serves a Vue 3 web UI** on port `5252`
-2. **Exposes a Fastify REST API** that manages Docker via the socket
-3. **Reads app templates** from its built-in catalog (Docker Compose + metadata)
-4. **Deploys isolated stacks** — each app is an independent Docker Compose project
-
-No databases, no external dependencies, no agents on the host.
+1. **Serves a Vue 3 UI** on port `5252`
+2. **Exposes a Fastify API** that talks to Docker via socket
+3. **Reads compose templates** from its built-in catalog
+4. **Deploys isolated stacks** — each app is an independent Compose project
 
 ---
 
 ## 🤝 Contributing
 
-PRs are welcome. To add an app to the catalog, follow the format in [apps/apps.md](apps/apps.md). After editing any app in `apps/`, run:
+To add an app, follow the format in [`apps/apps.md`](apps/apps.md), then validate:
 
 ```bash
 node check.js
 ```
 
-Fix any format issues it reports before opening a PR.
+PRs welcome.
 
 ---
 
 <div align="center">
-  <sub>Built with Vue 3 · Fastify · Docker · Tailwind CSS</sub>
-  <br/>
-  <br/>
+  <sub>Vue 3 · Fastify · Docker · Tailwind CSS</sub><br/><br/>
   <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="apps/apps.md">App Format Guide</a>
 </div>
