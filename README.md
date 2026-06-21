@@ -65,7 +65,7 @@ Install it in 30 seconds, deploy 130+ apps from the catalog, customize the envir
 
 ## 🚀 Quick Start
 
-> **Requires:** Docker — [install guide](https://yantr.org/install-docker.html)
+> **Requires:** Docker — [install guide](https://yantr.org/install.html)
 
 ```bash
 docker run -d \
