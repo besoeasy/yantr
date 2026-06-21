@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Install Yantr — Linux, macOS, Windows & Raspberry Pi</title>
+    <meta name="description" content="Step-by-step guide to install Yantr on Linux, macOS, Windows, and Raspberry Pi. Learn what works on each platform and run your self-hosted app store in minutes." />
+    <meta name="keywords" content="install yantr, yantr linux, yantr macos, yantr windows, yantr raspberry pi, self-hosted docker, homelab app store" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
+    <link rel="canonical" href="https://yantr.org/install.html" />
+    <link rel="icon" type="image/png" href="/yantr.png" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://yantr.org/install.html" />
+    <meta property="og:title" content="Install Yantr — Linux, macOS, Windows & Raspberry Pi" />
+    <meta property="og:description" content="Step-by-step guide to install Yantr on Linux, macOS, Windows, and Raspberry Pi." />
+    <meta property="og:image" content="https://yantr.org/banner.png" />
+    <meta property="og:site_name" content="Yantr" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./tailwind.css" />
+
+    <style>
+      body { font-family: 'Inter', sans-serif; }
+
+      .tab-btn { transition: all 0.2s ease; }
+      .tab-btn.active {
+        background-color: #111827 !important;
+        color: #fff !important;
+        border-color: #111827 !important;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.12);
+      }
+      .platform-panel { display: none; }
+      .platform-panel.active { display: block; }
+
+      .copy-btn svg.check { display: none; }
+      .copy-btn.copied svg.copy { display: none; }
+      .copy-btn.copied svg.check { display: block; }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-up { animation: fadeInUp 0.45s ease-out both; }
+      .delay-100 { animation-delay: 80ms; }
+      .delay-200 { animation-delay: 160ms; }
+      .delay-300 { animation-delay: 240ms; }
+      .delay-400 { animation-delay: 320ms; }
+
+      .smooth-shadow { box-shadow: 0 4px 14px 0 rgba(0,0,0,0.04), 0 1px 4px 0 rgba(0,0,0,0.03); }
+      .smooth-shadow-lg { box-shadow: 0 8px 28px 0 rgba(0,0,0,0.08), 0 2px 6px 0 rgba(0,0,0,0.04); }
+
+      .badge-green  { background: #dcfce7; color: #166534; }
+      .badge-yellow { background: #fef9c3; color: #854d0e; }
+      .badge-red    { background: #fee2e2; color: #991b1b; }
+      .badge-blue   { background: #dbeafe; color: #1e40af; }
+
+      .code-block {
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+        font-size: 0.8125rem;
+        line-height: 1.7;
+        overflow-x: auto;
+        position: relative;
+      }
+      .code-block .kw  { color: #f472b6; }
+      .code-block .flag { color: #86efac; }
+      .code-block .val  { color: #fcd34d; }
+      .code-block .cmt  { color: #64748b; font-style: italic; }
+
+      .copy-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #1e293b;
+        border-radius: 0.5rem 0.5rem 0 0;
+        padding: 0.5rem 1rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #94a3b8;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .copy-bar + .code-block { border-radius: 0 0 0.75rem 0.75rem; }
+
+      .step-num {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2rem; height: 2rem;
+        border-radius: 50%;
+        background: #111827;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .compat-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid #f1f5f9; }
+      .compat-row:last-child { border-bottom: none; }
+    </style>
+  </head>
+
+  <body class="bg-white text-gray-900 antialiased selection:bg-gray-900 selection:text-white overflow-x-hidden">
+    <div class="fixed inset-0 pointer-events-none z-[-1] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white"></div>
+
+    <main class="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+      <div class="w-full max-w-4xl mx-auto">
+
+        <!-- Back -->
+        <a href="./index.html" class="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-10 animate-fade-in-up">
+          <span class="transition-transform group-hover:-translate-x-1">←</span>
+          <span>Back to Yantr</span>
+        </a>
+
+        <!-- Header -->
+        <header class="mb-14 animate-fade-in-up delay-100">
+          <p class="text-[11px] uppercase tracking-[0.22em] text-gray-400 font-bold mb-3">Get Started</p>
+          <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">Install Yantr</h1>
+          <p class="text-lg text-gray-500 leading-relaxed max-w-2xl">
+            Yantr runs as a single Docker container. Pick your platform below to see the exact steps, compatibility notes, and the one command you need to run.
+          </p>
+        </header>
+
+        <!-- Requires Docker callout -->
+        <div class="mb-10 flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 px-5 py-4 animate-fade-in-up delay-200">
+          <svg class="w-5 h-5 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20A10 10 0 0112 2z"/></svg>
+          <p class="text-sm text-blue-800 leading-relaxed">
+            <strong>Requires Docker.</strong> If you don't have Docker installed yet, <a href="./install-docker.html" class="font-semibold underline hover:text-blue-600">follow the Docker install guide</a> first — it covers Windows, macOS, Linux, and Raspberry Pi.
+          </p>
+        </div>
+
+        <!-- Platform tabs -->
+        <div class="flex flex-wrap gap-2 mb-8 animate-fade-in-up delay-300" id="platform-tabs" role="tablist">
+          <button class="tab-btn active px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="linux" role="tab" aria-selected="true" id="tab-linux">
+            🐧 Linux
+          </button>
+          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="macos" role="tab" aria-selected="false" id="tab-macos">
+            🍎 macOS
+          </button>
+          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="windows" role="tab" aria-selected="false" id="tab-windows">
+            🪟 Windows
+          </button>
+          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="raspi" role="tab" aria-selected="false" id="tab-raspi">
+            🍓 Raspberry Pi
+          </button>
+        </div>
+
+        <!-- ── LINUX ─────────────────────────────────────────────────── -->
+        <div class="platform-panel active animate-fade-in-up delay-400" id="panel-linux" role="tabpanel" aria-labelledby="tab-linux">
+
+          <!-- Compat summary -->
+          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Compatibility</p>
+            <div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Full support</span>
+                <span class="text-sm text-gray-700">Docker socket — <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> works natively</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Full support</span>
+                <span class="text-sm text-gray-700">Port binding <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p 5252:5252</code> works on all distros</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Recommended</span>
+                <span class="text-sm text-gray-700">Best overall platform — all features work</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Steps -->
+          <div class="space-y-6">
+            <div class="flex gap-4">
+              <div class="step-num">1</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
+                <div class="copy-bar">
+                  <span>bash / zsh</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this, 'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Copy
+                  </button>
+                </div>
+                <div class="code-block">
+                  <span class="kw">docker run</span> -d \<br>
+                  &nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>
+                  &nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>
+                  &nbsp;&nbsp;ghcr.io/besoeasy/yantr
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">2</div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
+                <p class="text-sm text-gray-500 mb-3">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline hover:no-underline">http://localhost:5252</a> and create your operator account on the first visit.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── macOS ─────────────────────────────────────────────────── -->
+        <div class="platform-panel" id="panel-macos" role="tabpanel" aria-labelledby="tab-macos">
+
+          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Compatibility</p>
+            <div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Works</span>
+                <span class="text-sm text-gray-700">Docker socket — Docker Desktop symlinks it to <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> automatically</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Works</span>
+                <span class="text-sm text-gray-700">Port binding <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p 5252:5252</code> works correctly</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-red inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✗ Not supported</span>
+                <span class="text-sm text-gray-700"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">--network host</code> — Docker on macOS runs inside a Linux VM, so host networking is unavailable. Use <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p</code> instead.</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-yellow inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">⚠ Colima / OrbStack</span>
+                <span class="text-sm text-gray-700">If using Colima or OrbStack, the socket path may differ. Pass <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-e DOCKER_SOCKET=/path/to/docker.sock</code> to override.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="flex gap-4">
+              <div class="step-num">1</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-1">Make sure Docker Desktop is running</p>
+                <p class="text-sm text-gray-500 mb-3">Docker Desktop must be open in the menu bar before running Yantr.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">2</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
+                <div class="copy-bar">
+                  <span>Terminal</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this, 'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Copy
+                  </button>
+                </div>
+                <div class="code-block">
+                  <span class="kw">docker run</span> -d \<br>
+                  &nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>
+                  &nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>
+                  &nbsp;&nbsp;ghcr.io/besoeasy/yantr
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">3</div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
+                <p class="text-sm text-gray-500">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline hover:no-underline">http://localhost:5252</a> in your browser.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colima note -->
+          <div class="mt-8 rounded-xl border border-amber-100 bg-amber-50 px-5 py-4">
+            <p class="text-sm font-semibold text-amber-800 mb-1">Using Colima or OrbStack?</p>
+            <p class="text-sm text-amber-700 leading-relaxed">Find your socket path (e.g. <code class="text-xs bg-amber-100 px-1 rounded">~/.colima/default/docker.sock</code>) and add <code class="text-xs bg-amber-100 px-1 rounded">-e DOCKER_SOCKET=&lt;your-socket-path&gt;</code> to the command, and mount that path instead of <code class="text-xs bg-amber-100 px-1 rounded">/var/run/docker.sock</code>.</p>
+          </div>
+        </div>
+
+        <!-- ── WINDOWS ────────────────────────────────────────────────── -->
+        <div class="platform-panel" id="panel-windows" role="tabpanel" aria-labelledby="tab-windows">
+
+          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Compatibility</p>
+            <div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Works</span>
+                <span class="text-sm text-gray-700">Docker Desktop for Windows (WSL2 backend) — the socket is accessible via <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> inside WSL2</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Works</span>
+                <span class="text-sm text-gray-700">Port binding <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p 5252:5252</code> works in PowerShell and WSL2</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-red inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✗ Not supported</span>
+                <span class="text-sm text-gray-700"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">--network host</code> — not available on Windows. Use <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p</code> instead.</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-blue inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">ℹ Recommended</span>
+                <span class="text-sm text-gray-700">Run commands from <strong>PowerShell</strong> or the <strong>WSL2 terminal</strong> (not Command Prompt)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- PowerShell tab -->
+          <div class="space-y-6">
+            <div class="flex gap-4">
+              <div class="step-num">1</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-1">Make sure Docker Desktop is running</p>
+                <p class="text-sm text-gray-500">Open Docker Desktop and wait for it to show "Engine running" in the taskbar.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">2</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-2">Run Yantr — PowerShell</p>
+                <div class="copy-bar">
+                  <span>PowerShell</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this, 'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Copy
+                  </button>
+                </div>
+                <div class="code-block">
+                  <span class="kw">docker run</span> -d `<br>
+                  &nbsp;&nbsp;<span class="flag">--name</span> yantr `<br>
+                  &nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> `<br>
+                  &nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> `<br>
+                  &nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped `<br>
+                  &nbsp;&nbsp;ghcr.io/besoeasy/yantr
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Note: PowerShell uses backtick <code class="bg-gray-100 px-1 rounded">`</code> for line continuation instead of <code class="bg-gray-100 px-1 rounded">\</code></p>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">3</div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
+                <p class="text-sm text-gray-500">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline hover:no-underline">http://localhost:5252</a> in your browser.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── RASPBERRY PI ──────────────────────────────────────────── -->
+        <div class="platform-panel" id="panel-raspi" role="tabpanel" aria-labelledby="tab-raspi">
+
+          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Compatibility</p>
+            <div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Full support</span>
+                <span class="text-sm text-gray-700">Raspberry Pi 4 &amp; 5 (arm64) — fully supported</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-yellow inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">⚠ Partial</span>
+                <span class="text-sm text-gray-700">Raspberry Pi 3 (armv7) — Yantr runs, but some app images may not have arm/v7 builds</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-green inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">✓ Works</span>
+                <span class="text-sm text-gray-700">Docker socket and port binding work the same as on Linux</span>
+              </div>
+              <div class="compat-row">
+                <span class="badge-blue inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full">ℹ Tip</span>
+                <span class="text-sm text-gray-700">Use Raspberry Pi OS 64-bit (Bookworm) for the best compatibility</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="flex gap-4">
+              <div class="step-num">1</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-1">Install Docker on your Pi</p>
+                <p class="text-sm text-gray-500 mb-3">Use the official convenience script — it works on Raspberry Pi OS 64-bit:</p>
+                <div class="copy-bar">
+                  <span>bash</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this, 'curl -fsSL https://get.docker.com | sh && sudo usermod -aG docker $USER && newgrp docker')">
+                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Copy
+                  </button>
+                </div>
+                <div class="code-block">
+                  curl -fsSL https://get.docker.com | sh<br>
+                  sudo usermod -aG docker $USER<br>
+                  newgrp docker
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">2</div>
+              <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
+                <div class="copy-bar">
+                  <span>bash</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this, 'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    Copy
+                  </button>
+                </div>
+                <div class="code-block">
+                  <span class="kw">docker run</span> -d \<br>
+                  &nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>
+                  &nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>
+                  &nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>
+                  &nbsp;&nbsp;ghcr.io/besoeasy/yantr
+                </div>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="step-num">3</div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
+                <p class="text-sm text-gray-500">Visit <code class="text-sm bg-gray-100 px-1.5 py-0.5 rounded">http://&lt;your-pi-ip&gt;:5252</code> from any device on your network, or <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline hover:no-underline">http://localhost:5252</a> on the Pi itself.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Shared: update & remove ──────────────────────────────── -->
+        <div class="mt-14 pt-10 border-t border-gray-100 animate-fade-in-up delay-400">
+          <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Common Commands</p>
+          <div class="grid sm:grid-cols-2 gap-4">
+
+            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+              <p class="font-semibold text-gray-900 mb-1">Update Yantr</p>
+              <p class="text-xs text-gray-500 mb-3">Pull the latest image and restart</p>
+              <div class="code-block text-[0.75rem]">
+                docker pull ghcr.io/besoeasy/yantr<br>
+                docker stop yantr && docker rm yantr<br>
+                <span class="cmt"># then re-run the install command above</span>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+              <p class="font-semibold text-gray-900 mb-1">Remove Yantr</p>
+              <p class="text-xs text-gray-500 mb-3">Stop and delete the container</p>
+              <div class="code-block text-[0.75rem]">
+                docker stop yantr<br>
+                docker rm yantr<br>
+                <span class="cmt"># Your deployed app data is kept in Docker volumes</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-14 flex flex-wrap items-center justify-between gap-4 text-sm text-gray-400 border-t border-gray-100 pt-8">
+          <a href="./index.html" class="hover:text-gray-700 transition-colors">← Back to Yantr</a>
+          <div class="flex items-center gap-4">
+            <a href="./install-docker.html" class="hover:text-gray-700 transition-colors">Install Docker guide</a>
+            <a href="https://github.com/besoeasy/yantr/issues" target="_blank" class="hover:text-gray-700 transition-colors">Report an issue</a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      // Tab switching
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          document.querySelectorAll('.platform-panel').forEach(p => p.classList.remove('active'));
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          document.getElementById('panel-' + btn.dataset.target).classList.add('active');
+        });
+      });
+
+      // Copy helper
+      function copyCode(btn, text) {
+        navigator.clipboard.writeText(text).then(() => {
+          btn.classList.add('copied');
+          setTimeout(() => btn.classList.remove('copied'), 2000);
+        });
+      }
+    </script>
+  </body>
+</html>

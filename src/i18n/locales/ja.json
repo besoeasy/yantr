@@ -41,7 +41,6 @@
       "resources": "Source",
       "buildData": "ビルドデータ",
       "github": "GitHub",
-      "discord": "Discord",
       "reportIssue": "問題を報告",
       "buildInfo": "ビルド情報",
       "telegram": "Telegram"

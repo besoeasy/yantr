@@ -70,9 +70,8 @@ Install it in 30 seconds, deploy 130+ apps from the catalog, customize the envir
 ```bash
 docker run -d \
   --name yantr \
-  --network host \
+  -p 5252:5252 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /var/lib/docker/volumes:/var/lib/docker/volumes \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantr
 ```

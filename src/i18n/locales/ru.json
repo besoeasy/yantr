@@ -41,7 +41,6 @@
       "resources": "Source",
       "buildData": "Данные сборки",
       "github": "GitHub",
-      "discord": "Discord",
       "reportIssue": "Сообщить о проблеме",
       "buildInfo": "Информация о сборке",
       "telegram": "Telegram"
