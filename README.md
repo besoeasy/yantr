@@ -70,13 +70,16 @@ Install it in 30 seconds, deploy 130+ apps from the catalog, customize the envir
 ```bash
 docker run -d \
   --name yantr \
-  -p 5252:5252 \
+  --network host \
   -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /var/lib/docker/volumes:/var/lib/docker/volumes \
   --restart unless-stopped \
   ghcr.io/besoeasy/yantr
 ```
 
 Open **http://localhost:5252** and create the local operator account on first visit.
+
+> **macOS / Windows?** Host networking and the volumes path are Linux-only. See the [platform-specific install guide](https://yantr.org/install.html) for the correct command on your OS.
 
 Authentication is stateless by default: if you do not set a public key env var, Yantr keeps the configured operator key only in memory and clears it on restart or self-update. To pin one operator identity across restarts, pass a daku public key such as `-e dakupublickey=<66-char-hex-public-key>`.
 

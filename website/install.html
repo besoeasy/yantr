@@ -288,13 +288,13 @@
                 <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
                 <div class="copy-bar">
                   <span>bash / zsh</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr')">
                     <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                     Copy
                   </button>
                 </div>
-                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
+                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">--network</span> <span class="val">host</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/lib/docker/volumes:/var/lib/docker/volumes</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
               </div>
             </div>
             <div class="flex gap-4 mt-6">
@@ -528,13 +528,13 @@
                 <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
                 <div class="copy-bar">
                   <span>bash</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr')">
                     <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                     Copy
                   </button>
                 </div>
-                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
+                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">--network</span> <span class="val">host</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/lib/docker/volumes:/var/lib/docker/volumes</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
               </div>
             </div>
             <div class="flex gap-4 mt-6">
