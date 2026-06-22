@@ -58,23 +58,115 @@ async function countYantrWorkload() {
   return { stacks: projects.size, running };
 }
 
+function formatMachineLine(mid) {
+  if (!mid) return null;
+  return `**Machine ID** \`${mid}\``;
+}
+
+function formatTimestampLine() {
+  return `_${new Date().toISOString()}_`;
+}
+
+function formatPresenceBody(mid, fields) {
+  return [
+    `**Host** ${fields.os} · ${fields.arch} · ${fields.cores} cores · ${fields.ram_gb} GB RAM`,
+    `**Workload** ${fields.stacks} stacks · ${fields.running} running`,
+    `**Version** ${fields.v}`,
+    formatMachineLine(mid),
+    formatTimestampLine(),
+  ].filter(Boolean).join("\n");
+}
+
+function formatInstallBody(mid, fields) {
+  return [
+    `**App** \`${fields.app}\``,
+    formatMachineLine(mid),
+    formatTimestampLine(),
+  ].filter(Boolean).join("\n");
+}
+
+function formatUpdateBody(mid, fields) {
+  return [
+    `**App** \`${fields.app}\``,
+    formatMachineLine(mid),
+    formatTimestampLine(),
+  ].filter(Boolean).join("\n");
+}
+
+function formatSelfUpdateBody(mid, fields) {
+  return [
+    `**Containers updated** ${fields.updated}`,
+    `**Version** ${fields.v}`,
+    formatMachineLine(mid),
+    formatTimestampLine(),
+  ].filter(Boolean).join("\n");
+}
+
+function formatGenericBody(mid, fields) {
+  const lines = Object.entries(fields)
+    .filter(([, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `- **${key}** ${value}`);
+
+  if (mid) lines.push(`- **Machine ID** \`${mid}\``);
+  lines.push(`- ${formatTimestampLine()}`);
+
+  return lines.join("\n");
+}
+
+const EVENT_FORMATTERS = {
+  presence: {
+    title: (fields) => `Presence · ${fields.country || "??"}`,
+    body: formatPresenceBody,
+    priority: "2",
+  },
+  install: {
+    title: (fields) => `Installed · ${fields.app}`,
+    body: formatInstallBody,
+    priority: "3",
+  },
+  update: {
+    title: (fields) => `Updated · ${fields.app}`,
+    body: formatUpdateBody,
+    priority: "3",
+  },
+  selfupdate: {
+    title: (fields) => `Self-update · v${fields.v}`,
+    body: formatSelfUpdateBody,
+    priority: "3",
+  },
+};
+
+function buildTelemetryMessage(event, mid, fields) {
+  const formatter = EVENT_FORMATTERS[event];
+
+  if (formatter) {
+    return {
+      title: formatter.title(fields),
+      body: formatter.body(mid, fields),
+      priority: formatter.priority,
+    };
+  }
+
+  return {
+    title: `Yantr · ${event}`,
+    body: formatGenericBody(mid, fields),
+    priority: "3",
+  };
+}
+
 export function ping(event, fields = {}) {
   if (!isEnabled()) return;
 
   void (async () => {
     const mid = await getMachineIdForTelemetry();
-    const payload = mid ? { mid, ...fields } : fields;
-
-    const parts = Object.entries(payload)
-      .filter(([, value]) => value !== null && value !== undefined && value !== "")
-      .map(([key, value]) => `${key}=${value}`);
-    const body = [event, ...parts].join(" ");
+    const { title, body, priority } = buildTelemetryMessage(event, mid, fields);
 
     fetch(TELEMETRY_TOPIC, {
       method: "POST",
       headers: {
-        Title: event,
-        Tags: event,
+        Title: title,
+        Priority: priority,
+        Markdown: "yes",
       },
       body,
     }).catch(() => {});
