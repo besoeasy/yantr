@@ -15,6 +15,7 @@ import {
 import { spawnProcess, NotFoundError, BadRequestError } from "../utils.js";
 import { resolveComposeCommand } from "../compose.js";
 import { buildProjectComposeContent, getComposeProcessEnv, writeProjectCompose, writeProjectEnv } from "../stack-compose.js";
+import { trackInstall } from "../telemetry.js";
 
 const deploySchema = {
   body: {
@@ -135,6 +136,7 @@ export default async function appsRoutes(fastify) {
       );
       if (exitCode !== 0) throw new Error(`docker compose failed with exit code ${exitCode}: ${stderr}`);
 
+      trackInstall(appId);
       return reply.send({ success: true, message: `App '${appId}' deployed successfully`, appId, output: stdout, warnings: stderr || null, temporary: !!expiresIn });
     } catch (error) {
       const isArchError = error.message?.includes("no matching manifest") || error.message?.includes("platform") || error.message?.includes("architecture");

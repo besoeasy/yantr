@@ -32,6 +32,7 @@ import imagesRoutes from "./routes/images.js";
 import volumesRoutes from "./routes/volumes.js";
 import proxyRoutes from "./routes/proxy.js";
 import { startCaddy, stopCaddy } from "./caddy.js";
+import { startPresenceScheduler } from "./telemetry.js";
 import { getBrowserPort } from "./dufs.js";
 import http from "node:http";
 
@@ -179,6 +180,8 @@ try {
   startCaddy().catch((err) => {
     log("warn", `⚠️  [CADDY] ${err.message}`);
   });
+
+  startPresenceScheduler();
 } catch (err) {
   console.error("Failed to start server:", err);
   process.exit(1);

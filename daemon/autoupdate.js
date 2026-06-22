@@ -13,10 +13,11 @@
 
 import { spawnProcess } from "./utils.js";
 import { socketPath } from "./shared.js";
+import { trackSelfUpdate, trackUpdatesForContainers } from "./telemetry.js";
 
 let log = () => {};
 
-async function runWatchtower(containerArgs, label) {
+async function runWatchtower(containerArgs, label, trackContainers = []) {
   try {
     const { exitCode, stdout, stderr } = await spawnProcess(
       "docker",
@@ -42,6 +43,11 @@ async function runWatchtower(containerArgs, label) {
       const updatedMatches = allOutput.match(/msg="Updated /g);
       const updatedCount = updatedMatches ? updatedMatches.length : 0;
       log("info", `🔄 [${label}] Completed — ${updatedCount} container(s) updated`);
+      if (label === "SELFUPDATE") {
+        trackSelfUpdate(updatedCount);
+      } else if (updatedCount > 0) {
+        trackUpdatesForContainers(trackContainers);
+      }
       return { exitCode, stdout, stderr, updatedCount };
     } else {
       log("warn", `🔄 [${label}] Finished with exit code ${exitCode}: ${stderr.trim()}`);
@@ -57,7 +63,7 @@ async function runWatchtower(containerArgs, label) {
 export async function runUpdate(containerNames = []) {
   if (!containerNames.length) return { error: "No container names provided" };
   log("info", `🔄 [UPDATE] Updating containers: ${containerNames.join(", ")}`);
-  return runWatchtower(containerNames, "UPDATE");
+  return runWatchtower(containerNames, "UPDATE", containerNames);
 }
 
 // Update yantr itself by container name
