@@ -1,0 +1,38 @@
+{
+  "name": "Gitea",
+  "tags": [
+    "git",
+    "devops",
+    "version-control",
+    "code-hosting",
+    "self-hosted",
+    "productivity"
+  ],
+  "ports": [
+    {
+      "port": 3000,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    },
+    {
+      "port": 2222,
+      "protocol": "TCP",
+      "label": "SSH"
+    }
+  ],
+  "short_description": "Lightweight self-hosted Git service and code platform.",
+  "description": "Gitea is a painless self-hosted all-in-one software development service. It includes Git hosting, code review, team collaboration, package registry, CI/CD with Gitea Actions, and a built-in wiki — all in a lightweight, fast Go binary.",
+  "usecases": [
+    "Host private Git repositories for personal or team projects.",
+    "Run CI/CD pipelines with built-in Gitea Actions.",
+    "Manage code reviews, issues, and project wikis in one place."
+  ],
+  "website": "https://gitea.io",
+  "env_generators": {
+    "POSTGRES_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    }
+  },
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

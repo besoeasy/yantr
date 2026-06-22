@@ -1,0 +1,22 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    labels:
+      yantr.app: "navidrome"
+      yantr.service: "Web UI"
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ""
+    ports:
+      - "4533"
+    volumes:
+      - navidrome_data:/data
+      - navidrome_music:/music
+    restart: unless-stopped
+
+volumes:
+  navidrome_data:
+  navidrome_music:

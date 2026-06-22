@@ -1,0 +1,18 @@
+services:
+  app:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    labels:
+      yantr.app: "zigbee2mqtt"
+      yantr.service: "Web UI"
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8080"
+    volumes:
+      - zigbee2mqtt_data:/app/data
+    privileged: true
+    restart: unless-stopped
+
+volumes:
+  zigbee2mqtt_data:

@@ -1,0 +1,33 @@
+services:
+  server:
+    image: awinterstein/habitica-server:latest
+    container_name: habitica-server
+    labels:
+      yantr.app: habitica
+      yantr.service: Web UI
+    environment:
+      TZ: ${TZ:-UTC}
+      NODE_DB_URI: mongodb://habitica-mongo:27017/habitica
+      BASE_URL: http://localhost:3000
+    command: "sh -c \"perl -0pi -e 's/upgradeInsecureRequests: IS_PROD \\? \\[\\] :
+      null,?/upgradeInsecureRequests: null/g'
+      /var/lib/habitica/website/server/middlewares/index.js
+      /var/lib/habitica/website/transpiled-babel/middlewares/index.js &&
+      printenv | grep -v 'no_proxy' >> /etc/environment && /etc/init.d/cron
+      start && node /var/lib/habitica/website/transpiled-babel/index.js\""
+    ports:
+      - "3000"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+  mongo:
+    image: mongo:latest
+    container_name: habitica-mongo
+    volumes:
+      - habitica_mongo:/data/db
+    restart: unless-stopped
+    labels:
+      yantr.app: habitica
+      yantr.service: mongo
+volumes:
+  habitica_mongo: null

@@ -1,0 +1,76 @@
+services:
+  broker:
+    image: redis:7
+    container_name: paperless-broker
+    restart: unless-stopped
+    volumes:
+      - paperless_redis:/data
+    labels:
+      yantr.app: paperless
+      yantr.service: broker
+  db:
+    image: postgres:16
+    container_name: paperless-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - paperless_pgdata:/var/lib/postgresql/data
+    labels:
+      yantr.app: paperless
+      yantr.service: db
+  gotenberg:
+    image: gotenberg/gotenberg:8
+    container_name: paperless-gotenberg
+    restart: unless-stopped
+    command:
+      - gotenberg
+      - --chromium-disable-javascript=true
+      - --chromium-allow-list=file:///tmp/.*
+    labels:
+      yantr.app: paperless
+      yantr.service: gotenberg
+  tika:
+    image: ghcr.io/paperless-ngx/tika:latest
+    container_name: paperless-tika
+    restart: unless-stopped
+    labels:
+      yantr.app: paperless
+      yantr.service: tika
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless-webserver
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    labels:
+      yantr.app: paperless
+      yantr.service: Web UI
+    ports:
+      - "8000"
+    environment:
+      TZ: ${TZ:-UTC}
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
+      PAPERLESS_SECRET_KEY: ${SECRET_KEY}
+      PAPERLESS_TIME_ZONE: ${TZ:-UTC}
+    volumes:
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+      - paperless_export:/usr/src/paperless/export
+      - paperless_consume:/usr/src/paperless/consume
+volumes:
+  paperless_redis: null
+  paperless_pgdata: null
+  paperless_data: null
+  paperless_media: null
+  paperless_export: null
+  paperless_consume: null

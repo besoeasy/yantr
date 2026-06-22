@@ -1,0 +1,41 @@
+{
+  "name": "Frigate",
+  "tags": [
+    "nvr",
+    "cameras",
+    "security",
+    "ai",
+    "object-detection",
+    "self-hosted"
+  ],
+  "ports": [
+    {
+      "port": 8971,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    },
+    {
+      "port": 5000,
+      "protocol": "HTTP",
+      "label": "API"
+    },
+    {
+      "port": 8554,
+      "protocol": "TCP",
+      "label": "RTSP Restream"
+    }
+  ],
+  "short_description": "AI-powered NVR with real-time object detection for IP cameras.",
+  "description": "Frigate is a self-hosted NVR built around real-time AI object detection. It uses your CPU or GPU to detect people, vehicles, and animals in camera streams, storing recordings and sending alerts only when relevant events occur — keeping storage lean and notifications meaningful.",
+  "usecases": [
+    "Monitor IP cameras with AI-based person and vehicle detection.",
+    "Record only relevant events to save disk space.",
+    "Integrate camera events with Home Assistant for smart automations."
+  ],
+  "website": "https://frigate.video",
+  "notes": [
+    "A config.yml file is required in the frigate_config volume before first startup.",
+    "For hardware acceleration, pass your GPU device (e.g., /dev/dri/renderD128) via compose."
+  ],
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

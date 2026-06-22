@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: docmost-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: docmost
+      POSTGRES_USER: docmostuser
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - docmost_pgdata:/var/lib/postgresql/data
+    labels:
+      yantr.app: docmost
+      yantr.service: db
+  redis:
+    image: redis:7-alpine
+    container_name: docmost-redis
+    restart: unless-stopped
+    volumes:
+      - docmost_redis:/data
+    labels:
+      yantr.app: docmost
+      yantr.service: redis
+  web:
+    image: docmost/docmost:latest
+    container_name: docmost-web
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    labels:
+      yantr.app: docmost
+      yantr.service: Web UI
+    ports:
+      - "3000"
+    environment:
+      TZ: ${TZ:-UTC}
+      APP_URL: ""
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: postgresql://docmostuser:${POSTGRES_PASSWORD}@docmost-db:5432/docmost?sslmode=disable
+      REDIS_URL: redis://docmost-redis:6379
+      DISABLE_TELEMETRY: "true"
+    volumes:
+      - docmost_storage:/app/data/storage
+volumes:
+  docmost_pgdata: null
+  docmost_redis: null
+  docmost_storage: null

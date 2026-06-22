@@ -1,0 +1,87 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: affine-redis
+    restart: unless-stopped
+    volumes:
+      - affine_redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      yantr.app: affine
+      yantr.service: redis
+  db:
+    image: postgres:16-alpine
+    container_name: affine-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: affine
+      POSTGRES_USER: affine
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - affine_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U affine
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      yantr.app: affine
+      yantr.service: db
+  migration:
+    image: ghcr.io/toeverything/affine:latest
+    container_name: affine-migration
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      AFFINE_CONFIG_PATH: /root/.affine/config
+      REDIS_SERVER_HOST: affine-redis
+      DATABASE_URL: postgres://affine:${POSTGRES_PASSWORD}@affine-db:5432/affine
+      NODE_ENV: production
+    command:
+      - sh
+      - -c
+      - node ./scripts/run-migrations.js
+    volumes:
+      - affine_config:/root/.affine/config
+      - affine_storage:/root/.affine/storage
+    labels:
+      yantr.app: affine
+      yantr.service: migration
+  web:
+    image: ghcr.io/toeverything/affine:latest
+    container_name: affine-web
+    restart: unless-stopped
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+    labels:
+      yantr.app: affine
+      yantr.service: Web UI
+    ports:
+      - "3010"
+    environment:
+      TZ: ${TZ:-UTC}
+      AFFINE_CONFIG_PATH: /root/.affine/config
+      REDIS_SERVER_HOST: affine-redis
+      DATABASE_URL: postgres://affine:${POSTGRES_PASSWORD}@affine-db:5432/affine
+      NODE_ENV: production
+    volumes:
+      - affine_config:/root/.affine/config
+      - affine_storage:/root/.affine/storage
+volumes:
+  affine_redis: null
+  affine_pgdata: null
+  affine_config: null
+  affine_storage: null

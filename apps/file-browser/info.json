@@ -1,0 +1,27 @@
+{
+  "name": "File Browser",
+  "tags": [
+    "files",
+    "storage",
+    "self-hosted",
+    "file-manager",
+    "web",
+    "cloud"
+  ],
+  "ports": [
+    {
+      "port": 80,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Self-hosted web file manager with a clean, modern interface.",
+  "description": "File Browser provides a web-based file management interface for your server. Browse, upload, delete, preview, rename and edit files. Supports user management, sharing, and authentication. A lightweight alternative to cloud storage services.",
+  "usecases": [
+    "Browse and manage files on your server through any web browser.",
+    "Upload and download files securely without exposing SSH access.",
+    "Share files with others via direct links."
+  ],
+  "website": "https://filebrowser.org",
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

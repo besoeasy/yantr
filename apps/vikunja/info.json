@@ -1,0 +1,41 @@
+{
+  "name": "Vikunja",
+  "tags": [
+    "tasks",
+    "todo",
+    "project-management",
+    "productivity",
+    "self-hosted",
+    "kanban"
+  ],
+  "ports": [
+    {
+      "port": 3456,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Self-hosted open-source to-do and project manager.",
+  "description": "Vikunja is an open-source, self-hosted task management platform. Organize your work with lists, kanban boards, Gantt charts, and a calendar view. It offers teams and namespaces for collaboration, labels, priorities, due dates, and a REST API.",
+  "usecases": [
+    "Manage personal tasks and to-do lists with due dates and priorities.",
+    "Run team projects with kanban boards and task assignments.",
+    "Plan and track work using Gantt charts and calendar views."
+  ],
+  "website": "https://vikunja.io",
+  "env_generators": {
+    "MYSQL_ROOT_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "MYSQL_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "JWT_SECRET": {
+      "length": 64,
+      "charset": "alnum"
+    }
+  },
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

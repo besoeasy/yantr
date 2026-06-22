@@ -1,0 +1,44 @@
+services:
+  web:
+    image: vabene1111/recipes:latest
+    container_name: tandoor-web
+    labels:
+      yantr.app: tandoor
+      yantr.service: Web UI
+    environment:
+      TZ: ${TZ:-UTC}
+      SECRET_KEY: ${SECRET_KEY}
+      TANDOOR_PORT: 80
+      ALLOWED_HOSTS: "*"
+      ENABLE_SIGNUP: "0"
+      DB_ENGINE: django.db.backends.postgresql
+      POSTGRES_HOST: tandoor-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: tandoor
+      POSTGRES_USER: tandoor
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "80"
+    volumes:
+      - tandoor_staticfiles:/opt/recipes/staticfiles
+      - tandoor_mediafiles:/opt/recipes/mediafiles
+    depends_on:
+      - db
+    restart: unless-stopped
+  db:
+    image: postgres:latest
+    container_name: tandoor-db
+    environment:
+      POSTGRES_DB: tandoor
+      POSTGRES_USER: tandoor
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - tandoor_db:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: tandoor
+      yantr.service: db
+volumes:
+  tandoor_staticfiles: null
+  tandoor_mediafiles: null
+  tandoor_db: null

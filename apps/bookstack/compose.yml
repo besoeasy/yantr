@@ -1,0 +1,39 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: bookstack
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - bookstack_db:/var/lib/mysql
+    labels:
+      yantr.app: bookstack
+      yantr.service: db
+  server:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack-server
+    restart: unless-stopped
+    depends_on:
+      - db
+    labels:
+      yantr.app: bookstack
+      yantr.service: Web UI
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+      APP_URL: ""
+      DB_HOST: bookstack-db
+      DB_PORT: 3306
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - bookstack_data:/config
+volumes:
+  bookstack_db: null
+  bookstack_data: null

@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: firefly-iii-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: fireflyiii
+      MYSQL_USER: fireflyiii
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - firefly_iii_db:/var/lib/mysql
+    labels:
+      yantr.app: firefly-iii
+      yantr.service: db
+  server:
+    image: fireflyiii/core:latest
+    container_name: firefly-iii-server
+    restart: unless-stopped
+    depends_on:
+      - db
+    labels:
+      yantr.app: firefly-iii
+      yantr.service: Web UI
+    ports:
+      - "8080"
+    environment:
+      TZ: ${TZ:-UTC}
+      APP_KEY: ${APP_KEY}
+      DB_HOST: firefly-iii-db
+      DB_PORT: 3306
+      DB_CONNECTION: mysql
+      DB_DATABASE: fireflyiii
+      DB_USERNAME: fireflyiii
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      APP_URL: ""
+      TRUSTED_PROXIES: "**"
+    volumes:
+      - firefly_iii_upload:/var/www/html/storage/upload
+      - firefly_iii_export:/var/www/html/storage/export
+volumes:
+  firefly_iii_db: null
+  firefly_iii_upload: null
+  firefly_iii_export: null

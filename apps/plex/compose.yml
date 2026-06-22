@@ -1,0 +1,24 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    labels:
+      yantr.app: "plex"
+      yantr.service: "Web UI"
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+      VERSION: docker
+    ports:
+      - "32400"
+    volumes:
+      - plex_config:/config
+      - plex_tv:/tv
+      - plex_movies:/movies
+    restart: unless-stopped
+
+volumes:
+  plex_config:
+  plex_movies:
+  plex_tv:

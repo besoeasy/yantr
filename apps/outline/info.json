@@ -1,0 +1,44 @@
+{
+  "name": "Outline",
+  "tags": [
+    "wiki",
+    "knowledge-base",
+    "documentation",
+    "collaboration",
+    "self-hosted",
+    "productivity"
+  ],
+  "ports": [
+    {
+      "port": 3000,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Fast, collaborative wiki and knowledge base for teams.",
+  "description": "Outline is a fast, collaborative, beautiful knowledge base for teams. Write documentation in a rich Markdown editor, organize with nested documents and collections, control access with teams and permissions, and search across everything instantly.",
+  "usecases": [
+    "Build a team wiki with nested documents and rich formatting.",
+    "Document internal processes and share knowledge across teams.",
+    "Search and discover knowledge across your entire organization."
+  ],
+  "website": "https://www.getoutline.com",
+  "notes": [
+    "Outline requires an authentication provider (OIDC, Slack, Google) to be configured via environment variables after deployment."
+  ],
+  "env_generators": {
+    "POSTGRES_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "SECRET_KEY": {
+      "length": 64,
+      "charset": "hex"
+    },
+    "UTILS_SECRET": {
+      "length": 64,
+      "charset": "hex"
+    }
+  },
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

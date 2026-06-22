@@ -1,0 +1,27 @@
+{
+  "name": "Wallos",
+  "tags": [
+    "finance",
+    "subscriptions",
+    "budgeting",
+    "lifestyle",
+    "self-hosted",
+    "tracker"
+  ],
+  "ports": [
+    {
+      "port": 80,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Self-hosted subscription tracker to manage recurring payments.",
+  "description": "Wallos is a self-hosted subscription tracker that helps you manage and monitor all your recurring payments. Get insights into spending habits, set currency preferences, and receive notifications before renewals.",
+  "usecases": [
+    "Track all your subscription services in one place.",
+    "Monitor recurring monthly and annual spending.",
+    "Get reminders before subscription renewals are due."
+  ],
+  "website": "https://github.com/ellite/Wallos",
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

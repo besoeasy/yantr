@@ -1,0 +1,14 @@
+services:
+  web:
+    image: johannesjo/super-productivity:latest
+    container_name: super-productivity-web
+    restart: unless-stopped
+    labels:
+      yantr.app: "super-productivity"
+      yantr.service: "Web UI"
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+
+volumes: {}

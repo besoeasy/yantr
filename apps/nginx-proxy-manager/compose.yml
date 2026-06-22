@@ -1,0 +1,21 @@
+services:
+  web:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    labels:
+      yantr.app: "nginx-proxy-manager"
+      yantr.service: "Admin UI"
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "81"
+      - "80"
+      - "443"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+
+volumes:
+  npm_data:
+  npm_letsencrypt:

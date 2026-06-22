@@ -1,0 +1,17 @@
+services:
+  server:
+    image: homebridge/homebridge:latest
+    container_name: homebridge
+    labels:
+      yantr.app: "homebridge"
+      yantr.service: "Web UI"
+    network_mode: host
+    environment:
+      TZ: ${TZ:-UTC}
+      HOMEBRIDGE_CONFIG_UI_PORT: "8581"
+    volumes:
+      - homebridge_data:/homebridge
+    restart: unless-stopped
+
+volumes:
+  homebridge_data:

@@ -1,0 +1,17 @@
+services:
+  server:
+    image: linuxserver/snapdrop:latest
+    container_name: snapdrop
+    labels:
+      yantr.app: "snapdrop"
+      yantr.service: "Web UI"
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - snapdrop_config:/config
+
+volumes:
+  snapdrop_config:

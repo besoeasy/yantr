@@ -1,0 +1,19 @@
+services:
+  server:
+    image: bellamy/wallos:latest
+    container_name: wallos-server
+    labels:
+      yantr.app: "wallos"
+      yantr.service: "Web UI"
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - wallos_data:/var/www/html/db
+      - wallos_logos:/var/www/html/images/uploads/logos
+    restart: unless-stopped
+
+volumes:
+  wallos_data:
+  wallos_logos:

@@ -1,0 +1,37 @@
+{
+  "name": "BookStack",
+  "tags": [
+    "wiki",
+    "documentation",
+    "knowledge-base",
+    "self-hosted",
+    "productivity",
+    "collaboration"
+  ],
+  "ports": [
+    {
+      "port": 80,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Self-hosted wiki platform for organizing information.",
+  "description": "BookStack is a simple, self-hosted, easy-to-use platform for organising and storing information. Structured into books, chapters, and pages with a WYSIWYG editor, it offers full-text search, user management, image and file attachments, and REST API access.",
+  "usecases": [
+    "Create an internal wiki for your team or organization.",
+    "Document procedures and knowledge in a structured book format.",
+    "Search and retrieve documentation instantly with full-text search."
+  ],
+  "website": "https://www.bookstackapp.com",
+  "env_generators": {
+    "MYSQL_ROOT_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "MYSQL_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    }
+  },
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

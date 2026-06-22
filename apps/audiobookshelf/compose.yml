@@ -1,0 +1,23 @@
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    labels:
+      yantr.app: "audiobookshelf"
+      yantr.service: "Web UI"
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "13378"
+    volumes:
+      - audiobookshelf_config:/config
+      - audiobookshelf_metadata:/metadata
+      - audiobookshelf_audiobooks:/audiobooks
+      - audiobookshelf_podcasts:/podcasts
+    restart: unless-stopped
+
+volumes:
+  audiobookshelf_config:
+  audiobookshelf_metadata:
+  audiobookshelf_audiobooks:
+  audiobookshelf_podcasts:

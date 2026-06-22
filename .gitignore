@@ -12,3 +12,7 @@ website/apps.json
 website/apps
 website/github-data.json
 website/catalog
+
+# Temp files created by agents
+check_output*.txt
+*.txtn

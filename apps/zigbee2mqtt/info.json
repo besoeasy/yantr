@@ -1,0 +1,31 @@
+{
+  "name": "Zigbee2MQTT",
+  "tags": [
+    "zigbee",
+    "mqtt",
+    "iot",
+    "smart-home",
+    "home-automation",
+    "self-hosted"
+  ],
+  "ports": [
+    {
+      "port": 8080,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "Bridge Zigbee devices to MQTT without proprietary hubs.",
+  "description": "Zigbee2MQTT bridges your Zigbee devices to MQTT, allowing them to work with any home automation platform without vendor lock-in. Supports 3000+ Zigbee devices from brands like Philips Hue, IKEA, Aqara, and more. Requires a Zigbee USB coordinator.",
+  "usecases": [
+    "Connect Zigbee sensors, bulbs, and switches directly to MQTT.",
+    "Integrate hundreds of Zigbee devices with Home Assistant via MQTT.",
+    "Eliminate cloud dependency for Zigbee smart home devices."
+  ],
+  "website": "https://www.zigbee2mqtt.io",
+  "notes": [
+    "A Zigbee USB coordinator (e.g., ConBee II, CC2652) must be attached to the host.",
+    "Configure the coordinator USB path in /app/data/configuration.yaml after install."
+  ],
+  "logo": "QmPlaceholderForNow1234567890123456789012345"
+}

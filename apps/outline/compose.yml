@@ -1,0 +1,53 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: outline-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: outline
+      POSTGRES_USER: outline
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - outline_pgdata:/var/lib/postgresql/data
+    labels:
+      yantr.app: outline
+      yantr.service: db
+  redis:
+    image: redis:7-alpine
+    container_name: outline-redis
+    restart: unless-stopped
+    volumes:
+      - outline_redis:/data
+    labels:
+      yantr.app: outline
+      yantr.service: redis
+  web:
+    image: outlinewiki/outline:latest
+    container_name: outline-web
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    labels:
+      yantr.app: outline
+      yantr.service: Web UI
+    ports:
+      - "3000"
+    environment:
+      TZ: ${TZ:-UTC}
+      NODE_ENV: production
+      SECRET_KEY: ${SECRET_KEY}
+      UTILS_SECRET: ${UTILS_SECRET}
+      DATABASE_URL: postgres://outline:${POSTGRES_PASSWORD}@outline-db:5432/outline
+      PGSSLMODE: disable
+      REDIS_URL: redis://outline-redis:6379
+      PORT: 3000
+      FILE_STORAGE: local
+      FILE_STORAGE_LOCAL_ROOT_DIR: /var/lib/outline/data
+      FILE_STORAGE_UPLOAD_MAX_SIZE: 262144000
+    volumes:
+      - outline_data:/var/lib/outline/data
+volumes:
+  outline_pgdata: null
+  outline_redis: null
+  outline_data: null

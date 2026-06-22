@@ -1,0 +1,17 @@
+services:
+  server:
+    image: linuxserver/grocy:latest
+    container_name: grocy-server
+    labels:
+      yantr.app: "grocy"
+      yantr.service: "Web UI"
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - grocy_data:/config
+    restart: unless-stopped
+
+volumes:
+  grocy_data:
