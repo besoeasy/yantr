@@ -1,7 +1,31 @@
+import { createHash } from "node:crypto";
 import { docker, packageJson, getPublicIpIdentityCached } from "./shared.js";
 
 const TELEMETRY_TOPIC = process.env.YANTR_TELEMETRY_TOPIC || "https://ntfy.sh/yantr";
 const PRESENCE_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const MACHINE_ID_ROUNDS = 10_000;
+const MACHINE_ID_SALT = "yantr:machine-id:v1";
+
+function deriveMachineIdFromIp(ip) {
+  if (!ip || typeof ip !== "string") return null;
+
+  let digest = createHash("sha256")
+    .update(MACHINE_ID_SALT)
+    .update("\0")
+    .update(ip.trim())
+    .digest();
+
+  for (let round = 0; round < MACHINE_ID_ROUNDS; round++) {
+    digest = createHash("sha256").update(digest).digest();
+  }
+
+  return digest.toString("hex");
+}
+
+async function getMachineIdForTelemetry() {
+  const identity = await getPublicIpIdentityCached().catch(() => null);
+  return deriveMachineIdFromIp(identity?.ip);
+}
 
 function isEnabled() {
   return process.env.YANTR_TELEMETRY !== "false";
@@ -37,19 +61,24 @@ async function countYantrWorkload() {
 export function ping(event, fields = {}) {
   if (!isEnabled()) return;
 
-  const parts = Object.entries(fields)
-    .filter(([, value]) => value !== null && value !== undefined && value !== "")
-    .map(([key, value]) => `${key}=${value}`);
-  const body = [event, ...parts].join(" ");
+  void (async () => {
+    const mid = await getMachineIdForTelemetry();
+    const payload = mid ? { mid, ...fields } : fields;
 
-  fetch(TELEMETRY_TOPIC, {
-    method: "POST",
-    headers: {
-      Title: event,
-      Tags: event,
-    },
-    body,
-  }).catch(() => {});
+    const parts = Object.entries(payload)
+      .filter(([, value]) => value !== null && value !== undefined && value !== "")
+      .map(([key, value]) => `${key}=${value}`);
+    const body = [event, ...parts].join(" ");
+
+    fetch(TELEMETRY_TOPIC, {
+      method: "POST",
+      headers: {
+        Title: event,
+        Tags: event,
+      },
+      body,
+    }).catch(() => {});
+  })();
 }
 
 export async function sendPresence() {
