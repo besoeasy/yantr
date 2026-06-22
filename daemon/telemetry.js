@@ -17,16 +17,21 @@ function formatRamGb(memTotalBytes) {
   return Math.round(memTotalBytes / (1024 ** 3));
 }
 
-async function countYantrStacks() {
+async function countYantrWorkload() {
   const containers = await docker.listContainers({ all: true });
   const projects = new Set();
+  let running = 0;
+
   for (const container of containers) {
     const labels = container.Labels || {};
-    if (labels["yantr.app"] && labels["com.docker.compose.project"]) {
+    if (!labels["yantr.app"]) continue;
+    if (container.State === "running") running++;
+    if (labels["com.docker.compose.project"]) {
       projects.add(labels["com.docker.compose.project"]);
     }
   }
-  return projects.size;
+
+  return { stacks: projects.size, running };
 }
 
 export function ping(event, fields = {}) {
@@ -51,10 +56,10 @@ export async function sendPresence() {
   if (!isEnabled()) return;
 
   try {
-    const [info, identity, stacks] = await Promise.all([
+    const [info, identity, workload] = await Promise.all([
       docker.info(),
       getPublicIpIdentityCached().catch(() => null),
-      countYantrStacks(),
+      countYantrWorkload(),
     ]);
 
     ping("presence", {
@@ -63,7 +68,8 @@ export async function sendPresence() {
       arch: info.Architecture || "unknown",
       cores: info.NCPU || 0,
       ram_gb: formatRamGb(info.MemTotal),
-      stacks,
+      stacks: workload.stacks,
+      running: workload.running,
       v: packageJson.version || "dev",
     });
   } catch {
