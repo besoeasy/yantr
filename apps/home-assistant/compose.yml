@@ -7,8 +7,6 @@ services:
       yantr.service: "Web UI"
     network_mode: host
     privileged: true
-    environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - home_assistant_config:/config
     restart: unless-stopped
