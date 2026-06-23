@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { docker, packageJson, getPublicIpIdentityCached } from "./shared.js";
+import { docker, getPublicIpIdentityCached } from "./shared.js";
 
 const TELEMETRY_TOPIC = process.env.YANTR_TELEMETRY_TOPIC || "https://ntfy.sh/yantr";
 const PRESENCE_INTERVAL_MS = 24 * 60 * 60 * 1000;
@@ -71,7 +71,6 @@ function formatPresenceBody(mid, fields) {
   return [
     `**Host** ${fields.os} · ${fields.arch} · ${fields.cores} cores · ${fields.ram_gb} GB RAM`,
     `**Workload** ${fields.stacks} stacks · ${fields.running} running`,
-    `**Version** ${fields.v}`,
     formatMachineLine(mid),
     formatTimestampLine(),
   ].filter(Boolean).join("\n");
@@ -96,7 +95,6 @@ function formatUpdateBody(mid, fields) {
 function formatSelfUpdateBody(mid, fields) {
   return [
     `**Containers updated** ${fields.updated}`,
-    `**Version** ${fields.v}`,
     formatMachineLine(mid),
     formatTimestampLine(),
   ].filter(Boolean).join("\n");
@@ -130,7 +128,7 @@ const EVENT_FORMATTERS = {
     priority: "3",
   },
   selfupdate: {
-    title: (fields) => `Self-update · v${fields.v}`,
+    title: () => "Self-update",
     body: formatSelfUpdateBody,
     priority: "3",
   },
@@ -191,7 +189,6 @@ export async function sendPresence() {
       ram_gb: formatRamGb(info.MemTotal),
       stacks: workload.stacks,
       running: workload.running,
-      v: packageJson.version || "dev",
     });
   } catch {
     // fire-and-forget
@@ -223,10 +220,7 @@ export async function trackUpdatesForContainers(containerNames = []) {
 }
 
 export function trackSelfUpdate(updatedCount) {
-  ping("selfupdate", {
-    updated: updatedCount,
-    v: packageJson.version || "dev",
-  });
+  ping("selfupdate", { updated: updatedCount });
 }
 
 export function startPresenceScheduler() {
