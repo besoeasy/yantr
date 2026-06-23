@@ -6,8 +6,6 @@ services:
       yantr.app: "snapdrop"
       yantr.service: "Web UI"
     restart: unless-stopped
-    environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "80"
     volumes:
