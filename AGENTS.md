@@ -76,10 +76,9 @@ volumes:
 
 ```json
 // info.json
-// logo feild is optional
 {
   "name": "My App",
-  "logo": "IPFS CID",
+  "logo": "VALID IPFS CID or empty",
   "tags": ["productivity", "self-hosted", "webapp"],
   "ports": [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Self-hosted note-taking app.",
