@@ -39,16 +39,17 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
   - Valid YAML, deployable with `docker compose`
   - Required labels: `yantr.app` (folder name), `yantr.service` (display label)
   - Environment: key-value format preferred (not list)
-  - Credentials/secrets: no placeholder defaults (avoid `:-admin`, `:-password`); use `ADMIN_PASSWORD: ${ADMIN_PASSWORD}`
+  - User-provided values: use `${VAR}` or `${VAR:-default}` — never hardcode secrets/passwords as literals
+  - Credentials/secrets: no placeholder defaults (avoid `:-admin`, `:-password`, `:-changeme`); use `ADMIN_PASSWORD: ${ADMIN_PASSWORD}`
+  - **`check.js` enforces `env_generators`**: any compose value written as `${VAR}` (no `:-` fallback) must have a matching `env_generators` entry in `info.json`, except system vars (`TZ`, `PUID`, `PGID`, `TUNNEL_TOKEN`, `TAILSCALE_AUTH_KEY`, `TELEGRAM_BOT_TOKEN`, `NOSTR_NSEC`, `AUTHCODE`). `${VAR:-default}` is optional in the deploy form and does not require `env_generators`.
   - Ports: container-only format (`"8096"` not `"8096:8096"`)
   - Prefer `:latest` image tags
   - Volumes: named Docker volumes only
 - `info.json` required fields:
   - `name`, `logo` (IPFS CID — upload at `https://originless.besoeasy.com/upload`), `tags` (≥6 lowercase), `ports[]` (port/protocol/label), `short_description` (50-100 chars), `description` (200-300 chars), `usecases` (≥2), `website` (https://)
   - Optional: `notes[]`, `customapp` (boolean — true for Yantr-built apps with Dockerfile; shows "Built by Yantr" badge, disables auto-update), `env_generators`
-  - `env_generators`: map env var → generation rules (`length`, `charset`: `alnum`/`hex`/`numeric`/`alpha`/`base64url`/`alnum_symbols`, optional `characters`, `regex`)
-  - Required credential/secret vars in compose.yml must have `env_generators` entry
-- Checklist: `yantr.app` = folder name, valid compose, no placeholder defaults for secrets, `env_generators` covers required secrets, `notes` explains manual setup, ports documented
+  - `env_generators`: map env var → generation rules (`length`, `charset`: `alnum`/`hex`/`numeric`/`alpha`/`base64url`/`alnum_symbols`, optional `characters`, `regex`). Required for every `${VAR}` reference in `compose.yml` that has no default (validated by `check.js`).
+- Checklist: `yantr.app` = folder name, valid compose, no placeholder defaults for secrets, every `${VAR}` (no default) has `env_generators`, `notes` explains manual setup, ports documented
 
 ### Minimal App Example
 ```yaml
@@ -63,7 +64,7 @@ services:
     environment:
       TZ: ${TZ:-UTC}
       ADMIN_USER: ${ADMIN_USER:-admin}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     ports:
       - "8080"
     volumes:
@@ -85,7 +86,10 @@ volumes:
   "description": "A self-hosted note-taking service.",
   "usecases": ["Capture notes.", "Organize docs.", "Share with team."],
   "website": "https://example.com/docs",
-  "notes": ["Change default admin password."]
+  "env_generators": {
+    "ADMIN_PASSWORD": { "length": 20, "charset": "alnum_symbols" }
+  },
+  "notes": ["Set admin email in the deploy form if the app requires one."]
 }
 ```
 
@@ -115,6 +119,7 @@ volumes:
 
 ## Testing / Validation
 - No formal test suite — `node check.js` is the primary validation
+- `check.js` fails if `compose.yml` uses `${VAR}` without a default and `info.json` is missing the matching `env_generators` entry
 - Manual verification: `npm run docker` → open `http://localhost:5252`
 
 ## Key Files to Reference
