@@ -52,13 +52,14 @@ async function checkInfoJson(appName, infoPath) {
     fail(appName, 'info.json missing "name"', "Must be a non-empty string with correct capitalisation.");
   }
 
-  // logo — IPFS CID
-  if (!info.logo || typeof info.logo !== "string") {
-    fail(appName, 'info.json missing "logo"', "Must be a valid IPFS CIDv0 (Qm...) or CIDv1 (baf...) string.");
-  } else if (info.logo.includes("://")) {
-    warn(appName, '"logo" looks like a URL', `Should be an IPFS CID, got: "${info.logo}"`);
-  } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(info.logo) && !/^baf[a-zA-Z0-9]+$/.test(info.logo)) {
-    warn(appName, '"logo" does not look like a valid IPFS CID', `Got: "${info.logo}"`);
+  // logo — optional IPFS CID; empty or missing is allowed
+  if (typeof info.logo === "string" && info.logo.trim()) {
+    const logo = info.logo.trim();
+    if (logo.includes("://")) {
+      warn(appName, '"logo" looks like a URL', `Should be an IPFS CID, got: "${logo}"`);
+    } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(logo) && !/^baf[a-zA-Z0-9]+$/.test(logo)) {
+      warn(appName, '"logo" does not look like a valid IPFS CID', `Got: "${logo}"`);
+    }
   }
 
   // tags — min 6, lowercase, letters/numbers/hyphens only
