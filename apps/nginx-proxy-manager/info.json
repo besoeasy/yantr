@@ -37,5 +37,5 @@
     "Default admin credentials: admin@example.com / changeme — change immediately after first login.",
     "Port 80 and 443 must be reachable from the internet for Let's Encrypt validation."
   ],
-  "logo": "QmPlaceholderForNow1234567890123456789012345"
+  "logo": ""
 }

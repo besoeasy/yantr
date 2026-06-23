@@ -37,5 +37,5 @@
     "A config.yml file is required in the frigate_config volume before first startup.",
     "For hardware acceleration, pass your GPU device (e.g., /dev/dri/renderD128) via compose."
   ],
-  "logo": "QmPlaceholderForNow1234567890123456789012345"
+  "logo": ""
 }

@@ -27,5 +27,5 @@
     "A Zigbee USB coordinator (e.g., ConBee II, CC2652) must be attached to the host.",
     "Configure the coordinator USB path in /app/data/configuration.yaml after install."
   ],
-  "logo": "QmPlaceholderForNow1234567890123456789012345"
+  "logo": ""
 }

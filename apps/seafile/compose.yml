@@ -43,3 +43,4 @@ services:
 volumes:
   seafile_db:
   seafile_data:
+yes
