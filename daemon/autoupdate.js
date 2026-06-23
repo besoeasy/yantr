@@ -43,7 +43,7 @@ async function runWatchtower(containerArgs, label, trackContainers = []) {
       const updatedMatches = allOutput.match(/msg="Updated /g);
       const updatedCount = updatedMatches ? updatedMatches.length : 0;
       log("info", `🔄 [${label}] Completed — ${updatedCount} container(s) updated`);
-      if (label === "SELFUPDATE") {
+      if (label === "SELFUPDATE" && updatedCount > 0) {
         trackSelfUpdate(updatedCount);
       } else if (updatedCount > 0) {
         trackUpdatesForContainers(trackContainers);
