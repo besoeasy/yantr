@@ -11,8 +11,24 @@
     "Host your own file collaboration server with audit logging and backup support."
   ],
   "website": "https://www.seafile.com/en/home/",
+  "env_generators": {
+    "MYSQL_ROOT_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "MYSQL_PASSWORD": {
+      "length": 32,
+      "charset": "alnum"
+    },
+    "SEAFILE_ADMIN_PASSWORD": {
+      "length": 20,
+      "charset": "alnum_symbols",
+      "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$"
+    }
+  },
   "notes": [
-    "Change defaults for database and admin password after first login.",
+    "Set the admin email in the deploy form before first launch; the default is only for local testing.",
+    "Database and admin passwords are generated at deploy time — save them before starting the stack.",
     "Use external storage volumes for large libraries."
   ]
 }

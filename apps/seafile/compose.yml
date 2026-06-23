@@ -7,10 +7,10 @@ services:
       yantr.app: "seafile"
       yantr.service: "Database"
     environment:
-      MYSQL_ROOT_PASSWORD: "changeme"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: "seafile"
       MYSQL_USER: "seafile"
-      MYSQL_PASSWORD: "changeme"
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - seafile_db:/var/lib/mysql
 
@@ -29,18 +29,17 @@ services:
       SEAFILE_SERVER_LETSENCRYPT: "false"
       SEAFILE_SERVER_HOSTNAME: "localhost"
       DB_HOST: "seafile-db"
-      DB_ROOT_PASSWD: "changeme"
-      MYSQL_ROOT_PASSWORD: "changeme"
+      DB_ROOT_PASSWD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_HOST: "seafile-db"
       MYSQL_PORT: "3306"
       MYSQL_USER: "seafile"
-      MYSQL_PASSWORD: "changeme"
-      SEAFILE_ADMIN_EMAIL: "admin@example.com"
-      SEAFILE_ADMIN_PASSWORD: "changeme"
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SEAFILE_ADMIN_EMAIL: ${SEAFILE_ADMIN_EMAIL:-admin@localhost}
+      SEAFILE_ADMIN_PASSWORD: ${SEAFILE_ADMIN_PASSWORD}
     volumes:
       - seafile_data:/shared
 
 volumes:
   seafile_db:
   seafile_data:
-yes
