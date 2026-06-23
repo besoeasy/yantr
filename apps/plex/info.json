@@ -1,11 +1,13 @@
 {
   "name": "Plex",
-  "logo": "QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "logo": "QmQ895arqXLgtBSGNRz6zzR88XtWH8uGbcKKcko84Ba2Wr",
   "tags": ["media", "streaming", "movies", "tv", "entertainment", "video"],
   "ports": [{ "port": 32400, "protocol": "HTTP", "label": "Web UI" }],
   "short_description": "Organizes your video, music, and photo collections and streams them to all of your screens.",
   "description": "Plex Media Server organizes your video, music, and photo collections and streams them to all of your screens (mobile, TV, web). It supports rich metadata, automatic fetching of posters, summaries, and subtitles. A Plex account may be required for some premium features.",
   "usecases": ["Stream your movie and TV show collection.", "Organize your home media with rich metadata.", "Watch media remotely on any device."],
   "website": "https://www.plex.tv/",
-  "notes": ["To claim your server, you may need to use an SSH tunnel if you are accessing it outside your local network, or use a Plex Claim token via custom compose edit."]
+  "notes": [
+    "To claim your server, you may need to use an SSH tunnel if you are accessing it outside your local network, or use a Plex Claim token via custom compose edit."
+  ]
 }
