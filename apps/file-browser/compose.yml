@@ -7,7 +7,6 @@ services:
       yantr.service: "Web UI"
     restart: unless-stopped
     environment:
-      TZ: ${TZ:-UTC}
       FB_PORT: 80
       FB_DATABASE: /database/filebrowser.db
       FB_ROOT: /data
