@@ -1,0 +1,90 @@
+services:
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: librechat
+    ports:
+      - "3080"
+    command: npm run backend
+    environment:
+      HOST: 0.0.0.0
+      MONGO_URI: mongodb://librechat-mongodb:27017/LibreChat
+      MEILI_HOST: http://librechat-meilisearch:7700
+      RAG_PORT: 8000
+      RAG_API_URL: http://librechat-rag-api:8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-user_provided}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-user_provided}
+      CREDS_KEY: ${CREDS_KEY}
+      CREDS_IV: ${CREDS_IV}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    volumes:
+      - librechat_images:/app/client/public/images
+      - librechat_uploads:/app/uploads
+      - librechat_logs:/app/api/logs
+    depends_on:
+      - librechat-mongodb
+      - librechat-rag-api
+    restart: unless-stopped
+    labels:
+      yantr.app: "librechat"
+      yantr.service: "Web UI"
+
+  librechat-mongodb:
+    image: mongo:8
+    container_name: librechat-mongodb
+    command: mongod --noauth
+    volumes:
+      - librechat_db:/data/db
+    restart: unless-stopped
+    labels:
+      yantr.app: "librechat"
+      yantr.service: "Database"
+
+  librechat-meilisearch:
+    image: getmeili/meilisearch:v1.12.3
+    container_name: librechat-meilisearch
+    environment:
+      MEILI_HOST: http://librechat-meilisearch:7700
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    volumes:
+      - librechat_meilisearch:/meili_data
+    restart: unless-stopped
+    labels:
+      yantr.app: "librechat"
+      yantr.service: "Search Index"
+
+  librechat-vectordb:
+    image: ankane/pgvector:v0.5.1
+    container_name: librechat-vectordb
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: ${VECTORDB_PASSWORD}
+    volumes:
+      - librechat_vectordb:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "librechat"
+      yantr.service: "Vector DB"
+
+  librechat-rag-api:
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    container_name: librechat-rag-api
+    environment:
+      DB_HOST: librechat-vectordb
+      RAG_PORT: 8000
+    depends_on:
+      - librechat-vectordb
+    restart: unless-stopped
+    labels:
+      yantr.app: "librechat"
+      yantr.service: "RAG API"
+
+volumes:
+  librechat_images:
+  librechat_uploads:
+  librechat_logs:
+  librechat_db:
+  librechat_meilisearch:
+  librechat_vectordb:

@@ -1,0 +1,63 @@
+services:
+  owncloud:
+    image: owncloud/server:latest
+    container_name: owncloud
+    ports:
+      - "8080"
+    environment:
+      OWNCLOUD_DOMAIN: ${OWNCLOUD_DOMAIN:-localhost:8080}
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_DB_NAME: owncloud
+      OWNCLOUD_DB_USERNAME: owncloud
+      OWNCLOUD_DB_PASSWORD: ${DB_PASSWORD}
+      OWNCLOUD_DB_HOST: owncloud-mariadb
+      OWNCLOUD_ADMIN_USERNAME: admin
+      OWNCLOUD_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      OWNCLOUD_MYSQL_UTF8MB4: "true"
+      OWNCLOUD_REDIS_ENABLED: "true"
+      OWNCLOUD_REDIS_HOST: owncloud-redis
+      OWNCLOUD_LOG_LEVEL: 2
+    volumes:
+      - owncloud_data:/mnt/data
+      - owncloud_config:/var/www/html/config
+    depends_on:
+      - owncloud-mariadb
+      - owncloud-redis
+    restart: unless-stopped
+    labels:
+      yantr.app: "owncloud"
+      yantr.service: "Web UI"
+
+  owncloud-mariadb:
+    image: mariadb:10.11
+    container_name: owncloud-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: owncloud
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: owncloud
+      MARIADB_AUTO_UPGRADE: 1
+    command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
+    volumes:
+      - owncloud_db:/var/lib/mysql
+    restart: unless-stopped
+    labels:
+      yantr.app: "owncloud"
+      yantr.service: "Database"
+
+  owncloud-redis:
+    image: redis:6-alpine
+    container_name: owncloud-redis
+    command: ["--databases", "1"]
+    volumes:
+      - owncloud_redis:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "owncloud"
+      yantr.service: "Cache"
+
+volumes:
+  owncloud_data:
+  owncloud_config:
+  owncloud_db:
+  owncloud_redis:

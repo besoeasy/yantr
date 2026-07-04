@@ -1,0 +1,228 @@
+version: "3.7"
+
+x-environment: &env
+  # ---- External URL & ports ----
+  NGINX_PORT: 80
+  LISTEN_HTTP_PORT: 80
+
+  # ---- Bucket name used by frontend for /uploads paths ----
+  BUCKET_NAME: uploads
+
+  # ---- API Workers ----
+  GUNICORN_WORKERS: 2
+
+  # ---- Database ----
+  POSTGRES_DB: plane
+  POSTGRES_USER: plane
+  POSTGRES_PASSWORD: ${DB_PASSWORD}
+  DATABASE_URL: postgresql://plane:${DB_PASSWORD}@plane-db:5432/plane
+
+  # ---- Cache / broker ----
+  REDIS_URL: redis://plane-redis:6379/0
+  RABBITMQ_DEFAULT_USER: plane
+  RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD}
+  RABBITMQ_DEFAULT_VHOST: plane
+  CELERY_BROKER_URL: amqp://plane:${RABBIT_PASSWORD}@plane-rabbitmq:5672/plane
+
+  # ---- Object storage (MinIO; S3-compatible) ----
+  USE_MINIO: 1
+  AWS_ACCESS_KEY_ID: yantr
+  AWS_SECRET_ACCESS_KEY: ${APP_PASSWORD}
+  AWS_S3_ENDPOINT_URL: http://plane-minio:9000
+  AWS_S3_BUCKET_NAME: uploads
+  FILE_SIZE_LIMIT: 52428800  # 50 MB
+  MINIO_ENDPOINT_SSL: 0
+  MINIO_ROOT_USER: yantr
+  MINIO_ROOT_PASSWORD: ${APP_PASSWORD}
+
+  # ---- Django / app ----
+  SECRET_KEY: ${APP_SEED}
+  LIVE_SERVER_SECRET_KEY: ${APP_SEED}
+  USE_X_FORWARDED_HOST: 1
+  SECURE_SSL_REDIRECT: 0
+  SESSION_COOKIE_SECURE: 0
+  CSRF_COOKIE_SECURE: 0
+  WEBHOOK_ALLOWED_IPS: ""
+  WEBHOOK_ALLOWED_HOSTS: ""
+
+services:
+  plane-nginx:
+    image: nginx:alpine
+    container_name: plane-nginx
+    ports:
+      - "8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - plane-web
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Web UI (Router)"
+
+  plane-db:
+    image: postgres:16-alpine
+    container_name: plane-db
+    user: "1000:1000"
+    environment:
+      <<: *env
+    volumes:
+      - plane_db:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Database"
+
+  plane-redis:
+    image: redis:7-alpine
+    container_name: plane-redis
+    volumes:
+      - plane_redis:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Cache"
+
+  plane-rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: plane-rabbitmq
+    user: "1000:1000"
+    environment:
+      <<: *env
+    volumes:
+      - plane_rabbitmq:/var/lib/rabbitmq
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Message Broker"
+
+  plane-minio:
+    image: minio/minio:latest
+    container_name: plane-minio
+    user: "1000:1000"
+    command: server /export --console-address ":8763"
+    environment:
+      <<: *env
+    volumes:
+      - plane_uploads:/export
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Object Storage"
+
+  plane-api:
+    image: makeplane/plane-backend:v1.3.1
+    container_name: plane-api
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-db
+      - plane-redis
+      - plane-rabbitmq
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "API Server"
+
+  plane-worker:
+    image: makeplane/plane-backend:v1.3.1
+    container_name: plane-worker
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+      - plane-redis
+      - plane-rabbitmq
+    command: ["sh","-c","celery -A plane worker --loglevel=info"]
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Worker"
+
+  plane-beat-worker:
+    image: makeplane/plane-backend:v1.3.1
+    container_name: plane-beat-worker
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+      - plane-redis
+      - plane-rabbitmq
+    command: ["sh","-c","celery -A plane beat --loglevel=info"]
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Beat Worker"
+
+  plane-migrator:
+    image: makeplane/plane-backend:v1.3.1
+    container_name: plane-migrator
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-db
+    command: ["sh","-c","python manage.py wait_for_db && python manage.py migrate"]
+    restart: on-failure
+    labels:
+      yantr.app: "plane"
+      yantr.service: "DB Migrator"
+
+  plane-web:
+    image: makeplane/plane-frontend:v1.3.1
+    container_name: plane-web
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Frontend UI"
+
+  plane-live:
+    image: makeplane/plane-live:v1.3.1
+    container_name: plane-live
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Live Server"
+
+  plane-space:
+    image: makeplane/plane-space:v1.3.1
+    container_name: plane-space
+    user: "1000:1000"
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Space UI"
+
+  plane-admin:
+    image: makeplane/plane-admin:v1.3.1
+    container_name: plane-admin
+    environment:
+      <<: *env
+    depends_on:
+      - plane-api
+    restart: unless-stopped
+    labels:
+      yantr.app: "plane"
+      yantr.service: "Admin UI"
+
+volumes:
+  plane_db:
+  plane_redis:
+  plane_rabbitmq:
+  plane_uploads:

@@ -1,0 +1,37 @@
+{
+  "name": "Plane",
+  "logo": "",
+  "tags": [
+    "productivity",
+    "project-management",
+    "jira",
+    "kanban",
+    "issues",
+    "sprints",
+    "self-hosted",
+    "collaboration"
+  ],
+  "ports": [
+    { "port": 8080, "protocol": "HTTP", "label": "Web UI (Router)" }
+  ],
+  "short_description": "Open-source Jira alternative to track issues, sprints, and product roadmaps.",
+  "description": "Plane is a powerful open-source project management tool designed to track issues, run sprint cycles, and manage product roadmaps. It offers a robust rich text editor, sub-properties, referenced issues, and cycle tracking with burn-down charts. You can simplify complex projects with modules, customize views with filters, and capture ideas in Plane Pages. The complete stack includes a web UI, API, workers, Postgres database, Redis cache, RabbitMQ broker, and MinIO object storage for attachments.",
+  "usecases": [
+    "Run agile sprint cycles with burn-down charts and issue tracking.",
+    "Manage product roadmaps and divide complex projects into modules.",
+    "Replace Jira with a fast, modern, fully self-hosted alternative.",
+    "Capture notes, ideas, and actionable items using Plane Pages."
+  ],
+  "website": "https://plane.so",
+  "env_generators": {
+    "DB_PASSWORD": { "length": 32, "charset": "alnum" },
+    "RABBIT_PASSWORD": { "length": 32, "charset": "alnum" },
+    "APP_PASSWORD": { "length": 32, "charset": "alnum" },
+    "APP_SEED": { "length": 64, "charset": "base64url" }
+  },
+  "notes": [
+    "This is a heavy enterprise-grade stack (12 containers). Requires at least 4 GB of RAM (8 GB recommended).",
+    "The first boot will take a few minutes as the database migrations run.",
+    "Attachments are stored in a self-hosted MinIO bucket automatically configured."
+  ]
+}

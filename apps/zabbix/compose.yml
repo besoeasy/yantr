@@ -1,0 +1,63 @@
+services:
+  zabbix-frontend:
+    image: zabbix/zabbix-web-nginx-pgsql:latest
+    container_name: zabbix-frontend
+    ports:
+      - "8080"
+    environment:
+      DB_SERVER_HOST: zabbix-database
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      ZBX_SERVER_HOST: zabbix-server
+      PHP_TZ: ${TZ:-UTC}
+    depends_on:
+      - zabbix-server
+      - zabbix-database
+    restart: unless-stopped
+    labels:
+      yantr.app: "zabbix"
+      yantr.service: "Web UI"
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:latest
+    container_name: zabbix-server
+    ports:
+      - "10051"
+    environment:
+      DB_SERVER_HOST: zabbix-database
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - zabbix-database
+    restart: unless-stopped
+    labels:
+      yantr.app: "zabbix"
+      yantr.service: "Server Core"
+
+  zabbix-agent:
+    image: zabbix/zabbix-agent2:latest
+    container_name: zabbix-agent
+    environment:
+      ZBX_HOSTNAME: zabbix-agent
+      ZBX_SERVER_HOST: zabbix-server
+    restart: unless-stopped
+    labels:
+      yantr.app: "zabbix"
+      yantr.service: "Local Agent"
+
+  zabbix-database:
+    image: postgres:15-alpine
+    container_name: zabbix-database
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: zabbix
+      POSTGRES_DB: zabbix
+    volumes:
+      - zabbix_db:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "zabbix"
+      yantr.service: "Database"
+
+volumes:
+  zabbix_db:
