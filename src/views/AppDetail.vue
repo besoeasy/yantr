@@ -647,14 +647,14 @@ onMounted(async () => {
                             <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
                         </div>
                         <!-- Target Port: shown when app exposes multiple ports -->
-                        <div v-if="allPorts.length > 0" class="space-y-1.5">
+                        <div v-if="infoPorts.length > 0" class="space-y-1.5">
                             <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Target Port
                               <span class="text-[9px] font-normal normal-case tracking-normal text-gray-400 dark:text-zinc-500">App's internal port to proxy to</span>
                             </label>
                             <select v-model.number="authTargetPort" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer">
                               <option :value="0">Auto-detect (first HTTP port)</option>
-                              <option v-for="p in allPorts" :key="p.containerPort + '/' + p.protocol" :value="p.containerPort">
-                                :{{ p.containerPort }} — {{ p.protocol }}
+                              <option v-for="p in infoPorts" :key="p.port" :value="p.port">
+                                :{{ p.port }} — {{ p.label }} ({{ p.protocol }})
                               </option>
                             </select>
                         </div>
