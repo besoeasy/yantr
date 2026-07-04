@@ -29,24 +29,6 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 
 ## Critical Conventions
 
-### App Development
-- **Always run `node check.js` after editing `apps/`** — validates compose.yml format, port conflicts, required fields
-- **Hard rules** (from `apps/apps.md`):
-  - Never touch host filesystem — all persistent data uses Docker volumes
-  - Never use host bind mounts except `/var/run/docker.sock`, `/dev/net/tun`, local helper files
-  - Always use named Docker volumes for databases, config, uploads, media, logs, caches
-- `compose.yml` requirements:
-  - Valid YAML, deployable with `docker compose`
-  - Required labels per service: `yantr.service` (display name), `yantr.port.{N}: "PROTOCOL"` (e.g. `yantr.port.8080: "HTTP"`)
-  - Environment: key-value format preferred (not list)
-  - User-provided values: use `${VAR}` or `${VAR:-default}` — never hardcode secrets/passwords as literals
-  - Credentials/secrets: no placeholder defaults (avoid `:-admin`, `:-password`, `:-changeme`); use `ADMIN_PASSWORD: ${ADMIN_PASSWORD}`
-  - **`check.js` enforces `env_generators`**: any compose value written as `${VAR}` (no `:-` fallback) must have a matching `env_generators` entry in `x-yantr`, except system vars (`TZ`, `PUID`, `PGID`, `TUNNEL_TOKEN`, `TAILSCALE_AUTH_KEY`, `TELEGRAM_BOT_TOKEN`, `NOSTR_NSEC`, `AUTHCODE`). `${VAR:-default}` is optional and does not require `env_generators`.
-  - Ports: container-only format (`"8096"` not `"8096:8096"`)
-  - Prefer `:latest` image tags
-  - Volumes: named Docker volumes only
-- Checklist: valid compose, no placeholder defaults for secrets, every `${VAR}` (no default) has `env_generators` in `x-yantr`, `notes` explains manual setup, ports documented
-
 ### x-yantr Metadata Block
 All app metadata lives in the top-level `x-yantr` key of `compose.yml`. Docker Compose ignores `x-*` extension fields, so the file remains fully deployable.
 
