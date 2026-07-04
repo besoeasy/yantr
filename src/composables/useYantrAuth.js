@@ -74,11 +74,13 @@ function hexToBytes(hex) {
   return arr
 }
 
-/** Generate a cryptographically random 32-byte key, returned as hex. */
-function generateSecretHex() {
-  const bytes = new Uint8Array(32)
-  crypto.getRandomValues(bytes)
-  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
+/** Generate a deterministic 32-byte key from password + pin, returned as hex. */
+export async function generateDeterministicSecretHex(password, pin) {
+  const enc = new TextEncoder()
+  const data = enc.encode(`${password}:${pin}`)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  const hashArray = Array.from(new Uint8Array(hash))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
 /** Create a signed HMAC-SHA256 JWT token. Valid for 2 hours. */
@@ -101,21 +103,20 @@ async function createToken(secretHex, username) {
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
 function getStoredSecretHex() {
-  return localStorage.getItem(SECRET_KEY_STORAGE) || ''
+  return sessionStorage.getItem(SECRET_KEY_STORAGE) || ''
 }
 
 function storeIdentity(secretHex, username) {
   authState.secretHex = secretHex
-  localStorage.setItem(SECRET_KEY_STORAGE, secretHex)
-  localStorage.setItem(USERNAME_STORAGE, username)
+  sessionStorage.setItem(SECRET_KEY_STORAGE, secretHex)
+  localStorage.setItem(USERNAME_STORAGE, username) // Username can persist across sessions
 }
 
 function clearStoredIdentity() {
   authState.secretHex    = ''
   authState.authenticated = false
   authState.user         = null
-  localStorage.removeItem(SECRET_KEY_STORAGE)
-  localStorage.removeItem(USERNAME_STORAGE)
+  sessionStorage.removeItem(SECRET_KEY_STORAGE)
 }
 
 function setUnauthenticated(message = '') {
