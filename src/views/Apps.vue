@@ -95,8 +95,7 @@ const tags = computed(() => {
         Array.isArray(app.tags) && app.tags.includes(tag)
       ).length;
       return { name: tag, count };
-    })
-    .filter((tag) => tag.count > 2);
+    });
 });
 
 const combinedApps = computed(() => {
