@@ -59,9 +59,10 @@ type ProxyRoute struct {
 
 // XAuth holds the parsed x-auth block from a compose.yml.
 type XAuth struct {
-	Port     int    `yaml:"port"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+	Port       int    `yaml:"port"`
+	Username   string `yaml:"username"`
+	Password   string `yaml:"password"`
+	TargetPort int    `yaml:"target_port"` // optional: explicit internal port to proxy to
 }
 
 // IsRunning reports whether the Caddy subprocess is alive.
@@ -223,13 +224,21 @@ func ParseXAuth(doc map[string]interface{}) *XAuth {
 		port = int(v)
 	}
 
+	targetPort := 0
+	switch v := m["target_port"].(type) {
+	case int:
+		targetPort = v
+	case float64:
+		targetPort = int(v)
+	}
+
 	username, _ := m["username"].(string)
 	password, _ := m["password"].(string)
 
 	if port == 0 || username == "" || password == "" {
 		return nil
 	}
-	return &XAuth{Port: port, Username: username, Password: password}
+	return &XAuth{Port: port, Username: username, Password: password, TargetPort: targetPort}
 }
 
 // InjectCaddyAuthLabels hashes the x-auth password and injects yantr.caddy.*
@@ -262,8 +271,14 @@ func InjectCaddyAuthLabels(doc map[string]interface{}, auth *XAuth) error {
 			continue
 		}
 
-		// Find the app port from existing yantr.port.N labels.
-		appPort := resolveAppPort(svc)
+		// Determine the internal target port.
+		// Prefer the explicit TargetPort set by the caller (e.g. chosen by the
+		// user in the UI). Fall back to the first yantr.port.N label found in
+		// the service definition only when no explicit port was given.
+		appPort := auth.TargetPort
+		if appPort == 0 {
+			appPort = resolveAppPort(svc)
+		}
 
 		// Ensure labels is a map. If the compose was written with sequence-style
 		// labels ("- key=value"), yaml.v3 unmarshals them as []interface{}.
@@ -279,8 +294,12 @@ func InjectCaddyAuthLabels(doc map[string]interface{}, auth *XAuth) error {
 		// Plain password is intentionally NOT stored in any label.
 	}
 
+	effectiveTarget := auth.TargetPort
+	if effectiveTarget == 0 {
+		effectiveTarget = resolveAppPortFromDoc(doc)
+	}
 	shared.Log("info", fmt.Sprintf("[caddy] x-auth: injected auth labels → serve :%d, target :%d, user %s",
-		auth.Port, resolveAppPortFromDoc(doc), auth.Username))
+		auth.Port, effectiveTarget, auth.Username))
 	return nil
 }
 

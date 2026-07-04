@@ -402,10 +402,11 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		MasterApp          string                 `json:"masterApp"`
 		CustomPortMappings map[string]interface{} `json:"customPortMappings"`
 		Auth               *struct {
-			Enabled  bool   `json:"enabled"`
-			Port     int    `json:"port"`
-			Username string `json:"username"`
-			Password string `json:"password"`
+			Enabled    bool   `json:"enabled"`
+			Port       int    `json:"port"`
+			TargetPort int    `json:"targetPort"`
+			Username   string `json:"username"`
+			Password   string `json:"password"`
 		} `json:"auth"`
 	}
 	if !parseJSON(w, r, &body) {
@@ -497,9 +498,10 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		auth := caddy.ParseXAuth(doc)
 		if body.Auth != nil && body.Auth.Enabled {
 			auth = &caddy.XAuth{
-				Port:     body.Auth.Port,
-				Username: body.Auth.Username,
-				Password: body.Auth.Password,
+				Port:       body.Auth.Port,
+				TargetPort: body.Auth.TargetPort,
+				Username:   body.Auth.Username,
+				Password:   body.Auth.Password,
 			}
 		}
 		if auth != nil {
