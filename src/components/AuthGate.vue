@@ -10,6 +10,8 @@ const toast = useNotification()
 const { authState, loginYantr, setupYantrAdmin } = useYantrAuth()
 
 const username = ref(localStorage.getItem('yantr-username') || '')
+const password = ref('')
+const pin = ref('')
 const submitting = ref(false)
 const localError = ref('')
 
@@ -27,6 +29,8 @@ const title = computed(() => authState.booting
 
 function validate() {
   if (!String(username.value).trim()) return t('authGate.errors.usernameRequired')
+  if (!String(password.value).trim()) return 'Password is required'
+  if (!String(pin.value).trim()) return 'PIN is required'
   return ''
 }
 
@@ -41,7 +45,11 @@ async function submit() {
   localError.value = ''
 
   try {
-    const payload = { username: username.value }
+    const payload = { 
+      username: username.value, 
+      password: password.value, 
+      pin: pin.value 
+    }
     if (isSetup.value) {
       await setupYantrAdmin(payload)
       toast.success(t('authGate.messages.setupComplete'))
@@ -192,14 +200,47 @@ onUnmounted(() => {
               />
             </div>
 
+            <!-- Password -->
+            <div>
+              <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary) mb-1.5 flex items-center gap-1.5">
+                <LockKeyhole class="h-3.5 w-3.5" />
+                <span>PASSWORD</span>
+              </div>
+              <input
+                v-model="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                class="w-full bg-(--surface-muted) rounded-2xl px-4 py-3.5 text-[15px] font-medium placeholder:text-(--text-secondary)/60 focus:outline-none focus:-translate-y-px transition-all duration-200"
+                style="box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
+              />
+            </div>
+
+            <!-- PIN -->
+            <div>
+              <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary) mb-1.5 flex items-center gap-1.5">
+                <LockKeyhole class="h-3.5 w-3.5" />
+                <span>PIN</span>
+              </div>
+              <input
+                v-model="pin"
+                type="password"
+                inputmode="numeric"
+                autocomplete="off"
+                placeholder="Enter your PIN"
+                class="w-full bg-(--surface-muted) rounded-2xl px-4 py-3.5 text-[15px] font-medium placeholder:text-(--text-secondary)/60 focus:outline-none focus:-translate-y-px transition-all duration-200"
+                style="box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
+              />
+            </div>
+
             <!-- Setup note -->
             <p v-if="isSetup" class="text-[12px] text-(--text-secondary) leading-relaxed">
-              {{ t('authGate.setupNote') }}
+              Set a strong password and a PIN to generate your secure session key.
             </p>
 
             <!-- Login note: device-bound key -->
             <p v-else class="text-[12px] text-(--text-secondary) leading-relaxed">
-              {{ t('authGate.loginNote') }}
+              Enter your password and PIN to derive your session key and unlock Yantr.
             </p>
 
             <!-- Error -->

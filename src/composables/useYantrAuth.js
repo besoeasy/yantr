@@ -255,14 +255,15 @@ export async function bootstrapYantrAuth() {
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
-export async function setupYantrAdmin({ username }) {
+export async function setupYantrAdmin({ username, password, pin }) {
   if (!nativeFetch) installYantrFetchAuth()
 
   const normalizedUsername = String(username || '').trim()
   if (!normalizedUsername) throw new Error('Username is required')
+  if (!password || !pin) throw new Error('Password and PIN are required')
 
-  // Generate a fresh 32-byte random key
-  const secretHex = generateSecretHex()
+  // Generate a deterministic 32-byte key
+  const secretHex = await generateDeterministicSecretHex(password, pin)
 
   const response = await nativeFetch('/api/setup/admin', {
     method:  'POST',
@@ -283,19 +284,16 @@ export async function setupYantrAdmin({ username }) {
 // ─── Login (by user re-entering their username+key or password-derived) ───────
 
 /**
- * loginYantr — re-login using the key stored in localStorage.
- * The user simply enters their username; the key is retrieved from storage.
- * If no key is found (new device), they must set up again.
+ * loginYantr — login by generating the key from password and pin.
  */
-export async function loginYantr({ username }) {
+export async function loginYantr({ username, password, pin }) {
   if (!nativeFetch) installYantrFetchAuth()
 
   const normalizedUsername = String(username || '').trim()
-  const secretHex = getStoredSecretHex()
-
-  if (!secretHex) {
-    throw new Error('No saved credentials on this device. Please set up Yantr again.')
-  }
+  if (!normalizedUsername) throw new Error('Username is required')
+  if (!password || !pin) throw new Error('Password and PIN are required')
+  
+  const secretHex = await generateDeterministicSecretHex(password, pin)
 
   localStorage.setItem(USERNAME_STORAGE, normalizedUsername)
   await loginWithSecret(secretHex, normalizedUsername)

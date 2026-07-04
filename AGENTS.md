@@ -11,8 +11,6 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 | `npm run build` | Build production Vue app to `dist/` |
 | `npm run preview` | Preview production build |
 | `npm run docker` | Build & run Docker image with host network + Docker socket |
-| `npm run core:build` | Compile Go backend binary to `./yantr-core` |
-| `npm run core:run` | Run Go backend binary locally (requires `dist/` and `apps/`) |
 | `npm run website` | Build static website to `website/` |
 | `node check.js` | Validate all apps in `apps/` (run after any app changes) |
 
