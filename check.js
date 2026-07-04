@@ -30,31 +30,17 @@ function warn(appName, rule, detail) {
   if (detail) console.warn(`   ${detail}`);
 }
 
-// ── info.json rules ────────────────────────────────────────────────────────────
+// ── x-yantr block rules ────────────────────────────────────────────────────────
 
-async function checkInfoJson(appName, infoPath) {
-  let raw;
-  try {
-    raw = await readFile(infoPath, "utf-8");
-  } catch {
-    fail(appName, "info.json missing", `Expected at ${infoPath}`);
-  }
-
-  let info;
-  try {
-    info = JSON.parse(raw);
-  } catch (e) {
-    fail(appName, "info.json is not valid JSON", e.message);
-  }
-
+function checkXYantr(appName, meta) {
   // name
-  if (!info.name || typeof info.name !== "string" || !info.name.trim()) {
-    fail(appName, 'info.json missing "name"', "Must be a non-empty string with correct capitalisation.");
+  if (!meta.name || typeof meta.name !== "string" || !meta.name.trim()) {
+    fail(appName, 'x-yantr missing "name"', "Must be a non-empty string.");
   }
 
   // logo — optional IPFS CID; empty or missing is allowed
-  if (typeof info.logo === "string" && info.logo.trim()) {
-    const logo = info.logo.trim();
+  if (typeof meta.logo === "string" && meta.logo.trim()) {
+    const logo = meta.logo.trim();
     if (logo.includes("://")) {
       warn(appName, '"logo" looks like a URL', `Should be an IPFS CID, got: "${logo}"`);
     } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(logo) && !/^baf[a-zA-Z0-9]+$/.test(logo)) {
@@ -62,90 +48,67 @@ async function checkInfoJson(appName, infoPath) {
     }
   }
 
-  // tags — min 6, lowercase, letters/numbers/hyphens only
-  if (!Array.isArray(info.tags) || info.tags.length < 6) {
-    fail(appName, 'info.json "tags" must have at least 6 entries', `Found ${info.tags?.length ?? 0}`);
+  // tags — 3–5, lowercase, letters/numbers/hyphens only
+  if (!Array.isArray(meta.tags) || meta.tags.length < 3) {
+    fail(appName, 'x-yantr "tags" must have at least 3 entries', `Found ${meta.tags?.length ?? 0}`);
   }
-  for (const tag of info.tags) {
+  if (meta.tags.length > 5) {
+    fail(appName, 'x-yantr "tags" must have at most 5 entries', `Found ${meta.tags.length}`);
+  }
+  for (const tag of meta.tags) {
     if (typeof tag !== "string" || !/^[a-z0-9-]+$/.test(tag)) {
-      fail(appName, `info.json "tags" entry is invalid: "${tag}"`, "Tags must be lowercase letters, numbers, and hyphens only.");
+      fail(appName, `x-yantr "tags" entry is invalid: "${tag}"`, "Tags must be lowercase letters, numbers, and hyphens only.");
     }
   }
 
   // short_description — 50–100 chars
-  if (typeof info.short_description !== "string" || !info.short_description.trim()) {
-    fail(appName, 'info.json missing "short_description"', "Required field.");
+  if (typeof meta.short_description !== "string" || !meta.short_description.trim()) {
+    fail(appName, 'x-yantr missing "short_description"', "Required field.");
   } else {
-    const len = info.short_description.trim().length;
+    const len = meta.short_description.trim().length;
     if (len < 50 || len > 100) {
-      fail(appName, `info.json "short_description" length out of range (${len} chars)`, "Must be 50–100 characters.");
+      fail(appName, `x-yantr "short_description" length out of range (${len} chars)`, "Must be 50–100 characters.");
     }
   }
 
   // description — 200–300 chars
-  if (typeof info.description !== "string" || !info.description.trim()) {
-    fail(appName, 'info.json missing "description"', "Required field.");
+  if (typeof meta.description !== "string" || !meta.description.trim()) {
+    fail(appName, 'x-yantr missing "description"', "Required field.");
   } else {
-    const len = info.description.trim().length;
+    const len = meta.description.trim().length;
     if (len < 200 || len > 300) {
-      fail(appName, `info.json "description" length out of range (${len} chars)`, "Must be 200–300 characters.");
+      fail(appName, `x-yantr "description" length out of range (${len} chars)`, "Must be 200–300 characters.");
     }
   }
 
   // usecases — min 2
-  if (!Array.isArray(info.usecases) || info.usecases.length < 2) {
-    fail(appName, 'info.json "usecases" must have at least 2 entries', `Found ${info.usecases?.length ?? 0}`);
-  }
-
-  // ports — must be array format, no old "port" string
-  if ("port" in info) {
-    fail(appName, 'info.json uses deprecated "port" string field', 'Replace with "ports" array: [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }]');
-  }
-  if (!Array.isArray(info.ports)) {
-    fail(appName, 'info.json missing "ports" array', 'Required field. Use format: [{ "port": 8080, "protocol": "HTTP", "label": "Web UI" }]');
-  }
-  for (const p of info.ports) {
-    if (typeof p.port !== "number") {
-      fail(appName, `info.json "ports" entry has invalid "port" value: ${JSON.stringify(p.port)}`, "Must be a number.");
-    }
-    if (typeof p.protocol !== "string" || !p.protocol.trim()) {
-      fail(appName, `info.json "ports" entry missing "protocol" for port ${p.port}`, 'e.g. "HTTP", "TCP", "UDP"');
-    }
-    if (typeof p.label !== "string" || !p.label.trim()) {
-      fail(appName, `info.json "ports" entry missing "label" for port ${p.port}`, 'e.g. "Web UI"');
-    }
+  if (!Array.isArray(meta.usecases) || meta.usecases.length < 2) {
+    fail(appName, 'x-yantr "usecases" must have at least 2 entries', `Found ${meta.usecases?.length ?? 0}`);
   }
 
   // website — must be https://
-  if (!info.website || typeof info.website !== "string") {
-    fail(appName, 'info.json missing "website"', "Must be a valid https:// URL.");
-  } else if (!info.website.startsWith("https://")) {
-    fail(appName, `info.json "website" must start with https://`, `Got: "${info.website}"`);
-  }
-
-  // dependencies — removed; app metadata should stay self-contained
-  if ("dependencies" in info) {
-    fail(appName, 'info.json uses removed "dependencies" field', 'Remove the field and describe any manual app-to-app wiring in "notes".');
+  if (!meta.website || typeof meta.website !== "string") {
+    fail(appName, 'x-yantr missing "website"', "Must be a valid https:// URL.");
+  } else if (!meta.website.startsWith("https://")) {
+    fail(appName, `x-yantr "website" must start with https://`, `Got: "${meta.website}"`);
   }
 
   // notes — if present must be array of strings
-  if ("notes" in info) {
-    if (!Array.isArray(info.notes)) {
-      fail(appName, 'info.json "notes" must be an array of strings', "Remove the field or use an array.");
+  if ("notes" in meta) {
+    if (!Array.isArray(meta.notes)) {
+      fail(appName, 'x-yantr "notes" must be an array of strings', "Remove the field or use an array.");
     }
-    for (const note of info.notes) {
+    for (const note of meta.notes) {
       if (typeof note !== "string") {
-        fail(appName, 'info.json "notes" contains a non-string entry', JSON.stringify(note));
+        fail(appName, 'x-yantr "notes" contains a non-string entry', JSON.stringify(note));
       }
     }
   }
-
-  return info;
 }
 
 // ── compose.yml rules ──────────────────────────────────────────────────────────
 
-async function checkCompose(appName, composePath, info) {
+async function checkCompose(appName, composePath) {
   let raw;
   try {
     raw = await readFile(composePath, "utf-8");
@@ -160,6 +123,14 @@ async function checkCompose(appName, composePath, info) {
     fail(appName, "compose.yml is not valid YAML", e.message);
   }
 
+  // x-yantr block must exist and have a name
+  const meta = compose?.["x-yantr"];
+  if (!meta || typeof meta !== "object" || !meta.name) {
+    fail(appName, "compose.yml missing x-yantr block", 'Add an "x-yantr:" top-level key with name, tags, description, etc.');
+  }
+
+  checkXYantr(appName, meta);
+
   const services = compose?.services ?? {};
   if (Object.keys(services).length === 0) {
     fail(appName, "compose.yml has no services defined");
@@ -168,16 +139,37 @@ async function checkCompose(appName, composePath, info) {
   for (const [svcName, svc] of Object.entries(services)) {
     if (!svc || typeof svc !== "object") continue;
 
-    // Required yantr labels
     const labels = normaliseLabels(svc.labels);
-    for (const required of ["yantr.app", "yantr.service"]) {
-      if (!labels[required]) {
-        fail(appName, `compose.yml service "${svcName}" is missing required label: ${required}`);
-      }
+
+    // yantr.service is required
+    if (!labels["yantr.service"]) {
+      fail(appName, `compose.yml service "${svcName}" is missing required label: yantr.service`);
     }
 
-    if (labels["yantr.app"] && labels["yantr.app"] !== appName) {
-      warn(appName, `Service "${svcName}" yantr.app mismatch`, `yantr.app="${labels["yantr.app"]}" but folder is "${appName}"`);
+    // at least one yantr.port.N label required
+    const portLabels = Object.keys(labels).filter((k) => k.startsWith("yantr.port."));
+    if (portLabels.length === 0) {
+      fail(
+        appName,
+        `compose.yml service "${svcName}" has no port labels`,
+        'Add at least one "yantr.port.{N}: PROTOCOL" label, e.g. yantr.port.8080: "HTTP"'
+      );
+    }
+
+    // validate each yantr.port.N label
+    for (const key of portLabels) {
+      const portNum = key.replace("yantr.port.", "");
+      if (!/^\d+$/.test(portNum)) {
+        fail(appName, `compose.yml service "${svcName}" has invalid port label key: ${key}`, "Port must be a number, e.g. yantr.port.8080");
+      }
+      const protocol = labels[key];
+      if (!["HTTP", "HTTPS", "TCP", "UDP"].includes(protocol?.toUpperCase())) {
+        fail(
+          appName,
+          `compose.yml service "${svcName}" has invalid protocol "${protocol}" on label ${key}`,
+          'Allowed values: HTTP, HTTPS, TCP, UDP'
+        );
+      }
     }
 
     // Environment must be key-value object, not list
@@ -189,19 +181,18 @@ async function checkCompose(appName, composePath, info) {
       );
     } else if (svc.environment && typeof svc.environment === "object") {
       // Enforce env_generators for required variables
-      for (const [key, val] of Object.entries(svc.environment)) {
+      const envGenerators = meta.env_generators ?? {};
+      for (const [, val] of Object.entries(svc.environment)) {
         if (typeof val === "string") {
-          // Look for strictly required variables like ${ADMIN_PASSWORD} (no :- fallback)
           const reqMatch = val.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/);
           if (reqMatch) {
             const varName = reqMatch[1];
-            // Some common vars are system-provided or external tokens that users must provide manually
             const systemVars = ["TZ", "PUID", "PGID", "TUNNEL_TOKEN", "TAILSCALE_AUTH_KEY", "TELEGRAM_BOT_TOKEN", "NOSTR_NSEC", "AUTHCODE"];
-            if (!systemVars.includes(varName) && !info?.env_generators?.[varName] && !info?.envGenerators?.[varName]) {
+            if (!systemVars.includes(varName) && !envGenerators[varName]) {
               fail(
                 appName,
-                `compose.yml requires secret/variable "${varName}" without a default, but it's missing from info.json env_generators`,
-                `Add an env_generators entry for "${varName}" in info.json so Yantr can securely generate it.`
+                `compose.yml requires secret/variable "${varName}" without a default, but it's missing from x-yantr env_generators`,
+                `Add an env_generators entry for "${varName}" in the x-yantr block so Yantr can securely generate it.`
               );
             }
           }
@@ -209,22 +200,17 @@ async function checkCompose(appName, composePath, info) {
       }
     }
 
-    // Ports must use container-only format — no fixed host:container bindings
+    // Ports must use container-only format
     for (const entry of svc.ports ?? []) {
       const spec = typeof entry === "string" ? entry : entry?.target ? String(entry.target) : null;
       if (!spec) continue;
-
-      // Strip protocol suffix (e.g. "53:53/tcp" → "53:53")
       const noProto = spec.split("/")[0];
-
-      // Handle IPv6 bracket notation like "[::]:80:80"
       const stripped = noProto.replace(/^\[.*?\]:/, "");
-
       if (stripped.includes(":")) {
         warn(
           appName,
           `compose.yml service "${svcName}" uses fixed host port mapping: "${spec}"`,
-          'Use container-only format (e.g. "53/tcp") so Docker auto-assigns the host port and multiple instances can run.',
+          'Use container-only format (e.g. "8080") so Docker auto-assigns the host port.',
         );
       }
     }
@@ -258,7 +244,6 @@ function extractPublishedPorts(compose) {
   for (const svc of Object.values(compose?.services ?? {})) {
     for (const entry of svc?.ports ?? []) {
       if (typeof entry === "string") {
-        // "hostPort:containerPort" or "containerPort" etc.
         const noProto = entry.split("/")[0];
         const parts = noProto.split(":").filter(Boolean);
         if (parts.length >= 2) {
@@ -283,25 +268,21 @@ const apps = entries
 
 console.log(`🔍  Yantr App Validator — checking ${apps.length} apps alphabetically\n`);
 
-const portMap = new Map(); // port → appName[]
-let allPassed = true;
+const portMap = new Map();
 
 for (const appName of apps) {
   const appDir = path.join(APPS_DIR, appName);
-  const infoPath = path.join(appDir, "info.json");
   const composePath = path.join(appDir, "compose.yml");
 
-  const info = await checkInfoJson(appName, infoPath);
-  const compose = await checkCompose(appName, composePath, info);
+  const compose = await checkCompose(appName, composePath);
 
-  // Track published ports for conflict detection
   for (const port of extractPublishedPorts(compose)) {
     if (!portMap.has(port)) portMap.set(port, []);
     portMap.get(port).push(appName);
   }
 }
 
-// Port conflict check (after all apps so we can report both sides)
+// Port conflict check
 for (const [port, owners] of portMap.entries()) {
   if (owners.length > 1) {
     warn("port-conflict", `Port :${port} is used by multiple apps: ${owners.join(", ")}`, "These apps cannot run simultaneously on the same host.");

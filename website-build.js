@@ -15,54 +15,75 @@ const appsOutputDir = path.join(websiteDir, 'apps');
 const appsDir = path.join(__dirname, 'apps');
 const siteUrl = 'https://yantr.org';
 
+function normaliseLabels(raw) {
+  if (!raw) return {};
+  if (Array.isArray(raw)) {
+    const out = {};
+    for (const l of raw) {
+      if (typeof l !== 'string') continue;
+      const idx = l.indexOf('=');
+      out[idx === -1 ? l : l.slice(0, idx)] = idx === -1 ? '' : l.slice(idx + 1);
+    }
+    return out;
+  }
+  return typeof raw === 'object' ? raw : {};
+}
+
+function parsePortLabels(services) {
+  const ports = [];
+  const seen = new Set();
+  for (const svc of Object.values(services ?? {})) {
+    const labels = normaliseLabels(svc?.labels);
+    const serviceLabel = labels['yantr.service'] || '';
+    for (const [key, protocol] of Object.entries(labels)) {
+      if (!key.startsWith('yantr.port.')) continue;
+      const portNum = parseInt(key.replace('yantr.port.', ''), 10);
+      if (isNaN(portNum) || seen.has(portNum)) continue;
+      seen.add(portNum);
+      ports.push({ port: portNum, protocol: protocol.toUpperCase(), label: serviceLabel || `Port ${portNum}` });
+    }
+  }
+  return ports;
+}
+
 function parseAppFolder(appId, appPath) {
-  const infoPath = path.join(appPath, 'info.json');
   const composePath = path.join(appPath, 'compose.yml');
 
   try {
-    if (!fs.existsSync(infoPath)) {
-      console.warn(`⚠️  No info.json found for ${appId}`);
+    if (!fs.existsSync(composePath)) {
+      console.warn(`⚠️  No compose.yml found for ${appId}`);
       return null;
     }
 
-    const info = JSON.parse(fs.readFileSync(infoPath, 'utf8'));
+    const composeData = parse(fs.readFileSync(composePath, 'utf8'));
+    const meta = composeData?.['x-yantr'];
 
-    if (!info.name) {
-      console.warn(`⚠️  No name field in info.json for ${appId}`);
+    if (!meta?.name) {
+      console.warn(`⚠️  No x-yantr.name in compose.yml for ${appId}`);
       return null;
     }
 
-    // Extract primary service image from compose.yml if available
-    let image = null;
-    let serviceName = null;
-    if (fs.existsSync(composePath)) {
-      try {
-        const composeData = parse(fs.readFileSync(composePath, 'utf8'));
-        if (composeData?.services) {
-          serviceName = Object.keys(composeData.services)[0];
-          image = composeData.services[serviceName]?.image || null;
-        }
-      } catch {
-        // compose.yml unreadable — skip image
-      }
-    }
+    const services = composeData?.services ?? {};
+    const serviceName = Object.keys(services)[0] || null;
+    const image = serviceName ? (services[serviceName]?.image || null) : null;
+    const ports = parsePortLabels(services);
 
     return {
       id: appId,
-      name: info.name,
-      logo: info.logo || null,
-      tags: Array.isArray(info.tags) ? info.tags : [],
-      ports: Array.isArray(info.ports) ? info.ports : [],
-      short_description: info.short_description || '',
-      description: info.description || info.short_description || '',
-      usecases: Array.isArray(info.usecases) ? info.usecases : [],
-      website: info.website || null,
-      notes: Array.isArray(info.notes) ? info.notes : [],
+      name: meta.name,
+      logo: meta.logo || null,
+      tags: Array.isArray(meta.tags) ? meta.tags : [],
+      ports,
+      short_description: meta.short_description || '',
+      description: meta.description || meta.short_description || '',
+      usecases: Array.isArray(meta.usecases) ? meta.usecases : [],
+      website: meta.website || null,
+      notes: Array.isArray(meta.notes) ? meta.notes : [],
       image,
       serviceName,
     };
   } catch (error) {
-    console.error(`❌ Error parsing ${appId}/info.json:`, error.message);
+    console.error(`❌ Error parsing ${appId}/compose.yml:`, error.message);
     return null;
   }
 }
@@ -91,10 +112,10 @@ function buildAppsJson() {
 
   for (const appId of appDirs.sort()) {
     const appPath = path.join(appsDir, appId);
-    const infoPath = path.join(appPath, 'info.json');
+    const composePath = path.join(appPath, 'compose.yml');
 
-    if (!fs.existsSync(infoPath)) {
-      console.warn(`⚠️  Skipping ${appId}: info.json not found`);
+    if (!fs.existsSync(composePath)) {
+      console.warn(`⚠️  Skipping ${appId}: compose.yml not found`);
       stats.skipped++;
       continue;
     }
@@ -164,7 +185,6 @@ function toAppViewModel(app) {
     appUrl,
     appPagePath: `/apps/${id}/`,
     sourceComposeUrl: `https://github.com/besoeasy/yantr/blob/main/apps/${id}/compose.yml`,
-    sourceInfoUrl: `https://github.com/besoeasy/yantr/blob/main/apps/${id}/info.json`,
     sourceAppFolderUrl: `https://github.com/besoeasy/yantr/tree/main/apps/${id}`,
     appSearchIntentTitle: `${name} Docker Compose Setup`,
     appSearchIntentDescription: `Learn how to self-host ${name} with Docker Compose using Yantr. ${summary}`,
