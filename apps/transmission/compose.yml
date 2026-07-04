@@ -1,7 +1,7 @@
 x-yantr:
   name: "Transmission"
   logo: "QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ"
-  tags: [download, network, torrent, p2p, self-hosted, homelab, bittorrent]
+  tags: [download, torrent, p2p, self-hosted, homelab]
   short_description: "Fast, lightweight BitTorrent client with web interface and native Docker support."
   description: >
     Transmission is a fast, lightweight BitTorrent client that runs as a daemon with a web interface. It's known for its low resource usage, simplicity, and reliability. Features include a web UI for remote management, magnet link support, peer exchange, DHT, encryption, bandwidth scheduling,...
