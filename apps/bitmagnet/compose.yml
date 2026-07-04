@@ -8,9 +8,17 @@ x-yantr:
     and torrent search engine with a web UI. It crawls the DHT network to discover
     and index torrents, enabling powerful search and Servarr integration without relying
     on external trackers.
-  usecases: ["Index and search torrents across the DHT network without relying on public torrent sites.", "Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for automated media acquisition."]
+  usecases:
+    [
+      "Index and search torrents across the DHT network without relying on public torrent sites.",
+      "Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for automated media acquisition.",
+    ]
   website: "https://bitmagnet.io"
-  notes: ["Bitmagnet bundles its own PostgreSQL instance — no separate database setup is required.", "The Web UI runs on port 3333. Access it via a reverse proxy or deploy directly via Yantr.", "DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your firewall for effective peer discovery.", "The default PostgreSQL password is `postgresx`. Change the `POSTGRES_PASSWORD` environment variable in compose.yml before deploying in a production environment."]
+  notes:
+    [
+      "The Web UI runs on port 3333. Access it via a reverse proxy or deploy directly via Yantr.",
+      "DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your firewall for effective peer discovery.",
+    ]
 
 services:
   bitmagnet:
@@ -62,8 +70,6 @@ services:
       interval: 10s
     labels:
       yantr.app: "bitmagnet"
-      yantr.service.5432: "Database"
-      yantr.port.5432: "TCP"
 
 volumes:
   bitmagnet_config:
