@@ -473,6 +473,19 @@ func ensureLabelsMap(svc map[string]interface{}) map[string]interface{} {
 	switch l := svc["labels"].(type) {
 	case map[string]interface{}:
 		return l
+	case []interface{}:
+		m := make(map[string]interface{}, len(l))
+		for _, entry := range l {
+			if s, ok := entry.(string); ok {
+				if idx := strings.Index(s, "="); idx > 0 {
+					m[s[:idx]] = s[idx+1:]
+				} else {
+					m[s] = ""
+				}
+			}
+		}
+		svc["labels"] = m
+		return m
 	default:
 		m := map[string]interface{}{}
 		svc["labels"] = m
