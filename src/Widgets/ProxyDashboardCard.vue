@@ -9,7 +9,6 @@ const { apiUrl } = useApiUrl()
 const proxies = ref([])
 const caddyRunning = ref(false)
 const loading = ref(false)
-const disabling = ref(null) // projectId currently being disabled
 let refreshInterval = null
 
 async function fetchProxies() {
@@ -30,22 +29,6 @@ onUnmounted(() => {
   if (refreshInterval) clearInterval(refreshInterval)
 })
 
-async function disable(proxy) {
-  if (disabling.value) return
-  disabling.value = proxy.projectId
-  try {
-    const response = await fetch(`${apiUrl.value}/api/proxy/disable`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projectId: proxy.projectId }),
-    })
-    await expectApiSuccess(response, 'Failed to disable proxy')
-    await fetchProxies()
-  } catch {}
-  finally {
-    disabling.value = null
-  }
-}
 
 async function reload() {
   loading.value = true
@@ -122,19 +105,7 @@ async function reload() {
             </div>
           </div>
 
-          <!-- disable button -->
-          <button
-            @click="disable(p)"
-            :disabled="disabling === p.projectId"
-            class="shrink-0 flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all border"
-            :class="disabling === p.projectId
-              ? 'border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-zinc-500 cursor-not-allowed'
-              : 'border-red-200 dark:border-red-900/50 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'"
-          >
-            <Loader v-if="disabling === p.projectId" class="w-3 h-3 animate-spin" />
-            <Trash2 v-else class="w-3 h-3" />
-            <span>{{ disabling === p.projectId ? '…' : 'Remove' }}</span>
-          </button>
+
         </div>
       </div>
     </div>
