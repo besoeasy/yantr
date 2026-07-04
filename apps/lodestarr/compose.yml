@@ -1,0 +1,15 @@
+services:
+  lodestarr:
+    image: ghcr.io/ddonindia/lodestarr:latest
+    container_name: lodestarr
+    ports:
+      - "3420"
+    volumes:
+      - lodestarr_config:/root/.config/lodestarr
+    restart: unless-stopped
+    labels:
+      yantr.app: "lodestarr"
+      yantr.service: "Search Aggregator"
+
+volumes:
+  lodestarr_config:
