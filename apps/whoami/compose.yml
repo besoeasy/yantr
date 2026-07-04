@@ -1,7 +1,7 @@
 x-yantr:
   name: "Whoami"
   logo: "QmZvfwKJRMrMvzUyRyrLJjShVCsGozSAPDrCq6Vg1Fpde5"
-  tags: [tools, utility, self-hosted, homelab, docker]
+  tags: [tools, utility, self-hosted, homelab, docker, open-source, testing]
   short_description: "Simple HTTP service that displays request details - ideal for testing proxies and ingress."
   description: >
     Whoami is an extremely simple HTTP service that prints all incoming request details back to the client.
