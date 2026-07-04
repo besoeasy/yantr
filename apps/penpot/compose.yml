@@ -1,0 +1,81 @@
+services:
+  penpot-frontend:
+    image: penpotapp/frontend:latest
+    container_name: penpot-frontend
+    ports:
+      - "8080"
+    volumes:
+      - penpot_assets:/opt/data/assets
+    environment:
+      PENPOT_FLAGS: enable-registration enable-login-with-password disable-email-verification disable-smtp disable-secure-session-cookies
+    depends_on:
+      - penpot-backend
+      - penpot-exporter
+    restart: unless-stopped
+    labels:
+      yantr.app: "penpot"
+      yantr.service: "Web UI"
+
+  penpot-backend:
+    image: penpotapp/backend:latest
+    container_name: penpot-backend
+    volumes:
+      - penpot_assets:/opt/data/assets
+    environment:
+      PENPOT_FLAGS: enable-registration enable-login-with-password disable-email-verification disable-smtp enable-prepl-server disable-secure-session-cookies
+      PENPOT_SECRET_KEY: ${PENPOT_SECRET_KEY}
+      PENPOT_PUBLIC_URI: ${PUBLIC_URI:-http://localhost:8080}
+      PENPOT_DATABASE_URI: postgresql://penpot-db/penpot
+      PENPOT_DATABASE_USERNAME: penpot
+      PENPOT_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      PENPOT_REDIS_URI: redis://penpot-redis/0
+      PENPOT_ASSETS_STORAGE_BACKEND: assets-fs
+      PENPOT_STORAGE_ASSETS_FS_DIRECTORY: /opt/data/assets
+      PENPOT_TELEMETRY_ENABLED: "false"
+    depends_on:
+      - penpot-db
+      - penpot-redis
+    restart: unless-stopped
+    labels:
+      yantr.app: "penpot"
+      yantr.service: "Backend"
+
+  penpot-exporter:
+    image: penpotapp/exporter:latest
+    container_name: penpot-exporter
+    environment:
+      PENPOT_PUBLIC_URI: http://penpot-frontend:8080
+      PENPOT_REDIS_URI: redis://penpot-redis/0
+    restart: unless-stopped
+    labels:
+      yantr.app: "penpot"
+      yantr.service: "Exporter"
+
+  penpot-db:
+    image: postgres:15-alpine
+    container_name: penpot-db
+    environment:
+      POSTGRES_DB: penpot
+      POSTGRES_USER: penpot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - penpot_db:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "penpot"
+      yantr.service: "Database"
+
+  penpot-redis:
+    image: redis:7-alpine
+    container_name: penpot-redis
+    volumes:
+      - penpot_redis:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: "penpot"
+      yantr.service: "Cache"
+
+volumes:
+  penpot_assets:
+  penpot_db:
+  penpot_redis:

@@ -1,0 +1,35 @@
+{
+  "name": "Penpot",
+  "logo": "",
+  "tags": [
+    "design",
+    "ui",
+    "prototyping",
+    "collaboration",
+    "productivity",
+    "self-hosted",
+    "open-source",
+    "figma"
+  ],
+  "ports": [
+    { "port": 8080, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Open-source Figma alternative for collaborative UI design and prototyping.",
+  "description": "Penpot is a free, open-source design and prototyping platform built on open web standards (SVG). Teams collaborate in real-time on vector UI designs, interactive prototypes, and design systems — all in the browser, with no proprietary file formats. It supports components, design tokens, grids, constraints, and exporting assets, making it a complete Figma alternative you fully control. Backed by PostgreSQL for data and Redis for real-time collaboration.",
+  "usecases": [
+    "Design UI mockups and prototypes collaboratively in the browser.",
+    "Build and share reusable design systems and component libraries.",
+    "Create interactive prototypes with transitions to hand off to developers.",
+    "Replace Figma with a fully self-hosted, open-source alternative."
+  ],
+  "website": "https://penpot.app",
+  "env_generators": {
+    "PENPOT_SECRET_KEY": { "length": 64, "charset": "base64url" },
+    "POSTGRES_PASSWORD": { "length": 32, "charset": "alnum" }
+  },
+  "notes": [
+    "Set PUBLIC_URI to your server's URL so assets and links resolve correctly.",
+    "Email verification is disabled by default for local use — enable SMTP for production.",
+    "Requires at least 2 GB RAM for the full 5-service stack."
+  ]
+}

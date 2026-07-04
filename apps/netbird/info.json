@@ -1,0 +1,33 @@
+{
+  "name": "NetBird",
+  "logo": "",
+  "tags": [
+    "networking",
+    "vpn",
+    "wireguard",
+    "mesh",
+    "security",
+    "self-hosted",
+    "remote-access",
+    "zero-trust"
+  ],
+  "ports": [],
+  "short_description": "WireGuard-based mesh VPN that connects all your devices into a private network.",
+  "description": "NetBird is a zero-config WireGuard mesh VPN that connects your servers, devices, and containers into a secure private network. Unlike traditional VPNs, every node communicates directly (peer-to-peer) using WireGuard tunnels with NAT traversal, requiring no open ports or central traffic relay. Managed via the NetBird cloud dashboard or a self-hosted management server. Ideal for securely accessing home servers from anywhere without exposing them to the internet.",
+  "usecases": [
+    "Securely access your home server from anywhere without opening firewall ports.",
+    "Connect all your devices (laptops, phones, servers) into one private network.",
+    "Replace a traditional VPN with a peer-to-peer WireGuard mesh.",
+    "Enforce zero-trust network access policies across your infrastructure."
+  ],
+  "website": "https://netbird.io",
+  "env_generators": {
+    "NB_SETUP_KEY": { "length": 36, "charset": "hex" }
+  },
+  "notes": [
+    "NB_SETUP_KEY must be obtained from your NetBird dashboard at app.netbird.io — generate one under Setup Keys.",
+    "Uses host network mode and NET_ADMIN capabilities to manage WireGuard interfaces.",
+    "The management server defaults to NetBird cloud — self-host the server for full independence.",
+    "No ports are exposed — NetBird operates via outbound WireGuard tunnels only."
+  ]
+}

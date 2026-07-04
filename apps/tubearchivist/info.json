@@ -1,0 +1,36 @@
+{
+  "name": "TubeArchivist",
+  "logo": "",
+  "tags": [
+    "media",
+    "youtube",
+    "archive",
+    "self-hosted",
+    "video",
+    "download",
+    "search",
+    "streaming"
+  ],
+  "ports": [
+    { "port": 8000, "protocol": "HTTP", "label": "Web UI" }
+  ],
+  "short_description": "Self-hosted YouTube archive — subscribe, download, search, and stream your channels.",
+  "description": "TubeArchivist is a self-hosted YouTube media server with a full-featured web UI. Subscribe to channels, queue downloads, and browse your archive by channel, playlist, or full-text transcript search — powered by Elasticsearch. Stream videos directly from your server, track watch progress, and never lose content to takedowns or unavailability. Backed by Redis for job queuing and a custom Elasticsearch image optimized for media metadata.",
+  "usecases": [
+    "Archive entire YouTube channels locally before they disappear or get deleted.",
+    "Search video transcripts full-text across your entire downloaded library.",
+    "Stream archived videos from your home server to any device.",
+    "Track subscriptions and queue downloads automatically on a schedule."
+  ],
+  "website": "https://tubearchivist.com",
+  "env_generators": {
+    "TA_PASSWORD": { "length": 24, "charset": "alnum" },
+    "ELASTIC_PASSWORD": { "length": 24, "charset": "alnum" }
+  },
+  "notes": [
+    "Requires at least 2 GB RAM (4 GB recommended) due to the Elasticsearch service.",
+    "Set TA_HOST to your server's URL so the app generates correct links.",
+    "First indexing of large channels may take several minutes to complete.",
+    "TA_PASSWORD is the login password for the TubeArchivist web UI admin account."
+  ]
+}
