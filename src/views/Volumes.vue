@@ -7,9 +7,11 @@ import SearchInput from '../components/SearchInput.vue'
 import UnderlineTabBar from '../components/UnderlineTabBar.vue'
 import { useNotification } from '../composables/useNotification'
 import { useI18n } from 'vue-i18n'
+import { useYantrAuth } from '../composables/useYantrAuth'
 
 const toast = useNotification()
 const { t } = useI18n()
+const { openVolumeBrowser } = useYantrAuth()
 
 const volumesData = ref({})
 const loading = ref(false)
@@ -88,6 +90,7 @@ async function fetchVolumes() {
 }
 
 async function startBrowsing(volumeName) {
+  console.log(`[Volumes] Starting volume browser for volume: ${volumeName}`);
   actionLoading.value[volumeName] = true
   try {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, {
@@ -99,9 +102,13 @@ async function startBrowsing(volumeName) {
     if (data.success) {
       toast.success(t('volumes.browserStarted'))
       await fetchVolumes()
-      window.open(`/browse/${volumeName}/`, '_blank')
+      
+      openVolumeBrowser(volumeName)
+    } else {
+      console.error(`[Volumes] Failed to start browser for volume: ${volumeName}`, data);
     }
   } catch (error) {
+    console.error(`[Volumes] Error starting browser for volume: ${volumeName}`, error);
     toast.error(t('volumes.failedToStartBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
@@ -109,6 +116,7 @@ async function startBrowsing(volumeName) {
 }
 
 async function stopBrowsing(volumeName) {
+  console.log(`[Volumes] Stopping volume browser for volume: ${volumeName}`);
   actionLoading.value[volumeName] = true
   try {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'DELETE' })
@@ -116,8 +124,11 @@ async function stopBrowsing(volumeName) {
     if (data.success) {
       toast.success(t('volumes.browserStopped'))
       await fetchVolumes()
+    } else {
+      console.error(`[Volumes] Failed to stop browser for volume: ${volumeName}`, data);
     }
   } catch (error) {
+    console.error(`[Volumes] Error stopping browser for volume: ${volumeName}`, error);
     toast.error(t('volumes.failedToStopBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
@@ -254,7 +265,7 @@ onUnmounted(() => {
                   </div>
                   <h4 class="font-mono font-medium text-sm text-gray-900 dark:text-white truncate mb-4" :title="volume.name">{{ volume.name }}</h4>
                   <div class="mt-auto flex gap-2">
-                      <a :href="`/browse/${volume.name}/`"
+                      <a href="#" @click.prevent="openVolumeBrowser(volume.name)"
                          target="_blank"
                          class="flex-1 flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white dark:bg-white dark:hover:bg-gray-100 dark:text-gray-900 rounded-lg px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors shadow-sm">
                          <ExternalLink class="w-4 h-4" />
@@ -313,7 +324,7 @@ onUnmounted(() => {
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ formatDate(volume.createdAt) }}</td>
                       <td class="px-4 py-4 text-right">
                          <div v-if="volume.isBrowsing" class="inline-flex items-center gap-1.5">
-                            <a :href="`/browse/${volume.name}/`" target="_blank"
+                            <a href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
                                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors shadow-sm">
                                <ExternalLink class="w-3 h-3" />
                                {{ t('volumes.open') }}
@@ -365,7 +376,7 @@ onUnmounted(() => {
                       <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ volume.size }} {{ t('volumes.mb') }}</td>
                       <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ formatDate(volume.createdAt) }}</td>
                       <td class="px-4 py-4 text-right flex items-center justify-end gap-2">
-                         <a v-if="volume.isBrowsing" :href="`/browse/${volume.name}/`" target="_blank"
+                         <a v-if="volume.isBrowsing" href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
                             class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
                             title="Open Browser">
                             <ExternalLink class="w-4 h-4" />

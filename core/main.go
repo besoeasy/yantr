@@ -249,7 +249,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		isProtected := strings.HasPrefix(path, "/api/") || strings.HasPrefix(path, "/browse/")
+		isProtected := strings.HasPrefix(path, "/api/")
 		if !isProtected || publicPaths[path] {
 			next.ServeHTTP(w, r)
 			return
@@ -260,6 +260,9 @@ func authMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
+		if token == "" {
+			token = r.URL.Query().Get("token")
+		}
 		if _, err := auth.VerifyToken(token, cfg); err != nil {
 			jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 			return

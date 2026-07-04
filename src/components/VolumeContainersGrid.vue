@@ -1,9 +1,11 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import { useCurrentTime } from "../composables/useCurrentTime";
+import { useYantrAuth } from "../composables/useYantrAuth";
 import { FolderOpen, ExternalLink, EyeOff } from "lucide-vue-next";
 
 const { t } = useI18n();
+const { openVolumeBrowser } = useYantrAuth();
 
 const emit = defineEmits(['stop-browser'])
 
@@ -16,7 +18,7 @@ const { currentTime } = useCurrentTime();
 
 function openBrowser(e, browser) {
   e.stopPropagation();
-  window.open(`/browse/${browser.volumeName}/`, "_blank");
+  openVolumeBrowser(browser.volumeName);
 }
 
 function isTemporary(browser) {

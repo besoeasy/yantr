@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
+import { useYantrAuth } from '../composables/useYantrAuth'
 import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package } from 'lucide-vue-next'
 import AppLogo from '../components/AppLogo.vue'
 import { formatBytes } from '../utils/metrics'
@@ -14,6 +15,7 @@ const router = useRouter()
 const { t } = useI18n()
 const toast = useNotification()
 const { apiUrl } = useApiUrl()
+const { openVolumeBrowser } = useYantrAuth()
 
 const selectedContainer = ref(null)
 const containerStats = ref(null)
@@ -280,6 +282,7 @@ async function deleteContainer() {
 }
 
 async function browseVolume(volumeName, expiryMinutes = 60) {
+  console.log(`[ContainerDetail] Starting volume browser for volume: ${volumeName} (Expiry: ${expiryMinutes}m)`);
   browsingVolume.value[volumeName] = volumeName
   showVolumeMenu.value[volumeName] = false
   try {
@@ -293,8 +296,9 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     await expectApiSuccess(response, t('containerDetail.error.failedToStartVolumeBrowser'))
     const expiryText = expiryMinutes > 0 ? ` (${expiryMinutes}m)` : ' (no expiry)'
     toast.success(t('containerDetail.success.volumeBrowserStarted', { expiry: expiryText }))
-    window.open(`/browse/${volumeName}/`, '_blank')
+    openVolumeBrowser(volumeName)
   } catch (error) {
+    console.error(`[ContainerDetail] Error starting browser for volume: ${volumeName}`, error);
     toast.error(error.message || t('containerDetail.error.failedToStartVolumeBrowser'))
   } finally {
     delete browsingVolume.value[volumeName]

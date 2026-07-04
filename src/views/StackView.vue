@@ -6,6 +6,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
 import { formatDuration, formatBytes } from "../utils/metrics";
+import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
 import {
   Globe,
@@ -29,6 +30,7 @@ const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 const { currentTime } = useCurrentTime();
 const toast = useNotification();
+const { openVolumeBrowser } = useYantrAuth();
 
 const projectId = computed(() => route.params.projectId);
 
@@ -392,6 +394,7 @@ async function removeStack() {
 // ── Volume browsing ──────────────────────────────────────────────────────────
 
 async function browseVolume(volumeName, expiryMinutes = 60) {
+  console.log(`[StackView] Starting volume browser for volume: ${volumeName} (Expiry: ${expiryMinutes}m)`);
   browsingVolume.value[volumeName] = true;
   showVolumeMenu.value[volumeName] = false;
   try {
@@ -404,9 +407,12 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     if (data.success) {
       const expiryText = expiryMinutes > 0 ? ` (${t("stackView.expiresIn", { minutes: expiryMinutes })})` : ` (${t("stackView.noExpiry")})`;
       toast.success(t("stackView.volumeBrowserStarted", { expiry: expiryText }));
-      window.open(`/browse/${volumeName}/`, "_blank");
+      openVolumeBrowser(volumeName);
+    } else {
+      console.error(`[StackView] Failed to start browser for volume: ${volumeName}`, data);
     }
   } catch (e) {
+    console.error(`[StackView] Error starting browser for volume: ${volumeName}`, e);
     toast.error(t("stackView.failedToStartVolumeBrowser"));
   } finally {
     delete browsingVolume.value[volumeName];

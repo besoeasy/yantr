@@ -142,7 +142,7 @@ function isYantrRequest(url) {
 function shouldAttachAuth(url) {
   if (!isYantrRequest(url)) return false
   const pathname = url.pathname || '/'
-  if (!(pathname.startsWith('/api/') || pathname.startsWith('/browse/'))) return false
+  if (!pathname.startsWith('/api/')) return false
   return !PUBLIC_PATHS.has(pathname)
 }
 
@@ -253,6 +253,21 @@ export async function bootstrapYantrAuth() {
   }
 }
 
+// ─── Token Generation for External Use ────────────────────────────────────────
+
+export async function generateAuthToken() {
+  const secretHex = authState.secretHex || getStoredSecretHex()
+  const username  = localStorage.getItem(USERNAME_STORAGE) || ''
+  if (!secretHex || !username) return null
+  return await createToken(secretHex, username)
+}
+
+export function openVolumeBrowser(volumeName) {
+  console.log(`[Volume Browser] Opening browser for volume: ${volumeName}`)
+  const url = new URL(`/browse/${volumeName}/`, window.location.origin)
+  window.open(url.toString(), '_blank')
+}
+
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
 export async function setupYantrAdmin({ username, password, pin }) {
@@ -315,5 +330,7 @@ export function useYantrAuth() {
     setupYantrAdmin,
     loginYantr,
     logoutYantr,
+    generateAuthToken,
+    openVolumeBrowser,
   }
 }
