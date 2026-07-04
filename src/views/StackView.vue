@@ -38,8 +38,6 @@ const stack = ref(null);
 const loading = ref(true);
 const removing = ref(false);
 const updating = ref(false);
-const openingPort = ref(false);
-const newPort = ref({ serviceName: "", mapping: "" });
 
 async function updateStack() {
   if (updating.value || !stack.value) return;
@@ -162,14 +160,11 @@ const browsingVolume = ref({});
 const showVolumeMenu = ref({});
 
 // Top-level section navigation
-const activeSection = ref("ports"); // 'ports' | 'auth' | 'containers' | 'storage'
+const activeSection = ref("containers"); // 'auth' | 'containers' | 'storage'
 
 const sectionTabs = computed(() => [
-  ...(namedVolumes.value.length > 0 || otherMounts.value.length > 0
     ? [{ id: "storage", label: t("system.volumes"), icon: HardDrive, tone: "text-emerald-500" }]
     : []),
-  { id: "ports", label: t("stackView.openPortAction"), icon: Plus, tone: "text-blue-500" },
-  ...(stack.value?.appId !== "caddy-yantr"
     ? [{ id: "auth", label: t("stackView.auth"), icon: ShieldCheck, tone: "text-violet-500" }]
     : []),
   { id: "containers", label: t("stackView.containers"), icon: Server, tone: "text-amber-500" },
@@ -229,24 +224,6 @@ const servicesWithNetworks = computed(() => {
   if (!stack.value?.services) return [];
   return stack.value.services.filter((service) => Array.isArray(service.networks) && service.networks.length > 0);
 });
-
-const portServices = computed(() => {
-  if (!stack.value?.services) return [];
-  const seen = new Set();
-  return stack.value.services
-    .filter((service) => service.composeService)
-    .filter((service) => {
-      if (seen.has(service.composeService)) return false;
-      seen.add(service.composeService);
-      return true;
-    })
-    .map((service) => ({
-      value: service.composeService,
-      label: service.service || service.composeService,
-    }));
-});
-
-const needsPortServiceSelection = computed(() => portServices.value.length > 1);
 
 // Collect all unique mounts across all services
 const allMounts = computed(() => {
@@ -311,9 +288,6 @@ async function fetchStack() {
     const data = await res.json();
     if (data.success) {
       stack.value = data.stack;
-      if (!portServices.value.some((service) => service.value === newPort.value.serviceName)) {
-        newPort.value.serviceName = portServices.value[0]?.value || "";
-      }
     } else {
       toast.error(t("stackView.stackNotFound"));
       router.push("/");
@@ -326,40 +300,7 @@ async function fetchStack() {
   }
 }
 
-async function openPort() {
-  if (openingPort.value || !stack.value) return;
 
-  const serviceName = String(newPort.value.serviceName || "").trim();
-  const portMapping = String(newPort.value.mapping || "").trim();
-
-  if ((!serviceName && needsPortServiceSelection.value) || !portMapping) {
-    toast.error(t("stackView.portFormInvalid"));
-    return;
-  }
-
-  openingPort.value = true;
-  toast.info(t("stackView.openingPort", { portMapping }));
-
-  try {
-    const res = await fetch(`${apiUrl.value}/api/stacks/${projectId.value}/ports`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ serviceName, portMapping }),
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) {
-      throw new Error(data.error || t("stackView.failedToOpenPort"));
-    }
-
-    toast.success(t("stackView.portOpened", { portMapping: data.port?.portMapping || portMapping }));
-    newPort.value.mapping = "";
-    await fetchStack();
-  } catch (error) {
-    toast.error(error.message || t("stackView.failedToOpenPort"));
-  } finally {
-    openingPort.value = false;
-  }
-}
 
 async function removeStack() {
   if (removing.value) return;
@@ -805,38 +746,7 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- OPEN PORT SECTION -->
-      <div v-show="activeSection === 'ports'" class="space-y-4 animate-fadeIn">
-        <div class="rounded-2xl p-6 smooth-shadow" style="background: var(--surface)">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center border border-gray-100 dark:border-zinc-800 shrink-0" style="background: var(--surface-muted)">
-              <Plus :size="18" class="text-gray-500 dark:text-zinc-400" />
-            </div>
-            <div>
-              <div class="text-sm font-bold" style="color: var(--text-primary)">{{ t("stackView.openAnotherPort") }}</div>
-              <p class="text-xs mt-0.5" style="color: var(--text-secondary)">{{ t("stackView.openAnotherPortHint") }}</p>
-            </div>
-          </div>
-          <div :class="needsPortServiceSelection ? 'grid sm:grid-cols-2 gap-4 mb-5' : 'grid gap-4 mb-5'">
-            <label v-if="needsPortServiceSelection" class="space-y-2">
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary)">{{ t("stackView.service") }}</span>
-              <select v-model="newPort.serviceName" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-shadow hover:border-blue-300" style="background: var(--surface-muted)">
-                <option v-for="service in portServices" :key="service.value" :value="service.value">{{ service.label }}</option>
-              </select>
-            </label>
-            <label class="space-y-2">
-              <span class="text-xs font-bold uppercase tracking-wider" style="color: var(--text-secondary)">{{ t("stackView.portMappingLabel") }}</span>
-              <input v-model="newPort.mapping" placeholder="9000:9000 or 9000 or 53:53/udp" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-zinc-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono transition-shadow hover:border-blue-300" style="background: var(--surface-muted)" />
-              <p class="text-xs" style="color: var(--text-secondary)">{{ t("stackView.portMappingHint") }}</p>
-            </label>
-          </div>
-          <div class="flex justify-end">
-            <button @click="openPort" :disabled="openingPort || portServices.length === 0" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 hover:bg-blue-100 dark:hover:bg-blue-500/20 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-              <Plus :size="14" />{{ openingPort ? t("stackView.openingPortAction") : t("stackView.openPortAction") }}
-            </button>
-          </div>
-        </div>
-      </div>
+
 
       <!-- AUTH SECTION -->
       <div v-show="activeSection === 'auth' && stack.appId !== 'caddy-yantr'" class="space-y-4 animate-fadeIn">

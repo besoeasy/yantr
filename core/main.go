@@ -899,102 +899,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func handleStackPorts(w http.ResponseWriter, r *http.Request) {
-	projectID := chi.URLParam(r, "projectId")
-	var body struct {
-		ServiceName string `json:"serviceName"`
-		PortMapping string `json:"portMapping"`
-	}
-	if !parseJSON(w, r, &body) {
-		return
-	}
-	parsed := compose.ParseDockerPortInput(body.PortMapping)
-	if parsed == nil {
-		jsonErr(w, 400, "INVALID_PORT_MAPPING", "portMapping must be a valid Docker port format")
-		return
-	}
 
-	all, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
-	var pcs []dockerctr.Summary
-	for _, c := range all {
-		if c.Labels["com.docker.compose.project"] == projectID {
-			pcs = append(pcs, c)
-		}
-	}
-	if len(pcs) == 0 {
-		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack not found or no containers")
-		return
-	}
-
-	svcSet := map[string]bool{}
-	for _, c := range pcs {
-		if svc := c.Labels["com.docker.compose.service"]; svc != "" {
-			svcSet[svc] = true
-		}
-	}
-	svcName := body.ServiceName
-	if svcName == "" && len(svcSet) == 1 {
-		for k := range svcSet {
-			svcName = k
-		}
-	}
-	if svcName == "" {
-		jsonErr(w, 400, "SERVICE_NAME_REQUIRED", "serviceName is required for multi-service stacks")
-		return
-	}
-
-	baseID := getBaseAppID(projectID)
-	appPath := filepath.Join(apps.GetAppsDir(), baseID)
-	ref := compose.GetProjectComposeRef(appPath, projectID)
-	content, err := os.ReadFile(ref.ComposePath)
-	if err != nil {
-		jsonErr(w, 500, "COMPOSE_READ_FAILED", err.Error())
-		return
-	}
-	doc, err := compose.Parse(string(content))
-	if err != nil {
-		jsonErr(w, 500, "COMPOSE_PARSE_FAILED", err.Error())
-		return
-	}
-	services, _ := doc["services"].(map[string]interface{})
-	svcRaw, ok := services[svcName]
-	if !ok {
-		jsonErr(w, 400, "SERVICE_NOT_FOUND_IN_COMPOSE", fmt.Sprintf("Service '%s' not found", svcName))
-		return
-	}
-	svc, _ := svcRaw.(map[string]interface{})
-	compose.SetServicePortBindings(svc, []compose.PortBinding{{
-		HostPort: parsed.HostPort, ContainerPort: parsed.ContainerPort, Protocol: parsed.Protocol,
-	}})
-
-	newContent, _ := compose.Stringify(doc)
-	newRef, err := compose.WriteProjectCompose(appPath, projectID, newContent)
-	if err != nil {
-		jsonErr(w, 500, "COMPOSE_WRITE_FAILED", err.Error())
-		return
-	}
-	cmdName, cmdArgs, _ := getComposeCommand()
-	env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
-	args := append(cmdArgs, "-p", projectID, "-f", newRef.ComposeFile, "up", "-d")
-	stdout, stderr, exitCode, _ := spawnExec(cmdName, args, env, appPath)
-	if exitCode != 0 {
-		jsonErr(w, 500, "STACK_REDEPLOY_FAILED", stderr)
-		return
-	}
-
-	pm := strconv.Itoa(parsed.ContainerPort)
-	if parsed.HostPort != nil {
-		pm = strconv.Itoa(*parsed.HostPort) + ":" + pm
-	}
-	if parsed.Protocol != "tcp" {
-		pm += "/" + parsed.Protocol
-	}
-	jsonResp(w, 200, map[string]interface{}{
-		"success": true,
-		"message": fmt.Sprintf("Opened %s on service '%s'", pm, svcName),
-		"output": stdout, "warnings": stderr,
-	})
-}
 
 // ─── Handlers: images ─────────────────────────────────────────────────────────
 
@@ -1605,7 +1510,7 @@ func main() {
 	r.Get("/api/containers/{id}/logs", handleContainerLogs)
 	r.Delete("/api/containers/{id}", handleContainerDelete)
 	r.Get("/api/stacks/{projectId}", handleStackDetail)
-	r.Post("/api/stacks/{projectId}/ports", handleStackPorts)
+	r.Delete("/api/stacks/{projectId}", handleStackDelete)
 	r.Get("/api/images", handleImages)
 	r.Delete("/api/images/{id}", handleImageDelete)
 	r.Get("/api/volumes", handleVolumes)
