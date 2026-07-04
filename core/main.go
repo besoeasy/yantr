@@ -1386,6 +1386,88 @@ func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// ─── Temporary-install reaper ─────────────────────────────────────────────────
+
+// sweepExpiredContainers finds all running containers whose yantr.expireAt label
+// is in the past and tears them down. Stacks are removed via `docker compose down`
+// (which also cleans up networks/volumes). Standalone containers are stopped and
+// removed directly. Called every minute from a background goroutine.
+func sweepExpiredContainers() {
+	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
+	if err != nil {
+		shared.Log("warn", "[reaper] failed to list containers: "+err.Error())
+		return
+	}
+
+	now := time.Now().Unix()
+
+	// Collect expired projects (deduplicated) and standalone containers.
+	type projectMeta struct{ appID, project string }
+	expiredProjects := map[string]projectMeta{}
+	var standaloneIDs []string
+
+	for _, c := range all {
+		expireAtStr, ok := c.Labels["yantr.expireAt"]
+		if !ok {
+			continue
+		}
+		expireAt, err := strconv.ParseInt(expireAtStr, 10, 64)
+		if err != nil || expireAt <= 0 || now < expireAt {
+			continue // not expired yet
+		}
+		project := c.Labels["com.docker.compose.project"]
+		if project != "" {
+			if _, seen := expiredProjects[project]; !seen {
+				expiredProjects[project] = projectMeta{
+					appID:   getBaseAppID(project),
+					project: project,
+				}
+			}
+		} else {
+			standaloneIDs = append(standaloneIDs, c.ID)
+		}
+	}
+
+	// Tear down expired Compose stacks.
+	for projectID, meta := range expiredProjects {
+		shared.Log("info", fmt.Sprintf("[reaper] removing expired stack: %s", projectID))
+		appPath := filepath.Join(apps.GetAppsDir(), meta.appID)
+		ref := compose.GetProjectComposeRef(appPath, projectID)
+		removed := false
+		if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
+			if cmdName, cmdArgs, cmdErr := getComposeCommand(); cmdErr == nil {
+				env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+				args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
+				_, _, exitCode, _ := spawnExec(cmdName, args, env, appPath)
+				if exitCode == 0 {
+					compose.DeleteProjectCompose(appPath, projectID)
+					shared.Log("info", fmt.Sprintf("[reaper] stack %s removed", projectID))
+					removed = true
+				}
+			}
+		}
+		if !removed {
+			// Fallback: force-remove every container in the project.
+			shared.Log("warn", fmt.Sprintf("[reaper] compose down failed for %s — force-removing containers", projectID))
+			if stale, listErr := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
+				for _, c := range stale {
+					if c.Labels["com.docker.compose.project"] == projectID {
+						_ = docker.Client.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
+						_ = docker.Client.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
+					}
+				}
+			}
+		}
+	}
+
+	// Tear down standalone expired containers.
+	for _, id := range standaloneIDs {
+		shared.Log("info", fmt.Sprintf("[reaper] removing expired standalone container: %s", id))
+		_ = docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		_ = docker.Client.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+	}
+}
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 func main() {
@@ -1478,6 +1560,16 @@ func main() {
 		shared.Log("info", "🔒 Starting embedded Caddy proxy")
 		if err := caddy.StartCaddy(); err != nil {
 			shared.Log("warn", "⚠️  [CADDY] "+err.Error())
+		}
+	}()
+
+	// Start temporary-install reaper (checks every minute)
+	go func() {
+		shared.Log("info", "🧹 Starting temporary-install reaper (1 min interval)")
+		ticker := time.NewTicker(1 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			sweepExpiredContainers()
 		}
 	}()
 

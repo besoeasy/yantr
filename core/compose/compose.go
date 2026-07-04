@@ -242,9 +242,27 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 		applyExtraEnv(services, opts.ExtraEnv)
 	}
 
-	// Expiration labels
+	// Expiration labels — deploy-time expiresIn (hours) takes precedence;
+	// fall back to x-yantr.expireAt (absolute unix timestamp) from compose.yml.
 	if opts.ExpiresIn > 0 {
 		applyExpirationLabels(services, opts.ExpiresIn)
+	} else if xyantr, ok := doc["x-yantr"].(map[string]interface{}); ok {
+		if expireAtRaw, exists := xyantr["expireAt"]; exists {
+			var expireAt int64
+			switch v := expireAtRaw.(type) {
+			case int:
+				expireAt = int64(v)
+			case int64:
+				expireAt = v
+			case float64:
+				expireAt = int64(v)
+			case string:
+				expireAt, _ = strconv.ParseInt(v, 10, 64)
+			}
+			if expireAt > 0 {
+				applyAbsoluteExpirationLabels(services, expireAt)
+			}
+		}
 	}
 
 	// Caddy master label
@@ -406,8 +424,13 @@ func applyExpirationLabels(services map[string]interface{}, expiresInHours float
 		return
 	}
 	expireAt := int64(float64(unixNow()) + expiresInHours*3600)
-	expireStr := strconv.FormatInt(expireAt, 10)
+	applyAbsoluteExpirationLabels(services, expireAt)
+}
 
+// applyAbsoluteExpirationLabels stamps yantr.expireAt / yantr.temporary labels
+// with an already-computed absolute unix timestamp.
+func applyAbsoluteExpirationLabels(services map[string]interface{}, expireAt int64) {
+	expireStr := strconv.FormatInt(expireAt, 10)
 	for _, svcRaw := range services {
 		svc, ok := svcRaw.(map[string]interface{})
 		if !ok {

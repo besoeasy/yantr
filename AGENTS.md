@@ -97,7 +97,7 @@ x-auth:
 ```yaml
 # Full example with auth
 x-yantr:
-  name: "My App"
+  name: "My App" - always small caps no space only - and alpbets and number allowed
   ...
 
 x-auth:
