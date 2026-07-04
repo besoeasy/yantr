@@ -233,8 +233,7 @@ func ParseXAuth(doc map[string]interface{}) *XAuth {
 }
 
 // InjectCaddyAuthLabels hashes the x-auth password and injects yantr.caddy.*
-// labels into every service in the compose doc. Returns the target app port
-// (from yantr.port.N labels) and any error.
+// labels into every service in the compose doc.
 //
 // The x-auth block is left in the doc (Docker Compose ignores x-* fields).
 // The plain-text password is never written to the container — only the
@@ -244,17 +243,18 @@ func InjectCaddyAuthLabels(doc map[string]interface{}, auth *XAuth) error {
 		return nil
 	}
 
-	// Hash the plain-text password via the caddy binary
+	// Validate services exist before the expensive hash-password subprocess call.
+	services, ok := doc["services"].(map[string]interface{})
+	if !ok || len(services) == 0 {
+		return fmt.Errorf("x-auth: compose has no services")
+	}
+
+	// Hash the plain-text password via the caddy binary.
 	hash, err := HashPassword(auth.Password)
 	if err != nil {
 		return fmt.Errorf("x-auth: failed to hash password: %w", err)
 	}
 	encodedHash := EncodeHash(hash)
-
-	services, ok := doc["services"].(map[string]interface{})
-	if !ok || len(services) == 0 {
-		return fmt.Errorf("x-auth: compose has no services")
-	}
 
 	for _, svcRaw := range services {
 		svc, ok := svcRaw.(map[string]interface{})
@@ -262,27 +262,55 @@ func InjectCaddyAuthLabels(doc map[string]interface{}, auth *XAuth) error {
 			continue
 		}
 
-		// Find the app port from existing yantr.port.N labels
+		// Find the app port from existing yantr.port.N labels.
 		appPort := resolveAppPort(svc)
 
-		// Ensure labels map exists
-		labels, ok := svc["labels"].(map[string]interface{})
-		if !ok {
-			labels = map[string]interface{}{}
-			svc["labels"] = labels
-		}
+		// Ensure labels is a map. If the compose was written with sequence-style
+		// labels ("- key=value"), yaml.v3 unmarshals them as []interface{}.
+		// Convert to a map so we can inject Caddy labels without losing the
+		// existing yantr.port.* / yantr.service entries.
+		labels := ensureLabelsMapCaddy(svc)
 
 		labels["yantr.caddy.enabled"] = "true"
 		labels["yantr.caddy.serve.port"] = strconv.Itoa(auth.Port)
 		labels["yantr.caddy.target.port"] = strconv.Itoa(appPort)
 		labels["yantr.caddy.auth.user"] = auth.Username
 		labels["yantr.caddy.auth.pass"] = encodedHash
-		// Plain password is intentionally NOT stored in any label
+		// Plain password is intentionally NOT stored in any label.
 	}
 
 	shared.Log("info", fmt.Sprintf("[caddy] x-auth: injected auth labels → serve :%d, target :%d, user %s",
 		auth.Port, resolveAppPortFromDoc(doc), auth.Username))
 	return nil
+}
+
+// ensureLabelsMapCaddy returns the labels map for a service, creating one if
+// absent. It also handles the case where labels were declared as a YAML
+// sequence ("- KEY=VALUE") by parsing each entry into the returned map so
+// that existing labels are preserved rather than discarded.
+func ensureLabelsMapCaddy(svc map[string]interface{}) map[string]interface{} {
+	switch l := svc["labels"].(type) {
+	case map[string]interface{}:
+		return l
+	case []interface{}:
+		// Sequence-style labels: convert to map, preserving all entries.
+		m := make(map[string]interface{}, len(l))
+		for _, entry := range l {
+			if s, ok := entry.(string); ok {
+				if idx := strings.Index(s, "="); idx > 0 {
+					m[s[:idx]] = s[idx+1:]
+				} else {
+					m[s] = ""
+				}
+			}
+		}
+		svc["labels"] = m
+		return m
+	default:
+		m := map[string]interface{}{}
+		svc["labels"] = m
+		return m
+	}
 }
 
 // resolveAppPort finds the first yantr.port.N label value port number from a service.
