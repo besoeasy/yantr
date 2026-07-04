@@ -1,0 +1,70 @@
+x-yantr:
+  name: "Bitmagnet"
+  logo: "QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP"
+  tags: [torrent, indexer, crawler, servarr, search]
+  short_description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine."
+  description: >
+    Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content classifier,
+    and torrent search engine with a web UI. It crawls the DHT network to discover
+    and index torrents, enabling powerful search and Servarr integration without relying
+    on external trackers.
+  usecases: ["Index and search torrents across the DHT network without relying on public torrent sites.", "Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for automated media acquisition."]
+  website: "https://bitmagnet.io"
+  notes: ["Bitmagnet bundles its own PostgreSQL instance — no separate database setup is required.", "The Web UI runs on port 3333. Access it via a reverse proxy or deploy directly via Yantr.", "DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your firewall for effective peer discovery.", "The default PostgreSQL password is `postgresx`. Change the `POSTGRES_PASSWORD` environment variable in compose.yml before deploying in a production environment."]
+
+services:
+  bitmagnet:
+    image: ghcr.io/bitmagnet-io/bitmagnet:latest
+    container_name: bitmagnet
+    restart: unless-stopped
+    stop_grace_period: 1m
+    ports:
+      - "3333"
+      - "3334/tcp"
+      - "3334/udp"
+    environment:
+      HOME: /tmp
+      XDG_CONFIG_HOME: /config
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresx
+      POSTGRES_NAME: bitmagnet
+    volumes:
+      - bitmagnet_config:/config/bitmagnet
+    command:
+      - worker
+      - run
+      - --keys=http_server
+      - --keys=queue_server
+      - --keys=dht_crawler
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      yantr.app: "bitmagnet"
+      yantr.service.3333: "Web UI"
+      yantr.port.3333: "HTTP"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bitmagnet_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgresx
+      POSTGRES_DB: bitmagnet
+      POSTGRES_USER: postgres
+    shm_size: 1g
+    volumes:
+      - bitmagnet_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 20s
+      interval: 10s
+    labels:
+      yantr.app: "bitmagnet"
+      yantr.service.5432: "Database"
+      yantr.port.5432: "TCP"
+
+volumes:
+  bitmagnet_config:
+  bitmagnet_db:
