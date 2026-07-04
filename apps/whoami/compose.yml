@@ -16,5 +16,5 @@ services:
       - "80"
     restart: unless-stopped
     labels:
-      yantr.service: "Web UI"
+      yantr.service.80: "Web UI"
       yantr.port.80: "HTTP"

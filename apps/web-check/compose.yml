@@ -17,5 +17,5 @@ services:
       - "3000"
     restart: unless-stopped
     labels:
-      yantr.service: "Web UI"
+      yantr.service.3000: "Web UI"
       yantr.port.3000: "HTTP"

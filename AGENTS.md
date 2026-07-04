@@ -29,6 +29,8 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 
 ## Critical Conventions
 
+NO NEED FOR BEING BACKWARD COMPATIBLE, PREFER CLEAN FEATURE IMPLEMENTATION IF YOU CAN.
+
 ### x-yantr Metadata Block
 All app metadata lives in the top-level `x-yantr` key of `compose.yml`. Docker Compose ignores `x-*` extension fields, so the file remains fully deployable.
 
@@ -65,18 +67,23 @@ Port metadata is declared directly on each service via labels — collocated wit
 
 ```yaml
 # Pattern: yantr.port.{PORT_NUMBER}: "PROTOCOL"
+#          yantr.service.{PORT_NUMBER}: "Name"  ← per-port human-readable name
 labels:
-  yantr.service: "Web UI"      # human-readable name for this service endpoint
-  yantr.port.8080: "HTTP"      # port 8080 speaks HTTP
+  yantr.service.8080: "Web UI"   # name for port 8080
+  yantr.port.8080: "HTTP"        # port 8080 speaks HTTP
 
-# Multi-port example
+# Multi-port example — each port gets its own name
 labels:
-  yantr.service: "App"
+  yantr.service.80: "Web UI"
   yantr.port.80: "HTTP"
+  yantr.service.443: "Web UI (TLS)"
   yantr.port.443: "HTTPS"
+  yantr.service.51413: "Peer"
+  yantr.port.51413: "TCP"
 ```
 
 Supported protocols: `HTTP`, `HTTPS`, `TCP`, `UDP`
+
 
 ### x-auth Block (Optional, Deploy-time Only)
 Yantr reads `x-auth` at deploy time to configure a Caddy basic-auth proxy in front of the app. Docker Compose ignores `x-*` fields. The password is **never stored in container labels or visible via `docker inspect`** — Yantr bcrypts it, writes to Caddy config, then discards the plain text.
@@ -110,7 +117,7 @@ services:
     ports:
       - "3000"
     labels:
-      yantr.service: "Web UI"
+      yantr.service.3000: "Web UI"
       yantr.port.3000: "HTTP"
 ```
 
@@ -137,7 +144,7 @@ services:
     image: ghcr.io/example/my-app:latest
     container_name: my-app
     labels:
-      yantr.service: "Web UI"
+      yantr.service.8080: "Web UI"
       yantr.port.8080: "HTTP"
     environment:
       TZ: ${TZ:-UTC}

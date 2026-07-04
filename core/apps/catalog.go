@@ -241,14 +241,12 @@ func loadCatalog() (*Catalog, error) {
 // ─── Label-based port parsing ─────────────────────────────────────────────────
 
 // parsePortLabels scans every service's labels for yantr.port.N: "PROTOCOL"
-// and yantr.service: "Label", returning a deduplicated PortInfo list.
+// and yantr.service.N: "Label", returning a deduplicated PortInfo list.
 func parsePortLabels(services map[string]composeService) []PortInfo {
 	seen := map[int]bool{}
 	var ports []PortInfo
 
 	for _, svc := range services {
-		serviceLabel := svc.Labels["yantr.service"]
-
 		for key, protocol := range svc.Labels {
 			// key format: yantr.port.{N}
 			if !strings.HasPrefix(key, "yantr.port.") {
@@ -260,10 +258,11 @@ func parsePortLabels(services map[string]composeService) []PortInfo {
 				continue
 			}
 			seen[n] = true
+			serviceLabel := coalesce(svc.Labels[fmt.Sprintf("yantr.service.%d", n)], fmt.Sprintf("Port %d", n))
 			ports = append(ports, PortInfo{
 				Port:     n,
 				Protocol: strings.ToUpper(protocol),
-				Label:    coalesce(serviceLabel, fmt.Sprintf("Port %d", n)),
+				Label:    serviceLabel,
 			})
 		}
 	}

@@ -168,7 +168,7 @@ type appLabelSet struct {
 func parseAppLabels(labels map[string]string) appLabelSet {
 	return appLabelSet{
 		App:     labels["yantr.app"],
-		Service: labels["yantr.service"],
+		Service: labels["yantr.app"],
 	}
 }
 
@@ -863,11 +863,12 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 
 	portMap := map[string]map[string]interface{}{}
 	for _, c := range pcs {
-		svc := coalesce(c.Labels["yantr.service"], strings.TrimPrefix(c.Names[0], "/"), "unknown")
 		for _, p := range c.Ports {
 			if p.PublicPort == 0 {
 				continue
 			}
+			portSpecificKey := fmt.Sprintf("yantr.service.%d", p.PrivatePort)
+			svc := coalesce(c.Labels[portSpecificKey], strings.TrimPrefix(c.Names[0], "/"), "unknown")
 			key := fmt.Sprintf("%d:%d:%s:%s", p.PublicPort, p.PrivatePort, p.Type, svc)
 			if _, ok := portMap[key]; !ok {
 				portMap[key] = map[string]interface{}{
@@ -918,7 +919,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 			"id": c.ID, "name": name, "composeService": c.Labels["com.docker.compose.service"],
 			"image": c.Image, "state": c.State, "status": c.Status, "created": c.Created,
 			"rawPorts": c.Ports, "mounts": mounts, "networks": networks,
-			"service": coalesce(c.Labels["yantr.service"], lbl.Service, name),
+			"service": coalesce(lbl.Service, name),
 			"hasYantrLabel": lbl.App != "",
 		})
 	}

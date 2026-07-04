@@ -34,13 +34,13 @@ function parsePortLabels(services) {
   const seen = new Set();
   for (const svc of Object.values(services ?? {})) {
     const labels = normaliseLabels(svc?.labels);
-    const serviceLabel = labels['yantr.service'] || '';
     for (const [key, protocol] of Object.entries(labels)) {
       if (!key.startsWith('yantr.port.')) continue;
       const portNum = parseInt(key.replace('yantr.port.', ''), 10);
       if (isNaN(portNum) || seen.has(portNum)) continue;
       seen.add(portNum);
-      ports.push({ port: portNum, protocol: protocol.toUpperCase(), label: serviceLabel || `Port ${portNum}` });
+      const serviceLabel = labels[`yantr.service.${portNum}`] || `Port ${portNum}`;
+      ports.push({ port: portNum, protocol: protocol.toUpperCase(), label: serviceLabel });
     }
   }
   return ports;

@@ -28,8 +28,9 @@ services:
       - "51413/udp"
     restart: unless-stopped
     labels:
-      yantr.service: "Web UI"
+      yantr.service.9091: "Web UI"
       yantr.port.9091: "HTTP"
+      yantr.service.51413: "Peer"
       yantr.port.51413: "TCP"
 
 volumes:
