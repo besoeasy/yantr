@@ -1,0 +1,15 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io:latest
+    container_name: changedetection
+    ports:
+      - "5000"
+    volumes:
+      - changedetection_data:/datastore
+    restart: unless-stopped
+    labels:
+      yantr.app: "changedetection-io"
+      yantr.service: "Web UI"
+
+volumes:
+  changedetection_data:

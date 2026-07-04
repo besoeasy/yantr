@@ -1,0 +1,32 @@
+{
+  "name": "Forgejo",
+  "logo": "",
+  "tags": [
+    "git",
+    "developer",
+    "self-hosted",
+    "code",
+    "collaboration",
+    "devops",
+    "repository",
+    "open-source"
+  ],
+  "ports": [
+    { "port": 3000, "protocol": "HTTP", "label": "Web UI" },
+    { "port": 22, "protocol": "TCP", "label": "SSH" }
+  ],
+  "short_description": "Lightweight self-hosted Git platform with issues, PRs, CI, and packages.",
+  "description": "Forgejo is a community-driven, lightweight self-hosted Git service forked from Gitea. It provides a full GitHub-like experience: repositories, issues, pull requests, code review, wikis, project boards, releases, and package registries. Forgejo Actions offers built-in CI/CD compatible with GitHub Actions workflows. Written in Go, it runs on minimal hardware and is significantly lighter than GitLab while offering comparable features for personal or team use.",
+  "usecases": [
+    "Host private Git repositories for personal projects or your team.",
+    "Run CI/CD pipelines with Forgejo Actions, compatible with GitHub Actions syntax.",
+    "Manage issues, pull requests, and code reviews in a self-hosted environment.",
+    "Mirror repositories from GitHub or GitLab for backup and independence."
+  ],
+  "website": "https://forgejo.org",
+  "notes": [
+    "Complete the setup wizard on first visit at port 3000.",
+    "SSH cloning is available on port 22 — ensure it's not already used by your host.",
+    "Forgejo Actions runners can be added separately to enable CI/CD pipelines."
+  ]
+}

@@ -1,0 +1,21 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:latest-rootless
+    container_name: forgejo
+    ports:
+      - "3000"
+      - "22"
+    environment:
+      TZ: ${TZ:-UTC}
+      FORGEJO__security__INSTALL_LOCK: "false"
+    volumes:
+      - forgejo_data:/var/lib/gitea
+      - forgejo_config:/etc/gitea
+    restart: unless-stopped
+    labels:
+      yantr.app: "forgejo"
+      yantr.service: "Web UI"
+
+volumes:
+  forgejo_data:
+  forgejo_config:
