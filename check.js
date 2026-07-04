@@ -148,6 +148,14 @@ async function checkCompose(appName, composePath) {
 
     const labels = normaliseLabels(svc.labels);
 
+    if (!labels["yantr.app"] || labels["yantr.app"] !== appName) {
+      fail(
+        appName,
+        `compose.yml service "${svcName}" is missing or has incorrect yantr.app label`,
+        `Add exactly: yantr.app: "${appName}"`
+      );
+    }
+
     // yantr.service.{PORT} is required for each port
     const hasPortServiceLabel = Object.keys(labels).some((k) => /^yantr\.service\.\d+$/.test(k));
     if (!hasPortServiceLabel) {

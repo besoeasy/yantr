@@ -270,23 +270,7 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 		applyCaddyMasterLabel(services, strings.TrimSpace(opts.MasterApp))
 	}
 
-	// Yantr app identity label
-	if strings.TrimSpace(opts.AppID) != "" {
-		applyYantrAppLabel(services, strings.TrimSpace(opts.AppID))
-	}
-
 	return nil
-}
-
-func applyYantrAppLabel(services map[string]interface{}, appID string) {
-	for _, svcRaw := range services {
-		svc, ok := svcRaw.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		labels := ensureLabelsMap(svc)
-		labels["yantr.app"] = appID
-	}
 }
 
 func getServices(doc ComposeDoc) map[string]interface{} {
