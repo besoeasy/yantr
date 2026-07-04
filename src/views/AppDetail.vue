@@ -28,6 +28,17 @@ const customizePorts = ref(false);
 const customPortMappings = ref({});
 const extraEnvRows = ref([]);
 
+// Auth state
+const enableAuth = ref(false);
+const authPort = ref(3002);
+const authUsername = ref("admin");
+const authPassword = ref("");
+
+function generateAuthPassword() {
+  authPassword.value = randomStringFromCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:,.?", 16);
+  toast.success(t('appDetail.generatedValue', { envVar: 'Password' }));
+}
+
 function addExtraEnvRow() {
   extraEnvRows.value.push({ key: '', value: '' });
 }
@@ -285,6 +296,20 @@ async function deployApp() {
       extraEnv,
       instanceId: instanceNum, // Pass instance number to backend
     };
+
+    if (enableAuth.value) {
+      if (!authPort.value || !authUsername.value || !authPassword.value) {
+        toast.error("Please fill all authentication fields");
+        deploying.value = false;
+        return;
+      }
+      requestBody.auth = {
+        enabled: true,
+        port: authPort.value,
+        username: authUsername.value,
+        password: authPassword.value,
+      };
+    }
 
     if (temporaryInstall.value) {
       requestBody.expiresIn = expirationHours.value;
@@ -599,6 +624,35 @@ onMounted(async () => {
                             <option :value="336">{{ t('appDetail.2weeks') }}</option>
                             <option :value="720">{{ t('appDetail.1month') }}</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- Basic Authentication -->
+                <div class="rounded-lg border border-gray-200 dark:border-zinc-800 p-3 transition-colors bg-gray-50 dark:bg-zinc-900/30">
+                   <div class="flex items-start gap-3">
+                        <input type="checkbox" id="enable-auth" v-model="enableAuth" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
+                        <div class="flex-1">
+                            <label for="enable-auth" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">Enable Basic Auth</label>
+                            <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">Protect this app with a username and password</p>
+                        </div>
+                   </div>
+
+                    <div v-if="enableAuth" class="mt-4 pl-1 space-y-4">
+                        <div class="space-y-1.5">
+                            <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Proxy Port</label>
+                            <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Username</label>
+                            <input v-model="authUsername" type="text" placeholder="admin" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">
+                              Password
+                              <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">Generate</button>
+                            </label>
+                            <input v-model="authPassword" type="text" placeholder="Secret password" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                        </div>
                     </div>
                 </div>
 

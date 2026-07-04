@@ -401,6 +401,12 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		InstanceID         int                    `json:"instanceId"`
 		MasterApp          string                 `json:"masterApp"`
 		CustomPortMappings map[string]interface{} `json:"customPortMappings"`
+		Auth               *struct {
+			Enabled  bool   `json:"enabled"`
+			Port     int    `json:"port"`
+			Username string `json:"username"`
+			Password string `json:"password"`
+		} `json:"auth"`
 	}
 	if !parseJSON(w, r, &body) {
 		return
@@ -488,7 +494,15 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 
 	// ── x-auth: parse and inject Caddy auth labels ─────────────────────────
 	if doc, parseErr := compose.Parse(modifiedContent); parseErr == nil {
-		if auth := caddy.ParseXAuth(doc); auth != nil {
+		auth := caddy.ParseXAuth(doc)
+		if body.Auth != nil && body.Auth.Enabled {
+			auth = &caddy.XAuth{
+				Port:     body.Auth.Port,
+				Username: body.Auth.Username,
+				Password: body.Auth.Password,
+			}
+		}
+		if auth != nil {
 			if injectErr := caddy.InjectCaddyAuthLabels(doc, auth); injectErr != nil {
 				shared.Log("warn", "[deploy] x-auth inject failed: "+injectErr.Error())
 			} else if rebuilt, rebuildErr := compose.Stringify(doc); rebuildErr == nil {
