@@ -34,6 +34,7 @@ import (
 	"core/selfinstall"
 	"core/shared"
 	"core/system"
+	"core/telemetry"
 )
 
 // suppress unused import warning for dockernet (used in NetworkList)
@@ -507,6 +508,8 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		"appId": body.AppID, "output": stdout, "warnings": stderr,
 		"temporary": body.ExpiresIn > 0,
 	})
+
+	telemetry.TrackInstall(body.AppID)
 }
 
 // ─── Handlers: containers ─────────────────────────────────────────────────────
@@ -1500,6 +1503,11 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
+
+	// Very simple heuristic to detect if updates were found
+	if strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated") {
+		telemetry.TrackUpdatesForContainers(names)
+	}
 }
 
 func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
@@ -1510,6 +1518,10 @@ func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
+	
+	if strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated") {
+		telemetry.TrackSelfUpdate(1, version)
+	}
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -1528,6 +1540,8 @@ func main() {
 	apps.SetAppsDir(appsPath)
 	shared.Log("info", "📂 Apps directory: "+appsPath)
 	shared.Log("info", fmt.Sprintf("🏗️  Architecture: %s/%s", runtime.GOOS, runtime.GOARCH))
+
+	telemetry.StartPresenceScheduler(version)
 
 	// Router
 	r := chi.NewRouter()
