@@ -1,0 +1,34 @@
+{
+  "name": "Web Check",
+  "logo": "QmXwF1DUNZLpkLFzK7HhVdtNNPncNZMS4ktb7KHb6K8Khz",
+  "tags": [
+    "tools",
+    "network",
+    "utility",
+    "monitoring",
+    "dashboard",
+    "self-hosted",
+    "security"
+  ],
+  "ports": [
+    {
+      "port": 3000,
+      "protocol": "HTTP",
+      "label": "Web UI"
+    }
+  ],
+  "short_description": "All-in-one website analysis tool - SSL, DNS, headers, performance, and security checks.",
+  "description": "Web Check is a comprehensive web analysis tool that provides detailed insights into any website. It performs over 30 different checks including SSL certificate validation, DNS records analysis, HTTP headers inspection, WHOIS lookup, tech stack detection (CMS, frameworks, analytics), server...",
+  "usecases": [
+    "Analyze SSL certificate details and expiration dates.",
+    "Check what technologies a website is built with.",
+    "Verify security headers are properly configured.",
+    "Get detailed DNS and WHOIS information for any domain."
+  ],
+  "website": "https://github.com/lissy93/web-check",
+  "notes": [
+    "Runs 30+ checks on any URL you provide",
+    "All analysis done locally - no data sent to third parties",
+    "Great for security auditing"
+  ]
+}

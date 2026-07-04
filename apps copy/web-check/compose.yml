@@ -1,0 +1,10 @@
+services:
+  web-check:
+    image: lissy93/web-check:latest
+    container_name: web-check
+    ports:
+      - "3000"
+    restart: unless-stopped
+    labels:
+      yantr.app: "web-check"
+      yantr.service: "Web Analyzer"
