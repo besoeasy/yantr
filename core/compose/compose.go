@@ -67,7 +67,7 @@ func GetProjectComposeRef(appPath, projectID string) ComposeRef {
 
 // Parse parses YAML compose content into a generic map.
 func Parse(content string) (ComposeDoc, error) {
-	var doc ComposeDoc
+	var doc map[string]interface{}
 	if err := yaml.Unmarshal([]byte(content), &doc); err != nil {
 		return nil, fmt.Errorf("invalid compose YAML: %w", err)
 	}
