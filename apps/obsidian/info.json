@@ -1,0 +1,31 @@
+{
+  "name": "Obsidian",
+  "logo": "",
+  "tags": [
+    "notes",
+    "knowledge",
+    "markdown",
+    "productivity",
+    "writing",
+    "pkm",
+    "self-hosted",
+    "desktop"
+  ],
+  "ports": [
+    { "port": 3000, "protocol": "HTTP", "label": "Web UI (KasmVNC)" }
+  ],
+  "short_description": "Private, flexible markdown knowledge base that runs in your browser.",
+  "description": "Obsidian is a powerful knowledge management app built on plain Markdown files. This self-hosted version runs via KasmVNC, delivering the full Obsidian desktop experience in your browser. Notes are stored locally in a Docker volume — never on someone else's server. Supports thousands of community plugins, themes, and bidirectional linking to map your knowledge graph.",
+  "usecases": [
+    "Build a personal knowledge base with linked notes and graph view.",
+    "Write long-form content, journals, or documentation in Markdown.",
+    "Use community plugins for tasks, calendars, and Kanban boards.",
+    "Access your full Obsidian vault remotely from any browser."
+  ],
+  "website": "https://obsidian.md",
+  "notes": [
+    "Runs Obsidian as a full desktop app via KasmVNC — access it in any browser.",
+    "Requires seccomp:unconfined for the browser sandbox to function correctly.",
+    "Your vault is stored in the obsidian_config volume under /config/vaults."
+  ]
+}

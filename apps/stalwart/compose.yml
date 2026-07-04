@@ -1,0 +1,25 @@
+services:
+  stalwart:
+    image: stalwartlabs/stalwart:latest
+    container_name: stalwart
+    ports:
+      - "8080"
+      - "25"
+      - "587"
+      - "465"
+      - "143"
+      - "993"
+      - "110"
+      - "995"
+      - "4190"
+    environment:
+      STALWART_RECOVERY_ADMIN: admin:${ADMIN_PASSWORD}
+    volumes:
+      - stalwart_data:/opt/stalwart-mail
+    restart: unless-stopped
+    labels:
+      yantr.app: "stalwart"
+      yantr.service: "Web Admin"
+
+volumes:
+  stalwart_data:
