@@ -979,7 +979,7 @@
                   </div>
                 </div>
                 <div class="mt-2.5 flex items-center gap-4 text-[10px] uppercase tracking-wider font-semibold text-gray-500">
-                  <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-900"></span>Daemon (~67MB)</div>
+                  <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-900"></span>Core (~9MB)</div>
                   <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-500"></span>Overhead (~41MB)</div>
                   <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Margin (~32MB)</div>
                 </div>
@@ -996,7 +996,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                 </span>
                 <h3 class="font-bold text-gray-900 font-sans text-2xl tracking-tight">Minimum specs</h3>
-                <p class="text-sm text-gray-500 font-sans mt-2 leading-relaxed">Just enough to boot the daemon and a couple basic apps. Perfect for an old laptop or Raspberry Pi 4.</p>
+                <p class="text-sm text-gray-500 font-sans mt-2 leading-relaxed">Just enough to boot the core and a couple basic apps. Perfect for an old laptop or Raspberry Pi 4.</p>
               </div>
 
               <div class="space-y-4 font-sans">
@@ -1541,9 +1541,9 @@
 
         const NODES = [
           {
-            id: "daemon",
+            id: "core",
             icon: "🕷️",
-            label: "YANTR Daemon",
+            label: "YANTR Core",
             tag: "Core · Node.js",
             color: "#000000",
             textColor: "#ffffff",
@@ -1602,8 +1602,8 @@
             textColor: "#ffffff",
             px: 70,
             py: 87,
-            desc: "A Vue 3 + Vite single-page app served directly by the daemon. Zero separate web server needed. Connects to the REST API for all operations.",
-            bullets: ["Vue 3 + Vite build", "Served by the daemon itself", "Dark mode support", "Real-time container status"],
+            desc: "A Vue 3 + Vite single-page app served directly by the core. Zero separate web server needed. Connects to the REST API for all operations.",
+            bullets: ["Vue 3 + Vite build", "Served by the core itself", "Dark mode support", "Real-time container status"],
           },
           {
             id: "cli",
@@ -1644,11 +1644,11 @@
         ];
 
         const EDGES = [
-          { from: "daemon", to: "docker", label: "docker.sock" },
-          { from: "daemon", to: "catalog", label: "template resolution" },
-          { from: "daemon", to: "api", label: "serves API" },
-          { from: "daemon", to: "network", label: "port allocation" },
-          { from: "daemon", to: "volumes", label: "data ops" },
+          { from: "core", to: "docker", label: "docker.sock" },
+          { from: "core", to: "catalog", label: "template resolution" },
+          { from: "core", to: "api", label: "serves API" },
+          { from: "core", to: "network", label: "port allocation" },
+          { from: "core", to: "volumes", label: "data ops" },
           { from: "api", to: "webui", label: "JSON polling" },
           { from: "api", to: "cli", label: "REST calls" },
         ];

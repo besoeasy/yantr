@@ -125,7 +125,7 @@ func ReloadCaddyConfig() error {
 		return nil
 	}
 	caddyfile := buildCaddyfile(proxies)
-	return pushCaddyfile(caddyfile)
+	return pushCaddyfile(caddyfile, len(proxies))
 }
 
 // GetCaddyProxies scans running containers for yantr.caddy.* labels.
@@ -244,7 +244,7 @@ func buildCaddyfile(proxies []ProxyRoute) string {
 	return sb.String()
 }
 
-func pushCaddyfile(caddyfile string) error {
+func pushCaddyfile(caddyfile string, count int) error {
 	url := fmt.Sprintf("http://127.0.0.1:%d/load", adminPort)
 	resp, err := http.Post(url, "text/caddyfile", bytes.NewBufferString(caddyfile))
 	if err != nil {
@@ -255,7 +255,7 @@ func pushCaddyfile(caddyfile string) error {
 	if resp.StatusCode >= 300 {
 		return fmt.Errorf("[caddy] config load failed (%d): %s", resp.StatusCode, string(body))
 	}
-	shared.Log("info", fmt.Sprintf("🔒 Caddy reloaded: %d active proxy route(s)", 0))
+	shared.Log("info", fmt.Sprintf("🔒 Caddy reloaded: %d active proxy route(s)", count))
 	return nil
 }
 

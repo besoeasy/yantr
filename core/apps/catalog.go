@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -145,93 +146,110 @@ func loadCatalog() (*Catalog, error) {
 	}
 
 	var apps []App
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+
 	for _, entry := range entries {
 		if !entry.IsDir() {
 			continue
 		}
-		appPath := filepath.Join(appsDir, entry.Name())
-		composePath := filepath.Join(appPath, "compose.yml")
-		infoPath := filepath.Join(appPath, "info.json")
+		wg.Add(1)
+		go func(entry os.DirEntry) {
+			defer wg.Done()
+			appPath := filepath.Join(appsDir, entry.Name())
+			composePath := filepath.Join(appPath, "compose.yml")
+			infoPath := filepath.Join(appPath, "info.json")
 
-		if _, err := os.Stat(composePath); err != nil {
-			continue
-		}
-		if _, err := os.Stat(infoPath); err != nil {
-			continue
-		}
-
-		infoData, err := os.ReadFile(infoPath)
-		if err != nil {
-			shared.Log("warn", "apps: failed to read "+infoPath+": "+err.Error())
-			continue
-		}
-		var info infoJSON
-		if err := json.Unmarshal(infoData, &info); err != nil || info.Name == "" {
-			continue
-		}
-
-		composeContent, err := os.ReadFile(composePath)
-		if err != nil {
-			continue
-		}
-		composeStr := string(composeContent)
-
-		// Parse env vars
-		envVars := parseEnvVars(composeStr)
-
-		// Parse port mappings
-		composePorts := parseComposePorts(composeStr)
-
-		// Parse env generators
-		rawGens := info.EnvGenerators
-		if len(rawGens) == 0 {
-			rawGens = info.EnvGeneratorsAlt
-		}
-		envGenerators := make(map[string]EnvGenerator)
-		for k, v := range rawGens {
-			var gen EnvGenerator
-			if err := json.Unmarshal(v, &gen); err == nil {
-				envGenerators[k] = gen
+			if _, err := os.Stat(composePath); err != nil {
+				return
 			}
-		}
+			if _, err := os.Stat(infoPath); err != nil {
+				return
+			}
 
-		logo := shared.NormalizeAppLogo(info.Logo)
+			infoData, err := os.ReadFile(infoPath)
+			if err != nil {
+				shared.Log("warn", "apps: failed to read "+infoPath+": "+err.Error())
+				return
+			}
+			var info infoJSON
+			if err := json.Unmarshal(infoData, &info); err != nil || info.Name == "" {
+				return
+			}
 
-		tags := info.Tags
-		if tags == nil {
-			tags = []string{}
-		}
-		ports := info.Ports
-		if ports == nil {
-			ports = []PortInfo{}
-		}
-		usecases := info.Usecases
-		if usecases == nil {
-			usecases = []string{}
-		}
+			composeContent, err := os.ReadFile(composePath)
+			if err != nil {
+				return
+			}
+			composeStr := string(composeContent)
 
-		apps = append(apps, App{
-			ID:               entry.Name(),
-			Name:             info.Name,
-			Logo:             logo,
-			Tags:             tags,
-			Ports:            ports,
-			ShortDescription: info.ShortDescription,
-			Description:      coalesce(info.Description, info.ShortDescription),
-			Usecases:         usecases,
-			Website:          info.Website,
-			CustomApp:        info.CustomApp,
-			Notes:            info.Notes,
-			Path:             appPath,
-			ComposePath:      composePath,
-			Environment:      envVars,
-			EnvGenerators:    envGenerators,
-			ComposePorts:     composePorts,
-		})
+			// Parse env vars
+			envVars := parseEnvVars(composeStr)
+
+			// Parse port mappings
+			composePorts := parseComposePorts(composeStr)
+
+			// Parse env generators
+			rawGens := info.EnvGenerators
+			if len(rawGens) == 0 {
+				rawGens = info.EnvGeneratorsAlt
+			}
+			envGenerators := make(map[string]EnvGenerator)
+			for k, v := range rawGens {
+				var gen EnvGenerator
+				if err := json.Unmarshal(v, &gen); err == nil {
+					envGenerators[k] = gen
+				}
+			}
+
+			logo := shared.NormalizeAppLogo(info.Logo)
+
+			tags := info.Tags
+			if tags == nil {
+				tags = []string{}
+			}
+			ports := info.Ports
+			if ports == nil {
+				ports = []PortInfo{}
+			}
+			usecases := info.Usecases
+			if usecases == nil {
+				usecases = []string{}
+			}
+
+			app := App{
+				ID:               entry.Name(),
+				Name:             info.Name,
+				Logo:             logo,
+				Tags:             tags,
+				Ports:            ports,
+				ShortDescription: info.ShortDescription,
+				Description:      coalesce(info.Description, info.ShortDescription),
+				Usecases:         usecases,
+				Website:          info.Website,
+				CustomApp:        info.CustomApp,
+				Notes:            info.Notes,
+				Path:             appPath,
+				ComposePath:      composePath,
+				Environment:      envVars,
+				EnvGenerators:    envGenerators,
+				ComposePorts:     composePorts,
+			}
+			
+			mu.Lock()
+			apps = append(apps, app)
+			mu.Unlock()
+		}(entry)
 	}
+
+	wg.Wait()
 
 	if apps == nil {
 		apps = []App{}
+	} else {
+		sort.Slice(apps, func(i, j int) bool {
+			return apps[i].ID < apps[j].ID
+		})
 	}
 	return &Catalog{Apps: apps, Count: len(apps)}, nil
 }
