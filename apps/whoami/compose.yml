@@ -15,7 +15,6 @@ x-yantr:
 services:
   whoami:
     image: traefik/whoami
-    container_name: whoami
     ports:
       - "80"
     restart: unless-stopped
