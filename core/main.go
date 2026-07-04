@@ -1192,10 +1192,14 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		"volumes": map[string]interface{}{"count": 0, "spaceReclaimed": 0},
 	}
 	if body.Images {
-		if pruned, err := docker.Client.ImagesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
+		filters := dockerfilters.NewArgs()
+		filters.Add("dangling", "false") // removes all unused images, not just dangling
+		if pruned, err := docker.Client.ImagesPrune(context.Background(), filters); err == nil {
 			results["images"] = map[string]interface{}{
 				"count": len(pruned.ImagesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
 			}
+		} else {
+			shared.Log("warn", "system: images prune failed: "+err.Error())
 		}
 	}
 	if body.Volumes {
@@ -1203,6 +1207,8 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 			results["volumes"] = map[string]interface{}{
 				"count": len(pruned.VolumesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
 			}
+		} else {
+			shared.Log("warn", "system: volumes prune failed: "+err.Error())
 		}
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "results": results})
