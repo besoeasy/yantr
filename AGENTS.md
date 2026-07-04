@@ -78,7 +78,44 @@ labels:
 
 Supported protocols: `HTTP`, `HTTPS`, `TCP`, `UDP`
 
+### x-auth Block (Optional, Deploy-time Only)
+Yantr reads `x-auth` at deploy time to configure a Caddy basic-auth proxy in front of the app. Docker Compose ignores `x-*` fields. The password is **never stored in container labels or visible via `docker inspect`** — Yantr bcrypts it, writes to Caddy config, then discards the plain text.
+
+```yaml
+x-auth:
+  port: 3002       # Caddy listens here (auth-protected public port)
+  username: admin  # basic auth username
+  password: secret # plain text — bcrypted by Yantr at deploy time, then discarded
+```
+
+**How it works:**
+- App runs on its native port (e.g. `3000`) — internal only
+- Caddy listens on `x-auth.port` (e.g. `3002`) with basicauth → reverse proxies to `3000`
+- Users access the app on port `3002` with username/password
+- Omit `x-auth` entirely for apps that need no auth
+
+```yaml
+# Full example with auth
+x-yantr:
+  name: "My App"
+  ...
+
+x-auth:
+  port: 3002
+  username: admin
+  password: secret
+
+services:
+  my-app:
+    ports:
+      - "3000"
+    labels:
+      yantr.service: "Web UI"
+      yantr.port.3000: "HTTP"
+```
+
 ### Minimal App Example
+
 ```yaml
 # compose.yml — single file, no info.json needed
 x-yantr:

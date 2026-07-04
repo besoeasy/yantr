@@ -486,6 +486,17 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// ── x-auth: parse and inject Caddy auth labels ─────────────────────────
+	if doc, parseErr := compose.Parse(modifiedContent); parseErr == nil {
+		if auth := caddy.ParseXAuth(doc); auth != nil {
+			if injectErr := caddy.InjectCaddyAuthLabels(doc, auth); injectErr != nil {
+				shared.Log("warn", "[deploy] x-auth inject failed: "+injectErr.Error())
+			} else if rebuilt, rebuildErr := compose.Stringify(doc); rebuildErr == nil {
+				modifiedContent = rebuilt
+			}
+		}
+	}
+
 	ref, err := compose.WriteProjectCompose(appPath, projectName, modifiedContent)
 	if err != nil {
 		jsonErr(w, 500, "COMPOSE_WRITE_FAILED", err.Error())
@@ -503,6 +514,13 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	if exitCode != 0 {
 		jsonErr(w, 500, "DEPLOYMENT_FAILED", coalesce(stderr, stdout))
 		return
+	}
+
+	// Reload Caddy so new yantr.caddy.* labels are picked up
+	if caddy.IsRunning() {
+		if reloadErr := caddy.ReloadCaddyConfig(); reloadErr != nil {
+			shared.Log("warn", "[deploy] caddy reload after deploy failed: "+reloadErr.Error())
+		}
 	}
 
 	jsonResp(w, 200, map[string]interface{}{

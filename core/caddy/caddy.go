@@ -3,12 +3,18 @@
 // Caddy runs as a child process inside the Yantr container. Its config is
 // derived entirely from Docker container labels — no database, no state file.
 //
-// Label schema:
+// Label schema (written by InjectCaddyAuthLabels at deploy time):
 //   yantr.caddy.enabled      = "true"
-//   yantr.caddy.serve.port   = "<host port Caddy listens on>"
-//   yantr.caddy.target.port  = "<localhost port of the app>"
-//   yantr.caddy.auth.user    = "<username>"          (optional)
-//   yantr.caddy.auth.pass    = "<bcrypt hash, hex-encoded>"  (optional)
+//   yantr.caddy.serve.port   = "<port Caddy auth proxy listens on>"
+//   yantr.caddy.target.port  = "<app's native container port>"
+//   yantr.caddy.auth.user    = "<username>"
+//   yantr.caddy.auth.pass    = "<bcrypt hash, hex-encoded>"  (password discarded after hashing)
+//
+// x-auth compose block (read at deploy time, stripped before container runs):
+//   x-auth:
+//     port: 3002       # Caddy listens here
+//     username: admin
+//     password: secret # plain text — bcrypted, then discarded
 package caddy
 
 import (
@@ -34,8 +40,8 @@ import (
 const adminPort = 2019
 
 var (
-	mu          sync.Mutex
-	caddyCmd    *exec.Cmd
+	mu           sync.Mutex
+	caddyCmd     *exec.Cmd
 	caddyRunning bool
 )
 
@@ -49,6 +55,13 @@ type ProxyRoute struct {
 	TargetPort    int    `json:"targetPort"`
 	AuthUser      string `json:"authUser,omitempty"`
 	AuthPassHash  string `json:"-"` // raw bcrypt, never sent to frontend
+}
+
+// XAuth holds the parsed x-auth block from a compose.yml.
+type XAuth struct {
+	Port     int    `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 // IsRunning reports whether the Caddy subprocess is alive.
@@ -86,9 +99,6 @@ func StartCaddy() error {
 		mu.Unlock()
 		shared.Log("info", "[caddy] process exited")
 	}()
-
-	// Pipe stdout/stderr to our log
-	// (caddy's combined output comes from cmd.Stdout/Stderr — we need stderr redirected)
 
 	// Wait for admin API
 	if !waitForAdminAPI(20, 300*time.Millisecond) {
@@ -153,7 +163,7 @@ func GetCaddyProxies() ([]ProxyRoute, error) {
 			continue
 		}
 
-		// Resolve the actual host port
+		// Resolve the actual host port Docker assigned
 		targetPort := 0
 		for _, pb := range c.Ports {
 			if int(pb.PrivatePort) == containerPort && pb.PublicPort > 0 {
@@ -191,6 +201,126 @@ func GetCaddyProxies() ([]ProxyRoute, error) {
 	return proxies, nil
 }
 
+// ─── x-auth deploy-time wiring ────────────────────────────────────────────────
+
+// ParseXAuth extracts the x-auth block from a parsed compose doc.
+// Returns nil if the block is absent or incomplete.
+func ParseXAuth(doc map[string]interface{}) *XAuth {
+	raw, ok := doc["x-auth"]
+	if !ok || raw == nil {
+		return nil
+	}
+	m, ok := raw.(map[string]interface{})
+	if !ok {
+		return nil
+	}
+
+	port := 0
+	switch v := m["port"].(type) {
+	case int:
+		port = v
+	case float64:
+		port = int(v)
+	}
+
+	username, _ := m["username"].(string)
+	password, _ := m["password"].(string)
+
+	if port == 0 || username == "" || password == "" {
+		return nil
+	}
+	return &XAuth{Port: port, Username: username, Password: password}
+}
+
+// InjectCaddyAuthLabels hashes the x-auth password and injects yantr.caddy.*
+// labels into every service in the compose doc. Returns the target app port
+// (from yantr.port.N labels) and any error.
+//
+// The x-auth block is left in the doc (Docker Compose ignores x-* fields).
+// The plain-text password is never written to the container — only the
+// hex-encoded bcrypt hash reaches the label store.
+func InjectCaddyAuthLabels(doc map[string]interface{}, auth *XAuth) error {
+	if auth == nil {
+		return nil
+	}
+
+	// Hash the plain-text password via the caddy binary
+	hash, err := HashPassword(auth.Password)
+	if err != nil {
+		return fmt.Errorf("x-auth: failed to hash password: %w", err)
+	}
+	encodedHash := EncodeHash(hash)
+
+	services, ok := doc["services"].(map[string]interface{})
+	if !ok || len(services) == 0 {
+		return fmt.Errorf("x-auth: compose has no services")
+	}
+
+	for _, svcRaw := range services {
+		svc, ok := svcRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		// Find the app port from existing yantr.port.N labels
+		appPort := resolveAppPort(svc)
+
+		// Ensure labels map exists
+		labels, ok := svc["labels"].(map[string]interface{})
+		if !ok {
+			labels = map[string]interface{}{}
+			svc["labels"] = labels
+		}
+
+		labels["yantr.caddy.enabled"] = "true"
+		labels["yantr.caddy.serve.port"] = strconv.Itoa(auth.Port)
+		labels["yantr.caddy.target.port"] = strconv.Itoa(appPort)
+		labels["yantr.caddy.auth.user"] = auth.Username
+		labels["yantr.caddy.auth.pass"] = encodedHash
+		// Plain password is intentionally NOT stored in any label
+	}
+
+	shared.Log("info", fmt.Sprintf("[caddy] x-auth: injected auth labels → serve :%d, target :%d, user %s",
+		auth.Port, resolveAppPortFromDoc(doc), auth.Username))
+	return nil
+}
+
+// resolveAppPort finds the first yantr.port.N label value port number from a service.
+func resolveAppPort(svc map[string]interface{}) int {
+	labels, ok := svc["labels"].(map[string]interface{})
+	if !ok {
+		return 0
+	}
+	for key := range labels {
+		if strings.HasPrefix(key, "yantr.port.") {
+			portStr := strings.TrimPrefix(key, "yantr.port.")
+			if n, err := strconv.Atoi(portStr); err == nil {
+				return n
+			}
+		}
+	}
+	return 0
+}
+
+func resolveAppPortFromDoc(doc map[string]interface{}) int {
+	services, ok := doc["services"].(map[string]interface{})
+	if !ok {
+		return 0
+	}
+	for _, svcRaw := range services {
+		svc, ok := svcRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if p := resolveAppPort(svc); p != 0 {
+			return p
+		}
+	}
+	return 0
+}
+
+// ─── Password hashing ─────────────────────────────────────────────────────────
+
 // HashPassword calls `caddy hash-password` to produce a bcrypt hash.
 func HashPassword(plaintext string) (string, error) {
 	out, err := exec.Command("caddy", "hash-password", "--plaintext", plaintext).Output()
@@ -216,6 +346,8 @@ func normalizeStoredHash(value string) string {
 	}
 	return string(b)
 }
+
+// ─── Caddyfile generation ─────────────────────────────────────────────────────
 
 var bcryptRe = regexp.MustCompile(`^\$2[aby]\$\d{2}\$[./A-Za-z0-9]{53}$`)
 
