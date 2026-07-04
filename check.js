@@ -138,6 +138,13 @@ async function checkCompose(appName, composePath) {
 
   for (const [svcName, svc] of Object.entries(services)) {
     if (!svc || typeof svc !== "object") continue;
+    if (Array.isArray(svc.labels)) {
+      fail(
+        appName,
+        `compose.yml service "${svcName}" defines labels as an array`,
+        'Define labels as a map (key-value dictionary). Example:\n      labels:\n        yantr.service.80: "Web UI"\n        yantr.port.80: "HTTP"'
+      );
+    }
 
     const labels = normaliseLabels(svc.labels);
 
@@ -226,19 +233,6 @@ async function checkCompose(appName, composePath) {
 
 function normaliseLabels(raw) {
   if (!raw) return {};
-  if (Array.isArray(raw)) {
-    const out = {};
-    for (const l of raw) {
-      if (typeof l !== "string") continue;
-      const idx = l.indexOf("=");
-      if (idx === -1) {
-        out[l] = "";
-      } else {
-        out[l.slice(0, idx)] = l.slice(idx + 1);
-      }
-    }
-    return out;
-  }
   return typeof raw === "object" ? raw : {};
 }
 

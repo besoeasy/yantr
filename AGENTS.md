@@ -65,6 +65,8 @@ Use block sequences only when list items are objects with sub-fields (e.g. `env_
 ### Port Labels on Services
 Port metadata is declared directly on each service via labels — collocated with the `ports:` declaration it describes.
 
+**CRITICAL RULE:** `labels` MUST ALWAYS be defined as a map (key-value dictionary) and NEVER as a sequence/array (`- KEY=VALUE`). This is strictly enforced.
+
 ```yaml
 # Pattern: yantr.port.{PORT_NUMBER}: "PROTOCOL"
 #          yantr.service.{PORT_NUMBER}: "Name"  ← per-port human-readable name

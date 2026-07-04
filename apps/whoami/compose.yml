@@ -16,5 +16,6 @@ services:
       - "80"
     restart: unless-stopped
     labels:
+      yantr.app: "whoami"
       yantr.service.80: "Web UI"
       yantr.port.80: "HTTP"
