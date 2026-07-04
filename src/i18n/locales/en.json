@@ -604,29 +604,17 @@
     "cta": "Sponsor on GitHub"
   },
   "authGate": {
-    "badge": "Operator",
     "bootingTitle": "Preparing",
     "bootingSubtitle": "Checking configuration…",
     "bootingState": "Restoring session…",
-    "setupTitle": "Create identity",
-    "setupSubtitle": "Set your operator credentials. Everything is derived locally.",
+    "setupTitle": "Set up Yantr",
+    "setupSubtitle": "Choose a username to get started.",
     "loginTitle": "Sign in",
-    "loginSubtitle": "Enter your credentials to unlock.",
+    "loginSubtitle": "Enter your username to unlock.",
     "username": "Username",
     "usernamePlaceholder": "username",
-    "password": "Password",
-    "passwordPlaceholder": "••••••••",
-    "pin": "PIN",
-    "pinPlaceholder": "0000",
-    "pinHint": "Optional — defaults to 0000",
-    "seedNote": "Derived locally. Only the public key is stored.",
-    "previewLabel": "Public key",
-    "previewHint": "Derived from your credentials",
-    "previewPending": "Public key will appear here.",
-    "previewIncomplete": "Enter username and password (8+ chars).",
-    "previewWorking": "Deriving…",
-    "copyKey": "Copy",
-    "setupAction": "Create identity",
+    "seedNote": "Key stored locally. Sign in from this device.",
+    "setupAction": "Create account",
     "loginAction": "Sign in",
     "working": "Working…",
     "messages": {
@@ -639,6 +627,8 @@
       "passwordLength": "Password must be at least 8 characters.",
       "generic": "Failed.",
       "copyFailed": "Copy failed."
-    }
+    },
+    "setupNote": "A secure key will be generated and stored in your browser. Keep this device safe.",
+    "loginNote": "Your key is stored in this browser. Use this device to access Yantr."
   }
 }

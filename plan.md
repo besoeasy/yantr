@@ -3,6 +3,8 @@
 ## Objective
 Rewrite the existing Node.js/Fastify backend (`daemon`) in Go and rename it to `core`. This will replace the Node.js runtime with a single static binary, significantly reducing the Docker image size and improving type safety and maintainability.
 
+regarding daku, use something simpler that is supported by browser crypto api, and easy to verify here in backend with standard libararies
+
 ## Key Motivations & Advantages
 1. **Official Docker SDK**: Transition from the community `dockerode` wrapper to Docker's official Go SDK (`github.com/docker/docker/client`), providing type-safe and reliable interaction with the Docker engine.
 2. **First-Party Compose Parsing**: Replace ~400 lines of custom YAML parsing and mutation in `stack-compose.js` with Docker Compose's official parser (`github.com/compose-spec/compose-go/v2`), ensuring full spec compliance.

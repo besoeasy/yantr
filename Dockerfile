@@ -1,36 +1,43 @@
-FROM docker.io/library/node:lts AS builder
+# ─── Stage 1: Build Vue.js Frontend ──────────────────────────────────────────
+FROM docker.io/library/node:lts AS frontend-builder
 
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-
 RUN npm ci --prefer-offline --no-audit || npm install
 
 COPY . .
-
 RUN VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build
-
 RUN rm -rf node_modules .npm
 
-# Final Image
+# ─── Stage 2: Build Go Core Backend ──────────────────────────────────────────
+FROM docker.io/library/golang:1.25-alpine AS backend-builder
 
-FROM docker.io/library/node:alpine
+WORKDIR /build
 
+# Copy Go module files and download deps first (better layer caching)
+COPY core/go.mod core/go.sum ./
+RUN go mod download
+
+# Copy source and build static binary
+COPY core/ ./
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -ldflags="-w -s -X main.version=$(date -u +%Y%m%d)" \
+    -o /yantr-core .
+
+# ─── Stage 3: Final Image ────────────────────────────────────────────────────
+FROM docker.io/library/alpine:latest
+
+# Install runtime dependencies (no Node.js runtime needed!)
 RUN apk add --no-cache docker-cli docker-cli-compose wget dufs caddy
 
 WORKDIR /app
 
 RUN mkdir -p /data
 
-COPY package.json package-lock.json* ./
-
-RUN  npm install --omit=dev
-
-RUN npm cache clean --force
-
-COPY --from=builder /app/dist ./dist
-
-COPY daemon/ ./daemon/
+# Copy compiled assets
+COPY --from=frontend-builder /app/dist ./dist
+COPY --from=backend-builder /yantr-core ./yantr-core
 COPY apps/ ./apps/
 
 EXPOSE 5252
@@ -38,7 +45,7 @@ EXPOSE 5252
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 	CMD wget -qO- http://127.0.0.1:5252/api/health >/dev/null 2>&1 || exit 1
 
-ENV PORT=5252
+ENV YANTR_SERVE_UI=true
 ENV NODE_ENV=production
 
-CMD ["node", "daemon/index.js"]
+CMD ["/app/yantr-core"]

@@ -1,24 +1,17 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Copy, KeyRound, LoaderCircle, LockKeyhole, UserRound } from 'lucide-vue-next'
+import { LoaderCircle, LockKeyhole, UserRound } from 'lucide-vue-next'
 import { useNotification } from '../composables/useNotification'
-import { deriveDeterministicIdentity, useYantrAuth } from '../composables/useYantrAuth'
+import { useYantrAuth } from '../composables/useYantrAuth'
 
 const { t } = useI18n()
 const toast = useNotification()
 const { authState, loginYantr, setupYantrAdmin } = useYantrAuth()
 
 const username = ref(localStorage.getItem('yantr-username') || '')
-const password = ref('')
-const pin = ref('')
 const submitting = ref(false)
 const localError = ref('')
-const previewPublicKey = ref('')
-const previewLoading = ref(false)
-
-let previewTimer = null
-let previewRequestId = 0
 
 // Background mouse canvas
 const bgCanvas = ref(null)
@@ -32,67 +25,8 @@ const title = computed(() => authState.booting
   ? t('authGate.bootingTitle')
   : isSetup.value ? t('authGate.setupTitle') : t('authGate.loginTitle'))
 
-const effectivePin = computed(() => (pin.value || '').trim() || '0000')
-
-const previewReady = computed(() => Boolean(previewPublicKey.value))
-
-function shouldPreviewKey() {
-  return Boolean(String(username.value).trim()) && String(password.value).length >= 8
-}
-
-async function updatePreviewKey() {
-  const requestId = ++previewRequestId
-  if (previewTimer) clearTimeout(previewTimer)
-
-  if (!shouldPreviewKey()) {
-    previewLoading.value = false
-    previewPublicKey.value = ''
-    return
-  }
-
-  previewLoading.value = true
-  previewTimer = setTimeout(async () => {
-    try {
-      const identity = await deriveDeterministicIdentity({
-        username: username.value,
-        password: password.value,
-        pin: effectivePin.value,
-      })
-      if (requestId !== previewRequestId) return
-      previewPublicKey.value = identity.publicKey
-    } catch {
-      if (requestId !== previewRequestId) return
-      previewPublicKey.value = ''
-    } finally {
-      if (requestId === previewRequestId) previewLoading.value = false
-    }
-  }, 160)
-}
-
-async function copyText(value, message) {
-  if (!value) return
-  try {
-    await navigator.clipboard.writeText(value)
-    toast.success(message)
-  } catch {
-    toast.error(t('authGate.errors.copyFailed'))
-  }
-}
-
-watch([username, password, pin], () => {
-  updatePreviewKey()
-}, { immediate: true })
-
-onUnmounted(() => {
-  if (previewTimer) clearTimeout(previewTimer)
-  if (raf) cancelAnimationFrame(raf)
-  window.removeEventListener('mousemove', handleMouse)
-  window.removeEventListener('mouseleave', handleMouseLeave)
-})
-
 function validate() {
   if (!String(username.value).trim()) return t('authGate.errors.usernameRequired')
-  if (String(password.value).length < 8) return t('authGate.errors.passwordLength')
   return ''
 }
 
@@ -107,11 +41,7 @@ async function submit() {
   localError.value = ''
 
   try {
-    const payload = {
-      username: username.value,
-      password: password.value,
-      pin: effectivePin.value,
-    }
+    const payload = { username: username.value }
     if (isSetup.value) {
       await setupYantrAdmin(payload)
       toast.success(t('authGate.messages.setupComplete'))
@@ -119,8 +49,6 @@ async function submit() {
       await loginYantr(payload)
       toast.success(t('authGate.messages.loginComplete'))
     }
-    password.value = ''
-    pin.value = ''
   } catch (error) {
     localError.value = error.message || t('authGate.errors.generic')
   } finally {
@@ -128,7 +56,7 @@ async function submit() {
   }
 }
 
-// === Premium interactive background (very subtle mouse-reactive dots) ===
+// === Premium interactive background ===
 function initBackground() {
   const canvas = bgCanvas.value
   if (!canvas) return
@@ -141,7 +69,6 @@ function initBackground() {
   resize()
   window.addEventListener('resize', resize)
 
-  // Create elegant minimal dots
   dots = []
   const count = Math.min(160, Math.floor((canvas.width * canvas.height) / 12000))
   for (let i = 0; i < count; i++) {
@@ -155,92 +82,59 @@ function initBackground() {
       vy: (Math.random() - 0.5) * 0.15,
     })
   }
-
-  // Store base positions
   dots.forEach(d => { d.baseX = d.x; d.baseY = d.y })
 
   window.addEventListener('mousemove', handleMouse)
   window.addEventListener('mouseleave', handleMouseLeave)
-
   animateBackground()
 }
 
-function handleMouse(e) {
-  mouse.x = e.clientX
-  mouse.y = e.clientY
-  mouse.active = true
-}
-
-function handleMouseLeave() {
-  mouse.active = false
-}
+function handleMouse(e) { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true }
+function handleMouseLeave() { mouse.active = false }
 
 function animateBackground() {
   const canvas = bgCanvas.value
   const ctx = canvasCtx
   if (!ctx || !canvas) return
-
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
   const isDark = document.documentElement.classList.contains('dark')
   const dotColor = isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(15, 23, 42, 0.12)'
   const lineColor = isDark ? 'rgba(148, 163, 184, 0.08)' : 'rgba(15, 23, 42, 0.07)'
-
-  const mx = mouse.x
-  const my = mouse.y
-  const influence = mouse.active ? 78 : 0
+  const mx = mouse.x; const my = mouse.y; const influence = mouse.active ? 78 : 0
 
   ctx.fillStyle = dotColor
-
   for (let i = 0; i < dots.length; i++) {
     const d = dots[i]
-
-    // gentle mouse influence (very premium & restrained)
     if (mouse.active) {
-      const dx = mx - d.x
-      const dy = my - d.y
+      const dx = mx - d.x; const dy = my - d.y
       const dist = Math.sqrt(dx * dx + dy * dy) || 1
-
       if (dist < influence) {
         const force = (influence - dist) / influence
-        d.x = d.x + (dx / dist) * force * -0.9   // slight repel
+        d.x = d.x + (dx / dist) * force * -0.9
         d.y = d.y + (dy / dist) * force * -0.9
       }
     }
-
-    // very slow drift back toward base
     d.x += (d.baseX - d.x) * 0.012 + d.vx
     d.y += (d.baseY - d.y) * 0.012 + d.vy
-
-    // draw dot
-    ctx.beginPath()
-    ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2)
-    ctx.fill()
-
-    // subtle connection to mouse
+    ctx.beginPath(); ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2); ctx.fill()
     if (mouse.active) {
-      const dx = mx - d.x
-      const dy = my - d.y
+      const dx = mx - d.x; const dy = my - d.y
       const dist = Math.sqrt(dx * dx + dy * dy)
       if (dist < 92 && dist > 4) {
-        ctx.strokeStyle = lineColor
-        ctx.lineWidth = 0.7
-        ctx.beginPath()
-        ctx.moveTo(d.x, d.y)
-        ctx.lineTo(mx, my)
-        ctx.stroke()
+        ctx.strokeStyle = lineColor; ctx.lineWidth = 0.7
+        ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(mx, my); ctx.stroke()
       }
     }
   }
-
   raf = requestAnimationFrame(animateBackground)
 }
 
-onMounted(() => {
-  // init background mouse effect after DOM is ready
-  requestAnimationFrame(() => {
-    initBackground()
-  })
+onMounted(() => { requestAnimationFrame(() => { initBackground() }) })
+onUnmounted(() => {
+  if (raf) cancelAnimationFrame(raf)
+  window.removeEventListener('mousemove', handleMouse)
+  window.removeEventListener('mouseleave', handleMouseLeave)
 })
 </script>
 
@@ -253,7 +147,7 @@ onMounted(() => {
       style="opacity: 0.85;"
     />
 
-    <!-- Centered super-minimal content -->
+    <!-- Centered content -->
     <div class="relative z-10 min-h-screen flex items-center justify-center px-5 py-12">
       <div class="w-full max-w-[360px]">
         <!-- Minimal header -->
@@ -269,12 +163,12 @@ onMounted(() => {
           </p>
         </div>
 
-        <!-- The form card - extremely clean -->
+        <!-- Form card -->
         <div
           class="relative rounded-3xl bg-(--surface) smooth-shadow-lg px-6 py-7 transition-all duration-300"
           :class="{ 'opacity-60 pointer-events-none': authState.booting }"
         >
-          <div v-if="authState.booting" class="flex items-center justify-center min-h-[260px]">
+          <div v-if="authState.booting" class="flex items-center justify-center min-h-[140px]">
             <div class="flex items-center gap-3 text-sm text-(--text-secondary)">
               <LoaderCircle class="h-4 w-4 animate-spin" />
               <span>{{ t('authGate.bootingState') }}</span>
@@ -298,40 +192,15 @@ onMounted(() => {
               />
             </div>
 
-            <!-- Password -->
-            <div>
-              <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary) mb-1.5 flex items-center gap-1.5">
-                <KeyRound class="h-3.5 w-3.5" />
-                <span>{{ t('authGate.password') }}</span>
-              </div>
-              <input
-                v-model="password"
-                type="password"
-                autocomplete="current-password"
-                :placeholder="t('authGate.passwordPlaceholder')"
-                class="w-full bg-(--surface-muted) rounded-2xl px-4 py-3.5 text-[15px] font-medium placeholder:text-(--text-secondary)/60 focus:outline-none focus:-translate-y-px transition-all duration-200"
-                style="box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
-              />
-            </div>
+            <!-- Setup note -->
+            <p v-if="isSetup" class="text-[12px] text-(--text-secondary) leading-relaxed">
+              {{ t('authGate.setupNote') }}
+            </p>
 
-            <!-- PIN (optional) -->
-            <div>
-              <div class="flex items-center justify-between mb-1.5">
-                <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary) flex items-center gap-1.5">
-                  <span>{{ t('authGate.pin') }}</span>
-                </div>
-                <span class="text-[10px] text-(--text-secondary)/70">{{ t('authGate.pinHint') }}</span>
-              </div>
-              <input
-                v-model="pin"
-                type="text"
-                inputmode="numeric"
-                autocomplete="off"
-                :placeholder="t('authGate.pinPlaceholder')"
-                class="w-full bg-(--surface-muted) rounded-2xl px-4 py-3.5 text-[15px] font-medium placeholder:text-(--text-secondary)/60 focus:outline-none focus:-translate-y-px transition-all duration-200 tracking-[2px]"
-                style="box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
-              />
-            </div>
+            <!-- Login note: device-bound key -->
+            <p v-else class="text-[12px] text-(--text-secondary) leading-relaxed">
+              {{ t('authGate.loginNote') }}
+            </p>
 
             <!-- Error -->
             <p
@@ -352,34 +221,6 @@ onMounted(() => {
               <span>{{ submitting ? t('authGate.working') : isSetup ? t('authGate.setupAction') : t('authGate.loginAction') }}</span>
             </button>
           </form>
-
-          <!-- Current / derived public key - super minimal -->
-          <div class="mt-7 pt-5 border-t border-(--surface-muted)">
-            <div class="flex items-center justify-between mb-2">
-              <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary)">
-                {{ t('authGate.previewLabel') }}
-              </div>
-              <button
-                v-if="previewReady"
-                @click="copyText(previewPublicKey, t('authGate.messages.publicKeyCopied'))"
-                class="flex items-center gap-1 text-[10px] font-medium text-(--text-secondary) hover:text-(--text-primary) active:scale-95 transition-all"
-              >
-                <Copy class="h-3 w-3" />
-                <span>{{ t('authGate.copyKey') }}</span>
-              </button>
-            </div>
-
-            <div
-              class="min-h-[52px] font-mono text-[11px] leading-snug break-all rounded-2xl bg-(--surface-muted) px-4 py-3 text-(--text-primary) transition-all duration-300"
-              :class="{ 'opacity-50': previewLoading }"
-            >
-              <span v-if="previewLoading" class="inline-flex items-center gap-1.5 text-(--text-secondary)">
-                <LoaderCircle class="h-3 w-3 animate-spin" /> {{ t('authGate.previewWorking') }}
-              </span>
-              <span v-else-if="previewReady">{{ previewPublicKey }}</span>
-              <span v-else class="text-(--text-secondary)">{{ t('authGate.previewPending') }}</span>
-            </div>
-          </div>
         </div>
 
         <div class="mt-6 text-center text-[10px] tracking-[0.5px] text-(--text-secondary)">

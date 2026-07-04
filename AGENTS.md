@@ -1,16 +1,18 @@
 # Yantr — Agent Instructions
 
 ## Project Overview
-Self-hosted app store running as a Docker container alongside existing OS. Vue 3 frontend + Fastify API backend managing Docker Compose stacks via Docker socket.
+Self-hosted app store running as a Docker container alongside existing OS. Vue 3 frontend + **Go** API backend managing Docker Compose stacks via Docker socket.
 
 ## Commands
 
 | Command | Purpose |
-|---------|---------|
+|---------|----------|
 | `npm run dev` | Start Vite dev server (proxies `/api` to `localhost:5252`) |
 | `npm run build` | Build production Vue app to `dist/` |
 | `npm run preview` | Preview production build |
 | `npm run docker` | Build & run Docker image with host network + Docker socket |
+| `npm run core:build` | Compile Go backend binary to `./yantr-core` |
+| `npm run core:run` | Run Go backend binary locally (requires `dist/` and `apps/`) |
 | `npm run website` | Build static website to `website/` |
 | `node check.js` | Validate all apps in `apps/` (run after any app changes) |
 
@@ -18,10 +20,12 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 
 **Frontend** (`src/`): Vue 3 + Vue Router + Pinia (implicit), Tailwind CSS v4
 
-**Backend** (`daemon/`): Fastify API server on port 5252
-- Entry: `daemon/index.js` (self-install bootstrap → Fastify → routes → cleanup/autoupdate/Caddy)
-- Routes: `daemon/routes/` (auth, system, containers, stacks, apps, images, volumes, proxy)
-- Key modules: `shared.js` (Docker socket, logging), `stack-compose.js` (compose ops), `auth.js` (daku token auth), `caddy.js` (embedded reverse proxy), `cleanup.js`, `autoupdate.js`, `dufs.js` (volume browser)
+**Backend** (`core/`): Go HTTP server on port 5252 (replaces `daemon/`)
+- Entry: `core/main.go` (HTTP server → routes → Caddy subprocess)
+- Packages: `auth/` (HMAC-SHA256 token auth), `apps/` (catalog reader), `compose/` (YAML ops), `caddy/` (reverse proxy), `docker/` (SDK client), `selfinstall/` (bootstrap), `shared/` (logging), `system/` (IP identity)
+- Auth: stateless HMAC-SHA256 JWT (compatible with browser `SubtleCrypto`), configured via `POST /api/setup/admin` with `{username, secretHex}` (64-char hex = 32-byte key)
+- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`
+- Volume browser: `browser.go` manages dufs subprocess instances per volume
 
 **Apps Catalog** (`apps/`): 130+ apps, each with:
 - `compose.yml` — Docker Compose with `yantr.app` + `yantr.service` labels
