@@ -92,12 +92,12 @@ func getAppsDir() string {
 		return d
 	}
 	exe, _ := os.Executable()
-	return filepath.Join(filepath.Dir(exe), "..", "apps")
+	return filepath.Join(filepath.Dir(exe), "apps")
 }
 
 func getDistDir() string {
 	exe, _ := os.Executable()
-	return filepath.Join(filepath.Dir(exe), "..", "dist")
+	return filepath.Join(filepath.Dir(exe), "dist")
 }
 
 func getBaseAppID(projectID string) string {

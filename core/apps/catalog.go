@@ -79,9 +79,9 @@ var appsDir = func() string {
 	if d := os.Getenv("YANTR_APPS_DIR"); d != "" {
 		return d
 	}
-	// Default: sibling apps/ directory relative to the binary's parent
+	// Default: sibling apps/ directory relative to the binary
 	exe, _ := os.Executable()
-	return filepath.Join(filepath.Dir(exe), "..", "apps")
+	return filepath.Join(filepath.Dir(exe), "apps")
 }()
 
 // SetAppsDir overrides the apps directory (used by main.go).
@@ -142,6 +142,7 @@ var (
 func loadCatalog() (*Catalog, error) {
 	entries, err := os.ReadDir(appsDir)
 	if err != nil {
+		shared.Log("warn", "apps: failed to read appsDir "+appsDir+": "+err.Error())
 		return &Catalog{Apps: []App{}, Count: 0}, nil
 	}
 
