@@ -777,6 +777,67 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 
 // ─── Handlers: stacks ─────────────────────────────────────────────────────────
 
+func handleStackDelete(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+
+	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	if err != nil {
+		jsonErr(w, 500, "DOCKER_ERROR", err.Error())
+		return
+	}
+
+	var projectContainers []dockerctr.Summary
+	for _, c := range all {
+		if c.Labels["com.docker.compose.project"] == projectID {
+			projectContainers = append(projectContainers, c)
+		}
+	}
+
+	if len(projectContainers) == 0 {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "No containers found for this stack")
+		return
+	}
+
+	baseID := getBaseAppID(projectID)
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	ref := compose.GetProjectComposeRef(appPath, projectID)
+
+	if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
+		if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
+			env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
+			out, errStr, exitCode, err := spawnExec(cmdName, args, env, appPath)
+			if exitCode == 0 {
+				compose.DeleteProjectCompose(appPath, projectID)
+				jsonResp(w, 200, map[string]interface{}{
+					"success": true,
+					"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
+					"removed": true,
+				})
+				return
+			} else {
+				shared.Log("error", fmt.Sprintf("Stack remove failed: %s\n%s\nexit=%d err=%v", out, errStr, exitCode, err))
+				shared.Log("error", fmt.Sprintf("docker compose down exit=%d err=%v", exitCode, err))
+				jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("docker compose down failed (exit %d)", exitCode))
+				return
+			}
+		}
+	}
+
+	for _, c := range projectContainers {
+		id := c.ID
+		if c.State == "running" {
+			_ = docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		}
+		_ = docker.Client.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+	}
+
+	jsonResp(w, 200, map[string]interface{}{
+		"success": true,
+		"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
+	})
+}
+
 func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
 	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
