@@ -1,0 +1,48 @@
+services:
+  web:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    labels:
+      yantr.app: nginx-proxy-manager
+      yantr.service.81: Admin UI
+      yantr.port.81: HTTP
+      yantr.service.80: HTTP Proxy
+      yantr.port.80: HTTP
+      yantr.service.443: HTTPS Proxy
+      yantr.port.443: HTTPS
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "81"
+      - "80"
+      - "443"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+volumes:
+  npm_data: null
+  npm_letsencrypt: null
+x-yantr:
+  name: Nginx Proxy Manager
+  tags:
+    - reverse-proxy
+    - nginx
+    - ssl
+    - networking
+    - self-hosted
+  short_description: Easy-to-use reverse proxy with free SSL certificate management.
+  description: Nginx Proxy Manager provides a beautiful web UI to manage Nginx
+    reverse proxy hosts with automatic Let's Encrypt SSL certificates. Expose
+    self-hosted services securely over the internet with custom domains, access
+    lists, and advanced Nginx configuration — no command-line needed.
+  usecases:
+    - Expose self-hosted services via custom subdomains with HTTPS.
+    - Automatically obtain and renew Let's Encrypt SSL certificates.
+    - Manage reverse proxy rules, redirects, and access lists from a web UI.
+  website: https://nginxproxymanager.com
+  notes:
+    - "Default admin credentials: admin@example.com / changeme — change
+      immediately after first login."
+    - Port 80 and 443 must be reachable from the internet for Let's Encrypt
+      validation.
