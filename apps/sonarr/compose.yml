@@ -1,0 +1,52 @@
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    volumes:
+      - sonarr_config:/config
+      - sonarr_tv:/tv
+      - sonarr_downloads:/downloads
+    ports:
+      - "8989"
+    restart: unless-stopped
+    labels:
+      yantr.app: sonarr
+      yantr.service.8989: Web UI
+      yantr.port.8989: HTTP
+volumes:
+  sonarr_config:
+    name: sonarr_config
+  sonarr_tv:
+    name: sonarr_tv
+  sonarr_downloads:
+    name: sonarr_downloads
+x-yantr:
+  name: Sonarr
+  tags:
+    - media
+    - tools
+    - torrent
+    - download
+    - p2p
+  short_description: Smart PVR for TV shows that automatically downloads episodes
+    and organizes your series library.
+  description: Sonarr (formerly NzbDrone) is a PVR (Personal Video Recorder) for
+    Usenet and BitTorrent users. It monitors your RSS feeds for new episodes of
+    your favorite TV shows and automatically downloads them when they become
+    available. Features include season pack downloading, automatic episode
+    rena...
+  usecases:
+    - Track your favorite TV shows and automatically download new episodes as
+      they air.
+    - Build a perfectly organized TV series library with automatic renaming and
+      metadata.
+    - Get episodes in the quality you want - set preferences for HD, 4K, or
+      specific codecs.
+    - Use the calendar view to see when your shows are airing and plan your
+      watching.
+  website: https://github.com/linuxserver/docker-sonarr
+  logo: QmSH43o5suJ8UUngEiPGFWedxTdDk9SFDe2GVLNqSkFhJb
+  notes:
+    - Requires a download client (Usenet or BitTorrent)
+    - Integrates with Plex/Emby/Jellyfin for library updates
+    - Can manage multiple quality profiles for different shows
