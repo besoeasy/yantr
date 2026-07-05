@@ -1,0 +1,34 @@
+services:
+  convertx:
+    image: ghcr.io/c4illin/convertx:latest
+    container_name: convertx
+    labels:
+      yantr.app: convertx
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped
+x-yantr:
+  name: ConvertX
+  tags:
+    - tools
+    - utility
+    - storage
+    - files
+    - self-hosted
+  short_description: Self-hosted file converter - audio, video, images, documents, and archives.
+  description: ConvertX is a self-hosted file conversion tool for audio, video,
+    images, documents, and archives. It processes files locally on your server,
+    offering a simple web interface for uploads and conversions and supporting
+    common codecs and formats without external services.
+  usecases:
+    - Convert video files between formats.
+    - Extract audio from video files.
+    - Convert images to different formats.
+  website: https://github.com/C4illin/ConvertX
+  logo: QmafozB6D4dw51adzoPyrCwTTCATQv1nbVwZPME6yzDWF7
+  notes:
+    - Multiple format support
+    - Local processing only
+    - Web interface for easy use
