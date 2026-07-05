@@ -1,0 +1,47 @@
+services:
+  airsonic:
+    image: lscr.io/linuxserver/airsonic:latest
+    container_name: airsonic
+    labels:
+      yantr.app: airsonic
+      yantr.service.4040: Web UI
+      yantr.port.4040: HTTP
+    ports:
+      - "4040"
+    volumes:
+      - airsonic_config:/config
+      - airsonic_music:/music
+      - airsonic_playlists:/playlists
+      - airsonic_podcasts:/podcasts
+      - airsonic_media:/media
+    restart: unless-stopped
+volumes:
+  airsonic_config: null
+  airsonic_music: null
+  airsonic_playlists: null
+  airsonic_podcasts: null
+  airsonic_media: null
+x-yantr:
+  name: Airsonic
+  tags:
+    - media
+    - music
+    - audio
+    - gaming
+    - server
+  short_description: Open-source music streaming server with web player and mobile app support.
+  description: Airsonic is an open-source music streaming server that lets you
+    stream your personal collection to browsers and mobile apps. It supports
+    multi-user libraries, playlists, on-the-fly transcoding, podcast support,
+    jukebox mode, and Sonos/Chromecast/AirPlay integration.
+  usecases:
+    - Stream your music collection to any browser or device.
+    - Create playlists and share music with family members.
+    - Use jukebox mode to let guests choose music at parties.
+    - Access your music library remotely via the web interface.
+  website: https://github.com/airsonic/airsonic
+  logo: Qmb3YsRHNpn9L5CFLVLM3C4h7wNtMXcGsmXYn2uofZaiHK
+  notes:
+    - Supports transcoding for format compatibility
+    - Android app available for mobile listening
+    - Multiple users with personal libraries supported
