@@ -1,0 +1,66 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: bookstack-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: bookstack
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - bookstack_db:/var/lib/mysql
+    labels:
+      yantr.app: bookstack
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+  server:
+    image: lscr.io/linuxserver/bookstack:latest
+    container_name: bookstack-server
+    restart: unless-stopped
+    depends_on:
+      - db
+    labels:
+      yantr.app: bookstack
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+      APP_URL: ""
+      DB_HOST: bookstack-db
+      DB_PORT: 3306
+      DB_DATABASE: bookstack
+      DB_USERNAME: bookstack
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - bookstack_data:/config
+volumes:
+  bookstack_db: null
+  bookstack_data: null
+x-yantr:
+  name: BookStack
+  tags:
+    - wiki
+    - documentation
+    - knowledge-base
+    - self-hosted
+    - productivity
+  short_description: Self-hosted wiki platform for organizing information.
+  description: BookStack is a simple, self-hosted, easy-to-use platform for
+    organising and storing information. Structured into books, chapters, and
+    pages with a WYSIWYG editor, it offers full-text search, user management,
+    image and file attachments, and REST API access.
+  usecases:
+    - Create an internal wiki for your team or organization.
+    - Document procedures and knowledge in a structured book format.
+    - Search and retrieve documentation instantly with full-text search.
+  website: https://www.bookstackapp.com
+  env_generators:
+    MYSQL_ROOT_PASSWORD:
+      length: 32
+      charset: alnum
+    MYSQL_PASSWORD:
+      length: 32
+      charset: alnum
