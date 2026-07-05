@@ -6,7 +6,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "docker": "docker stop yantr || true && docker rm yantr || true && sleep 2 && docker build -t yantr:dev . && docker run --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes yantr:dev",
-    "website": "npx @tailwindcss/cli -i ./website/tailwind.input.css -o ./website/tailwind.css --minify && node website-build.js"
+    "website": "npx @tailwindcss/cli -i ./website/tailwind.input.css -o ./website/tailwind.css --minify && node scripts/website-build.js",
+    "check": "node scripts/check.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.3",

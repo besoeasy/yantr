@@ -23,9 +23,9 @@ type browser struct {
 
 // volumeBrowserRegistry manages dufs browser processes.
 type volumeBrowserRegistry struct {
-	mu        sync.Mutex
-	browsers  map[string]*browser
-	reserved  map[int]bool
+	mu       sync.Mutex
+	browsers map[string]*browser
+	reserved map[int]bool
 }
 
 func newVolumeBrowserRegistry() *volumeBrowserRegistry {

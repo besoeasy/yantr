@@ -125,8 +125,8 @@ func normalizeIPResponse(source string, raw map[string]interface{}, fetchedAt st
 	}
 
 	id := &IPIdentity{
-		Source:    source,
-		FetchedAt: fetchedAt,
+		Source:     source,
+		FetchedAt:  fetchedAt,
 		CacheTTLMs: int64(ipCacheTTL / time.Millisecond),
 	}
 

@@ -8,11 +8,11 @@ package compose
 import (
 	"bufio"
 	"fmt"
-	"time"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -214,12 +214,12 @@ func BuildProjectComposeContent(baseContent string, opts TransformOptions) (stri
 
 // TransformOptions holds the options for compose transforms.
 type TransformOptions struct {
-	ProjectID        string
-	AppID            string
-	ExpiresIn        float64
+	ProjectID          string
+	AppID              string
+	ExpiresIn          float64
 	CustomPortMappings map[string]interface{}
-	ExtraEnv         map[string]interface{}
-	MasterApp        string
+	ExtraEnv           map[string]interface{}
+	MasterApp          string
 }
 
 // ApplyTransforms applies all project-level transforms to the compose document in place.
@@ -585,10 +585,10 @@ func formatPortBinding(b PortBinding) string {
 
 // ParseDockerPortInput parses a Docker port string like "8080", "8080:8080", "53:53/udp".
 type ParsedPort struct {
-	HostPort          *int
-	ContainerPort     int
-	Protocol          string
-	HasExplicitHost   bool
+	HostPort        *int
+	ContainerPort   int
+	Protocol        string
+	HasExplicitHost bool
 }
 
 func ParseDockerPortInput(input string) *ParsedPort {

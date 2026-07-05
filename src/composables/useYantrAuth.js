@@ -13,17 +13,11 @@
  * server during setup. All subsequent tokens are signed client-side.
  */
 import { reactive, readonly } from 'vue'
+import { generateDeterministicSecretHex, createToken } from '../utils/crypto.js'
+import { installYantrFetchAuth, nativeFetch } from '../utils/fetchInterceptor.js'
 
-const SECRET_KEY_STORAGE = 'yantr-secret-key'   // 64-char hex, 32 bytes
-const USERNAME_STORAGE   = 'yantr-username'
-
-const PUBLIC_PATHS = new Set([
-  '/api/health',
-  '/api/version',
-  '/api/setup/status',
-  '/api/setup/admin',
-  '/api/auth/login',
-])
+export const SECRET_KEY_STORAGE = 'yantr-secret-key'   // 64-char hex, 32 bytes
+export const USERNAME_STORAGE   = 'yantr-username'
 
 const authState = reactive({
   booting:       true,
@@ -35,70 +29,6 @@ const authState = reactive({
 })
 
 let bootstrapPromise = null
-let fetchInstalled   = false
-let nativeFetch      = null
-
-// ─── Crypto helpers ──────────────────────────────────────────────────────────
-
-/** Convert ArrayBuffer to base64url (no padding). */
-function bufferToBase64url(buf) {
-  const bytes = new Uint8Array(buf)
-  let str = ''
-  for (const b of bytes) str += String.fromCharCode(b)
-  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '')
-}
-
-/** Convert a plain string to base64url. */
-function strToBase64url(s) {
-  return bufferToBase64url(new TextEncoder().encode(s))
-}
-
-/** Import a raw hex key as a CryptoKey for HMAC-SHA256. */
-async function importHmacKey(secretHex) {
-  const bytes = hexToBytes(secretHex)
-  return crypto.subtle.importKey(
-    'raw',
-    bytes,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign'],
-  )
-}
-
-/** Hex-decode a string to Uint8Array. */
-function hexToBytes(hex) {
-  const arr = new Uint8Array(hex.length / 2)
-  for (let i = 0; i < arr.length; i++) {
-    arr[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16)
-  }
-  return arr
-}
-
-/** Generate a deterministic 32-byte key from password + pin, returned as hex. */
-export async function generateDeterministicSecretHex(password, pin) {
-  const enc = new TextEncoder()
-  const data = enc.encode(`${password}:${pin}`)
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  const hashArray = Array.from(new Uint8Array(hash))
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-/** Create a signed HMAC-SHA256 JWT token. Valid for 2 hours. */
-async function createToken(secretHex, username) {
-  const header  = strToBase64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
-  const now     = Math.floor(Date.now() / 1000)
-  const payload = strToBase64url(JSON.stringify({ sub: username, iat: now, exp: now + 7200 }))
-  const signingInput = `${header}.${payload}`
-
-  const key = await importHmacKey(secretHex)
-  const sigBuf = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    new TextEncoder().encode(signingInput),
-  )
-  const sig = bufferToBase64url(sigBuf)
-  return `${signingInput}.${sig}`
-}
 
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
@@ -125,27 +55,6 @@ function setUnauthenticated(message = '') {
   authState.error = message
 }
 
-// ─── Request helpers ──────────────────────────────────────────────────────────
-
-function getRequestUrl(input) {
-  const source = typeof input === 'string' ? input : input?.url || '/'
-  return new URL(source, window.location.origin)
-}
-
-function isYantrRequest(url) {
-  const configured = window.VITE_API_URL
-    ? new URL(window.VITE_API_URL, window.location.origin).origin
-    : window.location.origin
-  return url.origin === window.location.origin || url.origin === configured
-}
-
-function shouldAttachAuth(url) {
-  if (!isYantrRequest(url)) return false
-  const pathname = url.pathname || '/'
-  if (!pathname.startsWith('/api/')) return false
-  return !PUBLIC_PATHS.has(pathname)
-}
-
 // ─── Login ────────────────────────────────────────────────────────────────────
 
 async function loginWithSecret(secretHex, username) {
@@ -165,53 +74,20 @@ async function loginWithSecret(secretHex, username) {
   return data.user || null
 }
 
-// ─── Fetch interceptor ────────────────────────────────────────────────────────
-
-export function installYantrFetchAuth() {
-  if (fetchInstalled || typeof window === 'undefined') return
-
-  nativeFetch = window.fetch.bind(window)
-  window.fetch = async (input, init = undefined) => {
-    const url = getRequestUrl(input)
-    if (!shouldAttachAuth(url)) {
-      return nativeFetch(input, init)
-    }
-
-    const secretHex = authState.secretHex || getStoredSecretHex()
-    const username  = localStorage.getItem(USERNAME_STORAGE) || ''
-    if (!secretHex) {
-      return nativeFetch(input, init)
-    }
-
-    const token   = await createToken(secretHex, username)
-    const headers = new Headers(
-      init?.headers
-        || (input instanceof Request ? input.headers : undefined)
-        || undefined
-    )
-    headers.set('Authorization', `Bearer ${token}`)
-
-    const response = input instanceof Request
-      ? await nativeFetch(new Request(input, { headers }), init)
-      : await nativeFetch(input, { ...(init || {}), headers })
-
-    if (response.status === 401 || response.status === 503) {
-      clearStoredIdentity()
-      authState.booting    = false
-      authState.configured = response.status !== 503
-      setUnauthenticated('Session expired. Sign in again.')
-    }
-
-    return response
-  }
-
-  fetchInstalled = true
-}
-
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 
 export async function bootstrapYantrAuth() {
-  if (!nativeFetch) installYantrFetchAuth()
+  installYantrFetchAuth({
+    getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+    getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
+    onUnauthorized: (status) => {
+      clearStoredIdentity()
+      authState.booting    = false
+      authState.configured = status !== 503
+      setUnauthenticated('Session expired. Sign in again.')
+    }
+  })
+
   if (bootstrapPromise) return bootstrapPromise
 
   bootstrapPromise = (async () => {
@@ -271,7 +147,18 @@ export function openVolumeBrowser(volumeName) {
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
 export async function setupYantrAdmin({ username, password, pin }) {
-  if (!nativeFetch) installYantrFetchAuth()
+  if (!nativeFetch) {
+    installYantrFetchAuth({
+      getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+      getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
+      onUnauthorized: (status) => {
+        clearStoredIdentity()
+        authState.booting    = false
+        authState.configured = status !== 503
+        setUnauthenticated('Session expired. Sign in again.')
+      }
+    })
+  }
 
   const normalizedUsername = String(username || '').trim()
   if (!normalizedUsername) throw new Error('Username is required')
@@ -302,7 +189,18 @@ export async function setupYantrAdmin({ username, password, pin }) {
  * loginYantr — login by generating the key from password and pin.
  */
 export async function loginYantr({ username, password, pin }) {
-  if (!nativeFetch) installYantrFetchAuth()
+  if (!nativeFetch) {
+    installYantrFetchAuth({
+      getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+      getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
+      onUnauthorized: (status) => {
+        clearStoredIdentity()
+        authState.booting    = false
+        authState.configured = status !== 503
+        setUnauthenticated('Session expired. Sign in again.')
+      }
+    })
+  }
 
   const normalizedUsername = String(username || '').trim()
   if (!normalizedUsername) throw new Error('Username is required')

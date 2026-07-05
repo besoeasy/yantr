@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"core/shared"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -116,22 +117,22 @@ func GetCatalogCached(forceRefresh bool) (*Catalog, error) {
 
 // xYantr matches the x-yantr extension block in compose.yml.
 type xYantr struct {
-	Name             string                    `yaml:"name"`
-	Logo             string                    `yaml:"logo"`
-	Tags             []string                  `yaml:"tags"`
-	ShortDescription string                    `yaml:"short_description"`
-	Description      string                    `yaml:"description"`
-	Usecases         []string                  `yaml:"usecases"`
-	Website          string                    `yaml:"website"`
-	CustomApp        bool                      `yaml:"customapp"`
-	Notes            []string                  `yaml:"notes"`
-	EnvGenerators    map[string]EnvGenerator   `yaml:"env_generators"`
+	Name             string                  `yaml:"name"`
+	Logo             string                  `yaml:"logo"`
+	Tags             []string                `yaml:"tags"`
+	ShortDescription string                  `yaml:"short_description"`
+	Description      string                  `yaml:"description"`
+	Usecases         []string                `yaml:"usecases"`
+	Website          string                  `yaml:"website"`
+	CustomApp        bool                    `yaml:"customapp"`
+	Notes            []string                `yaml:"notes"`
+	EnvGenerators    map[string]EnvGenerator `yaml:"env_generators"`
 }
 
 // composeFile is a minimal representation of the top-level compose.yml structure.
 type composeFile struct {
-	XYantr   xYantr                            `yaml:"x-yantr"`
-	Services map[string]composeService         `yaml:"services"`
+	XYantr   xYantr                    `yaml:"x-yantr"`
+	Services map[string]composeService `yaml:"services"`
 }
 
 // composeService captures only the labels we care about.

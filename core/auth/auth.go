@@ -1,22 +1,25 @@
 // Package auth provides stateless token verification for Yantr.
 //
 // Token format (replaces daku):
-//   A JWT-like structure: base64url(header).base64url(payload).base64url(signature)
-//   - Header: {"alg":"HS256","typ":"JWT"}
-//   - Payload: {"sub":"<username>","iat":<unix>,"exp":<unix>}
-//   - Signature: HMAC-SHA256(header.payload, secret)
+//
+//	A JWT-like structure: base64url(header).base64url(payload).base64url(signature)
+//	- Header: {"alg":"HS256","typ":"JWT"}
+//	- Payload: {"sub":"<username>","iat":<unix>,"exp":<unix>}
+//	- Signature: HMAC-SHA256(header.payload, secret)
 //
 // The secret is a 32-byte random value stored in /data/auth.json.
 // The frontend generates tokens using browser SubtleCrypto (importKey + sign with
 // the same HS256/HMAC-SHA256 algorithm), so no custom crypto library is needed.
 //
 // Setup flow:
-//   POST /api/setup/admin  { username, secret (hex-encoded 32-byte key) }
-//   → saves to /data/auth.json
+//
+//	POST /api/setup/admin  { username, secret (hex-encoded 32-byte key) }
+//	→ saves to /data/auth.json
 //
 // Login flow:
-//   The client signs { sub: username, iat, exp } with its stored secret key,
-//   sends as Bearer token. Server verifies HMAC and timestamp.
+//
+//	The client signs { sub: username, iat, exp } with its stored secret key,
+//	sends as Bearer token. Server verifies HMAC and timestamp.
 package auth
 
 import (
@@ -45,8 +48,8 @@ type AuthConfig struct {
 var ErrAlreadyConfigured = errors.New("admin is already configured")
 
 var (
-	mu          sync.RWMutex
-	setupMu     sync.Mutex   // serialises the check-then-write in SaveAuthConfig
+	mu           sync.RWMutex
+	setupMu      sync.Mutex // serialises the check-then-write in SaveAuthConfig
 	cachedConfig *AuthConfig
 	memoryConfig *AuthConfig // set after first successful setup in same process
 )

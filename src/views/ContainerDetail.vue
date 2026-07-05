@@ -8,6 +8,9 @@ import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../compo
 import { useYantrAuth } from '../composables/useYantrAuth'
 import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package, Copy, Check } from 'lucide-vue-next'
 import AppLogo from '../components/AppLogo.vue'
+import ContainerResources from '../components/ContainerResources.vue'
+import ContainerLogs from '../components/ContainerLogs.vue'
+import ContainerEnv from '../components/ContainerEnv.vue'
 import { formatBytes } from '../utils/metrics'
 
 const route = useRoute()
@@ -537,73 +540,16 @@ onUnmounted(() => {
 
           <div class="p-6">
             <div v-if="activeTab === 'resources'">
-              <div v-if="containerStats" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl">
-                  <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-3">
-                    <Cpu :size="12" /> {{ t('containerDetail.cpu') }}
-                  </div>
-                  <div class="text-3xl font-mono font-bold tracking-tighter text-gray-900 dark:text-white">
-                    {{ containerStats.cpu.percent }}%
-                  </div>
-                </div>
-                
-                <div class="bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl">
-                  <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-3">
-                    <Activity :size="12" /> {{ t('containerDetail.ram') }}
-                  </div>
-                  <div class="text-3xl font-mono font-bold tracking-tighter text-gray-900 dark:text-white">
-                    {{ containerStats.memory.percent }}%
-                  </div>
-                </div>
-                
-                <div class="md:col-span-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 p-5 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                  <div>
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">{{ t('containerDetail.networkIO') }}</div>
-                    <div class="text-sm font-mono font-semibold text-gray-900 dark:text-white">
-                      <span class="text-green-600 dark:text-green-500">↓ {{ formatBytes(containerStats.network.rx) }}</span>
-                      <span class="text-gray-300 dark:text-zinc-700 mx-3">|</span>
-                      <span class="text-blue-600 dark:text-blue-500">↑ {{ formatBytes(containerStats.network.tx) }}</span>
-                    </div>
-                  </div>
-                  <div class="sm:text-right">
-                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-1.5">{{ t('containerDetail.blockIO') }}</div>
-                    <div class="text-sm font-mono font-semibold text-gray-900 dark:text-white">
-                      {{ formatBytes(containerStats.blockIO.read) }} / {{ formatBytes(containerStats.blockIO.write) }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.noResourceData') }}</div>
+              <ContainerResources :container-stats="containerStats" />
             </div>
 
             <div v-else-if="activeTab === 'output'" class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
-                  <Terminal :size="12" /> {{ t('containerDetail.outputConsole') }}
-                </div>
-                <div class="flex items-center gap-2">
-                  <button @click="autoScrollLogs = !autoScrollLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="autoScrollLogs ? t('containerDetail.pauseAutoScroll') : t('containerDetail.enableAutoScroll')">
-                    <component :is="autoScrollLogs ? Pause : Play" :size="14" />
-                  </button>
-                  <button @click="fetchContainerLogs" class="p-1.5 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 transition-colors" :title="refreshingLogs ? t('containerDetail.refreshing') : t('common.refresh')">
-                    <RefreshCw :size="14" :class="{ 'animate-spin': refreshingLogs }" />
-                  </button>
-                </div>
-              </div>
-              
-              <div 
-                id="terminal-logs"
-                class="h-96 overflow-y-auto p-4 font-mono text-[11px] leading-5 text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent"
-              >
-                <div v-if="containerLogs.length === 0" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600">
-                  <div class="mb-2 text-[10px] font-bold uppercase tracking-widest">{{ t('containerDetail.noOutputLogs') }}</div>
-                </div>
-                <div v-else class="space-y-0.5">
-                  <div v-for="(log, i) in containerLogs" :key="i" class="break-all whitespace-pre-wrap hover:bg-gray-100 dark:hover:bg-zinc-900 px-1 -mx-1 rounded-sm">
-                    <span class="text-gray-400 dark:text-zinc-600 select-none mr-3 w-6 inline-block text-right">{{ i + 1 }}</span>{{ log }}
-                  </div>
-                </div>
-              </div>
+              <ContainerLogs 
+                :logs="containerLogs" 
+                v-model:autoScroll="autoScrollLogs" 
+                :refreshing="refreshingLogs" 
+                @refresh="fetchContainerLogs" 
+              />
             </div>
 
             <div v-else-if="activeTab === 'terminal'" class="space-y-4">
@@ -633,16 +579,7 @@ onUnmounted(() => {
             </div>
 
             <div v-else class="space-y-4">
-              <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
-                <Lock :size="12" /> {{ t('containerDetail.environmentVariables') }}
-              </div>
-              <div v-if="selectedContainer.env && selectedContainer.env.length > 0" class="bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 max-h-80 overflow-y-auto custom-scrollbar">
-                <div v-for="(envVar, i) in selectedContainer.env" :key="i" class="font-mono text-[11px] mb-3 last:mb-0 break-all flex flex-col sm:flex-row gap-1 sm:gap-4">
-                  <div class="text-gray-500 dark:text-zinc-500 font-bold shrink-0 sm:w-1/3">{{ envVar.split('=')[0] }}</div>
-                  <div class="text-gray-900 dark:text-zinc-300 flex-1">{{ envVar.split('=').slice(1).join('=') }}</div>
-                </div>
-              </div>
-              <div v-else class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.noEnvVars') }}</div>
+              <ContainerEnv :env="selectedContainer.env" />
             </div>
           </div>
         </div>
