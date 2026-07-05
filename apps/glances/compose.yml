@@ -1,0 +1,41 @@
+services:
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    labels:
+      yantr.app: glances
+      yantr.service.61208: Web UI
+      yantr.port.61208: HTTP
+    ports:
+      - "61208"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    pid: host
+    environment:
+      GLANCES_OPT: -w
+    restart: unless-stopped
+x-yantr:
+  name: Glances
+  tags:
+    - monitoring
+    - tools
+    - dashboard
+    - utility
+    - self-hosted
+  short_description: Cross-platform system monitoring tool showing CPU, memory,
+    disk, network, and Docker stats.
+  description: Glances is a cross-platform system monitor that shows real-time
+    CPU, memory, disk, network, process list, Docker stats, and hardware
+    sensors. It includes a web UI, alerts, InfluxDB export for historical data,
+    and auto-discovery for container metrics.
+  usecases:
+    - Monitor server performance in real-time through the web interface.
+    - Track Docker container resource usage alongside host metrics.
+    - Set up alerts when CPU, memory, or disk exceeds thresholds.
+    - View historical data by exporting to time-series databases.
+  website: https://nicolargo.github.io/glances/
+  logo: QmVa2UDC7pALhMyoiXgQsThyF9QszT2f7WcK168k7AGXhf
+  notes:
+    - Requires host PID namespace for full process monitoring
+    - Docker socket mount needed for container stats
+    - Can export to InfluxDB for long-term storage
