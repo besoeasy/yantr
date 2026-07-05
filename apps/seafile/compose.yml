@@ -1,0 +1,84 @@
+services:
+  seafile-db:
+    image: mariadb:10.6
+    container_name: seafile-db
+    restart: unless-stopped
+    labels:
+      yantr.app: seafile
+      yantr.service.8002: Web UI
+      yantr.port.8002: HTTP
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: seafile
+      MYSQL_USER: seafile
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - seafile_db:/var/lib/mysql
+  seafile:
+    image: seafileltd/seafile-mc:latest
+    container_name: seafile
+    restart: unless-stopped
+    labels:
+      yantr.app: seafile
+      yantr.service.8002: Web UI
+      yantr.port.8002: HTTP
+    depends_on:
+      - seafile-db
+    ports:
+      - "8002"
+    environment:
+      SEAFILE_SERVER_LETSENCRYPT: "false"
+      SEAFILE_SERVER_HOSTNAME: localhost
+      DB_HOST: seafile-db
+      DB_ROOT_PASSWD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_HOST: seafile-db
+      MYSQL_PORT: "3306"
+      MYSQL_USER: seafile
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      SEAFILE_ADMIN_EMAIL: ${SEAFILE_ADMIN_EMAIL:-admin@localhost}
+      SEAFILE_ADMIN_PASSWORD: ${SEAFILE_ADMIN_PASSWORD}
+    volumes:
+      - seafile_data:/shared
+volumes:
+  seafile_db: null
+  seafile_data: null
+x-yantr:
+  name: Seafile
+  tags:
+    - storage
+    - sync
+    - files
+    - productivity
+    - self-hosted
+  short_description: Fast, reliable file syncing and sharing platform for
+    self-hosted team collaboration.
+  description: Seafile is a self-hosted file sync and share platform with
+    efficient storage, versioning, and user permissions. It supports desktop and
+    mobile sync clients, team libraries, and built-in web previews while keeping
+    all data private on your infrastructure.
+  usecases:
+    - Sync documents and media across devices via encrypted, efficient delta
+      sync.
+    - Share folders with teams using permissions and group management.
+    - Host your own file collaboration server with audit logging and backup
+      support.
+  website: https://www.seafile.com/en/home/
+  logo: QmSeafileLogoCID1234567890abcdef1234567890abcd
+  notes:
+    - Set the admin email in the deploy form before first launch; the default is
+      only for local testing.
+    - Database and admin passwords are generated at deploy time — save them
+      before starting the stack.
+    - Use external storage volumes for large libraries.
+  env_generators:
+    MYSQL_ROOT_PASSWORD:
+      length: 32
+      charset: alnum
+    MYSQL_PASSWORD:
+      length: 32
+      charset: alnum
+    SEAFILE_ADMIN_PASSWORD:
+      length: 20
+      charset: alnum_symbols
+      regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
