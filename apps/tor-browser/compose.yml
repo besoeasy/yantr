@@ -1,0 +1,36 @@
+services:
+  tor-browser:
+    image: domistyle/tor-browser
+    container_name: tor-browser
+    ports:
+      - "5800"
+    labels:
+      yantr.app: tor-browser
+      yantr.service.5800: Web UI
+      yantr.port.5800: HTTP
+x-yantr:
+  name: Tor Browser
+  tags:
+    - privacy
+    - security
+    - anonymous
+    - tor
+    - self-hosted
+  short_description: Dockerized Tor Browser with VNC access for anonymous web
+    browsing through Tor network.
+  description: Tor Browser in Docker allows you to browse the web anonymously
+    through the Tor network without installing it locally on your machine. It
+    provides a complete Tor Browser experience accessible through any browser
+    via VNC. This is useful for running in a headless environment, providing
+    anonym...
+  usecases:
+    - Browse the internet anonymously from any location.
+    - Access .onion sites without installing Tor Browser locally.
+    - Isolate Tor usage from your main system for security.
+    - Use as a privacy-focused browsing solution on headless servers.
+  website: https://github.com/domistyle/docker-tor-browser
+  logo: QmaVTPSKHnzenoUpqydsnNHQ45WJDtRxxjnqzVqK4MiB38
+  notes:
+    - Accessed via VNC in browser - no local installation needed
+    - Slow due to Tor network routing - not for streaming
+    - All browsing data is lost on container restart
