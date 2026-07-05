@@ -153,8 +153,8 @@ const stateLabel = computed(() => {
                 :logo="dailyApp?.logo"
                 :name="dailyApp?.name"
                 :seed="dailyApp?.id || dailyApp?.name"
-                img-class="h-full w-full object-contain drop-shadow-sm"
-                icon-class="h-6 w-6 text-gray-400 dark:text-zinc-500"
+                img-class="h-full w-full object-contain"
+                icon-class="h-8 w-8 text-gray-200 dark:text-zinc-800 transition-colors duration-300 group-hover:text-amber-500/30"
               />
            </div>
         </div>
