@@ -1,0 +1,62 @@
+services:
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguard-home
+    labels:
+      yantr.app: adguard-home
+      yantr.service.3000: Initial Setup
+      yantr.port.3000: HTTP
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.53: DNS
+      yantr.port.53: UDP
+      yantr.service.853: DNS-over-TLS
+      yantr.port.853: TCP
+    ports:
+      - 53/tcp
+      - 53/udp
+      - 67/udp
+      - 68/tcp
+      - 68/udp
+      - "80"
+      - "443"
+      - 853/tcp
+      - "3000"
+    volumes:
+      - adguard_work:/opt/adguardhome/work
+      - adguard_conf:/opt/adguardhome/conf
+    restart: unless-stopped
+volumes:
+  adguard_work: null
+  adguard_conf: null
+x-yantr:
+  name: AdGuard Home
+  tags:
+    - network
+    - security
+    - dns
+    - privacy
+    - adblock
+  short_description: Network-wide DNS server that blocks ads, trackers, and
+    malicious domains at the DNS level.
+  description: AdGuard Home is a network-wide DNS server that blocks ads,
+    trackers, and malicious domains before they reach your devices. It provides
+    DNSSEC validation, customizable filter lists, parental controls, DHCP
+    support, query logging, and encrypted DNS (DoT/DoH/DoQ).
+  usecases:
+    - Block ads and trackers across all devices on your home network (phones,
+      tablets, TVs, IoT devices) by configuring your router to use AdGuard Home
+      as its DNS server.
+    - Protect children from inappropriate content by enabling parental controls
+      to block adult websites, enforce safe search, and schedule blocking times.
+    - Monitor which domains your devices are connecting to using the query log
+      and statistics dashboard to identify potential privacy violations.
+    - Improve network performance and reduce bandwidth usage by blocking
+      requests to ad and tracking servers before they load.
+  website: https://adguard.com/en/adguard-home/overview.html
+  logo: QmSBZ3r1XdbMZ9CiUUvtQvfL9HYjLGMF4nqftRJ2XHAS3j
+  notes:
+    - Requires port 53 (DNS) to be available on the host
+    - For full network coverage, configure your router's DHCP to point to
+      AdGuard Home as the DNS server
+    - Initial setup runs on port 3000, then the UI moves to port 80
