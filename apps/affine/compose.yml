@@ -15,7 +15,8 @@ services:
       retries: 5
     labels:
       yantr.app: affine
-      yantr.service: redis
+      yantr.service.3010: Web UI
+      yantr.port.3010: HTTP
   db:
     image: postgres:16-alpine
     container_name: affine-db
@@ -35,7 +36,8 @@ services:
       retries: 5
     labels:
       yantr.app: affine
-      yantr.service: db
+      yantr.service.3010: Web UI
+      yantr.port.3010: HTTP
   migration:
     image: ghcr.io/toeverything/affine:latest
     container_name: affine-migration
@@ -58,7 +60,8 @@ services:
       - affine_storage:/root/.affine/storage
     labels:
       yantr.app: affine
-      yantr.service: migration
+      yantr.service.3010: Web UI
+      yantr.port.3010: HTTP
   web:
     image: ghcr.io/toeverything/affine:latest
     container_name: affine-web
@@ -68,7 +71,8 @@ services:
         condition: service_completed_successfully
     labels:
       yantr.app: affine
-      yantr.service: Web UI
+      yantr.service.3010: Web UI
+      yantr.port.3010: HTTP
     ports:
       - "3010"
     environment:
@@ -85,3 +89,25 @@ volumes:
   affine_pgdata: null
   affine_config: null
   affine_storage: null
+x-yantr:
+  name: AFFiNE
+  tags:
+    - notes
+    - whiteboard
+    - collaboration
+    - productivity
+    - self-hosted
+  short_description: Privacy-focused collaborative notes and whiteboard platform.
+  description: AFFiNE is an open-source, privacy-first alternative to Notion and
+    Miro. It combines document editing, whiteboard drawing, and database-style
+    pages in one unified workspace. Collaborate in real-time, organize with
+    tags, and work offline with local-first sync.
+  usecases:
+    - Create rich documents and wikis with embedded whiteboards.
+    - Collaborate in real-time on notes and visual mind maps.
+    - Organize projects with edgeless canvas and structured pages.
+  website: https://affine.pro
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
