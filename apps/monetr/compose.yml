@@ -1,0 +1,109 @@
+services:
+  monetr:
+    image: ghcr.io/monetr/monetr:latest
+    container_name: monetr
+    user: 1000:1000
+    labels:
+      yantr.app: monetr
+      yantr.service.4000: Web UI
+      yantr.port.4000: HTTP
+    command:
+      - serve
+      - --migrate
+      - --generate-certificates
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
+    ports:
+      - "4000"
+    volumes:
+      - monetr_app_data:/etc/monetr
+    environment:
+      MONETR_ALLOW_SIGN_UP: ${MONETR_ALLOW_SIGN_UP:-true}
+      MONETR_PG_USERNAME: postgres
+      MONETR_PG_PASSWORD: ${MONETR_DB_PASSWORD:-m0netrPass123}
+      MONETR_PG_DATABASE: monetr
+      MONETR_PG_ADDRESS: db
+      MONETR_PG_PORT: 5432
+      MONETR_REDIS_ENABLED: "true"
+      MONETR_REDIS_ADDRESS: valkey
+      MONETR_REDIS_PORT: 6379
+      MONETR_STORAGE_ENABLED: ${MONETR_STORAGE_ENABLED:-true}
+      MONETR_STORAGE_PROVIDER: ${MONETR_STORAGE_PROVIDER:-filesystem}
+  db:
+    image: postgres:latest
+    container_name: monetr-db
+    user: 1000:1000
+    labels:
+      yantr.app: monetr
+      yantr.service.4000: Web UI
+      yantr.port.4000: HTTP
+    environment:
+      POSTGRES_PASSWORD: ${MONETR_DB_PASSWORD:-m0netrPass123}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: monetr
+    volumes:
+      - monetr_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+  valkey:
+    image: valkey/valkey:latest
+    container_name: monetr-valkey
+    user: 1000:1000
+    labels:
+      yantr.app: monetr
+      yantr.service.4000: Web UI
+      yantr.port.4000: HTTP
+    volumes:
+      - monetr_valkey_data:/data
+    healthcheck:
+      test:
+        - CMD
+        - valkey-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+volumes:
+  monetr_app_data: null
+  monetr_db_data: null
+  monetr_valkey_data: null
+x-yantr:
+  name: Monetr
+  tags:
+    - finance
+    - budgeting
+    - self-hosted
+    - docker
+    - productivity
+  short_description: Self-hosted personal finance app with budgeting, bank sync,
+    and spending insights.
+  description: Monetr is a self-hosted personal finance app for envelope budgeting
+    and expense tracking. It supports optional bank sync via Plaid for automatic
+    transaction import, detailed spending reports, and local file storage —
+    running privately on your own hardware with PostgreSQL and Valkey.
+  usecases:
+    - Create envelope budgets to allocate income across categories like
+      groceries, rent, and subscriptions, and track spending against each
+      envelope in real time.
+    - Connect bank accounts via Plaid to automatically import transactions and
+      keep your budget reconciled without manual entry.
+    - Self-host your entire financial data stack — Monetr, its database, and
+      cache — so no financial information ever leaves your own server.
+  website: https://github.com/monetr/monetr
+  logo: QmcCMxEJW5eKHx5f8J9bB65P56A5yqHqdBpvCQtPujMVru
+  notes:
+    - Set MONETR_DB_PASSWORD to a strong secret before first run — both the
+      monetr app and the postgres container must share the same value.
+    - Bank account sync requires a Plaid API key; set MONETR_ALLOW_SIGN_UP=false
+      after creating your account to lock registration.
