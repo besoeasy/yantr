@@ -22,6 +22,7 @@ x-yantr:
     DB_PASSWORD:
       length: 24
       charset: alnum
+
 services:
   web:
     image: tombursch/kitchenowl:latest

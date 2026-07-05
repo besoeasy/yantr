@@ -25,6 +25,7 @@ x-yantr:
       otherwise it uses the official vert.sh instance
     - All other conversions (images, audio, documents) run fully in-browser via
       WebAssembly
+
 services:
   vert:
     image: ghcr.io/vert-sh/vert:latest

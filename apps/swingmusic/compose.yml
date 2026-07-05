@@ -22,6 +22,7 @@ x-yantr:
     - Mount music folder for library
     - Reads metadata automatically
     - Responsive mobile-friendly UI
+
 services:
   swingmusic:
     image: ghcr.io/swingmx/swingmusic:latest

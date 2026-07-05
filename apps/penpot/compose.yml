@@ -30,6 +30,7 @@ x-yantr:
     POSTGRES_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   penpot-frontend:
     image: penpotapp/frontend:latest

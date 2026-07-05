@@ -23,6 +23,7 @@ x-yantr:
     MYSQL_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   db:
     image: mariadb:10.11

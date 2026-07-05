@@ -17,6 +17,7 @@ x-yantr:
     - Manage shopping lists and household chores.
     - Plan meals and recipes based on available ingredients.
   website: https://grocy.info
+
 services:
   server:
     image: linuxserver/grocy:latest

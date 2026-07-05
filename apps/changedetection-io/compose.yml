@@ -24,6 +24,7 @@ x-yantr:
       ntfy, Telegram, etc.).
     - Use CSS/XPath selectors to watch only a specific section of a page.
     - Enable the built-in browser (Playwright) for JavaScript-rendered pages.
+
 services:
   changedetection:
     image: ghcr.io/dgtlmoon/changedetection.io:latest

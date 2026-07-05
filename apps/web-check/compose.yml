@@ -24,6 +24,7 @@ x-yantr:
     - Runs 30+ checks on any URL you provide
     - All analysis done locally - no data sent to third parties
     - Great for security auditing
+
 services:
   web-check:
     image: lissy93/web-check:latest

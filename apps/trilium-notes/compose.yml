@@ -16,6 +16,7 @@ x-yantr:
     - Write and store code snippets with syntax highlighting.
     - Map relationships between notes with a visual note map.
   website: https://github.com/TriliumNext/Notes
+
 services:
   server:
     image: triliumnext/trilium:latest

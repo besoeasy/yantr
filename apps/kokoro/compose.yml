@@ -20,6 +20,7 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/remsky/Kokoro-FastAPI
   logo: Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z
+
 services:
   kokoro:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master

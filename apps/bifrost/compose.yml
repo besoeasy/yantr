@@ -23,6 +23,7 @@ x-yantr:
     - App data is stored in a Docker volume mounted at /app/data.
     - Logo is a temporary placeholder and should be replaced with the final IPFS
       CID later.
+
 services:
   bifrost:
     image: maximhq/bifrost:latest

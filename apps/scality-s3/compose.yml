@@ -19,6 +19,7 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://www.zenko.io/cloudserver/
   logo: QmSoQJKaWvrk9pff9x5EfxcG9QkRnGfCrkcSuGw2u8g7XJ
+
 services:
   scality-s3:
     image: zenko/cloudserver:latest

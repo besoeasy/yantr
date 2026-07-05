@@ -16,6 +16,7 @@ x-yantr:
     - Stream music and video from your personal collection.
     - Search through stored files with built-in indexing and metadata support.
   website: https://github.com/9001/copyparty
+
 services:
   web:
     image: ghcr.io/9001/copyparty-ac:latest

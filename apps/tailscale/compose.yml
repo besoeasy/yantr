@@ -25,6 +25,7 @@ x-yantr:
     - Port 41641 UDP must be open in your firewall for peer connections
     - Requires TAILSCALE_AUTH_KEY for unattended operation — generate one at
       https://login.tailscale.com/admin/settings/keys
+
 services:
   tailscale:
     image: tailscale/tailscale:latest

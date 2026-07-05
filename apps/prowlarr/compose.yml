@@ -24,6 +24,7 @@ x-yantr:
     - Supports both Usenet (NZB) and BitTorrent protocols
     - Replaces both NZBHydra2 and Jackett
     - Single API key for all your PVR apps to use
+
 services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest

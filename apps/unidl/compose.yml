@@ -20,6 +20,7 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/besoeasy/UniDL
   logo: QmeQL3b6vWfQX2TEbuovsof5mv23Jkxgnp8ejTyqjQMay3
+
 services:
   remote-torrent-downloader:
     image: ghcr.io/besoeasy/unidl:latest

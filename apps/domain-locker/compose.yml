@@ -19,6 +19,7 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://domain-locker.com
   logo: QmXCFhWvYYmz21YHP38zFFxsitmvMeZStbjfacg2dKrZnw
+
 services:
   domain-locker:
     image: lissy93/domain-locker:latest

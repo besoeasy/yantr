@@ -21,6 +21,7 @@ x-yantr:
     - Media discovery features
     - Bookmark organization
     - Theme customization
+
 services:
   dashmachine:
     image: rmountjoy/dashmachine:latest

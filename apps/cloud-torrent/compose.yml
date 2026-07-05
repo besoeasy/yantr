@@ -22,6 +22,7 @@ x-yantr:
     - Magnet link support
     - Streaming while downloading
     - Simple and lightweight
+
 services:
   cloud-torrent:
     image: jpillora/cloud-torrent:latest

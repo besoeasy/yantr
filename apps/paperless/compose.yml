@@ -23,6 +23,7 @@ x-yantr:
     SECRET_KEY:
       length: 64
       charset: alnum
+
 services:
   broker:
     image: redis:7

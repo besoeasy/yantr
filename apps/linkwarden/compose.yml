@@ -23,6 +23,7 @@ x-yantr:
     - Uses PostgreSQL database for storage
     - Web pages are archived for offline access
     - Supports multiple users and shared collections
+
 services:
   linkwarden:
     image: ghcr.io/linkwarden/linkwarden:v2.13.5

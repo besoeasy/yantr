@@ -30,6 +30,7 @@ x-yantr:
     ADMIN_PASSWORD:
       length: 24
       charset: alnum
+
 services:
   owncloud:
     image: owncloud/server:latest

@@ -24,6 +24,7 @@ x-yantr:
       Cloudflare Tunnel)
     - Depending on the popularity of your Nostr profile you may see high traffic
       on your ISP plan
+
 services:
   pyramid:
     image: ghcr.io/fiatjaf/pyramid:latest

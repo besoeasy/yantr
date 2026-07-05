@@ -21,6 +21,7 @@ x-yantr:
     - Multiple format support
     - Local processing only
     - Web interface for easy use
+
 services:
   convertx:
     image: ghcr.io/c4illin/convertx:latest

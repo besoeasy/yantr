@@ -26,6 +26,7 @@ x-yantr:
       http://192.168.1.10:3005) to restrict access. Defaults to * (all origins).
     - Agent Zero can execute code and shell commands inside its container — only
       expose it on a trusted network.
+
 services:
   agent-zero:
     image: agent0ai/agent-zero:latest

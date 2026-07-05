@@ -28,6 +28,7 @@ x-yantr:
     MARIADB_ROOT_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   photoprism:
     image: photoprism/photoprism:latest

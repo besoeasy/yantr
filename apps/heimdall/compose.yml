@@ -26,6 +26,7 @@ x-yantr:
     - Simple YAML-based configuration for adding apps
     - Built-in icons for 200+ popular applications
     - Lightweight and fast - minimal resource usage
+
 services:
   heimdall:
     image: linuxserver/heimdall:latest

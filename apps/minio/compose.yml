@@ -23,6 +23,7 @@ x-yantr:
     - Console runs on port 9001, API on port 9000
     - Default credentials are minioadmin/minioadmin - change in production
     - Distributed mode available for multi-node deployments
+
 services:
   minio:
     image: minio/minio:latest

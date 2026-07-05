@@ -22,6 +22,7 @@ x-yantr:
     - User authentication available
     - Share links with expiration
     - File preview support
+
 services:
   droppy:
     image: silverwind/droppy:latest

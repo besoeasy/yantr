@@ -23,6 +23,7 @@ x-yantr:
     - Uses LMDB for fast, high-capacity storage
     - Connects to other relays to share events
     - Configure limits for spam prevention
+
 services:
   strfry:
     image: ghcr.io/hoytech/strfry:latest

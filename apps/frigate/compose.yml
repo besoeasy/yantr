@@ -21,6 +21,7 @@ x-yantr:
       startup.
     - For hardware acceleration, pass your GPU device (e.g.,
       /dev/dri/renderD128) via compose.
+
 services:
   web:
     image: ghcr.io/blakeblackshear/frigate:latest

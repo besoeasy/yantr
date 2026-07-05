@@ -18,6 +18,7 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/linuxserver/docker-nano
   logo: Qmf4kNnrTW6jAtNGrhM62yC1XmvXf2x5ZtxcUfZUinegca
+
 services:
   nano:
     image: linuxserver/nano:latest

@@ -15,6 +15,7 @@ x-yantr:
     - Monitor fuel efficiency and mileage over time.
     - Receive reminders for upcoming scheduled maintenance.
   website: https://lubelogger.com
+
 services:
   app:
     image: ghcr.io/hargata/lubelogger:latest

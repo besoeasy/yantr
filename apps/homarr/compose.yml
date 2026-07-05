@@ -28,6 +28,7 @@ x-yantr:
     - Easy drag-and-drop layout customization through the UI
     - Encryption key required for widget functionality - set
       HOMARR_ENCRYPTION_KEY env variable
+
 services:
   homarr:
     container_name: homarr

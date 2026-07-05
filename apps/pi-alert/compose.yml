@@ -24,6 +24,7 @@ x-yantr:
     - Scans via ARP to discover all devices on network
     - Sends notifications via webhooks
     - Database of device history over time
+
 services:
   pi-alert:
     image: jokobsk/pi.alert:latest

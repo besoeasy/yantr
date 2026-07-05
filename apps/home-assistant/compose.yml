@@ -21,6 +21,7 @@ x-yantr:
   notes:
     - Home Assistant runs in host network mode to discover local devices.
     - First-time setup wizard is available at port 8123 after startup.
+
 services:
   server:
     image: homeassistant/home-assistant:latest

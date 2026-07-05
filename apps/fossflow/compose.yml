@@ -22,6 +22,7 @@ x-yantr:
     - Auto-save enabled
     - Export to PNG/SVG
     - Offline capable
+
 services:
   fossflow:
     image: stnsmith/fossflow:master-6cb6496

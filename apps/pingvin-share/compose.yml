@@ -16,6 +16,7 @@ x-yantr:
     - Send password-protected files to clients or colleagues securely.
     - Receive file uploads from external users via reverse shares.
   website: https://pingvin.share.moe
+
 services:
   web:
     image: stonith404/pingvin-share:latest

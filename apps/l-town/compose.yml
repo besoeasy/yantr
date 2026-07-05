@@ -19,6 +19,7 @@ x-yantr:
   notes:
     - No persistent volumes configured by default.
     - Expose port 30300 as shown in the compose file.
+
 services:
   l-town:
     image: ghcr.io/besoeasy/l-town:latest

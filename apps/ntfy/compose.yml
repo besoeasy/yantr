@@ -26,6 +26,7 @@ x-yantr:
       UI.
     - Topics are public by default — configure auth in /etc/ntfy/server.yml for
       private use.
+
 services:
   ntfy:
     image: binwiederhier/ntfy:latest

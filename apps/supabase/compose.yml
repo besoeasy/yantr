@@ -22,6 +22,7 @@ x-yantr:
     - Adjust SUPABASE_JWT_SECRET and database password for production.
     - Supabase official Docker stack may also include additional services for
       edge functions and storage.
+
 services:
   supabase-db:
     image: postgres:15-alpine

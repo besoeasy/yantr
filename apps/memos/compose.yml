@@ -23,6 +23,7 @@ x-yantr:
     - Very lightweight - runs well on minimal hardware
     - SQLite database for simple deployment
     - Mobile-friendly responsive design
+
 services:
   memos:
     image: neosmemo/memos:stable

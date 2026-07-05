@@ -23,6 +23,7 @@ x-yantr:
     - SMB port 445 - no need for older NetBIOS
     - Configure username and password via environment variables
     - Mount folders as volumes for persistent storage
+
 services:
   samba:
     image: dockurr/samba:latest

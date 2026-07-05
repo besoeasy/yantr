@@ -19,6 +19,7 @@ x-yantr:
   notes:
     - Homebridge runs in host network mode for local device discovery.
     - Install plugins from the Web UI after first launch.
+
 services:
   server:
     image: homebridge/homebridge:latest

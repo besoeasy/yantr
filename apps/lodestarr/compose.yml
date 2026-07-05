@@ -27,6 +27,7 @@ x-yantr:
     - Intended for educational purposes — ensure your use complies with local
       laws.
     - Exposes a Torznab-compatible API for PVR app integration.
+
 services:
   lodestarr:
     image: ghcr.io/ddonindia/lodestarr:latest

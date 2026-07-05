@@ -26,6 +26,7 @@ x-yantr:
     - Requires a download client (qBittorrent, Transmission, or Usenet)
     - Integrates with Plex/Emby/Jellyfin for library refresh after download
     - Supports both Usenet and BitTorrent protocols
+
 services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest

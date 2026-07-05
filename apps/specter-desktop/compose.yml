@@ -23,6 +23,7 @@ x-yantr:
     - Requires Bitcoin node connection
     - Hardware wallet support
     - Multisig capable
+
 services:
   specter-desktop:
     image: ghcr.io/cryptoadvance/specter-desktop:v2.1.1

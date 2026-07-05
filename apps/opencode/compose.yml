@@ -22,6 +22,7 @@ x-yantr:
     - Browser-based IDE
     - AI assistant integration
     - Terminal access
+
 services:
   opencode:
     image: ghcr.io/anomalyco/opencode:latest

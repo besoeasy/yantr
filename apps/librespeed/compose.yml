@@ -22,6 +22,7 @@ x-yantr:
     - No tracking or data collection - runs entirely locally
     - Works on desktop and mobile browsers
     - Multiple test file sizes available
+
 services:
   speedtest:
     image: ghcr.io/librespeed/speedtest:latest

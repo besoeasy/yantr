@@ -20,6 +20,7 @@ x-yantr:
     - ESPHome runs in host network mode to discover ESP devices on the local
       network.
     - First-time flash requires USB connection; subsequent updates are OTA.
+
 services:
   server:
     image: esphome/esphome:latest

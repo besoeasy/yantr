@@ -24,6 +24,7 @@ x-yantr:
     - MySQL-compatible - most MySQL clients and tools work directly
     - Set MYSQL_ROOT_PASSWORD environment variable for root access
     - Data persists in the mariadb_data volume
+
 services:
   mariadb:
     image: mariadb:latest

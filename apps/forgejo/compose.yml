@@ -25,6 +25,7 @@ x-yantr:
     - SSH cloning is available on port 22 — ensure it's not already used by your
       host.
     - Forgejo Actions runners can be added separately to enable CI/CD pipelines.
+
 services:
   forgejo:
     image: codeberg.org/forgejo/forgejo:latest-rootless

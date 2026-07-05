@@ -37,6 +37,7 @@ x-yantr:
       length: 16
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$
+
 services:
   vscode:
     image: lscr.io/linuxserver/code-server:latest

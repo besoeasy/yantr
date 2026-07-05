@@ -18,6 +18,7 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/drupal/drupal
   logo: QmXryrL9jF3YL37TEs7eZRsv5mvDyUYSkWdPrEDKE8GM8k
+
 services:
   drupal:
     image: drupal:latest

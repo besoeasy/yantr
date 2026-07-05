@@ -22,6 +22,7 @@ x-yantr:
     - Some features require Emby Premiere subscription
     - Hardware transcoding available with proper GPU setup
     - Similar to Jellyfin/Plex but with different feature set
+
 services:
   emby:
     image: linuxserver/emby:latest

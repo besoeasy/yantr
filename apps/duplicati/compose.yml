@@ -23,6 +23,7 @@ x-yantr:
     - Supports SFTP, FTP, WebDAV, B2, S3, and many cloud backends
     - AES-256 encryption keeps backups secure
     - Incremental backups only store changed files
+
 services:
   duplicati:
     image: linuxserver/duplicati:latest

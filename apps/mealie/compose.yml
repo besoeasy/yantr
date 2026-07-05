@@ -16,6 +16,7 @@ x-yantr:
     - Plan weekly meals and generate shopping lists.
     - Share a household recipe collection with family members.
   website: https://mealie.io
+
 services:
   web:
     image: ghcr.io/mealie-recipes/mealie:latest

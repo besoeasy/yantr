@@ -26,6 +26,7 @@ x-yantr:
     JWT_SECRET:
       length: 64
       charset: alnum
+
 services:
   db:
     image: mariadb:10.11

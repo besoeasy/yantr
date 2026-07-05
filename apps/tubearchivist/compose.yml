@@ -34,6 +34,7 @@ x-yantr:
     ELASTIC_PASSWORD:
       length: 24
       charset: alnum
+
 services:
   tubearchivist:
     image: bbilly1/tubearchivist:latest

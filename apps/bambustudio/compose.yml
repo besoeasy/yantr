@@ -23,6 +23,7 @@ x-yantr:
     - Shared memory size is set to 1GB which is required for the slicer engine.
     - Data persistence is handled through a named Docker volume to preserve
       settings and projects.
+
 services:
   bambustudio:
     image: lscr.io/linuxserver/bambustudio:latest

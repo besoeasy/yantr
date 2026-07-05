@@ -25,6 +25,7 @@ x-yantr:
       a separate database stack if needed.
     - Initial setup via web interface - set admin user and password there
     - Keep WordPress and plugins updated for security
+
 services:
   wordpress:
     image: wordpress:latest

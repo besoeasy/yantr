@@ -19,6 +19,7 @@ x-yantr:
   logo: QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333AA
   notes:
     - Set strong secrets and use external database volume backups.
+
 services:
   kimai-db:
     image: mysql:8.0

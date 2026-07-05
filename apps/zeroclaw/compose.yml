@@ -23,6 +23,7 @@ x-yantr:
     - Tool calling capability
     - Rust-based runtime
     - Requires API_KEY environment variable
+
 services:
   zeroclaw:
     image: ghcr.io/zeroclaw-labs/zeroclaw:latest

@@ -23,6 +23,7 @@ x-yantr:
     - Connect to public mints or run your own mint (nutshell)
     - All external traffic routed through Tor for enhanced privacy
     - Onion address available at /var/lib/tor/onion_service/hostname
+
 services:
   tor:
     build:

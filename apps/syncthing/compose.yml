@@ -27,6 +27,7 @@ x-yantr:
     - Uses ports 22000 (TCP) and 21027 (UDP) for synchronization
     - Works behind NAT with proper configuration
     - No account or cloud required - all peer-to-peer
+
 services:
   syncthing:
     image: syncthing/syncthing:latest

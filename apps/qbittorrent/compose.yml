@@ -21,6 +21,7 @@ x-yantr:
     - Web UI runs on port 8080
     - Peer port is 6881
     - Search plugins available
+
 services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest

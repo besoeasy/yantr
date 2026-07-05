@@ -22,6 +22,7 @@ x-yantr:
     - Pruned mode uses less disk space (~50GB vs 100GB+)
     - Restricted RPC prevents unauthorized spending
     - Use restricted mode for wallet connections
+
 services:
   monerod:
     image: ghcr.io/sethforprivacy/simple-monerod:latest

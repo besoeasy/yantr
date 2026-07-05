@@ -37,6 +37,7 @@ x-yantr:
       length: 20
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
+
 services:
   seafile-db:
     image: mariadb:10.6

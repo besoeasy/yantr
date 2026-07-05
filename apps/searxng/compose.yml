@@ -26,6 +26,7 @@ x-yantr:
     - No tracking or logging of search queries by default
     - Can be customized with themes and engine preferences
     - Can be set as browser default search engine
+
 services:
   searxng:
     image: searxng/searxng:latest

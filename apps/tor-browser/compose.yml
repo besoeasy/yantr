@@ -24,6 +24,7 @@ x-yantr:
     - Accessed via VNC in browser - no local installation needed
     - Slow due to Tor network routing - not for streaming
     - All browsing data is lost on container restart
+
 services:
   tor-browser:
     image: domistyle/tor-browser

@@ -20,6 +20,7 @@ x-yantr:
       under your control on local infrastructure.
   website: https://github.com/maybe-finance/maybe
   logo: QmcZLRLn3cHum9YMRhHv3355rVDgVVgQkioRm29x8YRX9q
+
 services:
   maybe:
     image: ghcr.io/maybe-finance/maybe:0.6.0

@@ -28,6 +28,7 @@ x-yantr:
     - To expose any Docker app, use the Docker host gateway IP (172.17.0.1)
       instead of 0.0.0.0 or localhost in the tunnel service URL, e.g.
       http://172.17.0.1:PORT
+
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest

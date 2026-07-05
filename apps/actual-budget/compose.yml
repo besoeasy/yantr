@@ -28,6 +28,7 @@ x-yantr:
       "Bank sync is optional and requires goCardless or SimpleFIN accounts",
       "Data is stored locally with optional cloud sync to your own server"
     ]
+
 services:
   actual-budget:
     image: actualbudget/actual-server:latest

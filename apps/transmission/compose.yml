@@ -34,6 +34,7 @@ x-yantr:
     TRANSMISSION_PASS:
       length: 16
       charset: alnum_symbols
+
 services:
   transmission:
     image: linuxserver/transmission:latest

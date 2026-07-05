@@ -21,6 +21,7 @@ x-yantr:
     - Requires Ollama or OpenAI API
     - Uses SearXNG for search
     - Source citations included
+
 services:
   perplexica:
     image: itzcrazykns1337/perplexica:v1.11.2

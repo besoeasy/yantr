@@ -29,6 +29,7 @@ x-yantr:
     - For full network coverage, configure your router's DHCP to point to
       AdGuard Home as the DNS server
     - Initial setup runs on port 3000, then the UI moves to port 80
+
 services:
   adguard:
     image: adguard/adguardhome:latest

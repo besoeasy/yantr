@@ -30,6 +30,7 @@ x-yantr:
       /home/sikka/data.
     - The HTTP service on port 8080 serves both the API and the built-in wallet
       pages.
+
 services:
   sikka:
     image: ghcr.io/sikkalabs/sikka:latest

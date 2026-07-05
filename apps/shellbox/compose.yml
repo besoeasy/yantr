@@ -31,6 +31,7 @@ x-yantr:
     USER_PASSWORD:
       length: 12
       charset: alnum_symbols
+
 services:
   shellbox:
     image: lscr.io/linuxserver/openssh-server:latest

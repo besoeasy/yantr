@@ -23,6 +23,7 @@ x-yantr:
     - Supports real-time price updates from public APIs
     - Redis used for caching price data
     - Data stored in SQLite database
+
 services:
   ghostfolio:
     image: ghostfolio/ghostfolio:latest

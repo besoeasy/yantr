@@ -42,6 +42,7 @@ x-yantr:
     VECTORDB_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   librechat:
     image: ghcr.io/danny-avila/librechat:latest

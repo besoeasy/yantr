@@ -26,6 +26,7 @@ x-yantr:
       peers to find your node.
     - Replace https://originless.besoeasy.com with http://localhost:3232 in API
       calls if using self-hosted.
+
 services:
   originless:
     image: ghcr.io/besoeasy/originless:latest

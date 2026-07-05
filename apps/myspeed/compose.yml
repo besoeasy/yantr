@@ -18,6 +18,7 @@ x-yantr:
       under your control on local infrastructure.
   website: https://myspeed.dev
   logo: QmWg4R7p8NKHoF9WWdhPqF2XgdyrB9bHMhGxqWidEiVBEN
+
 services:
   myspeed:
     image: germannewsmaker/myspeed:latest

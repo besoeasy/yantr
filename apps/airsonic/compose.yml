@@ -22,6 +22,7 @@ x-yantr:
     - Supports transcoding for format compatibility
     - Android app available for mobile listening
     - Multiple users with personal libraries supported
+
 services:
   airsonic:
     image: lscr.io/linuxserver/airsonic:latest

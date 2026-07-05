@@ -22,6 +22,7 @@ x-yantr:
     - Server cannot read your notes
     - Offline-first design
     - Local encryption
+
 services:
   zeronote:
     image: ghcr.io/besoeasy/zeronote:main

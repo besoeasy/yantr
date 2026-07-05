@@ -18,6 +18,7 @@ x-yantr:
   logo: QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111AA
   notes:
     - Set SYNAPSE_SERVER_NAME and TLS correctly before production use.
+
 services:
   synapse:
     image: matrixdotorg/synapse:latest

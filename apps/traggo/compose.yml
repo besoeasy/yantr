@@ -30,6 +30,7 @@ x-yantr:
     mynewpassword:
       length: 16
       charset: alnum_symbols
+
 services:
   traggo:
     image: traggo/server:latest

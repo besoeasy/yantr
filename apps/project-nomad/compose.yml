@@ -35,6 +35,7 @@ x-yantr:
     NOMAD_MYSQL_ROOT_PASSWORD:
       length: 32
       charset: alnum_symbols
+
 services:
   admin:
     image: ghcr.io/crosstalk-solutions/project-nomad:v1.30.2

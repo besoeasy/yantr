@@ -27,6 +27,7 @@ x-yantr:
     - Data stays on your server - no cloud dependency for automation logic
     - Webhooks can trigger workflows in real-time
     - Can be exposed for external triggers or used internally only
+
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest

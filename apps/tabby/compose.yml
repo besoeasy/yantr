@@ -22,6 +22,7 @@ x-yantr:
     - Uses MariaDB for database storage
     - Customizable backgrounds and themes
     - Keyboard shortcuts for quick navigation
+
 services:
   tabby:
     image: parksauce/tabby:latest

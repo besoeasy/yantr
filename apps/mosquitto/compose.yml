@@ -21,6 +21,7 @@ x-yantr:
       production use.
     - Config file is stored in the mosquitto_config volume at
       /mosquitto/config/mosquitto.conf.
+
 services:
   broker:
     image: eclipse-mosquitto:latest

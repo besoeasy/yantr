@@ -69,6 +69,7 @@ x-yantr:
     APP_SEED:
       length: 64
       charset: base64url
+
 services:
   plane-nginx:
     image: nginx:alpine

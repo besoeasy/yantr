@@ -20,6 +20,7 @@ x-yantr:
     POSTGRES_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   postgres:
     image: postgres:16-alpine

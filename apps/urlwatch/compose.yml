@@ -23,6 +23,7 @@ x-yantr:
     - Diff highlighting shows changes
     - Multiple notification options
     - Flexible filtering
+
 services:
   urlwatch:
     image: mediadepot/urlwatch:master

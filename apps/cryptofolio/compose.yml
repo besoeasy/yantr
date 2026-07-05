@@ -19,6 +19,7 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/xtrendence/cryptofolio
   logo: QmRSzoSr1npNczcYt5sFBauWCmYFdqyCytwoj3vtXtrs89
+
 services:
   cryptofolio:
     image: xtrendence/cryptofolio:latest

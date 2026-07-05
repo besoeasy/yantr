@@ -22,6 +22,7 @@ x-yantr:
     DB_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:release

@@ -23,6 +23,7 @@ x-yantr:
     - Requires host PID namespace for full process monitoring
     - Docker socket mount needed for container stats
     - Can export to InfluxDB for long-term storage
+
 services:
   glances:
     image: nicolargo/glances:latest

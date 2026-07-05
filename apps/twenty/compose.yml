@@ -30,6 +30,7 @@ x-yantr:
     APP_SECRET:
       length: 40
       charset: alnum
+
 services:
   twenty-server:
     image: twentycrm/twenty:latest

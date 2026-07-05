@@ -16,6 +16,7 @@ x-yantr:
     - Sync your reading library to Kobo e-readers.
     - Share your book collection with friends and family.
   website: https://github.com/janeczku/calibre-web
+
 services:
   server:
     image: linuxserver/calibre-web:latest

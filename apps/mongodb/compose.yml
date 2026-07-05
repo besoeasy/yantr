@@ -23,6 +23,7 @@ x-yantr:
     - Default port is 27017 for client connections
     - Data stored in /data/db directory in the container
     - Can require authentication in production deployments
+
 services:
   mongodb:
     image: mongo:latest

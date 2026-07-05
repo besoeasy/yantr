@@ -21,6 +21,7 @@ x-yantr:
     - Web UI on port 8112
     - Default password is 'deluge'
     - Plugin ecosystem available
+
 services:
   deluge:
     image: linuxserver/deluge:latest

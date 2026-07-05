@@ -31,6 +31,7 @@ x-yantr:
     SECRET_KEY:
       length: 32
       charset: hex
+
 services:
   fireshare:
     image: shaneisrael/fireshare:latest

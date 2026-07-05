@@ -24,6 +24,7 @@ x-yantr:
     - API integration with major exchanges for automatic updates
     - Supports hardware wallets (Ledger, Trezor)
     - Data stored locally - no third party can see your holdings
+
 services:
   rotki:
     image: rotki/rotki:latest

@@ -23,6 +23,7 @@ x-yantr:
     - API key required for connecting PVR apps
     - Supports 500+ torrent trackers
     - Update tracker definitions regularly for best results
+
 services:
   jackett:
     image: linuxserver/jackett:latest

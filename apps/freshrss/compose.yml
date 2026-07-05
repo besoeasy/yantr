@@ -23,6 +23,7 @@ x-yantr:
     - Supports OPML import for migrating from other feed readers
     - Can refresh feeds automatically on a schedule
     - Mobile-friendly interface works well on phones
+
 services:
   freshrss:
     image: linuxserver/freshrss:latest

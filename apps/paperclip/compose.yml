@@ -32,6 +32,7 @@ x-yantr:
       length: 48
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{32,}$
+
 services:
   paperclip:
     image: ghcr.io/paperclipai/paperclip:latest

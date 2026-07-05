@@ -19,6 +19,7 @@ x-yantr:
   notes:
     - BASE_URL must be updated to your server's actual URL for proper
       functionality.
+
 services:
   server:
     image: awinterstein/habitica-server:latest

@@ -15,6 +15,7 @@ x-yantr:
     - Monitor recurring monthly and annual spending.
     - Get reminders before subscription renewals are due.
   website: https://github.com/ellite/Wallos
+
 services:
   server:
     image: bellamy/wallos:latest

@@ -21,6 +21,7 @@ x-yantr:
       host.
     - Configure the coordinator USB path in /app/data/configuration.yaml after
       install.
+
 services:
   app:
     image: koenkk/zigbee2mqtt:latest

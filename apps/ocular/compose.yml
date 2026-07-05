@@ -36,6 +36,7 @@ x-yantr:
       length: 20
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{16,}$
+
 services:
   ocular:
     image: ghcr.io/simonwep/ocular:v2

@@ -20,6 +20,7 @@ x-yantr:
   notes:
     - Privileged mode is required to access the 3D printer USB serial port.
     - Use the Spaghetti Detective (Obico) plugin for AI-based failure detection.
+
 services:
   web:
     image: octoprint/octoprint:latest

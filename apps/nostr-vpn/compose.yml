@@ -25,6 +25,7 @@ x-yantr:
     - The daemon runs in host network mode to manage system-level routing.
     - Both services share a single named volume for config and state. Do not run
       multiple instances on the same host.
+
 services:
   daemon:
     image: ghcr.io/mmalmi/nostr-vpn-umbrel:v4.0.47

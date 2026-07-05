@@ -23,6 +23,7 @@ x-yantr:
     - Simple REST API for sending messages
     - WebSocket for real-time delivery
     - Supports multiple apps with different tokens
+
 services:
   gotify:
     image: ghcr.io/gotify/server

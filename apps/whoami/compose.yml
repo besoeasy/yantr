@@ -23,6 +23,7 @@ x-yantr:
     - Tiny image - only displays request info
     - Useful for testing but not much else
     - No configuration needed - just works
+
 services:
   whoami:
     image: traefik/whoami

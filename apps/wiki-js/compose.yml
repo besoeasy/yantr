@@ -28,6 +28,7 @@ x-yantr:
     - Requires PostgreSQL, MySQL, or MariaDB for data storage
     - Supports LDAP and SAML for enterprise authentication
     - Can export to static HTML for hosting anywhere
+
 services:
   wiki-js:
     image: linuxserver/wikijs:latest

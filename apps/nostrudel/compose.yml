@@ -25,6 +25,7 @@ x-yantr:
     - Requires a CORS proxy service for full functionality
     - Supports NIP-49 encrypted private key storage with password protection
     - Can connect to multiple relays simultaneously
+
 services:
   nostrudel:
     image: ghcr.io/hzrd149/nostrudel:1.1.0

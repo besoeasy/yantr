@@ -25,6 +25,7 @@ x-yantr:
     BITCOIN_RPC_PASSWORD:
       length: 32
       charset: alnum_symbols
+
 services:
   bitcoin-knots-vm:
     image: lscr.io/linuxserver/bitcoin-knots:latest

@@ -21,6 +21,7 @@ x-yantr:
     - Based on yt-dlp - supports 1700+ sites
     - Queue-based downloading
     - Audio extraction support
+
 services:
   metube:
     image: ghcr.io/alexta69/metube:latest

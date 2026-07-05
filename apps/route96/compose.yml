@@ -24,6 +24,7 @@ x-yantr:
       URLs.
     - The default logo is a placeholder — upload the Route96 SVG icon to
       originless.besoeasy.com and update this field with the resulting IPFS CID.
+
 services:
   server:
     image: voidic/route96:latest

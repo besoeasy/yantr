@@ -20,6 +20,7 @@ x-yantr:
   notes:
     - Set a secure ADMIN_PASSWORD before public exposure.
     - Store feed database backups from Postgres data volume.
+
 services:
   miniflux-db:
     image: postgres:15-alpine

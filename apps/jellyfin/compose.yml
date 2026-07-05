@@ -28,6 +28,7 @@ x-yantr:
       NVIDIA, or VA-API)
     - Media folders must be mounted with read access for the container
     - No account required - runs completely locally with no telemetry
+
 services:
   jellyfin:
     image: linuxserver/jellyfin:latest

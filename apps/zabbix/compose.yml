@@ -29,6 +29,7 @@ x-yantr:
     DB_PASSWORD:
       length: 32
       charset: alnum
+
 services:
   zabbix-frontend:
     image: zabbix/zabbix-web-nginx-pgsql:latest

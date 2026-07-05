@@ -31,6 +31,7 @@ x-yantr:
       browser certificate warning on first visit.
     - NO_CORS is enabled so web.stremio.com can reach your server across origins.
     - Use responsibly.
+
 services:
   stremio:
     image: stremio/server:latest

@@ -25,6 +25,7 @@ x-yantr:
       full functionality
     - End-to-end encrypted by default for direct messages and group chats
     - Can connect to the public Matrix network or your own private server
+
 services:
   element:
     image: vectorim/element-web:latest

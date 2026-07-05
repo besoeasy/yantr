@@ -26,6 +26,7 @@ x-yantr:
     - Requires access to Docker socket (/var/run/docker.sock)
     - First access requires setting up an admin user
     - Can manage multiple Docker environments from a single Portainer instance
+
 services:
   portainer:
     image: portainer/portainer-ce:latest

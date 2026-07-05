@@ -28,6 +28,7 @@ x-yantr:
     - Requires HTTPS for browser extensions to work properly
     - All data is encrypted client-side - server never sees your master password
     - WebSocket support enabled for real-time notifications
+
 services:
   vaultwarden:
     image: vaultwarden/server:latest

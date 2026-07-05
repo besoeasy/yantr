@@ -23,6 +23,7 @@ x-yantr:
     - Works with any Nostr relay
     - Can connect to multiple relays simultaneously
     - NIP-05 verification supported
+
 services:
   snort:
     image: voidic/snort:v0.3.0

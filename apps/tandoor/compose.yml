@@ -23,6 +23,7 @@ x-yantr:
     DB_PASSWORD:
       length: 24
       charset: alnum
+
 services:
   web:
     image: vabene1111/recipes:latest

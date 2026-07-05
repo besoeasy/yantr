@@ -28,6 +28,7 @@ x-yantr:
     - Supports over 30 monitoring types including HTTP, TCP, Ping, DNS, and more
     - Can monitor Docker containers directly via socket mount
     - Push endpoint available for services to send their own status updates
+
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:latest

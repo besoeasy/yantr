@@ -24,6 +24,7 @@ x-yantr:
   notes:
     - No backend required — the app connects directly to public or private Nostr
       relays.
+
 services:
   gupt:
     image: ghcr.io/besoeasy/gupt:latest

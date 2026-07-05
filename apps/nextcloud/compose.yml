@@ -28,6 +28,7 @@ x-yantr:
       if you want to pair one manually.
     - First-time setup requires web interface configuration
     - External storage support for mounting S3, FTP, SMB, and other backends
+
 services:
   nextcloud:
     image: nextcloud:stable

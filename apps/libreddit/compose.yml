@@ -21,6 +21,7 @@ x-yantr:
     - No JavaScript - works without it
     - Zero tracking
     - Fast and lightweight
+
 services:
   libreddit:
     image: ceramicwhite/libreddit:0.22.9

@@ -28,6 +28,7 @@ x-yantr:
     - The default PostgreSQL password is `postgresx`. Change the
       `POSTGRES_PASSWORD` environment variable in compose.yml before deploying
       in a production environment.
+
 services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest

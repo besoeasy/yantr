@@ -23,6 +23,7 @@ x-yantr:
     - Supports both guest and authenticated users
     - API available for automation
     - Syntax highlighting for 190+ languages
+
 services:
   pastefy:
     image: interaapps/pastefy:latest

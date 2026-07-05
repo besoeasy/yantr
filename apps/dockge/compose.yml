@@ -23,6 +23,7 @@ x-yantr:
     - Requires Docker socket access
     - Stores compose files in configurable directory
     - Stack traces from failed deployments shown clearly
+
 services:
   dockge:
     image: louislam/dockge:1

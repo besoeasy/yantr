@@ -21,6 +21,7 @@ x-yantr:
     - Exposing this container to the Internet is not recommended.
     - Using the `jpeg` encoder setting in the Selkies sidebar under Video
       Options is recommended for smoother video.
+
 services:
   ungoogled-chromium:
     image: lscr.io/linuxserver/ungoogled-chromium:latest

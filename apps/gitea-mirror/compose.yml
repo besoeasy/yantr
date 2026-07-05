@@ -37,6 +37,7 @@ x-yantr:
       length: 48
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{32,}$
+
 services:
   gitea-mirror:
     image: ghcr.io/raylabshq/gitea-mirror:latest

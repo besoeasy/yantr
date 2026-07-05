@@ -27,6 +27,7 @@ x-yantr:
     - The gateway API server binds to 0.0.0.0 inside the container; it is not
       exposed to the host but is reachable by the web service on the internal
       Docker network.
+
 services:
   web:
     image: ghcr.io/getumbrel/hermes-agent-umbrel:v2026.4.13

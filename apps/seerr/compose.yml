@@ -24,6 +24,7 @@ x-yantr:
     - Requires at least one media backend (Jellyfin, Emby, or Plex) and Radarr
       or Sonarr to handle requests.
     - Seerr does not download media itself.
+
 services:
   seerr:
     image: ghcr.io/seerr-team/seerr:latest

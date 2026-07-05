@@ -25,6 +25,7 @@ x-yantr:
     - Requires POSTGRES_PASSWORD environment variable
     - Can use volumes for data persistence
     - Supports numerous extensions for specialized use cases
+
 services:
   postgresql:
     image: postgres:latest

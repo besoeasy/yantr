@@ -23,6 +23,7 @@ x-yantr:
     - All processing done locally - no data leaves your server
     - Supports batch processing for multiple files
     - OCR requires additional language packs
+
 services:
   stirling-pdf:
     image: frooodle/s-pdf:latest

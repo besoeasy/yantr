@@ -30,6 +30,7 @@ x-yantr:
     PASSWORD:
       length: 16
       charset: alnum_symbols
+
 services:
   linux-box:
     build:

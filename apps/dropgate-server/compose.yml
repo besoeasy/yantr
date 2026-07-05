@@ -24,6 +24,7 @@ x-yantr:
       Dropgate into your own IT infrastructure and workflows.
   website: https://diamonddigital.dev/projects/dropgate
   logo: bafkreiabgxumoblpm3gfzhj5ucbxh36dyq2d3qg3pm2twbsuerp2c4ot6q
+
 services:
   dropgate-server:
     image: willtda/dropgate-server:latest

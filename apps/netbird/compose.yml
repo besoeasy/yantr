@@ -34,6 +34,7 @@ x-yantr:
     NB_SETUP_KEY:
       length: 36
       charset: hex
+
 services:
   netbird:
     image: netbirdio/netbird:latest

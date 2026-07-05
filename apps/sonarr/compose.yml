@@ -28,6 +28,7 @@ x-yantr:
     - Requires a download client (Usenet or BitTorrent)
     - Integrates with Plex/Emby/Jellyfin for library updates
     - Can manage multiple quality profiles for different shows
+
 services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest

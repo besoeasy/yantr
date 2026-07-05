@@ -22,6 +22,7 @@ x-yantr:
     - Runs Obsidian as a full desktop app via KasmVNC — access it in any browser.
     - Requires seccomp:unconfined for the browser sandbox to function correctly.
     - Your vault is stored in the obsidian_config volume under /config/vaults.
+
 services:
   obsidian:
     image: linuxserver/obsidian:latest

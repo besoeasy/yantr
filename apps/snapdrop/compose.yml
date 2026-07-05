@@ -17,6 +17,7 @@ x-yantr:
     - Share documents between devices without cloud services or USB cables.
     - Send files to guests on your local network without any apps or accounts.
   website: https://github.com/RobinLinus/snapdrop
+
 services:
   server:
     image: linuxserver/snapdrop:latest

@@ -33,6 +33,7 @@ x-yantr:
     CAMOFOX_API_KEY:
       length: 32
       charset: alnum_symbols
+
 services:
   camofox:
     image: ghcr.io/jo-inc/camofox-browser:latest

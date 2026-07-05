@@ -27,6 +27,7 @@ x-yantr:
       monetr app and the postgres container must share the same value.
     - Bank account sync requires a Plaid API key; set MONETR_ALLOW_SIGN_UP=false
       after creating your account to lock registration.
+
 services:
   monetr:
     image: ghcr.io/monetr/monetr:latest

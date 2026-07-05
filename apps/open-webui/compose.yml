@@ -24,6 +24,7 @@ x-yantr:
     - Requires Ollama to be running with models downloaded
     - Connects to Ollama on internal Docker network
     - Supports multiple users with admin controls
+
 services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main

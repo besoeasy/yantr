@@ -21,6 +21,7 @@ x-yantr:
     - Supports FTP and SFTP
     - Download queue management
     - Automatic retry on failure
+
 services:
   davos:
     image: linuxserver/davos:latest

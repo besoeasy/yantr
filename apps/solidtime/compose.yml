@@ -21,6 +21,7 @@ x-yantr:
     - Uses PostgreSQL database
     - Invoice generation included
     - Gotenberg for PDF generation
+
 services:
   solidtime:
     image: solidtime/solidtime:0.11.5

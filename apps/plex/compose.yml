@@ -22,6 +22,7 @@ x-yantr:
     - To claim your server, you may need to use an SSH tunnel if you are
       accessing it outside your local network, or use a Plex Claim token via
       custom compose edit.
+
 services:
   plex:
     image: lscr.io/linuxserver/plex:latest

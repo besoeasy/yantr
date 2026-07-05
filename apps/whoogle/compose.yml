@@ -24,6 +24,7 @@ x-yantr:
     - Proxies Google search - results come from Google's algorithm
     - No tracking cookies or IP logging
     - Can be customized with environment variables
+
 services:
   whoogle:
     image: benbusby/whoogle-search:latest

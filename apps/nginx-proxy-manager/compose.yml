@@ -21,6 +21,7 @@ x-yantr:
       immediately after first login."
     - Port 80 and 443 must be reachable from the internet for Let's Encrypt
       validation.
+
 services:
   web:
     image: jc21/nginx-proxy-manager:latest

@@ -28,6 +28,7 @@ x-yantr:
     - Configure your router's DHCP to point to Pi-hole as DNS server for
       network-wide protection
     - Default web password is set to 'yantr' - change it in production
+
 services:
   pihole:
     image: pihole/pihole:latest

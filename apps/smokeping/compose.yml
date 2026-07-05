@@ -23,6 +23,7 @@ x-yantr:
     - Requires ICMP ping access (may need CAP_NET_RAW)
     - Configure targets via config file
     - Historical graphs show trends over extended periods
+
 services:
   smokeping:
     image: linuxserver/smokeping:latest

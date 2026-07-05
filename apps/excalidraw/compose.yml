@@ -23,6 +23,7 @@ x-yantr:
     - This version uses the community 'excalidraw-persist' image for true
       server-side persistence.
     - Saved drawings will remain accessible across different devices.
+
 services:
   excalidraw:
     image: ghcr.io/ozencb/excalidraw-persist:latest

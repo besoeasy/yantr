@@ -29,6 +29,7 @@ x-yantr:
     - "Supports multiple notification channels: Discord, Slack, Telegram, email,
       Gotify, and more"
     - Web UI provides a dashboard showing all containers and their update status
+
 services:
   wud:
     image: getwud/wud

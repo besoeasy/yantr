@@ -24,6 +24,7 @@ x-yantr:
     - Uses yt-dlp for downloading - supports 1700+ sites
     - Subscription checking runs on a schedule
     - Auto-generated thumbnails and metadata
+
 services:
   youtubedl-material:
     image: tzahi12345/youtubedl-material:latest

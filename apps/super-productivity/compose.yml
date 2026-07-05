@@ -16,6 +16,7 @@ x-yantr:
     - Track time spent per task and export detailed work logs.
     - Sync tasks from Jira, GitHub, and GitLab issue trackers.
   website: https://super-productivity.com
+
 services:
   web:
     image: johannesjo/super-productivity:latest
