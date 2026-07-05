@@ -1,15 +1,3 @@
-x-yantr:
-  name: "deluge"
-  logo: "QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33"
-  tags: [torrent, bittorrent, download, media, self-hosted]
-  short_description: "Lightweight, full-featured BitTorrent client with a web UI."
-  description: >
-    Deluge is a lightweight, free, and full-featured BitTorrent client.
-    It offers a powerful web UI, supports plugins, and can run as a daemon.
-    Highly configurable for headless servers and home media setups.
-  usecases: ["Download and manage torrents remotely", "Headless torrent server with web UI"]
-  website: "https://deluge-torrent.org"
-
 services:
   deluge:
     image: linuxserver/deluge:latest
@@ -20,13 +8,35 @@ services:
     ports:
       - "8112"
       - "6881"
-      - "6881/udp"
+      - 6881/udp
     restart: unless-stopped
     labels:
-      yantr.app: "deluge"
-      yantr.service.8112: "Web UI"
-      yantr.port.8112: "HTTP"
-
+      yantr.app: deluge
+      yantr.service.8112: Web UI
+      yantr.port.8112: HTTP
 volumes:
-  deluge-config:
-  deluge-downloads:
+  deluge-config: null
+  deluge-downloads: null
+x-yantr:
+  name: Deluge
+  tags:
+    - download
+    - utility
+    - torrent
+    - p2p
+    - self-hosted
+  short_description: Full-featured cross-platform BitTorrent client with plugin support.
+  description: Deluge is a lightweight BitTorrent client that runs as a daemon
+    with a web UI. It provides a plugin system, remote management, DHT and peer
+    exchange, encryption, bandwidth scheduling, and RSS support—suitable for
+    low-memory servers.
+  usecases:
+    - Download torrents with powerful client.
+    - Use plugins for extended features.
+    - Remote torrent management.
+  website: https://deluge-torrent.org/
+  logo: QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33
+  notes:
+    - Web UI on port 8112
+    - Default password is 'deluge'
+    - Plugin ecosystem available
