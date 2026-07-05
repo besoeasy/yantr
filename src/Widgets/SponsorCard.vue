@@ -1,7 +1,8 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ArrowUpRight, GitBranch, ExternalLink } from "@lucide/vue";
+import { ArrowUpRight, GitBranch, ExternalLink, Heart } from "@lucide/vue";
 import { h } from 'vue';
+
 const Github = (props, context) => h('svg', {
   xmlns: "http://www.w3.org/2000/svg",
   width: "24",
@@ -58,78 +59,79 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
-  <div class="group flex h-full flex-col rounded-[1.4rem] bg-white p-5 text-(--text-primary) smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg dark:bg-[#0A0A0A] sm:p-6">
-    <div class="flex items-start justify-between gap-4">
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
-          <span>{{ t("sponsorCard.label") }}</span>
-          <span class="opacity-35">/</span>
-          <span>{{ t("home.externalLinks.resources") }}</span>
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full min-h-72">
+    <!-- top accent line -->
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+    <div class="relative z-10 p-5 flex flex-col h-full gap-4">
+      <!-- header -->
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-lg bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+            <Heart class="w-4.5 h-4.5 text-pink-600 dark:text-pink-400 group-hover:text-pink-500 transition-colors" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">{{ t("sponsorCard.label") }}</h3>
+            <div class="flex items-center gap-1.5 mt-1.5 text-pink-600 dark:text-pink-400">
+              <span class="text-[10px] font-bold uppercase tracking-wider">{{ t("home.externalLinks.resources") }}</span>
+            </div>
+          </div>
         </div>
-        <h3 class="mt-3 max-w-[16rem] text-xl font-semibold leading-tight tracking-tight text-(--text-primary) sm:text-[1.35rem]">
+        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900/50 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
+           <Github class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-pink-500" />
+        </div>
+      </div>
+
+      <!-- Content -->
+      <div class="mt-auto pt-6 flex flex-col relative z-10">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-2 leading-[1.1] mb-2">
           {{ t("sponsorCard.title") }}
-        </h3>
-      </div>
-      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gray-50 text-(--text-primary) transition-all duration-300 group-hover:scale-105 group-hover:-rotate-3 dark:bg-zinc-900">
-        <Github class="h-5 w-5" />
-      </div>
-    </div>
+        </div>
+        <div class="text-xs text-gray-500 dark:text-zinc-400 font-medium line-clamp-2 mb-6">
+          {{ t("sponsorCard.description") }}
+        </div>
 
-    <p class="mt-3 max-w-xl text-sm leading-relaxed text-(--text-secondary)">
-      {{ t("sponsorCard.description") }}
-    </p>
+        <div class="flex flex-col gap-2.5">
+          <!-- Main CTA -->
+          <a
+            href="https://github.com/sponsors/besoeasy"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group/cta relative flex h-12 w-full items-center justify-between rounded-xl bg-pink-500 dark:bg-pink-600 px-4 transition-all duration-300 hover:bg-pink-600 dark:hover:bg-pink-500 active:scale-[0.98] overflow-hidden text-white shadow-md shadow-pink-500/20"
+          >
+            <div class="flex items-center gap-2.5 relative z-10">
+              <Heart class="h-4 w-4 fill-current" />
+              <span class="text-sm font-bold tracking-wide">{{ t('sponsorCard.cta') }}</span>
+            </div>
+            <ArrowUpRight class="h-4.5 w-4.5 opacity-70 transition-transform duration-300 group-hover/cta:translate-x-1 group-hover/cta:-translate-y-1 group-hover/cta:opacity-100 relative z-10" />
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-out"></div>
+          </a>
 
-    <div class="mt-5 space-y-3">
-      <a
-        href="https://github.com/sponsors/besoeasy"
-        target="_blank"
-        rel="noopener noreferrer"
-        :aria-label="t('sponsorCard.cta')"
-        class="group/cta flex min-h-11 w-full items-center justify-between rounded-2xl bg-(--text-primary) px-4 py-3 text-(--bg-body) transition-all duration-300 hover:-translate-y-px hover:opacity-92 active:scale-[0.99]"
-      >
-        <span class="flex items-center gap-2.5">
-          <Github class="h-4 w-4 shrink-0" />
-          <span class="text-sm font-semibold tracking-tight">{{ t('sponsorCard.cta') }}</span>
-        </span>
-        <ArrowUpRight class="h-4 w-4 opacity-60 transition-all duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5 group-hover/cta:opacity-100" />
-      </a>
-
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-      <a
-        v-for="link in links"
-        :key="link.title"
-        :href="link.href"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="group/link flex min-h-11 items-center justify-between rounded-2xl px-3.5 py-3 transition-all duration-300 hover:-translate-y-0.5 bg-gray-50 text-(--text-primary) hover:smooth-shadow dark:bg-zinc-900/70"
-      >
-        <span class="flex min-w-0 items-center gap-2.5">
-          <component
-            :is="link.icon"
-            class="h-4 w-4 shrink-0 transition-colors duration-300 text-(--text-secondary) group-hover/link:text-(--text-primary)"
-          />
-          <span class="truncate text-xs font-semibold">{{ link.title }}</span>
-        </span>
-        <ExternalLink
-          class="ml-3 h-3.5 w-3.5 shrink-0 transition-all duration-300 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 text-(--text-secondary) group-hover/link:text-(--text-primary)"
-        />
-      </a>
-      </div>
-    </div>
-
-    <div class="mt-auto pt-5">
-      <div class="flex items-center justify-between gap-3 rounded-2xl bg-gray-50 px-3.5 py-3 dark:bg-zinc-900/70 sm:px-4">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
-            <GitBranch class="h-3.5 w-3.5 shrink-0" />
-            <span>{{ t("home.externalLinks.buildInfo") }}</span>
-          </div>
-          <div class="mt-1 text-sm font-semibold tracking-tight text-(--text-primary)">
-            {{ buildTimeAgo }}
+          <!-- Minor Links grid -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <a
+              v-for="link in links"
+              :key="link.title"
+              :href="link.href"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group/link flex h-10 items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-zinc-900/70 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-300 hover:text-gray-900 dark:hover:text-white border border-transparent dark:hover:border-zinc-700/50"
+            >
+              <component :is="link.icon" class="h-3.5 w-3.5" />
+              <span class="text-[10px] font-bold uppercase tracking-widest">{{ link.title }}</span>
+            </a>
           </div>
         </div>
-        <div class="max-w-42 text-right text-[10px] font-mono tracking-tight text-(--text-secondary)" :title="buildTimestamp">
-          {{ buildTimestamp }}
+
+        <!-- Build Info -->
+        <div class="mt-6 flex items-center justify-between border-t border-gray-100 dark:border-zinc-800/60 pt-4">
+          <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
+            <GitBranch class="h-3.5 w-3.5" />
+            <span>{{ buildTimeAgo }}</span>
+          </div>
+          <div class="text-[10px] font-mono font-bold tracking-wider text-gray-300 dark:text-zinc-600" :title="buildTimestamp">
+            {{ rawBuildTimestamp ? rawBuildTimestamp.split('T')[0] : 'DEV' }}
+          </div>
         </div>
       </div>
     </div>
