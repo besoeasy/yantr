@@ -1,0 +1,44 @@
+services:
+  lodestarr:
+    image: ghcr.io/ddonindia/lodestarr:latest
+    container_name: lodestarr
+    ports:
+      - "3420"
+    volumes:
+      - lodestarr_config:/root/.config/lodestarr
+    restart: unless-stopped
+    labels:
+      yantr.app: lodestarr
+      yantr.service.3420: Web UI
+      yantr.port.3420: HTTP
+volumes:
+  lodestarr_config: null
+x-yantr:
+  name: Lodestarr
+  tags:
+    - media
+    - torrent
+    - indexer
+    - download
+    - p2p
+  short_description: Lightweight Rust-based Torznab search aggregator and proxy
+    for multiple torrent indexers.
+  description: Lodestarr is a high-performance torrent search aggregator built
+    with Rust and Axum, compatible with Jackett's YAML indexer definitions. It
+    unifies search results from multiple indexers into a single
+    Torznab-compatible endpoint, making it a drop-in alternative to Jackett or
+    Prowlarr. Features a mo...
+  usecases:
+    - Aggregate torrent searches across multiple indexers via a single Torznab
+      endpoint.
+    - Connect to Sonarr, Radarr, or other PVR apps as a lightweight Jackett
+      replacement.
+    - Run headless indexer searches via the built-in CLI or terminal UI.
+    - Reduce resource usage compared to Prowlarr or Jackett with a Rust-based
+      backend.
+  website: https://github.com/ddonindia/Lodestarr
+  notes:
+    - Compatible with any indexer definition that works in Jackett.
+    - Intended for educational purposes — ensure your use complies with local
+      laws.
+    - Exposes a Torznab-compatible API for PVR app integration.
