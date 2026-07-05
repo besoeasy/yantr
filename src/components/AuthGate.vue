@@ -9,7 +9,6 @@ const { t } = useI18n()
 const toast = useNotification()
 const { authState, loginYantr, setupYantrAdmin } = useYantrAuth()
 
-const username = ref(localStorage.getItem('yantr-username') || '')
 const password = ref('')
 const pin = ref('')
 const submitting = ref(false)
@@ -28,7 +27,6 @@ const title = computed(() => authState.booting
   : isSetup.value ? t('authGate.setupTitle') : t('authGate.loginTitle'))
 
 function validate() {
-  if (!String(username.value).trim()) return t('authGate.errors.usernameRequired')
   if (!String(password.value).trim()) return 'Password is required'
   if (!String(pin.value).trim()) return 'PIN is required'
   return ''
@@ -46,7 +44,6 @@ async function submit() {
 
   try {
     const payload = { 
-      username: username.value, 
       password: password.value, 
       pin: pin.value 
     }
@@ -184,21 +181,6 @@ onUnmounted(() => {
           </div>
 
           <form v-else @submit.prevent="submit" class="space-y-5">
-            <!-- Username -->
-            <div>
-              <div class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary) mb-1.5 flex items-center gap-1.5">
-                <UserRound class="h-3.5 w-3.5" />
-                <span>{{ t('authGate.username') }}</span>
-              </div>
-              <input
-                v-model="username"
-                type="text"
-                autocomplete="username"
-                :placeholder="t('authGate.usernamePlaceholder')"
-                class="w-full bg-(--surface-muted) rounded-2xl px-4 py-3.5 text-[15px] font-medium placeholder:text-(--text-secondary)/60 focus:outline-none focus:-translate-y-px transition-all duration-200"
-                style="box-shadow: 0 1px 2px rgba(0,0,0,0.03);"
-              />
-            </div>
 
             <!-- Password -->
             <div>

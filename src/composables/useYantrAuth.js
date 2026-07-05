@@ -17,13 +17,11 @@ import { generateDeterministicSecretHex, createToken } from '../utils/crypto.js'
 import { installYantrFetchAuth, nativeFetch } from '../utils/fetchInterceptor.js'
 
 export const SECRET_KEY_STORAGE = 'yantr-secret-key'   // 64-char hex, 32 bytes
-export const USERNAME_STORAGE   = 'yantr-username'
 
 const authState = reactive({
   booting:       true,
   configured:    false,
   authenticated: false,
-  user:          null,
   secretHex:     '',   // 64 hex chars (32 bytes)
   error:         '',
 })
@@ -36,29 +34,26 @@ function getStoredSecretHex() {
   return sessionStorage.getItem(SECRET_KEY_STORAGE) || ''
 }
 
-function storeIdentity(secretHex, username) {
+function storeIdentity(secretHex) {
   authState.secretHex = secretHex
   sessionStorage.setItem(SECRET_KEY_STORAGE, secretHex)
-  localStorage.setItem(USERNAME_STORAGE, username) // Username can persist across sessions
 }
 
 function clearStoredIdentity() {
   authState.secretHex    = ''
   authState.authenticated = false
-  authState.user         = null
   sessionStorage.removeItem(SECRET_KEY_STORAGE)
 }
 
 function setUnauthenticated(message = '') {
   authState.authenticated = false
-  authState.user  = null
   authState.error = message
 }
 
 // ─── Login ────────────────────────────────────────────────────────────────────
 
-async function loginWithSecret(secretHex, username) {
-  const token    = await createToken(secretHex, username)
+async function loginWithSecret(secretHex) {
+  const token    = await createToken(secretHex)
   const response = await nativeFetch('/api/auth/login', {
     method:  'POST',
     headers: { Authorization: `Bearer ${token}` },
@@ -68,10 +63,9 @@ async function loginWithSecret(secretHex, username) {
     throw new Error(data.error || 'Authentication failed')
   }
   authState.authenticated = true
-  authState.user          = data.user || null
   authState.error         = ''
-  storeIdentity(secretHex, data.user?.username || username || localStorage.getItem(USERNAME_STORAGE) || '')
-  return data.user || null
+  storeIdentity(secretHex)
+  return data || null
 }
 
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
@@ -79,7 +73,6 @@ async function loginWithSecret(secretHex, username) {
 export async function bootstrapYantrAuth() {
   installYantrFetchAuth({
     getSecretHex: () => authState.secretHex || getStoredSecretHex(),
-    getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
     onUnauthorized: (status) => {
       clearStoredIdentity()
       authState.booting    = false
@@ -105,15 +98,14 @@ export async function bootstrapYantrAuth() {
     }
 
     const secretHex = getStoredSecretHex()
-    const username  = localStorage.getItem(USERNAME_STORAGE) || ''
-    if (!secretHex || !username) {
+    if (!secretHex) {
       setUnauthenticated('')
       authState.booting = false
       return
     }
 
     try {
-      await loginWithSecret(secretHex, username)
+      await loginWithSecret(secretHex)
     } catch {
       clearStoredIdentity()
       setUnauthenticated('Sign in to unlock Yantr.')
@@ -133,9 +125,8 @@ export async function bootstrapYantrAuth() {
 
 export async function generateAuthToken() {
   const secretHex = authState.secretHex || getStoredSecretHex()
-  const username  = localStorage.getItem(USERNAME_STORAGE) || ''
-  if (!secretHex || !username) return null
-  return await createToken(secretHex, username)
+  if (!secretHex) return null
+  return await createToken(secretHex)
 }
 
 export function openVolumeBrowser(volumeName) {
@@ -146,11 +137,10 @@ export function openVolumeBrowser(volumeName) {
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 
-export async function setupYantrAdmin({ username, password, pin }) {
+export async function setupYantrAdmin({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
       getSecretHex: () => authState.secretHex || getStoredSecretHex(),
-      getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false
@@ -160,8 +150,6 @@ export async function setupYantrAdmin({ username, password, pin }) {
     })
   }
 
-  const normalizedUsername = String(username || '').trim()
-  if (!normalizedUsername) throw new Error('Username is required')
   if (!password || !pin) throw new Error('Password and PIN are required')
 
   // Generate a deterministic 32-byte key
@@ -170,7 +158,7 @@ export async function setupYantrAdmin({ username, password, pin }) {
   const response = await nativeFetch('/api/setup/admin', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ username: normalizedUsername, secretHex }),
+    body:    JSON.stringify({ secretHex }),
   })
   const data = await response.json().catch(() => ({}))
 
@@ -180,7 +168,7 @@ export async function setupYantrAdmin({ username, password, pin }) {
 
   authState.configured = true
   // Login immediately using the freshly generated key
-  await loginWithSecret(secretHex, normalizedUsername)
+  await loginWithSecret(secretHex)
 }
 
 // ─── Login (by user re-entering their username+key or password-derived) ───────
@@ -188,11 +176,10 @@ export async function setupYantrAdmin({ username, password, pin }) {
 /**
  * loginYantr — login by generating the key from password and pin.
  */
-export async function loginYantr({ username, password, pin }) {
+export async function loginYantr({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
       getSecretHex: () => authState.secretHex || getStoredSecretHex(),
-      getUsername: () => localStorage.getItem(USERNAME_STORAGE) || '',
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false
@@ -202,14 +189,11 @@ export async function loginYantr({ username, password, pin }) {
     })
   }
 
-  const normalizedUsername = String(username || '').trim()
-  if (!normalizedUsername) throw new Error('Username is required')
   if (!password || !pin) throw new Error('Password and PIN are required')
   
   const secretHex = await generateDeterministicSecretHex(password, pin)
 
-  localStorage.setItem(USERNAME_STORAGE, normalizedUsername)
-  await loginWithSecret(secretHex, normalizedUsername)
+  await loginWithSecret(secretHex)
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

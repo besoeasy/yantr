@@ -138,13 +138,12 @@ func handleSetupStatus(w http.ResponseWriter, r *http.Request) {
 
 func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Username  string `json:"username"`
 		SecretHex string `json:"secretHex"`
 	}
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	cfg, err := auth.SaveAuthConfig(body.Username, body.SecretHex)
+	cfg, err := auth.SaveAuthConfig(body.SecretHex)
 	if err != nil {
 		if errors.Is(err, auth.ErrAlreadyConfigured) {
 			jsonErr(w, 409, "SETUP_ALREADY_CONFIGURED", "Yantr is already configured")
@@ -153,7 +152,7 @@ func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 400, "INVALID_SETUP_ADMIN_REQUEST", err.Error())
 		return
 	}
-	jsonResp(w, 201, map[string]interface{}{"success": true, "configured": true, "username": cfg.Username})
+	jsonResp(w, 201, map[string]interface{}{"success": true, "configured": true})
 }
 
 func handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -163,14 +162,13 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
-	username, err := auth.VerifyToken(token, cfg)
+	err := auth.VerifyToken(token, cfg)
 	if err != nil {
 		jsonErr(w, 401, "UNAUTHORIZED", "Unauthorized")
 		return
 	}
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true, "authenticated": true,
-		"user": map[string]interface{}{"username": username},
 	})
 }
 

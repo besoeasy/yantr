@@ -39,7 +39,6 @@ import (
 
 // AuthConfig holds the persisted auth configuration.
 type AuthConfig struct {
-	Username  string `json:"username"`
 	SecretHex string `json:"secretHex"` // 32-byte HMAC key, hex-encoded
 	CreatedAt string `json:"createdAt,omitempty"`
 }
@@ -99,12 +98,7 @@ func readEnvAuthConfig() *AuthConfig {
 	if _, err := hex.DecodeString(secretHex); err != nil {
 		return nil
 	}
-	username := os.Getenv("YANTR_AUTH_USERNAME")
-	if username == "" {
-		username = "admin"
-	}
 	return &AuthConfig{
-		Username:  username,
 		SecretHex: strings.ToLower(secretHex),
 	}
 }
@@ -139,7 +133,7 @@ func readAuthFile(forceRefresh bool) (*AuthConfig, error) {
 // SaveAuthConfig persists a new auth configuration.
 // It is safe for concurrent callers: the existence check and the write happen
 // inside a single mutex so two simultaneous requests cannot both succeed.
-func SaveAuthConfig(username, secretHex string) (*AuthConfig, error) {
+func SaveAuthConfig(secretHex string) (*AuthConfig, error) {
 	setupMu.Lock()
 	defer setupMu.Unlock()
 
@@ -157,12 +151,8 @@ func SaveAuthConfig(username, secretHex string) (*AuthConfig, error) {
 		return nil, ErrAlreadyConfigured
 	}
 
-	username = strings.TrimSpace(username)
 	secretHex = strings.ToLower(strings.TrimSpace(secretHex))
 
-	if username == "" {
-		return nil, fmt.Errorf("username is required")
-	}
 	if len(secretHex) != 64 {
 		return nil, fmt.Errorf("secretHex must be a 64-character hex string (32 bytes)")
 	}
@@ -171,7 +161,6 @@ func SaveAuthConfig(username, secretHex string) (*AuthConfig, error) {
 	}
 
 	cfg := &AuthConfig{
-		Username:  username,
 		SecretHex: secretHex,
 		CreatedAt: time.Now().UTC().Format(time.RFC3339),
 	}
@@ -200,22 +189,21 @@ func SaveAuthConfig(username, secretHex string) (*AuthConfig, error) {
 var jwtHeader = base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
 
 // VerifyToken verifies a HS256 JWT-style token against the stored secret.
-// Returns the username on success.
-func VerifyToken(token string, cfg *AuthConfig) (string, error) {
+func VerifyToken(token string, cfg *AuthConfig) error {
 	parts := strings.Split(token, ".")
 	if len(parts) != 3 {
-		return "", fmt.Errorf("invalid token format")
+		return fmt.Errorf("invalid token format")
 	}
 
 	header, payloadB64, sigB64 := parts[0], parts[1], parts[2]
 	if header != jwtHeader {
-		return "", fmt.Errorf("invalid token header")
+		return fmt.Errorf("invalid token header")
 	}
 
 	// Verify signature
 	key, err := hex.DecodeString(cfg.SecretHex)
 	if err != nil {
-		return "", fmt.Errorf("server auth misconfigured")
+		return fmt.Errorf("server auth misconfigured")
 	}
 
 	mac := hmac.New(sha256.New, key)
@@ -223,33 +211,32 @@ func VerifyToken(token string, cfg *AuthConfig) (string, error) {
 	expectedSig := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
 
 	if !hmac.Equal([]byte(sigB64), []byte(expectedSig)) {
-		return "", fmt.Errorf("invalid token signature")
+		return fmt.Errorf("invalid token signature")
 	}
 
 	// Decode payload
 	payloadData, err := base64.RawURLEncoding.DecodeString(payloadB64)
 	if err != nil {
-		return "", fmt.Errorf("invalid token payload encoding")
+		return fmt.Errorf("invalid token payload encoding")
 	}
 
 	var payload struct {
-		Sub string `json:"sub"`
-		Exp int64  `json:"exp"`
-		Iat int64  `json:"iat"`
+		Exp int64 `json:"exp"`
+		Iat int64 `json:"iat"`
 	}
 	if err := json.Unmarshal(payloadData, &payload); err != nil {
-		return "", fmt.Errorf("invalid token payload")
+		return fmt.Errorf("invalid token payload")
 	}
 
 	now := time.Now().Unix()
 	if payload.Exp > 0 && now > payload.Exp {
-		return "", fmt.Errorf("token expired")
+		return fmt.Errorf("token expired")
 	}
 	if payload.Iat > now+60 { // allow 60s clock skew
-		return "", fmt.Errorf("token issued in the future")
+		return fmt.Errorf("token issued in the future")
 	}
 
-	return payload.Sub, nil
+	return nil
 }
 
 // ExtractBearerToken extracts the token from the Authorization header.

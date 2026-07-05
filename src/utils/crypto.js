@@ -42,10 +42,10 @@ export async function generateDeterministicSecretHex(password, pin) {
 }
 
 /** Create a signed HMAC-SHA256 JWT token. Valid for 2 hours. */
-export async function createToken(secretHex, username) {
+export async function createToken(secretHex) {
   const header  = strToBase64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
   const now     = Math.floor(Date.now() / 1000)
-  const payload = strToBase64url(JSON.stringify({ sub: username, iat: now, exp: now + 7200 }))
+  const payload = strToBase64url(JSON.stringify({ iat: now, exp: now + 7200 }))
   const signingInput = `${header}.${payload}`
 
   const key = await importHmacKey(secretHex)
