@@ -1,0 +1,45 @@
+services:
+  samba:
+    image: dockurr/samba:latest
+    container_name: samba
+    environment:
+      NAME: ${SAMBA_NAME:-Data}
+      USER: ${SAMBA_USER:-admin}
+      PASS: ${SAMBA_PASS:-admin}
+    ports:
+      - "445"
+    volumes:
+      - samba-storage:/storage
+    restart: unless-stopped
+    labels:
+      yantr.app: samba
+      yantr.service.445: File Sharing
+      yantr.port.445: TCP
+volumes:
+  samba-storage:
+    name: samba-storage
+x-yantr:
+  name: Samba
+  tags:
+    - network
+    - storage
+    - utility
+    - files
+    - gaming
+  short_description: SMB/CIFS file sharing for Windows, Mac, and Linux to access
+    storage on your network.
+  description: Samba is the standard Windows interoperability suite for Unix-like
+    systems, providing SMB/CIFS file sharing that works with Windows, macOS, and
+    Linux clients. This Docker image makes it easy to set up a network share
+    that appears in your file explorer. Features include simple user manageme...
+  usecases:
+    - Share folders with all computers on your network.
+    - Access server storage from Windows, Mac, or Linux.
+    - Create a central file repository for home or office.
+    - Share media files for Plex/Jellyfin to scan.
+  website: https://github.com/dockur/samba
+  logo: QmYNjTj44mLCz5SZrWR9GkWU94bZw7hvqZZuFAwJJcsWU7
+  notes:
+    - SMB port 445 - no need for older NetBIOS
+    - Configure username and password via environment variables
+    - Mount folders as volumes for persistent storage
