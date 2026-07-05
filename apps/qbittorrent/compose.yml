@@ -1,0 +1,44 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    volumes:
+      - qbittorrent-config:/config
+      - qbittorrent-downloads:/downloads
+    ports:
+      - "8080"
+      - "6881"
+      - 6881/udp
+    restart: unless-stopped
+    labels:
+      yantr.app: qbittorrent
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+      yantr.service.6881: Torrent
+      yantr.port.6881: UDP
+volumes:
+  qbittorrent-config: null
+  qbittorrent-downloads: null
+x-yantr:
+  name: qBittorrent
+  tags:
+    - download
+    - network
+    - torrent
+    - p2p
+    - search
+  short_description: Popular torrent client with web UI, search plugins, and no ads.
+  description: qBittorrent is a feature-packed, cross-platform torrent client with
+    a clean modern interface. It includes integrated search engine plugins, RSS
+    support, sequential downloading, IP filtering, bandwidth scheduling, and
+    more. The LinuxServer.io Docker image includes the qBittorrent-nox daemon...
+  usecases:
+    - Download torrents with feature-rich UI.
+    - Use RSS feeds for automated downloads.
+    - Integrated search with plugins.
+  website: https://github.com/linuxserver/docker-qbittorrent
+  logo: QmU3rohmjuaXYNe37FDEcG2P6BL8t4fzu4WvNA69voFteA
+  notes:
+    - Web UI runs on port 8080
+    - Peer port is 6881
+    - Search plugins available
