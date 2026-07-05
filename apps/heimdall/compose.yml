@@ -1,0 +1,43 @@
+services:
+  heimdall:
+    image: linuxserver/heimdall:latest
+    container_name: heimdall
+    volumes:
+      - heimdall-config:/config
+    ports:
+      - "80"
+    restart: unless-stopped
+    labels:
+      yantr.app: heimdall
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+volumes:
+  heimdall-config: null
+x-yantr:
+  name: Heimdall
+  tags:
+    - dashboard
+    - organization
+    - monitoring
+    - utility
+    - homepage
+  short_description: Clean application dashboard with icons for quick access to
+    your self-hosted services.
+  description: Heimdall is a minimalist dashboard for quick access to self-hosted
+    services using customizable icons. It supports drag-and-drop organization,
+    built-in icons, search, keyboard shortcuts, and tabs—ideal as a lightweight
+    homelab launchpad.
+  usecases:
+    - Create a unified homepage with one-click access to all your self-hosted
+      apps.
+    - Use as your browser's start page for quick access to homelab services.
+    - Organize services by category with tabs for different areas (Media, Dev,
+      Admin).
+    - Add custom links to external services, bookmarks, or frequently visited
+      sites.
+  website: https://github.com/linuxserver/Heimdall
+  logo: QmURGit77px6MrQiuco9TGGgg3z9rkhcWs3MZ5pfSpzCE4
+  notes:
+    - Simple YAML-based configuration for adding apps
+    - Built-in icons for 200+ popular applications
+    - Lightweight and fast - minimal resource usage
