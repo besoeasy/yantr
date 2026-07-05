@@ -1,0 +1,43 @@
+services:
+  ungoogled-chromium:
+    image: lscr.io/linuxserver/ungoogled-chromium:latest
+    labels:
+      yantr.app: ungoogled-chromium
+      yantr.service.3001: Web UI
+      yantr.port.3001: HTTPS
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Etc/UTC
+      CHROME_CLI: ${CHROME_CLI:-https://duckduckgo.com}
+    volumes:
+      - config:/config
+    ports:
+      - 3001/tcp
+    shm_size: 1gb
+    restart: unless-stopped
+volumes:
+  config: null
+x-yantr:
+  name: Ungoogled Chromium
+  tags:
+    - utility
+    - browser
+    - network
+    - privacy
+    - self-hosted
+  short_description: Google Chromium, sans dependency on Google web services.
+  description: Ungoogled Chromium is a community fork of the Chromium web browser
+    that removes all connections to Google services. This is a container of
+    Ungoogled Chromium built by linuxserver.io that allows running a sandboxed
+    instance of it in another browser.
+  usecases:
+    - Visit websites you aren't sure about in a sandbox
+    - Use the same session on multiple devices
+    - Sign into alternate accounts without altering your main browser
+  website: https://docs.linuxserver.io/images/docker-ungoogled-chromium
+  logo: QmdLAeb991RKKxSK13JEJHFHHkAC9GBPRbuP7XUFA2nSij
+  notes:
+    - Exposing this container to the Internet is not recommended.
+    - Using the `jpeg` encoder setting in the Selkies sidebar under Video
+      Options is recommended for smoother video.
