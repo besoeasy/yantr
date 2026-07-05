@@ -1,0 +1,36 @@
+services:
+  server:
+    image: linuxserver/grocy:latest
+    container_name: grocy-server
+    labels:
+      yantr.app: grocy
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - grocy_data:/config
+    restart: unless-stopped
+volumes:
+  grocy_data: null
+x-yantr:
+  name: Grocy
+  tags:
+    - grocery
+    - household
+    - inventory
+    - lifestyle
+    - self-hosted
+  short_description: Self-hosted grocery and household management system.
+  description: Grocy is a web-based self-hosted groceries and household management
+    solution. Track products, manage shopping lists, control stock levels, plan
+    meals, and manage chores and tasks all in one place. It includes powerful
+    features for barcode scanning, meal planning, recipe management, and much
+    more.
+  usecases:
+    - Track pantry stock and prevent food waste.
+    - Manage shopping lists and household chores.
+    - Plan meals and recipes based on available ingredients.
+  website: https://grocy.info
