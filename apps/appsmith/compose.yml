@@ -1,0 +1,38 @@
+services:
+  appsmith:
+    image: appsmith/appsmith-ce:latest
+    container_name: appsmith
+    labels:
+      yantr.app: appsmith
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.443: Web UI
+      yantr.port.443: HTTPS
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - appsmith_stacks:/appsmith-stacks
+    restart: unless-stopped
+volumes:
+  appsmith_stacks: null
+x-yantr:
+  name: Appsmith
+  tags:
+    - productivity
+    - development
+    - git
+    - devops
+    - self-hosted
+  short_description: Low-code internal tools platform for rapid application development.
+  description: Low-code internal tools platform for rapid application development.
+    Appsmith is a self-hosted application focused on productivity, development,
+    git, devops. It can be deployed on any device via Docker Compose.
+  usecases:
+    - Self-host Appsmith on your home server to low-code internal tools platform
+      for rapid application development without depending on third-party cloud
+      services.
+    - Use Appsmith to manage your productivity workflows privately, keeping all
+      data under your control on local infrastructure.
+  website: https://github.com/appsmithorg/appsmith
+  logo: QmcEzSU5HXbZ9jiG6ZAY4PrqHRq2ddhQnfT2gcpXg34kuy
