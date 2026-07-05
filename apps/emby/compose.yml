@@ -1,0 +1,43 @@
+services:
+  emby:
+    image: linuxserver/emby:latest
+    container_name: emby
+    volumes:
+      - emby-config:/config
+      - emby-media:/data
+    ports:
+      - "8096"
+    restart: unless-stopped
+    labels:
+      yantr.app: emby
+      yantr.service.8096: Web UI
+      yantr.port.8096: HTTP
+volumes:
+  emby-config:
+    name: emby-config
+  emby-media:
+    name: emby-media
+x-yantr:
+  name: Emby
+  tags:
+    - media
+    - entertainment
+    - streaming
+    - video
+    - music
+  short_description: Media server with theater mode, live TV, and mobile sync features.
+  description: Emby is a media server that organizes and streams video, music, and
+    photos to devices. It supports theater mode, live TV/DVR, hardware
+    transcoding, and mobile sync for offline viewing. Some advanced features
+    require an Emby Premiere subscription.
+  usecases:
+    - Stream your movie and TV collection to any device.
+    - Watch live TV with DVR functionality (requires tuner).
+    - Sync media to mobile devices for offline viewing.
+    - Use theater mode for an immersive viewing experience.
+  website: https://emby.media/
+  logo: QmQW3NWmVuq3Q76pibyTu2XAkzLfWVKCeSKNcywmNwXGUV
+  notes:
+    - Some features require Emby Premiere subscription
+    - Hardware transcoding available with proper GPU setup
+    - Similar to Jellyfin/Plex but with different feature set
