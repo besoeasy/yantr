@@ -1,0 +1,71 @@
+services:
+  nextcloud:
+    image: nextcloud:stable
+    container_name: nextcloud
+    labels:
+      yantr.app: nextcloud
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      MYSQL_HOST: nextcloud-db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud_password
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER:-admin}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD:-admin_password}
+      NEXTCLOUD_TRUSTED_DOMAINS: ${NEXTCLOUD_TRUSTED_DOMAINS:-localhost}
+    volumes:
+      - nextcloud_data:/var/www/html
+    depends_on:
+      - nextcloud-db
+    restart: unless-stopped
+  nextcloud-db:
+    image: mariadb:10.11
+    container_name: nextcloud-db
+    environment:
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: nextcloud_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+    restart: unless-stopped
+    labels:
+      yantr.app: nextcloud
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+volumes:
+  nextcloud_data: null
+  nextcloud_db: null
+x-yantr:
+  name: Nextcloud
+  tags:
+    - productivity
+    - utility
+    - storage
+    - files
+    - sync
+  short_description: Self-hosted cloud platform for file sync, calendars,
+    contacts, and collaborative productivity.
+  description: Nextcloud is a self-hosted cloud platform for file sync, calendars,
+    contacts, chat, and collaborative editing. It includes end-to-end
+    encryption, 2FA, file versioning, federated sharing, and a rich app
+    ecosystem—providing a privacy-first alternative to hosted productivity
+    suites.
+  usecases:
+    - Replace Google Drive or Dropbox with your own self-hosted file sync and
+      sharing solution that keeps your data on your infrastructure.
+    - Sync calendars and contacts across all your devices using CalDAV and
+      CardDAV protocols.
+    - Host video calls and chat with family or team using Nextcloud Talk.
+    - Collaborate on documents in real-time with Nextcloud Office without
+      sending data to third parties.
+  website: https://github.com/nextcloud/server
+  logo: QmU23rKmzJwT93oCrnprdGJQBv4VaPiaZ6re88qbfmVE2u
+  notes:
+    - Requires a database connection during setup; point it at a MariaDB stack
+      if you want to pair one manually.
+    - First-time setup requires web interface configuration
+    - External storage support for mounting S3, FTP, SMB, and other backends
