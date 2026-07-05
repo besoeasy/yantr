@@ -1,0 +1,65 @@
+services:
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress
+    labels:
+      yantr.app: wordpress
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    restart: unless-stopped
+    ports:
+      - "80"
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    depends_on:
+      - wordpress-db
+  wordpress-db:
+    image: mysql:8.0
+    container_name: wordpress-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - wordpress_db:/var/lib/mysql
+    labels:
+      yantr.app: wordpress
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+volumes:
+  wordpress_data: null
+  wordpress_db: null
+x-yantr:
+  name: WordPress
+  tags:
+    - cms
+    - blog
+    - self-hosted
+    - homelab
+    - docker
+  short_description: World's most popular CMS and blogging platform with thousands
+    of themes and plugins.
+  description: WordPress is the world's most popular content management system,
+    powering over 40% of all websites. It started as a blogging platform but has
+    evolved into a full-featured CMS capable of building any type of website -
+    from simple blogs to complex e-commerce stores, membership sites, and ent...
+  usecases:
+    - Create a personal blog or portfolio website with complete control over
+      your data.
+    - Build a business website with contact forms, galleries, and custom pages.
+    - Set up an e-commerce store using WooCommerce plugin.
+    - Create a multi-author blog or news site with user registration and roles.
+  website: https://github.com/WordPress/WordPress
+  logo: QmfTeVfmHVGfwU4Q99TUT9xvGWc3s4RjPR3kzahnjqppKP
+  notes:
+    - Requires a MySQL-compatible database connection during setup; pair it with
+      a separate database stack if needed.
+    - Initial setup via web interface - set admin user and password there
+    - Keep WordPress and plugins updated for security
