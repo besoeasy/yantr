@@ -1,21 +1,37 @@
-x-yantr:
-  name: "Web Check"
-  logo: "QmXwF1DUNZLpkLFzK7HhVdtNNPncNZMS4ktb7KHb6K8Khz"
-  tags: [tools, network, utility, monitoring, security]
-  short_description: "All-in-one website analysis tool - SSL, DNS, headers, performance, and security checks."
-  description: >
-    Web Check provides detailed insights into any website. It performs over 30 checks including SSL validation, DNS analysis, HTTP headers inspection, WHOIS lookup, and tech stack detection. All analysis is done locally — no data is sent to third parties.
-  usecases: ["Analyze SSL certificate details and expiration dates.", "Check what technologies a website is built with.", "Verify security headers are properly configured.", "Get detailed DNS and WHOIS information for any domain."]
-  website: "https://github.com/lissy93/web-check"
-  notes: ["Runs 30+ checks on any URL you provide", "All analysis done locally - no data sent to third parties", "Great for security auditing"]
-
 services:
   web-check:
     image: lissy93/web-check:latest
+    container_name: web-check
     ports:
       - "3000"
     restart: unless-stopped
     labels:
-      yantr.app: "web-check"
-      yantr.service.3000: "Web UI"
-      yantr.port.3000: "HTTP"
+      yantr.app: web-check
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+x-yantr:
+  name: Web Check
+  tags:
+    - tools
+    - network
+    - utility
+    - monitoring
+    - dashboard
+  short_description: All-in-one website analysis tool - SSL, DNS, headers,
+    performance, and security checks.
+  description: Web Check is a comprehensive web analysis tool that provides
+    detailed insights into any website. It performs over 30 different checks
+    including SSL certificate validation, DNS records analysis, HTTP headers
+    inspection, WHOIS lookup, tech stack detection (CMS, frameworks, analytics),
+    server...
+  usecases:
+    - Analyze SSL certificate details and expiration dates.
+    - Check what technologies a website is built with.
+    - Verify security headers are properly configured.
+    - Get detailed DNS and WHOIS information for any domain.
+  website: https://github.com/lissy93/web-check
+  logo: QmXwF1DUNZLpkLFzK7HhVdtNNPncNZMS4ktb7KHb6K8Khz
+  notes:
+    - Runs 30+ checks on any URL you provide
+    - All analysis done locally - no data sent to third parties
+    - Great for security auditing
