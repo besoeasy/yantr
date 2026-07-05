@@ -1,0 +1,23 @@
+x-yantr:
+  name: "Gupt"
+  tags: [messaging, privacy, self-hosted, communication, encryption]
+  short_description: "Privacy-first messenger with encrypted chat, secure vault, and ephemeral sharing. No account needed."
+  description: >
+    Gupt is a privacy-first messenger that provides end-to-end encrypted chat,
+    a secure vault for passwords and notes, and ephemeral file sharing. Built on
+    Nostr, it requires no phone number, email, or account signup. All messages
+    are encrypted on your device before leaving, ensuring complete privacy.
+    Includes group chats, voice and video calls, and a built-in password manager.
+  usecases: ["Send private messages without sharing personal information.", "Store passwords and sensitive notes in an encrypted vault.", "Share files or text via self-destructing links.", "Communicate via WebRTC peer-to-peer voice and video calls."]
+  website: "https://gupt.app"
+
+services:
+  gupt:
+    image: ghcr.io/besoeasy/gupt:latest
+    container_name: gupt
+    labels:
+      yantr.service.8000: "Web UI"
+      yantr.port.8000: "HTTP"
+    ports:
+      - "8000"
+    restart: unless-stopped

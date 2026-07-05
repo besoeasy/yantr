@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os/exec"
 	"sync"
 	"time"
+
+	"core/docker"
 )
 
 // browserRegistry is the global instance of the volume browser manager.
@@ -71,12 +74,22 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 	}
 	r.mu.Unlock()
 
+	// Resolve the real mountpoint via the Docker API instead of hardcoding
+	// /var/lib/docker/volumes/<name>/_data, which breaks on non-default data-root.
+	vol, err := docker.Client.VolumeInspect(context.Background(), volumeName)
+	if err != nil {
+		return 0, fmt.Errorf("failed to inspect volume %q: %w", volumeName, err)
+	}
+	dataPath := vol.Mountpoint
+	if dataPath == "" {
+		return 0, fmt.Errorf("volume %q has no mountpoint", volumeName)
+	}
+
 	p, err := r.findFreePort()
 	if err != nil {
 		return 0, err
 	}
 
-	dataPath := "/var/lib/docker/volumes/" + volumeName + "/_data"
 	cmd := exec.Command("dufs", dataPath,
 		"--port", fmt.Sprintf("%d", p),
 		"--allow-all",

@@ -8,10 +8,7 @@ x-yantr:
     and presents them without ads, tracking, or clutter. It provides a clean,
     privacy-focused search experience while still using Google's search algorithm.
     No tracking cookies, no IP logging, and fully customizable with themes and filters.
-  usecases:
-    - "Search Google without ads or tracking from your own IP address."
-    - "Set as your browser's default search engine for private, clean results."
-    - "Customize search appearance with dark/light themes and result filters."
+  usecases: ["Search Google without ads or tracking from your own IP address.", "Set as your browser's default search engine for private, clean results.", "Customize search appearance with dark/light themes and result filters."]
   website: "https://github.com/benbusby/whoogle-search"
   notes: ["Proxies Google search — results still come from Google's algorithm.", "Supports customization via environment variables (themes, safe search, etc.)."]
 

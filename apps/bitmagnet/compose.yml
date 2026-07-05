@@ -70,6 +70,8 @@ services:
       interval: 10s
     labels:
       yantr.app: "bitmagnet"
+      yantr.service.5432: "Database"
+      yantr.port.5432: "TCP"
 
 volumes:
   bitmagnet_config:

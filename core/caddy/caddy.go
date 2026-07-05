@@ -369,8 +369,12 @@ func resolveAppPortFromDoc(doc map[string]interface{}) int {
 // ─── Password hashing ─────────────────────────────────────────────────────────
 
 // HashPassword calls `caddy hash-password` to produce a bcrypt hash.
+// The plaintext password is fed via stdin so it never appears in process
+// args (ps aux, /proc/<pid>/cmdline, audit logs, etc.).
 func HashPassword(plaintext string) (string, error) {
-	out, err := exec.Command("caddy", "hash-password", "--plaintext", plaintext).Output()
+	cmd := exec.Command("caddy", "hash-password")
+	cmd.Stdin = strings.NewReader(plaintext + "\n")
+	out, err := cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("caddy hash-password failed: %w", err)
 	}

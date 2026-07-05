@@ -41,8 +41,12 @@ type AuthConfig struct {
 	CreatedAt string `json:"createdAt,omitempty"`
 }
 
+// ErrAlreadyConfigured is returned by SaveAuthConfig when an admin already exists.
+var ErrAlreadyConfigured = errors.New("admin is already configured")
+
 var (
 	mu          sync.RWMutex
+	setupMu     sync.Mutex   // serialises the check-then-write in SaveAuthConfig
 	cachedConfig *AuthConfig
 	memoryConfig *AuthConfig // set after first successful setup in same process
 )
@@ -130,10 +134,26 @@ func readAuthFile(forceRefresh bool) (*AuthConfig, error) {
 }
 
 // SaveAuthConfig persists a new auth configuration.
+// It is safe for concurrent callers: the existence check and the write happen
+// inside a single mutex so two simultaneous requests cannot both succeed.
 func SaveAuthConfig(username, secretHex string) (*AuthConfig, error) {
+	setupMu.Lock()
+	defer setupMu.Unlock()
+
 	if readEnvAuthConfig() != nil {
 		return nil, fmt.Errorf("auth is managed by environment variable")
 	}
+	// Authoritative check inside the lock.
+	if existing, _ := readAuthFile(false); existing != nil {
+		return nil, ErrAlreadyConfigured
+	}
+	mu.RLock()
+	alreadyInMem := memoryConfig != nil
+	mu.RUnlock()
+	if alreadyInMem {
+		return nil, ErrAlreadyConfigured
+	}
+
 	username = strings.TrimSpace(username)
 	secretHex = strings.ToLower(strings.TrimSpace(secretHex))
 

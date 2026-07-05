@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httputil"
@@ -15,6 +16,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 
@@ -41,6 +43,16 @@ import (
 var _ = dockernet.NetworkingConfig{}
 
 const serverPort = 5252
+
+// Timeout constants for spawnExec — sized by operation class.
+const (
+	spawnTimeoutShort  = 10 * time.Second  // version probes, quick queries
+	spawnTimeoutMedium = 10 * time.Minute  // compose down, watchtower
+	spawnTimeoutLong   = 30 * time.Minute  // compose up (may pull large images)
+)
+
+// validAppID rejects any app ID that could be used for path traversal.
+var validAppID = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*$`)
 
 var version = "0.0.0" // injected at build time
 
@@ -105,10 +117,10 @@ func getBaseAppID(projectID string) string {
 	return shared.GetBaseAppID(projectID)
 }
 
-// ─── Process spawning ─────────────────────────────────────────────────────────
-
-func spawnExec(name string, args []string, env map[string]string, cwd string) (string, string, int, error) {
-	cmd := exec.Command(name, args...)
+// spawnExec runs an external command with a context (timeout) and optional env/cwd.
+// Always pass a context with a deadline — use the spawnTimeout* constants.
+func spawnExec(ctx context.Context, name string, args []string, env map[string]string, cwd string) (string, string, int, error) {
+	cmd := exec.CommandContext(ctx, name, args...)
 	if cwd != "" {
 		cmd.Dir = cwd
 	}
@@ -136,26 +148,33 @@ func spawnExec(name string, args []string, env map[string]string, cwd string) (s
 
 // ─── Compose command detection ────────────────────────────────────────────────
 
-var cachedCompose struct {
-	cmd  string
-	args []string
-	done bool
-}
+var (
+	cachedComposeMu   sync.Mutex
+	cachedComposeOnce sync.Once
+	cachedComposeCmd  string
+	cachedComposeArgs []string
+	cachedComposeErr  error
+)
 
 func getComposeCommand() (string, []string, error) {
-	if cachedCompose.done {
-		return cachedCompose.cmd, cachedCompose.args, nil
-	}
-	env := map[string]string{"DOCKER_HOST": "unix://" + docker.SocketPath}
-	if _, _, code, err := spawnExec("docker", []string{"compose", "version"}, env, ""); err == nil && code == 0 {
-		cachedCompose = struct{ cmd string; args []string; done bool }{"docker", []string{"compose"}, true}
-		return cachedCompose.cmd, cachedCompose.args, nil
-	}
-	if _, _, code, err := spawnExec("docker-compose", []string{"version"}, env, ""); err == nil && code == 0 {
-		cachedCompose = struct{ cmd string; args []string; done bool }{"docker-compose", nil, true}
-		return cachedCompose.cmd, cachedCompose.args, nil
-	}
-	return "", nil, fmt.Errorf("docker compose is not available")
+	cachedComposeOnce.Do(func() {
+		env := map[string]string{"DOCKER_HOST": "unix://" + docker.SocketPath}
+		ctx, cancel := context.WithTimeout(context.Background(), spawnTimeoutShort)
+		defer cancel()
+		if _, _, code, err := spawnExec(ctx, "docker", []string{"compose", "version"}, env, ""); err == nil && code == 0 {
+			cachedComposeCmd = "docker"
+			cachedComposeArgs = []string{"compose"}
+			return
+		}
+		ctx2, cancel2 := context.WithTimeout(context.Background(), spawnTimeoutShort)
+		defer cancel2()
+		if _, _, code, err := spawnExec(ctx2, "docker-compose", []string{"version"}, env, ""); err == nil && code == 0 {
+			cachedComposeCmd = "docker-compose"
+			return
+		}
+		cachedComposeErr = fmt.Errorf("docker compose is not available")
+	})
+	return cachedComposeCmd, cachedComposeArgs, cachedComposeErr
 }
 
 // ─── Label parsing ────────────────────────────────────────────────────────────
@@ -310,10 +329,6 @@ func handleSetupStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
-	if existing, _ := auth.LoadAuthConfig(false); existing != nil {
-		jsonErr(w, 409, "SETUP_ALREADY_CONFIGURED", "Yantr is already configured")
-		return
-	}
 	var body struct {
 		Username  string `json:"username"`
 		SecretHex string `json:"secretHex"`
@@ -323,6 +338,10 @@ func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 	cfg, err := auth.SaveAuthConfig(body.Username, body.SecretHex)
 	if err != nil {
+		if errors.Is(err, auth.ErrAlreadyConfigured) {
+			jsonErr(w, 409, "SETUP_ALREADY_CONFIGURED", "Yantr is already configured")
+			return
+		}
 		jsonErr(w, 400, "INVALID_SETUP_ADMIN_REQUEST", err.Error())
 		return
 	}
@@ -373,6 +392,10 @@ func handleApps(w http.ResponseWriter, r *http.Request) {
 
 func handleCheckArch(w http.ResponseWriter, r *http.Request) {
 	appID := chi.URLParam(r, "id")
+	if !validAppID.MatchString(appID) {
+		jsonErr(w, 400, "INVALID_APP_ID", "Invalid app ID")
+		return
+	}
 	composePath := filepath.Join(apps.GetAppsDir(), appID, "compose.yml")
 	content, err := os.ReadFile(composePath)
 	if err != nil {
@@ -414,6 +437,10 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	}
 	if body.AppID == "" {
 		jsonErr(w, 400, "APP_ID_REQUIRED", "appId is required")
+		return
+	}
+	if !validAppID.MatchString(body.AppID) {
+		jsonErr(w, 400, "INVALID_APP_ID", "Invalid app ID")
 		return
 	}
 
@@ -528,7 +555,9 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, docker.SocketPath)
 	args := append(cmdArgs, "-p", projectName, "-f", ref.ComposeFile, "up", "-d")
 	shared.Log("info", fmt.Sprintf("[deploy] starting: app=%s project=%s cmd=%s %s", body.AppID, projectName, cmdName, strings.Join(args, " ")))
-	stdout, stderr, exitCode, _ := spawnExec(cmdName, args, composeEnv, appPath)
+	deployCtx, deployCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
+	defer deployCancel()
+	stdout, stderr, exitCode, _ := spawnExec(deployCtx, cmdName, args, composeEnv, appPath)
 	if stdout != "" {
 		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
 			if line != "" {
@@ -775,7 +804,9 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 				env, _ := compose.GetComposeProcessEnv(appPath, project, docker.SocketPath)
 				args := append(cmdArgs, "-p", project, "-f", ref.ComposeFile, "down")
 				shared.Log("info", fmt.Sprintf("[container] removing stack: project=%s container=%s", project, name))
-				out, errStr, exitCode, _ := spawnExec(cmdName, args, env, appPath)
+				downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+				out, errStr, exitCode, _ := spawnExec(downCtx, cmdName, args, env, appPath)
+				downCancel()
 				if out != "" {
 					for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
 						if line != "" {
@@ -846,7 +877,9 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 			env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
 			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 			shared.Log("info", fmt.Sprintf("[stack] removing: project=%s", projectID))
-			out, errStr, exitCode, err := spawnExec(cmdName, args, env, appPath)
+			downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+			out, errStr, exitCode, err := spawnExec(downCtx, cmdName, args, env, appPath)
+			downCancel()
 			if out != "" {
 				for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
 					if line != "" {
@@ -1379,7 +1412,9 @@ func runWatchtower(containerNames []string) (string, string, int, error) {
 		"DOCKER_HOST":        "unix://" + docker.SocketPath,
 		"DOCKER_API_VERSION": "1.44",
 	}
-	return spawnExec("docker", args, env, "")
+	wctx, wcancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+	defer wcancel()
+	return spawnExec(wctx, "docker", args, env, "")
 }
 
 func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
@@ -1535,7 +1570,9 @@ func sweepExpiredContainers() {
 			if cmdName, cmdArgs, cmdErr := getComposeCommand(); cmdErr == nil {
 				env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
 				args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
-				_, _, exitCode, _ := spawnExec(cmdName, args, env, appPath)
+				reaperCtx, reaperCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+				_, _, exitCode, _ := spawnExec(reaperCtx, cmdName, args, env, appPath)
+				reaperCancel()
 				if exitCode == 0 {
 					compose.DeleteProjectCompose(appPath, projectID)
 					shared.Log("info", fmt.Sprintf("[reaper] stack %s removed", projectID))
