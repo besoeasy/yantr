@@ -1,0 +1,47 @@
+services:
+  broker:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    labels:
+      yantr.app: mosquitto
+      yantr.service.1883: MQTT Broker
+      yantr.port.1883: TCP
+      yantr.service.9001: MQTT over WebSockets
+      yantr.port.9001: TCP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "1883"
+      - "9001"
+    volumes:
+      - mosquitto_config:/mosquitto/config
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+volumes:
+  mosquitto_config: null
+  mosquitto_data: null
+  mosquitto_log: null
+x-yantr:
+  name: Mosquitto
+  tags:
+    - mqtt
+    - iot
+    - messaging
+    - broker
+    - self-hosted
+  short_description: Lightweight open-source MQTT message broker for IoT.
+  description: Eclipse Mosquitto is an open-source MQTT message broker ideal for
+    IoT and home automation. It efficiently handles lightweight
+    publish-subscribe messaging between smart home devices, sensors, and
+    automation controllers like Home Assistant, Node-RED, and Zigbee2MQTT.
+  usecases:
+    - Act as the central MQTT message broker for your smart home stack.
+    - Route messages between IoT sensors, actuators, and automation controllers.
+    - Enable pub/sub communication for Zigbee2MQTT and Home Assistant.
+  website: https://mosquitto.org
+  notes:
+    - Default config allows anonymous connections. Create a password file for
+      production use.
+    - Config file is stored in the mosquitto_config volume at
+      /mosquitto/config/mosquitto.conf.
