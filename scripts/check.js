@@ -15,7 +15,7 @@ import { readFile, readdir } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const APPS_DIR = path.join(__dirname, "apps");
+const APPS_DIR = path.join(__dirname, "..", "apps");
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
