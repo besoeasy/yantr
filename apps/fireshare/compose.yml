@@ -1,0 +1,57 @@
+services:
+  fireshare:
+    image: shaneisrael/fireshare:latest
+    container_name: fireshare
+    labels:
+      yantr.app: fireshare
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      MINUTES_BETWEEN_VIDEO_SCANS: ${MINUTES_BETWEEN_VIDEO_SCANS:-60}
+    volumes:
+      - fireshare_data:/data
+      - fireshare_processed:/processed
+      - fireshare_videos:/videos
+    restart: unless-stopped
+volumes:
+  fireshare_data: null
+  fireshare_processed: null
+  fireshare_videos: null
+x-yantr:
+  name: Fireshare
+  tags:
+    - media
+    - gaming
+    - streaming
+    - video
+    - self-hosted
+  short_description: Self-hosted video sharing designed for game clips.
+  description: Fireshare is a self-hosted video sharing platform for game clips.
+    Upload via the web UI or drop files into a watch folder, then browse and
+    share clips. Supports OpenGraph previews, SteamGridDB categorization, and
+    public or private galleries.
+  usecases:
+    - Share game clips with your friends.
+    - Categorize clips by game with data from SteamGridDB.
+    - Post your clips on social media or in chat with rich previews.
+  website: https://github.com/ShaneIsrael/fireshare
+  logo: QmZ31p6GWvGNm2mJTmVyCUr68PAJoax6mCVfgw4DEHbTQk
+  notes:
+    - Watch folder for automatic processing
+    - Gallery-style video organization
+    - Streaming playback
+  env_generators:
+    ADMIN_USERNAME:
+      length: 8
+      charset: alpha
+    ADMIN_PASSWORD:
+      length: 16
+      charset: alnum_symbols
+    SECRET_KEY:
+      length: 32
+      charset: hex
