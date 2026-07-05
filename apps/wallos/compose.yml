@@ -1,0 +1,36 @@
+services:
+  server:
+    image: bellamy/wallos:latest
+    container_name: wallos-server
+    labels:
+      yantr.app: wallos
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - wallos_data:/var/www/html/db
+      - wallos_logos:/var/www/html/images/uploads/logos
+    restart: unless-stopped
+volumes:
+  wallos_data: null
+  wallos_logos: null
+x-yantr:
+  name: Wallos
+  tags:
+    - finance
+    - subscriptions
+    - budgeting
+    - lifestyle
+    - self-hosted
+  short_description: Self-hosted subscription tracker to manage recurring payments.
+  description: Wallos is a self-hosted subscription tracker that helps you manage
+    and monitor all your recurring payments. Get insights into spending habits,
+    set currency preferences, and receive notifications before renewals.
+  usecases:
+    - Track all your subscription services in one place.
+    - Monitor recurring monthly and annual spending.
+    - Get reminders before subscription renewals are due.
+  website: https://github.com/ellite/Wallos
