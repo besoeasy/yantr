@@ -1,0 +1,40 @@
+services:
+  perplexica:
+    image: itzcrazykns1337/perplexica:v1.11.2
+    container_name: perplexica
+    labels:
+      yantr.app: perplexica
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - perplexica_data:/home/perplexica/data
+      - perplexica_uploads:/home/perplexica/uploads
+    restart: unless-stopped
+volumes:
+  perplexica_data: null
+  perplexica_uploads: null
+x-yantr:
+  name: Perplexica
+  tags:
+    - ai
+    - search
+    - privacy
+    - utility
+    - self-hosted
+  short_description: AI-powered search with LLM responses - open-source Perplexity alternative.
+  description: Perplexica is an AI-powered search engine that uses LLMs for
+    conversational answers with sources. This open-source Perplexity alternative
+    offers web search integration, citations, model selection, image search, and
+    privacy-focused design. Uses SearXNG and connects to Ollama or OpenAI.
+  usecases:
+    - AI-powered answers with sources.
+    - Alternative to Perplexity.
+    - Private AI search.
+  website: https://github.com/ItzCrazyKns/Perplexica
+  logo: QmXkTfV5b7aUepUyRLpo9C26P34LWrRyNcQTewFSZjezYc
+  notes:
+    - Requires Ollama or OpenAI API
+    - Uses SearXNG for search
+    - Source citations included
