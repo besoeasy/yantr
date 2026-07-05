@@ -1,0 +1,39 @@
+services:
+  metube:
+    image: ghcr.io/alexta69/metube:latest
+    container_name: metube
+    hostname: metube
+    volumes:
+      - metube_downloads:/downloads
+    ports:
+      - "8081"
+    restart: unless-stopped
+    labels:
+      yantr.app: metube
+      yantr.service.8081: Web UI
+      yantr.port.8081: HTTP
+volumes:
+  metube_downloads: null
+x-yantr:
+  name: MeTube
+  tags:
+    - media
+    - tools
+    - utility
+    - music
+    - audio
+  short_description: Web UI for yt-dlp - download videos/audio from YouTube and 1700+ sites.
+  description: MeTube is a web frontend for yt-dlp that lets you download videos
+    and audio from YouTube and many other sites. It offers a URL queue, format
+    selection, playlist support, download progress, and simple queue management
+    via a clean web UI.
+  usecases:
+    - Download YouTube videos for offline viewing.
+    - Extract audio as MP3 from videos.
+    - Download entire playlists.
+  website: https://github.com/alexta69/metube
+  logo: QmVHF6jueKh11T7LVbBC6NCCs2tuMo7Af7tKfWJEdXSkwQ
+  notes:
+    - Based on yt-dlp - supports 1700+ sites
+    - Queue-based downloading
+    - Audio extraction support
