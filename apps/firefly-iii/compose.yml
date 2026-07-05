@@ -12,7 +12,8 @@ services:
       - firefly_iii_db:/var/lib/mysql
     labels:
       yantr.app: firefly-iii
-      yantr.service: db
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
   server:
     image: fireflyiii/core:latest
     container_name: firefly-iii-server
@@ -21,7 +22,8 @@ services:
       - db
     labels:
       yantr.app: firefly-iii
-      yantr.service: Web UI
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
     ports:
       - "8080"
     environment:
@@ -42,3 +44,31 @@ volumes:
   firefly_iii_db: null
   firefly_iii_upload: null
   firefly_iii_export: null
+x-yantr:
+  name: Firefly III
+  tags:
+    - finance
+    - budgeting
+    - accounting
+    - money
+    - self-hosted
+  short_description: Self-hosted personal finance manager and budgeting tool.
+  description: Firefly III is a self-hosted financial manager that helps you keep
+    track of expenses, income, budgets, and savings goals. Create transactions,
+    set recurring bills, generate reports and charts, and understand your
+    spending patterns with detailed statistics.
+  usecases:
+    - Track all income and expenses across multiple accounts.
+    - Set budgets and savings goals and monitor progress.
+    - Generate detailed financial reports and spending charts.
+  website: https://www.firefly-iii.org
+  env_generators:
+    APP_KEY:
+      length: 32
+      charset: alnum
+    MYSQL_ROOT_PASSWORD:
+      length: 32
+      charset: alnum
+    MYSQL_PASSWORD:
+      length: 32
+      charset: alnum
