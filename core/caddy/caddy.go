@@ -4,17 +4,19 @@
 // derived entirely from Docker container labels — no database, no state file.
 //
 // Label schema (written by InjectCaddyAuthLabels at deploy time):
-//   yantr.caddy.enabled      = "true"
-//   yantr.caddy.serve.port   = "<port Caddy auth proxy listens on>"
-//   yantr.caddy.target.port  = "<app's native container port>"
-//   yantr.caddy.auth.user    = "<username>"
-//   yantr.caddy.auth.pass    = "<bcrypt hash, hex-encoded>"  (password discarded after hashing)
+//
+//	yantr.caddy.enabled      = "true"
+//	yantr.caddy.serve.port   = "<port Caddy auth proxy listens on>"
+//	yantr.caddy.target.port  = "<app's native container port>"
+//	yantr.caddy.auth.user    = "<username>"
+//	yantr.caddy.auth.pass    = "<bcrypt hash, hex-encoded>"  (password discarded after hashing)
 //
 // x-auth compose block (read at deploy time, stripped before container runs):
-//   x-auth:
-//     port: 3002       # Caddy listens here
-//     username: admin
-//     password: secret # plain text — bcrypted, then discarded
+//
+//	x-auth:
+//	  port: 3002       # Caddy listens here
+//	  username: admin
+//	  password: secret # plain text — bcrypted, then discarded
 package caddy
 
 import (
@@ -31,10 +33,12 @@ import (
 	"sync"
 	"time"
 
-	dockertypes "github.com/docker/docker/api/types/container"
-	dockerfilters "github.com/docker/docker/api/types/filters"
 	"core/docker"
 	"core/shared"
+
+	dockertypes "github.com/docker/docker/api/types/container"
+	dockerfilters "github.com/docker/docker/api/types/filters"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const adminPort = 2019
@@ -368,17 +372,14 @@ func resolveAppPortFromDoc(doc map[string]interface{}) int {
 
 // ─── Password hashing ─────────────────────────────────────────────────────────
 
-// HashPassword calls `caddy hash-password` to produce a bcrypt hash.
-// The plaintext password is fed via stdin so it never appears in process
-// args (ps aux, /proc/<pid>/cmdline, audit logs, etc.).
+// HashPassword uses Go's native bcrypt to produce a hash.
+// This is significantly faster and safer than spawning a subprocess.
 func HashPassword(plaintext string) (string, error) {
-	cmd := exec.Command("caddy", "hash-password")
-	cmd.Stdin = strings.NewReader(plaintext + "\n")
-	out, err := cmd.Output()
+	hash, err := bcrypt.GenerateFromPassword([]byte(plaintext), bcrypt.DefaultCost)
 	if err != nil {
-		return "", fmt.Errorf("caddy hash-password failed: %w", err)
+		return "", fmt.Errorf("native bcrypt failed: %w", err)
 	}
-	return strings.TrimSpace(string(out)), nil
+	return string(hash), nil
 }
 
 // EncodeHash hex-encodes a bcrypt hash for safe storage in Docker labels.
