@@ -12,24 +12,30 @@ services:
         target: /etc/strfry.conf
     command: relay --config /etc/strfry.conf
     labels:
-      yantr.app: "strfry"
-      yantr.service: "Nostr Relay"
-
+      yantr.app: strfry
+      yantr.service.7777: Relay
+      yantr.port.7777: HTTP
 configs:
   strfry-config:
-    content: |
-      ##
-      ## strfry config
+    content: >
       ##
 
+      ## strfry config
+
+      ##
+
+
       # Directory that contains the strfry LMDB database (restart required)
+
       db = "./strfry-db/"
+
 
       dbParams {
           maxreaders = 256
           mapsize = 10995116277760
           noReadAhead = false
       }
+
 
       events {
           maxEventSize = 65536
@@ -40,6 +46,7 @@ configs:
           maxNumTags = 2000
           maxTagValSize = 1024
       }
+
 
       relay {
           bind = "0.0.0.0"
@@ -93,6 +100,30 @@ configs:
               maxSyncEvents = 1000000
           }
       }
-
 volumes:
-  strfry-data:
+  strfry-data: null
+x-yantr:
+  name: Strfry
+  tags:
+    - network
+    - social
+    - storage
+    - files
+    - utility
+  short_description: High-performance nostr relay with LMDB storage for
+    decentralized social networking.
+  description: Strfry is a high-performance relay for Nostr (Notes and Other Stuff
+    Transmitted by Relays), a decentralized social network protocol. Nostr uses
+    simple JSON messages that get relayed between users through multiple relays
+    - no central server required. Running your own Strfry relay gives you...
+  usecases:
+    - Run your own nostr relay to support the decentralized network.
+    - Host a relay for friends or community with custom policies.
+    - Build your own piece of the nostr network.
+    - Use as a personal relay for your own notes.
+  website: https://github.com/hoytech/strfry
+  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
+  notes:
+    - Uses LMDB for fast, high-capacity storage
+    - Connects to other relays to share events
+    - Configure limits for spam prevention
