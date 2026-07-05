@@ -19,7 +19,7 @@ import (
 
 func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
-	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
 		jsonErr(w, 500, "DOCKER_ERROR", err.Error())
 		return
@@ -63,7 +63,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	var services []map[string]interface{}
 	for _, c := range pcs {
 		lbl := parseAppLabels(c.Labels)
-		info, err := docker.Client.ContainerInspect(context.Background(), c.ID)
+		info, err := docker.ContainerInspect(context.Background(), c.ID)
 		if err != nil {
 			continue
 		}
@@ -143,7 +143,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
 
-	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
 		jsonErr(w, 500, "DOCKER_ERROR", err.Error())
 		return
@@ -206,9 +206,9 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	for _, c := range projectContainers {
 		id := c.ID
 		if c.State == "running" {
-			_ = docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+			_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
 		}
-		_ = docker.Client.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+		_ = docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
 	}
 
 	jsonResp(w, 200, map[string]interface{}{

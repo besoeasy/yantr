@@ -12,12 +12,12 @@ import (
 )
 
 func handleImages(w http.ResponseWriter, r *http.Request) {
-	images, err := docker.Client.ImageList(context.Background(), dockerimage.ListOptions{})
+	images, err := docker.ImageList(context.Background(), dockerimage.ListOptions{})
 	if err != nil {
 		jsonErr(w, 500, "IMAGES_FETCH_FAILED", err.Error())
 		return
 	}
-	ctrs, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	usedIDs := map[string]bool{}
 	for _, c := range ctrs {
 		usedIDs[c.ImageID] = true
@@ -72,12 +72,12 @@ func handleImages(w http.ResponseWriter, r *http.Request) {
 
 func handleImageDelete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, _, err := docker.Client.ImageInspectWithRaw(context.Background(), id)
+	info, _, err := docker.ImageInspectWithRaw(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "IMAGE_NOT_FOUND", "Image not found")
 		return
 	}
-	if _, err := docker.Client.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{}); err != nil {
+	if _, err := docker.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{}); err != nil {
 		jsonErr(w, 500, "IMAGE_REMOVE_FAILED", err.Error())
 		return
 	}

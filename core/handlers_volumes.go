@@ -15,7 +15,7 @@ import (
 )
 
 func handleVolumes(w http.ResponseWriter, r *http.Request) {
-	vols, err := docker.Client.VolumeList(context.Background(), dockervol.ListOptions{})
+	vols, err := docker.VolumeList(context.Background(), dockervol.ListOptions{})
 	if err != nil {
 		jsonErr(w, 500, "VOLUMES_FETCH_FAILED", err.Error())
 		return
@@ -23,7 +23,7 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch real volume sizes via DiskUsage (VolumeList doesn't return sizes).
 	volSizes := map[string]int64{}
-	if du, duErr := docker.Client.DiskUsage(context.Background(), dockertypes.DiskUsageOptions{}); duErr == nil {
+	if du, duErr := docker.DiskUsage(context.Background(), dockertypes.DiskUsageOptions{}); duErr == nil {
 		for _, v := range du.Volumes {
 			if v != nil && v.UsageData != nil && v.UsageData.Size >= 0 {
 				volSizes[v.Name] = v.UsageData.Size
@@ -31,7 +31,7 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ctrs, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	usedVols := map[string]bool{}
 	for _, c := range ctrs {
 		for _, m := range c.Mounts {
@@ -90,7 +90,7 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 
 func handleVolumeDelete(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
-	if err := docker.Client.VolumeRemove(context.Background(), name, false); err != nil {
+	if err := docker.VolumeRemove(context.Background(), name, false); err != nil {
 		if strings.Contains(err.Error(), "in use") {
 			jsonErr(w, 409, "VOLUME_IN_USE", fmt.Sprintf("Volume '%s' is currently in use", name))
 			return
@@ -112,7 +112,7 @@ func handleVolumeBrowseStart(w http.ResponseWriter, r *http.Request) {
 	}
 	_ = json.NewDecoder(r.Body).Decode(&body) // optional
 
-	vols, _ := docker.Client.VolumeList(context.Background(), dockervol.ListOptions{})
+	vols, _ := docker.VolumeList(context.Background(), dockervol.ListOptions{})
 	found := false
 	for _, v := range vols.Volumes {
 		if v.Name == name {

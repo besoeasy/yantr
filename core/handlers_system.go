@@ -42,7 +42,7 @@ func runWatchtower(containerNames []string) (string, string, int, error) {
 }
 
 func sweepExpiredContainers() {
-	all, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
+	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
 	if err != nil {
 		shared.Log("warn", "[reaper] failed to list containers: "+err.Error())
 		return
@@ -100,11 +100,11 @@ func sweepExpiredContainers() {
 		if !removed {
 			// Fallback: force-remove every container in the project.
 			shared.Log("warn", fmt.Sprintf("[reaper] compose down failed for %s — force-removing containers", projectID))
-			if stale, listErr := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
+			if stale, listErr := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
 				for _, c := range stale {
 					if c.Labels["com.docker.compose.project"] == projectID {
-						_ = docker.Client.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
-						_ = docker.Client.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
+						_ = docker.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
+						_ = docker.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
 					}
 				}
 			}
@@ -114,8 +114,8 @@ func sweepExpiredContainers() {
 	// Tear down standalone expired containers.
 	for _, id := range standaloneIDs {
 		shared.Log("info", fmt.Sprintf("[reaper] removing expired standalone container: %s", id))
-		_ = docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
-		_ = docker.Client.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+		_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		_ = docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
 	}
 }
 
@@ -187,7 +187,7 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
-	info, err := docker.Client.Info(context.Background())
+	info, err := docker.Info(context.Background())
 	if err != nil {
 		jsonErr(w, 500, "SYSTEM_INFO_FETCH_FAILED", err.Error())
 		return
@@ -236,7 +236,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		// This is the safe default — avoids deleting images for stopped containers.
 		filters := dockerfilters.NewArgs()
 		filters.Add("dangling", "true")
-		if pruned, err := docker.Client.ImagesPrune(context.Background(), filters); err == nil {
+		if pruned, err := docker.ImagesPrune(context.Background(), filters); err == nil {
 			shared.Log("info", fmt.Sprintf("[prune] images: removed=%d reclaimed=%d bytes", len(pruned.ImagesDeleted), pruned.SpaceReclaimed))
 			results["images"] = map[string]interface{}{
 				"count": len(pruned.ImagesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
@@ -246,7 +246,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if body.Volumes {
-		if pruned, err := docker.Client.VolumesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
+		if pruned, err := docker.VolumesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
 			shared.Log("info", fmt.Sprintf("[prune] volumes: removed=%d reclaimed=%d bytes", len(pruned.VolumesDeleted), pruned.SpaceReclaimed))
 			results["volumes"] = map[string]interface{}{
 				"count": len(pruned.VolumesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
@@ -259,7 +259,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePortsUsed(w http.ResponseWriter, r *http.Request) {
-	ctrs, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
 	if err != nil {
 		jsonErr(w, 500, "USED_PORTS_FETCH_FAILED", err.Error())
 		return
@@ -289,7 +289,7 @@ func handlePortsSuggest(w http.ResponseWriter, r *http.Request) {
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	ctrs, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
 	used := map[int]bool{}
 	for _, c := range ctrs {
 		for _, p := range c.Ports {
@@ -356,7 +356,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	ctrs, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
 	idSet := map[string]bool{}
 	for _, id := range body.ContainerIDs {
 		idSet[id] = true

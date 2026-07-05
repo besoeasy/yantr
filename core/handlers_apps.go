@@ -105,7 +105,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 							}
 							return ""
 						}(), netName)
-						nets, err := docker.Client.NetworkList(context.Background(), dockernet.ListOptions{
+						nets, err := docker.NetworkList(context.Background(), dockernet.ListOptions{
 							Filters: dockerfilters.NewArgs(dockerfilters.Arg("name", name)),
 						})
 						if err != nil || !func() bool {

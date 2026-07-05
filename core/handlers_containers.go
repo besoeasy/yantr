@@ -18,7 +18,7 @@ import (
 )
 
 func handleContainers(w http.ResponseWriter, r *http.Request) {
-	containers, err := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	containers, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
 		jsonErr(w, 500, "CONTAINERS_FETCH_FAILED", err.Error())
 		return
@@ -79,7 +79,7 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, err := docker.Client.ContainerInspect(context.Background(), id)
+	info, err := docker.ContainerInspect(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "CONTAINER_NOT_FOUND", "Container not found")
 		return
@@ -112,7 +112,7 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	statsResp, err := docker.Client.ContainerStats(context.Background(), id, false)
+	statsResp, err := docker.ContainerStats(context.Background(), id, false)
 	if err != nil {
 		jsonErr(w, 500, "STATS_FETCH_FAILED", err.Error())
 		return
@@ -171,7 +171,7 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	tail := coalesce(r.URL.Query().Get("tail"), "100")
-	logsBody, err := docker.Client.ContainerLogs(context.Background(), id, dockerctr.LogsOptions{
+	logsBody, err := docker.ContainerLogs(context.Background(), id, dockerctr.LogsOptions{
 		ShowStdout: true, ShowStderr: true, Tail: tail, Timestamps: true,
 	})
 	if err != nil {
@@ -204,7 +204,7 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, err := docker.Client.ContainerInspect(context.Background(), id)
+	info, err := docker.ContainerInspect(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "CONTAINER_NOT_FOUND", "Container not found")
 		return
@@ -253,9 +253,9 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if info.State.Running {
-		_ = docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
 	}
-	if err := docker.Client.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{}); err != nil {
+	if err := docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_REMOVE_FAILED", err.Error())
 		return
 	}
@@ -264,7 +264,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.Client.ContainerStart(context.Background(), id, dockerctr.StartOptions{}); err != nil {
+	if err := docker.ContainerStart(context.Background(), id, dockerctr.StartOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_START_FAILED", err.Error())
 		return
 	}
@@ -273,7 +273,7 @@ func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+	if err := docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_STOP_FAILED", err.Error())
 		return
 	}
@@ -282,7 +282,7 @@ func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerRestart(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.Client.ContainerRestart(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+	if err := docker.ContainerRestart(context.Background(), id, dockerctr.StopOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_RESTART_FAILED", err.Error())
 		return
 	}

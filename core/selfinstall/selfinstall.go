@@ -69,7 +69,7 @@ func isFullyConfigured() (bool, error) {
 		return true, nil
 	}
 
-	info, err := docker.Client.ContainerInspect(context.Background(), hostname)
+	info, err := docker.ContainerInspect(context.Background(), hostname)
 	if err != nil {
 		// Not inside a container (dev mode) — treat as fully configured
 		return true, nil
@@ -92,16 +92,16 @@ func isFullyConfigured() (bool, error) {
 }
 
 func removeExisting(name string) error {
-	info, err := docker.Client.ContainerInspect(context.Background(), name)
+	info, err := docker.ContainerInspect(context.Background(), name)
 	if err != nil {
 		return nil // doesn't exist
 	}
 	if info.State.Running {
 		fmt.Printf("[selfinstall] Stopping existing %q container...\n", name)
-		_ = docker.Client.ContainerStop(context.Background(), name, dockertypes.StopOptions{Timeout: intPtr(5)})
+		_ = docker.ContainerStop(context.Background(), name, dockertypes.StopOptions{Timeout: intPtr(5)})
 	}
 	fmt.Printf("[selfinstall] Removing existing %q container...\n", name)
-	return docker.Client.ContainerRemove(context.Background(), name, dockertypes.RemoveOptions{Force: true})
+	return docker.ContainerRemove(context.Background(), name, dockertypes.RemoveOptions{Force: true})
 }
 
 func launchFullContainer() error {
@@ -119,7 +119,7 @@ func launchFullContainer() error {
 	}
 	networkConfig := &network.NetworkingConfig{}
 
-	resp, err := docker.Client.ContainerCreate(
+	resp, err := docker.ContainerCreate(
 		context.Background(),
 		config,
 		hostConfig,
@@ -130,7 +130,7 @@ func launchFullContainer() error {
 	if err != nil {
 		return err
 	}
-	return docker.Client.ContainerStart(context.Background(), resp.ID, dockertypes.StartOptions{})
+	return docker.ContainerStart(context.Background(), resp.ID, dockertypes.StartOptions{})
 }
 
 var passThroughEnvKeys = []string{
