@@ -1,0 +1,33 @@
+services:
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
+    container_name: kokoro
+    labels:
+      yantr.app: kokoro
+      yantr.service.8880: Web UI
+      yantr.port.8880: HTTP
+    ports:
+      - "8880"
+    restart: unless-stopped
+x-yantr:
+  name: Kokoro
+  tags:
+    - ai
+    - self-hosted
+    - homelab
+    - docker
+    - open-source
+  short_description: Lightweight Text-to-Speech model with 82M parameters
+    delivering high-quality speech synthesis.
+  description: Lightweight Text-to-Speech model with 82M parameters delivering
+    high-quality speech synthesis. Kokoro is a self-hosted application focused
+    on ai, self-hosted, homelab, docker. It can be deployed on any device via
+    Docker Compose.
+  usecases:
+    - Self-host Kokoro on your home server to lightweight text-to-speech model
+      with 82m parameters delivering high-quality speech synthesis without
+      depending on third-party cloud services.
+    - Use Kokoro to manage your ai workflows privately, keeping all data under
+      your control on local infrastructure.
+  website: https://github.com/remsky/Kokoro-FastAPI
+  logo: Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z
