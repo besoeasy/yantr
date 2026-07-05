@@ -13,6 +13,8 @@ services:
       yantr.port.3117: HTTP
 volumes:
   bitwatch-data: null
+
+  
 x-yantr:
   name: Bitwatch
   tags:
