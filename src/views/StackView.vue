@@ -291,37 +291,34 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen" style="background: var(--bg-body); color: var(--text-primary)">
+  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-zinc-100 font-sans selection:bg-blue-500/30">
 
     <!-- Loading -->
-    <div v-if="loading" class="flex items-center justify-center min-h-[60vh]">
-      <div class="w-7 h-7 border-2 border-gray-200 dark:border-zinc-700 border-t-blue-500 rounded-full animate-spin"></div>
+    <div v-if="loading" class="max-w-7xl mx-auto p-8 flex justify-center py-32">
+       <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin"></div>
     </div>
 
     <!-- Content -->
-    <div v-else-if="stack" class="max-w-5xl mx-auto px-4 sm:px-8 py-8 space-y-4 animate-fadeIn">
+    <main v-else-if="stack" class="max-w-7xl mx-auto px-6 py-8 space-y-6 animate-fadeIn">
       <!-- ── App Header ───────────────────────────────────────────────────────────── -->
-      <div class="mb-3 px-1 pb-3 sm:mb-4 sm:pb-4">
-        <div class="flex items-start gap-4 sm:gap-5">
-          <!-- Logo -->
-          <div
-            class="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl shrink-0 flex items-center justify-center overflow-hidden border border-gray-100 dark:border-zinc-800 hover:scale-105 transition-transform"
-            style="background: var(--surface-muted)"
-          >
-            <AppLogo
-              :logo="stack.app?.logo"
-              :name="stack.app?.name || stack.appId"
-              :seed="stack.app?.id || stack.projectId || stack.appId"
-              img-class="w-full h-full object-contain"
-              icon-class="w-full h-full text-gray-400 dark:text-zinc-500"
-            />
-          </div>
+      <div class="group relative bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
+         <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-          <!-- Info -->
-          <div class="flex-1 min-w-0">
-            <!-- Name + badges -->
+         <!-- Logo -->
+         <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
+           <AppLogo
+             :logo="stack.app?.logo"
+             :name="stack.app?.name || stack.appId"
+             :seed="stack.app?.id || stack.projectId || stack.appId"
+             img-class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all"
+             icon-class="w-full h-full text-gray-400 dark:text-zinc-600"
+           />
+         </div>
+
+         <!-- Info -->
+         <div class="flex-1 space-y-3">
             <div class="flex items-center flex-wrap gap-2 mb-1">
-              <h1 class="text-xl sm:text-2xl font-black tracking-tight" style="color: var(--text-primary)">
+              <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                 {{ stack.app?.name || stack.appId }}
               </h1>
               <span
@@ -329,43 +326,38 @@ onUnmounted(() => {
                 :class="stateClass"
               >{{ overallState }}</span>
               <span
-                class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-gray-200 dark:border-zinc-800 bg-gray-100 dark:bg-zinc-900"
-                style="color: var(--text-secondary)"
+                class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-gray-600 dark:text-zinc-400"
               >{{ stack.projectId }}</span>
             </div>
 
             <!-- Description -->
-            <p v-if="stack.app?.short_description" class="text-sm mb-3 leading-relaxed" style="color: var(--text-secondary)">
+            <p v-if="stack.app?.short_description" class="text-gray-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl">
               {{ stack.app.short_description }}
             </p>
 
             <!-- Tags -->
-            <div v-if="stack.app?.tags?.length" class="flex flex-wrap gap-1.5 mb-3">
+            <div v-if="stack.app?.tags?.length" class="pt-2 flex flex-wrap gap-2">
               <span
                 v-for="tag in (stack.app.tags).slice(0, 6)"
                 :key="tag"
-                class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border border-gray-200 dark:border-zinc-800 hover:border-gray-400 dark:hover:border-zinc-600 hover:scale-105 transition-all cursor-default"
-                style="color: var(--text-secondary)"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-[10px] font-bold tracking-widest text-gray-600 dark:text-zinc-400 rounded-md uppercase"
               >{{ tag }}</span>
             </div>
 
             <!-- Actions -->
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="flex-1"></span>
-
+            <div class="flex flex-wrap items-center gap-2 pt-2">
               <!-- Custom app badge -->
               <div
                 v-if="stack.app?.customapp"
-                class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20"
+                class="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20 uppercase tracking-wider"
               >
-                <Bot :size="13" />{{ t("stackView.builtByYantr") }}
+                <ShieldCheck :size="13" />{{ t("stackView.builtByYantr") }}
               </div>
 
               <button
                 v-if="stack.app"
                 @click="router.push(`/apps/${stack.appname || stack.appId}`)"
-                class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 hover:scale-[1.03] active:scale-95 transition-all"
-                style="color: var(--text-secondary)"
+                class="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-all uppercase tracking-wider"
               >
                 <ExternalLink :size="13" />{{ t("stackView.appPage") }}
               </button>
@@ -375,7 +367,7 @@ onUnmounted(() => {
                 v-if="!stack.app?.customapp"
                 @click="updateStack"
                 :disabled="updating"
-                class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg bg-gray-900 dark:bg-zinc-100 text-white dark:text-gray-900 hover:opacity-90 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                class="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-lg bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
               >
                 <RotateCcw :size="13" :class="updating ? 'animate-spin' : ''" />
                 {{ updating ? t("stackView.updating") : t("stackView.updateStack") }}
@@ -385,273 +377,253 @@ onUnmounted(() => {
               <button
                 @click="removeStack"
                 :disabled="removing"
-                class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg border bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500 border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20 hover:scale-[1.03] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
+                class="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-2 rounded-lg border bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500 border-red-200 dark:border-red-500/20 hover:bg-red-100 dark:hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
               >
                 <Trash2 :size="13" />{{ removing ? t("stackView.removing") : t("stackView.removeStack") }}
               </button>
             </div>
-          </div>
-        </div>
+         </div>
       </div>
 
       <!-- ── Ports Overview ─────────────────────────────────────────────────────────── -->
-      <div class="space-y-4 animate-fadeIn">
-        <div class="flex items-center justify-between gap-3 mb-1">
-          <div class="flex items-center gap-2 min-w-0">
-            <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
               {{ t("stackView.networkAccess") }}
-            </div>
+            </h3>
             <span
               v-if="enrichedPorts.length > 0"
-              class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] border border-gray-200 dark:border-zinc-800"
-              style="background: var(--surface-muted); color: var(--text-secondary)"
+              class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400"
             >
               {{ visiblePorts.length }}
             </span>
           </div>
-          <div v-if="hasDescribedPorts" class="flex gap-0.5 p-0.5 rounded-lg" style="background: var(--surface-muted)">
-            <button @click="showOnlyDescribedPorts = false" :class="!showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 smooth-shadow' : 'hover:bg-white/60 dark:hover:bg-zinc-800/60'" :style="!showOnlyDescribedPorts ? 'color: var(--text-primary)' : 'color: var(--text-secondary)'" class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md transition-all hover:scale-[1.02]">{{ t("stackView.allPorts") }}</button>
-            <button @click="showOnlyDescribedPorts = true" :class="showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 smooth-shadow' : 'hover:bg-white/60 dark:hover:bg-zinc-800/60'" :style="showOnlyDescribedPorts ? 'color: var(--text-primary)' : 'color: var(--text-secondary)'" class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-md transition-all hover:scale-[1.02]">{{ t("stackView.described") }}</button>
+          <div v-if="hasDescribedPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
+            <button @click="showOnlyDescribedPorts = false" :class="!showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'" class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all">{{ t("stackView.allPorts") }}</button>
+            <button @click="showOnlyDescribedPorts = true" :class="showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'" class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all">{{ t("stackView.described") }}</button>
           </div>
         </div>
 
-        <div v-if="enrichedPorts.length > 0" class="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div v-if="enrichedPorts.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div
             v-for="(p, i) in visiblePorts"
             :key="i"
-            class="group flex h-full flex-col rounded-2xl p-4 transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg"
-            style="background: var(--surface)"
+            class="group bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300 flex flex-col h-full"
           >
-            <div class="flex h-full flex-col gap-4">
-              <div class="flex items-start gap-3 min-w-0">
-                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 group-hover:scale-105" style="background: var(--surface-muted)">
-                  <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="16" class="text-blue-600 dark:text-blue-400" />
-                  <Network v-else :size="16" class="text-gray-500 dark:text-zinc-400" />
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-start gap-3.5 flex-1 min-w-0">
+                <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center shrink-0 shadow-sm transition-colors group-hover:text-blue-500 text-gray-600 dark:text-zinc-400">
+                  <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="18" />
+                  <Network v-else :size="18" />
                 </div>
-
                 <div class="min-w-0 flex-1">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <div class="text-sm font-semibold truncate" style="color: var(--text-primary)">
-                      {{ p.label || p.service }}
-                    </div>
-                    <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] border border-gray-200 dark:border-zinc-800" style="background: var(--surface-muted); color: var(--text-secondary)">
-                      {{ p.protocol }}
-                    </span>
-                    <span v-if="p.labeledProtocol" class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] border border-blue-200 dark:border-blue-500/20 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="font-mono text-[10px] font-bold uppercase text-gray-900 dark:text-white">{{ p.protocol }}</span>
+                    <span v-if="p.labeledProtocol" class="text-[9px] px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 rounded-md uppercase font-bold tracking-widest border border-gray-200 dark:border-zinc-700">
                       {{ p.labeledProtocol }}
                     </span>
                   </div>
-
-                  <div class="mt-1 text-[11px] uppercase tracking-[0.2em] truncate" style="color: var(--text-secondary)">
-                    {{ p.service }}
+                  <div class="text-[11px] text-gray-500 dark:text-zinc-400 truncate" :title="p.label || p.service">
+                    {{ p.label || p.service }}
                   </div>
                 </div>
               </div>
+            </div>
 
-              <div class="rounded-xl px-3.5 py-3" style="background: var(--surface-muted)">
-                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
-                  Port Route
-                </div>
-                <div class="mt-2 flex flex-wrap items-center gap-2">
-                  <span class="inline-flex items-center rounded-full px-3 py-1.5 font-mono font-bold text-xs bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20">
-                    :{{ p.hostPort }}
-                  </span>
-                  <ChevronRight :size="14" class="text-gray-300 dark:text-zinc-600" />
-                  <span class="inline-flex items-center rounded-full px-3 py-1.5 font-mono font-bold text-xs border border-gray-200 dark:border-zinc-800" style="color: var(--text-primary)">
-                    {{ p.containerPort }}
-                  </span>
-                </div>
+            <div class="space-y-2 mb-5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Host Port</span>
+                <span v-if="p.hostPort" class="font-mono font-bold text-gray-900 dark:text-white">:{{ p.hostPort }}</span>
+                <span v-else class="text-gray-400 italic">Internal</span>
               </div>
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">Container Port</span>
+                <span class="font-mono font-medium text-gray-700 dark:text-zinc-300">{{ p.containerPort }}</span>
+              </div>
+            </div>
 
-              <div class="mt-auto flex">
-                <a
-                  v-if="p.protocol === 'tcp'"
-                  :href="appUrl(p.hostPort, p.labeledProtocol || 'http')"
-                  target="_blank"
-                  class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider bg-gray-900 text-white transition-all duration-300 hover:opacity-90 hover:scale-[1.01] active:scale-95 dark:bg-zinc-100 dark:text-gray-900"
-                >
-                  <ExternalLink :size="13" class="transition-transform duration-300 group-hover:translate-x-0.5" />{{ t("stackView.open") }}
-                </a>
-                <span
-                  v-else
-                  class="inline-flex min-h-11 w-full items-center justify-center rounded-xl px-3.5 py-2.5 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800"
-                  style="color: var(--text-secondary)"
-                >
-                  {{ p.protocol.toUpperCase() }}
-                </span>
+            <div class="mt-auto">
+              <a
+                v-if="p.protocol === 'tcp'"
+                :href="appUrl(p.hostPort, p.labeledProtocol || 'http')"
+                target="_blank"
+                class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-[11px] font-bold uppercase tracking-wider"
+              >
+                <ExternalLink :size="12" />{{ t("stackView.open") }}
+              </a>
+              <div
+                v-else
+                class="w-full flex items-center justify-center px-3 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 rounded-lg text-[11px] font-bold uppercase tracking-wider"
+              >
+                {{ p.protocol.toUpperCase() }}
               </div>
             </div>
           </div>
         </div>
 
-        <div v-else class="rounded-2xl p-10 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 dark:border-zinc-800">
+        <div v-else class="group bg-white dark:bg-[#0A0A0A] border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-xl p-10 flex flex-col items-center justify-center gap-3">
           <Network :size="28" class="text-gray-300 dark:text-zinc-700" />
-          <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.noPortsPublished") }}</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t("stackView.noPortsPublished") }}</span>
         </div>
       </div>
 
-        <div class="space-y-4 animate-fadeIn">
-          <div class="flex items-center justify-between gap-3 mb-1">
-            <div class="flex items-center gap-2 min-w-0">
-              <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">
-                {{ t("stackView.internalAddresses") }}
+      <!-- ── Internal Addresses Overview ─────────────────────────────────────────────── -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
+              {{ t("stackView.internalAddresses") }}
+            </h3>
+            <span
+              v-if="servicesWithNetworks.length > 0"
+              class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400"
+            >
+              {{ servicesWithNetworks.length }}
+            </span>
+          </div>
+          <div class="text-[11px] text-gray-500 dark:text-zinc-500 font-medium">
+            {{ t("stackView.internalAddressesHint") }}
+          </div>
+        </div>
+
+        <div v-if="servicesWithNetworks.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div
+            v-for="svc in servicesWithNetworks"
+            :key="`${svc.id}-networks`"
+            class="group bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300"
+          >
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <div class="text-sm font-bold text-gray-900 dark:text-white">
+                  {{ svc.service }}
+                </div>
+                <div class="mt-1 text-[11px] uppercase tracking-widest text-gray-500 dark:text-zinc-400 font-bold">
+                  {{ svc.composeService || svc.name }}
+                </div>
               </div>
-              <span
-                v-if="servicesWithNetworks.length > 0"
-                class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] border border-gray-200 dark:border-zinc-800"
-                style="background: var(--surface-muted); color: var(--text-secondary)"
-              >
-                {{ servicesWithNetworks.length }}
+              <span class="inline-flex items-center rounded-md px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-gray-500 dark:text-zinc-400">
+                {{ svc.networks.length }}
               </span>
             </div>
-            <div class="text-[11px]" style="color: var(--text-secondary)">
-              {{ t("stackView.internalAddressesHint") }}
-            </div>
-          </div>
 
-          <div v-if="servicesWithNetworks.length > 0" class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div
-              v-for="svc in servicesWithNetworks"
-              :key="`${svc.id}-networks`"
-              class="rounded-2xl p-4 transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg"
-              style="background: var(--surface)"
-            >
-              <div class="flex items-start justify-between gap-3 mb-4">
-                <div>
-                  <div class="text-sm font-semibold" style="color: var(--text-primary)">
-                    {{ svc.service }}
-                  </div>
-                  <div class="mt-1 text-[11px] uppercase tracking-[0.2em]" style="color: var(--text-secondary)">
-                    {{ svc.composeService || svc.name }}
-                  </div>
+            <div class="space-y-2.5">
+              <div
+                v-for="network in svc.networks"
+                :key="`${svc.id}-${network.name}`"
+                class="rounded-lg px-3.5 py-3 bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800"
+              >
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-400">
+                    {{ network.name }}
+                  </span>
+                  <span class="font-mono font-bold text-[11px] text-gray-900 dark:text-white">
+                    {{ network.ipAddress }}
+                  </span>
                 </div>
-                <span class="inline-flex items-center rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] border border-gray-200 dark:border-zinc-800" style="background: var(--surface-muted); color: var(--text-secondary)">
-                  {{ svc.networks.length }}
-                </span>
-              </div>
-
-              <div class="space-y-2.5">
-                <div
-                  v-for="network in svc.networks"
-                  :key="`${svc.id}-${network.name}`"
-                  class="rounded-xl px-3.5 py-3"
-                  style="background: var(--surface-muted)"
-                >
-                  <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: var(--text-secondary)">
-                      {{ network.name }}
-                    </span>
-                    <span class="font-mono font-bold text-sm" style="color: var(--text-primary)">
-                      {{ network.ipAddress }}
-                    </span>
-                  </div>
-                  <div v-if="network.aliases?.length" class="mt-2 text-[11px]" style="color: var(--text-secondary)">
-                    {{ t("stackView.networkAliases") }} {{ network.aliases.join(", ") }}
-                  </div>
+                <div v-if="network.aliases?.length" class="mt-2 text-[10px] text-gray-500 dark:text-zinc-500">
+                  {{ t("stackView.networkAliases") }} {{ network.aliases.join(", ") }}
                 </div>
               </div>
             </div>
-          </div>
-
-          <div v-else class="rounded-2xl p-10 flex flex-col items-center justify-center gap-3 border-2 border-dashed border-gray-200 dark:border-zinc-800">
-            <Network :size="28" class="text-gray-300 dark:text-zinc-700" />
-            <span class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.noInternalAddresses") }}</span>
           </div>
         </div>
+
+        <div v-else class="group bg-white dark:bg-[#0A0A0A] border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-xl p-10 flex flex-col items-center justify-center gap-3">
+          <Network :size="28" class="text-gray-300 dark:text-zinc-700" />
+          <span class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t("stackView.noInternalAddresses") }}</span>
+        </div>
+      </div>
 
       <!-- ── Section Navigation ───────────────────────────────────────────────────────── -->
-      <div class="grid gap-2 rounded-2xl p-2" :class="sectionTabsGridClass" style="background: var(--surface-muted)">
-        <button
-          v-for="sec in sectionTabs"
-          :key="sec.id"
-          @click="activeSection = sec.id"
-          class="group flex w-full min-h-13 items-center gap-3 rounded-xl px-3.5 py-3 text-left transition-all duration-300"
-          :class="activeSection === sec.id
-            ? 'bg-white dark:bg-zinc-800 smooth-shadow'
-            : 'hover:bg-white/60 dark:hover:bg-zinc-800/60'"
-          :style="activeSection === sec.id ? 'color: var(--text-primary)' : 'color: var(--text-secondary)'"
-        >
-          <div
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-colors duration-300"
-            :style="activeSection === sec.id ? 'background: var(--surface-muted)' : 'background: transparent'"
+      <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+        <div class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1 mx-6 mt-6">
+          <button
+            v-for="sec in sectionTabs"
+            :key="sec.id"
+            @click="activeSection = sec.id"
+            :class="activeSection === sec.id ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
+            class="flex items-center gap-2 px-4 py-2 text-[11px] font-bold uppercase tracking-wider rounded-md transition-all"
           >
-            <component :is="sec.icon" :size="16" :class="sec.tone" />
+            <component :is="sec.icon" :size="14" />
+            {{ sec.label }}
+          </button>
+        </div>
+
+        <div class="p-6">
+          <!-- CONTAINERS SECTION -->
+          <div v-show="activeSection === 'containers'">
+            <StackServiceList 
+              :services="stack.services" 
+            />
           </div>
 
-          <div class="min-w-0 flex-1">
-            <div class="text-sm font-semibold leading-tight">
-              {{ sec.label }}
-            </div>
-          </div>
-        </button>
-      </div>
-
-      <!-- CONTAINERS SECTION -->
-      <StackServiceList 
-        v-show="activeSection === 'containers'" 
-        :services="stack.services" 
-      />
-
-
-
-
-
-      <!-- STORAGE SECTION -->
-      <div v-show="activeSection === 'storage'" class="space-y-4 animate-fadeIn">
-        <div v-if="namedVolumes.length > 0" class="space-y-3">
-          <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.storageVolumes") }}</div>
-          <div v-for="(vol, i) in namedVolumes" :key="vol.name" class="rounded-2xl p-5 border border-gray-100 dark:border-zinc-800 smooth-shadow hover:smooth-shadow-lg hover:-translate-y-0.5 transition-all group" style="background: var(--surface)">
-            <div class="flex items-start gap-4 mb-4">
-              <div class="w-11 h-11 rounded-xl flex items-center justify-center border border-gray-100 dark:border-zinc-800 shrink-0 group-hover:scale-110 group-hover:rotate-6 transition-all" style="background: var(--surface-muted)">
-                <HardDrive :size="18" class="text-gray-500 dark:text-zinc-400 group-hover:text-blue-500 transition-colors" />
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="font-bold text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" style="color: var(--text-primary)" :title="vol.name">{{ vol.name }}</div>
-                <div class="font-mono text-xs truncate mt-0.5" style="color: var(--text-secondary)">{{ vol.destination }}</div>
-                <div class="flex items-center gap-3 mt-2 text-xs flex-wrap" style="color: var(--text-secondary)">
-                  <span>{{ t("stackView.serviceLabel") }} <span class="font-bold px-1.5 py-0.5 rounded-md ml-1 bg-gray-100 dark:bg-zinc-800" style="color: var(--text-primary)">{{ vol.svcName }}</span></span>
+          <!-- STORAGE SECTION -->
+          <div v-show="activeSection === 'storage'" class="space-y-4">
+            <div v-if="namedVolumes.length > 0" class="space-y-4">
+              <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
+                {{ t("stackView.storageVolumes") }}
+              </h3>
+              <div class="grid gap-4">
+                <div v-for="(vol, i) in namedVolumes" :key="vol.name" class="group bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
+                  <div class="flex items-start justify-between gap-4 mb-5">
+                    <div class="flex items-start gap-4 min-w-0 flex-1">
+                      <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-gray-500 dark:text-zinc-400 shrink-0 shadow-sm group-hover:text-blue-500 transition-colors">
+                        <HardDrive :size="18" />
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="font-bold text-sm text-gray-900 dark:text-white truncate tracking-tight" :title="vol.name">{{ vol.name }}</div>
+                        <div class="text-[11px] text-gray-500 dark:text-zinc-400 font-mono truncate mt-1">{{ vol.destination }}</div>
+                        <div class="flex items-center gap-3 mt-2 text-[11px] text-gray-500 dark:text-zinc-400 flex-wrap">
+                          <span>{{ t("stackView.serviceLabel") }} <span class="font-bold px-1.5 py-0.5 rounded-md ml-1 bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-300">{{ vol.svcName }}</span></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap pt-4 border-t border-gray-100 dark:border-zinc-800">
+                    <div v-if="browsingVolume[vol.name]" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 animate-pulse px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">{{ t("stackView.startingWebDAV") }}</div>
+                    <template v-else-if="!showVolumeMenu[vol.name]">
+                      <button @click="showVolumeMenu[vol.name] = true" class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all">
+                        {{ t("stackView.browseFiles") }}
+                      </button>
+                    </template>
+                    <template v-else>
+                      <button @click="browseVolume(vol.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" :title="t('stackView.oneHourAccess')">1H</button>
+                      <button @click="browseVolume(vol.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" :title="t('stackView.permanentAccess')">Perm</button>
+                    </template>
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2 flex-wrap pt-3 border-t border-gray-100 dark:border-zinc-800">
-              <div v-if="browsingVolume[vol.name]" class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 animate-pulse px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">{{ t("stackView.startingWebDAV") }}</div>
-              <template v-else-if="!showVolumeMenu[vol.name]">
-                <button @click="showVolumeMenu[vol.name] = true" class="flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 rounded-xl hover:border-gray-300 dark:hover:border-zinc-700 hover:scale-[1.03] active:scale-95 transition-all" style="background: var(--surface-muted); color: var(--text-secondary)">
-                  <FolderOpen :size="13" />{{ t("stackView.browseFiles") }}
-                </button>
-              </template>
-              <template v-else>
-                <button @click="browseVolume(vol.name, 60)" class="px-3 py-2 text-xs font-bold uppercase tracking-wider bg-gray-900 dark:bg-zinc-100 text-white dark:text-black rounded-xl hover:opacity-90 hover:scale-[1.03] active:scale-95 transition-all" :title="t('stackView.oneHourAccess')">1H</button>
-                <button @click="browseVolume(vol.name, 0)" class="px-3 py-2 text-xs font-bold uppercase tracking-wider rounded-xl border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-700 hover:scale-[1.03] active:scale-95 transition-all" style="background: var(--surface-muted); color: var(--text-secondary)" :title="t('stackView.permanentAccess')">Perm</button>
-              </template>
+
+            <div v-if="otherMounts.length > 0" class="space-y-4 mt-6">
+              <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
+                {{ t("stackView.bindMounts") }}
+              </h3>
+              <div class="bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden border border-gray-200 dark:border-zinc-800 shadow-sm">
+                <table class="w-full text-left min-w-80">
+                  <thead>
+                    <tr class="border-b border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50">
+                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t("stackView.type") }}</th>
+                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t("stackView.hostPath") }}</th>
+                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t("stackView.containerPath") }}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-100 dark:divide-zinc-800">
+                    <tr v-for="(m, i) in otherMounts" :key="i" class="hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
+                      <td class="px-5 py-3.5">
+                        <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border" :class="m.type === 'bind' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'">{{ m.type }}</span>
+                      </td>
+                      <td class="px-5 py-3.5 font-mono text-[11px] text-gray-900 dark:text-white break-all max-w-xs">{{ m.source || "—" }}</td>
+                      <td class="px-5 py-3.5 font-mono text-[11px] text-gray-500 dark:text-zinc-400 break-all max-w-xs">{{ m.destination }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-        <div v-if="otherMounts.length > 0" class="space-y-3 mt-2">
-          <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.bindMounts") }}</div>
-          <div class="rounded-2xl overflow-hidden border border-gray-100 dark:border-zinc-800 smooth-shadow" style="background: var(--surface)">
-            <table class="w-full text-left min-w-80">
-              <thead>
-                <tr class="border-b border-gray-100 dark:border-zinc-800" style="background: var(--surface-muted)">
-                  <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.type") }}</th>
-                  <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.hostPath") }}</th>
-                  <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest" style="color: var(--text-secondary)">{{ t("stackView.containerPath") }}</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-100 dark:divide-zinc-800">
-                <tr v-for="(m, i) in otherMounts" :key="i" class="hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
-                  <td class="px-5 py-3.5">
-                    <span class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md border" :class="m.type === 'bind' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'">{{ m.type }}</span>
-                  </td>
-                  <td class="px-5 py-3.5 font-mono text-xs break-all max-w-xs" style="color: var(--text-primary)">{{ m.source || "—" }}</td>
-                  <td class="px-5 py-3.5 font-mono text-xs break-all max-w-xs" style="color: var(--text-secondary)">{{ m.destination }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
-
-    </div>
+    </main>
   </div>
 </template>
