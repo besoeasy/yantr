@@ -1,0 +1,116 @@
+services:
+  penpot-frontend:
+    image: penpotapp/frontend:latest
+    container_name: penpot-frontend
+    ports:
+      - "8080"
+    volumes:
+      - penpot_assets:/opt/data/assets
+    environment:
+      PENPOT_FLAGS: enable-registration enable-login-with-password
+        disable-email-verification disable-smtp disable-secure-session-cookies
+    depends_on:
+      - penpot-backend
+      - penpot-exporter
+    restart: unless-stopped
+    labels:
+      yantr.app: penpot
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  penpot-backend:
+    image: penpotapp/backend:latest
+    container_name: penpot-backend
+    volumes:
+      - penpot_assets:/opt/data/assets
+    environment:
+      PENPOT_FLAGS: enable-registration enable-login-with-password
+        disable-email-verification disable-smtp enable-prepl-server
+        disable-secure-session-cookies
+      PENPOT_SECRET_KEY: ${PENPOT_SECRET_KEY}
+      PENPOT_PUBLIC_URI: ${PUBLIC_URI:-http://localhost:8080}
+      PENPOT_DATABASE_URI: postgresql://penpot-db/penpot
+      PENPOT_DATABASE_USERNAME: penpot
+      PENPOT_DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      PENPOT_REDIS_URI: redis://penpot-redis/0
+      PENPOT_ASSETS_STORAGE_BACKEND: assets-fs
+      PENPOT_STORAGE_ASSETS_FS_DIRECTORY: /opt/data/assets
+      PENPOT_TELEMETRY_ENABLED: "false"
+    depends_on:
+      - penpot-db
+      - penpot-redis
+    restart: unless-stopped
+    labels:
+      yantr.app: penpot
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  penpot-exporter:
+    image: penpotapp/exporter:latest
+    container_name: penpot-exporter
+    environment:
+      PENPOT_PUBLIC_URI: http://penpot-frontend:8080
+      PENPOT_REDIS_URI: redis://penpot-redis/0
+    restart: unless-stopped
+    labels:
+      yantr.app: penpot
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  penpot-db:
+    image: postgres:15-alpine
+    container_name: penpot-db
+    environment:
+      POSTGRES_DB: penpot
+      POSTGRES_USER: penpot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - penpot_db:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: penpot
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  penpot-redis:
+    image: redis:7-alpine
+    container_name: penpot-redis
+    volumes:
+      - penpot_redis:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: penpot
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+volumes:
+  penpot_assets: null
+  penpot_db: null
+  penpot_redis: null
+x-yantr:
+  name: Penpot
+  tags:
+    - design
+    - ui
+    - prototyping
+    - collaboration
+    - productivity
+  short_description: Open-source Figma alternative for collaborative UI design and prototyping.
+  description: Penpot is a free, open-source design and prototyping platform built
+    on open web standards (SVG). Teams collaborate in real-time on vector UI
+    designs, interactive prototypes, and design systems — all in the browser,
+    with no proprietary file formats. It supports components, design tokens,
+    grids, co...
+  usecases:
+    - Design UI mockups and prototypes collaboratively in the browser.
+    - Build and share reusable design systems and component libraries.
+    - Create interactive prototypes with transitions to hand off to developers.
+    - Replace Figma with a fully self-hosted, open-source alternative.
+  website: https://penpot.app
+  notes:
+    - Set PUBLIC_URI to your server's URL so assets and links resolve correctly.
+    - Email verification is disabled by default for local use — enable SMTP for
+      production.
+    - Requires at least 2 GB RAM for the full 5-service stack.
+  env_generators:
+    PENPOT_SECRET_KEY:
+      length: 64
+      charset: base64url
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
