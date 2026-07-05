@@ -1,0 +1,41 @@
+services:
+  droppy:
+    image: silverwind/droppy:latest
+    container_name: droppy
+    labels:
+      yantr.app: droppy
+      yantr.service.8989: Web UI
+      yantr.port.8989: HTTP
+    ports:
+      - "8989"
+    volumes:
+      - droppy_config:/config
+      - droppy_files:/files
+    restart: unless-stopped
+volumes:
+  droppy_config: null
+  droppy_files: null
+x-yantr:
+  name: Droppy
+  tags:
+    - file-manager
+    - utility
+    - storage
+    - files
+    - self-hosted
+  short_description: Self-hosted file manager with upload, download, sharing, and
+    collaboration features.
+  description: Droppy is a self-hosted file manager for uploading, downloading,
+    organizing, and sharing files. It supports multi-file uploads, folder
+    creation, previews, shareable links, user authentication, and activity logs,
+    offering a clean responsive UI for small groups.
+  usecases:
+    - Share files with generate shareable links.
+    - Upload and organize files through browser.
+    - Simple file hosting for small groups.
+  website: https://github.com/silverwind/droppy
+  logo: Qme6oZNcBv7JN97qa66RiKE7UwpxxcVGbdRz395uaSPMPM
+  notes:
+    - User authentication available
+    - Share links with expiration
+    - File preview support
