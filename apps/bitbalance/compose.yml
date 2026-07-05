@@ -1,0 +1,46 @@
+services:
+  app:
+    image: ghcr.io/egzola/bitbalance:1.0.18
+    restart: unless-stopped
+    ports:
+      - "3710"
+    volumes:
+      - bitbalance-data:/data
+    environment:
+      PORT: "3710"
+      ELECTRUM_HOST: ${ELECTRUM_HOST:-"fulcrum.sethforprivacy.com"}
+      ELECTRUM_PORT: ${ELECTRUM_PORT:-50001}
+    labels:
+      yantr.app: bitbalance
+      yantr.service.3710: Web UI
+      yantr.port.3710: HTTP
+volumes:
+  bitbalance-data: null
+x-yantr:
+  name: bitBalance
+  tags:
+    - bitcoin
+    - finance
+    - wallet
+    - privacy
+    - self-hosted
+  short_description: Track Bitcoin wallet balances privately using your own Electrum node.
+  description: bitBalance is a self-hosted Bitcoin wallet tracker that monitors
+    balances using XPUB, YPUB, or ZPUB keys. Connects to your own
+    Electrs/Electrum server for maximum privacy with no third-party APIs.
+    Supports multiple wallets, automatic gap limit scanning, and real-time
+    balance updates.
+  usecases:
+    - Monitor all your Bitcoin wallet balances from a single private dashboard.
+    - Track cold storage, hardware wallet, or watch-only wallets without
+      exposing keys.
+    - Connect to your own Electrs node to avoid leaking wallet addresses to
+      third parties.
+    - Replace block explorer balance lookups with a fully self-hosted
+      alternative.
+  website: https://github.com/egzola/bitbalance
+  logo: QmcWGfoqE5yyzKkBreQjbgMHevxXjeCNVaMtZMpm8Sg9Mo
+  notes:
+    - Set ELECTRUM_HOST and ELECTRUM_PORT environment variables to point to your
+      Electrs or Electrum server for full privacy. Without these, the app falls
+      back to public servers.
