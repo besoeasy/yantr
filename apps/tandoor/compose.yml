@@ -4,7 +4,8 @@ services:
     container_name: tandoor-web
     labels:
       yantr.app: tandoor
-      yantr.service: Web UI
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
     environment:
       TZ: ${TZ:-UTC}
       SECRET_KEY: ${SECRET_KEY}
@@ -37,8 +38,34 @@ services:
     restart: unless-stopped
     labels:
       yantr.app: tandoor
-      yantr.service: db
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
 volumes:
   tandoor_staticfiles: null
   tandoor_mediafiles: null
   tandoor_db: null
+x-yantr:
+  name: Tandoor Recipes
+  tags:
+    - recipes
+    - cooking
+    - meal-planning
+    - food
+    - self-hosted
+  short_description: Self-hosted recipe manager with meal planning and shopping lists.
+  description: Tandoor Recipes is a self-hosted recipe management app. Import
+    recipes from URLs, organize with tags and books, plan meals for the week,
+    and auto-generate shopping lists based on your meal plan. This covers meal
+    planning and shopping.
+  usecases:
+    - Import and manage recipes from any website automatically.
+    - Plan weekly meals and generate smart grocery lists.
+    - Share recipes with family or cooking community.
+  website: https://tandoor.dev
+  env_generators:
+    SECRET_KEY:
+      length: 50
+      charset: alnum
+    DB_PASSWORD:
+      length: 24
+      charset: alnum
