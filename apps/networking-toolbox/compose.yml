@@ -1,0 +1,36 @@
+services:
+  networking-toolbox:
+    image: lissy93/networking-toolbox:latest
+    container_name: networking-toolbox
+    labels:
+      yantr.app: networking-toolbox
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped
+x-yantr:
+  name: Networking Toolbox
+  tags:
+    - network
+    - tools
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Collection of many networking utilities - port scanner, IP
+    info, DNS tools, and more.
+  description: Networking Toolbox bundles offline networking utilities such as
+    port scanner, IP lookup, DNS checker, traceroute, ping, HTTP header viewer,
+    and SSL certificate inspector. Useful for troubleshooting, verifying
+    configurations, and learning network diagnostics.
+  usecases:
+    - Check your public IP and location info.
+    - Scan ports on a server.
+    - Verify DNS records and propagation.
+    - Check SSL certificate details.
+  website: https://networking-toolbox.as93.net
+  logo: QmaU7tznY63wTMNNPtCQQbPBT4PNbPYFT9iq8utHwhfF47
+  notes:
+    - Extensive collection of networking tools
+    - All tools work offline
+    - Great for troubleshooting
