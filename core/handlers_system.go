@@ -450,7 +450,9 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		} else {
 			allStdout.WriteString(wOut + "\n")
 			allStderr.WriteString(wErr + "\n")
-			if strings.Contains(wOut, "Found new") || strings.Contains(wOut, "updating") || strings.Contains(wOut, "updated") {
+			
+			wCombined := strings.ToLower(wOut + "\n" + wErr)
+			if strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated") {
 				updatedCount += len(watchtowerNames)
 				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(watchtowerNames, ", ")))
 				telemetry.TrackUpdatesForContainers(watchtowerNames)
@@ -503,7 +505,8 @@ func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	updated := strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated")
+	wCombined := strings.ToLower(stdout + "\n" + stderr)
+	updated := strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")
 	if updated {
 		shared.Log("info", "[update:self] Yantr updated — restart may be required")
 	} else {
