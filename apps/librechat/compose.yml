@@ -1,0 +1,134 @@
+services:
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: librechat
+    ports:
+      - "3080"
+    command: npm run backend
+    environment:
+      HOST: 0.0.0.0
+      MONGO_URI: mongodb://librechat-mongodb:27017/LibreChat
+      MEILI_HOST: http://librechat-meilisearch:7700
+      RAG_PORT: 8000
+      RAG_API_URL: http://librechat-rag-api:8000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-user_provided}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-user_provided}
+      CREDS_KEY: ${CREDS_KEY}
+      CREDS_IV: ${CREDS_IV}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+    volumes:
+      - librechat_images:/app/client/public/images
+      - librechat_uploads:/app/uploads
+      - librechat_logs:/app/api/logs
+    depends_on:
+      - librechat-mongodb
+      - librechat-rag-api
+    restart: unless-stopped
+    labels:
+      yantr.app: librechat
+      yantr.service.3080: Web UI
+      yantr.port.3080: HTTP
+  librechat-mongodb:
+    image: mongo:8
+    container_name: librechat-mongodb
+    command: mongod --noauth
+    volumes:
+      - librechat_db:/data/db
+    restart: unless-stopped
+    labels:
+      yantr.app: librechat
+      yantr.service.3080: Web UI
+      yantr.port.3080: HTTP
+  librechat-meilisearch:
+    image: getmeili/meilisearch:v1.12.3
+    container_name: librechat-meilisearch
+    environment:
+      MEILI_HOST: http://librechat-meilisearch:7700
+      MEILI_NO_ANALYTICS: "true"
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+    volumes:
+      - librechat_meilisearch:/meili_data
+    restart: unless-stopped
+    labels:
+      yantr.app: librechat
+      yantr.service.3080: Web UI
+      yantr.port.3080: HTTP
+  librechat-vectordb:
+    image: ankane/pgvector:v0.5.1
+    container_name: librechat-vectordb
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: ${VECTORDB_PASSWORD}
+    volumes:
+      - librechat_vectordb:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: librechat
+      yantr.service.3080: Web UI
+      yantr.port.3080: HTTP
+  librechat-rag-api:
+    image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+    container_name: librechat-rag-api
+    environment:
+      DB_HOST: librechat-vectordb
+      RAG_PORT: 8000
+    depends_on:
+      - librechat-vectordb
+    restart: unless-stopped
+    labels:
+      yantr.app: librechat
+      yantr.service.3080: Web UI
+      yantr.port.3080: HTTP
+volumes:
+  librechat_images: null
+  librechat_uploads: null
+  librechat_logs: null
+  librechat_db: null
+  librechat_meilisearch: null
+  librechat_vectordb: null
+x-yantr:
+  name: LibreChat
+  tags:
+    - ai
+    - chat
+    - llm
+    - openai
+    - anthropic
+  short_description: Unified ChatGPT-like UI for OpenAI, Anthropic, and local LLMs with RAG.
+  description: LibreChat is a powerful, open-source ChatGPT clone that provides a
+    unified interface for multiple AI models. Connect it to OpenAI, Anthropic
+    (Claude), Google Gemini, or local models via Ollama. It features a complete
+    UI with chat history, presets, plugins, and a built-in RAG
+    (Retrieval-Augmented...
+  usecases:
+    - Provide a centralized, privacy-friendly AI chat interface for your team.
+    - Chat directly with your PDFs and documents using the built-in RAG engine.
+    - Switch seamlessly between GPT-4, Claude 3, and local open-source models.
+    - Save money on AI subscriptions by using API keys directly in one interface.
+  website: https://librechat.ai
+  notes:
+    - You can provide OPENAI_API_KEY and ANTHROPIC_API_KEY in the deploy form,
+      or configure them later in the admin UI.
+    - The stack includes a vector database (pgvector) to support document
+      uploads and chatting with files.
+  env_generators:
+    CREDS_KEY:
+      length: 64
+      charset: hex
+    CREDS_IV:
+      length: 32
+      charset: hex
+    JWT_SECRET:
+      length: 64
+      charset: hex
+    JWT_REFRESH_SECRET:
+      length: 64
+      charset: hex
+    MEILI_MASTER_KEY:
+      length: 48
+      charset: alnum
+    VECTORDB_PASSWORD:
+      length: 32
+      charset: alnum
