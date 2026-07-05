@@ -415,6 +415,7 @@ func main() {
 	r.Delete("/api/stacks/{projectId}", handleStackDelete)
 	r.Post("/api/stacks/{projectId}/restart", handleStackRestart)
 	r.Get("/api/images", handleImages)
+	r.Get("/api/image-details/{id}", handleImageDetails)
 	r.Delete("/api/images/{id}", handleImageDelete)
 	r.Get("/api/volumes", handleVolumes)
 	r.Get("/api/volumes/browsers", handleVolumeBrowserList)
