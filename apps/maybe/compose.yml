@@ -3,8 +3,9 @@ services:
     image: ghcr.io/maybe-finance/maybe:0.6.0
     container_name: maybe
     labels:
-      yantr.app: "maybe"
-      yantr.service: "Finance OS"
+      yantr.app: maybe
+      yantr.service.3063: Web UI
+      yantr.port.3063: HTTP
     ports:
       - "3063"
     volumes:
@@ -26,7 +27,6 @@ services:
       maybe-redis:
         condition: service_healthy
     restart: unless-stopped
-
   maybe-worker:
     image: ghcr.io/maybe-finance/maybe:0.6.0
     container_name: maybe-worker
@@ -46,10 +46,10 @@ services:
       maybe-redis:
         condition: service_healthy
     restart: unless-stopped
-
     labels:
-      yantr.app: "maybe"
-      yantr.service: "Queue Worker"
+      yantr.app: maybe
+      yantr.service.3063: Web UI
+      yantr.port.3063: HTTP
   maybe-db:
     image: postgres:16
     container_name: maybe-db
@@ -61,32 +61,59 @@ services:
       POSTGRES_PASSWORD: maybe
       PGDATA: /var/lib/postgresql/data/pgdata
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U maybe']
+      test:
+        - CMD-SHELL
+        - pg_isready -U maybe
       interval: 10s
       timeout: 5s
       retries: 5
     restart: unless-stopped
-
     labels:
-      yantr.app: "maybe"
-      yantr.service: "Database"
+      yantr.app: maybe
+      yantr.service.3063: Web UI
+      yantr.port.3063: HTTP
   maybe-redis:
     image: redis:7.4.2
     container_name: maybe-redis
-    user: "1000:1000"
+    user: 1000:1000
     volumes:
       - maybe_redis:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+        - CMD
+        - redis-cli
+        - ping
       interval: 5s
       timeout: 5s
       retries: 5
     restart: unless-stopped
-
     labels:
-      yantr.app: "maybe"
-      yantr.service: "Cache"
+      yantr.app: maybe
+      yantr.service.3063: Web UI
+      yantr.port.3063: HTTP
 volumes:
-  maybe_storage:
-  maybe_db:
-  maybe_redis:
+  maybe_storage: null
+  maybe_db: null
+  maybe_redis: null
+x-yantr:
+  name: Maybe
+  tags:
+    - finance
+    - productivity
+    - accounting
+    - self-hosted
+    - homelab
+  short_description: Open-source personal finance OS for managing accounts,
+    investments, and transactions.
+  description: Open-source personal finance OS for managing accounts, investments,
+    and transactions. Maybe is a self-hosted application focused on finance,
+    productivity, accounting, self-hosted. It can be deployed on any device via
+    Docker Compose.
+  usecases:
+    - Self-host Maybe on your home server to open-source personal finance os for
+      managing accounts, investments, and transactions without depending on
+      third-party cloud services.
+    - Use Maybe to manage your finance workflows privately, keeping all data
+      under your control on local infrastructure.
+  website: https://github.com/maybe-finance/maybe
+  logo: QmcZLRLn3cHum9YMRhHv3355rVDgVVgQkioRm29x8YRX9q
