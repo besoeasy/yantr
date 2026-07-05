@@ -3,8 +3,9 @@ services:
     image: solidtime/solidtime:0.11.5
     container_name: solidtime
     labels:
-      yantr.app: "solidtime"
-      yantr.service: "Time Tracker"
+      yantr.app: solidtime
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
     ports:
       - "8000"
     environment:
@@ -28,11 +29,14 @@ services:
       - solidtime-gotenberg
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/up"]
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8000/up
       interval: 30s
       timeout: 10s
       retries: 3
-
   solidtime-scheduler:
     image: solidtime/solidtime:0.11.5
     container_name: solidtime-scheduler
@@ -50,10 +54,10 @@ services:
     depends_on:
       - solidtime-db
     restart: unless-stopped
-
     labels:
-      yantr.app: "solidtime"
-      yantr.service: "Scheduler"
+      yantr.app: solidtime
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   solidtime-queue:
     image: solidtime/solidtime:0.11.5
     container_name: solidtime-queue
@@ -72,10 +76,10 @@ services:
     depends_on:
       - solidtime-db
     restart: unless-stopped
-
     labels:
-      yantr.app: "solidtime"
-      yantr.service: "Queue Worker"
+      yantr.app: solidtime
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   solidtime-db:
     image: postgres:17.3
     container_name: solidtime-db
@@ -87,27 +91,56 @@ services:
       - solidtime_db:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U solidtime"]
+      test:
+        - CMD-SHELL
+        - pg_isready -U solidtime
       interval: 10s
       timeout: 5s
       retries: 5
-
     labels:
-      yantr.app: "solidtime"
-      yantr.service: "Database"
+      yantr.app: solidtime
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   solidtime-gotenberg:
     image: gotenberg/gotenberg:8.14.0
     container_name: solidtime-gotenberg
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:3000/health
       interval: 30s
       timeout: 10s
       retries: 3
-
     labels:
-      yantr.app: "solidtime"
-      yantr.service: "PDF Service"
+      yantr.app: solidtime
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
 volumes:
-  solidtime_data:
-  solidtime_db:
+  solidtime_data: null
+  solidtime_db: null
+x-yantr:
+  name: Solidtime
+  tags:
+    - productivity
+    - time-tracking
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Time tracking with projects, clients, invoicing, and PDF invoice generation.
+  description: Solidtime is a time tracking application built with Laravel and
+    React. It includes project and client management, time entries, detailed
+    reports, team support, and invoice generation with PDF export. Perfect for
+    freelancers tracking billable hours or teams managing time across projects.
+  usecases:
+    - Track time on projects.
+    - Generate invoices for clients.
+    - Team time management.
+  website: https://www.solidtime.io/
+  logo: QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6
+  notes:
+    - Uses PostgreSQL database
+    - Invoice generation included
+    - Gotenberg for PDF generation
