@@ -1,0 +1,37 @@
+services:
+  web:
+    image: stonith404/pingvin-share:latest
+    container_name: pingvin-share
+    labels:
+      yantr.app: pingvin-share
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "3000"
+    volumes:
+      - pingvin_share_backend:/opt/app/backend/data
+      - pingvin_share_images:/opt/app/frontend/public/img
+volumes:
+  pingvin_share_backend: null
+  pingvin_share_images: null
+x-yantr:
+  name: Pingvin Share
+  tags:
+    - sharing
+    - files
+    - self-hosted
+    - upload
+    - links
+  short_description: Self-hosted file sharing with expirable links and password protection.
+  description: Pingvin Share is a self-hosted file sharing platform that lets you
+    create shareable links with expiration times, download limits, and password
+    protection. A privacy-focused alternative to WeTransfer and similar
+    services, with email notification support.
+  usecases:
+    - Share large files with temporary expirable links without cloud dependency.
+    - Send password-protected files to clients or colleagues securely.
+    - Receive file uploads from external users via reverse shares.
+  website: https://pingvin.share.moe
