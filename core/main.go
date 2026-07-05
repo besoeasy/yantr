@@ -521,21 +521,41 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 
 	cmdName, cmdArgs, err := getComposeCommand()
 	if err != nil {
+		shared.Log("error", "[deploy] compose command not found: "+err.Error())
 		jsonErr(w, 500, "COMPOSE_NOT_FOUND", err.Error())
 		return
 	}
 	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, docker.SocketPath)
 	args := append(cmdArgs, "-p", projectName, "-f", ref.ComposeFile, "up", "-d")
+	shared.Log("info", fmt.Sprintf("[deploy] starting: app=%s project=%s cmd=%s %s", body.AppID, projectName, cmdName, strings.Join(args, " ")))
 	stdout, stderr, exitCode, _ := spawnExec(cmdName, args, composeEnv, appPath)
+	if stdout != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
+			if line != "" {
+				shared.Log("info", "[deploy] "+line)
+			}
+		}
+	}
+	if stderr != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
+			if line != "" {
+				shared.Log("info", "[deploy] "+line)
+			}
+		}
+	}
 	if exitCode != 0 {
+		shared.Log("error", fmt.Sprintf("[deploy] FAILED: app=%s exit=%d", body.AppID, exitCode))
 		jsonErr(w, 500, "DEPLOYMENT_FAILED", coalesce(stderr, stdout))
 		return
 	}
+	shared.Log("info", fmt.Sprintf("[deploy] SUCCESS: app=%s project=%s", body.AppID, projectName))
 
 	// Reload Caddy so new yantr.caddy.* labels are picked up
 	if caddy.IsRunning() {
 		if reloadErr := caddy.ReloadCaddyConfig(); reloadErr != nil {
 			shared.Log("warn", "[deploy] caddy reload after deploy failed: "+reloadErr.Error())
+		} else {
+			shared.Log("info", "[deploy] caddy reloaded")
 		}
 	}
 
@@ -754,8 +774,24 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 			if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
 				env, _ := compose.GetComposeProcessEnv(appPath, project, docker.SocketPath)
 				args := append(cmdArgs, "-p", project, "-f", ref.ComposeFile, "down")
-				_, _, exitCode, _ := spawnExec(cmdName, args, env, appPath)
+				shared.Log("info", fmt.Sprintf("[container] removing stack: project=%s container=%s", project, name))
+				out, errStr, exitCode, _ := spawnExec(cmdName, args, env, appPath)
+				if out != "" {
+					for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+						if line != "" {
+							shared.Log("info", "[container] "+line)
+						}
+					}
+				}
+				if errStr != "" {
+					for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
+						if line != "" {
+							shared.Log("info", "[container] "+line)
+						}
+					}
+				}
 				if exitCode == 0 {
+					shared.Log("info", fmt.Sprintf("[container] stack removed: project=%s", project))
 					compose.DeleteProjectCompose(appPath, project)
 					jsonResp(w, 200, map[string]interface{}{
 						"success": true, "message": fmt.Sprintf("App stack '%s' removed successfully", project),
@@ -763,6 +799,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 					})
 					return
 				}
+				shared.Log("error", fmt.Sprintf("[container] compose down failed: project=%s exit=%d", project, exitCode))
 			}
 		}
 	}
@@ -808,8 +845,24 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 		if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
 			env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
 			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
+			shared.Log("info", fmt.Sprintf("[stack] removing: project=%s", projectID))
 			out, errStr, exitCode, err := spawnExec(cmdName, args, env, appPath)
+			if out != "" {
+				for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+					if line != "" {
+						shared.Log("info", "[stack] "+line)
+					}
+				}
+			}
+			if errStr != "" {
+				for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
+					if line != "" {
+						shared.Log("info", "[stack] "+line)
+					}
+				}
+			}
 			if exitCode == 0 {
+				shared.Log("info", fmt.Sprintf("[stack] removed: project=%s", projectID))
 				compose.DeleteProjectCompose(appPath, projectID)
 				jsonResp(w, 200, map[string]interface{}{
 					"success": true,
@@ -817,12 +870,10 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 					"removed": true,
 				})
 				return
-			} else {
-				shared.Log("error", fmt.Sprintf("Stack remove failed: %s\n%s\nexit=%d err=%v", out, errStr, exitCode, err))
-				shared.Log("error", fmt.Sprintf("docker compose down exit=%d err=%v", exitCode, err))
-				jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("docker compose down failed (exit %d)", exitCode))
-				return
 			}
+			shared.Log("error", fmt.Sprintf("[stack] compose down failed: project=%s exit=%d err=%v", projectID, exitCode, err))
+			jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("docker compose down failed (exit %d)", exitCode))
+			return
 		}
 	}
 
@@ -1362,29 +1413,72 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 404, "CONTAINERS_NOT_RUNNING", "None of the provided container IDs are currently running")
 		return
 	}
+	shared.Log("info", fmt.Sprintf("[update] running watchtower for containers: %s", strings.Join(names, ", ")))
 	stdout, stderr, exitCode, err := runWatchtower(names)
 	if err != nil {
+		shared.Log("error", "[update] watchtower error: "+err.Error())
 		jsonErr(w, 500, "AUTOUPDATE_FAILED", err.Error())
 		return
 	}
+	if stdout != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
+			if line != "" {
+				shared.Log("info", "[update] "+line)
+			}
+		}
+	}
+	if stderr != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
+			if line != "" {
+				shared.Log("info", "[update] "+line)
+			}
+		}
+	}
+	updated := strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated")
+	if updated {
+		shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(names, ", ")))
+	} else {
+		shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(names, ", "), exitCode))
+	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
 
-	// Very simple heuristic to detect if updates were found
-	if strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated") {
+	if updated {
 		telemetry.TrackUpdatesForContainers(names)
 	}
 }
 
 func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 	name := coalesce(os.Getenv("YANTR_CONTAINER_NAME"), "yantr")
+	shared.Log("info", "[update] self-update requested for container: "+name)
 	stdout, stderr, exitCode, err := runWatchtower([]string{name})
 	if err != nil {
+		shared.Log("error", "[update] self-update watchtower error: "+err.Error())
 		jsonErr(w, 500, "SELF_UPDATE_FAILED", err.Error())
 		return
 	}
+	if stdout != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
+			if line != "" {
+				shared.Log("info", "[update:self] "+line)
+			}
+		}
+	}
+	if stderr != "" {
+		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
+			if line != "" {
+				shared.Log("info", "[update:self] "+line)
+			}
+		}
+	}
+	updated := strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated")
+	if updated {
+		shared.Log("info", "[update:self] Yantr updated — restart may be required")
+	} else {
+		shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
+	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
-	
-	if strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated") {
+
+	if updated {
 		telemetry.TrackSelfUpdate(1, version)
 	}
 }
