@@ -1,0 +1,43 @@
+services:
+  jotty:
+    image: ghcr.io/fccview/jotty:1.20.0
+    container_name: jotty
+    labels:
+      yantr.app: jotty
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - jotty_data:/app/data
+      - jotty_config:/app/config
+      - jotty_cache:/app/.next/cache
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+volumes:
+  jotty_data: null
+  jotty_config: null
+  jotty_cache: null
+x-yantr:
+  name: Jotty
+  tags:
+    - productivity
+    - utility
+    - storage
+    - files
+    - task-manager
+  short_description: Lightweight checklists and notes app with Markdown support,
+    Kanban boards, and file-based storage.
+  description: Lightweight checklists and notes app with Markdown support, Kanban
+    boards, and file-based storage. Jotty is a self-hosted application focused
+    on productivity, utility, storage, files. It can be deployed on any device
+    via Docker Compose.
+  usecases:
+    - Self-host Jotty on your home server to lightweight checklists and notes
+      app with markdown support, kanban boards, and file-based storage without
+      depending on third-party cloud services.
+    - Use Jotty to manage your productivity workflows privately, keeping all
+      data under your control on local infrastructure.
+  website: https://github.com/fccview/jotty
+  logo: QmaCFEHEEBeqHMxCD3JKPx5AQJpoU4VFAXru85xRm5qeXV
