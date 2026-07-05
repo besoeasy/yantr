@@ -1,0 +1,172 @@
+services:
+  admin:
+    image: ghcr.io/crosstalk-solutions/project-nomad:v1.30.2
+    container_name: nomad_admin
+    labels:
+      yantr.app: project-nomad
+      yantr.service.8080: Command Center
+      yantr.port.8080: HTTP
+      yantr.service.9999: Container Logs
+      yantr.port.9999: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - project_nomad_storage:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+      - nomad_update_shared:/app/update-shared
+    environment:
+      TZ: ${TZ:-UTC}
+      NODE_ENV: production
+      PORT: 8080
+      LOG_LEVEL: info
+      APP_KEY: ${NOMAD_APP_KEY}
+      HOST: 0.0.0.0
+      URL: ${NOMAD_URL:-http://localhost:8080}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: nomad
+      DB_USER: nomad_user
+      DB_PASSWORD: ${NOMAD_DB_PASSWORD}
+      DB_NAME: nomad
+      DB_SSL: false
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - -f
+        - http://localhost:8080/api/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  mysql:
+    image: mysql:8.0
+    container_name: nomad_mysql
+    labels:
+      yantr.app: project-nomad
+      yantr.service.8080: Command Center
+      yantr.port.8080: HTTP
+      yantr.service.9999: Container Logs
+      yantr.port.9999: HTTP
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NOMAD_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: nomad
+      MYSQL_USER: nomad_user
+      MYSQL_PASSWORD: ${NOMAD_DB_PASSWORD}
+    volumes:
+      - project_nomad_mysql:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - mysqladmin
+        - ping
+        - -h
+        - localhost
+        - -u
+        - root
+        - -p${NOMAD_MYSQL_ROOT_PASSWORD}
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  redis:
+    image: redis:7-alpine
+    container_name: nomad_redis
+    labels:
+      yantr.app: project-nomad
+      yantr.service.8080: Command Center
+      yantr.port.8080: HTTP
+      yantr.service.9999: Container Logs
+      yantr.port.9999: HTTP
+    volumes:
+      - project_nomad_redis:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  dozzle:
+    image: amir20/dozzle:v10.0
+    container_name: nomad_dozzle
+    labels:
+      yantr.app: project-nomad
+      yantr.service.8080: Command Center
+      yantr.port.8080: HTTP
+      yantr.service.9999: Container Logs
+      yantr.port.9999: HTTP
+    ports:
+      - "9999"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOZZLE_ENABLE_ACTIONS: "false"
+      DOZZLE_ENABLE_SHELL: "false"
+    restart: unless-stopped
+  updater:
+    image: ghcr.io/crosstalk-solutions/project-nomad-sidecar-updater:v1.30.2
+    container_name: nomad_updater
+    labels:
+      yantr.app: project-nomad
+      yantr.service.8080: Command Center
+      yantr.port.8080: HTTP
+      yantr.service.9999: Container Logs
+      yantr.port.9999: HTTP
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - project_nomad_storage:/opt/project-nomad
+      - nomad_update_shared:/shared
+    restart: unless-stopped
+volumes:
+  project_nomad_storage: null
+  project_nomad_mysql: null
+  project_nomad_redis: null
+  nomad_update_shared: null
+x-yantr:
+  name: Project N.O.M.A.D.
+  tags:
+    - offline
+    - survival
+    - self-hosted
+    - docker
+    - ai
+  short_description: Self-contained offline survival computer with AI, knowledge
+    base, and essential tools.
+  description: Project N.O.M.A.D. is a self-contained offline survival computer
+    with AI chat, offline Wikipedia (Kiwix), Khan Academy courses (Kolibri),
+    maps, data tools, notes, and system benchmarking. Perfect for offline use.
+  usecases:
+    - Run AI chat and document search completely offline with local LLMs.
+    - Access Wikipedia, medical references, and educational content without
+      internet.
+    - Use as a self-contained survival computer for emergency preparedness.
+    - Host a private, secure knowledge base for offline use.
+  website: https://www.projectnomad.us
+  logo: QmTWne8qF7iFEo6oG3VJaUXY5veCD9Q7aDXSg1V5Jyz2Ai
+  notes:
+    - Requires Docker socket access for container orchestration.
+    - Minimum 4GB RAM for base installation; 32GB recommended for AI tools.
+    - Contains no telemetry - fully offline capable after initial install.
+    - No built-in authentication - use network-level controls for multi-user
+      access.
+  env_generators:
+    NOMAD_APP_KEY:
+      length: 48
+      charset: alnum_symbols
+    NOMAD_DB_PASSWORD:
+      length: 32
+      charset: alnum_symbols
+    NOMAD_MYSQL_ROOT_PASSWORD:
+      length: 32
+      charset: alnum_symbols
