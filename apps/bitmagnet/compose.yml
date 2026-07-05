@@ -1,25 +1,3 @@
-x-yantr:
-  name: "Bitmagnet"
-  logo: "QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP"
-  tags: [torrent, indexer, crawler, servarr, search]
-  short_description: "Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine."
-  description: >
-    Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content classifier,
-    and torrent search engine with a web UI. It crawls the DHT network to discover
-    and index torrents, enabling powerful search and Servarr integration without relying
-    on external trackers.
-  usecases:
-    [
-      "Index and search torrents across the DHT network without relying on public torrent sites.",
-      "Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for automated media acquisition.",
-    ]
-  website: "https://bitmagnet.io"
-  notes:
-    [
-      "The Web UI runs on port 3333. Access it via a reverse proxy or deploy directly via Yantr.",
-      "DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your firewall for effective peer discovery.",
-    ]
-
 services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest
@@ -28,8 +6,8 @@ services:
     stop_grace_period: 1m
     ports:
       - "3333"
-      - "3334/tcp"
-      - "3334/udp"
+      - 3334/tcp
+      - 3334/udp
     environment:
       HOME: /tmp
       XDG_CONFIG_HOME: /config
@@ -49,10 +27,9 @@ services:
       postgres:
         condition: service_healthy
     labels:
-      yantr.app: "bitmagnet"
-      yantr.service.3333: "Web UI"
-      yantr.port.3333: "HTTP"
-
+      yantr.app: bitmagnet
+      yantr.service.3333: Web UI
+      yantr.port.3333: HTTP
   postgres:
     image: postgres:16-alpine
     container_name: bitmagnet_postgres
@@ -65,14 +42,45 @@ services:
     volumes:
       - bitmagnet_db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test:
+        - CMD-SHELL
+        - pg_isready -U postgres
       start_period: 20s
       interval: 10s
     labels:
-      yantr.app: "bitmagnet"
-      yantr.service.5432: "Database"
-      yantr.port.5432: "TCP"
-
+      yantr.app: bitmagnet
+      yantr.service.3333: Web UI
+      yantr.port.3333: HTTP
 volumes:
-  bitmagnet_config:
-  bitmagnet_db:
+  bitmagnet_config: null
+  bitmagnet_db: null
+x-yantr:
+  name: Bitmagnet
+  tags:
+    - torrent
+    - dht
+    - indexer
+    - search
+    - crawler
+  short_description: Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine.
+  description: Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content
+    classifier, and torrent search engine with a web UI. It crawls the DHT
+    network to discover and index torrents, enabling powerful search and Servarr
+    integration without relying on external trackers.
+  usecases:
+    - Index and search torrents across the DHT network without relying on public
+      torrent sites.
+    - Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for
+      automated media acquisition.
+  website: https://bitmagnet.io
+  logo: QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP
+  notes:
+    - Bitmagnet bundles its own PostgreSQL instance — no separate database setup
+      is required.
+    - The Web UI runs on port 3333 but is not published to the host by default.
+      Access it via a reverse proxy or change the port mapping in compose.yml.
+    - DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your
+      firewall for effective peer discovery.
+    - The default PostgreSQL password is `postgresx`. Change the
+      `POSTGRES_PASSWORD` environment variable in compose.yml before deploying
+      in a production environment.
