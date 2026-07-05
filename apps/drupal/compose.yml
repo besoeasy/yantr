@@ -1,0 +1,35 @@
+services:
+  drupal:
+    image: drupal:latest
+    container_name: drupal
+    labels:
+      yantr.app: drupal
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - drupal_html:/var/www/html
+    restart: unless-stopped
+volumes:
+  drupal_html: null
+x-yantr:
+  name: Drupal
+  tags:
+    - cms
+    - productivity
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Powerful open-source content management system for building websites.
+  description: Powerful open-source content management system for building
+    websites. Drupal is a self-hosted application focused on cms, productivity,
+    self-hosted, homelab. It can be deployed on any device via Docker Compose.
+  usecases:
+    - Self-host Drupal on your home server to powerful open-source content
+      management system for building websites without depending on third-party
+      cloud services.
+    - Use Drupal to manage your cms workflows privately, keeping all data under
+      your control on local infrastructure.
+  website: https://github.com/drupal/drupal
+  logo: QmXryrL9jF3YL37TEs7eZRsv5mvDyUYSkWdPrEDKE8GM8k
