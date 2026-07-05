@@ -10,7 +10,7 @@ import { useYantrAuth } from './composables/useYantrAuth';
 const route = useRoute();
 const { locale, t } = useI18n();
 const { authState, bootstrapYantrAuth } = useYantrAuth();
-const theme = ref("light");
+const theme = ref("dark");
 const showLanguageMenu = ref(false);
 const languageMenuRef = ref(null);
 const mobileLanguageMenuRef = ref(null);
@@ -64,8 +64,8 @@ const handleOutsideClick = (e) => {
 
 onMounted(() => {
   const stored = localStorage.getItem("yantr-theme");
-  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  setTheme(stored || (prefersDark ? "dark" : "light"));
+  const prefersLight = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches;
+  setTheme(stored || (prefersLight ? "light" : "dark"));
   bootstrapYantrAuth();
 
   // Auto-detect browser language on first visit
