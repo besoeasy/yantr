@@ -8,11 +8,11 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const websiteDir = path.join(__dirname, 'website');
+const websiteDir = path.join(__dirname, '..', 'website');
 const templatesDir = path.join(websiteDir, 'templates');
 const appsJsonPath = path.join(websiteDir, 'apps.json');
 const appsOutputDir = path.join(websiteDir, 'apps');
-const appsDir = path.join(__dirname, 'apps');
+const appsDir = path.join(__dirname, '..', 'apps');
 const siteUrl = 'https://yantr.org';
 
 function normaliseLabels(raw) {
