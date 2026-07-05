@@ -1,0 +1,41 @@
+services:
+  app:
+    image: koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    labels:
+      yantr.app: zigbee2mqtt
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8080"
+    volumes:
+      - zigbee2mqtt_data:/app/data
+    privileged: true
+    restart: unless-stopped
+volumes:
+  zigbee2mqtt_data: null
+x-yantr:
+  name: Zigbee2MQTT
+  tags:
+    - zigbee
+    - mqtt
+    - iot
+    - smart-home
+    - home-automation
+  short_description: Bridge Zigbee devices to MQTT without proprietary hubs.
+  description: Zigbee2MQTT bridges your Zigbee devices to MQTT, allowing them to
+    work with any home automation platform without vendor lock-in. Supports
+    3000+ Zigbee devices from brands like Philips Hue, IKEA, Aqara, and more.
+    Requires a Zigbee USB coordinator.
+  usecases:
+    - Connect Zigbee sensors, bulbs, and switches directly to MQTT.
+    - Integrate hundreds of Zigbee devices with Home Assistant via MQTT.
+    - Eliminate cloud dependency for Zigbee smart home devices.
+  website: https://www.zigbee2mqtt.io
+  notes:
+    - A Zigbee USB coordinator (e.g., ConBee II, CC2652) must be attached to the
+      host.
+    - Configure the coordinator USB path in /app/data/configuration.yaml after
+      install.
