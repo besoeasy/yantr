@@ -1,0 +1,54 @@
+services:
+  dropgate-server:
+    image: willtda/dropgate-server:latest
+    pull_policy: always
+    container_name: dropgate-server
+    labels:
+      yantr.app: dropgate-server
+      yantr.service.52443: Dropgate Server Backend
+      yantr.port.52443: HTTP
+    ports:
+      - "52443"
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-52443}
+      SERVER_NAME: ${SERVER_NAME:-Dropgate Server}
+      ENABLE_WEB_UI: ${ENABLE_WEB_UI:-true}
+      ENABLE_UPLOAD: ${ENABLE_UPLOAD:-false}
+      UPLOAD_ENABLE_E2EE: ${UPLOAD_ENABLE_E2EE:-true}
+      UPLOAD_PRESERVE_UPLOADS: ${UPLOAD_PRESERVE_UPLOADS:-false}
+      UPLOAD_MAX_FILE_SIZE_MB: ${UPLOAD_MAX_FILE_SIZE_MB:-100}
+      UPLOAD_MAX_STORAGE_GB: ${UPLOAD_MAX_STORAGE_GB:-10}
+      UPLOAD_MAX_FILE_LIFETIME_HOURS: ${UPLOAD_MAX_FILE_LIFETIME_HOURS:-24}
+      UPLOAD_MAX_FILE_DOWNLOADS: ${UPLOAD_MAX_FILE_DOWNLOADS:-1}
+      ENABLE_P2P: ${ENABLE_P2P:-true}
+    volumes:
+      - dropgate_uploads:/usr/src/app/uploads
+    restart: unless-stopped
+volumes:
+  dropgate_uploads: null
+x-yantr:
+  name: Dropgate Server
+  tags:
+    - tools
+    - privacy
+    - storage
+    - files
+    - utility
+  short_description: Privacy-first self-hosted file sharing with hosted upload and P2P transfer.
+  description: Dropgate Server is the official backend and reference
+    implementation for secure, privacy-focused file sharing using the Dropgate
+    DGUP and DGDTP protocols. It ships a web UI for browser-based transfers and
+    supports native clients on Windows, Mac, and Linux for direct P2P
+    connections.
+  usecases:
+    - Create your own private and secure self-hosted file transfer system that
+      you run on your own terms.
+    - Access the Web UI to use Dropgate in your browser, or download the
+      official native Dropgate Client app to connect to Dropgate Servers from
+      Windows, Mac, and Linux.
+    - Set up a reverse proxy or tunnel to allow global access to your Dropgate
+      Server from anywhere.
+    - Harness the power of the @dropgate/core TypeScript library to integrate
+      Dropgate into your own IT infrastructure and workflows.
+  website: https://diamonddigital.dev/projects/dropgate
+  logo: bafkreiabgxumoblpm3gfzhj5ucbxh36dyq2d3qg3pm2twbsuerp2c4ot6q
