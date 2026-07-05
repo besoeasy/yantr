@@ -11,7 +11,8 @@ services:
       - mattermost_pgdata:/var/lib/postgresql/data
     labels:
       yantr.app: mattermost
-      yantr.service: db
+      yantr.service.8065: Web UI
+      yantr.port.8065: HTTP
   app:
     image: mattermost/mattermost-team-edition:latest
     container_name: mattermost-app
@@ -20,7 +21,8 @@ services:
       - db
     labels:
       yantr.app: mattermost
-      yantr.service: Web UI
+      yantr.service.8065: Web UI
+      yantr.port.8065: HTTP
     ports:
       - "8065"
     environment:
@@ -41,3 +43,25 @@ volumes:
   mattermost_logs: null
   mattermost_plugins: null
   mattermost_client_plugins: null
+x-yantr:
+  name: Mattermost
+  tags:
+    - messaging
+    - team-chat
+    - collaboration
+    - communication
+    - self-hosted
+  short_description: Open-source team messaging and collaboration platform.
+  description: Mattermost is an open-source, self-hosted team messaging platform
+    built for enterprise. It provides secure channels, direct messaging, file
+    sharing, integrations, playbooks for incident management, and a marketplace
+    of plugins for extending functionality.
+  usecases:
+    - Replace Slack with a private, self-hosted team messaging platform.
+    - Coordinate incident response using Mattermost Playbooks.
+    - Integrate with DevOps tools like GitHub, Jira, and Jenkins.
+  website: https://mattermost.com
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
