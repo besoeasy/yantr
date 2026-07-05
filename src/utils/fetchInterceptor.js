@@ -30,7 +30,7 @@ function shouldAttachAuth(url) {
   return !PUBLIC_PATHS.has(pathname)
 }
 
-export function installYantrFetchAuth({ getSecretHex, onUnauthorized }) {
+export function installYantrFetchAuth({ getPrivateKeyHex, onUnauthorized }) {
   if (fetchInstalled || typeof window === 'undefined') return
 
   nativeFetch = window.fetch.bind(window)
@@ -40,12 +40,12 @@ export function installYantrFetchAuth({ getSecretHex, onUnauthorized }) {
       return nativeFetch(input, init)
     }
 
-    const secretHex = getSecretHex()
-    if (!secretHex) {
+    const privateKeyHex = getPrivateKeyHex()
+    if (!privateKeyHex) {
       return nativeFetch(input, init)
     }
 
-    const token   = await createToken(secretHex)
+    const token   = await createToken(privateKeyHex)
     const headers = new Headers(
       init?.headers
         || (input instanceof Request ? input.headers : undefined)

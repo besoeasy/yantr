@@ -1,28 +1,27 @@
 /**
  * useYantrAuth.js
  *
- * Auth composable using browser SubtleCrypto (HMAC-SHA256 JWT) instead of daku.
+ * Auth composable using secp256k1 keypair auth.
  *
- * Token format: base64url(header).base64url(payload).base64url(signature)
- *   header:  {"alg":"HS256","typ":"JWT"}
- *   payload: {"sub":"<username>","iat":<unix>,"exp":<unix+1h>}
- *   signature: HMAC-SHA256(header.payload, 32-byte key)
+ * Key derivation: sha256(password:pin) iterated → secp256k1 private key
+ * Auth token: base64(JSON{ publickey, signature, message:"timestamp:nonce" })
  *
- * This is fully compatible with the Go core/auth package.
- * The 32-byte key (secretHex) is stored in localStorage and sent once to the
- * server during setup. All subsequent tokens are signed client-side.
+ * Setup: derive private key → extract public key → POST /api/setup/admin { publicKeyHex }
+ * Login: derive private key → sign token → POST /api/auth/login with Bearer token
+ *
+ * Compatible with the Go core/auth package.
  */
 import { reactive, readonly } from 'vue'
-import { generateDeterministicSecretHex, createToken } from '../utils/crypto.js'
+import { derivePrivateKey, getPublicKey, createToken } from '../utils/crypto.js'
 import { installYantrFetchAuth, nativeFetch } from '../utils/fetchInterceptor.js'
 
-export const SECRET_KEY_STORAGE = 'yantr-secret-key'   // 64-char hex, 32 bytes
+export const PRIVATE_KEY_STORAGE = 'yantr-private-key'  // 64-char hex, 32 bytes
 
 const authState = reactive({
   booting:       true,
   configured:    false,
   authenticated: false,
-  secretHex:     '',   // 64 hex chars (32 bytes)
+  privateKeyHex: '',
   error:         '',
 })
 
@@ -30,19 +29,19 @@ let bootstrapPromise = null
 
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
-function getStoredSecretHex() {
-  return sessionStorage.getItem(SECRET_KEY_STORAGE) || ''
+function getStoredPrivateKeyHex() {
+  return sessionStorage.getItem(PRIVATE_KEY_STORAGE) || ''
 }
 
-function storeIdentity(secretHex) {
-  authState.secretHex = secretHex
-  sessionStorage.setItem(SECRET_KEY_STORAGE, secretHex)
+function storeIdentity(privateKeyHex) {
+  authState.privateKeyHex = privateKeyHex
+  sessionStorage.setItem(PRIVATE_KEY_STORAGE, privateKeyHex)
 }
 
 function clearStoredIdentity() {
-  authState.secretHex    = ''
-  authState.authenticated = false
-  sessionStorage.removeItem(SECRET_KEY_STORAGE)
+  authState.privateKeyHex = ''
+  authState.authenticated  = false
+  sessionStorage.removeItem(PRIVATE_KEY_STORAGE)
 }
 
 function setUnauthenticated(message = '') {
@@ -52,8 +51,8 @@ function setUnauthenticated(message = '') {
 
 // ─── Login ────────────────────────────────────────────────────────────────────
 
-async function loginWithSecret(secretHex) {
-  const token    = await createToken(secretHex)
+async function loginWithPrivateKey(privateKeyHex) {
+  const token    = await createToken(privateKeyHex)
   const response = await nativeFetch('/api/auth/login', {
     method:  'POST',
     headers: { Authorization: `Bearer ${token}` },
@@ -64,7 +63,7 @@ async function loginWithSecret(secretHex) {
   }
   authState.authenticated = true
   authState.error         = ''
-  storeIdentity(secretHex)
+  storeIdentity(privateKeyHex)
   return data || null
 }
 
@@ -72,7 +71,7 @@ async function loginWithSecret(secretHex) {
 
 export async function bootstrapYantrAuth() {
   installYantrFetchAuth({
-    getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+    getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
     onUnauthorized: (status) => {
       clearStoredIdentity()
       authState.booting    = false
@@ -97,15 +96,15 @@ export async function bootstrapYantrAuth() {
       return
     }
 
-    const secretHex = getStoredSecretHex()
-    if (!secretHex) {
+    const privateKeyHex = getStoredPrivateKeyHex()
+    if (!privateKeyHex) {
       setUnauthenticated('')
       authState.booting = false
       return
     }
 
     try {
-      await loginWithSecret(secretHex)
+      await loginWithPrivateKey(privateKeyHex)
     } catch {
       clearStoredIdentity()
       setUnauthenticated('Sign in to unlock Yantr.')
@@ -124,9 +123,9 @@ export async function bootstrapYantrAuth() {
 // ─── Token Generation for External Use ────────────────────────────────────────
 
 export async function generateAuthToken() {
-  const secretHex = authState.secretHex || getStoredSecretHex()
-  if (!secretHex) return null
-  return await createToken(secretHex)
+  const privateKeyHex = authState.privateKeyHex || getStoredPrivateKeyHex()
+  if (!privateKeyHex) return null
+  return await createToken(privateKeyHex)
 }
 
 export function openVolumeBrowser(volumeName) {
@@ -140,7 +139,7 @@ export function openVolumeBrowser(volumeName) {
 export async function setupYantrAdmin({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
-      getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+      getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false
@@ -152,13 +151,14 @@ export async function setupYantrAdmin({ password, pin }) {
 
   if (!password || !pin) throw new Error('Password and PIN are required')
 
-  // Generate a deterministic 32-byte key
-  const secretHex = await generateDeterministicSecretHex(password, pin)
+  // Derive deterministic private key from password + pin
+  const privateKeyHex = await derivePrivateKey(password, pin)
+  const publicKeyHex  = getPublicKey(privateKeyHex)
 
   const response = await nativeFetch('/api/setup/admin', {
     method:  'POST',
     headers: { 'Content-Type': 'application/json' },
-    body:    JSON.stringify({ secretHex }),
+    body:    JSON.stringify({ publicKeyHex }),
   })
   const data = await response.json().catch(() => ({}))
 
@@ -167,19 +167,19 @@ export async function setupYantrAdmin({ password, pin }) {
   }
 
   authState.configured = true
-  // Login immediately using the freshly generated key
-  await loginWithSecret(secretHex)
+  // Login immediately using the freshly derived private key
+  await loginWithPrivateKey(privateKeyHex)
 }
 
-// ─── Login (by user re-entering their username+key or password-derived) ───────
+// ─── Login ────────────────────────────────────────────────────────────────────
 
 /**
- * loginYantr — login by generating the key from password and pin.
+ * loginYantr — derive private key from password + pin and sign a token.
  */
 export async function loginYantr({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
-      getSecretHex: () => authState.secretHex || getStoredSecretHex(),
+      getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false
@@ -190,10 +190,9 @@ export async function loginYantr({ password, pin }) {
   }
 
   if (!password || !pin) throw new Error('Password and PIN are required')
-  
-  const secretHex = await generateDeterministicSecretHex(password, pin)
 
-  await loginWithSecret(secretHex)
+  const privateKeyHex = await derivePrivateKey(password, pin)
+  await loginWithPrivateKey(privateKeyHex)
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

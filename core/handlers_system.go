@@ -138,12 +138,12 @@ func handleSetupStatus(w http.ResponseWriter, r *http.Request) {
 
 func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		SecretHex string `json:"secretHex"`
+		PublicKeyHex string `json:"publicKeyHex"`
 	}
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	_, err := auth.SaveAuthConfig(body.SecretHex)
+	_, err := auth.SaveAuthConfig(body.PublicKeyHex)
 	if err != nil {
 		if errors.Is(err, auth.ErrAlreadyConfigured) {
 			jsonErr(w, 409, "SETUP_ALREADY_CONFIGURED", "Yantr is already configured")

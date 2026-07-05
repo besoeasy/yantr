@@ -1,35 +1,43 @@
-// Package auth provides stateless token verification for Yantr.
+// Package auth provides stateless secp256k1 token verification for Yantr.
 //
-// Token format (replaces daku):
+// Token format:
 //
-//	A JWT-like structure: base64url(header).base64url(payload).base64url(signature)
-//	- Header: {"alg":"HS256","typ":"JWT"}
-//	- Payload: {"sub":"<username>","iat":<unix>,"exp":<unix>}
-//	- Signature: HMAC-SHA256(header.payload, secret)
+//	base64(JSON{ publickey, signature, message, timestamp, nonce })
+//	  - publickey: compressed secp256k1 public key, hex-encoded (66 chars)
+//	  - message:   "{timestamp}:{nonce}"
+//	  - signature: secp256k1 compact signature over sha256(message), hex-encoded
+//	  - timestamp: Unix milliseconds (JS Date.now())
+//	  - nonce:     random 16-byte hex string
 //
-// The secret is a 32-byte random value stored in /data/auth.json.
-// The frontend generates tokens using browser SubtleCrypto (importKey + sign with
-// the same HS256/HMAC-SHA256 algorithm), so no custom crypto library is needed.
+// The server stores only the admin public key (no secret).
+// Tokens are valid for 1 minute (timestamp checked server-side).
+//
+// Configuration:
+//
+//	Env var:   YANTR_ADMIN_PUBLIC_KEY (66-char hex, compressed secp256k1)
+//	File:      /data/auth.json         { "publicKeyHex": "..." }
 //
 // Setup flow:
 //
-//	POST /api/setup/admin  { username, secret (hex-encoded 32-byte key) }
+//	POST /api/setup/admin  { publicKeyHex }
 //	→ saves to /data/auth.json
 //
 // Login flow:
 //
-//	The client signs { sub: username, iat, exp } with its stored secret key,
-//	sends as Bearer token. Server verifies HMAC and timestamp.
+//	Client signs { message: "timestamp:nonce" } with private key,
+//	sends base64 JSON as Bearer token. Server verifies secp256k1 signature
+//	and checks timestamp is within 1 minute.
 package auth
 
 import (
-	"crypto/hmac"
+	"crypto/elliptic"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math/big"
 	"os"
 	"path/filepath"
 	"strings"
@@ -39,8 +47,8 @@ import (
 
 // AuthConfig holds the persisted auth configuration.
 type AuthConfig struct {
-	SecretHex string `json:"secretHex"` // 32-byte HMAC key, hex-encoded
-	CreatedAt string `json:"createdAt,omitempty"`
+	PublicKeyHex string `json:"publicKeyHex"` // compressed secp256k1 pubkey, 66 hex chars
+	CreatedAt    string `json:"createdAt,omitempty"`
 }
 
 // ErrAlreadyConfigured is returned by SaveAuthConfig when an admin already exists.
@@ -48,9 +56,9 @@ var ErrAlreadyConfigured = errors.New("admin is already configured")
 
 var (
 	mu           sync.RWMutex
-	setupMu      sync.Mutex // serialises the check-then-write in SaveAuthConfig
+	setupMu      sync.Mutex
 	cachedConfig *AuthConfig
-	memoryConfig *AuthConfig // set after first successful setup in same process
+	memoryConfig *AuthConfig
 )
 
 var dataDir = func() string {
@@ -66,7 +74,6 @@ func authFilePath() string {
 
 // LoadAuthConfig returns the current auth configuration (env → memory → file).
 func LoadAuthConfig(forceRefresh bool) (*AuthConfig, error) {
-	// 1. Env var override
 	if cfg := readEnvAuthConfig(); cfg != nil {
 		return cfg, nil
 	}
@@ -88,19 +95,18 @@ func LoadAuthConfig(forceRefresh bool) (*AuthConfig, error) {
 }
 
 func readEnvAuthConfig() *AuthConfig {
-	secretHex := os.Getenv("YANTR_AUTH_SECRET")
-	if secretHex == "" {
-		secretHex = os.Getenv("YANTR_SECRET")
-	}
-	if len(secretHex) != 64 { // 32 bytes = 64 hex chars
+	pubKeyHex := os.Getenv("YANTR_ADMIN_PUBLIC_KEY")
+	if pubKeyHex == "" {
 		return nil
 	}
-	if _, err := hex.DecodeString(secretHex); err != nil {
+	pubKeyHex = strings.ToLower(strings.TrimSpace(pubKeyHex))
+	if len(pubKeyHex) != 66 {
 		return nil
 	}
-	return &AuthConfig{
-		SecretHex: strings.ToLower(secretHex),
+	if _, err := hex.DecodeString(pubKeyHex); err != nil {
+		return nil
 	}
+	return &AuthConfig{PublicKeyHex: pubKeyHex}
 }
 
 func readAuthFile(forceRefresh bool) (*AuthConfig, error) {
@@ -116,11 +122,12 @@ func readAuthFile(forceRefresh bool) (*AuthConfig, error) {
 	if err := json.Unmarshal(data, &cfg); err != nil {
 		return nil, err
 	}
-	if len(cfg.SecretHex) != 64 {
-		return nil, fmt.Errorf("invalid secretHex length in auth.json")
+	cfg.PublicKeyHex = strings.ToLower(strings.TrimSpace(cfg.PublicKeyHex))
+	if len(cfg.PublicKeyHex) != 66 {
+		return nil, fmt.Errorf("invalid publicKeyHex length in auth.json")
 	}
-	if _, err := hex.DecodeString(cfg.SecretHex); err != nil {
-		return nil, fmt.Errorf("invalid secretHex in auth.json: %w", err)
+	if _, err := hex.DecodeString(cfg.PublicKeyHex); err != nil {
+		return nil, fmt.Errorf("invalid publicKeyHex in auth.json: %w", err)
 	}
 
 	mu.Lock()
@@ -131,16 +138,13 @@ func readAuthFile(forceRefresh bool) (*AuthConfig, error) {
 }
 
 // SaveAuthConfig persists a new auth configuration.
-// It is safe for concurrent callers: the existence check and the write happen
-// inside a single mutex so two simultaneous requests cannot both succeed.
-func SaveAuthConfig(secretHex string) (*AuthConfig, error) {
+func SaveAuthConfig(publicKeyHex string) (*AuthConfig, error) {
 	setupMu.Lock()
 	defer setupMu.Unlock()
 
 	if readEnvAuthConfig() != nil {
 		return nil, fmt.Errorf("auth is managed by environment variable")
 	}
-	// Authoritative check inside the lock.
 	if existing, _ := readAuthFile(false); existing != nil {
 		return nil, ErrAlreadyConfigured
 	}
@@ -151,18 +155,17 @@ func SaveAuthConfig(secretHex string) (*AuthConfig, error) {
 		return nil, ErrAlreadyConfigured
 	}
 
-	secretHex = strings.ToLower(strings.TrimSpace(secretHex))
-
-	if len(secretHex) != 64 {
-		return nil, fmt.Errorf("secretHex must be a 64-character hex string (32 bytes)")
+	publicKeyHex = strings.ToLower(strings.TrimSpace(publicKeyHex))
+	if len(publicKeyHex) != 66 {
+		return nil, fmt.Errorf("publicKeyHex must be a 66-character hex string (33 bytes compressed)")
 	}
-	if _, err := hex.DecodeString(secretHex); err != nil {
-		return nil, fmt.Errorf("secretHex is not valid hex: %w", err)
+	if _, err := hex.DecodeString(publicKeyHex); err != nil {
+		return nil, fmt.Errorf("publicKeyHex is not valid hex: %w", err)
 	}
 
 	cfg := &AuthConfig{
-		SecretHex: secretHex,
-		CreatedAt: time.Now().UTC().Format(time.RFC3339),
+		PublicKeyHex: publicKeyHex,
+		CreatedAt:    time.Now().UTC().Format(time.RFC3339),
 	}
 
 	data, err := json.Marshal(cfg)
@@ -185,58 +188,183 @@ func SaveAuthConfig(secretHex string) (*AuthConfig, error) {
 	return cfg, nil
 }
 
-// jwtHeader is the standard HS256 header, base64url-encoded (no padding).
-var jwtHeader = base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"HS256","typ":"JWT"}`))
+// authToken is the JSON structure sent by the frontend as a Bearer token (base64-encoded).
+type authToken struct {
+	PublicKey string `json:"publickey"`
+	Signature string `json:"signature"`
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+	Nonce     string `json:"nonce"`
+}
 
-// VerifyToken verifies a HS256 JWT-style token against the stored secret.
+// VerifyToken verifies a secp256k1 auth token against the stored public key.
 func VerifyToken(token string, cfg *AuthConfig) error {
-	parts := strings.Split(token, ".")
-	if len(parts) != 3 {
+	// Decode base64
+	decoded, err := base64.StdEncoding.DecodeString(token)
+	if err != nil {
+		// Try RawStdEncoding (no padding)
+		decoded, err = base64.RawStdEncoding.DecodeString(token)
+		if err != nil {
+			return fmt.Errorf("invalid token encoding")
+		}
+	}
+
+	var tok authToken
+	if err := json.Unmarshal(decoded, &tok); err != nil {
 		return fmt.Errorf("invalid token format")
 	}
 
-	header, payloadB64, sigB64 := parts[0], parts[1], parts[2]
-	if header != jwtHeader {
-		return fmt.Errorf("invalid token header")
+	if tok.PublicKey == "" || tok.Signature == "" || tok.Message == "" {
+		return fmt.Errorf("missing token fields")
 	}
 
-	// Verify signature
-	key, err := hex.DecodeString(cfg.SecretHex)
-	if err != nil {
-		return fmt.Errorf("server auth misconfigured")
+	// Check the public key matches the configured admin key
+	if strings.ToLower(tok.PublicKey) != strings.ToLower(cfg.PublicKeyHex) {
+		return fmt.Errorf("unknown public key")
 	}
 
-	mac := hmac.New(sha256.New, key)
-	mac.Write([]byte(header + "." + payloadB64))
-	expectedSig := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-
-	if !hmac.Equal([]byte(sigB64), []byte(expectedSig)) {
-		return fmt.Errorf("invalid token signature")
+	// Check timestamp (stored in milliseconds from JS Date.now())
+	nowMs := time.Now().UnixMilli()
+	maxAgeMs := int64(60 * 1000) // 1 minute
+	if tok.Timestamp <= 0 || abs64(nowMs-tok.Timestamp) > maxAgeMs {
+		return fmt.Errorf("token expired or clock skew too large")
 	}
 
-	// Decode payload
-	payloadData, err := base64.RawURLEncoding.DecodeString(payloadB64)
-	if err != nil {
-		return fmt.Errorf("invalid token payload encoding")
-	}
-
-	var payload struct {
-		Exp int64 `json:"exp"`
-		Iat int64 `json:"iat"`
-	}
-	if err := json.Unmarshal(payloadData, &payload); err != nil {
-		return fmt.Errorf("invalid token payload")
-	}
-
-	now := time.Now().Unix()
-	if payload.Exp > 0 && now > payload.Exp {
-		return fmt.Errorf("token expired")
-	}
-	if payload.Iat > now+60 { // allow 60s clock skew
-		return fmt.Errorf("token issued in the future")
+	// Verify the signature: secp256k1 over sha256(message)
+	msgHash := sha256.Sum256([]byte(tok.Message))
+	if err := verifySecp256k1(tok.PublicKey, tok.Signature, msgHash[:]); err != nil {
+		return fmt.Errorf("invalid signature: %w", err)
 	}
 
 	return nil
+}
+
+func abs64(x int64) int64 {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+// verifySecp256k1 verifies a compact secp256k1 signature (64 bytes, r||s) over msgHash.
+// Uses manual ECDSA verification with the secp256k1 curve parameters.
+func verifySecp256k1(pubKeyHex, sigHex string, msgHash []byte) error {
+	pubBytes, err := hex.DecodeString(pubKeyHex)
+	if err != nil {
+		return fmt.Errorf("invalid pubkey hex")
+	}
+	sigBytes, err := hex.DecodeString(sigHex)
+	if err != nil {
+		return fmt.Errorf("invalid signature hex")
+	}
+	if len(sigBytes) != 64 {
+		return fmt.Errorf("signature must be 64 bytes (compact r||s)")
+	}
+
+	curve := secp256k1Curve()
+	x, y := decompressPoint(curve, pubBytes)
+	if x == nil {
+		return fmt.Errorf("invalid compressed public key")
+	}
+
+	r := new(big.Int).SetBytes(sigBytes[:32])
+	s := new(big.Int).SetBytes(sigBytes[32:])
+
+	// Manual ECDSA verification:
+	// w = s⁻¹ mod n
+	// u1 = hash·w mod n
+	// u2 = r·w mod n
+	// (x1,y1) = u1·G + u2·Q
+	// valid if x1 mod n == r
+	n := curve.Params().N
+	if r.Sign() <= 0 || r.Cmp(n) >= 0 {
+		return fmt.Errorf("r out of range")
+	}
+	if s.Sign() <= 0 || s.Cmp(n) >= 0 {
+		return fmt.Errorf("s out of range")
+	}
+
+	w := new(big.Int).ModInverse(s, n)
+	hashInt := new(big.Int).SetBytes(msgHash)
+	u1 := new(big.Int).Mul(hashInt, w)
+	u1.Mod(u1, n)
+	u2 := new(big.Int).Mul(r, w)
+	u2.Mod(u2, n)
+
+	// u1·G
+	x1, y1 := curve.ScalarBaseMult(u1.Bytes())
+	// u2·Q
+	x2, y2 := curve.ScalarMult(x, y, u2.Bytes())
+	// add
+	rx, _ := curve.Add(x1, y1, x2, y2)
+	rx.Mod(rx, n)
+
+	if rx.Cmp(r) != 0 {
+		return fmt.Errorf("signature verification failed")
+	}
+	return nil
+}
+
+// decompressPoint decompresses a SEC1 compressed point (33 bytes: 02/03 prefix + X).
+func decompressPoint(curve elliptic.Curve, compressed []byte) (*big.Int, *big.Int) {
+	if len(compressed) != 33 {
+		return nil, nil
+	}
+	prefix := compressed[0]
+	if prefix != 0x02 && prefix != 0x03 {
+		return nil, nil
+	}
+
+	x := new(big.Int).SetBytes(compressed[1:])
+	p := curve.Params().P
+
+	// y² = x³ + ax + b  (for secp256k1, a=0, b=7)
+	// y² = x³ + 7
+	x3 := new(big.Int).Mul(x, x)
+	x3.Mul(x3, x)
+	x3.Add(x3, curve.Params().B)
+	x3.Mod(x3, p)
+
+	y := new(big.Int).ModSqrt(x3, p)
+	if y == nil {
+		return nil, nil
+	}
+
+	// Pick the correct root based on the prefix parity
+	if y.Bit(0) != uint(prefix&1) {
+		y.Sub(p, y)
+	}
+
+	if !curve.IsOnCurve(x, y) {
+		return nil, nil
+	}
+	return x, y
+}
+
+// secp256k1Curve returns an elliptic.Curve implementation for secp256k1.
+// Go's stdlib does not include secp256k1, so we define its parameters manually.
+func secp256k1Curve() elliptic.Curve {
+	return secp256k1CurveInstance
+}
+
+var secp256k1CurveInstance elliptic.Curve = newSecp256k1()
+
+func newSecp256k1() elliptic.Curve {
+	p, _ := new(big.Int).SetString("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F", 16)
+	n, _ := new(big.Int).SetString("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141", 16)
+	b, _ := new(big.Int).SetString("0000000000000000000000000000000000000000000000000000000000000007", 16)
+	gx, _ := new(big.Int).SetString("79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798", 16)
+	gy, _ := new(big.Int).SetString("483ADA7726A3C4655DA4FBFC0E1108A8FD17B448A68554199C47D08FFB10D4B8", 16)
+
+	return &elliptic.CurveParams{
+		P:       p,
+		N:       n,
+		B:       b,
+		Gx:      gx,
+		Gy:      gy,
+		BitSize: 256,
+		Name:    "secp256k1",
+	}
 }
 
 // ExtractBearerToken extracts the token from the Authorization header.
