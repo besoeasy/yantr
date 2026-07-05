@@ -1,5 +1,6 @@
 x-yantr:
   name: "Gupt"
+  logo: "QmRUCVqYvkWeQs9PkZgc3icHr4uY6jQsbs1y4cHa2umjCV"
   tags: [messaging, privacy, self-hosted, communication, encryption]
   short_description: "Privacy-first messenger with encrypted chat, secure vault, and ephemeral sharing. No account needed."
   description: >

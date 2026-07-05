@@ -1,5 +1,6 @@
 x-yantr:
   name: "deluge"
+  logo: "QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33"
   tags: [torrent, bittorrent, download, media, self-hosted]
   short_description: "Lightweight, full-featured BitTorrent client with a web UI."
   description: >
