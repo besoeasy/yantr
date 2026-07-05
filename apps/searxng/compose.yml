@@ -1,0 +1,45 @@
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    labels:
+      yantr.app: searxng
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - searxng_data:/etc/searxng
+    environment:
+      SEARXNG_BASE_URL: http://localhost:8080
+    restart: unless-stopped
+volumes:
+  searxng_data: null
+x-yantr:
+  name: SearXNG
+  tags:
+    - tools
+    - security
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Privacy-focused metasearch engine that aggregates results
+    from 80+ search engines without tracking.
+  description: SearXNG is a free and privacy-focused metasearch engine that can be
+    self-hosted. It aggregates results from over 80 search engines (Google,
+    Bing, DuckDuckGo, Wikipedia, etc.) while keeping your searches private - no
+    tracking, no logging, no personalization. It strips tracking parameters
+    fr...
+  usecases:
+    - Search the web without being tracked - your search queries never leave
+      your server.
+    - Use as your default search at home to avoid Google/Bing tracking.
+    - Access search results from multiple engines in one place with a unified
+      interface.
+    - Block annoying ads and tracking parameters from URLs automatically.
+  website: https://docs.searxng.org
+  logo: QmRbiaDWHNx6f9MvCpQ3PedjZd7A9szb2NbM9DMCvDvLtH
+  notes:
+    - No tracking or logging of search queries by default
+    - Can be customized with themes and engine preferences
+    - Can be set as browser default search engine
