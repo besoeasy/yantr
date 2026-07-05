@@ -1,0 +1,38 @@
+services:
+  moltis:
+    image: ghcr.io/moltis-org/moltis:latest
+    container_name: moltis
+    labels:
+      yantr.app: moltis
+      yantr.service.13131: Web UI
+      yantr.port.13131: HTTPS
+    ports:
+      - "13131"
+    volumes:
+      - moltis_config:/home/moltis/.config/moltis
+      - moltis_data:/home/moltis/.moltis
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+volumes:
+  moltis_config: null
+  moltis_data: null
+x-yantr:
+  name: Moltis
+  tags:
+    - ai
+    - tools
+    - docker
+    - containers
+    - devops
+  short_description: Self-hosted Moltis server with web UI and Docker access.
+  description: Self-hosted Moltis server with web UI and Docker access. Moltis is
+    a self-hosted application focused on ai, tools, docker, containers. It can
+    be deployed on any device via Docker Compose. It supports a wide range of
+    use cases for homelabs and self-hosted infrastructure.
+  usecases:
+    - Self-host Moltis on your home server to self-hosted moltis server with web
+      ui and docker access without depending on third-party cloud services.
+    - Use Moltis to manage your ai workflows privately, keeping all data under
+      your control on local infrastructure.
+  website: https://github.com/moltis-org/moltis
+  logo: Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd
