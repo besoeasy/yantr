@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"core/docker"
+	"core/shared"
 	"core/system"
 
 	"github.com/docker/docker/api/types/container"
@@ -25,12 +26,16 @@ func init() {
 	}
 	if os.Getenv("YANTR_TELEMETRY") == "false" {
 		isEnabled = false
+		shared.Log("info", "[telemetry] disabled via YANTR_TELEMETRY=false")
+	} else {
+		shared.Log("info", fmt.Sprintf("[telemetry] enabled → %s", telemetryTopic))
 	}
 }
 
 // Ping sends a telemetry event to the ntfy topic.
 func Ping(event string, fields map[string]interface{}) {
 	if !isEnabled {
+		shared.Log("info", fmt.Sprintf("[telemetry] skipped (disabled): event=%s", event))
 		return
 	}
 	go func() {
@@ -47,23 +52,32 @@ func Ping(event string, fields map[string]interface{}) {
 
 		req, err := http.NewRequestWithContext(context.Background(), "POST", telemetryTopic, bytes.NewBufferString(body))
 		if err != nil {
+			shared.Log("warn", fmt.Sprintf("[telemetry] failed to build request: event=%s err=%v", event, err))
 			return
 		}
 		req.Header.Set("Title", event)
 		req.Header.Set("Tags", event)
 
 		client := &http.Client{Timeout: 5 * time.Second}
-		_, _ = client.Do(req)
+		resp, err := client.Do(req)
+		if err != nil {
+			shared.Log("warn", fmt.Sprintf("[telemetry] send failed: event=%s err=%v", event, err))
+			return
+		}
+		defer resp.Body.Close()
+		shared.Log("info", fmt.Sprintf("[telemetry] sent: event=%s %s → %d", event, strings.Join(parts, " "), resp.StatusCode))
 	}()
 }
 
 // TrackInstall sends an install event.
 func TrackInstall(appID string) {
+	shared.Log("info", fmt.Sprintf("[telemetry] tracking install: app=%s", appID))
 	Ping("install", map[string]interface{}{"app": appID})
 }
 
 // TrackSelfUpdate sends a self-update event.
 func TrackSelfUpdate(updatedCount int, version string) {
+	shared.Log("info", fmt.Sprintf("[telemetry] tracking self-update: updated=%d v=%s", updatedCount, version))
 	Ping("selfupdate", map[string]interface{}{
 		"updated": updatedCount,
 		"v":       version,
@@ -83,6 +97,7 @@ func TrackUpdatesForContainers(containerNames []string) {
 
 		ctrs, err := docker.Client.ContainerList(context.Background(), container.ListOptions{All: true})
 		if err != nil {
+			shared.Log("warn", "[telemetry] TrackUpdatesForContainers: failed to list containers: "+err.Error())
 			return
 		}
 
@@ -99,6 +114,7 @@ func TrackUpdatesForContainers(containerNames []string) {
 		}
 
 		for appID := range appIDs {
+			shared.Log("info", fmt.Sprintf("[telemetry] tracking update: app=%s", appID))
 			Ping("update", map[string]interface{}{"app": appID})
 		}
 	}()
@@ -110,8 +126,10 @@ func SendPresence(version string) {
 		return
 	}
 	go func() {
+		shared.Log("info", "[telemetry] sending presence ping")
 		info, err := docker.Client.Info(context.Background())
 		if err != nil {
+			shared.Log("warn", "[telemetry] presence: failed to get docker info: "+err.Error())
 			return
 		}
 
@@ -134,6 +152,9 @@ func SendPresence(version string) {
 		}
 
 		stacks := countYantrStacks()
+
+		shared.Log("info", fmt.Sprintf("[telemetry] presence: country=%s os=%s arch=%s cores=%d ram=%dGB stacks=%d v=%s",
+			country, osName, info.Architecture, info.NCPU, ramGB, stacks, version))
 
 		Ping("presence", map[string]interface{}{
 			"country": country,
@@ -166,13 +187,16 @@ func countYantrStacks() int {
 // StartPresenceScheduler starts a background task to send presence daily.
 func StartPresenceScheduler(version string) {
 	if !isEnabled {
+		shared.Log("info", "[telemetry] presence scheduler not started (disabled)")
 		return
 	}
+	shared.Log("info", "[telemetry] presence scheduler started (interval=24h)")
 	SendPresence(version)
 	go func() {
 		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
 		for range ticker.C {
+			shared.Log("info", "[telemetry] presence tick (24h interval)")
 			SendPresence(version)
 		}
 	}()
