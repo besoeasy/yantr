@@ -361,7 +361,10 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	for _, id := range body.ContainerIDs {
 		idSet[id] = true
 	}
-	var names []string
+
+	var watchtowerNames []string
+	projectSet := map[string]bool{}
+
 	for _, c := range ctrs {
 		match := idSet[c.ID]
 		if !match {
@@ -372,46 +375,111 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		if match && len(c.Names) > 0 {
-			names = append(names, strings.TrimPrefix(c.Names[0], "/"))
+		if match {
+			project := c.Labels["com.docker.compose.project"]
+			if project != "" {
+				projectSet[project] = true
+			} else if len(c.Names) > 0 {
+				watchtowerNames = append(watchtowerNames, strings.TrimPrefix(c.Names[0], "/"))
+			}
 		}
 	}
-	if len(names) == 0 {
+
+	if len(projectSet) == 0 && len(watchtowerNames) == 0 {
 		jsonErr(w, 404, "CONTAINERS_NOT_RUNNING", "None of the provided container IDs are currently running")
 		return
 	}
-	shared.Log("info", fmt.Sprintf("[update] running watchtower for containers: %s", strings.Join(names, ", ")))
-	stdout, stderr, exitCode, err := runWatchtower(names)
-	if err != nil {
-		shared.Log("error", "[update] watchtower error: "+err.Error())
-		jsonErr(w, 500, "AUTOUPDATE_FAILED", err.Error())
-		return
-	}
-	if stdout != "" {
-		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
-			if line != "" {
-				shared.Log("info", "[update] "+line)
-			}
-		}
-	}
-	if stderr != "" {
-		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
-			if line != "" {
-				shared.Log("info", "[update] "+line)
-			}
-		}
-	}
-	updated := strings.Contains(stdout, "Found new") || strings.Contains(stdout, "updating") || strings.Contains(stdout, "updated")
-	if updated {
-		shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(names, ", ")))
-	} else {
-		shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(names, ", "), exitCode))
-	}
-	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
 
-	if updated {
-		telemetry.TrackUpdatesForContainers(names)
+	var allStdout, allStderr strings.Builder
+	updatedCount := 0
+
+	// 1. Process Compose Projects natively
+	cmdName, cmdArgs, cmdErr := getComposeCommand()
+	for projectID := range projectSet {
+		if cmdErr != nil {
+			allStderr.WriteString(fmt.Sprintf("[update] docker compose not available for %s: %v\n", projectID, cmdErr))
+			continue
+		}
+		baseID := getBaseAppID(projectID)
+		appPath := filepath.Join(apps.GetAppsDir(), baseID)
+		ref := compose.GetProjectComposeRef(appPath, projectID)
+
+		if _, statErr := os.Stat(ref.ComposePath); statErr != nil {
+			allStderr.WriteString(fmt.Sprintf("[update] compose.yml not found for %s\n", projectID))
+			continue
+		}
+
+		env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+		shared.Log("info", fmt.Sprintf("[update] pulling latest images for stack: %s", projectID))
+		pullCtx, pullCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
+		pullArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "pull")
+		outPull, errPull, exitPull, _ := spawnExec(pullCtx, cmdName, pullArgs, env, appPath)
+		pullCancel()
+
+		allStdout.WriteString(outPull + "\n")
+		allStderr.WriteString(errPull + "\n")
+
+		if exitPull != 0 {
+			shared.Log("error", fmt.Sprintf("[update] pull failed for %s", projectID))
+			continue
+		}
+
+		shared.Log("info", fmt.Sprintf("[update] recreating stack: %s", projectID))
+		upCtx, upCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
+		upArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "up", "-d")
+		outUp, errUp, _, _ := spawnExec(upCtx, cmdName, upArgs, env, appPath)
+		upCancel()
+
+		allStdout.WriteString(outUp + "\n")
+		allStderr.WriteString(errUp + "\n")
+
+		// If outUp/errUp contains "Started" or "Recreated", or "Pulled", it was updated
+		if strings.Contains(outUp, "Started") || strings.Contains(outUp, "Recreated") || strings.Contains(errUp, "Started") || strings.Contains(errUp, "Recreated") || strings.Contains(outPull, "Downloaded newer image") || strings.Contains(errPull, "Downloaded newer image") {
+			updatedCount++
+			shared.Log("info", fmt.Sprintf("[update] stack %s was updated", projectID))
+			telemetry.TrackUpdatesForContainers([]string{projectID})
+		} else {
+			shared.Log("info", fmt.Sprintf("[update] stack %s is already up to date", projectID))
+		}
 	}
+
+	// 2. Process standalone containers using Watchtower
+	if len(watchtowerNames) > 0 {
+		shared.Log("info", fmt.Sprintf("[update] running watchtower for standalone containers: %s", strings.Join(watchtowerNames, ", ")))
+		wOut, wErr, wExit, err := runWatchtower(watchtowerNames)
+		if err != nil {
+			allStderr.WriteString(fmt.Sprintf("[update] watchtower error: %v\n", err))
+		} else {
+			allStdout.WriteString(wOut + "\n")
+			allStderr.WriteString(wErr + "\n")
+			if strings.Contains(wOut, "Found new") || strings.Contains(wOut, "updating") || strings.Contains(wOut, "updated") {
+				updatedCount += len(watchtowerNames)
+				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(watchtowerNames, ", ")))
+				telemetry.TrackUpdatesForContainers(watchtowerNames)
+			} else {
+				shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(watchtowerNames, ", "), wExit))
+			}
+		}
+	}
+
+	// Dump logs cleanly
+	for _, line := range strings.Split(strings.TrimSpace(allStdout.String()), "\n") {
+		if line != "" {
+			shared.Log("info", "[update] "+line)
+		}
+	}
+	for _, line := range strings.Split(strings.TrimSpace(allStderr.String()), "\n") {
+		if line != "" {
+			shared.Log("info", "[update] "+line)
+		}
+	}
+
+	jsonResp(w, 200, map[string]interface{}{
+		"success":      true,
+		"updatedCount": updatedCount,
+		"output":       allStdout.String(),
+		"warnings":     allStderr.String(),
+	})
 }
 
 func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
