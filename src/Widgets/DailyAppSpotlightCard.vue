@@ -164,7 +164,10 @@ const stateLabel = computed(() => {
         <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2 leading-[1.1]">
           {{ dailyApp?.name }}
         </div>
-        <div class="text-sm font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-1 truncate">
+        <p v-if="dailyApp?.short_description" class="text-sm text-gray-500 dark:text-zinc-400 line-clamp-2 mt-1 leading-relaxed max-w-[90%]">
+          {{ dailyApp.short_description }}
+        </p>
+        <div class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-2 truncate">
           {{ primaryTag || "App" }}
         </div>
       </div>
