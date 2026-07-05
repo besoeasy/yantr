@@ -24,6 +24,7 @@ import (
 	dockerfilters "github.com/docker/docker/api/types/filters"
 	dockerimage "github.com/docker/docker/api/types/image"
 	dockernet "github.com/docker/docker/api/types/network"
+	dockertypes "github.com/docker/docker/api/types"
 	dockervol "github.com/docker/docker/api/types/volume"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -1132,6 +1133,17 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "VOLUMES_FETCH_FAILED", err.Error())
 		return
 	}
+
+	// Fetch real volume sizes via DiskUsage (VolumeList doesn't return sizes).
+	volSizes := map[string]int64{}
+	if du, duErr := docker.Client.DiskUsage(context.Background(), dockertypes.DiskUsageOptions{}); duErr == nil {
+		for _, v := range du.Volumes {
+			if v != nil && v.UsageData != nil && v.UsageData.Size >= 0 {
+				volSizes[v.Name] = v.UsageData.Size
+			}
+		}
+	}
+
 	ctrs, _ := docker.Client.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	usedVols := map[string]bool{}
 	for _, c := range ctrs {
@@ -1159,25 +1171,32 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 		if v.Labels == nil {
 			v.Labels = map[string]string{}
 		}
+		sz := volSizes[v.Name]
 		enriched = append(enriched, volItem{
 			Name: v.Name, Driver: v.Driver, Mountpoint: v.Mountpoint, CreatedAt: v.CreatedAt,
 			Labels: v.Labels, IsBrowsing: browserRegistry.IsBrowsing(v.Name), IsUsed: usedVols[v.Name],
+			SizeBytes: sz, Size: fmt.Sprintf("%.2f", float64(sz)/(1024*1024)),
 		})
 	}
 	if enriched == nil {
 		enriched = []volItem{}
 	}
+
 	var used, unused []volItem
+	var totalBytes, unusedBytes int64
 	for _, v := range enriched {
+		totalBytes += v.SizeBytes
 		if v.IsUsed {
 			used = append(used, v)
 		} else {
 			unused = append(unused, v)
+			unusedBytes += v.SizeBytes
 		}
 	}
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true, "total": len(enriched), "used": len(used), "unused": len(unused),
-		"totalSize": "0.00", "unusedSize": "0.00",
+		"totalSize":  fmt.Sprintf("%.2f", float64(totalBytes)/(1024*1024)),
+		"unusedSize": fmt.Sprintf("%.2f", float64(unusedBytes)/(1024*1024)),
 		"volumes": enriched, "usedVolumes": used, "unusedVolumes": unused,
 	})
 }
@@ -1283,23 +1302,27 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		"volumes": map[string]interface{}{"count": 0, "spaceReclaimed": 0},
 	}
 	if body.Images {
+		// dangling=true: only remove untagged layers, not ALL unused images.
+		// This is the safe default — avoids deleting images for stopped containers.
 		filters := dockerfilters.NewArgs()
-		filters.Add("dangling", "false") // removes all unused images, not just dangling
+		filters.Add("dangling", "true")
 		if pruned, err := docker.Client.ImagesPrune(context.Background(), filters); err == nil {
+			shared.Log("info", fmt.Sprintf("[prune] images: removed=%d reclaimed=%d bytes", len(pruned.ImagesDeleted), pruned.SpaceReclaimed))
 			results["images"] = map[string]interface{}{
 				"count": len(pruned.ImagesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
 			}
 		} else {
-			shared.Log("warn", "system: images prune failed: "+err.Error())
+			shared.Log("warn", "[prune] images failed: "+err.Error())
 		}
 	}
 	if body.Volumes {
 		if pruned, err := docker.Client.VolumesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
+			shared.Log("info", fmt.Sprintf("[prune] volumes: removed=%d reclaimed=%d bytes", len(pruned.VolumesDeleted), pruned.SpaceReclaimed))
 			results["volumes"] = map[string]interface{}{
 				"count": len(pruned.VolumesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
 			}
 		} else {
-			shared.Log("warn", "system: volumes prune failed: "+err.Error())
+			shared.Log("warn", "[prune] volumes failed: "+err.Error())
 		}
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "results": results})
