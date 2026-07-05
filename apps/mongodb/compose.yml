@@ -1,0 +1,40 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    labels:
+      yantr.app: mongodb
+      yantr.service.27017: Database
+      yantr.port.27017: TCP
+    ports:
+      - "27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+volumes:
+  mongodb_data: null
+x-yantr:
+  name: MongoDB
+  tags:
+    - database
+    - storage
+    - files
+    - utility
+    - notes
+  short_description: Popular NoSQL document database with flexible JSON-like
+    documents and powerful querying.
+  description: MongoDB is a NoSQL document database using flexible JSON-like
+    documents and dynamic schemas. It supports ad-hoc queries, indexing,
+    aggregation, replication, and sharding—making it suitable for modern web
+    apps, mobile backends, and analytics that require flexible data models.
+  usecases:
+    - Store application data for Node.js, Python, or other modern applications.
+    - Build content management systems with flexible document structures.
+    - Store IoT sensor data with time-series patterns.
+    - Use as the database for analytics applications requiring flexible schemas.
+  website: https://github.com/mongodb/mongo
+  logo: QmZYsae4jNFSyXC696vjkyiqSAR6DBGo4zKSgMGdE7ZSzy
+  notes:
+    - Default port is 27017 for client connections
+    - Data stored in /data/db directory in the container
+    - Can require authentication in production deployments
