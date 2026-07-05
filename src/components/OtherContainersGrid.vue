@@ -29,57 +29,47 @@ const emit = defineEmits(["select"]);
       @keydown.space.prevent="emit('select', container)"
       role="button"
       tabindex="0"
-      class="group relative h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 smooth-shadow hover:smooth-shadow-lg hover:-translate-y-0.5 cursor-pointer animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+      class="group relative h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full cursor-pointer animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
     >
-      <div class="relative z-10 flex flex-col h-full p-5">
+      <!-- top accent line -->
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-        <!-- Header: icon + name + status -->
-        <div class="flex items-start gap-3.5 mb-5">
-          <!-- Icon -->
-          <div class="w-11 h-11 rounded-xl bg-(--surface-muted) flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
-            <Box class="w-5 h-5 text-(--text-secondary) group-hover:text-blue-500 transition-colors duration-300" />
-          </div>
-
-          <!-- Name + status -->
-          <div class="min-w-0 flex-1 pt-0.5">
-            <h3 class="font-semibold text-sm text-gray-900 dark:text-white line-clamp-1 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300"
-                :title="container.name">
-              {{ container.name.replace(/^\//, "") }}
-            </h3>
-            <div class="mt-1 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                    :class="container.state === 'running' ? 'bg-green-500' : 'bg-gray-400 dark:bg-zinc-600'">
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider"
-                    :class="container.state === 'running' ? 'text-green-600 dark:text-green-500' : 'text-gray-400 dark:text-zinc-500'">
-                {{ container.state }}
-              </span>
+      <div class="relative z-10 p-5 flex flex-col h-full gap-4">
+        <!-- header -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-gray-50 dark:bg-zinc-800/50 border border-gray-100 dark:border-zinc-700/50 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+              <Box class="w-4.5 h-4.5 text-gray-500 dark:text-zinc-400 group-hover:text-gray-700 dark:group-hover:text-zinc-200 transition-colors" />
+            </div>
+            <div class="min-w-0">
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Docker App</h3>
+              <div class="flex items-center gap-1.5 mt-1.5"
+                   :class="container.state === 'running' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-zinc-500'">
+                <div class="w-1.5 h-1.5 rounded-full bg-current" :class="{ 'animate-pulse': container.state === 'running' }"></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider">{{ container.state }}</span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- Image row -->
-        <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-(--surface-muted) mb-5">
-          <span class="text-[10px] font-bold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500 shrink-0">Image</span>
-          <span class="font-mono text-xs text-gray-700 dark:text-zinc-300 truncate min-w-0" :title="container.image">
-            {{ container.image.split(":")[0] }}
-          </span>
-          <span v-if="container.image.includes(':')" class="text-[10px] font-mono text-gray-400 dark:text-zinc-500 shrink-0 ml-auto">
-            {{ container.image.split(":")[1] }}
-          </span>
-        </div>
-
-        <!-- Footer -->
-        <div class="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-zinc-800/60">
-          <span class="text-[10px] font-semibold uppercase tracking-[0.15em] text-gray-400 dark:text-zinc-500">
-            {{ t("home.otherContainersGrid.image") }}
-          </span>
-          <div class="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-            <span>{{ t("home.otherContainersGrid.inspect") }}</span>
-            <ArrowRight :size="13" class="group-hover:translate-x-0.5 transition-transform duration-300" />
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900/50 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
+             <ArrowRight class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-gray-700 dark:group-hover:text-zinc-200" />
           </div>
         </div>
 
+        <!-- Name at bottom + image -->
+        <div class="mt-auto pt-6 pb-1 flex flex-col relative z-10">
+          <div class="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors line-clamp-2 leading-[1.1] mb-3 break-all" :title="container.name">
+             {{ container.name.replace(/^\//, "") }}
+          </div>
+          
+          <div class="flex items-center gap-2">
+             <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 truncate min-w-0" :title="container.image">
+                {{ container.image.split(":")[0] }}
+             </span>
+             <span v-if="container.image.includes(':')" class="ml-auto text-[9px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-gray-50 dark:bg-zinc-900/50 text-gray-400 dark:text-zinc-500 shrink-0">
+                {{ container.image.split(":")[1] }}
+             </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

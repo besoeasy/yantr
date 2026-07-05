@@ -65,76 +65,53 @@ function navigate(group) {
       @keydown.space.prevent="navigate(group)"
       role="button"
       tabindex="0"
-      class="group relative h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 smooth-shadow hover:smooth-shadow-lg hover:-translate-y-0.5 cursor-pointer animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+      class="group relative h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full cursor-pointer animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
     >
-      <div class="relative z-10 flex flex-col h-full p-5">
+      <!-- top accent line -->
+      <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-        <!-- Header: logo + name + status -->
-        <div class="flex items-start gap-3.5 mb-5">
-          <!-- Logo -->
-          <div class="w-11 h-11 rounded-xl bg-(--surface-muted) flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
-            <AppLogo
-              :logo="group.logo"
-              :name="group.name"
-              :seed="group.appId || group.projectId"
-              img-class="w-6 h-6 object-contain"
-              icon-class="w-5 h-5 text-(--text-secondary) group-hover:text-blue-500 transition-colors"
-            />
-          </div>
-
-          <!-- Name + status -->
-          <div class="min-w-0 flex-1 pt-0.5">
-            <h3 class="font-semibold text-sm text-gray-900 dark:text-white line-clamp-1 tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-              {{ group.name }}
-            </h3>
-            <div class="mt-1 flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                    :class="groupState(group) === 'running' ? 'bg-green-500' : groupState(group) === 'partial' ? 'bg-amber-500' : 'bg-gray-400 dark:bg-zinc-600'">
-              </span>
-              <span class="text-[10px] font-semibold uppercase tracking-wider"
-                    :class="groupState(group) === 'running' ? 'text-green-600 dark:text-green-500' : groupState(group) === 'partial' ? 'text-amber-600 dark:text-amber-500' : 'text-gray-400 dark:text-zinc-500'">
-                {{ groupState(group) === 'partial' ? t("stackView.partial") : t("stackView." + groupState(group)) }}
-              </span>
-              <span v-if="hasTemporary(group)" class="text-[10px] font-semibold uppercase tracking-wider text-amber-500">
-                · {{ t("appOverview.expiresIn") }}
-              </span>
+      <div class="relative z-10 p-5 flex flex-col h-full gap-4">
+        <!-- header -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+              <AppLogo
+                :logo="group.logo"
+                :name="group.name"
+                :seed="group.appId || group.projectId"
+                img-class="w-5 h-5 object-contain"
+                icon-class="w-4.5 h-4.5 text-blue-600 dark:text-blue-400 group-hover:text-blue-500 transition-colors"
+              />
+            </div>
+            <div class="min-w-0">
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">{{ t("home.yantrApps").replace(/s$/, '') }}</h3>
+              <div class="flex items-center gap-1.5 mt-1.5"
+                   :class="groupState(group) === 'running' ? 'text-emerald-600 dark:text-emerald-400' : groupState(group) === 'partial' ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400 dark:text-zinc-500'">
+                <div class="w-1.5 h-1.5 rounded-full bg-current" :class="{ 'animate-pulse': groupState(group) === 'running' }"></div>
+                <span class="text-[10px] font-bold uppercase tracking-wider">{{ groupState(group) === 'partial' ? t("stackView.partial") : t("stackView." + groupState(group)) }}</span>
+                <span v-if="hasTemporary(group)" class="text-[10px] font-bold uppercase tracking-wider text-amber-500 ml-1">· {{ t("appOverview.expiresIn") }}</span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- Services list -->
-        <div class="flex flex-col gap-1.5 mb-5">
-          <div
-            v-for="c in group.containers"
-            :key="c.id"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-(--surface-muted)"
-          >
-            <span class="w-1.5 h-1.5 rounded-full shrink-0"
-                  :class="c.state === 'running' ? 'bg-green-500' : 'bg-gray-300 dark:bg-zinc-600'">
-            </span>
-            <span class="text-xs font-medium truncate text-gray-700 dark:text-zinc-300">
-              {{ c.app?.service || c.name }}
-            </span>
-            <span v-if="group.containers.length > 1" class="ml-auto text-[10px] font-mono text-gray-400 dark:text-zinc-500 shrink-0">
-              {{ c.state }}
-            </span>
+          <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900/50 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
+             <ArrowRight class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500" />
           </div>
         </div>
 
-        <!-- Footer -->
-        <div class="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-zinc-800/60">
-          <div class="flex items-center gap-1.5 text-gray-400 dark:text-zinc-500">
-            <Layers :size="12" />
-            <span class="text-[10px] font-semibold uppercase tracking-[0.15em]">
-              {{ group.containers.length === 1 ? '1 service' : `${group.containers.length} services` }}
-            </span>
+        <!-- Name at bottom + services -->
+        <div class="mt-auto pt-6 pb-1 flex flex-col relative z-10">
+          <div class="text-2xl sm:text-3xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-[1.1] mb-3">
+             {{ group.name }}
           </div>
-          <div class="flex items-center gap-1 text-blue-600 dark:text-blue-400 font-semibold text-xs opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
-            <span>{{ t("home.yantraContainersGrid.open") }}</span>
-            <ArrowRight :size="13" class="group-hover:translate-x-0.5 transition-transform duration-300" />
+          <div class="flex flex-col gap-1.5">
+             <div v-for="c in group.containers" :key="c.id" class="flex items-center gap-2">
+                <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 truncate">{{ c.app?.service || c.name }}</span>
+                <span class="ml-auto text-[9px] font-mono font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-gray-50 dark:bg-zinc-900/50" :class="c.state === 'running' ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-zinc-500'">
+                   {{ c.state }}
+                </span>
+             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
