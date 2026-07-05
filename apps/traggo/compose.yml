@@ -1,0 +1,50 @@
+services:
+  traggo:
+    image: traggo/server:latest
+    container_name: traggo
+    labels:
+      yantr.app: traggo
+      yantr.service.3030: Web UI
+      yantr.port.3030: HTTP
+    ports:
+      - "3030"
+    environment:
+      admin: ${admin}
+      mynewpassword: ${mynewpassword}
+    volumes:
+      - traggo_data:/opt/traggo/data
+    restart: unless-stopped
+volumes:
+  traggo_data: null
+x-yantr:
+  name: Traggo
+  tags:
+    - productivity
+    - time-tracking
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Tag-based time tracking with stopwatch, reports, and data export.
+  description: Traggo is a lightweight time tracking server built with Go. Unlike
+    traditional time trackers with projects and tasks, Traggo uses tags for
+    complete flexibility. Features include stopwatch for active timing, manual
+    time entry, tag-based organization, custom date ranges, break tracking,
+    data...
+  usecases:
+    - Track time spent on different activities using tags.
+    - Log billable hours for client work.
+    - Generate reports on time spent per tag.
+    - Export data for invoicing.
+  website: https://github.com/traggo/server
+  logo: QmTiS72Uz3JSJUmXTcx9GmPUnfABX5jFVEn2rMBCYzhhMj
+  notes:
+    - Tag-based - no rigid project structure
+    - API available for automation
+    - Break tracking included
+  env_generators:
+    admin:
+      length: 8
+      charset: alpha
+    mynewpassword:
+      length: 16
+      charset: alnum_symbols
