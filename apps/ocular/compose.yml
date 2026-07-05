@@ -1,0 +1,59 @@
+services:
+  ocular:
+    image: ghcr.io/simonwep/ocular:v2
+    container_name: ocular
+    labels:
+      yantr.app: ocular
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+      GENESIS_JWT_TOKEN_EXPIRATION: ${GENESIS_JWT_TOKEN_EXPIRATION:-60}
+      GENESIS_JWT_SECRET: ${GENESIS_JWT_SECRET}
+      GENESIS_CREATE_USERS: ${OCULAR_ADMIN_USERNAME:-admin}!:${OCULAR_ADMIN_PASSWORD}
+      GENESIS_JWT_COOKIE_ALLOW_HTTP: ${GENESIS_JWT_COOKIE_ALLOW_HTTP:-false}
+    volumes:
+      - ocular_data:/data/genesis
+    restart: unless-stopped
+volumes:
+  ocular_data: null
+x-yantr:
+  name: Ocular
+  tags:
+    - finance
+    - budgeting
+    - self-hosted
+    - docker
+    - homelab
+  short_description: Self-hosted budgeting app for tracking spending, accounts,
+    and household finances.
+  description: Ocular is a self-hosted personal budgeting app focused on tracking
+    accounts, expenses, and financial habits in a clean web interface. It stores
+    budgeting data locally, supports initial multi-user setup, and runs
+    privately on your own server with Docker.
+  usecases:
+    - Track personal or household spending from a private web interface without
+      relying on a hosted finance service.
+    - Create an initial admin account during deployment and manage budgets on
+      your own server with Docker.
+    - Keep budgeting data local and back it up from the named Docker volume used
+      by the app.
+  website: https://simonwep.github.io/ocular/
+  logo: QmOcularLogoCID1234567890abcdef1234567890abcef
+  notes:
+    - Ocular expects HTTPS by default for secure cookies; set
+      GENESIS_JWT_COOKIE_ALLOW_HTTP=true only on trusted plain HTTP networks.
+    - The first admin account is created from OCULAR_ADMIN_USERNAME and
+      OCULAR_ADMIN_PASSWORD during initial deployment.
+    - Budget data is stored in the named Docker volume mounted at /data/genesis.
+  env_generators:
+    GENESIS_JWT_SECRET:
+      length: 48
+      charset: alnum_symbols
+      regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{32,}$
+    OCULAR_ADMIN_PASSWORD:
+      length: 20
+      charset: alnum_symbols
+      regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{16,}$
