@@ -143,7 +143,7 @@ func handleSetupAdmin(w http.ResponseWriter, r *http.Request) {
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	cfg, err := auth.SaveAuthConfig(body.SecretHex)
+	_, err := auth.SaveAuthConfig(body.SecretHex)
 	if err != nil {
 		if errors.Is(err, auth.ErrAlreadyConfigured) {
 			jsonErr(w, 409, "SETUP_ALREADY_CONFIGURED", "Yantr is already configured")

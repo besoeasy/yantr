@@ -274,7 +274,7 @@ func authMiddleware(next http.Handler) http.Handler {
 		if token == "" {
 			token = r.URL.Query().Get("token")
 		}
-		if _, err := auth.VerifyToken(token, cfg); err != nil {
+		if err := auth.VerifyToken(token, cfg); err != nil {
 			jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 			return
 		}
