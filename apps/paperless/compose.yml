@@ -7,7 +7,8 @@ services:
       - paperless_redis:/data
     labels:
       yantr.app: paperless
-      yantr.service: broker
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   db:
     image: postgres:16
     container_name: paperless-db
@@ -20,7 +21,8 @@ services:
       - paperless_pgdata:/var/lib/postgresql/data
     labels:
       yantr.app: paperless
-      yantr.service: db
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   gotenberg:
     image: gotenberg/gotenberg:8
     container_name: paperless-gotenberg
@@ -31,14 +33,16 @@ services:
       - --chromium-allow-list=file:///tmp/.*
     labels:
       yantr.app: paperless
-      yantr.service: gotenberg
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   tika:
     image: ghcr.io/paperless-ngx/tika:latest
     container_name: paperless-tika
     restart: unless-stopped
     labels:
       yantr.app: paperless
-      yantr.service: tika
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
     container_name: paperless-webserver
@@ -50,7 +54,8 @@ services:
       - tika
     labels:
       yantr.app: paperless
-      yantr.service: Web UI
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
     ports:
       - "8000"
     environment:
@@ -74,3 +79,28 @@ volumes:
   paperless_media: null
   paperless_export: null
   paperless_consume: null
+x-yantr:
+  name: Paperless-ngx
+  tags:
+    - documents
+    - ocr
+    - productivity
+    - self-hosted
+    - archiving
+  short_description: Self-hosted document management system with OCR. for home.
+  description: Paperless-ngx is a community-supported open-source document
+    management system that transforms your physical documents into a searchable
+    online archive. It uses OCR to make scanned documents fully searchable and
+    organizes everything with tags, correspondents, and document types.
+  usecases:
+    - Scan and archive paper documents with automatic OCR.
+    - Search and retrieve any document instantly by content.
+    - Organize documents with tags, types, and correspondents.
+  website: https://docs.paperless-ngx.com
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
+    SECRET_KEY:
+      length: 64
+      charset: alnum
