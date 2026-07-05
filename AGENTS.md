@@ -180,17 +180,17 @@ volumes:
 - Dashboard cards: minimal identity-card style (quiet header, one strong focal line, ≤2 detail rows, clear bottom action); no nested backgrounds, pills, borders, rings, or dividers; emphasis via spacing/typography/icons/hover motion
 
 ### Backend
-- Auth: daku public key → stateless in-memory by default; set `dakupublickey` env to persist
-- API: all `/api/*` and `/browse/*` require bearer token after setup
-- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`
-- Docker socket: `/var/run/docker.sock` (mounted in container)
+- Architecture: See the main Architecture section above for `core/` package layout.
+- API: Most `/api/*` and all `/browse/*` routes require a Bearer token (JWT) after initial setup.
+- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`.
+- Docker socket: Expected at `/var/run/docker.sock` (mounted into the container).
 
 ## Docker Build
-- Multi-stage: Node LTS builder → Node Alpine final
+- Multi-stage: Node LTS frontend builder → Go Alpine backend builder → Alpine final
 - Final image installs: `docker-cli`, `docker-cli-compose`, `wget`, `dufs`, `caddy`
-- Copies: `dist/`, `daemon/`, `apps/`
-- Healthcheck: `wget http://127.0.0.1:5252/api/health`
-- Runs: `node daemon/index.js`
+- Copies: `dist/`, compiled `yantr-core` binary, `apps/`
+- Healthcheck: `wget -qO- http://127.0.0.1:5252/api/health >/dev/null 2>&1`
+- Runs: `/app/yantr-core`
 
 ## Testing / Validation
 - No formal test suite — `node check.js` is the primary validation
@@ -199,5 +199,6 @@ volumes:
 
 ## Key Files to Reference
 - `check.js` — validation rules (run after app changes)
-- `daemon/shared.js` — Docker socket path, logging, shared constants
-- `daemon/auth.js` — daku token verification
+- `core/shared/shared.go` — Docker socket path, logging, shared constants
+- `core/auth/auth.go` — HMAC-SHA256 JWT auth implementation
+- `core/compose/compose.go` — Docker Compose YAML parsing and deployment logic
