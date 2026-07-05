@@ -1,0 +1,40 @@
+services:
+  urlwatch:
+    image: mediadepot/urlwatch:master
+    container_name: urlwatch
+    labels:
+      yantr.app: urlwatch
+      yantr.service.8081: Web UI
+      yantr.port.8081: HTTP
+    ports:
+      - "8081"
+    volumes:
+      - urlwatch_config:/srv/urlwatch/config
+    restart: unless-stopped
+volumes:
+  urlwatch_config: null
+x-yantr:
+  name: UrlWatch
+  tags:
+    - utility
+    - monitoring
+    - dashboard
+    - self-hosted
+    - homelab
+  short_description: Website change monitor - get notified when pages change.
+  description: UrlWatch monitors websites and notifies you when they change.
+    Perfect for tracking price drops, product availability, page updates, job
+    postings, or any web content. Features include diff highlighting (shows
+    exactly what changed), flexible scheduling, multiple notification methods
+    (email,...
+  usecases:
+    - Track product prices and get alerts.
+    - Monitor job board updates.
+    - Watch for page content changes.
+    - Check if websites are down.
+  website: https://github.com/thp/urlwatch
+  logo: QmWkNcdYSyueiheQwyHXyjkXrxcGdKLcYGBbcECLiJ6c3W
+  notes:
+    - Diff highlighting shows changes
+    - Multiple notification options
+    - Flexible filtering
