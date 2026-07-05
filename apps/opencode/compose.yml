@@ -1,0 +1,50 @@
+services:
+  opencode:
+    image: ghcr.io/anomalyco/opencode:latest
+    command:
+      - web
+      - --hostname
+      - 0.0.0.0
+      - --port
+      - "4096"
+    container_name: opencode
+    labels:
+      yantr.app: opencode
+      yantr.service.4096: Web UI
+      yantr.port.4096: HTTP
+    environment:
+      HOME: /home/opencode
+    ports:
+      - "4096"
+    stdin_open: true
+    tty: true
+    volumes:
+      - opencodehome:/home/opencode
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+volumes:
+  opencodehome: null
+x-yantr:
+  name: OpenCode
+  tags:
+    - development
+    - productivity
+    - ai
+    - terminal
+    - utility
+  short_description: AI coding assistant in browser - edit files, run commands, and get AI help.
+  description: OpenCode is an AI-powered browser IDE combining editor, terminal,
+    and AI code support. It includes file browsing, command execution,
+    AI-assisted debugging and code explanations, git integration, and cloud
+    workspace sharing. Great for flexible development, remote coding, and quick
+    sessions.
+  usecases:
+    - Code from any browser.
+    - Get AI assistance with coding.
+    - Collaborative development.
+  website: https://github.com/anomalyco/opencode
+  logo: Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA
+  notes:
+    - Browser-based IDE
+    - AI assistant integration
+    - Terminal access
