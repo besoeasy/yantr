@@ -1,11 +1,6 @@
 x-yantr:
   name: YoutubeDL Material
-  tags:
-    - media
-    - downloader
-    - download
-    - utility
-    - self-hosted
+  tags: [ media, downloader, download, utility, self-hosted ]
   short_description: Modern web UI for youtube-dl/yt-dlp with subscriptions,
     playlists, and automation.
   description: YoutubeDL Material is a full-featured Material Design web UI for
@@ -14,16 +9,20 @@ x-yantr:
     Vimeo, SoundCloud, and many more. Features include subscription monitoring -
     a...
   usecases:
-    - Subscribe to YouTube channels and automatically download new videos.
-    - Download entire playlists or channels in bulk.
-    - Extract audio as MP3 from videos.
-    - Build a personal video archive of your favorite content.
+    [
+      Subscribe to YouTube channels and automatically download new videos.,
+      Download entire playlists or channels in bulk.,
+      Extract audio as MP3 from videos.,
+      Build a personal video archive of your favorite content.
+    ]
   website: https://github.com/Tzahi12345/YoutubeDL-Material
   logo: QmVgdMmZ1Ms2EskZfwc8VTfS1nXB2D3EW4PsJLKCDg4zFM
   notes:
-    - Uses yt-dlp for downloading - supports 1700+ sites
-    - Subscription checking runs on a schedule
-    - Auto-generated thumbnails and metadata
+    [
+      Uses yt-dlp for downloading - supports 1700+ sites,
+      Subscription checking runs on a schedule,
+      Auto-generated thumbnails and metadata
+    ]
 
 services:
   youtubedl-material:

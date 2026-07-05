@@ -1,25 +1,25 @@
 x-yantr:
   name: OctoPrint
-  tags:
-    - 3d-printing
-    - maker
-    - printer-control
-    - self-hosted
-    - monitoring
+  tags: [ 3d-printing, maker, printer-control, self-hosted, monitoring ]
   short_description: Web interface for monitoring and controlling 3D printers remotely.
   description: OctoPrint is the leading open-source web interface for 3D printers.
     Monitor print progress via webcam, upload G-code files, slice models, and
     control every aspect of your 3D printer from any browser. Supports hundreds
     of printers through a rich plugin ecosystem.
   usecases:
-    - Remotely monitor and control your 3D printer from any device.
-    - Queue and manage G-code print jobs with a web-based interface.
-    - Receive failure alerts and pause prints automatically with AI plugins.
+    [
+      Remotely monitor and control your 3D printer from any device.,
+      Queue and manage G-code print jobs with a web-based interface.,
+      Receive failure alerts and pause prints automatically with AI plugins.
+    ]
   website: https://octoprint.org
   logo: QmPKKDsiocEzBfk6K8w9JtA92Z1Xib1RpP71fAk57VokwW
   notes:
-    - Privileged mode is required to access the 3D printer USB serial port.
-    - Use the Spaghetti Detective (Obico) plugin for AI-based failure detection.
+    [
+      Privileged mode is required to access the 3D printer USB serial port.,
+      Use the Spaghetti Detective (Obico) plugin for AI-based failure
+        detection.
+    ]
 
 services:
   web:

@@ -1,21 +1,18 @@
 x-yantr:
   name: Nano
-  tags:
-    - cryptocurrency
-    - blockchain
-    - self-hosted
-    - homelab
-    - docker
+  tags: [ cryptocurrency, blockchain, self-hosted, homelab, docker ]
   short_description: Open source, green cryptocurrency and peer-to-peer payment system.
   description: Open source, green cryptocurrency and peer-to-peer payment system.
     Nano is a self-hosted application focused on cryptocurrency, blockchain,
     self-hosted, homelab. It can be deployed on any device via Docker Compose.
   usecases:
-    - Self-host Nano on your home server to open source, green cryptocurrency
-      and peer-to-peer payment system without depending on third-party cloud
-      services.
-    - Use Nano to manage your cryptocurrency workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      "Self-host Nano on your home server to open source, green cryptocurrency
+        and peer-to-peer payment system without depending on third-party cloud
+        services.",
+      "Use Nano to manage your cryptocurrency workflows privately, keeping all
+        data under your control on local infrastructure."
+    ]
   website: https://github.com/linuxserver/docker-nano
   logo: Qmf4kNnrTW6jAtNGrhM62yC1XmvXf2x5ZtxcUfZUinegca
 

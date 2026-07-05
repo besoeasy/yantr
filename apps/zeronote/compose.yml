@@ -1,11 +1,6 @@
 x-yantr:
   name: ZeroNote
-  tags:
-    - productivity
-    - security
-    - self-hosted
-    - homelab
-    - docker
+  tags: [ productivity, security, self-hosted, homelab, docker ]
   short_description: Offline-first encrypted notes with local storage and end-to-end encryption.
   description: ZeroNote is an offline-first notes application with strong
     encryption. Your notes are encrypted locally before storage, meaning the
@@ -13,15 +8,14 @@ x-yantr:
     encryption, markdown support, tags and organization, offline capability, and
     self-hosted privacy.
   usecases:
-    - Secure note-taking with encryption.
-    - Private notes that server cannot read.
-    - Offline-first personal knowledge base.
+    [
+      Secure note-taking with encryption.,
+      Private notes that server cannot read.,
+      Offline-first personal knowledge base.
+    ]
   website: https://github.com/besoeasy/zeronote
   logo: Qmbdks6yn4TrP2hfFZJ1dZPW84kYhrWoXDj4tLBtpWfRiF
-  notes:
-    - Server cannot read your notes
-    - Offline-first design
-    - Local encryption
+  notes: [ Server cannot read your notes, Offline-first design, Local encryption ]
 
 services:
   zeronote:

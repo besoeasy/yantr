@@ -1,11 +1,6 @@
 x-yantr:
   name: Excalidraw
-  tags:
-    - design
-    - whiteboard
-    - diagrams
-    - drawing
-    - productivity
+  tags: [ design, whiteboard, diagrams, drawing, productivity ]
   short_description: Virtual hand-drawn style whiteboard for diagrams and creative brainstorming.
   description: Excalidraw is a virtual whiteboard that allows you to create
     diagrams, sketches, and visual concepts with a playful, hand-drawn look.
@@ -13,16 +8,21 @@ x-yantr:
     embraces rough edges and fluid lines over rigid layouts. This self-hosted
     version includes...
   usecases:
-    - Brainstorm ideas and sketch diagrams collaboratively in real-time.
-    - Create architecture, flowchart, or mind-map diagrams with a hand-drawn
-      feel.
-    - Host a persistent, private whiteboard for your team or personal projects.
-    - Export your sketches seamlessly into other tools as SVG or high-res PNG.
+    [
+      Brainstorm ideas and sketch diagrams collaboratively in real-time.,
+      "Create architecture, flowchart, or mind-map diagrams with a hand-drawn
+        feel.",
+      "Host a persistent, private whiteboard for your team or personal
+        projects.",
+      Export your sketches seamlessly into other tools as SVG or high-res PNG.
+    ]
   website: https://excalidraw.com
   notes:
-    - This version uses the community 'excalidraw-persist' image for true
-      server-side persistence.
-    - Saved drawings will remain accessible across different devices.
+    [
+      This version uses the community 'excalidraw-persist' image for true
+        server-side persistence.,
+      Saved drawings will remain accessible across different devices.
+    ]
 
 services:
   excalidraw:

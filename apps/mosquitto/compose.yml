@@ -1,26 +1,26 @@
 x-yantr:
   name: Mosquitto
-  tags:
-    - mqtt
-    - iot
-    - messaging
-    - broker
-    - self-hosted
+  tags: [ mqtt, iot, messaging, broker, self-hosted ]
   short_description: Lightweight open-source MQTT message broker for IoT.
   description: Eclipse Mosquitto is an open-source MQTT message broker ideal for
     IoT and home automation. It efficiently handles lightweight
     publish-subscribe messaging between smart home devices, sensors, and
     automation controllers like Home Assistant, Node-RED, and Zigbee2MQTT.
   usecases:
-    - Act as the central MQTT message broker for your smart home stack.
-    - Route messages between IoT sensors, actuators, and automation controllers.
-    - Enable pub/sub communication for Zigbee2MQTT and Home Assistant.
+    [
+      Act as the central MQTT message broker for your smart home stack.,
+      "Route messages between IoT sensors, actuators, and automation
+        controllers.",
+      Enable pub/sub communication for Zigbee2MQTT and Home Assistant.
+    ]
   website: https://mosquitto.org
   notes:
-    - Default config allows anonymous connections. Create a password file for
-      production use.
-    - Config file is stored in the mosquitto_config volume at
-      /mosquitto/config/mosquitto.conf.
+    [
+      Default config allows anonymous connections. Create a password file for
+        production use.,
+      Config file is stored in the mosquitto_config volume at
+        /mosquitto/config/mosquitto.conf.
+    ]
 
 services:
   broker:

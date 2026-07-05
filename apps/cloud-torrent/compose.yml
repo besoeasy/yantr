@@ -1,11 +1,6 @@
 x-yantr:
   name: Cloud Torrent
-  tags:
-    - download
-    - utility
-    - torrent
-    - p2p
-    - cloud
+  tags: [ download, utility, torrent, p2p, cloud ]
   short_description: Self-hosted torrent client with web UI and streaming download support.
   description: Cloud Torrent is a simple, self-hosted torrent client with a clean
     web interface. Features include torrent upload, magnet link support,
@@ -13,15 +8,14 @@ x-yantr:
     automatic cleanup. Lightweight and easy to use for basic torrent downloading
     needs.
   usecases:
-    - Download torrents through a simple web interface.
-    - Stream video while downloading.
-    - Basic torrent management without bloat.
+    [
+      Download torrents through a simple web interface.,
+      Stream video while downloading.,
+      Basic torrent management without bloat.
+    ]
   website: https://github.com/jpillora/cloud-torrent
   logo: QmdPAfpuG5zkJs4GMX2DJ4xhKYq8vkT98TMjHgecAwkQVL
-  notes:
-    - Magnet link support
-    - Streaming while downloading
-    - Simple and lightweight
+  notes: [ Magnet link support, Streaming while downloading, Simple and lightweight ]
 
 services:
   cloud-torrent:

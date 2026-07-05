@@ -117,16 +117,31 @@ async function checkCompose(appName, composePath) {
   }
 
   let compose;
+  let doc;
   try {
     compose = YAML.parse(raw);
+    doc = YAML.parseDocument(raw);
   } catch (e) {
     fail(appName, "compose.yml is not valid YAML", e.message);
   }
 
-  // x-yantr block must exist and have a name
   const meta = compose?.["x-yantr"];
   if (!meta || typeof meta !== "object" || !meta.name) {
     fail(appName, "compose.yml missing x-yantr block", 'Add an "x-yantr:" top-level key with name, tags, description, etc.');
+  }
+
+  // Enforce compact flow sequences for tags, usecases, and notes
+  if (doc && doc.contents && doc.contents.items) {
+    const xYantrItem = doc.contents.items.find(item => item.key && item.key.value === 'x-yantr');
+    if (xYantrItem && xYantrItem.value && xYantrItem.value.items) {
+      for (const yantrProp of xYantrItem.value.items) {
+        if (['tags', 'usecases', 'notes'].includes(yantrProp.key.value) && yantrProp.value && yantrProp.value.items) {
+          if (!yantrProp.value.flow) {
+            fail(appName, `x-yantr "${yantrProp.key.value}" must use compact flow sequence`, `Use [item1, item2] format instead of block sequence (- item1 \\n - item2).`);
+          }
+        }
+      }
+    }
   }
 
   checkXYantr(appName, meta);

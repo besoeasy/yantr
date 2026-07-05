@@ -1,11 +1,6 @@
 x-yantr:
   name: Vaultwarden
-  tags:
-    - productivity
-    - security
-    - password-manager
-    - privacy
-    - self-hosted
+  tags: [ productivity, security, password-manager, privacy, self-hosted ]
   short_description: Lightweight, open-source Bitwarden-compatible password
     manager server written in Rust.
   description: Vaultwarden (formerly Bitwarden_RS) is a lightweight, open-source
@@ -14,20 +9,25 @@ x-yantr:
     browser extensions, desktop apps, and mobile apps. All passwords are
     encrypted...
   usecases:
-    - Store and manage all your passwords in a self-hosted vault that only you
-      control, with full Bitwarden client compatibility.
-    - Generate TOTP two-factor authentication codes directly within Vaultwarden
-      for added security.
-    - Securely share passwords or notes with family members using the Send
-      feature with expiration and deletion options.
-    - Access your passwords from any device using official Bitwarden apps while
-      keeping your data on your own server.
+    [
+      "Store and manage all your passwords in a self-hosted vault that only
+        you control, with full Bitwarden client compatibility.",
+      Generate TOTP two-factor authentication codes directly within
+        Vaultwarden for added security.,
+      Securely share passwords or notes with family members using the Send
+        feature with expiration and deletion options.,
+      Access your passwords from any device using official Bitwarden apps
+        while keeping your data on your own server.
+    ]
   website: https://github.com/dani-garcia/vaultwarden/wiki
   logo: QmUPKRipoMCZT3VCYVCoxe3z5WpDhfpb7v4HH1dDKedQaQ
   notes:
-    - Requires HTTPS for browser extensions to work properly
-    - All data is encrypted client-side - server never sees your master password
-    - WebSocket support enabled for real-time notifications
+    [
+      Requires HTTPS for browser extensions to work properly,
+      All data is encrypted client-side - server never sees your master
+        password,
+      WebSocket support enabled for real-time notifications
+    ]
 
 services:
   vaultwarden:

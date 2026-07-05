@@ -1,11 +1,6 @@
 x-yantr:
   name: PhotoPrism
-  tags:
-    - photos
-    - gallery
-    - ai
-    - media
-    - self-hosted
+  tags: [ photos, gallery, ai, media, self-hosted ]
   short_description: AI-Powered Photos App for organizing and sharing your
     collection on the Decentralized Web.
   description: PhotoPrism is an AI-powered app for browsing, organizing, and
@@ -13,9 +8,11 @@ x-yantr:
     tag and find pictures automatically without getting in your way. Say goodbye
     to the endless scrolling and let PhotoPrism's AI find the best shots.
   usecases:
-    - Organize personal photo collections.
-    - Automatically tag photos using AI.
-    - Share albums with friends and family.
+    [
+      Organize personal photo collections.,
+      Automatically tag photos using AI.,
+      Share albums with friends and family.
+    ]
   website: https://photoprism.app/
   logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   env_generators:

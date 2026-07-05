@@ -48,14 +48,14 @@ All app metadata lives in the top-level `x-yantr` key of `compose.yml`. Docker C
 - `customapp` — boolean; `true` for Yantr-built apps with Dockerfile (shows "Built by Yantr" badge, disables auto-update)
 - `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
 
-**YAML style rule — always use flow sequences for flat arrays:**
+**YAML style rule — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
 ```yaml
-# ✅ compact flow sequence (preferred)
+# ✅ compact flow sequence (STRICTLY REQUIRED)
 tags: [tools, utility, self-hosted, homelab, docker, open-source]
 usecases: ["Use case one.", "Use case two."]
 notes: ["Note one.", "Note two."]
 
-# ❌ block sequence (only for structured objects like env_generators)
+# ❌ block sequence (STRICTLY PROHIBITED for flat arrays; check.js WILL fail)
 tags:
   - tools
   - utility

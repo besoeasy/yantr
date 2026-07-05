@@ -1,22 +1,19 @@
 x-yantr:
   name: OpnForm
-  tags:
-    - productivity
-    - forms
-    - utility
-    - automation
-    - workflow
+  tags: [ productivity, forms, utility, automation, workflow ]
   short_description: Open source form builder with advanced customization and workflow options.
   description: Open source form builder with advanced customization and workflow
     options. OpnForm is a self-hosted application focused on productivity,
     forms, utility, automation. It can be deployed on any device via Docker
     Compose.
   usecases:
-    - Self-host OpnForm on your home server to open source form builder with
-      advanced customization and workflow options without depending on
-      third-party cloud services.
-    - Use OpnForm to manage your productivity workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      Self-host OpnForm on your home server to open source form builder with
+        advanced customization and workflow options without depending on
+        third-party cloud services.,
+      "Use OpnForm to manage your productivity workflows privately, keeping
+        all data under your control on local infrastructure."
+    ]
   website: https://github.com/JhumanJ/opnform
   logo: QmSmhDZydYp9xYPVCs19mvom1nMB7Cy7wrZxdtEXgbQtRT
 

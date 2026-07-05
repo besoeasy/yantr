@@ -1,20 +1,17 @@
 x-yantr:
   name: Vikunja
-  tags:
-    - tasks
-    - todo
-    - project-management
-    - productivity
-    - self-hosted
+  tags: [ tasks, todo, project-management, productivity, self-hosted ]
   short_description: Self-hosted open-source to-do and project manager.
   description: Vikunja is an open-source, self-hosted task management platform.
     Organize your work with lists, kanban boards, Gantt charts, and a calendar
     view. It offers teams and namespaces for collaboration, labels, priorities,
     due dates, and a REST API.
   usecases:
-    - Manage personal tasks and to-do lists with due dates and priorities.
-    - Run team projects with kanban boards and task assignments.
-    - Plan and track work using Gantt charts and calendar views.
+    [
+      Manage personal tasks and to-do lists with due dates and priorities.,
+      Run team projects with kanban boards and task assignments.,
+      Plan and track work using Gantt charts and calendar views.
+    ]
   website: https://vikunja.io
   env_generators:
     MYSQL_ROOT_PASSWORD:

@@ -1,20 +1,17 @@
 x-yantr:
   name: Calibre-Web
-  tags:
-    - ebooks
-    - library
-    - reading
-    - books
-    - self-hosted
+  tags: [ ebooks, library, reading, books, self-hosted ]
   short_description: Browse, read, and download your eBook library online.
   description: Calibre-Web is a web app providing a clean interface for browsing,
     reading, and downloading eBooks using an existing Calibre database. It
     supports OPDS catalog feeds, Kobo sync, user management, and online reading
     via an integrated ebook viewer.
   usecases:
-    - Host a personal eBook library accessible from any browser.
-    - Sync your reading library to Kobo e-readers.
-    - Share your book collection with friends and family.
+    [
+      Host a personal eBook library accessible from any browser.,
+      Sync your reading library to Kobo e-readers.,
+      Share your book collection with friends and family.
+    ]
   website: https://github.com/janeczku/calibre-web
 
 services:

@@ -41,26 +41,18 @@ for (const app of apps) {
     return ka.localeCompare(kb);
   });
 
-  // Find x-yantr and add spaces
+  // Add a blank line before every top-level block (except the first one)
   for (let i = 0; i < doc.contents.items.length; i++) {
     const item = doc.contents.items[i];
-    
-    // Clear any existing spacing first so it's consistent
-    item.key.spaceBefore = false;
-    
-    if (item.key.value === 'x-yantr') {
-      // Add space before x-yantr if it's not the very first item
-      if (i > 0) {
-        item.key.spaceBefore = true;
+    item.key.spaceBefore = (i > 0);
+
+    // Enforce flow sequences (compact arrays) for x-yantr arrays
+    if (item.key.value === 'x-yantr' && item.value && item.value.items) {
+      for (const yantrProp of item.value.items) {
+        if (['tags', 'usecases', 'notes'].includes(yantrProp.key.value) && yantrProp.value && yantrProp.value.items) {
+          yantrProp.value.flow = true;
+        }
       }
-      
-      // Add space after x-yantr (which means space before the next item)
-      if (i + 1 < doc.contents.items.length) {
-        doc.contents.items[i + 1].key.spaceBefore = true;
-      }
-    } else if (i > 0 && doc.contents.items[i - 1].key.value !== 'x-yantr') {
-      // Optionally add spacing between all major blocks (e.g. services, volumes, networks)
-      item.key.spaceBefore = true;
     }
   }
 

@@ -1,11 +1,6 @@
 x-yantr:
   name: Pi-hole
-  tags:
-    - network
-    - security
-    - dns
-    - privacy
-    - adblock
+  tags: [ network, security, dns, privacy, adblock ]
   short_description: Network-wide DNS sinkhole that blocks ads, trackers, and
     malicious domains across all devices.
   description: Pi-hole is a network-wide DNS sinkhole that protects all devices on
@@ -13,21 +8,25 @@ x-yantr:
     It blocks ads, trackers, and malicious domains at the DNS level before they
     can reach your devices. Features include a modern web dashboard showing...
   usecases:
-    - Block ads and tracking across your entire home network by configuring your
-      router to use Pi-hole as its DNS server.
-    - Monitor what domains your devices are connecting to using the real-time
-      query log and statistics dashboard.
-    - Replace your router's DHCP server with Pi-hole's built-in DHCP to
-      automatically direct all devices through ad blocking.
-    - Speed up your network and reduce bandwidth usage by blocking tracking and
-      advertising domains before they load.
+    [
+      Block ads and tracking across your entire home network by configuring
+        your router to use Pi-hole as its DNS server.,
+      Monitor what domains your devices are connecting to using the real-time
+        query log and statistics dashboard.,
+      Replace your router's DHCP server with Pi-hole's built-in DHCP to
+        automatically direct all devices through ad blocking.,
+      Speed up your network and reduce bandwidth usage by blocking tracking
+        and advertising domains before they load.
+    ]
   website: https://docs.pi-hole.net
   logo: QmYbagd1HGhQkxjcgj8KvEGc3ASyubA7MuVSZokJkSmpBr
   notes:
-    - Requires port 53 (DNS) to be available on the host
-    - Configure your router's DHCP to point to Pi-hole as DNS server for
-      network-wide protection
-    - Default web password is set to 'yantr' - change it in production
+    [
+      Requires port 53 (DNS) to be available on the host,
+      Configure your router's DHCP to point to Pi-hole as DNS server for
+        network-wide protection,
+      Default web password is set to 'yantr' - change it in production
+    ]
 
 services:
   pihole:

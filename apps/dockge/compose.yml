@@ -1,11 +1,6 @@
 x-yantr:
   name: Dockge
-  tags:
-    - docker
-    - management
-    - containers
-    - devops
-    - self-hosted
+  tags: [ docker, management, containers, devops, self-hosted ]
   short_description: Elegant Docker Compose management UI for creating and
     managing stacks interactively.
   description: Dockge is a Docker Compose-focused management UI offering a visual
@@ -13,16 +8,20 @@ x-yantr:
     controls (start/stop/restart, logs, shell). It simplifies managing
     compose-based projects with a clean, user-friendly interface.
   usecases:
-    - Create and edit docker-compose.yml files with a visual editor.
-    - Manage your compose stacks - start, stop, restart services.
-    - View logs and access containers directly from the UI.
-    - Organize multiple compose projects in one place.
+    [
+      Create and edit docker-compose.yml files with a visual editor.,
+      "Manage your compose stacks - start, stop, restart services.",
+      View logs and access containers directly from the UI.,
+      Organize multiple compose projects in one place.
+    ]
   website: https://github.com/louislam/dockge
   logo: QmXUGnzPpcRuGks5CJB6we1cFcBW2qPau9FZUs98wPGFJL
   notes:
-    - Requires Docker socket access
-    - Stores compose files in configurable directory
-    - Stack traces from failed deployments shown clearly
+    [
+      Requires Docker socket access,
+      Stores compose files in configurable directory,
+      Stack traces from failed deployments shown clearly
+    ]
 
 services:
   dockge:

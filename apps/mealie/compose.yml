@@ -1,20 +1,17 @@
 x-yantr:
   name: Mealie
-  tags:
-    - recipes
-    - cooking
-    - food
-    - meal-planning
-    - self-hosted
+  tags: [ recipes, cooking, food, meal-planning, self-hosted ]
   short_description: Self-hosted recipe manager and meal planner. with meal planning.
   description: Mealie is a self-hosted recipe manager and meal planner with a REST
     API backend and a reactive frontend. Import recipes from any URL, plan your
     weekly meals, generate shopping lists, and share recipes with your household
     all in one place.
   usecases:
-    - Import and store recipes from any website automatically.
-    - Plan weekly meals and generate shopping lists.
-    - Share a household recipe collection with family members.
+    [
+      Import and store recipes from any website automatically.,
+      Plan weekly meals and generate shopping lists.,
+      Share a household recipe collection with family members.
+    ]
   website: https://mealie.io
 
 services:

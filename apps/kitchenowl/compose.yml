@@ -1,19 +1,16 @@
 x-yantr:
   name: KitchenOwl
-  tags:
-    - kitchen
-    - recipes
-    - shopping
-    - meal-planning
-    - self-hosted
+  tags: [ kitchen, recipes, shopping, meal-planning, self-hosted ]
   short_description: Smart self-hosted kitchen and grocery list manager.
   description: KitchenOwl is a smart self-hosted grocery list and recipe manager.
     Plan meals, track pantry items, generate shopping lists automatically, and
     share with household members for collaborative kitchen management.
   usecases:
-    - Plan weekly meals and generate smart shopping lists.
-    - Store and organize recipes with ingredient tracking.
-    - Share grocery lists with family members in real time.
+    [
+      Plan weekly meals and generate smart shopping lists.,
+      Store and organize recipes with ingredient tracking.,
+      Share grocery lists with family members in real time.
+    ]
   website: https://kitchenowl.org
   env_generators:
     JWT_SECRET_KEY:

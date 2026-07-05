@@ -1,26 +1,25 @@
 x-yantr:
   name: Home Assistant
-  tags:
-    - smart-home
-    - home-automation
-    - iot
-    - self-hosted
-    - automation
+  tags: [ smart-home, home-automation, iot, self-hosted, automation ]
   short_description: Open-source home automation platform for smart home control.
   description: Home Assistant is a powerful open-source home automation platform
     that puts local control and privacy first. Integrate hundreds of smart home
     devices, create automations, and monitor your home from a single dashboard.
     Runs entirely on your local network.
   usecases:
-    - Automate lights, thermostats, and smart plugs based on schedules or
-      triggers.
-    - Monitor sensors and security cameras from a unified dashboard.
-    - Create complex home automation routines without cloud dependency.
+    [
+      "Automate lights, thermostats, and smart plugs based on schedules or
+        triggers.",
+      Monitor sensors and security cameras from a unified dashboard.,
+      Create complex home automation routines without cloud dependency.
+    ]
   website: https://www.home-assistant.io
   logo: QmPgmuH851guhPKsA5hDv78HCiwvL79czkXX8PXY6SSCL1
   notes:
-    - Home Assistant runs in host network mode to discover local devices.
-    - First-time setup wizard is available at port 8123 after startup.
+    [
+      Home Assistant runs in host network mode to discover local devices.,
+      First-time setup wizard is available at port 8123 after startup.
+    ]
 
 services:
   server:

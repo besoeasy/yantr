@@ -1,11 +1,6 @@
 x-yantr:
   name: Bambu Studio
-  tags:
-    - 3d-printing
-    - slicer
-    - self-hosted
-    - webui
-    - docker
+  tags: [ 3d-printing, slicer, self-hosted, webui, docker ]
   short_description: Self-hosted Bambu Studio 3D printing slicer and printer
     management via browser.
   description: Bambu Studio is a self-hosted 3D printing slicer and printer
@@ -13,16 +8,20 @@ x-yantr:
     in the browser. Manage print jobs, configure printer settings, and monitor
     prints from any device.
   usecases:
-    - Slice and prepare 3D models for printing directly from your browser.
-    - Manage multiple Bambu Lab printers and monitor print jobs remotely.
-    - Access your 3D printing workspace from any device without local software
-      installation.
+    [
+      Slice and prepare 3D models for printing directly from your browser.,
+      Manage multiple Bambu Lab printers and monitor print jobs remotely.,
+      Access your 3D printing workspace from any device without local software
+        installation.
+    ]
   website: https://github.com/linuxserver/docker-bambustudio
   logo: Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA
   notes:
-    - Shared memory size is set to 1GB which is required for the slicer engine.
-    - Data persistence is handled through a named Docker volume to preserve
-      settings and projects.
+    [
+      Shared memory size is set to 1GB which is required for the slicer engine.,
+      Data persistence is handled through a named Docker volume to preserve
+        settings and projects.
+    ]
 
 services:
   bambustudio:

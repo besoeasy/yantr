@@ -1,26 +1,20 @@
 x-yantr:
   name: Dashmachine
-  tags:
-    - dashboard
-    - organization
-    - monitoring
-    - utility
-    - homepage
+  tags: [ dashboard, organization, monitoring, utility, homepage ]
   short_description: Application dashboard with bookmarks, media discovery, and sleek UI.
   description: Dashmachine is an application dashboard for organizing bookmarks
     and homelab services with media discovery. It offers drag-and-drop layout,
     favicon fetching, dark/light themes, embedded media information, and easy
     web UI configuration for a polished home screen.
   usecases:
-    - Organize bookmarks with auto-fetched icons.
-    - Track media with embedded information.
-    - Dashboard for homelab services.
+    [
+      Organize bookmarks with auto-fetched icons.,
+      Track media with embedded information.,
+      Dashboard for homelab services.
+    ]
   website: https://github.com/rmountjoy92/dashmachine
   logo: QmTvbLNZMCyEQmcFBbY7EkKq9hnJTPy8ut4hAYRH3Xxaiw
-  notes:
-    - Media discovery features
-    - Bookmark organization
-    - Theme customization
+  notes: [ Media discovery features, Bookmark organization, Theme customization ]
 
 services:
   dashmachine:

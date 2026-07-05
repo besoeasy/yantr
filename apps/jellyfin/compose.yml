@@ -1,11 +1,6 @@
 x-yantr:
   name: Jellyfin
-  tags:
-    - media
-    - entertainment
-    - streaming
-    - video
-    - music
+  tags: [ media, entertainment, streaming, video, music ]
   short_description: Free and open-source media server for streaming movies, TV
     shows, music, and photos to any device.
   description: Jellyfin is a free, open-source media server for streaming and
@@ -13,21 +8,25 @@ x-yantr:
     subtitles, live TV/DVR, hardware transcoding, user management, and broad
     client support—fully local with no premium tiers or telemetry.
   usecases:
-    - Create a personal Netflix-like streaming service for your movie and TV
-      show collection accessible from any device in your home.
-    - Stream your music library with album artwork and artist information to
-      phones, computers, or smart speakers.
-    - Set up live TV recording with DVR functionality using HDHomeRun tuners to
-      record broadcast TV.
-    - Share media with family members through user accounts with parental
-      controls and access restrictions.
+    [
+      Create a personal Netflix-like streaming service for your movie and TV
+        show collection accessible from any device in your home.,
+      "Stream your music library with album artwork and artist information to
+        phones, computers, or smart speakers.",
+      Set up live TV recording with DVR functionality using HDHomeRun tuners
+        to record broadcast TV.,
+      Share media with family members through user accounts with parental
+        controls and access restrictions.
+    ]
   website: https://jellyfin.org/
   logo: QmcsxWwZb9CZYsG5EvAEVwqjEw2FeX3KroZD5rvo87XWMZ
   notes:
-    - Hardware transcoding requires appropriate GPU drivers (Intel Quick Sync,
-      NVIDIA, or VA-API)
-    - Media folders must be mounted with read access for the container
-    - No account required - runs completely locally with no telemetry
+    [
+      "Hardware transcoding requires appropriate GPU drivers (Intel Quick
+        Sync, NVIDIA, or VA-API)",
+      Media folders must be mounted with read access for the container,
+      No account required - runs completely locally with no telemetry
+    ]
 
 services:
   jellyfin:

@@ -1,20 +1,17 @@
 x-yantr:
   name: NocoDB
-  tags:
-    - database
-    - spreadsheet
-    - no-code
-    - productivity
-    - self-hosted
+  tags: [ database, spreadsheet, no-code, productivity, self-hosted ]
   short_description: Open-source Airtable alternative — databases as spreadsheets.
   description: NocoDB is an open-source no-code platform that turns any database
     into a smart spreadsheet interface. Connect to PostgreSQL, MySQL, or SQLite
     and get instant REST APIs, gallery and kanban views, form builders, and team
     collaboration features.
   usecases:
-    - Build no-code apps and forms on top of your existing databases.
-    - Collaborate on structured data with a familiar spreadsheet interface.
-    - Auto-generate REST APIs from any database table instantly.
+    [
+      Build no-code apps and forms on top of your existing databases.,
+      Collaborate on structured data with a familiar spreadsheet interface.,
+      Auto-generate REST APIs from any database table instantly.
+    ]
   website: https://nocodb.com
   env_generators:
     POSTGRES_PASSWORD:

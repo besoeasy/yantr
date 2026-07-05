@@ -1,11 +1,6 @@
 x-yantr:
   name: Specter Desktop
-  tags:
-    - security
-    - tools
-    - bitcoin
-    - crypto
-    - blockchain
+  tags: [ security, tools, bitcoin, crypto, blockchain ]
   short_description: Bitcoin wallet with hardware device support, multisig, and
     air-gapped signing.
   description: Specter Desktop is a beginner-friendly yet powerful Bitcoin wallet
@@ -14,15 +9,19 @@ x-yantr:
     connects to your Bitcoin node for full verification while providing a
     clean...
   usecases:
-    - Manage Bitcoin with hardware wallet.
-    - Set up multisig Bitcoin vault.
-    - Air-gapped transaction signing.
+    [
+      Manage Bitcoin with hardware wallet.,
+      Set up multisig Bitcoin vault.,
+      Air-gapped transaction signing.
+    ]
   website: https://specter.solutions/desktop
   logo: QmdHMdrWHAFAcEpJZgJsv2kFnTZRR5x1A5x12KNHW2LqGY
   notes:
-    - Requires Bitcoin node connection
-    - Hardware wallet support
-    - Multisig capable
+    [
+      Requires Bitcoin node connection,
+      Hardware wallet support,
+      Multisig capable
+    ]
 
 services:
   specter-desktop:

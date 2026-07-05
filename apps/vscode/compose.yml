@@ -1,11 +1,6 @@
 x-yantr:
   name: VS Code
-  tags:
-    - development
-    - terminal
-    - ide
-    - self-hosted
-    - homelab
+  tags: [ development, terminal, ide, self-hosted, homelab ]
   short_description: Web-based VS Code IDE accessible via browser for remote
     development and server management.
   description: A self-hosted VS Code IDE powered by code-server. Full VS Code
@@ -13,25 +8,30 @@ x-yantr:
     extensions. Ideal for remote development and server management from any
     device.
   usecases:
-    - Develop and debug applications remotely using a full-featured IDE
-      accessible through any modern web browser.
-    - Manage servers and configure systems via a secure web-based terminal (use
-      sudo with the install password to become root inside the container).
-    - Collaborate with team members by sharing access to your development
-      environment without requiring local IDE installations.
-    - Work consistently across devices with synchronized settings, extensions,
-      and workspace configurations.
+    [
+      Develop and debug applications remotely using a full-featured IDE
+        accessible through any modern web browser.,
+      Manage servers and configure systems via a secure web-based terminal
+        (use sudo with the install password to become root inside the
+        container).,
+      Collaborate with team members by sharing access to your development
+        environment without requiring local IDE installations.,
+      "Work consistently across devices with synchronized settings,
+        extensions, and workspace configurations."
+    ]
   website: https://github.com/coder/code-server
   logo: QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX
   notes:
-    - The password for the web UI is auto-generated on install (strong random
-      value).
-    - The same password is used for `sudo` inside the integrated terminal (so
-      you can run apt, install packages, etc.).
-    - Data persistence is handled through a named Docker volume to preserve
-      settings and installed extensions.
-    - Access the interface at https://your-domain:8443 or
-      http://your-server-ip:8443 in your browser.
+    [
+      The password for the web UI is auto-generated on install (strong random
+        value).,
+      "The same password is used for `sudo` inside the integrated terminal (so
+        you can run apt, install packages, etc.).",
+      Data persistence is handled through a named Docker volume to preserve
+        settings and installed extensions.,
+      Access the interface at https://your-domain:8443 or
+        http://your-server-ip:8443 in your browser.
+    ]
   env_generators:
     PASSWORD:
       length: 16

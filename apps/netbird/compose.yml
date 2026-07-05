@@ -1,11 +1,6 @@
 x-yantr:
   name: NetBird
-  tags:
-    - networking
-    - vpn
-    - wireguard
-    - mesh
-    - security
+  tags: [ networking, vpn, wireguard, mesh, security ]
   short_description: WireGuard-based mesh VPN that connects all your devices into
     a private network.
   description: NetBird is a zero-config WireGuard mesh VPN that connects your
@@ -14,22 +9,26 @@ x-yantr:
     WireGuard tunnels with NAT traversal, requiring no open ports or central
     traffic relay. Man...
   usecases:
-    - Securely access your home server from anywhere without opening firewall
-      ports.
-    - Connect all your devices (laptops, phones, servers) into one private
-      network.
-    - Replace a traditional VPN with a peer-to-peer WireGuard mesh.
-    - Enforce zero-trust network access policies across your infrastructure.
+    [
+      Securely access your home server from anywhere without opening firewall
+        ports.,
+      "Connect all your devices (laptops, phones, servers) into one private
+        network.",
+      Replace a traditional VPN with a peer-to-peer WireGuard mesh.,
+      Enforce zero-trust network access policies across your infrastructure.
+    ]
   website: https://netbird.io
   notes:
-    - NB_SETUP_KEY must be obtained from your NetBird dashboard at
-      app.netbird.io — generate one under Setup Keys.
-    - Uses host network mode and NET_ADMIN capabilities to manage WireGuard
-      interfaces.
-    - The management server defaults to NetBird cloud — self-host the server for
-      full independence.
-    - No ports are exposed — NetBird operates via outbound WireGuard tunnels
-      only.
+    [
+      NB_SETUP_KEY must be obtained from your NetBird dashboard at
+        app.netbird.io — generate one under Setup Keys.,
+      Uses host network mode and NET_ADMIN capabilities to manage WireGuard
+        interfaces.,
+      The management server defaults to NetBird cloud — self-host the server
+        for full independence.,
+      No ports are exposed — NetBird operates via outbound WireGuard tunnels
+        only.
+    ]
   env_generators:
     NB_SETUP_KEY:
       length: 36

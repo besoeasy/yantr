@@ -1,11 +1,6 @@
 x-yantr:
   name: Bitcoin Knots
-  tags:
-    - cryptocurrency
-    - bitcoin
-    - crypto
-    - blockchain
-    - self-hosted
+  tags: [ cryptocurrency, bitcoin, crypto, blockchain, self-hosted ]
   short_description: Full Bitcoin node with enhanced features, mempool
     visualization, and wallet support.
   description: Bitcoin Knots is a full Bitcoin node implementation providing
@@ -14,16 +9,20 @@ x-yantr:
     and network statistics—enabling privacy-preserving, self-verified Bitcoin
     usage.
   usecases:
-    - Run a full Bitcoin node for maximum privacy and security.
-    - Verify transactions without trusting block explorers.
-    - Use as a backend for wallet applications.
-    - Support the Bitcoin network by relaying transactions.
+    [
+      Run a full Bitcoin node for maximum privacy and security.,
+      Verify transactions without trusting block explorers.,
+      Use as a backend for wallet applications.,
+      Support the Bitcoin network by relaying transactions.
+    ]
   website: https://bitcoinknots.org
   logo: QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ
   notes:
-    - Full sync requires ~600GB+ and growing
-    - Port 8332 for RPC, 8333 for P2P networking
-    - Set RPC credentials for wallet/API access
+    [
+      Full sync requires ~600GB+ and growing,
+      "Port 8332 for RPC, 8333 for P2P networking",
+      Set RPC credentials for wallet/API access
+    ]
   env_generators:
     BITCOIN_RPC_USER:
       length: 8

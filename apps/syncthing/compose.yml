@@ -1,11 +1,6 @@
 x-yantr:
   name: Syncthing
-  tags:
-    - tools
-    - utility
-    - storage
-    - files
-    - self-hosted
+  tags: [ tools, utility, storage, files, self-hosted ]
   short_description: Continuous file synchronization between devices with
     peer-to-peer encryption and no cloud depend...
   description: Syncthing is a continuous file synchronization program that syncs
@@ -14,19 +9,23 @@ x-yantr:
     synced directly between your devices using peer-to-peer connections,
     meani...
   usecases:
-    - Sync your photos from your phone to your home server automatically when on
-      WiFi.
-    - Keep important documents synchronized across your laptop, desktop, and
-      server without using Dropbox or Google Drive.
-    - Create a private backup solution - sync to a secondary device for
-      redundancy.
-    - Share files with family members using device-to-device synchronization.
+    [
+      Sync your photos from your phone to your home server automatically when
+        on WiFi.,
+      "Keep important documents synchronized across your laptop, desktop, and
+        server without using Dropbox or Google Drive.",
+      Create a private backup solution - sync to a secondary device for
+        redundancy.,
+      Share files with family members using device-to-device synchronization.
+    ]
   website: https://syncthing.net/
   logo: Qmd864pdeSwReg9hfWERXdNiDCEqN7w3urE2416cWNGFSm
   notes:
-    - Uses ports 22000 (TCP) and 21027 (UDP) for synchronization
-    - Works behind NAT with proper configuration
-    - No account or cloud required - all peer-to-peer
+    [
+      Uses ports 22000 (TCP) and 21027 (UDP) for synchronization,
+      Works behind NAT with proper configuration,
+      No account or cloud required - all peer-to-peer
+    ]
 
 services:
   syncthing:

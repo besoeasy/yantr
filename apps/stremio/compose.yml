@@ -1,11 +1,6 @@
 x-yantr:
   name: Stremio
-  tags:
-    - media
-    - streaming
-    - video
-    - self-hosted
-    - homelab
+  tags: [ media, streaming, video, self-hosted, homelab ]
   short_description: Media center for streaming with addons - movies, shows, and video content.
   description: Stremio is a media center application that lets you discover and
     watch videos. It supports movies, TV shows, and video content through
@@ -13,24 +8,29 @@ x-yantr:
     streaming backend. Features include addons for various content sources,
     library for...
   usecases:
-    - Organize your video library.
-    - Discover new movies and shows through addons.
-    - Track what you've watched.
+    [
+      Organize your video library.,
+      Discover new movies and shows through addons.,
+      Track what you've watched.
+    ]
   website: https://github.com/Stremio/stremio-web
   logo: QmUJ8LsjmfsZdPybvXWkAJsEJYadr8D6L1iqXvgtC48hfX
   notes:
-    - This deploys the Stremio streaming server only (not the web UI). Use with
-      the Stremio desktop app or web.stremio.com.
-    - HTTP is on port 11470, HTTPS on 12470. These are separate services — do
-      not reverse-proxy both to the HTTP port.
-    - HTTPS needs a Stremio-issued certificate. In the Stremio app, open
-      Settings → Streaming and set your LAN/public IP as the HTTPS endpoint so
-      the server can fetch a cert from api.strem.io.
-    - For web.stremio.com, paste the HTTPS streaming URL
-      (https://your-host:12470-port) into Settings → Streaming → URL. Accept the
-      browser certificate warning on first visit.
-    - NO_CORS is enabled so web.stremio.com can reach your server across origins.
-    - Use responsibly.
+    [
+      This deploys the Stremio streaming server only (not the web UI). Use
+        with the Stremio desktop app or web.stremio.com.,
+      "HTTP is on port 11470, HTTPS on 12470. These are separate services — do
+        not reverse-proxy both to the HTTP port.",
+      "HTTPS needs a Stremio-issued certificate. In the Stremio app, open
+        Settings → Streaming and set your LAN/public IP as the HTTPS endpoint so
+        the server can fetch a cert from api.strem.io.",
+      "For web.stremio.com, paste the HTTPS streaming URL
+        (https://your-host:12470-port) into Settings → Streaming → URL. Accept
+        the browser certificate warning on first visit.",
+      NO_CORS is enabled so web.stremio.com can reach your server across
+        origins.,
+      Use responsibly.
+    ]
 
 services:
   stremio:

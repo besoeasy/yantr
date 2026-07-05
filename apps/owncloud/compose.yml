@@ -1,11 +1,6 @@
 x-yantr:
   name: ownCloud
-  tags:
-    - files
-    - cloud
-    - storage
-    - sync
-    - collaboration
+  tags: [ files, cloud, storage, sync, collaboration ]
   short_description: Self-hosted cloud storage to sync files and collaborate securely.
   description: ownCloud is a self-hosted, enterprise-ready file synchronization
     and sharing platform. It provides a secure space to store, sync, and share
@@ -13,16 +8,20 @@ x-yantr:
     to Google Drive or Dropbox, ownCloud gives you complete control over your
     data. It...
   usecases:
-    - Sync files seamlessly across Windows, macOS, Linux, iOS, and Android.
-    - Share files securely with external users via password-protected links.
-    - Host a private alternative to Google Drive or Dropbox.
-    - Back up your photos and documents automatically from your mobile device.
+    [
+      "Sync files seamlessly across Windows, macOS, Linux, iOS, and Android.",
+      Share files securely with external users via password-protected links.,
+      Host a private alternative to Google Drive or Dropbox.,
+      Back up your photos and documents automatically from your mobile device.
+    ]
   website: https://owncloud.com
   notes:
-    - The default admin username is 'admin'. The password is generated at deploy
-      time.
-    - You can customize OWNCLOUD_DOMAIN in the deploy form if you plan to expose
-      it to the internet.
+    [
+      The default admin username is 'admin'. The password is generated at
+        deploy time.,
+      You can customize OWNCLOUD_DOMAIN in the deploy form if you plan to
+        expose it to the internet.
+    ]
   env_generators:
     DB_PASSWORD:
       length: 32

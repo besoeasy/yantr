@@ -1,11 +1,6 @@
 x-yantr:
   name: n8n
-  tags:
-    - productivity
-    - tools
-    - automation
-    - workflow
-    - self-hosted
+  tags: [ productivity, tools, automation, workflow, self-hosted ]
   short_description: Powerful workflow automation platform with 400+ integrations
     and no-code automation builder.
   description: n8n is a self-hosted workflow automation platform with a visual
@@ -13,20 +8,24 @@ x-yantr:
     triggers, error handling, and complex logic—useful for automating
     notifications, data sync, backups, reporting, and AI-enhanced workflows.
   usecases:
-    - Automate notifications by connecting services - get Slack alerts when
-      GitHub issues are created or when a sensor triggers.
-    - Sync data between apps - automatically copy new rows from Airtable to
-      Google Sheets, or backup form submissions to a database.
-    - Create self-service portals - let users trigger predefined workflows
-      without technical knowledge.
-    - Build AI workflows - chain LLM calls, vector databases, and other AI
-      services for document processing or chatbots.
+    [
+      Automate notifications by connecting services - get Slack alerts when
+        GitHub issues are created or when a sensor triggers.,
+      "Sync data between apps - automatically copy new rows from Airtable to
+        Google Sheets, or backup form submissions to a database.",
+      Create self-service portals - let users trigger predefined workflows
+        without technical knowledge.,
+      "Build AI workflows - chain LLM calls, vector databases, and other AI
+        services for document processing or chatbots."
+    ]
   website: https://docs.n8n.io
   logo: QmT4ncfKSqhVEpoQi7FZpzyRyHemgXDjqXX896esZtMxGM
   notes:
-    - Data stays on your server - no cloud dependency for automation logic
-    - Webhooks can trigger workflows in real-time
-    - Can be exposed for external triggers or used internally only
+    [
+      Data stays on your server - no cloud dependency for automation logic,
+      Webhooks can trigger workflows in real-time,
+      Can be exposed for external triggers or used internally only
+    ]
 
 services:
   n8n:

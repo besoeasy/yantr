@@ -1,37 +1,36 @@
 x-yantr:
   name: Gitea Mirror
-  tags:
-    - git
-    - backup
-    - mirror
-    - gitea
-    - github
+  tags: [ git, backup, mirror, gitea, github ]
   short_description: Mirror GitHub repositories to a self-hosted Gitea or Forgejo instance.
   description: Gitea Mirror synchronizes GitHub repositories (public and private)
     to a Gitea or Forgejo instance. It supports scheduled mirroring, metadata
     sync (issues, PRs, wikis, releases), Git LFS, organization mirroring, and a
     dashboard for monitoring sync status.
   usecases:
-    - Keep a complete backup of all your GitHub repositories on your own Gitea
-      server, updated automatically on a schedule.
-    - Mirror entire GitHub organizations to Gitea with flexible destination
-      strategies (preserve structure, single org, or flat user).
-    - Sync issues, pull requests, labels, milestones, and wikis alongside code
-      for a full metadata backup.
-    - Use as a disaster-recovery solution so your code remains accessible even
-      if GitHub is unavailable.
+    [
+      "Keep a complete backup of all your GitHub repositories on your own
+        Gitea server, updated automatically on a schedule.",
+      "Mirror entire GitHub organizations to Gitea with flexible destination
+        strategies (preserve structure, single org, or flat user).",
+      "Sync issues, pull requests, labels, milestones, and wikis alongside
+        code for a full metadata backup.",
+      Use as a disaster-recovery solution so your code remains accessible even
+        if GitHub is unavailable.
+    ]
   website: https://giteamirror.com/
   logo: QmVVPpyw3Utk6MbSsmvCJEsEbmcvnBiH6CmM3AjSyzeLCX
   notes:
-    - First user to sign up becomes the admin — secure the instance immediately
-      after first launch
-    - Set BETTER_AUTH_SECRET to a long random string in production for secure
-      session signing
-    - Configure GitHub token and Gitea connection through the web UI after
-      starting
-    - Supports automatic repo discovery and cleanup of repos deleted from GitHub
-      (v3.4.0+)
-    - Git LFS mirroring requires LFS to be enabled on your Gitea server
+    [
+      First user to sign up becomes the admin — secure the instance
+        immediately after first launch,
+      Set BETTER_AUTH_SECRET to a long random string in production for secure
+        session signing,
+      Configure GitHub token and Gitea connection through the web UI after
+        starting,
+      Supports automatic repo discovery and cleanup of repos deleted from
+        GitHub (v3.4.0+),
+      Git LFS mirroring requires LFS to be enabled on your Gitea server
+    ]
   env_generators:
     BETTER_AUTH_SECRET:
       length: 48

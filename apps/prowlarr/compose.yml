@@ -1,11 +1,6 @@
 x-yantr:
   name: Prowlarr
-  tags:
-    - media
-    - tools
-    - torrent
-    - download
-    - p2p
+  tags: [ media, tools, torrent, download, p2p ]
   short_description: Unified indexer manager for both Usenet and BitTorrent with
     PVR app integration.
   description: Prowlarr is an indexer manager that supports both Usenet and
@@ -14,16 +9,20 @@ x-yantr:
     BitTorrent trackers through a unified API. Unlike Jackett which only
     supports BitTorren...
   usecases:
-    - Manage all your Usenet and BitTorrent indexers in one place.
-    - Connect Sonarr/Radarr to both Usenet and torrent sources.
-    - Monitor which indexers are working and which are down.
-    - Auto-discover new releases across all your indexers.
+    [
+      Manage all your Usenet and BitTorrent indexers in one place.,
+      Connect Sonarr/Radarr to both Usenet and torrent sources.,
+      Monitor which indexers are working and which are down.,
+      Auto-discover new releases across all your indexers.
+    ]
   website: https://github.com/linuxserver/docker-prowlarr
   logo: Qma8EiYwcHKzMtqS8vbvtGCtRApdWnhMszeZCECuuoMzz7
   notes:
-    - Supports both Usenet (NZB) and BitTorrent protocols
-    - Replaces both NZBHydra2 and Jackett
-    - Single API key for all your PVR apps to use
+    [
+      Supports both Usenet (NZB) and BitTorrent protocols,
+      Replaces both NZBHydra2 and Jackett,
+      Single API key for all your PVR apps to use
+    ]
 
 services:
   prowlarr:

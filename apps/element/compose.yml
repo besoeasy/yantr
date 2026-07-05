@@ -1,11 +1,6 @@
 x-yantr:
   name: Element
-  tags:
-    - productivity
-    - security
-    - chat
-    - messaging
-    - communication
+  tags: [ productivity, security, chat, messaging, communication ]
   short_description: Feature-rich Matrix client for secure, decentralized chat,
     voice, and video communication.
   description: Element is a Matrix-based secure, decentralized chat client
@@ -13,18 +8,23 @@ x-yantr:
     calls, file sharing, and bridges to other networks. Host your own homeserver
     for full control and synchronized history across devices.
   usecases:
-    - Set up a private family chat server with end-to-end encryption.
-    - Create a team communication platform for your projects without data
-      leaving your infrastructure.
-    - Join the wider Matrix network to communicate with users on other servers.
-    - Use bridges to connect with Slack, Discord, Telegram, and other platforms.
+    [
+      Set up a private family chat server with end-to-end encryption.,
+      Create a team communication platform for your projects without data
+        leaving your infrastructure.,
+      Join the wider Matrix network to communicate with users on other servers.,
+      "Use bridges to connect with Slack, Discord, Telegram, and other
+        platforms."
+    ]
   website: https://element.io
   logo: QmWMcjdA7izomrqwuW6D8JT8y75K7jCANqnDMYxZRzmzHU
   notes:
-    - This is just the web client - requires a Matrix homeserver (Synapse) for
-      full functionality
-    - End-to-end encrypted by default for direct messages and group chats
-    - Can connect to the public Matrix network or your own private server
+    [
+      This is just the web client - requires a Matrix homeserver (Synapse) for
+        full functionality,
+      End-to-end encrypted by default for direct messages and group chats,
+      Can connect to the public Matrix network or your own private server
+    ]
 
 services:
   element:

@@ -1,26 +1,25 @@
 x-yantr:
   name: Deluge
-  tags:
-    - download
-    - utility
-    - torrent
-    - p2p
-    - self-hosted
+  tags: [ download, utility, torrent, p2p, self-hosted ]
   short_description: Full-featured cross-platform BitTorrent client with plugin support.
   description: Deluge is a lightweight BitTorrent client that runs as a daemon
     with a web UI. It provides a plugin system, remote management, DHT and peer
     exchange, encryption, bandwidth scheduling, and RSS support—suitable for
     low-memory servers.
   usecases:
-    - Download torrents with powerful client.
-    - Use plugins for extended features.
-    - Remote torrent management.
+    [
+      Download torrents with powerful client.,
+      Use plugins for extended features.,
+      Remote torrent management.
+    ]
   website: https://deluge-torrent.org/
   logo: QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33
   notes:
-    - Web UI on port 8112
-    - Default password is 'deluge'
-    - Plugin ecosystem available
+    [
+      Web UI on port 8112,
+      Default password is 'deluge',
+      Plugin ecosystem available
+    ]
 
 services:
   deluge:

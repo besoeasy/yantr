@@ -1,11 +1,6 @@
 x-yantr:
   name: MinIO
-  tags:
-    - utility
-    - tools
-    - storage
-    - files
-    - self-hosted
+  tags: [ utility, tools, storage, files, self-hosted ]
   short_description: High-performance S3-compatible object storage for building
     scalable storage solutions.
   description: MinIO is a high-performance, S3-compatible object storage server
@@ -13,16 +8,20 @@ x-yantr:
     coding, IAM, replication, versioning, encryption, and an administrative
     console—compatible with S3 clients and Kubernetes deployments.
   usecases:
-    - Build a private cloud storage solution compatible with S3 applications.
-    - Store backups, archives, or media files with scalable object storage.
-    - Use as the backend for Nextcloud's external storage.
-    - Run AI/ML workloads that need S3-compatible storage for datasets.
+    [
+      Build a private cloud storage solution compatible with S3 applications.,
+      "Store backups, archives, or media files with scalable object storage.",
+      Use as the backend for Nextcloud's external storage.,
+      Run AI/ML workloads that need S3-compatible storage for datasets.
+    ]
   website: https://min.io
   logo: QmWgS8CxKS7UYSgNNp6nqsTLYwMF5tk8cQfroTgyvxsbQ7
   notes:
-    - Console runs on port 9001, API on port 9000
-    - Default credentials are minioadmin/minioadmin - change in production
-    - Distributed mode available for multi-node deployments
+    [
+      "Console runs on port 9001, API on port 9000",
+      Default credentials are minioadmin/minioadmin - change in production,
+      Distributed mode available for multi-node deployments
+    ]
 
 services:
   minio:

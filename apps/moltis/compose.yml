@@ -1,21 +1,19 @@
 x-yantr:
   name: Moltis
-  tags:
-    - ai
-    - tools
-    - docker
-    - containers
-    - devops
+  tags: [ ai, tools, docker, containers, devops ]
   short_description: Self-hosted Moltis server with web UI and Docker access.
   description: Self-hosted Moltis server with web UI and Docker access. Moltis is
     a self-hosted application focused on ai, tools, docker, containers. It can
     be deployed on any device via Docker Compose. It supports a wide range of
     use cases for homelabs and self-hosted infrastructure.
   usecases:
-    - Self-host Moltis on your home server to self-hosted moltis server with web
-      ui and docker access without depending on third-party cloud services.
-    - Use Moltis to manage your ai workflows privately, keeping all data under
-      your control on local infrastructure.
+    [
+      Self-host Moltis on your home server to self-hosted moltis server with
+        web ui and docker access without depending on third-party cloud
+        services.,
+      "Use Moltis to manage your ai workflows privately, keeping all data
+        under your control on local infrastructure."
+    ]
   website: https://github.com/moltis-org/moltis
   logo: Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd
 

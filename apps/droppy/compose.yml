@@ -1,11 +1,6 @@
 x-yantr:
   name: Droppy
-  tags:
-    - file-manager
-    - utility
-    - storage
-    - files
-    - self-hosted
+  tags: [ file-manager, utility, storage, files, self-hosted ]
   short_description: Self-hosted file manager with upload, download, sharing, and
     collaboration features.
   description: Droppy is a self-hosted file manager for uploading, downloading,
@@ -13,15 +8,19 @@ x-yantr:
     creation, previews, shareable links, user authentication, and activity logs,
     offering a clean responsive UI for small groups.
   usecases:
-    - Share files with generate shareable links.
-    - Upload and organize files through browser.
-    - Simple file hosting for small groups.
+    [
+      Share files with generate shareable links.,
+      Upload and organize files through browser.,
+      Simple file hosting for small groups.
+    ]
   website: https://github.com/silverwind/droppy
   logo: Qme6oZNcBv7JN97qa66RiKE7UwpxxcVGbdRz395uaSPMPM
   notes:
-    - User authentication available
-    - Share links with expiration
-    - File preview support
+    [
+      User authentication available,
+      Share links with expiration,
+      File preview support
+    ]
 
 services:
   droppy:

@@ -1,21 +1,18 @@
 x-yantr:
   name: Appsmith
-  tags:
-    - productivity
-    - development
-    - git
-    - devops
-    - self-hosted
+  tags: [ productivity, development, git, devops, self-hosted ]
   short_description: Low-code internal tools platform for rapid application development.
   description: Low-code internal tools platform for rapid application development.
     Appsmith is a self-hosted application focused on productivity, development,
     git, devops. It can be deployed on any device via Docker Compose.
   usecases:
-    - Self-host Appsmith on your home server to low-code internal tools platform
-      for rapid application development without depending on third-party cloud
-      services.
-    - Use Appsmith to manage your productivity workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      Self-host Appsmith on your home server to low-code internal tools
+        platform for rapid application development without depending on
+        third-party cloud services.,
+      "Use Appsmith to manage your productivity workflows privately, keeping
+        all data under your control on local infrastructure."
+    ]
   website: https://github.com/appsmithorg/appsmith
   logo: QmcEzSU5HXbZ9jiG6ZAY4PrqHRq2ddhQnfT2gcpXg34kuy
 

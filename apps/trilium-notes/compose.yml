@@ -1,20 +1,17 @@
 x-yantr:
   name: Trilium Notes
-  tags:
-    - notes
-    - knowledge-base
-    - personal-wiki
-    - productivity
-    - self-hosted
+  tags: [ notes, knowledge-base, personal-wiki, productivity, self-hosted ]
   short_description: Hierarchical note-taking app for large personal knowledge bases.
   description: Trilium Notes is a hierarchical note-taking application with a
     focus on building large personal knowledge bases. It features rich text and
     code notes, note relationships, scripting with JavaScript, end-to-end
     encryption, and sync across multiple devices.
   usecases:
-    - Build a personal knowledge base with hierarchical organization.
-    - Write and store code snippets with syntax highlighting.
-    - Map relationships between notes with a visual note map.
+    [
+      Build a personal knowledge base with hierarchical organization.,
+      Write and store code snippets with syntax highlighting.,
+      Map relationships between notes with a visual note map.
+    ]
   website: https://github.com/TriliumNext/Notes
 
 services:

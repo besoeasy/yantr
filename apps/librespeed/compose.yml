@@ -1,27 +1,26 @@
 x-yantr:
   name: LibreSpeed
-  tags:
-    - network
-    - tools
-    - utility
-    - speedtest
-    - self-hosted
+  tags: [ network, tools, utility, speedtest, self-hosted ]
   short_description: Self-hosted internet speed test with detailed metrics and no tracking.
   description: LibreSpeed is a self-hosted internet speed test that measures
     download/upload, ping, and jitter with no tracking. It offers multiple test
     sizes, optional result history with a backend, and a clean UI—useful for
     private network benchmarking and ISP troubleshooting.
   usecases:
-    - Test your home internet connection speed privately.
-    - Monitor network performance over time with regular tests.
-    - Test speed between different network locations.
-    - Share a private speed test with your ISP for troubleshooting.
+    [
+      Test your home internet connection speed privately.,
+      Monitor network performance over time with regular tests.,
+      Test speed between different network locations.,
+      Share a private speed test with your ISP for troubleshooting.
+    ]
   website: https://github.com/librespeed/speedtest
   logo: QmSPU6HmY4jRjanybWFDGQapEbSoY6ii4nc7MSUjicS5Xd
   notes:
-    - No tracking or data collection - runs entirely locally
-    - Works on desktop and mobile browsers
-    - Multiple test file sizes available
+    [
+      No tracking or data collection - runs entirely locally,
+      Works on desktop and mobile browsers,
+      Multiple test file sizes available
+    ]
 
 services:
   speedtest:

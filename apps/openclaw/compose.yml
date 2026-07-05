@@ -1,11 +1,6 @@
 x-yantr:
   name: OpenClaw
-  tags:
-    - ai
-    - tools
-    - utility
-    - self-hosted
-    - homelab
+  tags: [ ai, tools, utility, self-hosted, homelab ]
   short_description: Personal AI assistant — Gateway control plane with
     multi-channel inbox (WhatsApp, Telegram, Slack...
   description: Personal AI assistant — Gateway control plane with multi-channel
@@ -13,11 +8,13 @@ x-yantr:
     focused on ai, tools, utility, self-hosted. It can be deployed on any device
     via Docker Compose.
   usecases:
-    - Self-host OpenClaw on your home server to personal ai assistant — gateway
-      control plane with multi-channel inbox (whatsapp, telegram, slack..
-      without depending on third-party cloud services.
-    - Use OpenClaw to manage your ai workflows privately, keeping all data under
-      your control on local infrastructure.
+    [
+      "Self-host OpenClaw on your home server to personal ai assistant —
+        gateway control plane with multi-channel inbox (whatsapp, telegram,
+        slack.. without depending on third-party cloud services.",
+      "Use OpenClaw to manage your ai workflows privately, keeping all data
+        under your control on local infrastructure."
+    ]
   website: https://openclaw.ai
   logo: QmRdr8gQqpGLXkZc53NcQV3i71931yNQqYrLhpaWEpTMwp
 

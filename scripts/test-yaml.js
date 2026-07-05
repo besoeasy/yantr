@@ -1,22 +1,14 @@
-import fs from 'fs';
 import YAML from 'yaml';
 
-const doc = YAML.parseDocument(`services:
+const doc = YAML.parseDocument(`x-yantr:
+  name: "Test"
+services:
   app:
     image: nginx
-x-yantr:
-  name: "Test"
-volumes:
-  data:
 `);
 
-// Sort top-level keys
-doc.contents.items.sort((a, b) => a.key.value.localeCompare(b.key.value));
-
-for (const item of doc.contents.items) {
-  if (item.key.value === 'x-yantr') {
-    item.key.spaceBefore = true; // Adds blank line before
-  }
-}
+doc.contents.items.forEach((item, i) => {
+  item.key.spaceBefore = true;
+});
 
 console.log(doc.toString());

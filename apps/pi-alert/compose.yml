@@ -1,11 +1,6 @@
 x-yantr:
   name: Pi.Alert
-  tags:
-    - network
-    - monitoring
-    - security
-    - dashboard
-    - utility
+  tags: [ network, monitoring, security, dashboard, utility ]
   short_description: Network scanner that detects devices, alerts on new
     connections, and tracks device history.
   description: Pi.Alert is a powerful network monitoring tool that continuously
@@ -14,16 +9,20 @@ x-yantr:
     devices appear or unknown devices connect. Features include automatic
     device...
   usecases:
-    - Monitor your home network for new device connections.
-    - Get alerts when unknown devices connect to your WiFi.
-    - Track device history - when devices joined and last seen.
-    - Identify all devices on your network with vendor recognition.
+    [
+      Monitor your home network for new device connections.,
+      Get alerts when unknown devices connect to your WiFi.,
+      Track device history - when devices joined and last seen.,
+      Identify all devices on your network with vendor recognition.
+    ]
   website: https://github.com/jokobsk/pi.alert
   logo: QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3
   notes:
-    - Scans via ARP to discover all devices on network
-    - Sends notifications via webhooks
-    - Database of device history over time
+    [
+      Scans via ARP to discover all devices on network,
+      Sends notifications via webhooks,
+      Database of device history over time
+    ]
 
 services:
   pi-alert:

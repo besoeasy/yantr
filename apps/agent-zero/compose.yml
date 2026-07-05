@@ -1,31 +1,31 @@
 x-yantr:
   name: Agent Zero
-  tags:
-    - ai
-    - agent
-    - llm
-    - automation
-    - self-hosted
+  tags: [ ai, agent, llm, automation, self-hosted ]
   short_description: Self-hosted autonomous AI agent framework with a web interface.
   description: Agent Zero is an open-source AI agent framework with a
     browser-based interface to define, run, and chain agents for tasks like
     research, coding, and file management — entirely on your own hardware, with
     no data sent to third-party cloud services.
   usecases:
-    - Run autonomous AI agents locally to perform multi-step tasks such as web
-      research, code generation, or file operations without relying on cloud
-      providers.
-    - Build and chain custom agent workflows that combine multiple tools and LLM
-      calls to automate repetitive or complex tasks.
-    - Experiment with different LLM backends (OpenAI, Ollama, etc.) by pointing
-      Agent Zero at your preferred model endpoint.
+    [
+      "Run autonomous AI agents locally to perform multi-step tasks such as
+        web research, code generation, or file operations without relying on
+        cloud providers.",
+      Build and chain custom agent workflows that combine multiple tools and
+        LLM calls to automate repetitive or complex tasks.,
+      "Experiment with different LLM backends (OpenAI, Ollama, etc.) by
+        pointing Agent Zero at your preferred model endpoint."
+    ]
   website: https://github.com/agent0ai/agent-zero
   logo: QmRBVG7DQaWrFKa6aj9pmqshzJSL1TzSkBZTYJqvj1rrSw
   notes:
-    - Set ALLOWED_ORIGINS to a comma-separated list of allowed origins (e.g.
-      http://192.168.1.10:3005) to restrict access. Defaults to * (all origins).
-    - Agent Zero can execute code and shell commands inside its container — only
-      expose it on a trusted network.
+    [
+      Set ALLOWED_ORIGINS to a comma-separated list of allowed origins (e.g.
+        http://192.168.1.10:3005) to restrict access. Defaults to * (all
+        origins).,
+      Agent Zero can execute code and shell commands inside its container —
+        only expose it on a trusted network.
+    ]
 
 services:
   agent-zero:

@@ -1,11 +1,6 @@
 x-yantr:
   name: Transmission
-  tags:
-    - download
-    - network
-    - torrent
-    - p2p
-    - self-hosted
+  tags: [ download, network, torrent, p2p, self-hosted ]
   short_description: Fast, lightweight BitTorrent client with web interface and
     native Docker support.
   description: Transmission is a fast, lightweight BitTorrent client that runs as
@@ -14,19 +9,23 @@ x-yantr:
     management, magnet link support, peer exchange, DHT, encryption, bandwidth
     scheduling,...
   usecases:
-    - Download Linux ISOs, open-source software, and public domain media via
-      BitTorrent.
-    - Set up automated downloads using watch folders - drop a .torrent file and
-      it starts downloading automatically.
-    - Build a headless download server that runs in the background and can be
-      controlled from any browser.
-    - Integrate with Sonarr/Radarr for automated media downloading.
+    [
+      "Download Linux ISOs, open-source software, and public domain media via
+        BitTorrent.",
+      Set up automated downloads using watch folders - drop a .torrent file
+        and it starts downloading automatically.,
+      Build a headless download server that runs in the background and can be
+        controlled from any browser.,
+      Integrate with Sonarr/Radarr for automated media downloading.
+    ]
   website: https://transmissionbt.com/
   logo: QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ
   notes:
-    - Web interface runs on port 9091 by default
-    - Peer port is 51413 - needs to be accessible for optimal downloads
-    - LinuxServer.io image includes VPN and automatic cleanup features
+    [
+      Web interface runs on port 9091 by default,
+      Peer port is 51413 - needs to be accessible for optimal downloads,
+      LinuxServer.io image includes VPN and automatic cleanup features
+    ]
   env_generators:
     TRANSMISSION_USER:
       length: 8

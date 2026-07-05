@@ -1,11 +1,6 @@
 x-yantr:
   name: Obsidian
-  tags:
-    - notes
-    - knowledge
-    - markdown
-    - productivity
-    - writing
+  tags: [ notes, knowledge, markdown, productivity, writing ]
   short_description: Private, flexible markdown knowledge base that runs in your browser.
   description: Obsidian is a powerful knowledge management app built on plain
     Markdown files. This self-hosted version runs via KasmVNC, delivering the
@@ -13,15 +8,21 @@ x-yantr:
     in a Docker volume — never on someone else's server. Supports thousands of
     community...
   usecases:
-    - Build a personal knowledge base with linked notes and graph view.
-    - Write long-form content, journals, or documentation in Markdown.
-    - Use community plugins for tasks, calendars, and Kanban boards.
-    - Access your full Obsidian vault remotely from any browser.
+    [
+      Build a personal knowledge base with linked notes and graph view.,
+      "Write long-form content, journals, or documentation in Markdown.",
+      "Use community plugins for tasks, calendars, and Kanban boards.",
+      Access your full Obsidian vault remotely from any browser.
+    ]
   website: https://obsidian.md
   notes:
-    - Runs Obsidian as a full desktop app via KasmVNC — access it in any browser.
-    - Requires seccomp:unconfined for the browser sandbox to function correctly.
-    - Your vault is stored in the obsidian_config volume under /config/vaults.
+    [
+      Runs Obsidian as a full desktop app via KasmVNC — access it in any
+        browser.,
+      Requires seccomp:unconfined for the browser sandbox to function
+        correctly.,
+      Your vault is stored in the obsidian_config volume under /config/vaults.
+    ]
 
 services:
   obsidian:

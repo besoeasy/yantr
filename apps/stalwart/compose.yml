@@ -1,11 +1,6 @@
 x-yantr:
   name: Stalwart
-  tags:
-    - email
-    - mail
-    - smtp
-    - imap
-    - self-hosted
+  tags: [ email, mail, smtp, imap, self-hosted ]
   short_description: All-in-one mail and collaboration server with SMTP, IMAP, and CalDAV.
   description: Stalwart is a fast, secure, and scalable open-source mail server
     built in Rust. It supports the full email protocol stack — JMAP, IMAP4,
@@ -13,20 +8,24 @@ x-yantr:
     sharing. Features include AI-powered spam filtering, DNS blocklists,
     greylisting, buil...
   usecases:
-    - Host your own email server with full SMTP, IMAP, and POP3 support.
-    - Share calendars and contacts via CalDAV and CardDAV protocols.
-    - Block spam and phishing with AI-powered filtering and DNS blocklists.
-    - Manage multiple email domains and users from the web admin dashboard.
+    [
+      "Host your own email server with full SMTP, IMAP, and POP3 support.",
+      Share calendars and contacts via CalDAV and CardDAV protocols.,
+      Block spam and phishing with AI-powered filtering and DNS blocklists.,
+      Manage multiple email domains and users from the web admin dashboard.
+    ]
   website: https://stalw.art
   notes:
-    - Port 25 (SMTP) may be blocked by your ISP or cloud provider — check before
-      deploying.
-    - Log in to the admin UI at port 8080 with username 'admin' and your
-      generated ADMIN_PASSWORD.
-    - Point MX, SPF, DKIM, and DMARC DNS records at your server IP for reliable
-      email delivery.
-    - CalDAV, CardDAV, and WebDAV are available alongside standard email
-      protocols.
+    [
+      Port 25 (SMTP) may be blocked by your ISP or cloud provider — check
+        before deploying.,
+      Log in to the admin UI at port 8080 with username 'admin' and your
+        generated ADMIN_PASSWORD.,
+      "Point MX, SPF, DKIM, and DMARC DNS records at your server IP for
+        reliable email delivery.",
+      "CalDAV, CardDAV, and WebDAV are available alongside standard email
+        protocols."
+    ]
   env_generators:
     ADMIN_PASSWORD:
       length: 24

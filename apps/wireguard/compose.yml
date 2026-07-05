@@ -1,11 +1,6 @@
 x-yantr:
   name: WireGuard
-  tags:
-    - network
-    - security
-    - vpn
-    - privacy
-    - self-hosted
+  tags: [ network, security, vpn, privacy, self-hosted ]
   short_description: Fast, modern VPN with state-of-the-art cryptography for
     secure remote network access.
   description: WireGuard is a fast, modern, and secure VPN protocol that uses
@@ -14,20 +9,25 @@ x-yantr:
     wg-easy web UI for easy management. WireGuard is significantly faster than
     Ope...
   usecases:
-    - Access your home network remotely by connecting to your WireGuard VPN from
-      anywhere in the world.
-    - Securely access self-hosted services (like Home Assistant, Jellyfin,
-      Nextcloud) while traveling without exposing them to the public internet.
-    - Protect your browsing on public WiFi by routing all traffic through your
-      encrypted home connection.
-    - Create site-to-site VPNs to connect multiple locations (home office,
-      parent's house) into one network.
+    [
+      Access your home network remotely by connecting to your WireGuard VPN
+        from anywhere in the world.,
+      "Securely access self-hosted services (like Home Assistant, Jellyfin,
+        Nextcloud) while traveling without exposing them to the public
+        internet.",
+      Protect your browsing on public WiFi by routing all traffic through your
+        encrypted home connection.,
+      "Create site-to-site VPNs to connect multiple locations (home office,
+        parent's house) into one network."
+    ]
   website: https://www.wireguard.com
   logo: QmYvWBezgveN9KZARJeAczC6p8mUMsYAwLyV8NKRNHKNCi
   notes:
-    - Requires UDP port 51820 open in your firewall for VPN connections
-    - Admin panel runs on port 51821 (HTTPS recommended in production)
-    - Each client needs a QR code or config file to connect
+    [
+      Requires UDP port 51820 open in your firewall for VPN connections,
+      Admin panel runs on port 51821 (HTTPS recommended in production),
+      Each client needs a QR code or config file to connect
+    ]
 
 services:
   wireguard:

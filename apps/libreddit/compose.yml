@@ -1,26 +1,20 @@
 x-yantr:
   name: LibReddit
-  tags:
-    - social
-    - privacy
-    - self-hosted
-    - homelab
-    - docker
+  tags: [ social, privacy, self-hosted, homelab, docker ]
   short_description: Private Reddit frontend - no ads, no tracking, no JavaScript required.
   description: LibReddit is a privacy-focused Reddit frontend that strips ads,
     tracking, and JavaScript for a fast, lightweight browsing experience. It
     supports browsing, posting, voting, content filtering, and media
     previews—ideal for privacy-conscious users.
   usecases:
-    - Browse Reddit without ads or tracking.
-    - Faster, cleaner Reddit interface.
-    - Use as alternative to official Reddit.
+    [
+      Browse Reddit without ads or tracking.,
+      "Faster, cleaner Reddit interface.",
+      Use as alternative to official Reddit.
+    ]
   website: https://github.com/spikecodes/libreddit
   logo: QmTieAKkWAmA12gchbEJiBGZZK64hsuKQYRtSbibJ9qWxF
-  notes:
-    - No JavaScript - works without it
-    - Zero tracking
-    - Fast and lightweight
+  notes: [ No JavaScript - works without it, Zero tracking, Fast and lightweight ]
 
 services:
   libreddit:

@@ -1,11 +1,6 @@
 x-yantr:
   name: SwingMusic
-  tags:
-    - media
-    - entertainment
-    - music
-    - audio
-    - self-hosted
+  tags: [ media, entertainment, music, audio, self-hosted ]
   short_description: Modern self-hosted music player with clean interface and audio visualization.
   description: SwingMusic is a beautiful, modern music player for your self-hosted
     music library. It features a clean minimalist interface, gapless playback,
@@ -13,15 +8,19 @@ x-yantr:
     visualization. Simply point it to your music folder and enjoy. Supports
     common...
   usecases:
-    - Stream your local music collection from any browser.
-    - Create playlists and manage your music library.
-    - Enjoy gapless playback with modern UI.
+    [
+      Stream your local music collection from any browser.,
+      Create playlists and manage your music library.,
+      Enjoy gapless playback with modern UI.
+    ]
   website: https://swingmusic.vercel.app/
   logo: QmVWKyW9G8C4zxCDMMutg7eSNuugdAzUUNwzhbvjkv6j1o
   notes:
-    - Mount music folder for library
-    - Reads metadata automatically
-    - Responsive mobile-friendly UI
+    [
+      Mount music folder for library,
+      Reads metadata automatically,
+      Responsive mobile-friendly UI
+    ]
 
 services:
   swingmusic:

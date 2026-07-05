@@ -1,25 +1,24 @@
 x-yantr:
   name: Miniflux
-  tags:
-    - rss
-    - news
-    - reading
-    - utility
-    - productivity
+  tags: [ rss, news, reading, utility, productivity ]
   short_description: Minimalist self-hosted RSS reader with focus mode and keyboard navigation.
   description: Miniflux is a fast and minimal RSS reader with an emphasis on
     usability and privacy. It supports managing subscriptions, auto-refresh
     schedules, and read/unread state in a clean interface that runs entirely in
     the browser.
   usecases:
-    - Centralize RSS feeds into one lightweight self-hosted interface.
-    - Read articles distraction-free with built-in keyboard shortcuts.
-    - Share feeds and integrations with automation pipelines.
+    [
+      Centralize RSS feeds into one lightweight self-hosted interface.,
+      Read articles distraction-free with built-in keyboard shortcuts.,
+      Share feeds and integrations with automation pipelines.
+    ]
   website: https://miniflux.app/
   logo: QmMinifluxLogoCID1234567890abcdef1234567890abc
   notes:
-    - Set a secure ADMIN_PASSWORD before public exposure.
-    - Store feed database backups from Postgres data volume.
+    [
+      Set a secure ADMIN_PASSWORD before public exposure.,
+      Store feed database backups from Postgres data volume.
+    ]
 
 services:
   miniflux-db:

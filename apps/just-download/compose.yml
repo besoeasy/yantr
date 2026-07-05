@@ -1,21 +1,18 @@
 x-yantr:
   name: Just. Download.
-  tags:
-    - media
-    - torrent
-    - download
-    - p2p
-    - utility
+  tags: [ media, torrent, download, p2p, utility ]
   short_description: Simple torrent downloader that bridges Torznab indexers with Transmission.
   description: Simple torrent downloader that bridges Torznab indexers with
     Transmission. Just. Download. is a self-hosted application focused on media,
     torrent, download, p2p. It can be deployed on any device via Docker Compose.
   usecases:
-    - Self-host Just. Download. on your home server to simple torrent downloader
-      that bridges torznab indexers with transmission without depending on
-      third-party cloud services.
-    - Use Just. Download. to manage your media workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      Self-host Just. Download. on your home server to simple torrent
+        downloader that bridges torznab indexers with transmission without
+        depending on third-party cloud services.,
+      "Use Just. Download. to manage your media workflows privately, keeping
+        all data under your control on local infrastructure."
+    ]
   website: https://codeberg.org/highghlow/just-download
   logo: Qmc9ChgqKxSUXJ37gC8ndutwEmzCic4QQrgTaxPCffuV6V
 

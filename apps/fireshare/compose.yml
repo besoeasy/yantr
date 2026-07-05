@@ -1,26 +1,25 @@
 x-yantr:
   name: Fireshare
-  tags:
-    - media
-    - gaming
-    - streaming
-    - video
-    - self-hosted
+  tags: [ media, gaming, streaming, video, self-hosted ]
   short_description: Self-hosted video sharing designed for game clips.
   description: Fireshare is a self-hosted video sharing platform for game clips.
     Upload via the web UI or drop files into a watch folder, then browse and
     share clips. Supports OpenGraph previews, SteamGridDB categorization, and
     public or private galleries.
   usecases:
-    - Share game clips with your friends.
-    - Categorize clips by game with data from SteamGridDB.
-    - Post your clips on social media or in chat with rich previews.
+    [
+      Share game clips with your friends.,
+      Categorize clips by game with data from SteamGridDB.,
+      Post your clips on social media or in chat with rich previews.
+    ]
   website: https://github.com/ShaneIsrael/fireshare
   logo: QmZ31p6GWvGNm2mJTmVyCUr68PAJoax6mCVfgw4DEHbTQk
   notes:
-    - Watch folder for automatic processing
-    - Gallery-style video organization
-    - Streaming playback
+    [
+      Watch folder for automatic processing,
+      Gallery-style video organization,
+      Streaming playback
+    ]
   env_generators:
     ADMIN_USERNAME:
       length: 8

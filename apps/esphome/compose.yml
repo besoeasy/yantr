@@ -1,25 +1,24 @@
 x-yantr:
   name: ESPHome
-  tags:
-    - iot
-    - esp32
-    - esp8266
-    - firmware
-    - smart-home
+  tags: [ iot, esp32, esp8266, firmware, smart-home ]
   short_description: Firmware builder and manager for ESP8266 and ESP32 devices.
   description: ESPHome lets you program and manage ESP8266 and ESP32
     microcontrollers using simple YAML configuration files. Flash custom
     firmware wirelessly, integrate sensors and actuators into Home Assistant,
     and monitor your devices — all without writing a single line of C++.
   usecases:
-    - Create custom IoT sensors for temperature, humidity, and motion.
-    - Build smart switches and plugs with ESP-based microcontrollers.
-    - Wirelessly update firmware on dozens of ESP devices at once.
+    [
+      "Create custom IoT sensors for temperature, humidity, and motion.",
+      Build smart switches and plugs with ESP-based microcontrollers.,
+      Wirelessly update firmware on dozens of ESP devices at once.
+    ]
   website: https://esphome.io
   notes:
-    - ESPHome runs in host network mode to discover ESP devices on the local
-      network.
-    - First-time flash requires USB connection; subsequent updates are OTA.
+    [
+      ESPHome runs in host network mode to discover ESP devices on the local
+        network.,
+      First-time flash requires USB connection; subsequent updates are OTA.
+    ]
 
 services:
   server:

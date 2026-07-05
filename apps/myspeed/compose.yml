@@ -1,21 +1,18 @@
 x-yantr:
   name: MySpeed
-  tags:
-    - network
-    - tools
-    - utility
-    - speedtest
-    - self-hosted
+  tags: [ network, tools, utility, speedtest, self-hosted ]
   short_description: Speed test analysis software that tracks your internet speed for 30 days.
   description: Speed test analysis software that tracks your internet speed for 30
     days. MySpeed is a self-hosted application focused on network, tools,
     utility, speedtest. It can be deployed on any device via Docker Compose.
   usecases:
-    - Self-host MySpeed on your home server to speed test analysis software that
-      tracks your internet speed for 30 days without depending on third-party
-      cloud services.
-    - Use MySpeed to manage your network workflows privately, keeping all data
-      under your control on local infrastructure.
+    [
+      Self-host MySpeed on your home server to speed test analysis software
+        that tracks your internet speed for 30 days without depending on
+        third-party cloud services.,
+      "Use MySpeed to manage your network workflows privately, keeping all
+        data under your control on local infrastructure."
+    ]
   website: https://myspeed.dev
   logo: QmWg4R7p8NKHoF9WWdhPqF2XgdyrB9bHMhGxqWidEiVBEN
 

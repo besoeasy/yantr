@@ -1,11 +1,6 @@
 x-yantr:
   name: FreshRSS
-  tags:
-    - feed
-    - productivity
-    - rss
-    - news
-    - reader
+  tags: [ feed, productivity, rss, news, reader ]
   short_description: Self-hosted RSS/Atom feed aggregator with multi-user support
     and powerful filtering.
   description: FreshRSS is a self-hosted RSS/Atom aggregator for reading and
@@ -13,16 +8,21 @@ x-yantr:
     import/export, media playback for podcasts/videos, and extensions—offering a
     privacy-friendly replacement for hosted feed services.
   usecases:
-    - Aggregate all your favorite blogs and news sources into one private reader.
-    - Follow YouTube channels and get video updates alongside text content.
-    - Share subscriptions with family members using multi-user support.
-    - Use filters and categories to organize feeds by topic or priority.
+    [
+      Aggregate all your favorite blogs and news sources into one private
+        reader.,
+      Follow YouTube channels and get video updates alongside text content.,
+      Share subscriptions with family members using multi-user support.,
+      Use filters and categories to organize feeds by topic or priority.
+    ]
   website: https://github.com/FreshRSS/FreshRSS
   logo: QmeS63xjuJXpVGUXP5B78naYoBcrcL7H5ZprF13kLZJUMq
   notes:
-    - Supports OPML import for migrating from other feed readers
-    - Can refresh feeds automatically on a schedule
-    - Mobile-friendly interface works well on phones
+    [
+      Supports OPML import for migrating from other feed readers,
+      Can refresh feeds automatically on a schedule,
+      Mobile-friendly interface works well on phones
+    ]
 
 services:
   freshrss:

@@ -1,11 +1,6 @@
 x-yantr:
   name: Camofox Browser
-  tags:
-    - browser
-    - proxy
-    - privacy
-    - webui
-    - self-hosted
+  tags: [ browser, proxy, privacy, webui, self-hosted ]
   short_description: Headless browser with REST API for web automation,
     screenshots, and data extraction.
   description: Headless Chromium browser container with a REST API for web
@@ -14,21 +9,25 @@ x-yantr:
     detection and provides cookie and session management for seamless
     integration with any stack.
   usecases:
-    - Capture full-page screenshots and PDFs of websites for archiving,
-      monitoring, or documentation.
-    - Extract and scrape dynamic web content rendered by JavaScript with
-      programmatic API access.
-    - Automate web form submissions, login flows, and browser-based workflows
-      via REST API.
-    - Take scheduled screenshots of dashboards or web pages for visual
-      monitoring and change detection.
+    [
+      "Capture full-page screenshots and PDFs of websites for archiving,
+        monitoring, or documentation.",
+      Extract and scrape dynamic web content rendered by JavaScript with
+        programmatic API access.,
+      "Automate web form submissions, login flows, and browser-based workflows
+        via REST API.",
+      Take scheduled screenshots of dashboards or web pages for visual
+        monitoring and change detection.
+    ]
   website: https://github.com/jo-inc/camofox-browser
   logo: QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX
   notes:
-    - API key is required and auto-generated on first deploy via the env
-      generator
-    - Default port 9377 serves the REST API endpoint
-    - Based on Chromium - expect ~500MB+ RAM usage
+    [
+      API key is required and auto-generated on first deploy via the env
+        generator,
+      Default port 9377 serves the REST API endpoint,
+      Based on Chromium - expect ~500MB+ RAM usage
+    ]
   env_generators:
     CAMOFOX_API_KEY:
       length: 32

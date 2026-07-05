@@ -1,11 +1,6 @@
 x-yantr:
   name: Uptime Kuma
-  tags:
-    - tools
-    - network
-    - monitoring
-    - dashboard
-    - utility
+  tags: [ tools, network, monitoring, dashboard, utility ]
   short_description: Self-hosted uptime monitoring tool with status pages,
     notifications, and 30+ check types.
   description: Uptime Kuma is a fancy self-hosted monitoring tool that helps you
@@ -14,20 +9,25 @@ x-yantr:
     protocol types. Features include beautiful status pages with uptime history,
     mult...
   usecases:
-    - Monitor your self-hosted services (Home Assistant, Jellyfin, Nextcloud)
-      and get alerted when they go down.
-    - Create a public status page to show your family or users that your
-      services are running smoothly.
-    - Track SSL certificate expiration dates and get notified before
-      certificates expire.
-    - Monitor Docker containers without installing agents - uses Docker socket
-      for native container health checks.
+    [
+      "Monitor your self-hosted services (Home Assistant, Jellyfin, Nextcloud)
+        and get alerted when they go down.",
+      Create a public status page to show your family or users that your
+        services are running smoothly.,
+      Track SSL certificate expiration dates and get notified before
+        certificates expire.,
+      Monitor Docker containers without installing agents - uses Docker socket
+        for native container health checks.
+    ]
   website: https://github.com/louislam/uptime-kuma/wiki
   logo: Qmb7LeUwFtcWpkpbiyzEPYPecX8iXNZMtvjag9WyrCDmLV
   notes:
-    - Supports over 30 monitoring types including HTTP, TCP, Ping, DNS, and more
-    - Can monitor Docker containers directly via socket mount
-    - Push endpoint available for services to send their own status updates
+    [
+      "Supports over 30 monitoring types including HTTP, TCP, Ping, DNS, and
+        more",
+      Can monitor Docker containers directly via socket mount,
+      Push endpoint available for services to send their own status updates
+    ]
 
 services:
   uptime-kuma:

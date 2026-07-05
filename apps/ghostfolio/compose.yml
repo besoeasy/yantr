@@ -1,11 +1,6 @@
 x-yantr:
   name: Ghostfolio
-  tags:
-    - productivity
-    - utility
-    - finance
-    - crypto
-    - portfolio
+  tags: [ productivity, utility, finance, crypto, portfolio ]
   short_description: Modern wealth management platform for tracking stocks, ETFs,
     cryptocurrencies, and assets.
   description: Ghostfolio is an open-source wealth management app for tracking
@@ -13,16 +8,21 @@ x-yantr:
     allocation charts, performance vs benchmarks, net worth history, exportable
     data, and a responsive UI for private portfolio analysis.
   usecases:
-    - Track your complete investment portfolio across stocks, ETFs, and crypto.
-    - Monitor net worth over time with historical charts.
-    - Analyze asset allocation and diversification.
-    - Make data-driven investment decisions with portfolio analysis tools.
+    [
+      "Track your complete investment portfolio across stocks, ETFs, and
+        crypto.",
+      Monitor net worth over time with historical charts.,
+      Analyze asset allocation and diversification.,
+      Make data-driven investment decisions with portfolio analysis tools.
+    ]
   website: https://ghostfol.io
   logo: QmZ288p9irBeP9M369V2FY876tRk9nodM7u4hzeGBAYAUD
   notes:
-    - Supports real-time price updates from public APIs
-    - Redis used for caching price data
-    - Data stored in SQLite database
+    [
+      Supports real-time price updates from public APIs,
+      Redis used for caching price data,
+      Data stored in SQLite database
+    ]
 
 services:
   ghostfolio:

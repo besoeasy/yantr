@@ -1,11 +1,6 @@
 x-yantr:
   name: Cloudflared
-  tags:
-    - network
-    - security
-    - vpn
-    - privacy
-    - self-hosted
+  tags: [ network, security, vpn, privacy, self-hosted ]
   short_description: Secure tunnel from your server to Cloudflare for remote
     access without opening firewall ports.
   description: Cloudflared (Cloudflare Tunnel) creates a secure connection from
@@ -14,20 +9,24 @@ x-yantr:
     authentication, automatic TLS certificates, and multi-service support via a
     single tunnel.
   usecases:
-    - Access your home server from anywhere without router port forwarding.
-    - Expose Jellyfin, Nextcloud, or other services securely with Cloudflare
-      authentication.
-    - Get free automatic HTTPS for your self-hosted services.
-    - Set up zero-trust access - require login before reaching your services.
+    [
+      Access your home server from anywhere without router port forwarding.,
+      "Expose Jellyfin, Nextcloud, or other services securely with Cloudflare
+        authentication.",
+      Get free automatic HTTPS for your self-hosted services.,
+      Set up zero-trust access - require login before reaching your services.
+    ]
   website: https://github.com/cloudflare/cloudflared
   logo: Qmcyr4xpG4SZdBp9VorVjRrvHqHoQzCu9YHCQZGNC5ck8T
   notes:
-    - Requires a Cloudflare account and tunnel token
-    - No ports need to be opened on your firewall
-    - Traffic routed through Cloudflare for DDoS protection
-    - To expose any Docker app, use the Docker host gateway IP (172.17.0.1)
-      instead of 0.0.0.0 or localhost in the tunnel service URL, e.g.
-      http://172.17.0.1:PORT
+    [
+      Requires a Cloudflare account and tunnel token,
+      No ports need to be opened on your firewall,
+      Traffic routed through Cloudflare for DDoS protection,
+      "To expose any Docker app, use the Docker host gateway IP (172.17.0.1)
+        instead of 0.0.0.0 or localhost in the tunnel service URL, e.g.
+        http://172.17.0.1:PORT"
+    ]
 
 services:
   cloudflared:

@@ -1,11 +1,6 @@
 x-yantr:
   name: Navidrome
-  tags:
-    - music
-    - audio
-    - streaming
-    - self-hosted
-    - media
+  tags: [ music, audio, streaming, self-hosted, media ]
   short_description: Modern Music Server and Streamer compatible with Subsonic/Airsonic.
   description: Navidrome is a fast, lightweight, and modern open-source music
     server and streamer. It allows you to listen to your own digital music
@@ -13,8 +8,10 @@ x-yantr:
     implements the Subsonic API, meaning it's compatible with many mobile and
     desktop clients.
   usecases:
-    - Stream your personal music library.
-    - Share music collections with friends and family.
+    [
+      Stream your personal music library.,
+      Share music collections with friends and family.
+    ]
   website: https://www.navidrome.org/
   logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 

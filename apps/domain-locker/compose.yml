@@ -1,22 +1,19 @@
 x-yantr:
   name: Domain Locker
-  tags:
-    - security
-    - tools
-    - monitoring
-    - dashboard
-    - utility
+  tags: [ security, tools, monitoring, dashboard, utility ]
   short_description: Complete visibility of your domain portfolio with monitoring and alerts.
   description: Complete visibility of your domain portfolio with monitoring and
     alerts. Domain Locker is a self-hosted application focused on security,
     tools, monitoring, dashboard. It can be deployed on any device via Docker
     Compose.
   usecases:
-    - Self-host Domain Locker on your home server to complete visibility of your
-      domain portfolio with monitoring and alerts without depending on
-      third-party cloud services.
-    - Use Domain Locker to manage your security workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      Self-host Domain Locker on your home server to complete visibility of
+        your domain portfolio with monitoring and alerts without depending on
+        third-party cloud services.,
+      "Use Domain Locker to manage your security workflows privately, keeping
+        all data under your control on local infrastructure."
+    ]
   website: https://domain-locker.com
   logo: QmXCFhWvYYmz21YHP38zFFxsitmvMeZStbjfacg2dKrZnw
 

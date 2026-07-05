@@ -1,11 +1,6 @@
 x-yantr:
   name: Traggo
-  tags:
-    - productivity
-    - time-tracking
-    - self-hosted
-    - homelab
-    - docker
+  tags: [ productivity, time-tracking, self-hosted, homelab, docker ]
   short_description: Tag-based time tracking with stopwatch, reports, and data export.
   description: Traggo is a lightweight time tracking server built with Go. Unlike
     traditional time trackers with projects and tasks, Traggo uses tags for
@@ -13,16 +8,20 @@ x-yantr:
     time entry, tag-based organization, custom date ranges, break tracking,
     data...
   usecases:
-    - Track time spent on different activities using tags.
-    - Log billable hours for client work.
-    - Generate reports on time spent per tag.
-    - Export data for invoicing.
+    [
+      Track time spent on different activities using tags.,
+      Log billable hours for client work.,
+      Generate reports on time spent per tag.,
+      Export data for invoicing.
+    ]
   website: https://github.com/traggo/server
   logo: QmTiS72Uz3JSJUmXTcx9GmPUnfABX5jFVEn2rMBCYzhhMj
   notes:
-    - Tag-based - no rigid project structure
-    - API available for automation
-    - Break tracking included
+    [
+      Tag-based - no rigid project structure,
+      API available for automation,
+      Break tracking included
+    ]
   env_generators:
     admin:
       length: 8

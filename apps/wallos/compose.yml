@@ -1,19 +1,16 @@
 x-yantr:
   name: Wallos
-  tags:
-    - finance
-    - subscriptions
-    - budgeting
-    - lifestyle
-    - self-hosted
+  tags: [ finance, subscriptions, budgeting, lifestyle, self-hosted ]
   short_description: Self-hosted subscription tracker to manage recurring payments.
   description: Wallos is a self-hosted subscription tracker that helps you manage
     and monitor all your recurring payments. Get insights into spending habits,
     set currency preferences, and receive notifications before renewals.
   usecases:
-    - Track all your subscription services in one place.
-    - Monitor recurring monthly and annual spending.
-    - Get reminders before subscription renewals are due.
+    [
+      Track all your subscription services in one place.,
+      Monitor recurring monthly and annual spending.,
+      Get reminders before subscription renewals are due.
+    ]
   website: https://github.com/ellite/Wallos
 
 services:

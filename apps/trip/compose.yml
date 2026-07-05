@@ -1,11 +1,6 @@
 x-yantr:
   name: Trip
-  tags:
-    - productivity
-    - tools
-    - indexer
-    - servarr
-    - automation
+  tags: [ productivity, tools, indexer, servarr, automation ]
   short_description: Self-hostable map tracker and trip planner to visualize POIs
     and organize your next adventure.
   description: Self-hostable map tracker and trip planner to visualize POIs and
@@ -13,11 +8,13 @@ x-yantr:
     productivity, tools, indexer, servarr. It can be deployed on any device via
     Docker Compose.
   usecases:
-    - Self-host Trip on your home server to self-hostable map tracker and trip
-      planner to visualize pois and organize your next adventure without
-      depending on third-party cloud services.
-    - Use Trip to manage your productivity workflows privately, keeping all data
-      under your control on local infrastructure.
+    [
+      Self-host Trip on your home server to self-hostable map tracker and trip
+        planner to visualize pois and organize your next adventure without
+        depending on third-party cloud services.,
+      "Use Trip to manage your productivity workflows privately, keeping all
+        data under your control on local infrastructure."
+    ]
   website: https://github.com/itskovacs/trip
   logo: QmcxepcQDfmK7gcGSdWPNuyFR1oqR4qeG5jvetn2qYHg8z
 

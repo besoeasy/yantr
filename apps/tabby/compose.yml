@@ -1,27 +1,26 @@
 x-yantr:
   name: Tabby
-  tags:
-    - productivity
-    - browsing
-    - dashboard
-    - utility
-    - homepage
+  tags: [ productivity, browsing, dashboard, utility, homepage ]
   short_description: Customizable start page with tabs, bookmarks, weather, and quick links.
   description: Tabby is a beautiful, customizable start page for your browser that
     combines a new tab experience with useful utilities. Features include a tabs
     interface for organizing your links into categories, weather widget, quick
     search bar, clock with date, background customization, bookmark manage...
   usecases:
-    - Set as your browser's new tab page for quick access to bookmarks.
-    - Organize bookmarks into tabs by category (Work, News, Social, etc.).
-    - Quick search from the start page with custom search engines.
-    - Display weather and time at a glance.
+    [
+      Set as your browser's new tab page for quick access to bookmarks.,
+      "Organize bookmarks into tabs by category (Work, News, Social, etc.).",
+      Quick search from the start page with custom search engines.,
+      Display weather and time at a glance.
+    ]
   website: https://github.com/parksauce/tabby
   logo: QmcQ3CYdea4rtPmwJTSggcFYvpKcSpSqSQMbS9RdWjzTWS
   notes:
-    - Uses MariaDB for database storage
-    - Customizable backgrounds and themes
-    - Keyboard shortcuts for quick navigation
+    [
+      Uses MariaDB for database storage,
+      Customizable backgrounds and themes,
+      Keyboard shortcuts for quick navigation
+    ]
 
 services:
   tabby:

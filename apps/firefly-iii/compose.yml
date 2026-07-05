@@ -1,20 +1,17 @@
 x-yantr:
   name: Firefly III
-  tags:
-    - finance
-    - budgeting
-    - accounting
-    - money
-    - self-hosted
+  tags: [ finance, budgeting, accounting, money, self-hosted ]
   short_description: Self-hosted personal finance manager and budgeting tool.
   description: Firefly III is a self-hosted financial manager that helps you keep
     track of expenses, income, budgets, and savings goals. Create transactions,
     set recurring bills, generate reports and charts, and understand your
     spending patterns with detailed statistics.
   usecases:
-    - Track all income and expenses across multiple accounts.
-    - Set budgets and savings goals and monitor progress.
-    - Generate detailed financial reports and spending charts.
+    [
+      Track all income and expenses across multiple accounts.,
+      Set budgets and savings goals and monitor progress.,
+      Generate detailed financial reports and spending charts.
+    ]
   website: https://www.firefly-iii.org
   env_generators:
     APP_KEY:

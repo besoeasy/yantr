@@ -32,12 +32,7 @@ x-environment: &a1
 
 x-yantr:
   name: Plane
-  tags:
-    - productivity
-    - project-management
-    - jira
-    - kanban
-    - issues
+  tags: [ productivity, project-management, jira, kanban, issues ]
   short_description: Open-source Jira alternative to track issues, sprints, and product roadmaps.
   description: Plane is a powerful open-source project management tool designed to
     track issues, run sprint cycles, and manage product roadmaps. It offers a
@@ -45,17 +40,21 @@ x-yantr:
     tracking with burn-down charts. You can simplify complex projects with
     modules, custo...
   usecases:
-    - Run agile sprint cycles with burn-down charts and issue tracking.
-    - Manage product roadmaps and divide complex projects into modules.
-    - Replace Jira with a fast, modern, fully self-hosted alternative.
-    - Capture notes, ideas, and actionable items using Plane Pages.
+    [
+      Run agile sprint cycles with burn-down charts and issue tracking.,
+      Manage product roadmaps and divide complex projects into modules.,
+      "Replace Jira with a fast, modern, fully self-hosted alternative.",
+      "Capture notes, ideas, and actionable items using Plane Pages."
+    ]
   website: https://plane.so
   notes:
-    - This is a heavy enterprise-grade stack (12 containers). Requires at least
-      4 GB of RAM (8 GB recommended).
-    - The first boot will take a few minutes as the database migrations run.
-    - Attachments are stored in a self-hosted MinIO bucket automatically
-      configured.
+    [
+      This is a heavy enterprise-grade stack (12 containers). Requires at
+        least 4 GB of RAM (8 GB recommended).,
+      The first boot will take a few minutes as the database migrations run.,
+      Attachments are stored in a self-hosted MinIO bucket automatically
+        configured.
+    ]
   env_generators:
     DB_PASSWORD:
       length: 32

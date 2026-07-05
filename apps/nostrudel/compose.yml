@@ -1,11 +1,6 @@
 x-yantr:
   name: noStrudel
-  tags:
-    - social
-    - nostr
-    - decentralized
-    - self-hosted
-    - homelab
+  tags: [ social, nostr, decentralized, self-hosted, homelab ]
   short_description: Feature-rich Nostr web client for exploring the protocol,
     viewing events, and managing keys.
   description: noStrudel is a Nostr web client for power users, offering raw event
@@ -13,18 +8,22 @@ x-yantr:
     (NIP-49), media uploads, Zap.Stream integration, and advanced search and
     threading features to inspect the protocol and interact securely.
   usecases:
-    - Explore the Nostr protocol by viewing raw events and understanding how
-      data flows through relays.
-    - Post, reply, zap, and interact with the Nostr social network using your
-      keys.
-    - Manage multiple Nostr accounts and switch between them easily.
-    - Stream live content from Zap.Stream directly within the client interface.
+    [
+      Explore the Nostr protocol by viewing raw events and understanding how
+        data flows through relays.,
+      "Post, reply, zap, and interact with the Nostr social network using your
+        keys.",
+      Manage multiple Nostr accounts and switch between them easily.,
+      Stream live content from Zap.Stream directly within the client interface.
+    ]
   website: https://github.com/hzrd149/nostrudel
   logo: QmQd78JBNgAnVAAk6Ux6Jo3tHUXLyzjYeaRZ1EXwMFzHNe
   notes:
-    - Requires a CORS proxy service for full functionality
-    - Supports NIP-49 encrypted private key storage with password protection
-    - Can connect to multiple relays simultaneously
+    [
+      Requires a CORS proxy service for full functionality,
+      Supports NIP-49 encrypted private key storage with password protection,
+      Can connect to multiple relays simultaneously
+    ]
 
 services:
   nostrudel:

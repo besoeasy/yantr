@@ -1,11 +1,6 @@
 x-yantr:
   name: PostgreSQL
-  tags:
-    - database
-    - storage
-    - utility
-    - self-hosted
-    - homelab
+  tags: [ database, storage, utility, self-hosted, homelab ]
   short_description: Open-source relational database with JSON support, full-text
     search, and extensions.
   description: PostgreSQL is a powerful, open-source object-relational database
@@ -14,17 +9,22 @@ x-yantr:
     perfect for modern applications. Features include ACID compliance, MVCC for
     co...
   usecases:
-    - Use as the database backend for complex applications like Wiki.js,
-      Ghostfolio, or Home Assistant.
-    - Store JSON data alongside relational data in the same database.
-    - Enable full-text search for building search features in your applications.
-    - Use pgvector extension for storing and querying AI embeddings.
+    [
+      "Use as the database backend for complex applications like Wiki.js,
+        Ghostfolio, or Home Assistant.",
+      Store JSON data alongside relational data in the same database.,
+      Enable full-text search for building search features in your
+        applications.,
+      Use pgvector extension for storing and querying AI embeddings.
+    ]
   website: https://github.com/postgres/postgres
   logo: QmSmV8pEZ4EcmdQPZ9wsBovGFSXBxxgKTpk1H9woR79a6S
   notes:
-    - Requires POSTGRES_PASSWORD environment variable
-    - Can use volumes for data persistence
-    - Supports numerous extensions for specialized use cases
+    [
+      Requires POSTGRES_PASSWORD environment variable,
+      Can use volumes for data persistence,
+      Supports numerous extensions for specialized use cases
+    ]
 
 services:
   postgresql:

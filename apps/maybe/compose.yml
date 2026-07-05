@@ -1,11 +1,6 @@
 x-yantr:
   name: Maybe
-  tags:
-    - finance
-    - productivity
-    - accounting
-    - self-hosted
-    - homelab
+  tags: [ finance, productivity, accounting, self-hosted, homelab ]
   short_description: Open-source personal finance OS for managing accounts,
     investments, and transactions.
   description: Open-source personal finance OS for managing accounts, investments,
@@ -13,11 +8,13 @@ x-yantr:
     productivity, accounting, self-hosted. It can be deployed on any device via
     Docker Compose.
   usecases:
-    - Self-host Maybe on your home server to open-source personal finance os for
-      managing accounts, investments, and transactions without depending on
-      third-party cloud services.
-    - Use Maybe to manage your finance workflows privately, keeping all data
-      under your control on local infrastructure.
+    [
+      "Self-host Maybe on your home server to open-source personal finance os
+        for managing accounts, investments, and transactions without depending
+        on third-party cloud services.",
+      "Use Maybe to manage your finance workflows privately, keeping all data
+        under your control on local infrastructure."
+    ]
   website: https://github.com/maybe-finance/maybe
   logo: QmcZLRLn3cHum9YMRhHv3355rVDgVVgQkioRm29x8YRX9q
 

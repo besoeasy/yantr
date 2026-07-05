@@ -1,11 +1,6 @@
 x-yantr:
   name: pyramid
-  tags:
-    - nostr
-    - relay
-    - blossom
-    - community
-    - git
+  tags: [ nostr, relay, blossom, community, git ]
   short_description: a wondrous furnace of communityzenship backed by a dynamic
     ladder of socialhood
   description: pyramid is a Nostr service suite for small community or personal
@@ -13,17 +8,21 @@ x-yantr:
     and GRASP Git hosting. Invite friends to your relay and control how many
     users they can further invite.
   usecases:
-    - Small-scale community Nostr relay for yourself and friends
-    - Group chats for your friends or the public
-    - Host files such as media in Nostr posts or website files for nsites
-    - Host Git repositories using the GRASP protocol
+    [
+      Small-scale community Nostr relay for yourself and friends,
+      Group chats for your friends or the public,
+      Host files such as media in Nostr posts or website files for nsites,
+      Host Git repositories using the GRASP protocol
+    ]
   website: https://github.com/fiatjaf/pyramid
   logo: QmWhbSnNbgBASZSX42RDfgUkZb6gKytRJyV3yRbr3YzYxr
   notes:
-    - Public access is required for full function (use reverse proxy or
-      Cloudflare Tunnel)
-    - Depending on the popularity of your Nostr profile you may see high traffic
-      on your ISP plan
+    [
+      Public access is required for full function (use reverse proxy or
+        Cloudflare Tunnel),
+      Depending on the popularity of your Nostr profile you may see high
+        traffic on your ISP plan
+    ]
 
 services:
   pyramid:

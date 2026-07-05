@@ -1,11 +1,6 @@
 x-yantr:
   name: Zabbix
-  tags:
-    - monitoring
-    - infrastructure
-    - network
-    - metrics
-    - alerts
+  tags: [ monitoring, infrastructure, network, metrics, alerts ]
   short_description: Enterprise-class open source distributed monitoring solution.
   description: Zabbix is a mature, enterprise-level platform for monitoring the
     health and performance of your entire IT infrastructure. It collects metrics
@@ -13,18 +8,22 @@ x-yantr:
     time. It features advanced alerting, customizable dashboards, and
     auto-discovery...
   usecases:
-    - Monitor CPU, memory, disk, and network metrics for all your homelab
-      servers.
-    - Set up alerting to notify you via email or webhook when a service goes
-      down.
-    - Build custom dashboards to visualize the health of your entire network.
-    - Monitor IoT devices, routers, and switches using SNMP.
+    [
+      "Monitor CPU, memory, disk, and network metrics for all your homelab
+        servers.",
+      Set up alerting to notify you via email or webhook when a service goes
+        down.,
+      Build custom dashboards to visualize the health of your entire network.,
+      "Monitor IoT devices, routers, and switches using SNMP."
+    ]
   website: https://www.zabbix.com
   notes:
-    - The default login for the Web UI is Admin / zabbix (case-sensitive).
-      Please change it after first login.
-    - Port 10051 is exposed so external Zabbix Agents can report metrics to the
-      server.
+    [
+      The default login for the Web UI is Admin / zabbix (case-sensitive).
+        Please change it after first login.,
+      Port 10051 is exposed so external Zabbix Agents can report metrics to
+        the server.
+    ]
   env_generators:
     DB_PASSWORD:
       length: 32

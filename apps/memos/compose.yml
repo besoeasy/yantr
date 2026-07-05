@@ -1,11 +1,6 @@
 x-yantr:
   name: Memos
-  tags:
-    - productivity
-    - tools
-    - notes
-    - social
-    - self-hosted
+  tags: [ productivity, tools, notes, social, self-hosted ]
   short_description: Lightweight, self-hosted note-taking app with a clean
     social-media-style interface.
   description: Memos is a lightweight, self-hosted note-taking app with a
@@ -13,16 +8,20 @@ x-yantr:
     attachments, and public sharing—ideal for journaling, quick notes, and
     minimal-setup personal knowledge capture.
   usecases:
-    - Daily journaling with a clean, distraction-free interface.
-    - Quick note capture that syncs across your devices.
-    - Share public notes via generated links.
-    - Use as a minimalist knowledge base with tags for organization.
+    [
+      "Daily journaling with a clean, distraction-free interface.",
+      Quick note capture that syncs across your devices.,
+      Share public notes via generated links.,
+      Use as a minimalist knowledge base with tags for organization.
+    ]
   website: https://github.com/usememos/memos
   logo: QmVYAHxdTDQqw3DDm6YRk6EvgmuWtMDae8Z8LQaCVqYZ2B
   notes:
-    - Very lightweight - runs well on minimal hardware
-    - SQLite database for simple deployment
-    - Mobile-friendly responsive design
+    [
+      Very lightweight - runs well on minimal hardware,
+      SQLite database for simple deployment,
+      Mobile-friendly responsive design
+    ]
 
 services:
   memos:

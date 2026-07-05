@@ -1,21 +1,18 @@
 x-yantr:
   name: Bitcoin Knots VM
-  tags:
-    - cryptocurrency
-    - bitcoin
-    - crypto
-    - blockchain
-    - self-hosted
+  tags: [ cryptocurrency, bitcoin, crypto, blockchain, self-hosted ]
   short_description: Bitcoin full node with enhanced features and privacy focus.
   description: Bitcoin full node with enhanced features and privacy focus. Bitcoin
     Knots VM is a self-hosted application focused on cryptocurrency, bitcoin,
     crypto, blockchain. It can be deployed on any device via Docker Compose.
   usecases:
-    - Self-host Bitcoin Knots VM on your home server to bitcoin full node with
-      enhanced features and privacy focus without depending on third-party cloud
-      services.
-    - Use Bitcoin Knots VM to manage your cryptocurrency workflows privately,
-      keeping all data under your control on local infrastructure.
+    [
+      Self-host Bitcoin Knots VM on your home server to bitcoin full node with
+        enhanced features and privacy focus without depending on third-party
+        cloud services.,
+      "Use Bitcoin Knots VM to manage your cryptocurrency workflows privately,
+        keeping all data under your control on local infrastructure."
+    ]
   website: https://bitcoinknots.org
   logo: QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ
   env_generators:

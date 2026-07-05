@@ -1,11 +1,6 @@
 x-yantr:
   name: ntfy
-  tags:
-    - notifications
-    - alerts
-    - push
-    - messaging
-    - automation
+  tags: [ notifications, alerts, push, messaging, automation ]
   short_description: Self-hosted push notification server — send alerts via plain
     HTTP to any device.
   description: ntfy is a simple HTTP-based pub/sub notification service. Publish a
@@ -14,18 +9,24 @@ x-yantr:
     fly; subscribers listen via a URL. Ideal for alerting from cron jobs,
     scripts,...
   usecases:
-    - Get instant alerts from cron jobs, scripts, or server events on your phone.
-    - Receive push notifications from home automation rules and IoT devices.
-    - Use as a lightweight webhook sink for CI/CD pipelines and build status.
-    - Send alerts from monitoring tools like Uptime Kuma or Grafana to any
-      device.
+    [
+      "Get instant alerts from cron jobs, scripts, or server events on your
+        phone.",
+      Receive push notifications from home automation rules and IoT devices.,
+      Use as a lightweight webhook sink for CI/CD pipelines and build status.,
+      Send alerts from monitoring tools like Uptime Kuma or Grafana to any
+        device.
+    ]
   website: https://ntfy.sh
   notes:
-    - "Send a notification with: curl -d 'Hello!' ntfy.your-server.com/my-topic"
-    - Subscribe on Android/iOS with the ntfy app, or in any browser via the web
-      UI.
-    - Topics are public by default — configure auth in /etc/ntfy/server.yml for
-      private use.
+    [
+      "Send a notification with: curl -d 'Hello!'
+        ntfy.your-server.com/my-topic",
+      "Subscribe on Android/iOS with the ntfy app, or in any browser via the
+        web UI.",
+      Topics are public by default — configure auth in /etc/ntfy/server.yml
+        for private use.
+    ]
 
 services:
   ntfy:

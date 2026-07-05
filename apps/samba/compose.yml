@@ -1,11 +1,6 @@
 x-yantr:
   name: Samba
-  tags:
-    - network
-    - storage
-    - utility
-    - files
-    - gaming
+  tags: [ network, storage, utility, files, gaming ]
   short_description: SMB/CIFS file sharing for Windows, Mac, and Linux to access
     storage on your network.
   description: Samba is the standard Windows interoperability suite for Unix-like
@@ -13,16 +8,20 @@ x-yantr:
     Linux clients. This Docker image makes it easy to set up a network share
     that appears in your file explorer. Features include simple user manageme...
   usecases:
-    - Share folders with all computers on your network.
-    - Access server storage from Windows, Mac, or Linux.
-    - Create a central file repository for home or office.
-    - Share media files for Plex/Jellyfin to scan.
+    [
+      Share folders with all computers on your network.,
+      "Access server storage from Windows, Mac, or Linux.",
+      Create a central file repository for home or office.,
+      Share media files for Plex/Jellyfin to scan.
+    ]
   website: https://github.com/dockur/samba
   logo: QmYNjTj44mLCz5SZrWR9GkWU94bZw7hvqZZuFAwJJcsWU7
   notes:
-    - SMB port 445 - no need for older NetBIOS
-    - Configure username and password via environment variables
-    - Mount folders as volumes for persistent storage
+    [
+      SMB port 445 - no need for older NetBIOS,
+      Configure username and password via environment variables,
+      Mount folders as volumes for persistent storage
+    ]
 
 services:
   samba:

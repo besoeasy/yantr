@@ -1,11 +1,6 @@
 x-yantr:
   name: MoviePilot
-  tags:
-    - media
-    - automation
-    - downloader
-    - nas
-    - self-hosted
+  tags: [ media, automation, downloader, nas, self-hosted ]
   short_description: NAS media automation for subscribing, downloading, and
     organizing movies and TV shows.
   description: MoviePilot is a NAS-focused media automation tool for subscribing
@@ -13,26 +8,30 @@ x-yantr:
     downloading via qBittorrent/Transmission/rTorrent, renaming and organizing
     media, and syncing with media servers like Jellyfin and Plex.
   usecases:
-    - Automatically subscribe to TV shows and download new episodes as they air,
-      then organize them into your media server.
-    - Search and download movies by title across multiple torrent indexers with
-      a single click.
-    - Automatically rename and move downloaded media files into a clean library
-      structure compatible with Jellyfin or Plex.
-    - Manage running download tasks across qBittorrent, Transmission, or
-      rTorrent from a single unified dashboard.
+    [
+      "Automatically subscribe to TV shows and download new episodes as they
+        air, then organize them into your media server.",
+      Search and download movies by title across multiple torrent indexers
+        with a single click.,
+      Automatically rename and move downloaded media files into a clean
+        library structure compatible with Jellyfin or Plex.,
+      "Manage running download tasks across qBittorrent, Transmission, or
+        rTorrent from a single unified dashboard."
+    ]
   website: https://movie-pilot.org/
   logo: QmYhcfGgTfDj5Eb8srdJMzJBhmnw1ctWpJZgF5efb3aSfb
   notes:
-    - Default Web UI is on port 3000; API backend listens on port 3001
-    - Set SUPERUSER and SUPERUSER_PASSWORD environment variables before first
-      launch
-    - Mount your media directory (e.g., /media) for MoviePilot to organize
-      downloaded files
-    - Requires a compatible downloader (qBittorrent, Transmission, or rTorrent)
-      configured separately
-    - For production use, consider using PostgreSQL and Redis instead of the
-      default SQLite database
+    [
+      Default Web UI is on port 3000; API backend listens on port 3001,
+      Set SUPERUSER and SUPERUSER_PASSWORD environment variables before first
+        launch,
+      "Mount your media directory (e.g., /media) for MoviePilot to organize
+        downloaded files",
+      "Requires a compatible downloader (qBittorrent, Transmission, or
+        rTorrent) configured separately",
+      "For production use, consider using PostgreSQL and Redis instead of the
+        default SQLite database"
+    ]
   env_generators:
     SUPERUSER:
       length: 8

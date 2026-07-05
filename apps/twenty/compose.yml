@@ -1,11 +1,6 @@
 x-yantr:
   name: Twenty
-  tags:
-    - crm
-    - productivity
-    - sales
-    - business
-    - contacts
+  tags: [ crm, productivity, sales, business, contacts ]
   short_description: Open-source CRM built for modern teams to manage contacts and pipelines.
   description: Twenty is a leading open-source CRM built by a community of
     hundreds of contributors. It offers contact management, custom objects and
@@ -13,16 +8,20 @@ x-yantr:
     notes, tasks, and full API and webhook support. Designed for flexibility, it
     helps busi...
   usecases:
-    - Manage customer contacts, companies, and deals in one place.
-    - Visualize your sales pipeline with Kanban and table views.
-    - Build custom CRM objects and fields tailored to your business.
-    - Automate workflows via the built-in API and webhook support.
+    [
+      "Manage customer contacts, companies, and deals in one place.",
+      Visualize your sales pipeline with Kanban and table views.,
+      Build custom CRM objects and fields tailored to your business.,
+      Automate workflows via the built-in API and webhook support.
+    ]
   website: https://twenty.com
   notes:
-    - Requires at least 2 GB RAM for the full stack (app + Postgres + Redis).
-    - Set SERVER_URL to your public URL (e.g. http://your-server-ip:3000) in the
-      deploy form.
-    - First boot may take a minute while database migrations run.
+    [
+      Requires at least 2 GB RAM for the full stack (app + Postgres + Redis).,
+      Set SERVER_URL to your public URL (e.g. http://your-server-ip:3000) in
+        the deploy form.,
+      First boot may take a minute while database migrations run.
+    ]
   env_generators:
     POSTGRES_PASSWORD:
       length: 32

@@ -1,11 +1,6 @@
 x-yantr:
   name: LibreChat
-  tags:
-    - ai
-    - chat
-    - llm
-    - openai
-    - anthropic
+  tags: [ ai, chat, llm, openai, anthropic ]
   short_description: Unified ChatGPT-like UI for OpenAI, Anthropic, and local LLMs with RAG.
   description: LibreChat is a powerful, open-source ChatGPT clone that provides a
     unified interface for multiple AI models. Connect it to OpenAI, Anthropic
@@ -13,16 +8,23 @@ x-yantr:
     UI with chat history, presets, plugins, and a built-in RAG
     (Retrieval-Augmented...
   usecases:
-    - Provide a centralized, privacy-friendly AI chat interface for your team.
-    - Chat directly with your PDFs and documents using the built-in RAG engine.
-    - Switch seamlessly between GPT-4, Claude 3, and local open-source models.
-    - Save money on AI subscriptions by using API keys directly in one interface.
+    [
+      "Provide a centralized, privacy-friendly AI chat interface for your
+        team.",
+      Chat directly with your PDFs and documents using the built-in RAG engine.,
+      "Switch seamlessly between GPT-4, Claude 3, and local open-source
+        models.",
+      Save money on AI subscriptions by using API keys directly in one
+        interface.
+    ]
   website: https://librechat.ai
   notes:
-    - You can provide OPENAI_API_KEY and ANTHROPIC_API_KEY in the deploy form,
-      or configure them later in the admin UI.
-    - The stack includes a vector database (pgvector) to support document
-      uploads and chatting with files.
+    [
+      "You can provide OPENAI_API_KEY and ANTHROPIC_API_KEY in the deploy
+        form, or configure them later in the admin UI.",
+      The stack includes a vector database (pgvector) to support document
+        uploads and chatting with files.
+    ]
   env_generators:
     CREDS_KEY:
       length: 64

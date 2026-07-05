@@ -1,11 +1,6 @@
 x-yantr:
   name: Invio
-  tags:
-    - productivity
-    - utility
-    - self-hosted
-    - homelab
-    - docker
+  tags: [ productivity, utility, self-hosted, homelab, docker ]
   short_description: Self-hosted invoicing without the bloat. Self-host it with
     Docker using Yantr.
   description: Self-hosted invoicing without the bloat. Self-host it with Docker
@@ -13,11 +8,13 @@ x-yantr:
     utility, self-hosted, homelab. It can be deployed on any device via Docker
     Compose.
   usecases:
-    - Self-host Invio on your home server to self-hosted invoicing without the
-      bloat. self-host it with docker using yantr without depending on
-      third-party cloud services.
-    - Use Invio to manage your productivity workflows privately, keeping all
-      data under your control on local infrastructure.
+    [
+      Self-host Invio on your home server to self-hosted invoicing without the
+        bloat. self-host it with docker using yantr without depending on
+        third-party cloud services.,
+      "Use Invio to manage your productivity workflows privately, keeping all
+        data under your control on local infrastructure."
+    ]
   website: https://github.com/kittendevv/Invio/wiki
   logo: QmTxfLAvG4LnESZyVJ6dWMzXqJpaDYyTmKEhLxEux6PAH3
 

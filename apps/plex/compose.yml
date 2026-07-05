@@ -1,11 +1,6 @@
 x-yantr:
   name: Plex
-  tags:
-    - media
-    - streaming
-    - movies
-    - tv
-    - entertainment
+  tags: [ media, streaming, movies, tv, entertainment ]
   short_description: Organizes your video, music, and photo collections and
     streams them to all of your screens.
   description: Plex Media Server organizes your video, music, and photo
@@ -13,15 +8,19 @@ x-yantr:
     supports rich metadata, automatic fetching of posters, summaries, and
     subtitles. A Plex account may be required for some premium features.
   usecases:
-    - Stream your movie and TV show collection.
-    - Organize your home media with rich metadata.
-    - Watch media remotely on any device.
+    [
+      Stream your movie and TV show collection.,
+      Organize your home media with rich metadata.,
+      Watch media remotely on any device.
+    ]
   website: https://www.plex.tv/
   logo: QmQ895arqXLgtBSGNRz6zzR88XtWH8uGbcKKcko84Ba2Wr
   notes:
-    - To claim your server, you may need to use an SSH tunnel if you are
-      accessing it outside your local network, or use a Plex Claim token via
-      custom compose edit.
+    [
+      "To claim your server, you may need to use an SSH tunnel if you are
+        accessing it outside your local network, or use a Plex Claim token via
+        custom compose edit."
+    ]
 
 services:
   plex:

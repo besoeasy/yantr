@@ -1,11 +1,6 @@
 x-yantr:
   name: changedetection.io
-  tags:
-    - monitoring
-    - automation
-    - alerts
-    - web
-    - self-hosted
+  tags: [ monitoring, automation, alerts, web, self-hosted ]
   short_description: Monitor any website for changes and get notified instantly
     via email or webhook.
   description: changedetection.io watches web pages for any changes and notifies
@@ -14,16 +9,21 @@ x-yantr:
     Supports CSS and XPath selectors to watch specific page sections, visual
     screensh...
   usecases:
-    - Monitor product pages for price drops or stock restocks.
-    - Track government, news, or documentation pages for content updates.
-    - Watch job boards or listing sites for new postings matching your criteria.
-    - Alert your team via Slack or Discord when a monitored page changes.
+    [
+      Monitor product pages for price drops or stock restocks.,
+      "Track government, news, or documentation pages for content updates.",
+      Watch job boards or listing sites for new postings matching your
+        criteria.,
+      Alert your team via Slack or Discord when a monitored page changes.
+    ]
   website: https://changedetection.io
   notes:
-    - Supports 70+ notification services via Apprise (email, Slack, Discord,
-      ntfy, Telegram, etc.).
-    - Use CSS/XPath selectors to watch only a specific section of a page.
-    - Enable the built-in browser (Playwright) for JavaScript-rendered pages.
+    [
+      "Supports 70+ notification services via Apprise (email, Slack, Discord,
+        ntfy, Telegram, etc.).",
+      Use CSS/XPath selectors to watch only a specific section of a page.,
+      Enable the built-in browser (Playwright) for JavaScript-rendered pages.
+    ]
 
 services:
   changedetection:

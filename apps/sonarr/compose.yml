@@ -1,11 +1,6 @@
 x-yantr:
   name: Sonarr
-  tags:
-    - media
-    - tools
-    - torrent
-    - download
-    - p2p
+  tags: [ media, tools, torrent, download, p2p ]
   short_description: Smart PVR for TV shows that automatically downloads episodes
     and organizes your series library.
   description: Sonarr (formerly NzbDrone) is a PVR (Personal Video Recorder) for
@@ -14,20 +9,24 @@ x-yantr:
     available. Features include season pack downloading, automatic episode
     rena...
   usecases:
-    - Track your favorite TV shows and automatically download new episodes as
-      they air.
-    - Build a perfectly organized TV series library with automatic renaming and
-      metadata.
-    - Get episodes in the quality you want - set preferences for HD, 4K, or
-      specific codecs.
-    - Use the calendar view to see when your shows are airing and plan your
-      watching.
+    [
+      Track your favorite TV shows and automatically download new episodes as
+        they air.,
+      Build a perfectly organized TV series library with automatic renaming
+        and metadata.,
+      "Get episodes in the quality you want - set preferences for HD, 4K, or
+        specific codecs.",
+      Use the calendar view to see when your shows are airing and plan your
+        watching.
+    ]
   website: https://github.com/linuxserver/docker-sonarr
   logo: QmSH43o5suJ8UUngEiPGFWedxTdDk9SFDe2GVLNqSkFhJb
   notes:
-    - Requires a download client (Usenet or BitTorrent)
-    - Integrates with Plex/Emby/Jellyfin for library updates
-    - Can manage multiple quality profiles for different shows
+    [
+      Requires a download client (Usenet or BitTorrent),
+      Integrates with Plex/Emby/Jellyfin for library updates,
+      Can manage multiple quality profiles for different shows
+    ]
 
 services:
   sonarr:

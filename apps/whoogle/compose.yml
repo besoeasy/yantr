@@ -1,11 +1,6 @@
 x-yantr:
   name: Whoogle
-  tags:
-    - search
-    - privacy
-    - utility
-    - self-hosted
-    - homelab
+  tags: [ search, privacy, utility, self-hosted, homelab ]
   short_description: Self-hosted, ad-free Google search proxy with privacy
     features and customization options.
   description: Whoogle is a self-hosted search proxy that fetches Google search
@@ -14,16 +9,20 @@ x-yantr:
     algorithm. Features include no ads or tracking, customizable themes (dark,
     light,...
   usecases:
-    - Search Google without ads or tracking from your IP address.
-    - Get clean, distraction-free search results.
-    - Set as your browser's default search engine for privacy.
-    - Customize search appearance with themes and filters.
+    [
+      Search Google without ads or tracking from your IP address.,
+      "Get clean, distraction-free search results.",
+      Set as your browser's default search engine for privacy.,
+      Customize search appearance with themes and filters.
+    ]
   website: https://github.com/benbusby/whoogle
   logo: QmNPLDz2jjjG67UeNVAC1wgdBs9eMrUQQYkRRWXWmtSZxV
   notes:
-    - Proxies Google search - results come from Google's algorithm
-    - No tracking cookies or IP logging
-    - Can be customized with environment variables
+    [
+      Proxies Google search - results come from Google's algorithm,
+      No tracking cookies or IP logging,
+      Can be customized with environment variables
+    ]
 
 services:
   whoogle:

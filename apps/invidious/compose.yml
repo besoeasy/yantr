@@ -1,11 +1,6 @@
 x-yantr:
   name: Invidious
-  tags:
-    - media
-    - video
-    - youtube
-    - privacy
-    - streaming
+  tags: [ media, video, youtube, privacy, streaming ]
   short_description: Ad-free, privacy-respecting alternative frontend for YouTube.
   description: Invidious is an open-source, lightweight alternative front-end to
     YouTube. It allows you to search, watch, and subscribe to YouTube videos and
@@ -13,14 +8,18 @@ x-yantr:
     playlists, manage subscriptions, and listen to audio in the background
     without...
   usecases:
-    - Watch YouTube videos without advertisements or algorithmic tracking.
-    - Subscribe to YouTube channels via RSS without needing a Google account.
-    - Listen to video audio in the background on mobile devices.
-    - Bypass region locks and age restrictions natively through the proxy.
+    [
+      Watch YouTube videos without advertisements or algorithmic tracking.,
+      Subscribe to YouTube channels via RSS without needing a Google account.,
+      Listen to video audio in the background on mobile devices.,
+      Bypass region locks and age restrictions natively through the proxy.
+    ]
   website: https://invidious.io
   notes:
-    - Includes the Invidious Companion service to improve stream stability and
-      reduce blocking.
+    [
+      Includes the Invidious Companion service to improve stream stability and
+        reduce blocking.
+    ]
   env_generators:
     DB_PASSWORD:
       length: 32

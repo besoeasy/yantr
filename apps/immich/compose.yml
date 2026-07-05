@@ -1,11 +1,6 @@
 x-yantr:
   name: Immich
-  tags:
-    - photos
-    - backup
-    - gallery
-    - ai
-    - self-hosted
+  tags: [ photos, backup, gallery, ai, self-hosted ]
   short_description: High performance self-hosted photo and video backup solution
     with mobile app support.
   description: Immich is a very high performance, self-hosted photo and video
@@ -13,9 +8,11 @@ x-yantr:
     privacy-friendly alternative to Google Photos or Apple Photos with support
     for facial recognition, object detection, and shared albums.
   usecases:
-    - Backup photos automatically from mobile devices.
-    - Browse large photo libraries quickly.
-    - Detect faces and objects in photos offline.
+    [
+      Backup photos automatically from mobile devices.,
+      Browse large photo libraries quickly.,
+      Detect faces and objects in photos offline.
+    ]
   website: https://immich.app/
   logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   env_generators:
