@@ -1,16 +1,18 @@
 /**
- * crypto.js — secp256k1 auth for Yantr
+ * crypto.js — Ed25519 auth for Yantr
  *
- * Key derivation: sha256(password:pin) iterated → private key
- * Auth token: base64(JSON{ publickey, signature, message:"timestamp:nonce" })
- * Signature: secp256k1 over sha256(message)
+ * Key derivation: sha256(password:pin) iterated → 32-byte Ed25519 seed
+ * Auth token:     base64(JSON{ publickey, signature, message:"timestamp:nonce" })
+ * Signature:      Ed25519 over raw message bytes (not a hash)
  *
- * Compatible with the Go core/auth package which verifies secp256k1 signatures.
+ * Compatible with Go stdlib crypto/ed25519 — zero external deps on server.
  *
- * Uses @noble/curves/secp256k1 (v3+) which has built-in HMAC support —
- * no manual hmacSha256Sync wiring needed.
+ * Key sizes:
+ *   private key (seed): 32 bytes / 64 hex chars
+ *   public key:         32 bytes / 64 hex chars
+ *   signature:          64 bytes / 128 hex chars
  */
-import { secp256k1 } from '@noble/curves/secp256k1.js'
+import { ed25519 } from '@noble/curves/ed25519.js'
 import { sha256 as nobleSha256 } from '@noble/hashes/sha2.js'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -39,38 +41,30 @@ function base64Encode(obj) {
 // ─── Private key derivation ───────────────────────────────────────────────────
 
 /**
- * Derive a deterministic secp256k1 private key from password + pin.
- * Uses iterative sha256 hashing until a valid scalar is found.
+ * Derive a deterministic Ed25519 private key (seed) from password + pin.
+ * Any 32-byte value is a valid Ed25519 seed — no rejection sampling needed.
  */
 export async function derivePrivateKey(password, pin) {
   const enc = new TextEncoder()
   const seed = enc.encode(`${password}:${pin}`)
 
-  // Initial hash
+  // Initial hash — sha256 always produces 32 bytes, valid as Ed25519 seed
   let key = nobleSha256(seed)
 
-  // Iterate sha256 based on seed length (mirrors old JS behaviour)
+  // Iterate sha256 based on seed length for key stretching
   const rounds = Math.max(seed.length, 1)
   for (let i = 1; i < rounds; i++) {
     key = nobleSha256(key)
   }
 
-  // Ensure the key is a valid secp256k1 private key scalar
-  while (true) {
-    try {
-      secp256k1.getPublicKey(key, true)
-      return bytesToHex(key)
-    } catch {
-      key = nobleSha256(key)
-    }
-  }
+  return bytesToHex(key)
 }
 
 // ─── Public key ───────────────────────────────────────────────────────────────
 
-/** Get compressed public key hex from private key hex. */
+/** Derive Ed25519 public key (32 bytes) from private key seed hex. */
 export function getPublicKey(privateKeyHex) {
-  const pub = secp256k1.getPublicKey(hexToBytes(privateKeyHex), true)
+  const pub = ed25519.getPublicKey(hexToBytes(privateKeyHex))
   return bytesToHex(pub)
 }
 
@@ -79,8 +73,8 @@ export function getPublicKey(privateKeyHex) {
 /**
  * Create a signed auth token for Yantr API.
  * Format: base64(JSON{ publickey, signature, message, timestamp, nonce })
- *   message = "timestamp:nonce"
- *   signature = secp256k1 over sha256(message)
+ *   message   = "timestamp:nonce"
+ *   signature = Ed25519 over raw message bytes
  */
 export async function createToken(privateKeyHex) {
   const publicKeyHex = getPublicKey(privateKeyHex)
@@ -89,8 +83,9 @@ export async function createToken(privateKeyHex) {
   const nonce = bytesToHex(nonceBytes)
   const message = `${timestamp}:${nonce}`
 
-  const msgHash = nobleSha256(new TextEncoder().encode(message))
-  const sig = secp256k1.sign(msgHash, hexToBytes(privateKeyHex))
+  // Ed25519 signs raw bytes — no pre-hashing
+  const msgBytes = new TextEncoder().encode(message)
+  const sig = ed25519.sign(msgBytes, hexToBytes(privateKeyHex))
   const signature = bytesToHex(sig)
 
   return base64Encode({ publickey: publicKeyHex, signature, message, timestamp, nonce })

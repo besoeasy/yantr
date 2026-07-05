@@ -265,38 +265,55 @@ func authMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
+		shared.Log("debug", fmt.Sprintf("[auth] %s %s", r.Method, path))
 		cfg, err := auth.LoadAuthConfig(false)
 		if err != nil {
+			shared.Log("warn", "[auth] LoadAuthConfig error: "+err.Error())
 			jsonErr(w, http.StatusServiceUnavailable, "SETUP_REQUIRED", "Setup required")
 			return
+		}
+		if cfg == nil {
+			shared.Log("debug", "[auth] no admin configured yet (cfg=nil)")
+		} else {
+			shared.Log("debug", "[auth] admin key loaded: "+cfg.PublicKeyHex)
 		}
 
 		token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
 		if token == "" {
 			token = r.URL.Query().Get("token")
 		}
+		if token == "" {
+			shared.Log("warn", "[auth] no token in request")
+		} else {
+			shared.Log("debug", fmt.Sprintf("[auth] token present (len=%d)", len(token)))
+		}
 
 		if cfg == nil {
 			// No admin configured yet — treat the first valid self-signed token
 			// as the bootstrap admin key and register it automatically.
 			if token == "" {
+				shared.Log("warn", "[auth] bootstrap: no token provided, rejecting")
 				jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 				return
 			}
+			shared.Log("debug", "[auth] bootstrap: attempting to register first public key from token")
 			newCfg, bootstrapErr := auth.BootstrapFromToken(token)
 			if bootstrapErr != nil {
+				shared.Log("warn", "[auth] bootstrap failed: "+bootstrapErr.Error())
 				jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 				return
 			}
-			shared.Log("auth: bootstrapped admin public key %s", newCfg.PublicKeyHex)
+			shared.Log("info", "[auth] bootstrapped admin public key: "+newCfg.PublicKeyHex)
 			next.ServeHTTP(w, r)
 			return
 		}
 
 		if err := auth.VerifyToken(token, cfg); err != nil {
+			shared.Log("warn", fmt.Sprintf("[auth] VerifyToken failed for pubkey %s: %v", cfg.PublicKeyHex, err))
 			jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 			return
 		}
+		shared.Log("debug", "[auth] token verified OK")
 		next.ServeHTTP(w, r)
 	})
 }
