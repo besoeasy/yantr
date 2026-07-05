@@ -1,0 +1,67 @@
+services:
+  archivebox:
+    image: archivebox/archivebox
+    container_name: archivebox
+    labels:
+      yantr.app: archivebox
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    stop_grace_period: 1m
+    shm_size: 1gb
+    ports:
+      - "8000"
+    environment:
+      ALLOWED_HOSTS: "*"
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PUBLIC_INDEX: "True"
+      PUBLIC_SNAPSHOTS: "True"
+      PUBLIC_ADD_VIEW: "False"
+    volumes:
+      - archivebox_data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:8000/public/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped
+volumes:
+  archivebox_data: null
+x-yantr:
+  name: ArchiveBox
+  tags:
+    - tools
+    - archiving
+    - bookmarks
+    - web
+    - utility
+  short_description: Self-hosted internet archiving solution for saving web pages,
+    bookmarks, and content.
+  description: ArchiveBox is a self-hosted internet archiving solution to save web
+    pages, bookmarks, and content offline. Supports HTML, PDF, screenshots,
+    WARC, and text formats. Import from browsers, Pocket, Pinboard or RSS feeds
+    then browse your archive through the web UI.
+  usecases:
+    - Archive bookmarks and web pages to preserve content before it disappears
+      or changes.
+    - Import from browsers, Pocket, Pinboard, RSS feeds, or the CLI for bulk
+      archiving.
+    - Browse your personal internet archive through the web UI with search and
+      tagging.
+    - Run scheduled archiving to automatically save new bookmarks or followed
+      links.
+  website: https://github.com/ArchiveBox/ArchiveBox
+  logo: QmRjtdvzpWZSjsbR8rBfisLjtkBPEoXttwyen6F72BTYHv
+  notes:
+    - First run creates an admin user with the credentials set via
+      ADMIN_USERNAME and ADMIN_PASSWORD
+    - Large shm_size (1gb) is required for loading heavy pages with Chromium
+    - Can import from browsers, Pocket, Pinboard, RSS, and CLI tools
+  env_generators:
+    ADMIN_PASSWORD:
+      length: 20
+      charset: alnum_symbols
+      regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
