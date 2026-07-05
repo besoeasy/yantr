@@ -1,0 +1,54 @@
+services:
+  monerod:
+    image: ghcr.io/sethforprivacy/simple-monerod:latest
+    container_name: monerod
+    restart: unless-stopped
+    labels:
+      yantr.app: monerod
+      yantr.service.18089: Restricted RPC
+      yantr.port.18089: TCP
+      yantr.service.18080: P2P
+      yantr.port.18080: TCP
+    ports:
+      - 18080/tcp
+      - 18089/tcp
+    volumes:
+      - bitmonero:/home/monero/.bitmonero
+    command:
+      - monerod
+      - --public-node
+      - --prune-blockchain
+      - --rpc-restricted-bind-ip=0.0.0.0
+      - --rpc-restricted-bind-port=18089
+      - --no-igd
+      - --no-zmq
+      - --enable-dns-blocklist
+      - --db-sync-mode=safe
+      - --log-level=0
+      - --ban-list=/home/monero/ban_list.txt
+volumes:
+  bitmonero: null
+x-yantr:
+  name: Monero Node
+  tags:
+    - cryptocurrency
+    - blockchain
+    - network
+    - crypto
+    - wallet
+  short_description: Privacy-focused Monero full node for wallet connections and network support.
+  description: Monero Node is a pruned Monero full node offering an RPC interface
+    for wallets and network participation. It supports pruned storage,
+    restricted RPC for safer wallet connectivity, P2P sync, and lets you avoid
+    public nodes to improve transaction privacy.
+  usecases:
+    - Connect your Monero wallet to your own node for better privacy.
+    - Support the Monero network by relaying transactions.
+    - Build applications that interact with the Monero blockchain.
+    - Avoid using public RPC nodes that could deanonymize you.
+  website: https://github.com/sethforprivacy/simple-monerod
+  logo: QmarnKCoBY8ZQRnK319Sv9QDdKrUKfnpYteZ71XiswoP8y
+  notes:
+    - Pruned mode uses less disk space (~50GB vs 100GB+)
+    - Restricted RPC prevents unauthorized spending
+    - Use restricted mode for wallet connections
