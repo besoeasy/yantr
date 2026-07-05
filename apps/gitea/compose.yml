@@ -11,7 +11,10 @@ services:
       - gitea_pgdata:/var/lib/postgresql/data
     labels:
       yantr.app: gitea
-      yantr.service: db
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.2222: SSH
+      yantr.port.2222: TCP
   server:
     image: gitea/gitea:latest
     container_name: gitea-server
@@ -20,7 +23,10 @@ services:
       - db
     labels:
       yantr.app: gitea
-      yantr.service: Web UI
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.2222: SSH
+      yantr.port.2222: TCP
     ports:
       - "3000"
       - "2222"
@@ -42,3 +48,25 @@ volumes:
   gitea_pgdata: null
   gitea_data: null
   gitea_config: null
+x-yantr:
+  name: Gitea
+  tags:
+    - git
+    - devops
+    - version-control
+    - code-hosting
+    - self-hosted
+  short_description: Lightweight self-hosted Git service and code platform.
+  description: Gitea is a painless self-hosted all-in-one software development
+    service. It includes Git hosting, code review, team collaboration, package
+    registry, CI/CD with Gitea Actions, and a built-in wiki — all in a
+    lightweight, fast Go binary.
+  usecases:
+    - Host private Git repositories for personal or team projects.
+    - Run CI/CD pipelines with built-in Gitea Actions.
+    - Manage code reviews, issues, and project wikis in one place.
+  website: https://gitea.io
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
