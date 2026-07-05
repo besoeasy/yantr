@@ -1,0 +1,32 @@
+services:
+  l-town:
+    image: ghcr.io/besoeasy/l-town:latest
+    container_name: l-town
+    labels:
+      yantr.app: l-town
+      yantr.service.30300: Web UI
+      yantr.port.30300: HTTP
+    ports:
+      - "30300"
+    restart: unless-stopped
+x-yantr:
+  name: L-Town
+  tags:
+    - self-hosted
+    - web
+    - multiplayer
+    - game
+    - p2p
+  short_description: Lightweight self-hosted L-Town server exposing a single web port.
+  description: L-Town is a lightweight, self-hosted server for the L-Town project.
+    It exposes a single network port for web and websocket connections, is easy
+    to deploy via Docker, and is intended for small self-hosted multiplayer/web
+    apps. Configure volumes if you need to persist state.
+  usecases:
+    - Self-host multiplayer demos.
+    - Host lightweight web/socket apps.
+  website: https://github.com/besoeasy/l-town
+  logo: QmamhV9FcGDvdmxDeEcV2RH28kNRnEFEZy75fCGfuvgMSc
+  notes:
+    - No persistent volumes configured by default.
+    - Expose port 30300 as shown in the compose file.
