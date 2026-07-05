@@ -1,0 +1,47 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    volumes:
+      - radarr_config:/config
+      - radarr_movies:/movies
+      - radarr_downloads:/downloads
+    ports:
+      - "7878"
+    restart: unless-stopped
+    labels:
+      yantr.app: radarr
+      yantr.service.7878: Web UI
+      yantr.port.7878: HTTP
+volumes:
+  radarr_config: null
+  radarr_movies: null
+  radarr_downloads: null
+x-yantr:
+  name: Radarr
+  tags:
+    - media
+    - tools
+    - streaming
+    - video
+    - servarr
+  short_description: Automated movie download manager that integrates with torrent
+    clients for automatic downloading.
+  description: Radarr is an independent fork of Sonarr reworked for automatically
+    downloading movies via Usenet and BitTorrent. It monitors your RSS feeds for
+    new movie releases from your favorite indexers, grabs them automatically,
+    and organizes them into your media library with proper naming convention...
+  usecases:
+    - Automatically download new movie releases from your favorite trackers as
+      soon as they're available.
+    - Maintain a perfectly organized movie library with automatic renaming and
+      metadata fetching.
+    - Upgrade quality automatically - replace SD movies with HD or 4K versions
+      when better quality becomes available.
+    - Get notified when movies are available in your wanted quality profile.
+  website: https://github.com/linuxserver/docker-radarr
+  logo: QmfNn5gZnB1QYxXdumJ3Xw4jz9o18H2Zmub5F2NXU4h8wv
+  notes:
+    - Requires a download client (qBittorrent, Transmission, or Usenet)
+    - Integrates with Plex/Emby/Jellyfin for library refresh after download
+    - Supports both Usenet and BitTorrent protocols
