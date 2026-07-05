@@ -1,17 +1,3 @@
-services:
-  pyramid:
-    image: ghcr.io/fiatjaf/pyramid:latest
-    restart: unless-stopped
-    ports:
-      - "3334"
-    volumes:
-      - data:/app/data
-    labels:
-      yantr.app: pyramid
-      yantr.service.3334: Web UI, WebSocket Endpoint, Blossom Endpoint
-      yantr.port.3334: HTTP
-volumes:
-  data: {}
 x-yantr:
   name: pyramid
   tags:
@@ -38,3 +24,18 @@ x-yantr:
       Cloudflare Tunnel)
     - Depending on the popularity of your Nostr profile you may see high traffic
       on your ISP plan
+services:
+  pyramid:
+    image: ghcr.io/fiatjaf/pyramid:latest
+    restart: unless-stopped
+    ports:
+      - "3334"
+    volumes:
+      - data:/app/data
+    labels:
+      yantr.app: pyramid
+      yantr.service.3334: Web UI, WebSocket Endpoint, Blossom Endpoint
+      yantr.port.3334: HTTP
+
+volumes:
+  data: {}

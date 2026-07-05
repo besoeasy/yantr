@@ -1,3 +1,30 @@
+x-yantr:
+  name: Nostr VPN
+  tags:
+    - vpn
+    - nostr
+    - privacy
+    - networking
+    - self-hosted
+  short_description: Decentralized VPN daemon and web UI built on the Nostr
+    protocol for P2P tunnels.
+  description: Nostr VPN is a decentralized VPN daemon and web UI built on the
+    Nostr protocol. It creates peer-to-peer encrypted tunnels without central
+    servers, using Nostr relays for peer discovery and key exchange. Manage
+    connections and monitor status via the built-in web interface.
+  usecases:
+    - Create encrypted peer-to-peer tunnels between devices without relying on
+      centralized VPN servers.
+    - Use Nostr identity keys to authenticate and establish VPN connections with
+      other Nostr users.
+  website: https://github.com/mmalmi/nostr-vpn
+  logo: QmUTShSH3pWFQKj2nNhzNk6UwYy2qmEm3wNhn98sEFcmsW
+  notes:
+    - The daemon requires NET_ADMIN capability and access to /dev/net/tun for
+      creating VPN tunnel interfaces.
+    - The daemon runs in host network mode to manage system-level routing.
+    - Both services share a single named volume for config and state. Do not run
+      multiple instances on the same host.
 services:
   daemon:
     image: ghcr.io/mmalmi/nostr-vpn-umbrel:v4.0.47
@@ -47,32 +74,6 @@ services:
       yantr.app: nostr-vpn
       yantr.service.38080: Web UI
       yantr.port.38080: HTTP
+
 volumes:
   nostr_vpn_data: null
-x-yantr:
-  name: Nostr VPN
-  tags:
-    - vpn
-    - nostr
-    - privacy
-    - networking
-    - self-hosted
-  short_description: Decentralized VPN daemon and web UI built on the Nostr
-    protocol for P2P tunnels.
-  description: Nostr VPN is a decentralized VPN daemon and web UI built on the
-    Nostr protocol. It creates peer-to-peer encrypted tunnels without central
-    servers, using Nostr relays for peer discovery and key exchange. Manage
-    connections and monitor status via the built-in web interface.
-  usecases:
-    - Create encrypted peer-to-peer tunnels between devices without relying on
-      centralized VPN servers.
-    - Use Nostr identity keys to authenticate and establish VPN connections with
-      other Nostr users.
-  website: https://github.com/mmalmi/nostr-vpn
-  logo: QmUTShSH3pWFQKj2nNhzNk6UwYy2qmEm3wNhn98sEFcmsW
-  notes:
-    - The daemon requires NET_ADMIN capability and access to /dev/net/tun for
-      creating VPN tunnel interfaces.
-    - The daemon runs in host network mode to manage system-level routing.
-    - Both services share a single named volume for config and state. Do not run
-      multiple instances on the same host.

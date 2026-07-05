@@ -1,20 +1,3 @@
-services:
-  privatebin:
-    image: privatebin/nginx-fpm-alpine:latest
-    container_name: privatebin
-    labels:
-      yantr.app: privatebin
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    volumes:
-      - privatebin_data:/srv/data
-      - privatebin_config:/srv/cfg
-    restart: unless-stopped
-volumes:
-  privatebin_data: null
-  privatebin_config: null
 x-yantr:
   name: PrivateBin
   tags:
@@ -48,3 +31,21 @@ x-yantr:
     - Set a password for additional security beyond the URL-based encryption
     - Server cannot read paste contents - provides plausible deniability for
       hosting
+services:
+  privatebin:
+    image: privatebin/nginx-fpm-alpine:latest
+    container_name: privatebin
+    labels:
+      yantr.app: privatebin
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - privatebin_data:/srv/data
+      - privatebin_config:/srv/cfg
+    restart: unless-stopped
+
+volumes:
+  privatebin_data: null
+  privatebin_config: null

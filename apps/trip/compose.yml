@@ -1,18 +1,3 @@
-services:
-  trip:
-    image: ghcr.io/itskovacs/trip:latest
-    container_name: trip
-    labels:
-      yantr.app: trip
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
-    ports:
-      - "8000"
-    volumes:
-      - trip_storage:/app/storage
-    restart: unless-stopped
-volumes:
-  trip_storage: null
 x-yantr:
   name: Trip
   tags:
@@ -35,3 +20,19 @@ x-yantr:
       under your control on local infrastructure.
   website: https://github.com/itskovacs/trip
   logo: QmcxepcQDfmK7gcGSdWPNuyFR1oqR4qeG5jvetn2qYHg8z
+services:
+  trip:
+    image: ghcr.io/itskovacs/trip:latest
+    container_name: trip
+    labels:
+      yantr.app: trip
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    ports:
+      - "8000"
+    volumes:
+      - trip_storage:/app/storage
+    restart: unless-stopped
+
+volumes:
+  trip_storage: null

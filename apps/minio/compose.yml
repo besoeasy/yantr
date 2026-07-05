@@ -1,25 +1,3 @@
-services:
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    restart: unless-stopped
-    command: server /data --console-address ":9001"
-    ports:
-      - "9000"
-      - "9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${WEBPASSWORD:-minioadmin}
-    volumes:
-      - minio_data:/data
-    labels:
-      yantr.app: minio
-      yantr.service.9001: Console
-      yantr.port.9001: HTTP
-      yantr.service.9000: API
-      yantr.port.9000: HTTP
-volumes:
-  minio_data: null
 x-yantr:
   name: MinIO
   tags:
@@ -45,3 +23,26 @@ x-yantr:
     - Console runs on port 9001, API on port 9000
     - Default credentials are minioadmin/minioadmin - change in production
     - Distributed mode available for multi-node deployments
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000"
+      - "9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${WEBPASSWORD:-minioadmin}
+    volumes:
+      - minio_data:/data
+    labels:
+      yantr.app: minio
+      yantr.service.9001: Console
+      yantr.port.9001: HTTP
+      yantr.service.9000: API
+      yantr.port.9000: HTTP
+
+volumes:
+  minio_data: null

@@ -1,3 +1,28 @@
+x-yantr:
+  name: Linkwarden
+  tags:
+    - productivity
+    - utility
+    - bookmarks
+    - search
+    - privacy
+  short_description: Self-hosted bookmark manager with full-text search,
+    archiving, and collaboration features.
+  description: Linkwarden is a self-hosted bookmark manager for saving, archiving,
+    and searching links. It offers full-text search, page archival and
+    screenshots, collaborative collections, tagging, and import/export—useful
+    for research, shared bookmarks, and preserving web resources.
+  usecases:
+    - Save and organize bookmarks with automatic archiving of web page content.
+    - Search through saved links and archived content instantly.
+    - Share bookmark collections with family or team members.
+    - Preserve important web resources that might disappear from the internet.
+  website: https://github.com/linkwarden/linkwarden
+  logo: QmXS2iBXkfwvLA2iiVGCxj8sY3j8KKCf2NGz6hCgiuSeQU
+  notes:
+    - Uses PostgreSQL database for storage
+    - Web pages are archived for offline access
+    - Supports multiple users and shared collections
 services:
   linkwarden:
     image: ghcr.io/linkwarden/linkwarden:v2.13.5
@@ -36,31 +61,7 @@ services:
       yantr.app: linkwarden
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
+
 volumes:
   linkwarden_data: null
   linkwarden_db: null
-x-yantr:
-  name: Linkwarden
-  tags:
-    - productivity
-    - utility
-    - bookmarks
-    - search
-    - privacy
-  short_description: Self-hosted bookmark manager with full-text search,
-    archiving, and collaboration features.
-  description: Linkwarden is a self-hosted bookmark manager for saving, archiving,
-    and searching links. It offers full-text search, page archival and
-    screenshots, collaborative collections, tagging, and import/export—useful
-    for research, shared bookmarks, and preserving web resources.
-  usecases:
-    - Save and organize bookmarks with automatic archiving of web page content.
-    - Search through saved links and archived content instantly.
-    - Share bookmark collections with family or team members.
-    - Preserve important web resources that might disappear from the internet.
-  website: https://github.com/linkwarden/linkwarden
-  logo: QmXS2iBXkfwvLA2iiVGCxj8sY3j8KKCf2NGz6hCgiuSeQU
-  notes:
-    - Uses PostgreSQL database for storage
-    - Web pages are archived for offline access
-    - Supports multiple users and shared collections

@@ -1,19 +1,3 @@
-services:
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    container_name: prowlarr
-    volumes:
-      - prowlarr_config:/config
-    ports:
-      - "9696"
-    restart: unless-stopped
-    labels:
-      yantr.app: prowlarr
-      yantr.service.9696: Web UI
-      yantr.port.9696: HTTP
-volumes:
-  prowlarr_config:
-    name: prowlarr_config
 x-yantr:
   name: Prowlarr
   tags:
@@ -40,3 +24,20 @@ x-yantr:
     - Supports both Usenet (NZB) and BitTorrent protocols
     - Replaces both NZBHydra2 and Jackett
     - Single API key for all your PVR apps to use
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    volumes:
+      - prowlarr_config:/config
+    ports:
+      - "9696"
+    restart: unless-stopped
+    labels:
+      yantr.app: prowlarr
+      yantr.service.9696: Web UI
+      yantr.port.9696: HTTP
+
+volumes:
+  prowlarr_config:
+    name: prowlarr_config

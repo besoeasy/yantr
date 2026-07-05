@@ -1,25 +1,3 @@
-services:
-  linux-box:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: linux-box
-    hostname: linux-box
-    restart: unless-stopped
-    labels:
-      yantr.app: debian
-      yantr.service.22: SSH
-      yantr.port.22: TCP
-    environment:
-      USERNAME: ${USERNAME}
-      PASSWORD: ${PASSWORD}
-    ports:
-      - "22"
-    volumes:
-      - debian-home:/home
-volumes:
-  debian-home:
-    name: debian-home
 x-yantr:
   name: Debian
   tags:
@@ -52,3 +30,26 @@ x-yantr:
     PASSWORD:
       length: 16
       charset: alnum_symbols
+services:
+  linux-box:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: linux-box
+    hostname: linux-box
+    restart: unless-stopped
+    labels:
+      yantr.app: debian
+      yantr.service.22: SSH
+      yantr.port.22: TCP
+    environment:
+      USERNAME: ${USERNAME}
+      PASSWORD: ${PASSWORD}
+    ports:
+      - "22"
+    volumes:
+      - debian-home:/home
+
+volumes:
+  debian-home:
+    name: debian-home

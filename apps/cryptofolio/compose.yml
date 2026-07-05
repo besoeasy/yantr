@@ -1,14 +1,3 @@
-services:
-  cryptofolio:
-    image: xtrendence/cryptofolio:latest
-    container_name: cryptofolio
-    labels:
-      yantr.app: cryptofolio
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    restart: unless-stopped
 x-yantr:
   name: Cryptofolio
   tags:
@@ -30,3 +19,14 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/xtrendence/cryptofolio
   logo: QmRSzoSr1npNczcYt5sFBauWCmYFdqyCytwoj3vtXtrs89
+services:
+  cryptofolio:
+    image: xtrendence/cryptofolio:latest
+    container_name: cryptofolio
+    labels:
+      yantr.app: cryptofolio
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    restart: unless-stopped

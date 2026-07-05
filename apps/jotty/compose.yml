@@ -1,24 +1,3 @@
-services:
-  jotty:
-    image: ghcr.io/fccview/jotty:1.20.0
-    container_name: jotty
-    labels:
-      yantr.app: jotty
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    volumes:
-      - jotty_data:/app/data
-      - jotty_config:/app/config
-      - jotty_cache:/app/.next/cache
-    environment:
-      NODE_ENV: production
-    restart: unless-stopped
-volumes:
-  jotty_data: null
-  jotty_config: null
-  jotty_cache: null
 x-yantr:
   name: Jotty
   tags:
@@ -41,3 +20,25 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/fccview/jotty
   logo: QmaCFEHEEBeqHMxCD3JKPx5AQJpoU4VFAXru85xRm5qeXV
+services:
+  jotty:
+    image: ghcr.io/fccview/jotty:1.20.0
+    container_name: jotty
+    labels:
+      yantr.app: jotty
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - jotty_data:/app/data
+      - jotty_config:/app/config
+      - jotty_cache:/app/.next/cache
+    environment:
+      NODE_ENV: production
+    restart: unless-stopped
+
+volumes:
+  jotty_data: null
+  jotty_config: null
+  jotty_cache: null

@@ -1,14 +1,3 @@
-services:
-  networking-toolbox:
-    image: lissy93/networking-toolbox:latest
-    container_name: networking-toolbox
-    labels:
-      yantr.app: networking-toolbox
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    restart: unless-stopped
 x-yantr:
   name: Networking Toolbox
   tags:
@@ -34,3 +23,14 @@ x-yantr:
     - Extensive collection of networking tools
     - All tools work offline
     - Great for troubleshooting
+services:
+  networking-toolbox:
+    image: lissy93/networking-toolbox:latest
+    container_name: networking-toolbox
+    labels:
+      yantr.app: networking-toolbox
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped

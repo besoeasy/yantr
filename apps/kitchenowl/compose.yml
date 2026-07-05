@@ -1,3 +1,27 @@
+x-yantr:
+  name: KitchenOwl
+  tags:
+    - kitchen
+    - recipes
+    - shopping
+    - meal-planning
+    - self-hosted
+  short_description: Smart self-hosted kitchen and grocery list manager.
+  description: KitchenOwl is a smart self-hosted grocery list and recipe manager.
+    Plan meals, track pantry items, generate shopping lists automatically, and
+    share with household members for collaborative kitchen management.
+  usecases:
+    - Plan weekly meals and generate smart shopping lists.
+    - Store and organize recipes with ingredient tracking.
+    - Share grocery lists with family members in real time.
+  website: https://kitchenowl.org
+  env_generators:
+    JWT_SECRET_KEY:
+      length: 64
+      charset: hex
+    DB_PASSWORD:
+      length: 24
+      charset: alnum
 services:
   web:
     image: tombursch/kitchenowl:latest
@@ -35,30 +59,7 @@ services:
       yantr.app: kitchenowl
       yantr.service.8080: Web UI
       yantr.port.8080: HTTP
+
 volumes:
   kitchenowl_files: null
   kitchenowl_db: null
-x-yantr:
-  name: KitchenOwl
-  tags:
-    - kitchen
-    - recipes
-    - shopping
-    - meal-planning
-    - self-hosted
-  short_description: Smart self-hosted kitchen and grocery list manager.
-  description: KitchenOwl is a smart self-hosted grocery list and recipe manager.
-    Plan meals, track pantry items, generate shopping lists automatically, and
-    share with household members for collaborative kitchen management.
-  usecases:
-    - Plan weekly meals and generate smart shopping lists.
-    - Store and organize recipes with ingredient tracking.
-    - Share grocery lists with family members in real time.
-  website: https://kitchenowl.org
-  env_generators:
-    JWT_SECRET_KEY:
-      length: 64
-      charset: hex
-    DB_PASSWORD:
-      length: 24
-      charset: alnum

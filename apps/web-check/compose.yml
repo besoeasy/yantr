@@ -1,14 +1,3 @@
-services:
-  web-check:
-    image: lissy93/web-check:latest
-    container_name: web-check
-    ports:
-      - "3000"
-    restart: unless-stopped
-    labels:
-      yantr.app: web-check
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
 x-yantr:
   name: Web Check
   tags:
@@ -35,3 +24,14 @@ x-yantr:
     - Runs 30+ checks on any URL you provide
     - All analysis done locally - no data sent to third parties
     - Great for security auditing
+services:
+  web-check:
+    image: lissy93/web-check:latest
+    container_name: web-check
+    ports:
+      - "3000"
+    restart: unless-stopped
+    labels:
+      yantr.app: web-check
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP

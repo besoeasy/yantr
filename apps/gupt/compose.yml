@@ -1,14 +1,3 @@
-services:
-  gupt:
-    image: ghcr.io/besoeasy/gupt:latest
-    container_name: gupt
-    labels:
-      yantr.app: gupt
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
-    ports:
-      - "8000"
-    restart: unless-stopped
 x-yantr:
   name: GUPT
   tags:
@@ -35,3 +24,14 @@ x-yantr:
   notes:
     - No backend required — the app connects directly to public or private Nostr
       relays.
+services:
+  gupt:
+    image: ghcr.io/besoeasy/gupt:latest
+    container_name: gupt
+    labels:
+      yantr.app: gupt
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    ports:
+      - "8000"
+    restart: unless-stopped

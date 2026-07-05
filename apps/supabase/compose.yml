@@ -1,3 +1,27 @@
+x-yantr:
+  name: Supabase
+  tags:
+    - database
+    - backend
+    - developer
+    - api
+    - self-hosted
+  short_description: Open-source Firebase alternative with Postgres, auth,
+    storage, and realtime APIs.
+  description: Supabase is an open-source backend platform offering database,
+    auth, storage, and realtime subscriptions. Self-hosted via Docker, it
+    provides instant APIs, access control, and event triggers for modern web and
+    mobile apps.
+  usecases:
+    - Build self-hosted web app backends with Postgres + REST/GrapqhQL APIs.
+    - Manage users with built-in authentication and role-based access policies.
+    - Host secure file storage with signed upload/download URLs.
+  website: https://supabase.com/docs/guides/self-hosting
+  logo: QmSupabaseLogoCID1234567890abcdef1234567890abc
+  notes:
+    - Adjust SUPABASE_JWT_SECRET and database password for production.
+    - Supabase official Docker stack may also include additional services for
+      edge functions and storage.
 services:
   supabase-db:
     image: postgres:15-alpine
@@ -34,30 +58,7 @@ services:
       SUPABASE_URL: http://localhost:54321
     volumes:
       - supabase_config:/var/lib/supabase
+
 volumes:
   supabase_db: null
   supabase_config: null
-x-yantr:
-  name: Supabase
-  tags:
-    - database
-    - backend
-    - developer
-    - api
-    - self-hosted
-  short_description: Open-source Firebase alternative with Postgres, auth,
-    storage, and realtime APIs.
-  description: Supabase is an open-source backend platform offering database,
-    auth, storage, and realtime subscriptions. Self-hosted via Docker, it
-    provides instant APIs, access control, and event triggers for modern web and
-    mobile apps.
-  usecases:
-    - Build self-hosted web app backends with Postgres + REST/GrapqhQL APIs.
-    - Manage users with built-in authentication and role-based access policies.
-    - Host secure file storage with signed upload/download URLs.
-  website: https://supabase.com/docs/guides/self-hosting
-  logo: QmSupabaseLogoCID1234567890abcdef1234567890abc
-  notes:
-    - Adjust SUPABASE_JWT_SECRET and database password for production.
-    - Supabase official Docker stack may also include additional services for
-      edge functions and storage.

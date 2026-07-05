@@ -1,14 +1,3 @@
-services:
-  convertx:
-    image: ghcr.io/c4illin/convertx:latest
-    container_name: convertx
-    labels:
-      yantr.app: convertx
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    restart: unless-stopped
 x-yantr:
   name: ConvertX
   tags:
@@ -32,3 +21,14 @@ x-yantr:
     - Multiple format support
     - Local processing only
     - Web interface for easy use
+services:
+  convertx:
+    image: ghcr.io/c4illin/convertx:latest
+    container_name: convertx
+    labels:
+      yantr.app: convertx
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped

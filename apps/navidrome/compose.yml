@@ -1,25 +1,3 @@
-services:
-  navidrome:
-    image: deluan/navidrome:latest
-    container_name: navidrome
-    labels:
-      yantr.app: navidrome
-      yantr.service.4533: Web UI
-      yantr.port.4533: HTTP
-    environment:
-      ND_SCANSCHEDULE: 1h
-      ND_LOGLEVEL: info
-      ND_SESSIONTIMEOUT: 24h
-      ND_BASEURL: ""
-    ports:
-      - "4533"
-    volumes:
-      - navidrome_data:/data
-      - navidrome_music:/music
-    restart: unless-stopped
-volumes:
-  navidrome_data: null
-  navidrome_music: null
 x-yantr:
   name: Navidrome
   tags:
@@ -39,3 +17,26 @@ x-yantr:
     - Share music collections with friends and family.
   website: https://www.navidrome.org/
   logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    labels:
+      yantr.app: navidrome
+      yantr.service.4533: Web UI
+      yantr.port.4533: HTTP
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ""
+    ports:
+      - "4533"
+    volumes:
+      - navidrome_data:/data
+      - navidrome_music:/music
+    restart: unless-stopped
+
+volumes:
+  navidrome_data: null
+  navidrome_music: null

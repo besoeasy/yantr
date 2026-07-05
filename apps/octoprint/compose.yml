@@ -1,21 +1,3 @@
-services:
-  web:
-    image: octoprint/octoprint:latest
-    container_name: octoprint
-    labels:
-      yantr.app: octoprint
-      yantr.service.5000: Web UI
-      yantr.port.5000: HTTP
-    privileged: true
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "5000"
-    volumes:
-      - octoprint_data:/octoprint
-    restart: unless-stopped
-volumes:
-  octoprint_data: null
 x-yantr:
   name: OctoPrint
   tags:
@@ -38,3 +20,22 @@ x-yantr:
   notes:
     - Privileged mode is required to access the 3D printer USB serial port.
     - Use the Spaghetti Detective (Obico) plugin for AI-based failure detection.
+services:
+  web:
+    image: octoprint/octoprint:latest
+    container_name: octoprint
+    labels:
+      yantr.app: octoprint
+      yantr.service.5000: Web UI
+      yantr.port.5000: HTTP
+    privileged: true
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "5000"
+    volumes:
+      - octoprint_data:/octoprint
+    restart: unless-stopped
+
+volumes:
+  octoprint_data: null

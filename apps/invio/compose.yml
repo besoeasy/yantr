@@ -1,18 +1,3 @@
-services:
-  invio:
-    image: ghcr.io/kittendevv/invio:latest
-    container_name: invio
-    labels:
-      yantr.app: invio
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    volumes:
-      - invio_data:/app/data
-    restart: unless-stopped
-volumes:
-  invio_data: null
 x-yantr:
   name: Invio
   tags:
@@ -35,3 +20,19 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/kittendevv/Invio/wiki
   logo: QmTxfLAvG4LnESZyVJ6dWMzXqJpaDYyTmKEhLxEux6PAH3
+services:
+  invio:
+    image: ghcr.io/kittendevv/invio:latest
+    container_name: invio
+    labels:
+      yantr.app: invio
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - invio_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  invio_data: null

@@ -1,22 +1,3 @@
-services:
-  swingmusic:
-    image: ghcr.io/swingmx/swingmusic:latest
-    container_name: swingmusic
-    volumes:
-      - swingmusic-music:/music
-      - swingmusic-config:/config
-    ports:
-      - "1970"
-    restart: unless-stopped
-    labels:
-      yantr.app: swingmusic
-      yantr.service.1970: Web UI
-      yantr.port.1970: HTTP
-volumes:
-  swingmusic-music:
-    name: swingmusic-music
-  swingmusic-config:
-    name: swingmusic-config
 x-yantr:
   name: SwingMusic
   tags:
@@ -41,3 +22,23 @@ x-yantr:
     - Mount music folder for library
     - Reads metadata automatically
     - Responsive mobile-friendly UI
+services:
+  swingmusic:
+    image: ghcr.io/swingmx/swingmusic:latest
+    container_name: swingmusic
+    volumes:
+      - swingmusic-music:/music
+      - swingmusic-config:/config
+    ports:
+      - "1970"
+    restart: unless-stopped
+    labels:
+      yantr.app: swingmusic
+      yantr.service.1970: Web UI
+      yantr.port.1970: HTTP
+
+volumes:
+  swingmusic-music:
+    name: swingmusic-music
+  swingmusic-config:
+    name: swingmusic-config

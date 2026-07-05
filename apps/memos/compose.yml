@@ -1,17 +1,3 @@
-services:
-  memos:
-    image: neosmemo/memos:stable
-    container_name: memos
-    volumes:
-      - memos_data:/var/opt/memos
-    ports:
-      - 5230
-    labels:
-      yantr.app: memos
-      yantr.service.5230: Web UI
-      yantr.port.5230: HTTP
-volumes:
-  memos_data: null
 x-yantr:
   name: Memos
   tags:
@@ -37,3 +23,18 @@ x-yantr:
     - Very lightweight - runs well on minimal hardware
     - SQLite database for simple deployment
     - Mobile-friendly responsive design
+services:
+  memos:
+    image: neosmemo/memos:stable
+    container_name: memos
+    volumes:
+      - memos_data:/var/opt/memos
+    ports:
+      - 5230
+    labels:
+      yantr.app: memos
+      yantr.service.5230: Web UI
+      yantr.port.5230: HTTP
+
+volumes:
+  memos_data: null

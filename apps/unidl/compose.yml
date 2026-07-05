@@ -1,3 +1,25 @@
+x-yantr:
+  name: UniDL
+  tags:
+    - media
+    - download
+    - utility
+    - streaming
+    - video
+  short_description: Media streaming and sharing platform with Telegram integration.
+  description: UniDL is a media streaming and sharing platform with Telegram
+    integration. It supports self-hosted deployment via Docker Compose and
+    provides tools for downloading and organizing video/audio libraries. With
+    local control over assets and distribution, it avoids third-party cloud
+    limitations.
+  usecases:
+    - Self-host UniDL on your home server to media streaming and sharing
+      platform with telegram integration without depending on third-party cloud
+      services.
+    - Use UniDL to manage your media workflows privately, keeping all data under
+      your control on local infrastructure.
+  website: https://github.com/besoeasy/UniDL
+  logo: QmeQL3b6vWfQX2TEbuovsof5mv23Jkxgnp8ejTyqjQMay3
 services:
   remote-torrent-downloader:
     image: ghcr.io/besoeasy/unidl:latest
@@ -23,27 +45,6 @@ services:
     volumes:
       - unidl_data:/tmp/unidl
     restart: unless-stopped
+
 volumes:
   unidl_data: null
-x-yantr:
-  name: UniDL
-  tags:
-    - media
-    - download
-    - utility
-    - streaming
-    - video
-  short_description: Media streaming and sharing platform with Telegram integration.
-  description: UniDL is a media streaming and sharing platform with Telegram
-    integration. It supports self-hosted deployment via Docker Compose and
-    provides tools for downloading and organizing video/audio libraries. With
-    local control over assets and distribution, it avoids third-party cloud
-    limitations.
-  usecases:
-    - Self-host UniDL on your home server to media streaming and sharing
-      platform with telegram integration without depending on third-party cloud
-      services.
-    - Use UniDL to manage your media workflows privately, keeping all data under
-      your control on local infrastructure.
-  website: https://github.com/besoeasy/UniDL
-  logo: QmeQL3b6vWfQX2TEbuovsof5mv23Jkxgnp8ejTyqjQMay3

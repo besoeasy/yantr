@@ -1,21 +1,3 @@
-services:
-  camofox:
-    image: ghcr.io/jo-inc/camofox-browser:latest
-    container_name: camofox
-    environment:
-      CAMOFOX_API_KEY: ${CAMOFOX_API_KEY}
-    volumes:
-      - camofox_data:/home/node/.camofox
-    ports:
-      - "9377"
-    restart: unless-stopped
-    labels:
-      yantr.app: camofox
-      yantr.service.9377: Web UI
-      yantr.port.9377: HTTP
-volumes:
-  camofox_data:
-    name: camofox_data
 x-yantr:
   name: Camofox Browser
   tags:
@@ -51,3 +33,22 @@ x-yantr:
     CAMOFOX_API_KEY:
       length: 32
       charset: alnum_symbols
+services:
+  camofox:
+    image: ghcr.io/jo-inc/camofox-browser:latest
+    container_name: camofox
+    environment:
+      CAMOFOX_API_KEY: ${CAMOFOX_API_KEY}
+    volumes:
+      - camofox_data:/home/node/.camofox
+    ports:
+      - "9377"
+    restart: unless-stopped
+    labels:
+      yantr.app: camofox
+      yantr.service.9377: Web UI
+      yantr.port.9377: HTTP
+
+volumes:
+  camofox_data:
+    name: camofox_data

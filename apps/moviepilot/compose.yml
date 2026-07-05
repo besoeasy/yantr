@@ -1,38 +1,3 @@
-services:
-  moviepilot:
-    stdin_open: true
-    tty: true
-    image: jxxghp/moviepilot-v2:latest
-    container_name: moviepilot
-    hostname: moviepilot
-    ports:
-      - "3000"
-      - "3001"
-    volumes:
-      - moviepilot-config:/config
-      - moviepilot-core:/moviepilot/.cache/ms-playwright
-      - /media:/media
-    environment:
-      NGINX_PORT: 3000
-      PORT: 3001
-      PUID: 0
-      PGID: 0
-      UMASK: "000"
-      TZ: ${TZ:-Asia/Shanghai}
-      SUPERUSER: ${SUPERUSER}
-      SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
-    restart: unless-stopped
-    labels:
-      yantr.app: moviepilot
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.3001: API
-      yantr.port.3001: HTTP
-volumes:
-  moviepilot-config:
-    name: moviepilot-config
-  moviepilot-core:
-    name: moviepilot-core
 x-yantr:
   name: MoviePilot
   tags:
@@ -75,3 +40,39 @@ x-yantr:
     SUPERUSER_PASSWORD:
       length: 32
       charset: alnum_symbols
+services:
+  moviepilot:
+    stdin_open: true
+    tty: true
+    image: jxxghp/moviepilot-v2:latest
+    container_name: moviepilot
+    hostname: moviepilot
+    ports:
+      - "3000"
+      - "3001"
+    volumes:
+      - moviepilot-config:/config
+      - moviepilot-core:/moviepilot/.cache/ms-playwright
+      - /media:/media
+    environment:
+      NGINX_PORT: 3000
+      PORT: 3001
+      PUID: 0
+      PGID: 0
+      UMASK: "000"
+      TZ: ${TZ:-Asia/Shanghai}
+      SUPERUSER: ${SUPERUSER}
+      SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
+    restart: unless-stopped
+    labels:
+      yantr.app: moviepilot
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.3001: API
+      yantr.port.3001: HTTP
+
+volumes:
+  moviepilot-config:
+    name: moviepilot-config
+  moviepilot-core:
+    name: moviepilot-core

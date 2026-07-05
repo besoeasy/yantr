@@ -1,14 +1,3 @@
-services:
-  vert:
-    image: ghcr.io/vert-sh/vert:latest
-    container_name: vert
-    labels:
-      yantr.app: vert
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    restart: unless-stopped
 x-yantr:
   name: VERT
   tags:
@@ -36,3 +25,14 @@ x-yantr:
       otherwise it uses the official vert.sh instance
     - All other conversions (images, audio, documents) run fully in-browser via
       WebAssembly
+services:
+  vert:
+    image: ghcr.io/vert-sh/vert:latest
+    container_name: vert
+    labels:
+      yantr.app: vert
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped

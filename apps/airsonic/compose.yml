@@ -1,26 +1,3 @@
-services:
-  airsonic:
-    image: lscr.io/linuxserver/airsonic:latest
-    container_name: airsonic
-    labels:
-      yantr.app: airsonic
-      yantr.service.4040: Web UI
-      yantr.port.4040: HTTP
-    ports:
-      - "4040"
-    volumes:
-      - airsonic_config:/config
-      - airsonic_music:/music
-      - airsonic_playlists:/playlists
-      - airsonic_podcasts:/podcasts
-      - airsonic_media:/media
-    restart: unless-stopped
-volumes:
-  airsonic_config: null
-  airsonic_music: null
-  airsonic_playlists: null
-  airsonic_podcasts: null
-  airsonic_media: null
 x-yantr:
   name: Airsonic
   tags:
@@ -45,3 +22,27 @@ x-yantr:
     - Supports transcoding for format compatibility
     - Android app available for mobile listening
     - Multiple users with personal libraries supported
+services:
+  airsonic:
+    image: lscr.io/linuxserver/airsonic:latest
+    container_name: airsonic
+    labels:
+      yantr.app: airsonic
+      yantr.service.4040: Web UI
+      yantr.port.4040: HTTP
+    ports:
+      - "4040"
+    volumes:
+      - airsonic_config:/config
+      - airsonic_music:/music
+      - airsonic_playlists:/playlists
+      - airsonic_podcasts:/podcasts
+      - airsonic_media:/media
+    restart: unless-stopped
+
+volumes:
+  airsonic_config: null
+  airsonic_music: null
+  airsonic_playlists: null
+  airsonic_podcasts: null
+  airsonic_media: null

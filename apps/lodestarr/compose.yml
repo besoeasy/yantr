@@ -1,18 +1,3 @@
-services:
-  lodestarr:
-    image: ghcr.io/ddonindia/lodestarr:latest
-    container_name: lodestarr
-    ports:
-      - "3420"
-    volumes:
-      - lodestarr_config:/root/.config/lodestarr
-    restart: unless-stopped
-    labels:
-      yantr.app: lodestarr
-      yantr.service.3420: Web UI
-      yantr.port.3420: HTTP
-volumes:
-  lodestarr_config: null
 x-yantr:
   name: Lodestarr
   tags:
@@ -42,3 +27,19 @@ x-yantr:
     - Intended for educational purposes — ensure your use complies with local
       laws.
     - Exposes a Torznab-compatible API for PVR app integration.
+services:
+  lodestarr:
+    image: ghcr.io/ddonindia/lodestarr:latest
+    container_name: lodestarr
+    ports:
+      - "3420"
+    volumes:
+      - lodestarr_config:/root/.config/lodestarr
+    restart: unless-stopped
+    labels:
+      yantr.app: lodestarr
+      yantr.service.3420: Web UI
+      yantr.port.3420: HTTP
+
+volumes:
+  lodestarr_config: null

@@ -1,17 +1,3 @@
-services:
-  libreddit:
-    image: ceramicwhite/libreddit:0.22.9
-    container_name: libreddit
-    labels:
-      yantr.app: libreddit
-      yantr.service.7420: Web UI
-      yantr.port.7420: HTTP
-    ports:
-      - "7420"
-    environment:
-      PORT: 7420
-    init: true
-    restart: unless-stopped
 x-yantr:
   name: LibReddit
   tags:
@@ -35,3 +21,17 @@ x-yantr:
     - No JavaScript - works without it
     - Zero tracking
     - Fast and lightweight
+services:
+  libreddit:
+    image: ceramicwhite/libreddit:0.22.9
+    container_name: libreddit
+    labels:
+      yantr.app: libreddit
+      yantr.service.7420: Web UI
+      yantr.port.7420: HTTP
+    ports:
+      - "7420"
+    environment:
+      PORT: 7420
+    init: true
+    restart: unless-stopped

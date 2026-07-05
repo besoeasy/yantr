@@ -1,20 +1,3 @@
-services:
-  mariadb:
-    image: mariadb:latest
-    container_name: mariadb
-    labels:
-      yantr.app: mariadb
-      yantr.service.3306: Database
-      yantr.port.3306: TCP
-    ports:
-      - "3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    restart: unless-stopped
-volumes:
-  mariadb_data: null
 x-yantr:
   name: MariaDB
   tags:
@@ -41,3 +24,21 @@ x-yantr:
     - MySQL-compatible - most MySQL clients and tools work directly
     - Set MYSQL_ROOT_PASSWORD environment variable for root access
     - Data persists in the mariadb_data volume
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    labels:
+      yantr.app: mariadb
+      yantr.service.3306: Database
+      yantr.port.3306: TCP
+    ports:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  mariadb_data: null

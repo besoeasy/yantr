@@ -1,3 +1,28 @@
+x-yantr:
+  name: Paperless-ngx
+  tags:
+    - documents
+    - ocr
+    - productivity
+    - self-hosted
+    - archiving
+  short_description: Self-hosted document management system with OCR. for home.
+  description: Paperless-ngx is a community-supported open-source document
+    management system that transforms your physical documents into a searchable
+    online archive. It uses OCR to make scanned documents fully searchable and
+    organizes everything with tags, correspondents, and document types.
+  usecases:
+    - Scan and archive paper documents with automatic OCR.
+    - Search and retrieve any document instantly by content.
+    - Organize documents with tags, types, and correspondents.
+  website: https://docs.paperless-ngx.com
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
+    SECRET_KEY:
+      length: 64
+      charset: alnum
 services:
   broker:
     image: redis:7
@@ -72,6 +97,7 @@ services:
       - paperless_media:/usr/src/paperless/media
       - paperless_export:/usr/src/paperless/export
       - paperless_consume:/usr/src/paperless/consume
+
 volumes:
   paperless_redis: null
   paperless_pgdata: null
@@ -79,28 +105,3 @@ volumes:
   paperless_media: null
   paperless_export: null
   paperless_consume: null
-x-yantr:
-  name: Paperless-ngx
-  tags:
-    - documents
-    - ocr
-    - productivity
-    - self-hosted
-    - archiving
-  short_description: Self-hosted document management system with OCR. for home.
-  description: Paperless-ngx is a community-supported open-source document
-    management system that transforms your physical documents into a searchable
-    online archive. It uses OCR to make scanned documents fully searchable and
-    organizes everything with tags, correspondents, and document types.
-  usecases:
-    - Scan and archive paper documents with automatic OCR.
-    - Search and retrieve any document instantly by content.
-    - Organize documents with tags, types, and correspondents.
-  website: https://docs.paperless-ngx.com
-  env_generators:
-    POSTGRES_PASSWORD:
-      length: 32
-      charset: alnum
-    SECRET_KEY:
-      length: 64
-      charset: alnum

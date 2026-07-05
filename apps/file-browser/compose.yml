@@ -1,25 +1,3 @@
-services:
-  server:
-    image: filebrowser/filebrowser:latest
-    container_name: file-browser
-    labels:
-      yantr.app: file-browser
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    restart: unless-stopped
-    environment:
-      FB_PORT: 80
-      FB_DATABASE: /database/filebrowser.db
-      FB_ROOT: /data
-      FB_NOAUTH: "true"
-    ports:
-      - "80"
-    volumes:
-      - file_browser_db:/database
-      - file_browser_data:/data
-volumes:
-  file_browser_db: null
-  file_browser_data: null
 x-yantr:
   name: File Browser
   tags:
@@ -39,3 +17,26 @@ x-yantr:
     - Share files with others via direct links.
   website: https://filebrowser.org
   logo: QmebPcQTwXvzUG4sG2X9mCZ3raT12fKXDovocFYKyTVs9j
+services:
+  server:
+    image: filebrowser/filebrowser:latest
+    container_name: file-browser
+    labels:
+      yantr.app: file-browser
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    restart: unless-stopped
+    environment:
+      FB_PORT: 80
+      FB_DATABASE: /database/filebrowser.db
+      FB_ROOT: /data
+      FB_NOAUTH: "true"
+    ports:
+      - "80"
+    volumes:
+      - file_browser_db:/database
+      - file_browser_data:/data
+
+volumes:
+  file_browser_db: null
+  file_browser_data: null

@@ -1,3 +1,26 @@
+x-yantr:
+  name: Solidtime
+  tags:
+    - productivity
+    - time-tracking
+    - self-hosted
+    - homelab
+    - docker
+  short_description: Time tracking with projects, clients, invoicing, and PDF invoice generation.
+  description: Solidtime is a time tracking application built with Laravel and
+    React. It includes project and client management, time entries, detailed
+    reports, team support, and invoice generation with PDF export. Perfect for
+    freelancers tracking billable hours or teams managing time across projects.
+  usecases:
+    - Track time on projects.
+    - Generate invoices for clients.
+    - Team time management.
+  website: https://www.solidtime.io/
+  logo: QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6
+  notes:
+    - Uses PostgreSQL database
+    - Invoice generation included
+    - Gotenberg for PDF generation
 services:
   solidtime:
     image: solidtime/solidtime:0.11.5
@@ -118,29 +141,7 @@ services:
       yantr.app: solidtime
       yantr.service.8000: Web UI
       yantr.port.8000: HTTP
+
 volumes:
   solidtime_data: null
   solidtime_db: null
-x-yantr:
-  name: Solidtime
-  tags:
-    - productivity
-    - time-tracking
-    - self-hosted
-    - homelab
-    - docker
-  short_description: Time tracking with projects, clients, invoicing, and PDF invoice generation.
-  description: Solidtime is a time tracking application built with Laravel and
-    React. It includes project and client management, time entries, detailed
-    reports, team support, and invoice generation with PDF export. Perfect for
-    freelancers tracking billable hours or teams managing time across projects.
-  usecases:
-    - Track time on projects.
-    - Generate invoices for clients.
-    - Team time management.
-  website: https://www.solidtime.io/
-  logo: QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6
-  notes:
-    - Uses PostgreSQL database
-    - Invoice generation included
-    - Gotenberg for PDF generation

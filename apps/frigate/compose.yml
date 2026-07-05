@@ -1,3 +1,26 @@
+x-yantr:
+  name: Frigate
+  tags:
+    - nvr
+    - cameras
+    - security
+    - ai
+    - object-detection
+  short_description: AI-powered NVR with real-time object detection for IP cameras.
+  description: Frigate is a self-hosted NVR built around real-time AI object
+    detection. It uses your CPU or GPU to detect people, vehicles, and animals
+    in camera streams, storing recordings and sending alerts only when relevant
+    events occur — keeping storage lean and notifications meaningful.
+  usecases:
+    - Monitor IP cameras with AI-based person and vehicle detection.
+    - Record only relevant events to save disk space.
+    - Integrate camera events with Home Assistant for smart automations.
+  website: https://frigate.video
+  notes:
+    - A config.yml file is required in the frigate_config volume before first
+      startup.
+    - For hardware acceleration, pass your GPU device (e.g.,
+      /dev/dri/renderD128) via compose.
 services:
   web:
     image: ghcr.io/blakeblackshear/frigate:latest
@@ -22,29 +45,7 @@ services:
       - frigate_config:/config
       - frigate_media:/media/frigate
     restart: unless-stopped
+
 volumes:
   frigate_config: null
   frigate_media: null
-x-yantr:
-  name: Frigate
-  tags:
-    - nvr
-    - cameras
-    - security
-    - ai
-    - object-detection
-  short_description: AI-powered NVR with real-time object detection for IP cameras.
-  description: Frigate is a self-hosted NVR built around real-time AI object
-    detection. It uses your CPU or GPU to detect people, vehicles, and animals
-    in camera streams, storing recordings and sending alerts only when relevant
-    events occur — keeping storage lean and notifications meaningful.
-  usecases:
-    - Monitor IP cameras with AI-based person and vehicle detection.
-    - Record only relevant events to save disk space.
-    - Integrate camera events with Home Assistant for smart automations.
-  website: https://frigate.video
-  notes:
-    - A config.yml file is required in the frigate_config volume before first
-      startup.
-    - For hardware acceleration, pass your GPU device (e.g.,
-      /dev/dri/renderD128) via compose.

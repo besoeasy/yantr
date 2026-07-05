@@ -1,3 +1,33 @@
+x-yantr:
+  name: Bitmagnet
+  tags:
+    - torrent
+    - dht
+    - indexer
+    - search
+    - crawler
+  short_description: Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine.
+  description: Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content
+    classifier, and torrent search engine with a web UI. It crawls the DHT
+    network to discover and index torrents, enabling powerful search and Servarr
+    integration without relying on external trackers.
+  usecases:
+    - Index and search torrents across the DHT network without relying on public
+      torrent sites.
+    - Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for
+      automated media acquisition.
+  website: https://bitmagnet.io
+  logo: QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP
+  notes:
+    - Bitmagnet bundles its own PostgreSQL instance — no separate database setup
+      is required.
+    - The Web UI runs on port 3333 but is not published to the host by default.
+      Access it via a reverse proxy or change the port mapping in compose.yml.
+    - DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your
+      firewall for effective peer discovery.
+    - The default PostgreSQL password is `postgresx`. Change the
+      `POSTGRES_PASSWORD` environment variable in compose.yml before deploying
+      in a production environment.
 services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest
@@ -51,36 +81,7 @@ services:
       yantr.app: bitmagnet
       yantr.service.3333: Web UI
       yantr.port.3333: HTTP
+
 volumes:
   bitmagnet_config: null
   bitmagnet_db: null
-x-yantr:
-  name: Bitmagnet
-  tags:
-    - torrent
-    - dht
-    - indexer
-    - search
-    - crawler
-  short_description: Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine.
-  description: Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content
-    classifier, and torrent search engine with a web UI. It crawls the DHT
-    network to discover and index torrents, enabling powerful search and Servarr
-    integration without relying on external trackers.
-  usecases:
-    - Index and search torrents across the DHT network without relying on public
-      torrent sites.
-    - Integrate with Servarr apps (Radarr, Sonarr) as a custom indexer for
-      automated media acquisition.
-  website: https://bitmagnet.io
-  logo: QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP
-  notes:
-    - Bitmagnet bundles its own PostgreSQL instance — no separate database setup
-      is required.
-    - The Web UI runs on port 3333 but is not published to the host by default.
-      Access it via a reverse proxy or change the port mapping in compose.yml.
-    - DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on your
-      firewall for effective peer discovery.
-    - The default PostgreSQL password is `postgresx`. Change the
-      `POSTGRES_PASSWORD` environment variable in compose.yml before deploying
-      in a production environment.

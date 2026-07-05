@@ -1,18 +1,3 @@
-services:
-  bifrost:
-    image: maximhq/bifrost:latest
-    container_name: bifrost
-    labels:
-      yantr.app: bifrost
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    volumes:
-      - bifrost_data:/app/data
-    restart: unless-stopped
-volumes:
-  bifrost_data: null
 x-yantr:
   name: Bifrost
   tags:
@@ -38,3 +23,19 @@ x-yantr:
     - App data is stored in a Docker volume mounted at /app/data.
     - Logo is a temporary placeholder and should be replaced with the final IPFS
       CID later.
+services:
+  bifrost:
+    image: maximhq/bifrost:latest
+    container_name: bifrost
+    labels:
+      yantr.app: bifrost
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - bifrost_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  bifrost_data: null

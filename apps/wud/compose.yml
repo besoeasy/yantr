@@ -1,16 +1,3 @@
-services:
-  wud:
-    image: getwud/wud
-    container_name: wud
-    labels:
-      yantr.app: wud
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
 x-yantr:
   name: WUD
   tags:
@@ -42,3 +29,16 @@ x-yantr:
     - "Supports multiple notification channels: Discord, Slack, Telegram, email,
       Gotify, and more"
     - Web UI provides a dashboard showing all containers and their update status
+services:
+  wud:
+    image: getwud/wud
+    container_name: wud
+    labels:
+      yantr.app: wud
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

@@ -1,18 +1,3 @@
-services:
-  server:
-    image: linuxserver/snapdrop:latest
-    container_name: snapdrop
-    labels:
-      yantr.app: snapdrop
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    restart: unless-stopped
-    ports:
-      - "80"
-    volumes:
-      - snapdrop_config:/config
-volumes:
-  snapdrop_config: null
 x-yantr:
   name: Snapdrop
   tags:
@@ -32,3 +17,19 @@ x-yantr:
     - Share documents between devices without cloud services or USB cables.
     - Send files to guests on your local network without any apps or accounts.
   website: https://github.com/RobinLinus/snapdrop
+services:
+  server:
+    image: linuxserver/snapdrop:latest
+    container_name: snapdrop
+    labels:
+      yantr.app: snapdrop
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    restart: unless-stopped
+    ports:
+      - "80"
+    volumes:
+      - snapdrop_config:/config
+
+volumes:
+  snapdrop_config: null

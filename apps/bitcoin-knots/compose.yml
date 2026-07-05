@@ -1,27 +1,3 @@
-services:
-  bitcoin-knots:
-    image: bitcoinknots/bitcoin:latest
-    container_name: bitcoin-knots
-    environment:
-      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
-      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
-    command: -printtoconsole -server=1 -rpcuser=${BITCOIN_RPC_USER}
-      -rpcpassword=${BITCOIN_RPC_PASSWORD} -rpcbind=0.0.0.0
-      -rpcallowip=0.0.0.0/0
-    volumes:
-      - bitcoin_knots_data:/bitcoin/.bitcoin
-    ports:
-      - "8332"
-      - "8333"
-    restart: unless-stopped
-    labels:
-      yantr.app: bitcoin-knots
-      yantr.service.8332: RPC
-      yantr.port.8332: HTTP
-      yantr.service.8333: P2P
-      yantr.port.8333: TCP
-volumes:
-  bitcoin_knots_data: null
 x-yantr:
   name: Bitcoin Knots
   tags:
@@ -55,3 +31,28 @@ x-yantr:
     BITCOIN_RPC_PASSWORD:
       length: 32
       charset: alnum_symbols
+services:
+  bitcoin-knots:
+    image: bitcoinknots/bitcoin:latest
+    container_name: bitcoin-knots
+    environment:
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
+    command: -printtoconsole -server=1 -rpcuser=${BITCOIN_RPC_USER}
+      -rpcpassword=${BITCOIN_RPC_PASSWORD} -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+    volumes:
+      - bitcoin_knots_data:/bitcoin/.bitcoin
+    ports:
+      - "8332"
+      - "8333"
+    restart: unless-stopped
+    labels:
+      yantr.app: bitcoin-knots
+      yantr.service.8332: RPC
+      yantr.port.8332: HTTP
+      yantr.service.8333: P2P
+      yantr.port.8333: TCP
+
+volumes:
+  bitcoin_knots_data: null

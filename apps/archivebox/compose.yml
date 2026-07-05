@@ -1,35 +1,3 @@
-services:
-  archivebox:
-    image: archivebox/archivebox
-    container_name: archivebox
-    labels:
-      yantr.app: archivebox
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
-    stop_grace_period: 1m
-    shm_size: 1gb
-    ports:
-      - "8000"
-    environment:
-      ALLOWED_HOSTS: "*"
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      PUBLIC_INDEX: "True"
-      PUBLIC_SNAPSHOTS: "True"
-      PUBLIC_ADD_VIEW: "False"
-    volumes:
-      - archivebox_data:/data
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - wget -q -O /dev/null http://127.0.0.1:8000/public/ || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 180s
-    restart: unless-stopped
-volumes:
-  archivebox_data: null
 x-yantr:
   name: ArchiveBox
   tags:
@@ -65,3 +33,36 @@ x-yantr:
       length: 20
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
+services:
+  archivebox:
+    image: archivebox/archivebox
+    container_name: archivebox
+    labels:
+      yantr.app: archivebox
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    stop_grace_period: 1m
+    shm_size: 1gb
+    ports:
+      - "8000"
+    environment:
+      ALLOWED_HOSTS: "*"
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PUBLIC_INDEX: "True"
+      PUBLIC_SNAPSHOTS: "True"
+      PUBLIC_ADD_VIEW: "False"
+    volumes:
+      - archivebox_data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -q -O /dev/null http://127.0.0.1:8000/public/ || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+    restart: unless-stopped
+
+volumes:
+  archivebox_data: null

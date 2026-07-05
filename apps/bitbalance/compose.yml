@@ -1,21 +1,3 @@
-services:
-  app:
-    image: ghcr.io/egzola/bitbalance:1.0.18
-    restart: unless-stopped
-    ports:
-      - "3710"
-    volumes:
-      - bitbalance-data:/data
-    environment:
-      PORT: "3710"
-      ELECTRUM_HOST: ${ELECTRUM_HOST:-"fulcrum.sethforprivacy.com"}
-      ELECTRUM_PORT: ${ELECTRUM_PORT:-50001}
-    labels:
-      yantr.app: bitbalance
-      yantr.service.3710: Web UI
-      yantr.port.3710: HTTP
-volumes:
-  bitbalance-data: null
 x-yantr:
   name: bitBalance
   tags:
@@ -44,3 +26,22 @@ x-yantr:
     - Set ELECTRUM_HOST and ELECTRUM_PORT environment variables to point to your
       Electrs or Electrum server for full privacy. Without these, the app falls
       back to public servers.
+services:
+  app:
+    image: ghcr.io/egzola/bitbalance:1.0.18
+    restart: unless-stopped
+    ports:
+      - "3710"
+    volumes:
+      - bitbalance-data:/data
+    environment:
+      PORT: "3710"
+      ELECTRUM_HOST: ${ELECTRUM_HOST:-"fulcrum.sethforprivacy.com"}
+      ELECTRUM_PORT: ${ELECTRUM_PORT:-50001}
+    labels:
+      yantr.app: bitbalance
+      yantr.service.3710: Web UI
+      yantr.port.3710: HTTP
+
+volumes:
+  bitbalance-data: null

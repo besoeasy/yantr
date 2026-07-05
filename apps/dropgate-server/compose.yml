@@ -1,31 +1,3 @@
-services:
-  dropgate-server:
-    image: willtda/dropgate-server:latest
-    pull_policy: always
-    container_name: dropgate-server
-    labels:
-      yantr.app: dropgate-server
-      yantr.service.52443: Dropgate Server Backend
-      yantr.port.52443: HTTP
-    ports:
-      - "52443"
-    environment:
-      SERVER_PORT: ${SERVER_PORT:-52443}
-      SERVER_NAME: ${SERVER_NAME:-Dropgate Server}
-      ENABLE_WEB_UI: ${ENABLE_WEB_UI:-true}
-      ENABLE_UPLOAD: ${ENABLE_UPLOAD:-false}
-      UPLOAD_ENABLE_E2EE: ${UPLOAD_ENABLE_E2EE:-true}
-      UPLOAD_PRESERVE_UPLOADS: ${UPLOAD_PRESERVE_UPLOADS:-false}
-      UPLOAD_MAX_FILE_SIZE_MB: ${UPLOAD_MAX_FILE_SIZE_MB:-100}
-      UPLOAD_MAX_STORAGE_GB: ${UPLOAD_MAX_STORAGE_GB:-10}
-      UPLOAD_MAX_FILE_LIFETIME_HOURS: ${UPLOAD_MAX_FILE_LIFETIME_HOURS:-24}
-      UPLOAD_MAX_FILE_DOWNLOADS: ${UPLOAD_MAX_FILE_DOWNLOADS:-1}
-      ENABLE_P2P: ${ENABLE_P2P:-true}
-    volumes:
-      - dropgate_uploads:/usr/src/app/uploads
-    restart: unless-stopped
-volumes:
-  dropgate_uploads: null
 x-yantr:
   name: Dropgate Server
   tags:
@@ -52,3 +24,32 @@ x-yantr:
       Dropgate into your own IT infrastructure and workflows.
   website: https://diamonddigital.dev/projects/dropgate
   logo: bafkreiabgxumoblpm3gfzhj5ucbxh36dyq2d3qg3pm2twbsuerp2c4ot6q
+services:
+  dropgate-server:
+    image: willtda/dropgate-server:latest
+    pull_policy: always
+    container_name: dropgate-server
+    labels:
+      yantr.app: dropgate-server
+      yantr.service.52443: Dropgate Server Backend
+      yantr.port.52443: HTTP
+    ports:
+      - "52443"
+    environment:
+      SERVER_PORT: ${SERVER_PORT:-52443}
+      SERVER_NAME: ${SERVER_NAME:-Dropgate Server}
+      ENABLE_WEB_UI: ${ENABLE_WEB_UI:-true}
+      ENABLE_UPLOAD: ${ENABLE_UPLOAD:-false}
+      UPLOAD_ENABLE_E2EE: ${UPLOAD_ENABLE_E2EE:-true}
+      UPLOAD_PRESERVE_UPLOADS: ${UPLOAD_PRESERVE_UPLOADS:-false}
+      UPLOAD_MAX_FILE_SIZE_MB: ${UPLOAD_MAX_FILE_SIZE_MB:-100}
+      UPLOAD_MAX_STORAGE_GB: ${UPLOAD_MAX_STORAGE_GB:-10}
+      UPLOAD_MAX_FILE_LIFETIME_HOURS: ${UPLOAD_MAX_FILE_LIFETIME_HOURS:-24}
+      UPLOAD_MAX_FILE_DOWNLOADS: ${UPLOAD_MAX_FILE_DOWNLOADS:-1}
+      ENABLE_P2P: ${ENABLE_P2P:-true}
+    volumes:
+      - dropgate_uploads:/usr/src/app/uploads
+    restart: unless-stopped
+
+volumes:
+  dropgate_uploads: null

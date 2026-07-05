@@ -1,20 +1,3 @@
-services:
-  n8n:
-    image: docker.n8n.io/n8nio/n8n:latest
-    container_name: n8n
-    labels:
-      yantr.app: n8n
-      yantr.service.5678: Web UI
-      yantr.port.5678: HTTP
-    ports:
-      - "5678"
-    volumes:
-      - n8n_data:/home/node/.n8n
-    environment:
-      N8N_PORT: 5678
-    restart: unless-stopped
-volumes:
-  n8n_data: null
 x-yantr:
   name: n8n
   tags:
@@ -44,3 +27,21 @@ x-yantr:
     - Data stays on your server - no cloud dependency for automation logic
     - Webhooks can trigger workflows in real-time
     - Can be exposed for external triggers or used internally only
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    labels:
+      yantr.app: n8n
+      yantr.service.5678: Web UI
+      yantr.port.5678: HTTP
+    ports:
+      - "5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_PORT: 5678
+    restart: unless-stopped
+
+volumes:
+  n8n_data: null

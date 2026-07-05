@@ -1,18 +1,3 @@
-services:
-  dashmachine:
-    image: rmountjoy/dashmachine:latest
-    container_name: dashmachine
-    labels:
-      yantr.app: dashmachine
-      yantr.service.5000: Web UI
-      yantr.port.5000: HTTP
-    ports:
-      - "5000"
-    volumes:
-      - dashmachine_data:/dashmachine/dashmachine/user_data
-    restart: unless-stopped
-volumes:
-  dashmachine_data: null
 x-yantr:
   name: Dashmachine
   tags:
@@ -36,3 +21,19 @@ x-yantr:
     - Media discovery features
     - Bookmark organization
     - Theme customization
+services:
+  dashmachine:
+    image: rmountjoy/dashmachine:latest
+    container_name: dashmachine
+    labels:
+      yantr.app: dashmachine
+      yantr.service.5000: Web UI
+      yantr.port.5000: HTTP
+    ports:
+      - "5000"
+    volumes:
+      - dashmachine_data:/dashmachine/dashmachine/user_data
+    restart: unless-stopped
+
+volumes:
+  dashmachine_data: null

@@ -1,20 +1,3 @@
-services:
-  vaultwarden:
-    image: vaultwarden/server:latest
-    container_name: vaultwarden
-    labels:
-      yantr.app: vaultwarden
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - vaultwarden_data:/data
-    environment:
-      WEBSOCKET_ENABLED: "true"
-    restart: unless-stopped
-volumes:
-  vaultwarden_data: null
 x-yantr:
   name: Vaultwarden
   tags:
@@ -45,3 +28,21 @@ x-yantr:
     - Requires HTTPS for browser extensions to work properly
     - All data is encrypted client-side - server never sees your master password
     - WebSocket support enabled for real-time notifications
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    labels:
+      yantr.app: vaultwarden
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - vaultwarden_data:/data
+    environment:
+      WEBSOCKET_ENABLED: "true"
+    restart: unless-stopped
+
+volumes:
+  vaultwarden_data: null

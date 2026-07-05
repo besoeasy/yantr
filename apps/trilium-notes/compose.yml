@@ -1,20 +1,3 @@
-services:
-  server:
-    image: triliumnext/trilium:latest
-    container_name: trilium-notes-server
-    restart: unless-stopped
-    labels:
-      yantr.app: trilium-notes
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    environment:
-      TZ: ${TZ:-UTC}
-    volumes:
-      - trilium_data:/home/node/trilium-data
-volumes:
-  trilium_data: null
 x-yantr:
   name: Trilium Notes
   tags:
@@ -33,3 +16,21 @@ x-yantr:
     - Write and store code snippets with syntax highlighting.
     - Map relationships between notes with a visual note map.
   website: https://github.com/TriliumNext/Notes
+services:
+  server:
+    image: triliumnext/trilium:latest
+    container_name: trilium-notes-server
+    restart: unless-stopped
+    labels:
+      yantr.app: trilium-notes
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - trilium_data:/home/node/trilium-data
+
+volumes:
+  trilium_data: null

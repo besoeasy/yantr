@@ -1,18 +1,3 @@
-services:
-  urlwatch:
-    image: mediadepot/urlwatch:master
-    container_name: urlwatch
-    labels:
-      yantr.app: urlwatch
-      yantr.service.8081: Web UI
-      yantr.port.8081: HTTP
-    ports:
-      - "8081"
-    volumes:
-      - urlwatch_config:/srv/urlwatch/config
-    restart: unless-stopped
-volumes:
-  urlwatch_config: null
 x-yantr:
   name: UrlWatch
   tags:
@@ -38,3 +23,19 @@ x-yantr:
     - Diff highlighting shows changes
     - Multiple notification options
     - Flexible filtering
+services:
+  urlwatch:
+    image: mediadepot/urlwatch:master
+    container_name: urlwatch
+    labels:
+      yantr.app: urlwatch
+      yantr.service.8081: Web UI
+      yantr.port.8081: HTTP
+    ports:
+      - "8081"
+    volumes:
+      - urlwatch_config:/srv/urlwatch/config
+    restart: unless-stopped
+
+volumes:
+  urlwatch_config: null

@@ -1,18 +1,3 @@
-services:
-  drupal:
-    image: drupal:latest
-    container_name: drupal
-    labels:
-      yantr.app: drupal
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - drupal_html:/var/www/html
-    restart: unless-stopped
-volumes:
-  drupal_html: null
 x-yantr:
   name: Drupal
   tags:
@@ -33,3 +18,19 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/drupal/drupal
   logo: QmXryrL9jF3YL37TEs7eZRsv5mvDyUYSkWdPrEDKE8GM8k
+services:
+  drupal:
+    image: drupal:latest
+    container_name: drupal
+    labels:
+      yantr.app: drupal
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - drupal_html:/var/www/html
+    restart: unless-stopped
+
+volumes:
+  drupal_html: null

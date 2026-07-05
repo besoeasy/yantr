@@ -1,31 +1,3 @@
-services:
-  pihole:
-    image: pihole/pihole:latest
-    container_name: pihole
-    entrypoint: /app/entrypoint.sh
-    labels:
-      yantr.app: pihole
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-      yantr.service.53: DNS
-      yantr.port.53: UDP
-    ports:
-      - 53/tcp
-      - 53/udp
-      - "80"
-    environment:
-      WEBPASSWORD: ${WEBPASSWORD:-yantr}
-    volumes:
-      - ./entrypoint.sh:/app/entrypoint.sh:ro
-      - pihole_data:/etc/pihole
-      - pihole_dnsmasq:/etc/dnsmasq.d
-    dns:
-      - 127.0.0.1
-      - 1.1.1.1
-    restart: unless-stopped
-volumes:
-  pihole_data: null
-  pihole_dnsmasq: null
 x-yantr:
   name: Pi-hole
   tags:
@@ -56,3 +28,32 @@ x-yantr:
     - Configure your router's DHCP to point to Pi-hole as DNS server for
       network-wide protection
     - Default web password is set to 'yantr' - change it in production
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    entrypoint: /app/entrypoint.sh
+    labels:
+      yantr.app: pihole
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.53: DNS
+      yantr.port.53: UDP
+    ports:
+      - 53/tcp
+      - 53/udp
+      - "80"
+    environment:
+      WEBPASSWORD: ${WEBPASSWORD:-yantr}
+    volumes:
+      - ./entrypoint.sh:/app/entrypoint.sh:ro
+      - pihole_data:/etc/pihole
+      - pihole_dnsmasq:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    restart: unless-stopped
+
+volumes:
+  pihole_data: null
+  pihole_dnsmasq: null

@@ -1,20 +1,3 @@
-services:
-  agent-zero:
-    image: agent0ai/agent-zero:latest
-    container_name: agent-zero
-    labels:
-      yantr.app: agent-zero
-      yantr.service.3005: Web UI
-      yantr.port.3005: HTTP
-    restart: on-failure
-    ports:
-      - "3005"
-    volumes:
-      - agent_zero_data:/a0
-    environment:
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
-volumes:
-  agent_zero_data: null
 x-yantr:
   name: Agent Zero
   tags:
@@ -43,3 +26,21 @@ x-yantr:
       http://192.168.1.10:3005) to restrict access. Defaults to * (all origins).
     - Agent Zero can execute code and shell commands inside its container — only
       expose it on a trusted network.
+services:
+  agent-zero:
+    image: agent0ai/agent-zero:latest
+    container_name: agent-zero
+    labels:
+      yantr.app: agent-zero
+      yantr.service.3005: Web UI
+      yantr.port.3005: HTTP
+    restart: on-failure
+    ports:
+      - "3005"
+    volumes:
+      - agent_zero_data:/a0
+    environment:
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-*}
+
+volumes:
+  agent_zero_data: null

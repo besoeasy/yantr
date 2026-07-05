@@ -1,22 +1,3 @@
-services:
-  sikka:
-    image: ghcr.io/sikkalabs/sikka:latest
-    container_name: sikka
-    restart: unless-stopped
-    labels:
-      yantr.app: sikka
-      yantr.service.64552: Node API and Wallet
-      yantr.port.64552: HTTP
-    environment:
-      nodeprivatekey: ${nodeprivatekey:-}
-      nodeaddress: ${nodeaddress:-}
-      nodemessage: ${nodemessage:-}
-    ports:
-      - "64552"
-    volumes:
-      - sikka-data:/home/sikka/data
-volumes:
-  sikka-data: null
 x-yantr:
   name: Sikka
   tags:
@@ -49,3 +30,23 @@ x-yantr:
       /home/sikka/data.
     - The HTTP service on port 8080 serves both the API and the built-in wallet
       pages.
+services:
+  sikka:
+    image: ghcr.io/sikkalabs/sikka:latest
+    container_name: sikka
+    restart: unless-stopped
+    labels:
+      yantr.app: sikka
+      yantr.service.64552: Node API and Wallet
+      yantr.port.64552: HTTP
+    environment:
+      nodeprivatekey: ${nodeprivatekey:-}
+      nodeaddress: ${nodeaddress:-}
+      nodemessage: ${nodemessage:-}
+    ports:
+      - "64552"
+    volumes:
+      - sikka-data:/home/sikka/data
+
+volumes:
+  sikka-data: null

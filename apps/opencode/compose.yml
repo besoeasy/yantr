@@ -1,29 +1,3 @@
-services:
-  opencode:
-    image: ghcr.io/anomalyco/opencode:latest
-    command:
-      - web
-      - --hostname
-      - 0.0.0.0
-      - --port
-      - "4096"
-    container_name: opencode
-    labels:
-      yantr.app: opencode
-      yantr.service.4096: Web UI
-      yantr.port.4096: HTTP
-    environment:
-      HOME: /home/opencode
-    ports:
-      - "4096"
-    stdin_open: true
-    tty: true
-    volumes:
-      - opencodehome:/home/opencode
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-volumes:
-  opencodehome: null
 x-yantr:
   name: OpenCode
   tags:
@@ -48,3 +22,30 @@ x-yantr:
     - Browser-based IDE
     - AI assistant integration
     - Terminal access
+services:
+  opencode:
+    image: ghcr.io/anomalyco/opencode:latest
+    command:
+      - web
+      - --hostname
+      - 0.0.0.0
+      - --port
+      - "4096"
+    container_name: opencode
+    labels:
+      yantr.app: opencode
+      yantr.service.4096: Web UI
+      yantr.port.4096: HTTP
+    environment:
+      HOME: /home/opencode
+    ports:
+      - "4096"
+    stdin_open: true
+    tty: true
+    volumes:
+      - opencodehome:/home/opencode
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  opencodehome: null

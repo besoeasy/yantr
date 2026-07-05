@@ -1,18 +1,3 @@
-services:
-  rotki:
-    image: rotki/rotki:latest
-    container_name: rotki
-    labels:
-      yantr.app: rotki
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - rotki_data:/data
-    restart: unless-stopped
-volumes:
-  rotki_data: null
 x-yantr:
   name: Rotki
   tags:
@@ -39,3 +24,19 @@ x-yantr:
     - API integration with major exchanges for automatic updates
     - Supports hardware wallets (Ledger, Trezor)
     - Data stored locally - no third party can see your holdings
+services:
+  rotki:
+    image: rotki/rotki:latest
+    container_name: rotki
+    labels:
+      yantr.app: rotki
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - rotki_data:/data
+    restart: unless-stopped
+
+volumes:
+  rotki_data: null

@@ -1,27 +1,3 @@
-services:
-  transmission:
-    image: linuxserver/transmission:latest
-    container_name: transmission
-    environment:
-      USER: ${TRANSMISSION_USER}
-      PASS: ${TRANSMISSION_PASS}
-    volumes:
-      - transmission_config:/config
-      - transmission_downloads:/downloads
-    ports:
-      - "9091"
-      - "51413"
-      - 51413/udp
-    restart: unless-stopped
-    labels:
-      yantr.app: transmission
-      yantr.service.9091: Web Interface
-      yantr.port.9091: HTTP
-volumes:
-  transmission_config:
-    name: transmission_config
-  transmission_downloads:
-    name: transmission_downloads
 x-yantr:
   name: Transmission
   tags:
@@ -58,3 +34,28 @@ x-yantr:
     TRANSMISSION_PASS:
       length: 16
       charset: alnum_symbols
+services:
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      USER: ${TRANSMISSION_USER}
+      PASS: ${TRANSMISSION_PASS}
+    volumes:
+      - transmission_config:/config
+      - transmission_downloads:/downloads
+    ports:
+      - "9091"
+      - "51413"
+      - 51413/udp
+    restart: unless-stopped
+    labels:
+      yantr.app: transmission
+      yantr.service.9091: Web Interface
+      yantr.port.9091: HTTP
+
+volumes:
+  transmission_config:
+    name: transmission_config
+  transmission_downloads:
+    name: transmission_downloads

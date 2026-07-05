@@ -1,15 +1,3 @@
-services:
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
-    environment:
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
-    restart: unless-stopped
-    labels:
-      yantr.app: cloudflared
-      yantr.service.80: Internal
-      yantr.port.80: TCP
 x-yantr:
   name: Cloudflared
   tags:
@@ -40,3 +28,15 @@ x-yantr:
     - To expose any Docker app, use the Docker host gateway IP (172.17.0.1)
       instead of 0.0.0.0 or localhost in the tunnel service URL, e.g.
       http://172.17.0.1:PORT
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    restart: unless-stopped
+    labels:
+      yantr.app: cloudflared
+      yantr.service.80: Internal
+      yantr.port.80: TCP

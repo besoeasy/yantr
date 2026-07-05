@@ -1,14 +1,3 @@
-services:
-  speedtest:
-    image: ghcr.io/librespeed/speedtest:latest
-    container_name: librespeed
-    labels:
-      yantr.app: librespeed
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    restart: unless-stopped
 x-yantr:
   name: LibreSpeed
   tags:
@@ -33,3 +22,14 @@ x-yantr:
     - No tracking or data collection - runs entirely locally
     - Works on desktop and mobile browsers
     - Multiple test file sizes available
+services:
+  speedtest:
+    image: ghcr.io/librespeed/speedtest:latest
+    container_name: librespeed
+    labels:
+      yantr.app: librespeed
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    restart: unless-stopped

@@ -1,26 +1,3 @@
-services:
-  netbird:
-    image: netbirdio/netbird:latest
-    container_name: netbird
-    cap_add:
-      - NET_ADMIN
-      - SYS_ADMIN
-      - SYS_RESOURCE
-    network_mode: host
-    environment:
-      NB_MANAGEMENT_URL: ${NB_MANAGEMENT_URL:-https://api.wiretrustee.com:443}
-      NB_ADMIN_URL: ${NB_ADMIN_URL:-https://app.netbird.io:443}
-      NB_SETUP_KEY: ${NB_SETUP_KEY}
-      TZ: ${TZ:-UTC}
-    volumes:
-      - netbird_config:/etc/netbird
-    restart: unless-stopped
-    labels:
-      yantr.app: netbird
-      yantr.service.80: Internal
-      yantr.port.80: TCP
-volumes:
-  netbird_config: null
 x-yantr:
   name: NetBird
   tags:
@@ -57,3 +34,27 @@ x-yantr:
     NB_SETUP_KEY:
       length: 36
       charset: hex
+services:
+  netbird:
+    image: netbirdio/netbird:latest
+    container_name: netbird
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+    network_mode: host
+    environment:
+      NB_MANAGEMENT_URL: ${NB_MANAGEMENT_URL:-https://api.wiretrustee.com:443}
+      NB_ADMIN_URL: ${NB_ADMIN_URL:-https://app.netbird.io:443}
+      NB_SETUP_KEY: ${NB_SETUP_KEY}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - netbird_config:/etc/netbird
+    restart: unless-stopped
+    labels:
+      yantr.app: netbird
+      yantr.service.80: Internal
+      yantr.port.80: TCP
+
+volumes:
+  netbird_config: null

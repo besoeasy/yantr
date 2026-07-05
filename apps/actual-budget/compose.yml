@@ -1,16 +1,33 @@
 x-yantr:
   name: "Actual Budget"
   logo: "QmYhzJQFC7KG7RenmubaBZi1f8F2XkagEamPvJxQqmyqGR"
-  tags: [finance, accounting, budgeting, self-hosted, sync]
-  short_description: "Fast, privacy-focused personal finance app with envelope budgeting and multi-device sync."
+  tags: [ finance, accounting, budgeting, self-hosted, sync ]
+  short_description: "Fast, privacy-focused personal finance app with envelope
+    budgeting and multi-device sync."
   description: >
-    Actual Budget is a local-first, open-source personal finance app built on envelope budgeting.
-    It stores data locally, supports multi-currency budgets, customizable categories, bank import
-    integrations, and optional end-to-end encrypted sync via your own server.
-  usecases: ["Track household spending by creating budget envelopes for groceries, rent, utilities, entertainment, and other categories to see exactly where your money goes.", "Sync your budget across multiple devices (phone, tablet, laptop) by running your own self-hosted sync server.", "Import bank transactions automatically via goCardless or SimpleFIN to keep your accounts reconciled without manual entry.", "Use end-to-end encryption to keep your financial data private even when using the sync feature."]
+    Actual Budget is a local-first, open-source personal finance app built on
+    envelope budgeting. It stores data locally, supports multi-currency budgets,
+    customizable categories, bank import integrations, and optional end-to-end
+    encrypted sync via your own server.
+  usecases:
+    [
+      "Track household spending by creating budget envelopes for groceries,
+        rent, utilities, entertainment, and other categories to see exactly
+        where your money goes.",
+      "Sync your budget across multiple devices (phone, tablet, laptop) by
+        running your own self-hosted sync server.",
+      "Import bank transactions automatically via goCardless or SimpleFIN to
+        keep your accounts reconciled without manual entry.",
+      "Use end-to-end encryption to keep your financial data private even when
+        using the sync feature."
+    ]
   website: "https://actualbudget.org"
-  notes: ["Requires a sync server to share data between multiple devices", "Bank sync is optional and requires goCardless or SimpleFIN accounts", "Data is stored locally with optional cloud sync to your own server"]
-
+  notes:
+    [
+      "Requires a sync server to share data between multiple devices",
+      "Bank sync is optional and requires goCardless or SimpleFIN accounts",
+      "Data is stored locally with optional cloud sync to your own server"
+    ]
 services:
   actual-budget:
     image: actualbudget/actual-server:latest
@@ -27,3 +44,4 @@ services:
 
 volumes:
   actual_data:
+

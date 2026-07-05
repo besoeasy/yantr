@@ -1,24 +1,3 @@
-services:
-  rutorrent:
-    image: linuxserver/rutorrent:latest
-    container_name: rutorrent
-    labels:
-      yantr.app: rutorrent
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-      yantr.service.51413: Torrent
-      yantr.port.51413: TCP
-    ports:
-      - "80"
-      - "51413"
-      - 6881/udp
-    volumes:
-      - rutorrent_config:/config
-      - rutorrent_downloads:/downloads
-    restart: unless-stopped
-volumes:
-  rutorrent_config: null
-  rutorrent_downloads: null
 x-yantr:
   name: ruTorrent
   tags:
@@ -43,3 +22,25 @@ x-yantr:
     - Frontend for rtorrent
     - Many plugins available
     - RSS automation support
+services:
+  rutorrent:
+    image: linuxserver/rutorrent:latest
+    container_name: rutorrent
+    labels:
+      yantr.app: rutorrent
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.51413: Torrent
+      yantr.port.51413: TCP
+    ports:
+      - "80"
+      - "51413"
+      - 6881/udp
+    volumes:
+      - rutorrent_config:/config
+      - rutorrent_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  rutorrent_config: null
+  rutorrent_downloads: null

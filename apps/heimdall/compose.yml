@@ -1,18 +1,3 @@
-services:
-  heimdall:
-    image: linuxserver/heimdall:latest
-    container_name: heimdall
-    volumes:
-      - heimdall-config:/config
-    ports:
-      - "80"
-    restart: unless-stopped
-    labels:
-      yantr.app: heimdall
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-volumes:
-  heimdall-config: null
 x-yantr:
   name: Heimdall
   tags:
@@ -41,3 +26,19 @@ x-yantr:
     - Simple YAML-based configuration for adding apps
     - Built-in icons for 200+ popular applications
     - Lightweight and fast - minimal resource usage
+services:
+  heimdall:
+    image: linuxserver/heimdall:latest
+    container_name: heimdall
+    volumes:
+      - heimdall-config:/config
+    ports:
+      - "80"
+    restart: unless-stopped
+    labels:
+      yantr.app: heimdall
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+
+volumes:
+  heimdall-config: null

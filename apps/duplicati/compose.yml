@@ -1,22 +1,3 @@
-services:
-  duplicati:
-    image: linuxserver/duplicati:latest
-    container_name: duplicati
-    labels:
-      yantr.app: duplicati
-      yantr.service.8200: Web UI
-      yantr.port.8200: HTTP
-    ports:
-      - "8200"
-    volumes:
-      - duplicati_config:/config
-      - duplicati_backups:/backups
-      - duplicati_source:/source
-    restart: unless-stopped
-volumes:
-  duplicati_config: null
-  duplicati_backups: null
-  duplicati_source: null
 x-yantr:
   name: Duplicati
   tags:
@@ -42,3 +23,23 @@ x-yantr:
     - Supports SFTP, FTP, WebDAV, B2, S3, and many cloud backends
     - AES-256 encryption keeps backups secure
     - Incremental backups only store changed files
+services:
+  duplicati:
+    image: linuxserver/duplicati:latest
+    container_name: duplicati
+    labels:
+      yantr.app: duplicati
+      yantr.service.8200: Web UI
+      yantr.port.8200: HTTP
+    ports:
+      - "8200"
+    volumes:
+      - duplicati_config:/config
+      - duplicati_backups:/backups
+      - duplicati_source:/source
+    restart: unless-stopped
+
+volumes:
+  duplicati_config: null
+  duplicati_backups: null
+  duplicati_source: null

@@ -1,25 +1,3 @@
-services:
-  vscode:
-    image: lscr.io/linuxserver/code-server:latest
-    container_name: vscode
-    environment:
-      PASSWORD: ${PASSWORD}
-      SUDO_PASSWORD: ${PASSWORD}
-      PUID: "1000"
-      PGID: "1000"
-      TZ: ${TZ:-UTC}
-    ports:
-      - "8443"
-    volumes:
-      - vscode-data:/config
-    restart: unless-stopped
-    labels:
-      yantr.app: vscode
-      yantr.service.8443: Web UI
-      yantr.port.8443: HTTP
-volumes:
-  vscode-data:
-    name: vscode-data
 x-yantr:
   name: VS Code
   tags:
@@ -59,3 +37,26 @@ x-yantr:
       length: 16
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$
+services:
+  vscode:
+    image: lscr.io/linuxserver/code-server:latest
+    container_name: vscode
+    environment:
+      PASSWORD: ${PASSWORD}
+      SUDO_PASSWORD: ${PASSWORD}
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8443"
+    volumes:
+      - vscode-data:/config
+    restart: unless-stopped
+    labels:
+      yantr.app: vscode
+      yantr.service.8443: Web UI
+      yantr.port.8443: HTTP
+
+volumes:
+  vscode-data:
+    name: vscode-data

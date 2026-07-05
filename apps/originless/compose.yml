@@ -1,30 +1,3 @@
-services:
-  originless:
-    image: ghcr.io/besoeasy/originless:latest
-    init: true
-    container_name: originless
-    hostname: originless
-    environment:
-      STORAGE_MAX: ${STORAGE_MAX:-200GB}
-    volumes:
-      - originless:/app/data
-    ports:
-      - "3232"
-      - 4001/tcp
-      - 4001/udp
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:3232 || exit 1
-      start_period: 20s
-      timeout: 3s
-      interval: 15s
-      retries: 3
-    restart: unless-stopped
-    labels:
-      yantr.app: originless
-      yantr.service.3232: Web UI
-      yantr.port.3232: HTTP
-volumes:
-  originless: null
 x-yantr:
   name: Originless
   tags:
@@ -53,3 +26,31 @@ x-yantr:
       peers to find your node.
     - Replace https://originless.besoeasy.com with http://localhost:3232 in API
       calls if using self-hosted.
+services:
+  originless:
+    image: ghcr.io/besoeasy/originless:latest
+    init: true
+    container_name: originless
+    hostname: originless
+    environment:
+      STORAGE_MAX: ${STORAGE_MAX:-200GB}
+    volumes:
+      - originless:/app/data
+    ports:
+      - "3232"
+      - 4001/tcp
+      - 4001/udp
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3232 || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      yantr.app: originless
+      yantr.service.3232: Web UI
+      yantr.port.3232: HTTP
+
+volumes:
+  originless: null

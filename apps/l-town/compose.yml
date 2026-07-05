@@ -1,14 +1,3 @@
-services:
-  l-town:
-    image: ghcr.io/besoeasy/l-town:latest
-    container_name: l-town
-    labels:
-      yantr.app: l-town
-      yantr.service.30300: Web UI
-      yantr.port.30300: HTTP
-    ports:
-      - "30300"
-    restart: unless-stopped
 x-yantr:
   name: L-Town
   tags:
@@ -30,3 +19,14 @@ x-yantr:
   notes:
     - No persistent volumes configured by default.
     - Expose port 30300 as shown in the compose file.
+services:
+  l-town:
+    image: ghcr.io/besoeasy/l-town:latest
+    container_name: l-town
+    labels:
+      yantr.app: l-town
+      yantr.service.30300: Web UI
+      yantr.port.30300: HTTP
+    ports:
+      - "30300"
+    restart: unless-stopped

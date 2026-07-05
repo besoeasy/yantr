@@ -1,20 +1,3 @@
-services:
-  server:
-    image: linuxserver/grocy:latest
-    container_name: grocy-server
-    labels:
-      yantr.app: grocy
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "80"
-    volumes:
-      - grocy_data:/config
-    restart: unless-stopped
-volumes:
-  grocy_data: null
 x-yantr:
   name: Grocy
   tags:
@@ -34,3 +17,21 @@ x-yantr:
     - Manage shopping lists and household chores.
     - Plan meals and recipes based on available ingredients.
   website: https://grocy.info
+services:
+  server:
+    image: linuxserver/grocy:latest
+    container_name: grocy-server
+    labels:
+      yantr.app: grocy
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - grocy_data:/config
+    restart: unless-stopped
+
+volumes:
+  grocy_data: null

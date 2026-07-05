@@ -1,34 +1,3 @@
-services:
-  adguard:
-    image: adguard/adguardhome:latest
-    container_name: adguard-home
-    labels:
-      yantr.app: adguard-home
-      yantr.service.3000: Initial Setup
-      yantr.port.3000: HTTP
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-      yantr.service.53: DNS
-      yantr.port.53: UDP
-      yantr.service.853: DNS-over-TLS
-      yantr.port.853: TCP
-    ports:
-      - 53/tcp
-      - 53/udp
-      - 67/udp
-      - 68/tcp
-      - 68/udp
-      - "80"
-      - "443"
-      - 853/tcp
-      - "3000"
-    volumes:
-      - adguard_work:/opt/adguardhome/work
-      - adguard_conf:/opt/adguardhome/conf
-    restart: unless-stopped
-volumes:
-  adguard_work: null
-  adguard_conf: null
 x-yantr:
   name: AdGuard Home
   tags:
@@ -60,3 +29,35 @@ x-yantr:
     - For full network coverage, configure your router's DHCP to point to
       AdGuard Home as the DNS server
     - Initial setup runs on port 3000, then the UI moves to port 80
+services:
+  adguard:
+    image: adguard/adguardhome:latest
+    container_name: adguard-home
+    labels:
+      yantr.app: adguard-home
+      yantr.service.3000: Initial Setup
+      yantr.port.3000: HTTP
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.53: DNS
+      yantr.port.53: UDP
+      yantr.service.853: DNS-over-TLS
+      yantr.port.853: TCP
+    ports:
+      - 53/tcp
+      - 53/udp
+      - 67/udp
+      - 68/tcp
+      - 68/udp
+      - "80"
+      - "443"
+      - 853/tcp
+      - "3000"
+    volumes:
+      - adguard_work:/opt/adguardhome/work
+      - adguard_conf:/opt/adguardhome/conf
+    restart: unless-stopped
+
+volumes:
+  adguard_work: null
+  adguard_conf: null

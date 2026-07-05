@@ -1,14 +1,3 @@
-services:
-  specter-desktop:
-    image: ghcr.io/cryptoadvance/specter-desktop:v2.1.1
-    container_name: specter-desktop
-    labels:
-      yantr.app: specter-desktop
-      yantr.service.25441: Web UI
-      yantr.port.25441: HTTP
-    ports:
-      - "25441"
-    restart: unless-stopped
 x-yantr:
   name: Specter Desktop
   tags:
@@ -34,3 +23,14 @@ x-yantr:
     - Requires Bitcoin node connection
     - Hardware wallet support
     - Multisig capable
+services:
+  specter-desktop:
+    image: ghcr.io/cryptoadvance/specter-desktop:v2.1.1
+    container_name: specter-desktop
+    labels:
+      yantr.app: specter-desktop
+      yantr.service.25441: Web UI
+      yantr.port.25441: HTTP
+    ports:
+      - "25441"
+    restart: unless-stopped

@@ -1,26 +1,3 @@
-services:
-  audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:latest
-    container_name: audiobookshelf
-    labels:
-      yantr.app: audiobookshelf
-      yantr.service.13378: Web UI
-      yantr.port.13378: HTTP
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "13378"
-    volumes:
-      - audiobookshelf_config:/config
-      - audiobookshelf_metadata:/metadata
-      - audiobookshelf_audiobooks:/audiobooks
-      - audiobookshelf_podcasts:/podcasts
-    restart: unless-stopped
-volumes:
-  audiobookshelf_config: null
-  audiobookshelf_metadata: null
-  audiobookshelf_audiobooks: null
-  audiobookshelf_podcasts: null
 x-yantr:
   name: Audiobookshelf
   tags:
@@ -40,3 +17,27 @@ x-yantr:
     - Track listening progress across devices.
   website: https://www.audiobookshelf.org/
   logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    labels:
+      yantr.app: audiobookshelf
+      yantr.service.13378: Web UI
+      yantr.port.13378: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "13378"
+    volumes:
+      - audiobookshelf_config:/config
+      - audiobookshelf_metadata:/metadata
+      - audiobookshelf_audiobooks:/audiobooks
+      - audiobookshelf_podcasts:/podcasts
+    restart: unless-stopped
+
+volumes:
+  audiobookshelf_config: null
+  audiobookshelf_metadata: null
+  audiobookshelf_audiobooks: null
+  audiobookshelf_podcasts: null

@@ -1,3 +1,35 @@
+x-yantr:
+  name: Twenty
+  tags:
+    - crm
+    - productivity
+    - sales
+    - business
+    - contacts
+  short_description: Open-source CRM built for modern teams to manage contacts and pipelines.
+  description: Twenty is a leading open-source CRM built by a community of
+    hundreds of contributors. It offers contact management, custom objects and
+    fields, Kanban and table views, pipeline visualization, email integration,
+    notes, tasks, and full API and webhook support. Designed for flexibility, it
+    helps busi...
+  usecases:
+    - Manage customer contacts, companies, and deals in one place.
+    - Visualize your sales pipeline with Kanban and table views.
+    - Build custom CRM objects and fields tailored to your business.
+    - Automate workflows via the built-in API and webhook support.
+  website: https://twenty.com
+  notes:
+    - Requires at least 2 GB RAM for the full stack (app + Postgres + Redis).
+    - Set SERVER_URL to your public URL (e.g. http://your-server-ip:3000) in the
+      deploy form.
+    - First boot may take a minute while database migrations run.
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
+    APP_SECRET:
+      length: 40
+      charset: alnum
 services:
   twenty-server:
     image: twentycrm/twenty:latest
@@ -44,39 +76,8 @@ services:
       yantr.app: twenty
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
+
 volumes:
   twenty_server_data: null
   twenty_db_data: null
   twenty_redis_data: null
-x-yantr:
-  name: Twenty
-  tags:
-    - crm
-    - productivity
-    - sales
-    - business
-    - contacts
-  short_description: Open-source CRM built for modern teams to manage contacts and pipelines.
-  description: Twenty is a leading open-source CRM built by a community of
-    hundreds of contributors. It offers contact management, custom objects and
-    fields, Kanban and table views, pipeline visualization, email integration,
-    notes, tasks, and full API and webhook support. Designed for flexibility, it
-    helps busi...
-  usecases:
-    - Manage customer contacts, companies, and deals in one place.
-    - Visualize your sales pipeline with Kanban and table views.
-    - Build custom CRM objects and fields tailored to your business.
-    - Automate workflows via the built-in API and webhook support.
-  website: https://twenty.com
-  notes:
-    - Requires at least 2 GB RAM for the full stack (app + Postgres + Redis).
-    - Set SERVER_URL to your public URL (e.g. http://your-server-ip:3000) in the
-      deploy form.
-    - First boot may take a minute while database migrations run.
-  env_generators:
-    POSTGRES_PASSWORD:
-      length: 32
-      charset: alnum
-    APP_SECRET:
-      length: 40
-      charset: alnum

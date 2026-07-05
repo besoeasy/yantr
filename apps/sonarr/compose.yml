@@ -1,25 +1,3 @@
-services:
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr
-    volumes:
-      - sonarr_config:/config
-      - sonarr_tv:/tv
-      - sonarr_downloads:/downloads
-    ports:
-      - "8989"
-    restart: unless-stopped
-    labels:
-      yantr.app: sonarr
-      yantr.service.8989: Web UI
-      yantr.port.8989: HTTP
-volumes:
-  sonarr_config:
-    name: sonarr_config
-  sonarr_tv:
-    name: sonarr_tv
-  sonarr_downloads:
-    name: sonarr_downloads
 x-yantr:
   name: Sonarr
   tags:
@@ -50,3 +28,26 @@ x-yantr:
     - Requires a download client (Usenet or BitTorrent)
     - Integrates with Plex/Emby/Jellyfin for library updates
     - Can manage multiple quality profiles for different shows
+services:
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    volumes:
+      - sonarr_config:/config
+      - sonarr_tv:/tv
+      - sonarr_downloads:/downloads
+    ports:
+      - "8989"
+    restart: unless-stopped
+    labels:
+      yantr.app: sonarr
+      yantr.service.8989: Web UI
+      yantr.port.8989: HTTP
+
+volumes:
+  sonarr_config:
+    name: sonarr_config
+  sonarr_tv:
+    name: sonarr_tv
+  sonarr_downloads:
+    name: sonarr_downloads

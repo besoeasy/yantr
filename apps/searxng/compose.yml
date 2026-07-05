@@ -1,20 +1,3 @@
-services:
-  searxng:
-    image: searxng/searxng:latest
-    container_name: searxng
-    labels:
-      yantr.app: searxng
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    volumes:
-      - searxng_data:/etc/searxng
-    environment:
-      SEARXNG_BASE_URL: http://localhost:8080
-    restart: unless-stopped
-volumes:
-  searxng_data: null
 x-yantr:
   name: SearXNG
   tags:
@@ -43,3 +26,21 @@ x-yantr:
     - No tracking or logging of search queries by default
     - Can be customized with themes and engine preferences
     - Can be set as browser default search engine
+services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    labels:
+      yantr.app: searxng
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - searxng_data:/etc/searxng
+    environment:
+      SEARXNG_BASE_URL: http://localhost:8080
+    restart: unless-stopped
+
+volumes:
+  searxng_data: null

@@ -1,26 +1,3 @@
-services:
-  open-webui:
-    image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
-    labels:
-      yantr.app: open-webui
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    environment:
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
-    volumes:
-      - open_webui_data:/app/backend/data
-    restart: unless-stopped
-    networks:
-      - ollama_network
-volumes:
-  open_webui_data: null
-networks:
-  ollama_network:
-    name: ollama_network
-    external: true
 x-yantr:
   name: Open WebUI
   tags:
@@ -47,3 +24,28 @@ x-yantr:
     - Requires Ollama to be running with models downloaded
     - Connects to Ollama on internal Docker network
     - Supports multiple users with admin controls
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    labels:
+      yantr.app: open-webui
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+    volumes:
+      - open_webui_data:/app/backend/data
+    restart: unless-stopped
+    networks:
+      - ollama_network
+
+networks:
+  ollama_network:
+    name: ollama_network
+    external: true
+
+volumes:
+  open_webui_data: null

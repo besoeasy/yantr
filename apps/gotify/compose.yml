@@ -1,21 +1,3 @@
-services:
-  gotify:
-    image: ghcr.io/gotify/server
-    container_name: gotify
-    labels:
-      yantr.app: gotify
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    environment:
-      GOTIFY_DEFAULTUSER_NAME: ${GOTIFY_DEFAULTUSER_NAME:-admin}
-      GOTIFY_DEFAULTUSER_PASS: ${GOTIFY_DEFAULTUSER_PASS:-admin}
-    volumes:
-      - gotify_data:/app/data
-    restart: unless-stopped
-volumes:
-  gotify_data: null
 x-yantr:
   name: Gotify
   tags:
@@ -41,3 +23,22 @@ x-yantr:
     - Simple REST API for sending messages
     - WebSocket for real-time delivery
     - Supports multiple apps with different tokens
+services:
+  gotify:
+    image: ghcr.io/gotify/server
+    container_name: gotify
+    labels:
+      yantr.app: gotify
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      GOTIFY_DEFAULTUSER_NAME: ${GOTIFY_DEFAULTUSER_NAME:-admin}
+      GOTIFY_DEFAULTUSER_PASS: ${GOTIFY_DEFAULTUSER_PASS:-admin}
+    volumes:
+      - gotify_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  gotify_data: null

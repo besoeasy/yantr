@@ -1,22 +1,3 @@
-services:
-  web:
-    image: ghcr.io/mealie-recipes/mealie:latest
-    container_name: mealie-web
-    restart: unless-stopped
-    labels:
-      yantr.app: mealie
-      yantr.service.9000: Web UI
-      yantr.port.9000: HTTP
-    ports:
-      - "9000"
-    environment:
-      TZ: ${TZ:-UTC}
-      ALLOW_SIGNUP: "true"
-      DB_ENGINE: sqlite
-    volumes:
-      - mealie_data:/app/data
-volumes:
-  mealie_data: null
 x-yantr:
   name: Mealie
   tags:
@@ -35,3 +16,23 @@ x-yantr:
     - Plan weekly meals and generate shopping lists.
     - Share a household recipe collection with family members.
   website: https://mealie.io
+services:
+  web:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie-web
+    restart: unless-stopped
+    labels:
+      yantr.app: mealie
+      yantr.service.9000: Web UI
+      yantr.port.9000: HTTP
+    ports:
+      - "9000"
+    environment:
+      TZ: ${TZ:-UTC}
+      ALLOW_SIGNUP: "true"
+      DB_ENGINE: sqlite
+    volumes:
+      - mealie_data:/app/data
+
+volumes:
+  mealie_data: null

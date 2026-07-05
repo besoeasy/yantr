@@ -1,26 +1,3 @@
-services:
-  web:
-    image: ghcr.io/9001/copyparty-ac:latest
-    container_name: copyparty
-    labels:
-      yantr.app: copyparty
-      yantr.service.3923: Web UI
-      yantr.port.3923: HTTP
-    restart: unless-stopped
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "3923"
-    volumes:
-      - copyparty_config:/cfg/hists
-      - copyparty_shared:/shr
-      - copyparty_media:/media
-      - copyparty_uploads:/uploads
-volumes:
-  copyparty_config: null
-  copyparty_shared: null
-  copyparty_media: null
-  copyparty_uploads: null
 x-yantr:
   name: Copyparty
   tags:
@@ -39,3 +16,27 @@ x-yantr:
     - Stream music and video from your personal collection.
     - Search through stored files with built-in indexing and metadata support.
   website: https://github.com/9001/copyparty
+services:
+  web:
+    image: ghcr.io/9001/copyparty-ac:latest
+    container_name: copyparty
+    labels:
+      yantr.app: copyparty
+      yantr.service.3923: Web UI
+      yantr.port.3923: HTTP
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "3923"
+    volumes:
+      - copyparty_config:/cfg/hists
+      - copyparty_shared:/shr
+      - copyparty_media:/media
+      - copyparty_uploads:/uploads
+
+volumes:
+  copyparty_config: null
+  copyparty_shared: null
+  copyparty_media: null
+  copyparty_uploads: null

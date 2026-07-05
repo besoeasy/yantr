@@ -1,18 +1,3 @@
-services:
-  pi-alert:
-    image: jokobsk/pi.alert:latest
-    container_name: pi-alert
-    labels:
-      yantr.app: pi-alert
-      yantr.service.20211: Monitoring
-      yantr.port.20211: UDP
-    ports:
-      - 20211/udp
-    volumes:
-      - pi_alert_config:/config
-    restart: unless-stopped
-volumes:
-  pi_alert_config: null
 x-yantr:
   name: Pi.Alert
   tags:
@@ -39,3 +24,19 @@ x-yantr:
     - Scans via ARP to discover all devices on network
     - Sends notifications via webhooks
     - Database of device history over time
+services:
+  pi-alert:
+    image: jokobsk/pi.alert:latest
+    container_name: pi-alert
+    labels:
+      yantr.app: pi-alert
+      yantr.service.20211: Monitoring
+      yantr.port.20211: UDP
+    ports:
+      - 20211/udp
+    volumes:
+      - pi_alert_config:/config
+    restart: unless-stopped
+
+volumes:
+  pi_alert_config: null

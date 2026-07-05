@@ -1,23 +1,3 @@
-services:
-  ungoogled-chromium:
-    image: lscr.io/linuxserver/ungoogled-chromium:latest
-    labels:
-      yantr.app: ungoogled-chromium
-      yantr.service.3001: Web UI
-      yantr.port.3001: HTTPS
-    environment:
-      PUID: "1000"
-      PGID: "1000"
-      TZ: Etc/UTC
-      CHROME_CLI: ${CHROME_CLI:-https://duckduckgo.com}
-    volumes:
-      - config:/config
-    ports:
-      - 3001/tcp
-    shm_size: 1gb
-    restart: unless-stopped
-volumes:
-  config: null
 x-yantr:
   name: Ungoogled Chromium
   tags:
@@ -41,3 +21,24 @@ x-yantr:
     - Exposing this container to the Internet is not recommended.
     - Using the `jpeg` encoder setting in the Selkies sidebar under Video
       Options is recommended for smoother video.
+services:
+  ungoogled-chromium:
+    image: lscr.io/linuxserver/ungoogled-chromium:latest
+    labels:
+      yantr.app: ungoogled-chromium
+      yantr.service.3001: Web UI
+      yantr.port.3001: HTTPS
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: Etc/UTC
+      CHROME_CLI: ${CHROME_CLI:-https://duckduckgo.com}
+    volumes:
+      - config:/config
+    ports:
+      - 3001/tcp
+    shm_size: 1gb
+    restart: unless-stopped
+
+volumes:
+  config: null

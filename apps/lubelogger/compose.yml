@@ -1,3 +1,20 @@
+x-yantr:
+  name: LubeLogger
+  tags:
+    - vehicle
+    - maintenance
+    - tracker
+    - automotive
+    - self-hosted
+  short_description: Self-hosted vehicle maintenance and fuel log tracker.
+  description: LubeLogger is a self-hosted vehicle service record and fuel mileage
+    tracker. Log oil changes, tire rotations, repairs, and fuel fill-ups to
+    track costs and maintenance schedules for all your vehicles.
+  usecases:
+    - Log and track vehicle maintenance history and costs.
+    - Monitor fuel efficiency and mileage over time.
+    - Receive reminders for upcoming scheduled maintenance.
+  website: https://lubelogger.com
 services:
   app:
     image: ghcr.io/hargata/lubelogger:latest
@@ -18,6 +35,7 @@ services:
       - lubelogger_translations:/App/wwwroot/translations
       - lubelogger_log:/App/log
     restart: unless-stopped
+
 volumes:
   lubelogger_config: null
   lubelogger_data: null
@@ -25,20 +43,3 @@ volumes:
   lubelogger_images: null
   lubelogger_translations: null
   lubelogger_log: null
-x-yantr:
-  name: LubeLogger
-  tags:
-    - vehicle
-    - maintenance
-    - tracker
-    - automotive
-    - self-hosted
-  short_description: Self-hosted vehicle maintenance and fuel log tracker.
-  description: LubeLogger is a self-hosted vehicle service record and fuel mileage
-    tracker. Log oil changes, tire rotations, repairs, and fuel fill-ups to
-    track costs and maintenance schedules for all your vehicles.
-  usecases:
-    - Log and track vehicle maintenance history and costs.
-    - Monitor fuel efficiency and mileage over time.
-    - Receive reminders for upcoming scheduled maintenance.
-  website: https://lubelogger.com

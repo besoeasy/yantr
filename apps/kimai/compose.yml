@@ -1,3 +1,24 @@
+x-yantr:
+  name: Kimai
+  tags:
+    - time-tracking
+    - productivity
+    - workflow
+    - self-hosted
+    - homelab
+  short_description: Open-source multi-user time tracking, billing, and reporting
+    platform for freelancers and teams.
+  description: Kimai is a multi-user time-tracking system with invoicing features,
+    expense tracking, role-based permissions, and reporting for freelancers and
+    small teams. It supports project-based entries, export to CSV/PDF, and
+    optional LDAP/OAuth authentication in self-hosted deployments.
+  usecases:
+    - Track time and projects.
+    - Generate invoices and reports for clients.
+  website: https://www.kimai.org/documentation/installation/docker/
+  logo: QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333AA
+  notes:
+    - Set strong secrets and use external database volume backups.
 services:
   kimai-db:
     image: mysql:8.0
@@ -33,27 +54,7 @@ services:
       - kimai_data:/opt/kimai/var
     depends_on:
       - kimai-db
+
 volumes:
   kimai_db: null
   kimai_data: null
-x-yantr:
-  name: Kimai
-  tags:
-    - time-tracking
-    - productivity
-    - workflow
-    - self-hosted
-    - homelab
-  short_description: Open-source multi-user time tracking, billing, and reporting
-    platform for freelancers and teams.
-  description: Kimai is a multi-user time-tracking system with invoicing features,
-    expense tracking, role-based permissions, and reporting for freelancers and
-    small teams. It supports project-based entries, export to CSV/PDF, and
-    optional LDAP/OAuth authentication in self-hosted deployments.
-  usecases:
-    - Track time and projects.
-    - Generate invoices and reports for clients.
-  website: https://www.kimai.org/documentation/installation/docker/
-  logo: QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333AA
-  notes:
-    - Set strong secrets and use external database volume backups.

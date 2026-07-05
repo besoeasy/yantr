@@ -1,18 +1,3 @@
-services:
-  pastefy:
-    image: interaapps/pastefy:latest
-    container_name: pastefy
-    labels:
-      yantr.app: pastefy
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - pastefy_data:/app/data
-    restart: unless-stopped
-volumes:
-  pastefy_data: null
 x-yantr:
   name: Pastefy
   tags:
@@ -38,3 +23,19 @@ x-yantr:
     - Supports both guest and authenticated users
     - API available for automation
     - Syntax highlighting for 190+ languages
+services:
+  pastefy:
+    image: interaapps/pastefy:latest
+    container_name: pastefy
+    labels:
+      yantr.app: pastefy
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - pastefy_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  pastefy_data: null

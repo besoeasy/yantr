@@ -1,21 +1,3 @@
-services:
-  appsmith:
-    image: appsmith/appsmith-ce:latest
-    container_name: appsmith
-    labels:
-      yantr.app: appsmith
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-      yantr.service.443: Web UI
-      yantr.port.443: HTTPS
-    ports:
-      - "80"
-      - "443"
-    volumes:
-      - appsmith_stacks:/appsmith-stacks
-    restart: unless-stopped
-volumes:
-  appsmith_stacks: null
 x-yantr:
   name: Appsmith
   tags:
@@ -36,3 +18,22 @@ x-yantr:
       data under your control on local infrastructure.
   website: https://github.com/appsmithorg/appsmith
   logo: QmcEzSU5HXbZ9jiG6ZAY4PrqHRq2ddhQnfT2gcpXg34kuy
+services:
+  appsmith:
+    image: appsmith/appsmith-ce:latest
+    container_name: appsmith
+    labels:
+      yantr.app: appsmith
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.443: Web UI
+      yantr.port.443: HTTPS
+    ports:
+      - "80"
+      - "443"
+    volumes:
+      - appsmith_stacks:/appsmith-stacks
+    restart: unless-stopped
+
+volumes:
+  appsmith_stacks: null

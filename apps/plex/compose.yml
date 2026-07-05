@@ -1,26 +1,3 @@
-services:
-  plex:
-    image: lscr.io/linuxserver/plex:latest
-    container_name: plex
-    labels:
-      yantr.app: plex
-      yantr.service.32400: Web UI
-      yantr.port.32400: HTTP
-    environment:
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
-      VERSION: docker
-    ports:
-      - "32400"
-    volumes:
-      - plex_config:/config
-      - plex_tv:/tv
-      - plex_movies:/movies
-    restart: unless-stopped
-volumes:
-  plex_config: null
-  plex_movies: null
-  plex_tv: null
 x-yantr:
   name: Plex
   tags:
@@ -45,3 +22,27 @@ x-yantr:
     - To claim your server, you may need to use an SSH tunnel if you are
       accessing it outside your local network, or use a Plex Claim token via
       custom compose edit.
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    labels:
+      yantr.app: plex
+      yantr.service.32400: Web UI
+      yantr.port.32400: HTTP
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      VERSION: docker
+    ports:
+      - "32400"
+    volumes:
+      - plex_config:/config
+      - plex_tv:/tv
+      - plex_movies:/movies
+    restart: unless-stopped
+
+volumes:
+  plex_config: null
+  plex_movies: null
+  plex_tv: null

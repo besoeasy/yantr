@@ -1,20 +1,3 @@
-services:
-  bitwatch:
-    image: ghcr.io/zapomatic/bitwatch:latest
-    container_name: bitwatch
-    restart: unless-stopped
-    ports:
-      - "3117"
-    volumes:
-      - bitwatch-data:/app/server/data
-    labels:
-      yantr.app: bitwatch
-      yantr.service.3117: Web UI
-      yantr.port.3117: HTTP
-volumes:
-  bitwatch-data: null
-
-  
 x-yantr:
   name: Bitwatch
   tags:
@@ -36,3 +19,19 @@ x-yantr:
       under your control on local infrastructure.
   website: https://github.com/zapomatic/bitwatch
   logo: QmX4wcMVLo1mvb38iyH9xQfmXyB9DAdLesDqvsFjhU7iP8
+services:
+  bitwatch:
+    image: ghcr.io/zapomatic/bitwatch:latest
+    container_name: bitwatch
+    restart: unless-stopped
+    ports:
+      - "3117"
+    volumes:
+      - bitwatch-data:/app/server/data
+    labels:
+      yantr.app: bitwatch
+      yantr.service.3117: Web UI
+      yantr.port.3117: HTTP
+
+volumes:
+  bitwatch-data: null

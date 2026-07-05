@@ -1,3 +1,25 @@
+x-yantr:
+  name: AFFiNE
+  tags:
+    - notes
+    - whiteboard
+    - collaboration
+    - productivity
+    - self-hosted
+  short_description: Privacy-focused collaborative notes and whiteboard platform.
+  description: AFFiNE is an open-source, privacy-first alternative to Notion and
+    Miro. It combines document editing, whiteboard drawing, and database-style
+    pages in one unified workspace. Collaborate in real-time, organize with
+    tags, and work offline with local-first sync.
+  usecases:
+    - Create rich documents and wikis with embedded whiteboards.
+    - Collaborate in real-time on notes and visual mind maps.
+    - Organize projects with edgeless canvas and structured pages.
+  website: https://affine.pro
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
 services:
   redis:
     image: redis:7-alpine
@@ -84,30 +106,9 @@ services:
     volumes:
       - affine_config:/root/.affine/config
       - affine_storage:/root/.affine/storage
+
 volumes:
   affine_redis: null
   affine_pgdata: null
   affine_config: null
   affine_storage: null
-x-yantr:
-  name: AFFiNE
-  tags:
-    - notes
-    - whiteboard
-    - collaboration
-    - productivity
-    - self-hosted
-  short_description: Privacy-focused collaborative notes and whiteboard platform.
-  description: AFFiNE is an open-source, privacy-first alternative to Notion and
-    Miro. It combines document editing, whiteboard drawing, and database-style
-    pages in one unified workspace. Collaborate in real-time, organize with
-    tags, and work offline with local-first sync.
-  usecases:
-    - Create rich documents and wikis with embedded whiteboards.
-    - Collaborate in real-time on notes and visual mind maps.
-    - Organize projects with edgeless canvas and structured pages.
-  website: https://affine.pro
-  env_generators:
-    POSTGRES_PASSWORD:
-      length: 32
-      charset: alnum

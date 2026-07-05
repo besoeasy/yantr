@@ -1,26 +1,3 @@
-services:
-  youtubedl-material:
-    image: tzahi12345/youtubedl-material:latest
-    container_name: youtubedl-material
-    labels:
-      yantr.app: youtubedl-material
-      yantr.service.17442: Web UI
-      yantr.port.17442: HTTP
-    ports:
-      - "17442"
-    volumes:
-      - youtubedl_appdata:/app/appdata
-      - youtubedl_video:/app/video
-      - youtubedl_subscriptions:/app/subscriptions
-      - youtubedl_users:/app/users
-      - youtubedl_audio:/app/audio
-    restart: unless-stopped
-volumes:
-  youtubedl_appdata: null
-  youtubedl_video: null
-  youtubedl_subscriptions: null
-  youtubedl_users: null
-  youtubedl_audio: null
 x-yantr:
   name: YoutubeDL Material
   tags:
@@ -47,3 +24,27 @@ x-yantr:
     - Uses yt-dlp for downloading - supports 1700+ sites
     - Subscription checking runs on a schedule
     - Auto-generated thumbnails and metadata
+services:
+  youtubedl-material:
+    image: tzahi12345/youtubedl-material:latest
+    container_name: youtubedl-material
+    labels:
+      yantr.app: youtubedl-material
+      yantr.service.17442: Web UI
+      yantr.port.17442: HTTP
+    ports:
+      - "17442"
+    volumes:
+      - youtubedl_appdata:/app/appdata
+      - youtubedl_video:/app/video
+      - youtubedl_subscriptions:/app/subscriptions
+      - youtubedl_users:/app/users
+      - youtubedl_audio:/app/audio
+    restart: unless-stopped
+
+volumes:
+  youtubedl_appdata: null
+  youtubedl_video: null
+  youtubedl_subscriptions: null
+  youtubedl_users: null
+  youtubedl_audio: null

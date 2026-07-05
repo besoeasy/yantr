@@ -1,18 +1,3 @@
-services:
-  whoogle:
-    image: benbusby/whoogle-search:latest
-    container_name: whoogle
-    labels:
-      yantr.app: whoogle
-      yantr.service.5000: Web UI
-      yantr.port.5000: HTTP
-    ports:
-      - "5000"
-    volumes:
-      - whoogle_config:/config
-    restart: unless-stopped
-volumes:
-  whoogle_config: null
 x-yantr:
   name: Whoogle
   tags:
@@ -39,3 +24,19 @@ x-yantr:
     - Proxies Google search - results come from Google's algorithm
     - No tracking cookies or IP logging
     - Can be customized with environment variables
+services:
+  whoogle:
+    image: benbusby/whoogle-search:latest
+    container_name: whoogle
+    labels:
+      yantr.app: whoogle
+      yantr.service.5000: Web UI
+      yantr.port.5000: HTTP
+    ports:
+      - "5000"
+    volumes:
+      - whoogle_config:/config
+    restart: unless-stopped
+
+volumes:
+  whoogle_config: null

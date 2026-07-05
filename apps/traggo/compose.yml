@@ -1,21 +1,3 @@
-services:
-  traggo:
-    image: traggo/server:latest
-    container_name: traggo
-    labels:
-      yantr.app: traggo
-      yantr.service.3030: Web UI
-      yantr.port.3030: HTTP
-    ports:
-      - "3030"
-    environment:
-      admin: ${admin}
-      mynewpassword: ${mynewpassword}
-    volumes:
-      - traggo_data:/opt/traggo/data
-    restart: unless-stopped
-volumes:
-  traggo_data: null
 x-yantr:
   name: Traggo
   tags:
@@ -48,3 +30,22 @@ x-yantr:
     mynewpassword:
       length: 16
       charset: alnum_symbols
+services:
+  traggo:
+    image: traggo/server:latest
+    container_name: traggo
+    labels:
+      yantr.app: traggo
+      yantr.service.3030: Web UI
+      yantr.port.3030: HTTP
+    ports:
+      - "3030"
+    environment:
+      admin: ${admin}
+      mynewpassword: ${mynewpassword}
+    volumes:
+      - traggo_data:/opt/traggo/data
+    restart: unless-stopped
+
+volumes:
+  traggo_data: null

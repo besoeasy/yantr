@@ -1,3 +1,28 @@
+x-yantr:
+  name: Docmost
+  tags:
+    - wiki
+    - documentation
+    - collaboration
+    - knowledge-base
+    - self-hosted
+  short_description: Open-source collaborative wiki and documentation platform.
+  description: Docmost is an open-source collaborative wiki and documentation
+    platform. Write with a powerful rich-text editor, organize content in spaces
+    and pages, collaborate in real-time, manage permissions per workspace, and
+    attach files and images to documents.
+  usecases:
+    - Build a team wiki with collaborative real-time editing.
+    - Organize project documentation in structured spaces and pages.
+    - Manage permissions and access control per workspace or page.
+  website: https://docmost.com
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
+    APP_SECRET:
+      length: 64
+      charset: hex
 services:
   db:
     image: postgres:16-alpine
@@ -45,32 +70,8 @@ services:
       DISABLE_TELEMETRY: "true"
     volumes:
       - docmost_storage:/app/data/storage
+
 volumes:
   docmost_pgdata: null
   docmost_redis: null
   docmost_storage: null
-x-yantr:
-  name: Docmost
-  tags:
-    - wiki
-    - documentation
-    - collaboration
-    - knowledge-base
-    - self-hosted
-  short_description: Open-source collaborative wiki and documentation platform.
-  description: Docmost is an open-source collaborative wiki and documentation
-    platform. Write with a powerful rich-text editor, organize content in spaces
-    and pages, collaborate in real-time, manage permissions per workspace, and
-    attach files and images to documents.
-  usecases:
-    - Build a team wiki with collaborative real-time editing.
-    - Organize project documentation in structured spaces and pages.
-    - Manage permissions and access control per workspace or page.
-  website: https://docmost.com
-  env_generators:
-    POSTGRES_PASSWORD:
-      length: 32
-      charset: alnum
-    APP_SECRET:
-      length: 64
-      charset: hex

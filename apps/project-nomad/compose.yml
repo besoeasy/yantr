@@ -1,3 +1,40 @@
+x-yantr:
+  name: Project N.O.M.A.D.
+  tags:
+    - offline
+    - survival
+    - self-hosted
+    - docker
+    - ai
+  short_description: Self-contained offline survival computer with AI, knowledge
+    base, and essential tools.
+  description: Project N.O.M.A.D. is a self-contained offline survival computer
+    with AI chat, offline Wikipedia (Kiwix), Khan Academy courses (Kolibri),
+    maps, data tools, notes, and system benchmarking. Perfect for offline use.
+  usecases:
+    - Run AI chat and document search completely offline with local LLMs.
+    - Access Wikipedia, medical references, and educational content without
+      internet.
+    - Use as a self-contained survival computer for emergency preparedness.
+    - Host a private, secure knowledge base for offline use.
+  website: https://www.projectnomad.us
+  logo: QmTWne8qF7iFEo6oG3VJaUXY5veCD9Q7aDXSg1V5Jyz2Ai
+  notes:
+    - Requires Docker socket access for container orchestration.
+    - Minimum 4GB RAM for base installation; 32GB recommended for AI tools.
+    - Contains no telemetry - fully offline capable after initial install.
+    - No built-in authentication - use network-level controls for multi-user
+      access.
+  env_generators:
+    NOMAD_APP_KEY:
+      length: 48
+      charset: alnum_symbols
+    NOMAD_DB_PASSWORD:
+      length: 32
+      charset: alnum_symbols
+    NOMAD_MYSQL_ROOT_PASSWORD:
+      length: 32
+      charset: alnum_symbols
 services:
   admin:
     image: ghcr.io/crosstalk-solutions/project-nomad:v1.30.2
@@ -128,45 +165,9 @@ services:
       - project_nomad_storage:/opt/project-nomad
       - nomad_update_shared:/shared
     restart: unless-stopped
+
 volumes:
   project_nomad_storage: null
   project_nomad_mysql: null
   project_nomad_redis: null
   nomad_update_shared: null
-x-yantr:
-  name: Project N.O.M.A.D.
-  tags:
-    - offline
-    - survival
-    - self-hosted
-    - docker
-    - ai
-  short_description: Self-contained offline survival computer with AI, knowledge
-    base, and essential tools.
-  description: Project N.O.M.A.D. is a self-contained offline survival computer
-    with AI chat, offline Wikipedia (Kiwix), Khan Academy courses (Kolibri),
-    maps, data tools, notes, and system benchmarking. Perfect for offline use.
-  usecases:
-    - Run AI chat and document search completely offline with local LLMs.
-    - Access Wikipedia, medical references, and educational content without
-      internet.
-    - Use as a self-contained survival computer for emergency preparedness.
-    - Host a private, secure knowledge base for offline use.
-  website: https://www.projectnomad.us
-  logo: QmTWne8qF7iFEo6oG3VJaUXY5veCD9Q7aDXSg1V5Jyz2Ai
-  notes:
-    - Requires Docker socket access for container orchestration.
-    - Minimum 4GB RAM for base installation; 32GB recommended for AI tools.
-    - Contains no telemetry - fully offline capable after initial install.
-    - No built-in authentication - use network-level controls for multi-user
-      access.
-  env_generators:
-    NOMAD_APP_KEY:
-      length: 48
-      charset: alnum_symbols
-    NOMAD_DB_PASSWORD:
-      length: 32
-      charset: alnum_symbols
-    NOMAD_MYSQL_ROOT_PASSWORD:
-      length: 32
-      charset: alnum_symbols

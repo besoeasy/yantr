@@ -1,24 +1,3 @@
-services:
-  obsidian:
-    image: linuxserver/obsidian:latest
-    container_name: obsidian
-    security_opt:
-      - seccomp:unconfined
-    environment:
-      TZ: ${TZ:-UTC}
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
-    ports:
-      - "3000"
-    volumes:
-      - obsidian_config:/config
-    restart: unless-stopped
-    labels:
-      yantr.app: obsidian
-      yantr.service.3000: Web UI (KasmVNC)
-      yantr.port.3000: HTTP
-volumes:
-  obsidian_config: null
 x-yantr:
   name: Obsidian
   tags:
@@ -43,3 +22,25 @@ x-yantr:
     - Runs Obsidian as a full desktop app via KasmVNC — access it in any browser.
     - Requires seccomp:unconfined for the browser sandbox to function correctly.
     - Your vault is stored in the obsidian_config volume under /config/vaults.
+services:
+  obsidian:
+    image: linuxserver/obsidian:latest
+    container_name: obsidian
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      TZ: ${TZ:-UTC}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    ports:
+      - "3000"
+    volumes:
+      - obsidian_config:/config
+    restart: unless-stopped
+    labels:
+      yantr.app: obsidian
+      yantr.service.3000: Web UI (KasmVNC)
+      yantr.port.3000: HTTP
+
+volumes:
+  obsidian_config: null

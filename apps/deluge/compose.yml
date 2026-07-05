@@ -1,22 +1,3 @@
-services:
-  deluge:
-    image: linuxserver/deluge:latest
-    container_name: deluge
-    volumes:
-      - deluge-config:/config
-      - deluge-downloads:/downloads
-    ports:
-      - "8112"
-      - "6881"
-      - 6881/udp
-    restart: unless-stopped
-    labels:
-      yantr.app: deluge
-      yantr.service.8112: Web UI
-      yantr.port.8112: HTTP
-volumes:
-  deluge-config: null
-  deluge-downloads: null
 x-yantr:
   name: Deluge
   tags:
@@ -40,3 +21,23 @@ x-yantr:
     - Web UI on port 8112
     - Default password is 'deluge'
     - Plugin ecosystem available
+services:
+  deluge:
+    image: linuxserver/deluge:latest
+    container_name: deluge
+    volumes:
+      - deluge-config:/config
+      - deluge-downloads:/downloads
+    ports:
+      - "8112"
+      - "6881"
+      - 6881/udp
+    restart: unless-stopped
+    labels:
+      yantr.app: deluge
+      yantr.service.8112: Web UI
+      yantr.port.8112: HTTP
+
+volumes:
+  deluge-config: null
+  deluge-downloads: null

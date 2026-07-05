@@ -1,27 +1,3 @@
-services:
-  broker:
-    image: eclipse-mosquitto:latest
-    container_name: mosquitto
-    labels:
-      yantr.app: mosquitto
-      yantr.service.1883: MQTT Broker
-      yantr.port.1883: TCP
-      yantr.service.9001: MQTT over WebSockets
-      yantr.port.9001: TCP
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "1883"
-      - "9001"
-    volumes:
-      - mosquitto_config:/mosquitto/config
-      - mosquitto_data:/mosquitto/data
-      - mosquitto_log:/mosquitto/log
-    restart: unless-stopped
-volumes:
-  mosquitto_config: null
-  mosquitto_data: null
-  mosquitto_log: null
 x-yantr:
   name: Mosquitto
   tags:
@@ -45,3 +21,28 @@ x-yantr:
       production use.
     - Config file is stored in the mosquitto_config volume at
       /mosquitto/config/mosquitto.conf.
+services:
+  broker:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    labels:
+      yantr.app: mosquitto
+      yantr.service.1883: MQTT Broker
+      yantr.port.1883: TCP
+      yantr.service.9001: MQTT over WebSockets
+      yantr.port.9001: TCP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "1883"
+      - "9001"
+    volumes:
+      - mosquitto_config:/mosquitto/config
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+
+volumes:
+  mosquitto_config: null
+  mosquitto_data: null
+  mosquitto_log: null

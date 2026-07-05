@@ -1,3 +1,25 @@
+x-yantr:
+  name: Mattermost
+  tags:
+    - messaging
+    - team-chat
+    - collaboration
+    - communication
+    - self-hosted
+  short_description: Open-source team messaging and collaboration platform.
+  description: Mattermost is an open-source, self-hosted team messaging platform
+    built for enterprise. It provides secure channels, direct messaging, file
+    sharing, integrations, playbooks for incident management, and a marketplace
+    of plugins for extending functionality.
+  usecases:
+    - Replace Slack with a private, self-hosted team messaging platform.
+    - Coordinate incident response using Mattermost Playbooks.
+    - Integrate with DevOps tools like GitHub, Jira, and Jenkins.
+  website: https://mattermost.com
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
 services:
   db:
     image: postgres:16-alpine
@@ -36,6 +58,7 @@ services:
       - mattermost_logs:/mattermost/logs
       - mattermost_plugins:/mattermost/plugins
       - mattermost_client_plugins:/mattermost/client/plugins
+
 volumes:
   mattermost_pgdata: null
   mattermost_config: null
@@ -43,25 +66,3 @@ volumes:
   mattermost_logs: null
   mattermost_plugins: null
   mattermost_client_plugins: null
-x-yantr:
-  name: Mattermost
-  tags:
-    - messaging
-    - team-chat
-    - collaboration
-    - communication
-    - self-hosted
-  short_description: Open-source team messaging and collaboration platform.
-  description: Mattermost is an open-source, self-hosted team messaging platform
-    built for enterprise. It provides secure channels, direct messaging, file
-    sharing, integrations, playbooks for incident management, and a marketplace
-    of plugins for extending functionality.
-  usecases:
-    - Replace Slack with a private, self-hosted team messaging platform.
-    - Coordinate incident response using Mattermost Playbooks.
-    - Integrate with DevOps tools like GitHub, Jira, and Jenkins.
-  website: https://mattermost.com
-  env_generators:
-    POSTGRES_PASSWORD:
-      length: 32
-      charset: alnum

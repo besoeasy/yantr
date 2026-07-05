@@ -1,27 +1,3 @@
-services:
-  fireshare:
-    image: shaneisrael/fireshare:latest
-    container_name: fireshare
-    labels:
-      yantr.app: fireshare
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    environment:
-      ADMIN_USERNAME: ${ADMIN_USERNAME}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      SECRET_KEY: ${SECRET_KEY}
-      MINUTES_BETWEEN_VIDEO_SCANS: ${MINUTES_BETWEEN_VIDEO_SCANS:-60}
-    volumes:
-      - fireshare_data:/data
-      - fireshare_processed:/processed
-      - fireshare_videos:/videos
-    restart: unless-stopped
-volumes:
-  fireshare_data: null
-  fireshare_processed: null
-  fireshare_videos: null
 x-yantr:
   name: Fireshare
   tags:
@@ -55,3 +31,28 @@ x-yantr:
     SECRET_KEY:
       length: 32
       charset: hex
+services:
+  fireshare:
+    image: shaneisrael/fireshare:latest
+    container_name: fireshare
+    labels:
+      yantr.app: fireshare
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      MINUTES_BETWEEN_VIDEO_SCANS: ${MINUTES_BETWEEN_VIDEO_SCANS:-60}
+    volumes:
+      - fireshare_data:/data
+      - fireshare_processed:/processed
+      - fireshare_videos:/videos
+    restart: unless-stopped
+
+volumes:
+  fireshare_data: null
+  fireshare_processed: null
+  fireshare_videos: null

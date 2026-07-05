@@ -1,23 +1,3 @@
-services:
-  ntfy:
-    image: binwiederhier/ntfy:latest
-    container_name: ntfy
-    command: serve
-    environment:
-      TZ: ${TZ:-UTC}
-    ports:
-      - "80"
-    volumes:
-      - ntfy_cache:/var/cache/ntfy
-      - ntfy_data:/etc/ntfy
-    restart: unless-stopped
-    labels:
-      yantr.app: ntfy
-      yantr.service.80: Web UI & API
-      yantr.port.80: HTTP
-volumes:
-  ntfy_cache: null
-  ntfy_data: null
 x-yantr:
   name: ntfy
   tags:
@@ -46,3 +26,24 @@ x-yantr:
       UI.
     - Topics are public by default — configure auth in /etc/ntfy/server.yml for
       private use.
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    command: serve
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - ntfy_cache:/var/cache/ntfy
+      - ntfy_data:/etc/ntfy
+    restart: unless-stopped
+    labels:
+      yantr.app: ntfy
+      yantr.service.80: Web UI & API
+      yantr.port.80: HTTP
+
+volumes:
+  ntfy_cache: null
+  ntfy_data: null

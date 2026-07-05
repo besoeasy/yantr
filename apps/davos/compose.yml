@@ -1,20 +1,3 @@
-services:
-  davos:
-    image: linuxserver/davos:latest
-    container_name: davos
-    labels:
-      yantr.app: davos
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
-    ports:
-      - "8080"
-    volumes:
-      - davos_config:/config
-      - davos_downloads:/downloads
-    restart: unless-stopped
-volumes:
-  davos_config: null
-  davos_downloads: null
 x-yantr:
   name: Davos
   tags:
@@ -38,3 +21,21 @@ x-yantr:
     - Supports FTP and SFTP
     - Download queue management
     - Automatic retry on failure
+services:
+  davos:
+    image: linuxserver/davos:latest
+    container_name: davos
+    labels:
+      yantr.app: davos
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - davos_config:/config
+      - davos_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  davos_config: null
+  davos_downloads: null

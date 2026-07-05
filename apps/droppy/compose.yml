@@ -1,20 +1,3 @@
-services:
-  droppy:
-    image: silverwind/droppy:latest
-    container_name: droppy
-    labels:
-      yantr.app: droppy
-      yantr.service.8989: Web UI
-      yantr.port.8989: HTTP
-    ports:
-      - "8989"
-    volumes:
-      - droppy_config:/config
-      - droppy_files:/files
-    restart: unless-stopped
-volumes:
-  droppy_config: null
-  droppy_files: null
 x-yantr:
   name: Droppy
   tags:
@@ -39,3 +22,21 @@ x-yantr:
     - User authentication available
     - Share links with expiration
     - File preview support
+services:
+  droppy:
+    image: silverwind/droppy:latest
+    container_name: droppy
+    labels:
+      yantr.app: droppy
+      yantr.service.8989: Web UI
+      yantr.port.8989: HTTP
+    ports:
+      - "8989"
+    volumes:
+      - droppy_config:/config
+      - droppy_files:/files
+    restart: unless-stopped
+
+volumes:
+  droppy_config: null
+  droppy_files: null

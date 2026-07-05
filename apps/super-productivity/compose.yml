@@ -1,17 +1,3 @@
-services:
-  web:
-    image: johannesjo/super-productivity:latest
-    container_name: super-productivity-web
-    restart: unless-stopped
-    labels:
-      yantr.app: super-productivity
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    environment:
-      TZ: ${TZ:-UTC}
-volumes: {}
 x-yantr:
   name: Super Productivity
   tags:
@@ -30,3 +16,18 @@ x-yantr:
     - Track time spent per task and export detailed work logs.
     - Sync tasks from Jira, GitHub, and GitLab issue trackers.
   website: https://super-productivity.com
+services:
+  web:
+    image: johannesjo/super-productivity:latest
+    container_name: super-productivity-web
+    restart: unless-stopped
+    labels:
+      yantr.app: super-productivity
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+
+volumes: {}

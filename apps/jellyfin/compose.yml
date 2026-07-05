@@ -1,22 +1,3 @@
-services:
-  jellyfin:
-    image: linuxserver/jellyfin:latest
-    container_name: jellyfin
-    volumes:
-      - jellyfin-config:/config
-      - jellyfin-media:/data
-    ports:
-      - "8096"
-    restart: unless-stopped
-    labels:
-      yantr.app: jellyfin
-      yantr.service.8096: Web UI
-      yantr.port.8096: HTTP
-volumes:
-  jellyfin-config:
-    name: jellyfin-config
-  jellyfin-media:
-    name: jellyfin-media
 x-yantr:
   name: Jellyfin
   tags:
@@ -47,3 +28,23 @@ x-yantr:
       NVIDIA, or VA-API)
     - Media folders must be mounted with read access for the container
     - No account required - runs completely locally with no telemetry
+services:
+  jellyfin:
+    image: linuxserver/jellyfin:latest
+    container_name: jellyfin
+    volumes:
+      - jellyfin-config:/config
+      - jellyfin-media:/data
+    ports:
+      - "8096"
+    restart: unless-stopped
+    labels:
+      yantr.app: jellyfin
+      yantr.service.8096: Web UI
+      yantr.port.8096: HTTP
+
+volumes:
+  jellyfin-config:
+    name: jellyfin-config
+  jellyfin-media:
+    name: jellyfin-media

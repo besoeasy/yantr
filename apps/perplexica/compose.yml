@@ -1,20 +1,3 @@
-services:
-  perplexica:
-    image: itzcrazykns1337/perplexica:v1.11.2
-    container_name: perplexica
-    labels:
-      yantr.app: perplexica
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-    ports:
-      - "3000"
-    volumes:
-      - perplexica_data:/home/perplexica/data
-      - perplexica_uploads:/home/perplexica/uploads
-    restart: unless-stopped
-volumes:
-  perplexica_data: null
-  perplexica_uploads: null
 x-yantr:
   name: Perplexica
   tags:
@@ -38,3 +21,21 @@ x-yantr:
     - Requires Ollama or OpenAI API
     - Uses SearXNG for search
     - Source citations included
+services:
+  perplexica:
+    image: itzcrazykns1337/perplexica:v1.11.2
+    container_name: perplexica
+    labels:
+      yantr.app: perplexica
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - perplexica_data:/home/perplexica/data
+      - perplexica_uploads:/home/perplexica/uploads
+    restart: unless-stopped
+
+volumes:
+  perplexica_data: null
+  perplexica_uploads: null

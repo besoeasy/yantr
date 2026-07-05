@@ -1,18 +1,3 @@
-services:
-  freshrss:
-    image: linuxserver/freshrss:latest
-    container_name: freshrss
-    labels:
-      yantr.app: freshrss
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - freshrss_config:/config
-    restart: unless-stopped
-volumes:
-  freshrss_config: null
 x-yantr:
   name: FreshRSS
   tags:
@@ -38,3 +23,19 @@ x-yantr:
     - Supports OPML import for migrating from other feed readers
     - Can refresh feeds automatically on a schedule
     - Mobile-friendly interface works well on phones
+services:
+  freshrss:
+    image: linuxserver/freshrss:latest
+    container_name: freshrss
+    labels:
+      yantr.app: freshrss
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - freshrss_config:/config
+    restart: unless-stopped
+
+volumes:
+  freshrss_config: null

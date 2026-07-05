@@ -1,21 +1,3 @@
-services:
-  gitea-mirror:
-    image: ghcr.io/raylabshq/gitea-mirror:latest
-    container_name: gitea-mirror
-    restart: unless-stopped
-    ports:
-      - "4321"
-    volumes:
-      - gitea-mirror-data:/app/data
-    environment:
-      PORT: 4321
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-    labels:
-      yantr.app: gitea-mirror
-      yantr.service.4321: Web UI
-      yantr.port.4321: HTTP
-volumes:
-  gitea-mirror-data: null
 x-yantr:
   name: Gitea Mirror
   tags:
@@ -55,3 +37,22 @@ x-yantr:
       length: 48
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{32,}$
+services:
+  gitea-mirror:
+    image: ghcr.io/raylabshq/gitea-mirror:latest
+    container_name: gitea-mirror
+    restart: unless-stopped
+    ports:
+      - "4321"
+    volumes:
+      - gitea-mirror-data:/app/data
+    environment:
+      PORT: 4321
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+    labels:
+      yantr.app: gitea-mirror
+      yantr.service.4321: Web UI
+      yantr.port.4321: HTTP
+
+volumes:
+  gitea-mirror-data: null

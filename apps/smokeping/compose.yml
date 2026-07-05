@@ -1,20 +1,3 @@
-services:
-  smokeping:
-    image: linuxserver/smokeping:latest
-    container_name: smokeping
-    labels:
-      yantr.app: smokeping
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
-    ports:
-      - "80"
-    volumes:
-      - smokeping_config:/config
-      - smokeping_data:/data
-    restart: unless-stopped
-volumes:
-  smokeping_config: null
-  smokeping_data: null
 x-yantr:
   name: Smokeping
   tags:
@@ -40,3 +23,21 @@ x-yantr:
     - Requires ICMP ping access (may need CAP_NET_RAW)
     - Configure targets via config file
     - Historical graphs show trends over extended periods
+services:
+  smokeping:
+    image: linuxserver/smokeping:latest
+    container_name: smokeping
+    labels:
+      yantr.app: smokeping
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    volumes:
+      - smokeping_config:/config
+      - smokeping_data:/data
+    restart: unless-stopped
+
+volumes:
+  smokeping_config: null
+  smokeping_data: null

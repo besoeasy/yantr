@@ -1,3 +1,24 @@
+x-yantr:
+  name: Habitica
+  tags:
+    - productivity
+    - habits
+    - gamification
+    - tasks
+    - self-hosted
+  short_description: Self-hosted gamified habit tracker and task manager.
+  description: Habitica is a self-hosted, gamified habit tracker that turns your
+    daily tasks, habits, and to-do lists into a role-playing game. Earn
+    experience points, level up your character, and stay motivated to accomplish
+    your goals.
+  usecases:
+    - Build positive habits through game-like reward systems.
+    - Manage daily tasks and to-do lists with RPG progression.
+    - Form accountability groups with friends to stay on track.
+  website: https://habitica.com
+  notes:
+    - BASE_URL must be updated to your server's actual URL for proper
+      functionality.
 services:
   server:
     image: awinterstein/habitica-server:latest
@@ -31,26 +52,6 @@ services:
       yantr.app: habitica
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
+
 volumes:
   habitica_mongo: null
-x-yantr:
-  name: Habitica
-  tags:
-    - productivity
-    - habits
-    - gamification
-    - tasks
-    - self-hosted
-  short_description: Self-hosted gamified habit tracker and task manager.
-  description: Habitica is a self-hosted, gamified habit tracker that turns your
-    daily tasks, habits, and to-do lists into a role-playing game. Earn
-    experience points, level up your character, and stay motivated to accomplish
-    your goals.
-  usecases:
-    - Build positive habits through game-like reward systems.
-    - Manage daily tasks and to-do lists with RPG progression.
-    - Form accountability groups with friends to stay on track.
-  website: https://habitica.com
-  notes:
-    - BASE_URL must be updated to your server's actual URL for proper
-      functionality.

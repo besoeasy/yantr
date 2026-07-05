@@ -1,21 +1,3 @@
-services:
-  moltis:
-    image: ghcr.io/moltis-org/moltis:latest
-    container_name: moltis
-    labels:
-      yantr.app: moltis
-      yantr.service.13131: Web UI
-      yantr.port.13131: HTTPS
-    ports:
-      - "13131"
-    volumes:
-      - moltis_config:/home/moltis/.config/moltis
-      - moltis_data:/home/moltis/.moltis
-      - /var/run/docker.sock:/var/run/docker.sock
-    restart: unless-stopped
-volumes:
-  moltis_config: null
-  moltis_data: null
 x-yantr:
   name: Moltis
   tags:
@@ -36,3 +18,22 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/moltis-org/moltis
   logo: Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd
+services:
+  moltis:
+    image: ghcr.io/moltis-org/moltis:latest
+    container_name: moltis
+    labels:
+      yantr.app: moltis
+      yantr.service.13131: Web UI
+      yantr.port.13131: HTTPS
+    ports:
+      - "13131"
+    volumes:
+      - moltis_config:/home/moltis/.config/moltis
+      - moltis_data:/home/moltis/.moltis
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  moltis_config: null
+  moltis_data: null

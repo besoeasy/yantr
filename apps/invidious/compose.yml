@@ -1,3 +1,36 @@
+x-yantr:
+  name: Invidious
+  tags:
+    - media
+    - video
+    - youtube
+    - privacy
+    - streaming
+  short_description: Ad-free, privacy-respecting alternative frontend for YouTube.
+  description: Invidious is an open-source, lightweight alternative front-end to
+    YouTube. It allows you to search, watch, and subscribe to YouTube videos and
+    channels completely ad-free and without Google tracking you. You can create
+    playlists, manage subscriptions, and listen to audio in the background
+    without...
+  usecases:
+    - Watch YouTube videos without advertisements or algorithmic tracking.
+    - Subscribe to YouTube channels via RSS without needing a Google account.
+    - Listen to video audio in the background on mobile devices.
+    - Bypass region locks and age restrictions natively through the proxy.
+  website: https://invidious.io
+  notes:
+    - Includes the Invidious Companion service to improve stream stability and
+      reduce blocking.
+  env_generators:
+    DB_PASSWORD:
+      length: 32
+      charset: alnum
+    COMPANION_SECRET:
+      length: 64
+      charset: hex
+    HMAC_KEY:
+      length: 64
+      charset: hex
 services:
   invidious:
     image: ceramicwhite/invidious:latest
@@ -61,39 +94,7 @@ services:
       yantr.app: invidious
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
+
 volumes:
   invidious_db: null
   invidious_companioncache: null
-x-yantr:
-  name: Invidious
-  tags:
-    - media
-    - video
-    - youtube
-    - privacy
-    - streaming
-  short_description: Ad-free, privacy-respecting alternative frontend for YouTube.
-  description: Invidious is an open-source, lightweight alternative front-end to
-    YouTube. It allows you to search, watch, and subscribe to YouTube videos and
-    channels completely ad-free and without Google tracking you. You can create
-    playlists, manage subscriptions, and listen to audio in the background
-    without...
-  usecases:
-    - Watch YouTube videos without advertisements or algorithmic tracking.
-    - Subscribe to YouTube channels via RSS without needing a Google account.
-    - Listen to video audio in the background on mobile devices.
-    - Bypass region locks and age restrictions natively through the proxy.
-  website: https://invidious.io
-  notes:
-    - Includes the Invidious Companion service to improve stream stability and
-      reduce blocking.
-  env_generators:
-    DB_PASSWORD:
-      length: 32
-      charset: alnum
-    COMPANION_SECRET:
-      length: 64
-      charset: hex
-    HMAC_KEY:
-      length: 64
-      charset: hex

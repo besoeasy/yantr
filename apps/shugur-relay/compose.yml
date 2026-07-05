@@ -1,3 +1,23 @@
+x-yantr:
+  name: Shugur Relay
+  tags:
+    - network
+    - social
+    - database
+    - storage
+    - utility
+  short_description: High-performance nostr relay with distributed database.
+  description: High-performance nostr relay with distributed database. Shugur
+    Relay is a self-hosted application focused on network, social, database,
+    storage. It can be deployed on any device via Docker Compose. It supports a
+    wide range of use cases for homelabs and self-hosted infrastructure.
+  usecases:
+    - Self-host Shugur Relay on your home server to high-performance nostr relay
+      with distributed database without depending on third-party cloud services.
+    - Use Shugur Relay to manage your network workflows privately, keeping all
+      data under your control on local infrastructure.
+  website: https://github.com/Shugur-Network/relay
+  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
 services:
   shugur-relay:
     image: ghcr.io/shugur-network/relay:latest
@@ -52,25 +72,6 @@ services:
       yantr.app: shugur-relay
       yantr.service.8080: Relay
       yantr.port.8080: HTTP
+
 volumes:
   cockroach-data: null
-x-yantr:
-  name: Shugur Relay
-  tags:
-    - network
-    - social
-    - database
-    - storage
-    - utility
-  short_description: High-performance nostr relay with distributed database.
-  description: High-performance nostr relay with distributed database. Shugur
-    Relay is a self-hosted application focused on network, social, database,
-    storage. It can be deployed on any device via Docker Compose. It supports a
-    wide range of use cases for homelabs and self-hosted infrastructure.
-  usecases:
-    - Self-host Shugur Relay on your home server to high-performance nostr relay
-      with distributed database without depending on third-party cloud services.
-    - Use Shugur Relay to manage your network workflows privately, keeping all
-      data under your control on local infrastructure.
-  website: https://github.com/Shugur-Network/relay
-  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD

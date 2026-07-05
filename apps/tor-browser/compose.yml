@@ -1,13 +1,3 @@
-services:
-  tor-browser:
-    image: domistyle/tor-browser
-    container_name: tor-browser
-    ports:
-      - "5800"
-    labels:
-      yantr.app: tor-browser
-      yantr.service.5800: Web UI
-      yantr.port.5800: HTTP
 x-yantr:
   name: Tor Browser
   tags:
@@ -34,3 +24,13 @@ x-yantr:
     - Accessed via VNC in browser - no local installation needed
     - Slow due to Tor network routing - not for streaming
     - All browsing data is lost on container restart
+services:
+  tor-browser:
+    image: domistyle/tor-browser
+    container_name: tor-browser
+    ports:
+      - "5800"
+    labels:
+      yantr.app: tor-browser
+      yantr.service.5800: Web UI
+      yantr.port.5800: HTTP

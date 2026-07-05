@@ -1,26 +1,3 @@
-services:
-  forgejo:
-    image: codeberg.org/forgejo/forgejo:latest-rootless
-    container_name: forgejo
-    ports:
-      - "3000"
-      - "22"
-    environment:
-      TZ: ${TZ:-UTC}
-      FORGEJO__security__INSTALL_LOCK: "false"
-    volumes:
-      - forgejo_data:/var/lib/gitea
-      - forgejo_config:/etc/gitea
-    restart: unless-stopped
-    labels:
-      yantr.app: forgejo
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.22: SSH
-      yantr.port.22: TCP
-volumes:
-  forgejo_data: null
-  forgejo_config: null
 x-yantr:
   name: Forgejo
   tags:
@@ -48,3 +25,27 @@ x-yantr:
     - SSH cloning is available on port 22 — ensure it's not already used by your
       host.
     - Forgejo Actions runners can be added separately to enable CI/CD pipelines.
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:latest-rootless
+    container_name: forgejo
+    ports:
+      - "3000"
+      - "22"
+    environment:
+      TZ: ${TZ:-UTC}
+      FORGEJO__security__INSTALL_LOCK: "false"
+    volumes:
+      - forgejo_data:/var/lib/gitea
+      - forgejo_config:/etc/gitea
+    restart: unless-stopped
+    labels:
+      yantr.app: forgejo
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.22: SSH
+      yantr.port.22: TCP
+
+volumes:
+  forgejo_data: null
+  forgejo_config: null

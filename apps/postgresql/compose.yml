@@ -1,21 +1,3 @@
-services:
-  postgresql:
-    image: postgres:latest
-    container_name: postgresql
-    labels:
-      yantr.app: postgresql
-      yantr.service.5432: Database
-      yantr.port.5432: TCP
-    ports:
-      - "5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    volumes:
-      - postgresql_data:/var/lib/postgresql/data
-    restart: unless-stopped
-volumes:
-  postgresql_data: null
 x-yantr:
   name: PostgreSQL
   tags:
@@ -43,3 +25,22 @@ x-yantr:
     - Requires POSTGRES_PASSWORD environment variable
     - Can use volumes for data persistence
     - Supports numerous extensions for specialized use cases
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql
+    labels:
+      yantr.app: postgresql
+      yantr.service.5432: Database
+      yantr.port.5432: TCP
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgresql_data: null

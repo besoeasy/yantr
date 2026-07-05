@@ -1,3 +1,27 @@
+x-yantr:
+  name: Immich
+  tags:
+    - photos
+    - backup
+    - gallery
+    - ai
+    - self-hosted
+  short_description: High performance self-hosted photo and video backup solution
+    with mobile app support.
+  description: Immich is a very high performance, self-hosted photo and video
+    backup solution directly from your mobile phone. It is meant to be a
+    privacy-friendly alternative to Google Photos or Apple Photos with support
+    for facial recognition, object detection, and shared albums.
+  usecases:
+    - Backup photos automatically from mobile devices.
+    - Browse large photo libraries quickly.
+    - Detect faces and objects in photos offline.
+  website: https://immich.app/
+  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  env_generators:
+    DB_PASSWORD:
+      length: 32
+      charset: alnum
 services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
@@ -67,31 +91,8 @@ services:
       - shared_buffers=512MB
       - -c
       - wal_compression=on
+
 volumes:
   immich_upload: null
   immich_model_cache: null
   immich_db: null
-x-yantr:
-  name: Immich
-  tags:
-    - photos
-    - backup
-    - gallery
-    - ai
-    - self-hosted
-  short_description: High performance self-hosted photo and video backup solution
-    with mobile app support.
-  description: Immich is a very high performance, self-hosted photo and video
-    backup solution directly from your mobile phone. It is meant to be a
-    privacy-friendly alternative to Google Photos or Apple Photos with support
-    for facial recognition, object detection, and shared albums.
-  usecases:
-    - Backup photos automatically from mobile devices.
-    - Browse large photo libraries quickly.
-    - Detect faces and objects in photos offline.
-  website: https://immich.app/
-  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  env_generators:
-    DB_PASSWORD:
-      length: 32
-      charset: alnum

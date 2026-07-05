@@ -1,14 +1,3 @@
-services:
-  kokoro:
-    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
-    container_name: kokoro
-    labels:
-      yantr.app: kokoro
-      yantr.service.8880: Web UI
-      yantr.port.8880: HTTP
-    ports:
-      - "8880"
-    restart: unless-stopped
 x-yantr:
   name: Kokoro
   tags:
@@ -31,3 +20,14 @@ x-yantr:
       your control on local infrastructure.
   website: https://github.com/remsky/Kokoro-FastAPI
   logo: Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z
+services:
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
+    container_name: kokoro
+    labels:
+      yantr.app: kokoro
+      yantr.service.8880: Web UI
+      yantr.port.8880: HTTP
+    ports:
+      - "8880"
+    restart: unless-stopped

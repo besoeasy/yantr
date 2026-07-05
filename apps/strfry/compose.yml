@@ -1,3 +1,28 @@
+x-yantr:
+  name: Strfry
+  tags:
+    - network
+    - social
+    - storage
+    - files
+    - utility
+  short_description: High-performance nostr relay with LMDB storage for
+    decentralized social networking.
+  description: Strfry is a high-performance relay for Nostr (Notes and Other Stuff
+    Transmitted by Relays), a decentralized social network protocol. Nostr uses
+    simple JSON messages that get relayed between users through multiple relays
+    - no central server required. Running your own Strfry relay gives you...
+  usecases:
+    - Run your own nostr relay to support the decentralized network.
+    - Host a relay for friends or community with custom policies.
+    - Build your own piece of the nostr network.
+    - Use as a personal relay for your own notes.
+  website: https://github.com/hoytech/strfry
+  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
+  notes:
+    - Uses LMDB for fast, high-capacity storage
+    - Connects to other relays to share events
+    - Configure limits for spam prevention
 services:
   strfry:
     image: ghcr.io/hoytech/strfry:latest
@@ -15,6 +40,10 @@ services:
       yantr.app: strfry
       yantr.service.7777: Relay
       yantr.port.7777: HTTP
+
+volumes:
+  strfry-data: null
+
 configs:
   strfry-config:
     content: >
@@ -100,30 +129,3 @@ configs:
               maxSyncEvents = 1000000
           }
       }
-volumes:
-  strfry-data: null
-x-yantr:
-  name: Strfry
-  tags:
-    - network
-    - social
-    - storage
-    - files
-    - utility
-  short_description: High-performance nostr relay with LMDB storage for
-    decentralized social networking.
-  description: Strfry is a high-performance relay for Nostr (Notes and Other Stuff
-    Transmitted by Relays), a decentralized social network protocol. Nostr uses
-    simple JSON messages that get relayed between users through multiple relays
-    - no central server required. Running your own Strfry relay gives you...
-  usecases:
-    - Run your own nostr relay to support the decentralized network.
-    - Host a relay for friends or community with custom policies.
-    - Build your own piece of the nostr network.
-    - Use as a personal relay for your own notes.
-  website: https://github.com/hoytech/strfry
-  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
-  notes:
-    - Uses LMDB for fast, high-capacity storage
-    - Connects to other relays to share events
-    - Configure limits for spam prevention

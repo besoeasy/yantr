@@ -1,22 +1,3 @@
-services:
-  syncthing:
-    image: syncthing/syncthing:latest
-    container_name: syncthing
-    hostname: syncthing
-    volumes:
-      - syncthing_data:/var/syncthing
-    ports:
-      - "8384"
-      - 22000/tcp
-      - 22000/udp
-      - 21027/udp
-    restart: unless-stopped
-    labels:
-      yantr.app: syncthing
-      yantr.service.8384: Web UI
-      yantr.port.8384: HTTP
-volumes:
-  syncthing_data: null
 x-yantr:
   name: Syncthing
   tags:
@@ -46,3 +27,23 @@ x-yantr:
     - Uses ports 22000 (TCP) and 21027 (UDP) for synchronization
     - Works behind NAT with proper configuration
     - No account or cloud required - all peer-to-peer
+services:
+  syncthing:
+    image: syncthing/syncthing:latest
+    container_name: syncthing
+    hostname: syncthing
+    volumes:
+      - syncthing_data:/var/syncthing
+    ports:
+      - "8384"
+      - 22000/tcp
+      - 22000/udp
+      - 21027/udp
+    restart: unless-stopped
+    labels:
+      yantr.app: syncthing
+      yantr.service.8384: Web UI
+      yantr.port.8384: HTTP
+
+volumes:
+  syncthing_data: null

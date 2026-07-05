@@ -1,26 +1,3 @@
-services:
-  bitcoin-knots-vm:
-    image: lscr.io/linuxserver/bitcoin-knots:latest
-    container_name: bitcoin-knots-vm
-    hostname: bitcoin-knots-vm
-    environment:
-      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
-      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
-    volumes:
-      - bitcoin_knots_config:/config
-    ports:
-      - "3000"
-      - "3001"
-      - "8333"
-    restart: unless-stopped
-    labels:
-      yantr.app: bitcoin-knots-vm
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.3001: Web UI
-      yantr.port.3001: HTTPS
-volumes:
-  bitcoin_knots_vm_config: null
 x-yantr:
   name: Bitcoin Knots VM
   tags:
@@ -48,3 +25,27 @@ x-yantr:
     BITCOIN_RPC_PASSWORD:
       length: 32
       charset: alnum_symbols
+services:
+  bitcoin-knots-vm:
+    image: lscr.io/linuxserver/bitcoin-knots:latest
+    container_name: bitcoin-knots-vm
+    hostname: bitcoin-knots-vm
+    environment:
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
+    volumes:
+      - bitcoin_knots_config:/config
+    ports:
+      - "3000"
+      - "3001"
+      - "8333"
+    restart: unless-stopped
+    labels:
+      yantr.app: bitcoin-knots-vm
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.3001: Web UI
+      yantr.port.3001: HTTPS
+
+volumes:
+  bitcoin_knots_vm_config: null

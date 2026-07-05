@@ -1,23 +1,3 @@
-services:
-  jackett:
-    image: linuxserver/jackett:latest
-    container_name: jackett
-    hostname: jackett
-    environment:
-      AUTO_UPDATE: "true"
-    volumes:
-      - jackett_config:/config
-      - jackett_downloads:/downloads
-    ports:
-      - "9117"
-    restart: unless-stopped
-    labels:
-      yantr.app: jackett
-      yantr.service.9117: Web UI
-      yantr.port.9117: HTTP
-volumes:
-  jackett_config: null
-  jackett_downloads: null
 x-yantr:
   name: Jackett
   tags:
@@ -43,3 +23,24 @@ x-yantr:
     - API key required for connecting PVR apps
     - Supports 500+ torrent trackers
     - Update tracker definitions regularly for best results
+services:
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    hostname: jackett
+    environment:
+      AUTO_UPDATE: "true"
+    volumes:
+      - jackett_config:/config
+      - jackett_downloads:/downloads
+    ports:
+      - "9117"
+    restart: unless-stopped
+    labels:
+      yantr.app: jackett
+      yantr.service.9117: Web UI
+      yantr.port.9117: HTTP
+
+volumes:
+  jackett_config: null
+  jackett_downloads: null

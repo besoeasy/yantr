@@ -1,19 +1,3 @@
-services:
-  stremio:
-    image: stremio/server:latest
-    container_name: stremio
-    restart: unless-stopped
-    ports:
-      - "11470"
-      - "12470"
-    environment:
-      NO_CORS: "1"
-    labels:
-      yantr.app: stremio
-      yantr.service.11470: Streaming Server
-      yantr.port.11470: HTTP
-      yantr.service.12470: Streaming Server (TLS)
-      yantr.port.12470: HTTPS
 x-yantr:
   name: Stremio
   tags:
@@ -47,3 +31,19 @@ x-yantr:
       browser certificate warning on first visit.
     - NO_CORS is enabled so web.stremio.com can reach your server across origins.
     - Use responsibly.
+services:
+  stremio:
+    image: stremio/server:latest
+    container_name: stremio
+    restart: unless-stopped
+    ports:
+      - "11470"
+      - "12470"
+    environment:
+      NO_CORS: "1"
+    labels:
+      yantr.app: stremio
+      yantr.service.11470: Streaming Server
+      yantr.port.11470: HTTP
+      yantr.service.12470: Streaming Server (TLS)
+      yantr.port.12470: HTTPS
