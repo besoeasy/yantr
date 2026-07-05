@@ -1,0 +1,43 @@
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    labels:
+      yantr.app: mariadb
+      yantr.service.3306: Database
+      yantr.port.3306: TCP
+    ports:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    restart: unless-stopped
+volumes:
+  mariadb_data: null
+x-yantr:
+  name: MariaDB
+  tags:
+    - database
+    - storage
+    - utility
+    - self-hosted
+    - homelab
+  short_description: Fast, open-source MySQL-compatible database with enhanced
+    features and better performance.
+  description: MariaDB is an open-source, MySQL-compatible relational database
+    server. It supports multiple storage engines, JSON and GIS features, and
+    offers improved performance and additional features used by apps like
+    WordPress and Nextcloud—serving as a drop-in MySQL replacement.
+  usecases:
+    - Run the database backend for Nextcloud, WordPress, or other PHP
+      applications.
+    - Store application data for your custom projects with full SQL capabilities.
+    - Use as a drop-in replacement for MySQL in existing applications.
+    - Build analytics databases with ColumnStore for real-time aggregations.
+  website: https://github.com/MariaDB/server
+  logo: Qmegk86ebzbktv7YWCMnVrueBpfpZHm9wktuUSdQBHvHQx
+  notes:
+    - MySQL-compatible - most MySQL clients and tools work directly
+    - Set MYSQL_ROOT_PASSWORD environment variable for root access
+    - Data persists in the mariadb_data volume
