@@ -1,0 +1,99 @@
+services:
+  owncloud:
+    image: owncloud/server:latest
+    container_name: owncloud
+    ports:
+      - "8080"
+    environment:
+      OWNCLOUD_DOMAIN: ${OWNCLOUD_DOMAIN:-localhost:8080}
+      OWNCLOUD_DB_TYPE: mysql
+      OWNCLOUD_DB_NAME: owncloud
+      OWNCLOUD_DB_USERNAME: owncloud
+      OWNCLOUD_DB_PASSWORD: ${DB_PASSWORD}
+      OWNCLOUD_DB_HOST: owncloud-mariadb
+      OWNCLOUD_ADMIN_USERNAME: admin
+      OWNCLOUD_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      OWNCLOUD_MYSQL_UTF8MB4: "true"
+      OWNCLOUD_REDIS_ENABLED: "true"
+      OWNCLOUD_REDIS_HOST: owncloud-redis
+      OWNCLOUD_LOG_LEVEL: 2
+    volumes:
+      - owncloud_data:/mnt/data
+      - owncloud_config:/var/www/html/config
+    depends_on:
+      - owncloud-mariadb
+      - owncloud-redis
+    restart: unless-stopped
+    labels:
+      yantr.app: owncloud
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  owncloud-mariadb:
+    image: mariadb:10.11
+    container_name: owncloud-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: owncloud
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: owncloud
+      MARIADB_AUTO_UPGRADE: 1
+    command:
+      - --max-allowed-packet=128M
+      - --innodb-log-file-size=64M
+    volumes:
+      - owncloud_db:/var/lib/mysql
+    restart: unless-stopped
+    labels:
+      yantr.app: owncloud
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+  owncloud-redis:
+    image: redis:6-alpine
+    container_name: owncloud-redis
+    command:
+      - --databases
+      - "1"
+    volumes:
+      - owncloud_redis:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: owncloud
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+volumes:
+  owncloud_data: null
+  owncloud_config: null
+  owncloud_db: null
+  owncloud_redis: null
+x-yantr:
+  name: ownCloud
+  tags:
+    - files
+    - cloud
+    - storage
+    - sync
+    - collaboration
+  short_description: Self-hosted cloud storage to sync files and collaborate securely.
+  description: ownCloud is a self-hosted, enterprise-ready file synchronization
+    and sharing platform. It provides a secure space to store, sync, and share
+    your files across all your devices (desktop and mobile). As an alternative
+    to Google Drive or Dropbox, ownCloud gives you complete control over your
+    data. It...
+  usecases:
+    - Sync files seamlessly across Windows, macOS, Linux, iOS, and Android.
+    - Share files securely with external users via password-protected links.
+    - Host a private alternative to Google Drive or Dropbox.
+    - Back up your photos and documents automatically from your mobile device.
+  website: https://owncloud.com
+  notes:
+    - The default admin username is 'admin'. The password is generated at deploy
+      time.
+    - You can customize OWNCLOUD_DOMAIN in the deploy form if you plan to expose
+      it to the internet.
+  env_generators:
+    DB_PASSWORD:
+      length: 32
+      charset: alnum
+    ADMIN_PASSWORD:
+      length: 24
+      charset: alnum
