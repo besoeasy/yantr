@@ -1,0 +1,38 @@
+services:
+  vert:
+    image: ghcr.io/vert-sh/vert:latest
+    container_name: vert
+    labels:
+      yantr.app: vert
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped
+x-yantr:
+  name: VERT
+  tags:
+    - converter
+    - files
+    - tools
+    - self-hosted
+    - docker
+  short_description: Next-generation open-source file converter powered by WebAssembly.
+  description: VERT is a privacy-first file conversion tool that converts images,
+    audio, documents, and video directly in your browser using WebAssembly. It
+    supports over 250 file formats with no file size limits, no cloud uploads,
+    and no tracking — everything stays local on your device.
+  usecases:
+    - Convert images between formats such as PNG, JPEG, WebP, AVIF, and more
+      without uploading them to any third-party service.
+    - Convert audio and document files locally in the browser using
+      WebAssembly-powered FFmpeg, ImageMagick, and Pandoc.
+    - Self-host your own instance for your team or homelab to ensure all file
+      conversions remain private and on your own infrastructure.
+  website: https://github.com/VERT-sh/VERT
+  logo: QmNN7eRPuJSg4Jw7BEhvhFQEyAyNcLnvMnsqHA2XBYy2dM
+  notes:
+    - Video conversion requires the optional vertd daemon for local processing;
+      otherwise it uses the official vert.sh instance
+    - All other conversions (images, audio, documents) run fully in-browser via
+      WebAssembly
