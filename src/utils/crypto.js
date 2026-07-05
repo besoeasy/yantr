@@ -91,7 +91,7 @@ export async function createToken(privateKeyHex) {
 
   const msgHash = nobleSha256(new TextEncoder().encode(message))
   const sig = secp256k1.sign(msgHash, hexToBytes(privateKeyHex))
-  const signature = bytesToHex(sig.toCompactRawBytes())
+  const signature = bytesToHex(sig)
 
   return base64Encode({ publickey: publicKeyHex, signature, message, timestamp, nonce })
 }
