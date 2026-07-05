@@ -1,0 +1,41 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    labels:
+      yantr.app: navidrome
+      yantr.service.4533: Web UI
+      yantr.port.4533: HTTP
+    environment:
+      ND_SCANSCHEDULE: 1h
+      ND_LOGLEVEL: info
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ""
+    ports:
+      - "4533"
+    volumes:
+      - navidrome_data:/data
+      - navidrome_music:/music
+    restart: unless-stopped
+volumes:
+  navidrome_data: null
+  navidrome_music: null
+x-yantr:
+  name: Navidrome
+  tags:
+    - music
+    - audio
+    - streaming
+    - self-hosted
+    - media
+  short_description: Modern Music Server and Streamer compatible with Subsonic/Airsonic.
+  description: Navidrome is a fast, lightweight, and modern open-source music
+    server and streamer. It allows you to listen to your own digital music
+    collection from anywhere, sharing it with your friends and family. It
+    implements the Subsonic API, meaning it's compatible with many mobile and
+    desktop clients.
+  usecases:
+    - Stream your personal music library.
+    - Share music collections with friends and family.
+  website: https://www.navidrome.org/
+  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
