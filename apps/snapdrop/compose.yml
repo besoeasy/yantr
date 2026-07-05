@@ -1,0 +1,34 @@
+services:
+  server:
+    image: linuxserver/snapdrop:latest
+    container_name: snapdrop
+    labels:
+      yantr.app: snapdrop
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    restart: unless-stopped
+    ports:
+      - "80"
+    volumes:
+      - snapdrop_config:/config
+volumes:
+  snapdrop_config: null
+x-yantr:
+  name: Snapdrop
+  tags:
+    - sharing
+    - local-network
+    - files
+    - transfer
+    - self-hosted
+  short_description: Local network file sharing inspired by Apple AirDrop.
+  description: Snapdrop is a self-hosted local network file sharing tool. Transfer
+    files between devices on the same network with no accounts, no plugins, and
+    no configuration. Works in any modern browser. Inspired by Apple AirDrop for
+    cross-platform use.
+  usecases:
+    - Transfer files between your phone and computer instantly on the same
+      network.
+    - Share documents between devices without cloud services or USB cables.
+    - Send files to guests on your local network without any apps or accounts.
+  website: https://github.com/RobinLinus/snapdrop
