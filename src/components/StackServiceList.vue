@@ -2,7 +2,7 @@
 import { ref, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Server, ChevronRight, ChevronDown, Network, ExternalLink, Activity, Terminal } from 'lucide-vue-next'
+import { Server, ChevronRight, ChevronDown, Network, ExternalLink, Activity, Terminal } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { useApiUrl } from '../composables/useApiUrl'

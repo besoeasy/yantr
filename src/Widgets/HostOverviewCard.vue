@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { Cpu, Server, Activity } from "lucide-vue-next";
+import { Cpu, Server, Activity } from "@lucide/vue";
 import { formatBytes } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";

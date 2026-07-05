@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ArrowRight, Box } from "lucide-vue-next";
+import { ArrowRight, Box } from "@lucide/vue";
 
 const { t } = useI18n();
 

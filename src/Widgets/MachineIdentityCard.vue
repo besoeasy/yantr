@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from 'vue-i18n'
-import { Globe, MapPin, Network, RefreshCw, Server, ShieldCheck, AlertCircle } from "lucide-vue-next";
+import { Globe, MapPin, Network, RefreshCw, Server, ShieldCheck, AlertCircle } from "@lucide/vue";
 
 const { t } = useI18n()
 const props = defineProps({

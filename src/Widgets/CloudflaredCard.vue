@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Cloud, CloudOff, Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe, Wifi } from 'lucide-vue-next'
+import { Cloud, CloudOff, Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe, Wifi } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'

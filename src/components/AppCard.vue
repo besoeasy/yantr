@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import AppLogo from "./AppLogo.vue";
 import { 
   Layers
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 const { t } = useI18n()
 const props = defineProps({

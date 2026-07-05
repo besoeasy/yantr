@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Timer, Hourglass, Zap } from 'lucide-vue-next'
+import { Timer, Hourglass, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics.js'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'

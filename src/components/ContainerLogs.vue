@@ -1,5 +1,5 @@
 <script setup>
-import { Terminal, Pause, Play, RefreshCw } from 'lucide-vue-next'
+import { Terminal, Pause, Play, RefreshCw } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check } from 'lucide-vue-next'
+import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check } from '@lucide/vue'
 import StatCard from '../components/StatCard.vue'
 import SizeDistributionChart from '../components/SizeDistributionChart.vue'
 import SearchInput from '../components/SearchInput.vue'

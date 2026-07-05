@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
-import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "lucide-vue-next";
+import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "@lucide/vue";
 
 // Auto-load all widget .vue files from src/Widgets/, shuffle once per day
 const widgetModules = import.meta.glob("../Widgets/*.vue", { eager: true });

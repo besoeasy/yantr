@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { Layers, ArrowRight } from "lucide-vue-next";
+import { Layers, ArrowRight } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
 
 const { t } = useI18n();

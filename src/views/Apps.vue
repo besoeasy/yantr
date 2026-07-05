@@ -6,7 +6,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
 import AppCard from "../components/AppCard.vue";
-import { Tag, Search, LayoutGrid, X, Command } from "lucide-vue-next";
+import { Tag, Search, LayoutGrid, X, Command } from "@lucide/vue";
 
 const { t } = useI18n();
 const toast = useNotification();

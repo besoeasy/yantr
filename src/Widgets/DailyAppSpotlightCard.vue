@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { AlertCircle, ArrowRight, CalendarDays, Layers, Sparkles } from "lucide-vue-next";
+import { AlertCircle, ArrowRight, CalendarDays, Layers, Sparkles } from "@lucide/vue";
 import AppLogo from "../components/AppLogo.vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";

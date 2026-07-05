@@ -6,7 +6,7 @@ import { useNotification } from "../composables/useNotification";
 import { useApiUrl } from "../composables/useApiUrl";
 import { getApiErrorMessage, readJsonResponse } from "../composables/useApiResponse";
 import { usePortConflict } from "../composables/usePortConflict";
-import { AlertTriangle, Check, Play, Plus, X } from "lucide-vue-next";
+import { AlertTriangle, Check, Play, Plus, X } from "@lucide/vue";
 
 const props = defineProps({
   app: {

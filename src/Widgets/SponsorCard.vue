@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ArrowUpRight, Github, GitBranch, ExternalLink } from "lucide-vue-next";
+import { ArrowUpRight, Github, GitBranch, ExternalLink } from "@lucide/vue";
 
 const { t } = useI18n();
 

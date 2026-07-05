@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowRight, ClipboardList, HardDrive, Layers } from "lucide-vue-next";
+import { ArrowRight, ClipboardList, HardDrive, Layers } from "@lucide/vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref, watch } from "vue";
-import { Bot, Box, Database, Globe, Package, Server } from "lucide-vue-next";
+import { Bot, Box, Database, Globe, Package, Server } from "@lucide/vue";
 
 const props = defineProps({
   logo: {

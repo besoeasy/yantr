@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted} from 'vue'
-import { ShieldCheck, Trash2, Loader, Globe, User, RefreshCw } from 'lucide-vue-next'
+import { ShieldCheck, Trash2, Loader, Globe, User, RefreshCw } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 

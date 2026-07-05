@@ -2,7 +2,7 @@
 import { useI18n } from "vue-i18n";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useYantrAuth } from "../composables/useYantrAuth";
-import { FolderOpen, ExternalLink, EyeOff } from "lucide-vue-next";
+import { FolderOpen, ExternalLink, EyeOff } from "@lucide/vue";
 
 const { t } = useI18n();
 const { openVolumeBrowser } = useYantrAuth();

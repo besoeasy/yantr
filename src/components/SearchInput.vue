@@ -1,5 +1,5 @@
 <script setup>
-import { Search } from 'lucide-vue-next'
+import { Search } from '@lucide/vue'
 
 defineProps({
   modelValue: { type: String, default: '' },

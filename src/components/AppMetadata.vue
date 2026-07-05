@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Globe, FileCode, Tag, Info } from "lucide-vue-next";
+import { Globe, FileCode, Tag, Info } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 

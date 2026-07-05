@@ -1,5 +1,5 @@
 <script setup>
-import { Cpu, Activity } from 'lucide-vue-next'
+import { Cpu, Activity } from '@lucide/vue'
 import { useI18n } from 'vue-i18n'
 import { formatBytes } from '../utils/metrics'
 

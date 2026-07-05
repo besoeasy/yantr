@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LoaderCircle, LockKeyhole, UserRound } from 'lucide-vue-next'
+import { LoaderCircle, LockKeyhole, UserRound } from '@lucide/vue'
 import { useNotification } from '../composables/useNotification'
 import { useYantrAuth } from '../composables/useYantrAuth'
 

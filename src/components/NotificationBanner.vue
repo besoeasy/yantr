@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
-import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from 'lucide-vue-next'
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from '@lucide/vue'
 import { notificationState, useNotification } from '../composables/useNotification'
 
 const { t } = useI18n()
