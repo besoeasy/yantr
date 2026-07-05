@@ -1,0 +1,45 @@
+services:
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    restart: unless-stopped
+    labels:
+      yantr.app: synapse
+      yantr.service.8008: Client API
+      yantr.port.8008: HTTP
+      yantr.service.8448: Federation
+      yantr.port.8448: HTTPS
+    environment:
+      TZ: ${TZ:-UTC}
+      SYNAPSE_SERVER_NAME: ${SYNAPSE_SERVER_NAME:-matrix.local}
+      SYNAPSE_REPORT_STATS: no
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+    ports:
+      - "8008"
+      - "8448"
+    volumes:
+      - synapse_data:/data
+      - synapse_media:/data/media
+volumes:
+  synapse_data: null
+  synapse_media: null
+x-yantr:
+  name: Matrix Synapse
+  tags:
+    - chat
+    - messaging
+    - matrix
+    - social
+    - privacy
+  short_description: Open-source Matrix homeserver for chat and real-time communication.
+  description: Matrix Synapse is the reference Matrix homeserver implementation
+    for secure, decentralized chat and federated real-time communication. It
+    supports end-to-end encryption, room history, and federation with other
+    Matrix servers while giving complete control over messaging data.
+  usecases:
+    - Host your own chat and rooms.
+    - Federate with other Matrix servers.
+  website: https://matrix.org/docs/projects/server/synapse
+  logo: QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111AA
+  notes:
+    - Set SYNAPSE_SERVER_NAME and TLS correctly before production use.
