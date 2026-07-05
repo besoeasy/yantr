@@ -1,0 +1,55 @@
+services:
+  wireguard:
+    image: ghcr.io/wg-easy/wg-easy:15
+    container_name: wireguard
+    hostname: wireguard
+    volumes:
+      - wireguard_data:/etc/wireguard
+    ports:
+      - 51820/udp
+      - "51821"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    labels:
+      yantr.app: wireguard
+      yantr.service.51821: Admin Panel
+      yantr.port.51821: HTTP
+      yantr.service.51820: VPN Tunnel
+      yantr.port.51820: UDP
+volumes:
+  wireguard_data: null
+x-yantr:
+  name: WireGuard
+  tags:
+    - network
+    - security
+    - vpn
+    - privacy
+    - self-hosted
+  short_description: Fast, modern VPN with state-of-the-art cryptography for
+    secure remote network access.
+  description: WireGuard is a fast, modern, and secure VPN protocol that uses
+    state-of-the-art cryptography. It provides a lightweight and efficient way
+    to create secure point-to-point connections. This deployment includes the
+    wg-easy web UI for easy management. WireGuard is significantly faster than
+    Ope...
+  usecases:
+    - Access your home network remotely by connecting to your WireGuard VPN from
+      anywhere in the world.
+    - Securely access self-hosted services (like Home Assistant, Jellyfin,
+      Nextcloud) while traveling without exposing them to the public internet.
+    - Protect your browsing on public WiFi by routing all traffic through your
+      encrypted home connection.
+    - Create site-to-site VPNs to connect multiple locations (home office,
+      parent's house) into one network.
+  website: https://www.wireguard.com
+  logo: QmYvWBezgveN9KZARJeAczC6p8mUMsYAwLyV8NKRNHKNCi
+  notes:
+    - Requires UDP port 51820 open in your firewall for VPN connections
+    - Admin panel runs on port 51821 (HTTPS recommended in production)
+    - Each client needs a QR code or config file to connect
