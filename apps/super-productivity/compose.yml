@@ -1,0 +1,32 @@
+services:
+  web:
+    image: johannesjo/super-productivity:latest
+    container_name: super-productivity-web
+    restart: unless-stopped
+    labels:
+      yantr.app: super-productivity
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "80"
+    environment:
+      TZ: ${TZ:-UTC}
+volumes: {}
+x-yantr:
+  name: Super Productivity
+  tags:
+    - tasks
+    - productivity
+    - time-tracking
+    - todo
+    - self-hosted
+  short_description: Advanced task manager with time tracking and Pomodoro timer.
+  description: Super Productivity is an advanced to-do list and time tracker with
+    integrations for Jira, GitHub, GitLab, and Gitea. It features a built-in
+    Pomodoro timer, time boxing, idle detection, worklog export, and beautiful
+    distraction-free UI.
+  usecases:
+    - Manage tasks with integrated Pomodoro time-boxing sessions.
+    - Track time spent per task and export detailed work logs.
+    - Sync tasks from Jira, GitHub, and GitLab issue trackers.
+  website: https://super-productivity.com
