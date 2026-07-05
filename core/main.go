@@ -846,6 +846,33 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": fmt.Sprintf("Container '%s' removed successfully", name)})
 }
 
+func handleContainerStart(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if err := docker.Client.ContainerStart(context.Background(), id, dockerctr.StartOptions{}); err != nil {
+		jsonErr(w, 500, "CONTAINER_START_FAILED", err.Error())
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container started successfully"})
+}
+
+func handleContainerStop(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if err := docker.Client.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+		jsonErr(w, 500, "CONTAINER_STOP_FAILED", err.Error())
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container stopped successfully"})
+}
+
+func handleContainerRestart(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if err := docker.Client.ContainerRestart(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+		jsonErr(w, 500, "CONTAINER_RESTART_FAILED", err.Error())
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container restarted successfully"})
+}
+
 // ─── Handlers: stacks ─────────────────────────────────────────────────────────
 
 func handleStackDelete(w http.ResponseWriter, r *http.Request) {
@@ -923,6 +950,59 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
 	})
+}
+
+func handleStackRestart(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+
+	baseID := getBaseAppID(projectID)
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	ref := compose.GetProjectComposeRef(appPath, projectID)
+
+	if _, statErr := os.Stat(ref.ComposePath); statErr != nil {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack compose file not found")
+		return
+	}
+
+	cmdName, cmdArgs, err := getComposeCommand()
+	if err != nil {
+		jsonErr(w, 500, "COMPOSE_NOT_FOUND", "docker compose command not found")
+		return
+	}
+
+	env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "restart")
+	shared.Log("info", fmt.Sprintf("[stack] restarting: project=%s", projectID))
+	restartCtx, restartCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+	out, errStr, exitCode, err := spawnExec(restartCtx, cmdName, args, env, appPath)
+	restartCancel()
+
+	if out != "" {
+		for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+			if line != "" {
+				shared.Log("info", "[stack] "+line)
+			}
+		}
+	}
+	if errStr != "" {
+		for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
+			if line != "" {
+				shared.Log("info", "[stack] "+line)
+			}
+		}
+	}
+
+	if exitCode == 0 {
+		shared.Log("info", fmt.Sprintf("[stack] restarted: project=%s", projectID))
+		jsonResp(w, 200, map[string]interface{}{
+			"success": true,
+			"message": fmt.Sprintf("Stack '%s' restarted successfully", projectID),
+		})
+		return
+	}
+
+	shared.Log("error", fmt.Sprintf("[stack] compose restart failed: project=%s exit=%d err=%v", projectID, exitCode, err))
+	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("docker compose restart failed (exit %d)", exitCode))
 }
 
 func handleStackDetail(w http.ResponseWriter, r *http.Request) {
@@ -1670,8 +1750,12 @@ func main() {
 	r.Get("/api/containers/{id}/stats", handleContainerStats)
 	r.Get("/api/containers/{id}/logs", handleContainerLogs)
 	r.Delete("/api/containers/{id}", handleContainerDelete)
+	r.Post("/api/containers/{id}/start", handleContainerStart)
+	r.Post("/api/containers/{id}/stop", handleContainerStop)
+	r.Post("/api/containers/{id}/restart", handleContainerRestart)
 	r.Get("/api/stacks/{projectId}", handleStackDetail)
 	r.Delete("/api/stacks/{projectId}", handleStackDelete)
+	r.Post("/api/stacks/{projectId}/restart", handleStackRestart)
 	r.Get("/api/images", handleImages)
 	r.Delete("/api/images/{id}", handleImageDelete)
 	r.Get("/api/volumes", handleVolumes)

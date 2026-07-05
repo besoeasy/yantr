@@ -1,12 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
-import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package } from 'lucide-vue-next'
+import { ExternalLink, RefreshCw, Trash2, Network, FolderOpen, Terminal, Activity, Cpu, HardDrive, ShieldCheck, Share2, Globe, Database, Lock, Folder, Pause, Play, Download, Clock, Package, Copy, Check } from 'lucide-vue-next'
 import AppLogo from '../components/AppLogo.vue'
 import { formatBytes } from '../utils/metrics'
 
@@ -32,6 +31,18 @@ const showOnlyDescribedPorts = ref(true)
 const loadErrorState = {
   stats: false,
   logs: false,
+}
+
+const copiedCommand = ref(false)
+const copyExecCommand = async () => {
+  try {
+    await navigator.clipboard.writeText(`docker exec -it ${selectedContainer.value.name} /bin/sh`)
+    copiedCommand.value = true
+    setTimeout(() => copiedCommand.value = false, 2000)
+    toast.success('Command copied to clipboard')
+  } catch (err) {
+    toast.error('Failed to copy command')
+  }
 }
 
 function notifyLoadErrorOnce(key, message) {
@@ -507,6 +518,13 @@ onUnmounted(() => {
                 {{ t('containerDetail.output') }}
               </button>
               <button
+                @click="activeTab = 'terminal'"
+                :class="activeTab === 'terminal' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
+                class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
+              >
+                Terminal
+              </button>
+              <button
                 @click="activeTab = 'env'"
                 :class="activeTab === 'env' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
@@ -583,6 +601,32 @@ onUnmounted(() => {
                   <div v-for="(log, i) in containerLogs" :key="i" class="break-all whitespace-pre-wrap hover:bg-gray-100 dark:hover:bg-zinc-900 px-1 -mx-1 rounded-sm">
                     <span class="text-gray-400 dark:text-zinc-600 select-none mr-3 w-6 inline-block text-right">{{ i + 1 }}</span>{{ log }}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-else-if="activeTab === 'terminal'" class="space-y-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
+                  <Terminal :size="12" /> Container Shell Access
+                </div>
+              </div>
+              <div class="bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
+                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mb-4 font-medium leading-relaxed">
+                  To access the interactive shell for this container, open your host terminal and run the following command:
+                </p>
+                <div class="flex items-center gap-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
+                  <div class="flex-1 font-mono text-[11px] text-gray-900 dark:text-zinc-300 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
+                    docker exec -it {{ selectedContainer.name }} /bin/sh
+                  </div>
+                  <button
+                    @click="copyExecCommand"
+                    class="p-2 rounded-md transition-colors shrink-0"
+                    :class="copiedCommand ? 'text-green-600 bg-green-50 dark:bg-green-500/10' : 'text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800'"
+                    :title="copiedCommand ? 'Copied!' : 'Copy command'"
+                  >
+                    <component :is="copiedCommand ? Check : Copy" :size="14" />
+                  </button>
                 </div>
               </div>
             </div>
