@@ -198,88 +198,89 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="group relative flex h-full flex-col overflow-hidden rounded-[1.4rem] bg-white dark:bg-[#0A0A0A] smooth-shadow transition-all duration-300 hover:-translate-y-0.5 hover:smooth-shadow-lg">
-    <div class="absolute right-5 top-5 h-16 w-16 rounded-full bg-blue-500/6 blur-2xl transition-all duration-500 group-hover:scale-125 group-hover:bg-blue-500/10"></div>
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full min-h-72">
+    <!-- top accent line -->
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-    <div v-if="loading" class="relative z-10 flex min-h-56 flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-50 dark:bg-zinc-900 text-blue-500 transition-transform duration-500 group-hover:scale-105 group-hover:-rotate-6">
-        <Server class="h-5 w-5 animate-pulse" />
+    <div v-if="loading" class="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 p-5 h-full text-center">
+      <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center shrink-0">
+        <Server class="w-4.5 h-4.5 text-blue-600 dark:text-blue-400 animate-pulse" />
       </div>
-      <span class="text-[10px] font-semibold uppercase tracking-[0.18em] text-(--text-secondary)">{{ t("quickMetrics.hostMetrics.scanningHost") }}</span>
+      <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-zinc-500">{{ t("quickMetrics.hostMetrics.scanningHost") }}</span>
     </div>
 
-    <div v-else-if="error" class="relative z-10 flex min-h-56 flex-1 flex-col justify-center p-6">
-      <div class="rounded-[1.25rem] bg-red-500/10 p-5 text-red-600 dark:text-red-300">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-500/12">
-            <Activity class="h-4.5 w-4.5" />
+    <div v-else-if="error" class="relative z-10 flex flex-1 flex-col gap-4 p-5 h-full">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 flex items-center justify-center shrink-0">
+          <Activity class="w-4.5 h-4.5 text-red-600 dark:text-red-400" />
+        </div>
+        <div class="min-w-0">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mt-1.5 block">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</span>
+        </div>
+      </div>
+      <div class="mt-auto pt-6 pb-2">
+        <div class="text-3xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+          {{ t("common.error") }}
+        </div>
+        <div class="text-sm font-medium text-gray-500 dark:text-zinc-400 mt-2 line-clamp-2">
+          {{ error }}
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="relative z-10 p-5 flex flex-col gap-4 h-full">
+      <!-- header -->
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+            <Server class="w-4.5 h-4.5 text-blue-600 dark:text-blue-400" />
           </div>
           <div class="min-w-0">
-            <p class="text-[10px] font-bold uppercase tracking-[0.18em]">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</p>
-            <p class="mt-1 line-clamp-2 text-sm opacity-85 wrap-break-word">{{ error }}</p>
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
+            <div class="flex items-center gap-1.5 mt-1.5 text-emerald-600 dark:text-emerald-400">
+              <div class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
+              <span class="text-[10px] font-bold uppercase tracking-wider">{{ t("quickMetrics.hostMetrics.online") }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div v-else class="relative z-10 flex h-full flex-col p-5">
-      <!-- Compact header -->
-      <div class="flex items-center justify-between gap-3">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
-            <span>{{ t("quickMetrics.hostMetrics.hostSystem") }}</span>
-            <span class="opacity-35">/</span>
-            <span class="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-              <span class="status-dot h-1.5 w-1.5 rounded-full bg-current"></span>
-              {{ t("quickMetrics.hostMetrics.online") }}
-            </span>
-          </div>
-          <h3 class="mt-1.5 truncate text-base font-semibold tracking-tight text-(--text-primary)">{{ osInfo.name }}</h3>
+      <div class="mt-auto pt-6 pb-2 flex flex-col relative z-10 pr-4">
+        <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-[1.1] mb-2">
+          {{ osInfo.name }}
         </div>
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gray-50 dark:bg-zinc-900 text-blue-500 transition-all duration-500 group-hover:scale-105 group-hover:-rotate-6">
-          <Server class="h-4 w-4" />
+        
+        <div class="text-xs text-gray-500 dark:text-zinc-400 line-clamp-1 truncate font-medium">
+          {{ osInfo.type }} • {{ osInfo.arch }} • {{ osInfo.kernel }}
         </div>
-      </div>
 
-      <!-- OS tags - tighter -->
-      <div class="mt-3 flex flex-wrap gap-1.5">
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 dark:bg-zinc-900/70 px-2.5 py-1 text-[10px] font-medium text-(--text-secondary)">
-          <Server class="h-3 w-3 text-blue-500 shrink-0" />{{ osInfo.type }}
-        </span>
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 dark:bg-zinc-900/70 px-2.5 py-1 text-[10px] font-medium text-(--text-secondary)">
-          <Cpu class="h-3 w-3 text-violet-500 shrink-0" />{{ osInfo.arch }}
-        </span>
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-50 dark:bg-zinc-900/70 px-2.5 py-1 text-[10px] font-mono text-(--text-secondary)">
-          <Activity class="h-3 w-3 text-emerald-500 shrink-0" />{{ osInfo.kernel }}
-        </span>
-      </div>
+        <div class="flex flex-wrap items-center gap-3 mt-3">
+           <template v-for="stat in workloadStats" :key="stat.key">
+              <div class="flex items-center gap-1.5 text-[11px] font-medium">
+                 <span class="text-gray-400 dark:text-zinc-500 uppercase tracking-widest">{{ stat.label }}</span>
+                 <span :class="['font-bold', stat.tone]">{{ stat.value }}</span>
+              </div>
+           </template>
+        </div>
 
-      <div class="mt-4 space-y-2.5 rounded-[1.1rem] bg-gray-50 px-3.5 py-3.5 dark:bg-zinc-900/70 sm:px-4">
-        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-(--text-secondary)">
-          {{ greeting }}
-        </p>
-
-        <p class="text-sm leading-6 text-(--text-secondary)">
-          <template v-for="(stat, index) in workloadStats" :key="stat.key">
-            <span v-if="index > 0" class="mx-1.5 opacity-40">•</span>
-            <span>
-              {{ stat.label }}
-              <span :class="['font-semibold text-(--text-primary)', stat.tone]">{{ stat.value }}</span>
-            </span>
-          </template>
-        </p>
-
-        <p class="text-sm leading-6 text-(--text-secondary)">
-          <template v-for="(stat, index) in hostSummaryStats" :key="stat.key">
-            <span v-if="index > 0" class="mx-1.5 opacity-40">•</span>
-            <span>
-              {{ stat.label }}
-              <span :class="['font-semibold text-(--text-primary)', stat.tone]">
-                {{ stat.value }}<span v-if="stat.suffix" class="ml-1 text-(--text-secondary)">{{ stat.suffix }}</span>
+        <div class="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-100 dark:border-zinc-800">
+           <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.processors") }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ displayCores }} <span class="text-gray-400 dark:text-zinc-500 font-medium text-xs">{{ t("quickMetrics.hostMetrics.cores") }}</span></span>
+           </div>
+           <div class="flex flex-col">
+              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.memory") }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ displayMemParts.value }} <span class="text-gray-400 dark:text-zinc-500 font-medium text-xs">{{ displayMemParts.unit }}</span></span>
+           </div>
+           <div class="flex flex-col min-w-0">
+              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.dockerVol") }}</span>
+              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight truncate">
+                {{ storageInfo.usedFormatted }}
+                <span v-if="storageInfo.total > 0" class="text-gray-400 dark:text-zinc-500 font-medium text-xs">/ {{ displayStoragePercent }}%</span>
               </span>
-            </span>
-          </template>
-        </p>
+           </div>
+        </div>
       </div>
     </div>
   </div>
