@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ArrowRight, ClipboardList, HardDrive, Layers } from "@lucide/vue";
+import { ClipboardList, HardDrive, Layers, Wrench } from "@lucide/vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 
@@ -42,88 +42,54 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col rounded-2xl p-5 smooth-shadow bg-white dark:bg-[#0A0A0A] text-(--text-primary)">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full min-h-72">
+    <!-- top accent line -->
+    <div class="absolute top-0 left-0 w-full h-0.5 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-    <!-- Header -->
-    <div class="mb-5">
-      <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-(--text-secondary)">{{ t("home.toolsNavCard.systemTools") }}</p>
-      <h3 class="mt-1 text-base font-semibold tracking-tight">{{ t("home.toolsNavCard.images") }}, {{ t("home.toolsNavCard.volumes") }} & {{ t("home.toolsNavCard.logs") }}</h3>
+    <div class="relative z-10 p-5 flex flex-col h-full">
+      <!-- header -->
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+            <Wrench class="w-4.5 h-4.5 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("home.toolsNavCard.systemTools") }}</h3>
+            <div class="flex items-center gap-1.5 mt-1.5 text-indigo-600 dark:text-indigo-400">
+              <span class="text-[10px] font-bold uppercase tracking-wider">Management</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content (Removed large text) -->
+      <div class="mt-auto pt-6 pb-2 flex flex-col relative z-10 pr-[120px]">
+      </div>
+
+      <!-- Tool Cluster in Right Corner -->
+      <div class="absolute bottom-5 right-5 flex flex-col items-end gap-3 z-50 pointer-events-auto">
+         <!-- Top row: 1 item -->
+         <div class="flex gap-3">
+            <!-- Logs -->
+            <button type="button" @click.prevent.stop="router.push('/logs')" :title="t('home.toolsNavCard.logs')" class="group/btn relative w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-500/10 border border-violet-100 dark:border-violet-500/20 flex items-center justify-center transition-all duration-300 hover:bg-violet-500 hover:border-violet-500 hover:scale-105 hover:shadow-xl hover:shadow-violet-500/30 text-violet-600 dark:text-violet-400 overflow-hidden cursor-pointer">
+               <ClipboardList class="w-8 h-8 transition-all duration-300 group-hover/btn:-translate-y-16 group-hover/btn:opacity-0 pointer-events-none" />
+               <span class="absolute inset-0 flex items-center justify-center font-black text-xs translate-y-16 group-hover/btn:translate-y-0 transition-all duration-300 uppercase tracking-widest text-white opacity-0 group-hover/btn:opacity-100 pointer-events-none">Live</span>
+            </button>
+         </div>
+         <!-- Bottom row: 2 items -->
+         <div class="flex gap-3">
+            <!-- Images -->
+            <button type="button" @click.prevent.stop="router.push('/images')" :title="t('home.toolsNavCard.images')" class="group/btn relative w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center transition-all duration-300 hover:bg-blue-500 hover:border-blue-500 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 text-blue-600 dark:text-blue-400 overflow-hidden cursor-pointer">
+               <Layers class="w-8 h-8 transition-all duration-300 group-hover/btn:-translate-y-16 group-hover/btn:opacity-0 pointer-events-none" />
+               <span class="absolute inset-0 flex items-center justify-center font-black text-2xl translate-y-16 group-hover/btn:translate-y-0 transition-all duration-300 text-white opacity-0 group-hover/btn:opacity-100 pointer-events-none">{{ imageCount !== null ? imageCount : '-' }}</span>
+            </button>
+            <!-- Volumes -->
+            <button type="button" @click.prevent.stop="router.push('/volumes')" :title="t('home.toolsNavCard.volumes')" class="group/btn relative w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center transition-all duration-300 hover:bg-emerald-500 hover:border-emerald-500 hover:scale-105 hover:shadow-xl hover:shadow-emerald-500/30 text-emerald-600 dark:text-emerald-400 overflow-hidden cursor-pointer">
+               <HardDrive class="w-8 h-8 transition-all duration-300 group-hover/btn:-translate-y-16 group-hover/btn:opacity-0 pointer-events-none" />
+               <span class="absolute inset-0 flex items-center justify-center font-black text-2xl translate-y-16 group-hover/btn:translate-y-0 transition-all duration-300 text-white opacity-0 group-hover/btn:opacity-100 pointer-events-none">{{ volumeCount !== null ? volumeCount : '-' }}</span>
+            </button>
+         </div>
+      </div>
     </div>
-
-    <!-- Tool rows -->
-    <div class="flex flex-col gap-2">
-
-      <!-- Images -->
-      <button
-        type="button"
-        @click="router.push('/images')"
-        class="group flex items-center justify-between rounded-xl px-3.5 py-3 bg-(--surface-muted) hover:bg-blue-500/8 transition-all duration-200 text-left"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-500/10">
-            <Layers class="h-4 w-4 text-blue-500" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs font-semibold">{{ t("home.toolsNavCard.images") }}</div>
-            <div class="mt-0.5 text-[11px] text-(--text-secondary) truncate">{{ t("home.toolsNavCard.imagesDesc") }}</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0 ml-3">
-          <span v-if="imageCount !== null" class="text-sm font-bold text-blue-500 tabular-nums">{{ imageCount }}</span>
-          <span v-else class="w-5 h-3 rounded bg-(--surface-muted) animate-pulse"></span>
-          <ArrowRight class="h-3.5 w-3.5 text-(--text-secondary) -translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-200" />
-        </div>
-      </button>
-
-      <!-- Volumes -->
-      <button
-        type="button"
-        @click="router.push('/volumes')"
-        class="group flex items-center justify-between rounded-xl px-3.5 py-3 bg-(--surface-muted) hover:bg-emerald-500/8 transition-all duration-200 text-left"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10">
-            <HardDrive class="h-4 w-4 text-emerald-500" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs font-semibold">{{ t("home.toolsNavCard.volumes") }}</div>
-            <div class="mt-0.5 text-[11px] text-(--text-secondary) truncate">{{ t("home.toolsNavCard.volumesDesc") }}</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0 ml-3">
-          <span v-if="volumeCount !== null" class="text-sm font-bold text-emerald-500 tabular-nums">{{ volumeCount }}</span>
-          <span v-else class="w-5 h-3 rounded bg-(--surface-muted) animate-pulse"></span>
-          <ArrowRight class="h-3.5 w-3.5 text-(--text-secondary) -translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-200" />
-        </div>
-      </button>
-
-      <!-- Logs -->
-      <button
-        type="button"
-        @click="router.push('/logs')"
-        class="group flex items-center justify-between rounded-xl px-3.5 py-3 bg-(--surface-muted) hover:bg-violet-500/8 transition-all duration-200 text-left"
-      >
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-500/10">
-            <ClipboardList class="h-4 w-4 text-violet-500" />
-          </div>
-          <div class="min-w-0">
-            <div class="text-xs font-semibold">{{ t("home.toolsNavCard.logs") }}</div>
-            <div class="mt-0.5 text-[11px] text-(--text-secondary) truncate">{{ t("home.toolsNavCard.logsDesc") }}</div>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0 ml-3">
-          <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-violet-500">
-            <span class="h-1.5 w-1.5 rounded-full bg-violet-500"></span>
-            Live
-          </span>
-          <ArrowRight class="h-3.5 w-3.5 text-(--text-secondary) -translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-200" />
-        </div>
-      </button>
-
-    </div>
-
-
-
   </div>
 </template>
