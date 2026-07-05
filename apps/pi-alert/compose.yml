@@ -1,0 +1,41 @@
+services:
+  pi-alert:
+    image: jokobsk/pi.alert:latest
+    container_name: pi-alert
+    labels:
+      yantr.app: pi-alert
+      yantr.service.20211: Monitoring
+      yantr.port.20211: UDP
+    ports:
+      - 20211/udp
+    volumes:
+      - pi_alert_config:/config
+    restart: unless-stopped
+volumes:
+  pi_alert_config: null
+x-yantr:
+  name: Pi.Alert
+  tags:
+    - network
+    - monitoring
+    - security
+    - dashboard
+    - utility
+  short_description: Network scanner that detects devices, alerts on new
+    connections, and tracks device history.
+  description: Pi.Alert is a powerful network monitoring tool that continuously
+    scans your network to detect all connected devices. It builds a database of
+    all devices by MAC address, hostname, and vendor, alerting you when new
+    devices appear or unknown devices connect. Features include automatic
+    device...
+  usecases:
+    - Monitor your home network for new device connections.
+    - Get alerts when unknown devices connect to your WiFi.
+    - Track device history - when devices joined and last seen.
+    - Identify all devices on your network with vendor recognition.
+  website: https://github.com/jokobsk/pi.alert
+  logo: QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3
+  notes:
+    - Scans via ARP to discover all devices on network
+    - Sends notifications via webhooks
+    - Database of device history over time
