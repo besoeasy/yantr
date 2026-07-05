@@ -1,0 +1,82 @@
+services:
+  twenty-server:
+    image: twentycrm/twenty:latest
+    container_name: twenty-server
+    ports:
+      - "3000"
+    environment:
+      NODE_PORT: 3000
+      PG_DATABASE_URL: postgres://twenty:${POSTGRES_PASSWORD}@twenty-db:5432/default
+      SERVER_URL: ${SERVER_URL:-http://localhost:3000}
+      REDIS_URL: redis://twenty-redis:6379
+      APP_SECRET: ${APP_SECRET}
+    volumes:
+      - twenty_server_data:/app/packages/twenty-server/.local-storage
+    depends_on:
+      - twenty-db
+      - twenty-redis
+    restart: unless-stopped
+    labels:
+      yantr.app: twenty
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+  twenty-db:
+    image: postgres:16-alpine
+    container_name: twenty-db
+    environment:
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: default
+    volumes:
+      - twenty_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    labels:
+      yantr.app: twenty
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+  twenty-redis:
+    image: redis:7-alpine
+    container_name: twenty-redis
+    volumes:
+      - twenty_redis_data:/data
+    restart: unless-stopped
+    labels:
+      yantr.app: twenty
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+volumes:
+  twenty_server_data: null
+  twenty_db_data: null
+  twenty_redis_data: null
+x-yantr:
+  name: Twenty
+  tags:
+    - crm
+    - productivity
+    - sales
+    - business
+    - contacts
+  short_description: Open-source CRM built for modern teams to manage contacts and pipelines.
+  description: Twenty is a leading open-source CRM built by a community of
+    hundreds of contributors. It offers contact management, custom objects and
+    fields, Kanban and table views, pipeline visualization, email integration,
+    notes, tasks, and full API and webhook support. Designed for flexibility, it
+    helps busi...
+  usecases:
+    - Manage customer contacts, companies, and deals in one place.
+    - Visualize your sales pipeline with Kanban and table views.
+    - Build custom CRM objects and fields tailored to your business.
+    - Automate workflows via the built-in API and webhook support.
+  website: https://twenty.com
+  notes:
+    - Requires at least 2 GB RAM for the full stack (app + Postgres + Redis).
+    - Set SERVER_URL to your public URL (e.g. http://your-server-ip:3000) in the
+      deploy form.
+    - First boot may take a minute while database migrations run.
+  env_generators:
+    POSTGRES_PASSWORD:
+      length: 32
+      charset: alnum
+    APP_SECRET:
+      length: 40
+      charset: alnum
