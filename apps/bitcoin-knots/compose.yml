@@ -1,0 +1,57 @@
+services:
+  bitcoin-knots:
+    image: bitcoinknots/bitcoin:latest
+    container_name: bitcoin-knots
+    environment:
+      BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
+      BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}
+    command: -printtoconsole -server=1 -rpcuser=${BITCOIN_RPC_USER}
+      -rpcpassword=${BITCOIN_RPC_PASSWORD} -rpcbind=0.0.0.0
+      -rpcallowip=0.0.0.0/0
+    volumes:
+      - bitcoin_knots_data:/bitcoin/.bitcoin
+    ports:
+      - "8332"
+      - "8333"
+    restart: unless-stopped
+    labels:
+      yantr.app: bitcoin-knots
+      yantr.service.8332: RPC
+      yantr.port.8332: HTTP
+      yantr.service.8333: P2P
+      yantr.port.8333: TCP
+volumes:
+  bitcoin_knots_data: null
+x-yantr:
+  name: Bitcoin Knots
+  tags:
+    - cryptocurrency
+    - bitcoin
+    - crypto
+    - blockchain
+    - self-hosted
+  short_description: Full Bitcoin node with enhanced features, mempool
+    visualization, and wallet support.
+  description: Bitcoin Knots is a full Bitcoin node implementation providing
+    complete blockchain verification. It includes wallet features, mempool
+    visualization, advanced fee estimation, Replace-By-Fee support, SPV filters,
+    and network statistics—enabling privacy-preserving, self-verified Bitcoin
+    usage.
+  usecases:
+    - Run a full Bitcoin node for maximum privacy and security.
+    - Verify transactions without trusting block explorers.
+    - Use as a backend for wallet applications.
+    - Support the Bitcoin network by relaying transactions.
+  website: https://bitcoinknots.org
+  logo: QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ
+  notes:
+    - Full sync requires ~600GB+ and growing
+    - Port 8332 for RPC, 8333 for P2P networking
+    - Set RPC credentials for wallet/API access
+  env_generators:
+    BITCOIN_RPC_USER:
+      length: 8
+      charset: alpha
+    BITCOIN_RPC_PASSWORD:
+      length: 32
+      charset: alnum_symbols
