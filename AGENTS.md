@@ -66,16 +66,20 @@ Use block sequences only when list items are objects with sub-fields (e.g. `env_
 Port metadata is declared directly on each service via labels — collocated with the `ports:` declaration it describes.
 
 **CRITICAL RULE:** `labels` MUST ALWAYS be defined as a map (key-value dictionary) and NEVER as a sequence/array (`- KEY=VALUE`). This is strictly enforced.
+Additionally, the `yantr.app: "app-name"` label is **strictly required** on all services because the backend uses it for identification.
 
 ```yaml
-# Pattern: yantr.port.{PORT_NUMBER}: "PROTOCOL"
+# Pattern: yantr.app: "app-name"                ← REQUIRED by backend
+#          yantr.port.{PORT_NUMBER}: "PROTOCOL"
 #          yantr.service.{PORT_NUMBER}: "Name"  ← per-port human-readable name
 labels:
+  yantr.app: "my-app"
   yantr.service.8080: "Web UI"   # name for port 8080
   yantr.port.8080: "HTTP"        # port 8080 speaks HTTP
 
 # Multi-port example — each port gets its own name
 labels:
+  yantr.app: "my-app"
   yantr.service.80: "Web UI"
   yantr.port.80: "HTTP"
   yantr.service.443: "Web UI (TLS)"
@@ -119,6 +123,7 @@ services:
     ports:
       - "3000"
     labels:
+      yantr.app: "my-app"
       yantr.service.3000: "Web UI"
       yantr.port.3000: "HTTP"
 ```
@@ -146,6 +151,7 @@ services:
     image: ghcr.io/example/my-app:latest
     container_name: my-app
     labels:
+      yantr.app: "my-app"
       yantr.service.8080: "Web UI"
       yantr.port.8080: "HTTP"
     environment:
