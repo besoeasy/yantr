@@ -1,0 +1,47 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    labels:
+      yantr.app: plex
+      yantr.service.32400: Web UI
+      yantr.port.32400: HTTP
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      VERSION: docker
+    ports:
+      - "32400"
+    volumes:
+      - plex_config:/config
+      - plex_tv:/tv
+      - plex_movies:/movies
+    restart: unless-stopped
+volumes:
+  plex_config: null
+  plex_movies: null
+  plex_tv: null
+x-yantr:
+  name: Plex
+  tags:
+    - media
+    - streaming
+    - movies
+    - tv
+    - entertainment
+  short_description: Organizes your video, music, and photo collections and
+    streams them to all of your screens.
+  description: Plex Media Server organizes your video, music, and photo
+    collections and streams them to all of your screens (mobile, TV, web). It
+    supports rich metadata, automatic fetching of posters, summaries, and
+    subtitles. A Plex account may be required for some premium features.
+  usecases:
+    - Stream your movie and TV show collection.
+    - Organize your home media with rich metadata.
+    - Watch media remotely on any device.
+  website: https://www.plex.tv/
+  logo: QmQ895arqXLgtBSGNRz6zzR88XtWH8uGbcKKcko84Ba2Wr
+  notes:
+    - To claim your server, you may need to use an SSH tunnel if you are
+      accessing it outside your local network, or use a Plex Claim token via
+      custom compose edit.
