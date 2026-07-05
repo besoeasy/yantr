@@ -17,3 +17,4 @@ website/catalog
 check_output*.txt
 *.txtn
 yantr-core
+.npm-cache
