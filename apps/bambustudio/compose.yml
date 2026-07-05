@@ -1,0 +1,45 @@
+services:
+  bambustudio:
+    image: lscr.io/linuxserver/bambustudio:latest
+    container_name: bambustudio
+    volumes:
+      - bambustudio-data:/config
+    ports:
+      - "3000"
+      - "3001"
+    shm_size: 1gb
+    restart: unless-stopped
+    labels:
+      yantr.app: bambustudio
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+      yantr.service.3001: API
+      yantr.port.3001: HTTP
+volumes:
+  bambustudio-data:
+    name: bambustudio-data
+x-yantr:
+  name: Bambu Studio
+  tags:
+    - 3d-printing
+    - slicer
+    - self-hosted
+    - webui
+    - docker
+  short_description: Self-hosted Bambu Studio 3D printing slicer and printer
+    management via browser.
+  description: Bambu Studio is a self-hosted 3D printing slicer and printer
+    management tool powered by LinuxServer.io, providing a full slicing workflow
+    in the browser. Manage print jobs, configure printer settings, and monitor
+    prints from any device.
+  usecases:
+    - Slice and prepare 3D models for printing directly from your browser.
+    - Manage multiple Bambu Lab printers and monitor print jobs remotely.
+    - Access your 3D printing workspace from any device without local software
+      installation.
+  website: https://github.com/linuxserver/docker-bambustudio
+  logo: Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA
+  notes:
+    - Shared memory size is set to 1GB which is required for the slicer engine.
+    - Data persistence is handled through a named Docker volume to preserve
+      settings and projects.
