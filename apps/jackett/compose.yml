@@ -1,0 +1,45 @@
+services:
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett
+    hostname: jackett
+    environment:
+      AUTO_UPDATE: "true"
+    volumes:
+      - jackett_config:/config
+      - jackett_downloads:/downloads
+    ports:
+      - "9117"
+    restart: unless-stopped
+    labels:
+      yantr.app: jackett
+      yantr.service.9117: Web UI
+      yantr.port.9117: HTTP
+volumes:
+  jackett_config: null
+  jackett_downloads: null
+x-yantr:
+  name: Jackett
+  tags:
+    - media
+    - tools
+    - utility
+    - torrent
+    - download
+  short_description: API bridge that provides torrent indexer functionality to PVR
+    apps like Sonarr and Radarr.
+  description: Jackett is an API bridge for PVR apps (Sonarr, Radarr) that queries
+    multiple torrent trackers and returns standardized results. It supports
+    hundreds of public and private trackers, handles authentication, and exposes
+    Torznab endpoints so your apps need only one integration.
+  usecases:
+    - Enable automated media downloading by connecting Jackett to Sonarr/Radarr.
+    - Search for torrents across multiple trackers from one interface.
+    - Get fresh releases automatically downloaded to your media library.
+    - Use with multiple PVR apps (TV, movies, music) through one integration.
+  website: https://github.com/Jackett/Jackett
+  logo: QmQs2oSE9ccQrueSFPw6ZPXCVHk2rFuT54HUyZAApSoqDJ
+  notes:
+    - API key required for connecting PVR apps
+    - Supports 500+ torrent trackers
+    - Update tracker definitions regularly for best results
