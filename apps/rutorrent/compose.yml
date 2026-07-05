@@ -1,0 +1,45 @@
+services:
+  rutorrent:
+    image: linuxserver/rutorrent:latest
+    container_name: rutorrent
+    labels:
+      yantr.app: rutorrent
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.51413: Torrent
+      yantr.port.51413: TCP
+    ports:
+      - "80"
+      - "51413"
+      - 6881/udp
+    volumes:
+      - rutorrent_config:/config
+      - rutorrent_downloads:/downloads
+    restart: unless-stopped
+volumes:
+  rutorrent_config: null
+  rutorrent_downloads: null
+x-yantr:
+  name: ruTorrent
+  tags:
+    - torrent
+    - download
+    - p2p
+    - self-hosted
+    - homelab
+  short_description: Feature-rich web frontend for rtorrent - powerful CLI-based torrent client.
+  description: ruTorrent is a feature-rich web frontend for rtorrent, the robust
+    command-line BitTorrent client. It provides a full-featured interface for
+    managing torrents including multiple files, RSS feeds, scheduling, plugins,
+    and detailed information. It's more powerful than many GUI clients while
+    b...
+  usecases:
+    - Manage torrents through powerful web UI.
+    - RSS feed automation for shows.
+    - Advanced torrent management.
+  website: https://github.com/linuxserver/docker-rutorrent
+  logo: QmPt2kfbSDSajzcshVCrR3ZYyNZTzWYqEg6cTiYQPYhmMr
+  notes:
+    - Frontend for rtorrent
+    - Many plugins available
+    - RSS automation support
