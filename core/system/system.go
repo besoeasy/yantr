@@ -93,7 +93,7 @@ func fetchFromProvider(client *http.Client, p provider, fetchedAt string) (*IPId
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "yantr-core")
+	req.Header.Set("User-Agent", "yantr")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err

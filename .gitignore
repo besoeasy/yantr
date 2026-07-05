@@ -16,5 +16,5 @@ website/catalog
 # Temp files created by agents
 check_output*.txt
 *.txtn
-yantr-core
+yantr
 .npm-cache

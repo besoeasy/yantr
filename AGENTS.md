@@ -188,9 +188,9 @@ volumes:
 ## Docker Build
 - Multi-stage: Node LTS frontend builder → Go Alpine backend builder → Alpine final
 - Final image installs: `docker-cli`, `docker-cli-compose`, `wget`, `dufs`, `caddy`
-- Copies: `dist/`, compiled `yantr-core` binary, `apps/`
+- Copies: `dist/`, compiled `yantr` binary, `apps/`
 - Healthcheck: `wget -qO- http://127.0.0.1:5252/api/health >/dev/null 2>&1`
-- Runs: `/app/yantr-core`
+- Runs: `/app/yantr`
 
 ## Testing / Validation
 - No formal test suite — `node check.js` is the primary validation

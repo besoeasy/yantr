@@ -23,7 +23,7 @@ RUN go mod download
 COPY core/ ./
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags="-w -s -X main.version=$(date -u +%Y%m%d)" \
-    -o /yantr-core .
+    -o /yantr .
 
 # ─── Stage 3: Final Image ────────────────────────────────────────────────────
 FROM docker.io/library/alpine:latest
@@ -37,7 +37,7 @@ RUN mkdir -p /data
 
 # Copy compiled assets
 COPY --from=frontend-builder /app/dist ./dist
-COPY --from=backend-builder /yantr-core ./yantr-core
+COPY --from=backend-builder /yantr ./yantr
 COPY apps/ ./apps/
 
 EXPOSE 5252
@@ -48,4 +48,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 ENV YANTR_SERVE_UI=true
 ENV NODE_ENV=production
 
-CMD ["/app/yantr-core"]
+CMD ["/app/yantr"]
