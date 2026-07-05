@@ -43,6 +43,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "volumes" */ "./views/Volumes.vue"),
     },
     {
+      path: "/proxies",
+      name: "proxies",
+      component: () => import(/* webpackChunkName: "proxies" */ "./views/Proxies.vue"),
+    },
+    {
       path: "/logs",
       name: "logs",
       component: () => import(/* webpackChunkName: "logs" */ "./views/Logs.vue"),

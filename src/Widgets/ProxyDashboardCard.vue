@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted} from 'vue'
-import { ShieldCheck, Trash2, Loader, Globe, User, RefreshCw } from '@lucide/vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { ShieldCheck, RefreshCw, ArrowUpRight } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
+import { useRouter } from 'vue-router'
 
 const { apiUrl } = useApiUrl()
+const router = useRouter()
 
 const proxies = ref([])
 const caddyRunning = ref(false)
@@ -29,8 +31,8 @@ onUnmounted(() => {
   if (refreshInterval) clearInterval(refreshInterval)
 })
 
-
-async function reload() {
+async function reload(e) {
+  if (e) e.stopPropagation()
   loading.value = true
   try {
     const response = await fetch(`${apiUrl.value}/api/proxy/reload`, { method: 'POST' })
@@ -41,12 +43,17 @@ async function reload() {
     loading.value = false
   }
 }
+
+function goToProxies() {
+  router.push('/proxies')
+}
 </script>
 
 <template>
   <div
     v-if="proxies.length > 0"
-    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
+    @click="goToProxies"
+    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800"
   >
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -55,23 +62,23 @@ async function reload() {
       <!-- header -->
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0">
+          <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
             <ShieldCheck class="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">Active Proxies</h3>
-            <p class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1">Caddy · {{ proxies.length }} running</p>
+            <div v-if="caddyRunning" class="flex items-center gap-1.5 mt-1.5">
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Live</span>
+            </div>
+            <div v-else class="text-[10px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1.5">Stopped</div>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <div v-if="caddyRunning" class="flex items-center gap-1.5">
-            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Live</span>
-          </div>
           <button
             @click="reload"
             :disabled="loading"
-            class="p-1.5 rounded-lg text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
+            class="p-1.5 rounded-lg text-gray-400 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all z-20 relative"
             title="Reload Caddy config"
           >
             <RefreshCw class="w-3.5 h-3.5" :class="{ 'animate-spin': loading }" />
@@ -79,35 +86,22 @@ async function reload() {
         </div>
       </div>
 
-      <!-- proxy list -->
-      <div class="flex flex-col gap-2">
-        <div
-          v-for="p in proxies"
-          :key="p.projectId"
-          class="flex items-center gap-3 rounded-lg border border-gray-100 dark:border-zinc-800/80 bg-gray-50/50 dark:bg-zinc-900/40 px-3 py-2.5 group/row transition-colors hover:border-gray-200 dark:hover:border-zinc-700"
-        >
-          <!-- ports -->
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="font-mono text-[12px] font-bold text-emerald-600 dark:text-emerald-400">:{{ p.servePort }}</span>
-              <span class="text-[10px] text-gray-400 dark:text-zinc-500">→</span>
-              <span class="font-mono text-[11px] text-gray-600 dark:text-zinc-300">:{{ p.targetPort }}</span>
-            </div>
-            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-              <div class="flex items-center gap-1 text-[10px] text-gray-400 dark:text-zinc-500">
-                <Globe class="w-3 h-3" />
-                <span class="truncate max-w-[100px]">{{ p.containerName }}</span>
-              </div>
-              <div v-if="p.authUser" class="flex items-center gap-1 text-[10px] text-gray-400 dark:text-zinc-500">
-                <User class="w-3 h-3" />
-                <span>{{ p.authUser }}</span>
-              </div>
-            </div>
-          </div>
-
-
+      <div class="mt-auto pt-6 pb-2 flex items-baseline gap-2">
+        <div class="text-6xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+          {{ proxies.length }}
+        </div>
+        <div class="text-sm font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest">
+          Routes
         </div>
       </div>
+
+      <!-- Arrow indicator -->
+      <div class="absolute bottom-5 right-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
+        <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center border border-gray-100 dark:border-zinc-800">
+           <ArrowUpRight class="w-4 h-4 text-gray-600 dark:text-zinc-400" />
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
