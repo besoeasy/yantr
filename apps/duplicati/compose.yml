@@ -1,0 +1,44 @@
+services:
+  duplicati:
+    image: linuxserver/duplicati:latest
+    container_name: duplicati
+    labels:
+      yantr.app: duplicati
+      yantr.service.8200: Web UI
+      yantr.port.8200: HTTP
+    ports:
+      - "8200"
+    volumes:
+      - duplicati_config:/config
+      - duplicati_backups:/backups
+      - duplicati_source:/source
+    restart: unless-stopped
+volumes:
+  duplicati_config: null
+  duplicati_backups: null
+  duplicati_source: null
+x-yantr:
+  name: Duplicati
+  tags:
+    - tools
+    - security
+    - utility
+    - backup
+    - storage
+  short_description: Free, open-source backup tool with encryption, deduplication,
+    and cloud storage support.
+  description: Duplicati is an open-source backup client that creates encrypted,
+    incremental backups to local or cloud storage. It supports SFTP, WebDAV,
+    S3/B2, AES-256 encryption, deduplication, scheduling, retention policies,
+    version history, and a web UI for restores and management.
+  usecases:
+    - Automated encrypted backups of your server to local NAS or remote storage.
+    - Backup to multiple destinations (local + cloud) for redundancy.
+    - Restore specific files or entire backups on demand.
+    - Use deduplication to minimize storage requirements.
+  website: https://www.duplicati.com
+  logo: QmX52qWfGH9q5mPvjT3mfmf6ag6BUW8fGwGX1WrbPxfqn8
+  notes:
+    - Supports SFTP, FTP, WebDAV, B2, S3, and many cloud backends
+    - AES-256 encryption keeps backups secure
+    - Incremental backups only store changed files
