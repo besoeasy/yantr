@@ -6,14 +6,12 @@
  * Signature: secp256k1 over sha256(message)
  *
  * Compatible with the Go core/auth package which verifies secp256k1 signatures.
+ *
+ * Uses @noble/curves/secp256k1 (v3+) which has built-in HMAC support —
+ * no manual hmacSha256Sync wiring needed.
  */
-import * as secp from '@noble/secp256k1'
-import { hmac } from '@noble/hashes/hmac.js'
+import { secp256k1 } from '@noble/curves/secp256k1.js'
 import { sha256 as nobleSha256 } from '@noble/hashes/sha2.js'
-
-// Required by @noble/secp256k1 for synchronous signing
-secp.etc.hmacSha256Sync = (key, ...msgs) =>
-  hmac(nobleSha256, key, secp.etc.concatBytes(...msgs))
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -60,7 +58,7 @@ export async function derivePrivateKey(password, pin) {
   // Ensure the key is a valid secp256k1 private key scalar
   while (true) {
     try {
-      secp.getPublicKey(key, true)
+      secp256k1.getPublicKey(key, true)
       return bytesToHex(key)
     } catch {
       key = nobleSha256(key)
@@ -72,7 +70,7 @@ export async function derivePrivateKey(password, pin) {
 
 /** Get compressed public key hex from private key hex. */
 export function getPublicKey(privateKeyHex) {
-  const pub = secp.getPublicKey(hexToBytes(privateKeyHex), true)
+  const pub = secp256k1.getPublicKey(hexToBytes(privateKeyHex), true)
   return bytesToHex(pub)
 }
 
@@ -92,7 +90,7 @@ export async function createToken(privateKeyHex) {
   const message = `${timestamp}:${nonce}`
 
   const msgHash = nobleSha256(new TextEncoder().encode(message))
-  const sig = secp.sign(msgHash, hexToBytes(privateKeyHex))
+  const sig = secp256k1.sign(msgHash, hexToBytes(privateKeyHex))
   const signature = bytesToHex(sig.toCompactRawBytes())
 
   return base64Encode({ publickey: publicKeyHex, signature, message, timestamp, nonce })

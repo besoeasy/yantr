@@ -21,7 +21,6 @@ Self-hosted app store running as a Docker container alongside existing OS. Vue 3
 **Backend** (`core/`): Go HTTP server on port 5252 (replaces `daemon/`)
 - Entry: `core/main.go` (HTTP server → routes → Caddy subprocess)
 - Packages: `auth/` (HMAC-SHA256 token auth), `apps/` (catalog reader), `compose/` (YAML ops), `caddy/` (reverse proxy), `docker/` (SDK client), `selfinstall/` (bootstrap), `shared/` (logging), `system/` (IP identity)
-- Auth: stateless HMAC-SHA256 JWT (compatible with browser `SubtleCrypto`), configured via `POST /api/setup/admin` with `{username, secretHex}` (64-char hex = 32-byte key)
 - Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`
 - Volume browser: `browser.go` manages dufs subprocess instances per volume
 
