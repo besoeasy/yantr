@@ -12,6 +12,12 @@
 // The server stores only the admin public key (no secret).
 // Tokens are valid for 1 minute (timestamp checked server-side).
 //
+// Bootstrap flow (no admin configured):
+//
+//	If neither YANTR_ADMIN_PUBLIC_KEY env var nor /data/auth.json exist,
+//	the first request that presents a valid secp256k1 self-signed token
+//	automatically becomes the admin. No explicit setup step required.
+//
 // Configuration:
 //
 //	Env var:   YANTR_ADMIN_PUBLIC_KEY (66-char hex, compressed secp256k1)
@@ -186,6 +192,60 @@ func SaveAuthConfig(publicKeyHex string) (*AuthConfig, error) {
 	mu.Unlock()
 
 	return cfg, nil
+}
+
+// BootstrapFromToken auto-registers the first public key as admin when no
+// admin is configured yet. It verifies the token is a valid self-signed
+// secp256k1 token (so the caller actually controls the key), then saves
+// the public key from the token as the admin.
+//
+// Returns the newly saved AuthConfig on success, or an error if the token
+// is invalid / an admin is already configured.
+func BootstrapFromToken(token string) (*AuthConfig, error) {
+	// Reject if already configured (env or file).
+	if readEnvAuthConfig() != nil {
+		return nil, fmt.Errorf("auth is managed by environment variable")
+	}
+	if existing, _ := readAuthFile(false); existing != nil {
+		return nil, ErrAlreadyConfigured
+	}
+	mu.RLock()
+	alreadyInMem := memoryConfig != nil
+	mu.RUnlock()
+	if alreadyInMem {
+		return nil, ErrAlreadyConfigured
+	}
+
+	// Decode and parse the token.
+	decoded, err := base64.StdEncoding.DecodeString(token)
+	if err != nil {
+		decoded, err = base64.RawStdEncoding.DecodeString(token)
+		if err != nil {
+			return nil, fmt.Errorf("invalid token encoding")
+		}
+	}
+	var tok authToken
+	if err := json.Unmarshal(decoded, &tok); err != nil {
+		return nil, fmt.Errorf("invalid token format")
+	}
+	if tok.PublicKey == "" || tok.Signature == "" || tok.Message == "" {
+		return nil, fmt.Errorf("missing token fields")
+	}
+
+	// Validate timestamp.
+	nowMs := time.Now().UnixMilli()
+	if tok.Timestamp <= 0 || abs64(nowMs-tok.Timestamp) > int64(60*1000) {
+		return nil, fmt.Errorf("token expired")
+	}
+
+	// Verify the signature against the token's own public key.
+	msgHash := sha256.Sum256([]byte(tok.Message))
+	if err := verifySecp256k1(tok.PublicKey, tok.Signature, msgHash[:]); err != nil {
+		return nil, fmt.Errorf("invalid signature: %w", err)
+	}
+
+	// All good — save this public key as admin.
+	return SaveAuthConfig(tok.PublicKey)
 }
 
 // authToken is the JSON structure sent by the frontend as a Bearer token (base64-encoded).

@@ -266,14 +266,33 @@ func authMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		cfg, err := auth.LoadAuthConfig(false)
-		if err != nil || cfg == nil {
+		if err != nil {
 			jsonErr(w, http.StatusServiceUnavailable, "SETUP_REQUIRED", "Setup required")
 			return
 		}
+
 		token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
 		if token == "" {
 			token = r.URL.Query().Get("token")
 		}
+
+		if cfg == nil {
+			// No admin configured yet — treat the first valid self-signed token
+			// as the bootstrap admin key and register it automatically.
+			if token == "" {
+				jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
+				return
+			}
+			newCfg, bootstrapErr := auth.BootstrapFromToken(token)
+			if bootstrapErr != nil {
+				jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
+				return
+			}
+			shared.Log("auth: bootstrapped admin public key %s", newCfg.PublicKeyHex)
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		if err := auth.VerifyToken(token, cfg); err != nil {
 			jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 			return
@@ -281,6 +300,7 @@ func authMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
 
 // ─── Browse proxy ─────────────────────────────────────────────────────────────
 
