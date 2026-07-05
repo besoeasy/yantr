@@ -71,7 +71,7 @@ async function loginWithPrivateKey(privateKeyHex) {
 
 export async function bootstrapYantrAuth() {
   installYantrFetchAuth({
-    getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
+    getToken: generateAuthToken,
     onUnauthorized: (status) => {
       clearStoredIdentity()
       authState.booting    = false
@@ -139,7 +139,7 @@ export function openVolumeBrowser(volumeName) {
 export async function setupYantrAdmin({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
-      getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
+      getToken: generateAuthToken,
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false
@@ -179,7 +179,7 @@ export async function setupYantrAdmin({ password, pin }) {
 export async function loginYantr({ password, pin }) {
   if (!nativeFetch) {
     installYantrFetchAuth({
-      getPrivateKeyHex: () => authState.privateKeyHex || getStoredPrivateKeyHex(),
+      getToken: generateAuthToken,
       onUnauthorized: (status) => {
         clearStoredIdentity()
         authState.booting    = false

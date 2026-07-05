@@ -38,7 +38,7 @@ export function installYantrFetchAuth({ getToken, onUnauthorized }) {
       return nativeFetch(input, init)
     }
 
-    const token = getToken()
+    const token = await getToken()
     if (!token) {
       return nativeFetch(input, init)
     }
