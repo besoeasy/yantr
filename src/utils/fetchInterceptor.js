@@ -1,5 +1,3 @@
-import { createToken } from './crypto.js'
-
 const PUBLIC_PATHS = new Set([
   '/api/health',
   '/api/version',
@@ -30,7 +28,7 @@ function shouldAttachAuth(url) {
   return !PUBLIC_PATHS.has(pathname)
 }
 
-export function installYantrFetchAuth({ getPrivateKeyHex, onUnauthorized }) {
+export function installYantrFetchAuth({ getToken, onUnauthorized }) {
   if (fetchInstalled || typeof window === 'undefined') return
 
   nativeFetch = window.fetch.bind(window)
@@ -40,12 +38,11 @@ export function installYantrFetchAuth({ getPrivateKeyHex, onUnauthorized }) {
       return nativeFetch(input, init)
     }
 
-    const privateKeyHex = getPrivateKeyHex()
-    if (!privateKeyHex) {
+    const token = getToken()
+    if (!token) {
       return nativeFetch(input, init)
     }
 
-    const token   = await createToken(privateKeyHex)
     const headers = new Headers(
       init?.headers
         || (input instanceof Request ? input.headers : undefined)
