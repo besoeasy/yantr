@@ -1,0 +1,40 @@
+services:
+  davos:
+    image: linuxserver/davos:latest
+    container_name: davos
+    labels:
+      yantr.app: davos
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - davos_config:/config
+      - davos_downloads:/downloads
+    restart: unless-stopped
+volumes:
+  davos_config: null
+  davos_downloads: null
+x-yantr:
+  name: Davos
+  tags:
+    - download
+    - file-management
+    - media
+    - utility
+    - self-hosted
+  short_description: Web-based download manager with queue, scheduling, and FTP/SFTP support.
+  description: Davos is a web-based FTP/SFTP download manager with a clean UI. It
+    supports download queues, scheduling, automatic retries, folder watching,
+    and bulk file management—useful for large or scheduled downloads from remote
+    servers.
+  usecases:
+    - Download files from FTP/SFTP servers.
+    - Queue downloads for later.
+    - Schedule downloads for off-peak hours.
+  website: https://github.com/linuxserver/docker-davos
+  logo: QmVN8Wpn8RgjPwR7ggoVxPjKqE4GzYN69uZGMiyQmu792X
+  notes:
+    - Supports FTP and SFTP
+    - Download queue management
+    - Automatic retry on failure
