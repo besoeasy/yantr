@@ -1,0 +1,44 @@
+services:
+  app:
+    image: ghcr.io/hargata/lubelogger:latest
+    container_name: lubelogger-app
+    labels:
+      yantr.app: lubelogger
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8080"
+    volumes:
+      - lubelogger_config:/App/config
+      - lubelogger_data:/App/data
+      - lubelogger_documents:/App/wwwroot/documents
+      - lubelogger_images:/App/wwwroot/images
+      - lubelogger_translations:/App/wwwroot/translations
+      - lubelogger_log:/App/log
+    restart: unless-stopped
+volumes:
+  lubelogger_config: null
+  lubelogger_data: null
+  lubelogger_documents: null
+  lubelogger_images: null
+  lubelogger_translations: null
+  lubelogger_log: null
+x-yantr:
+  name: LubeLogger
+  tags:
+    - vehicle
+    - maintenance
+    - tracker
+    - automotive
+    - self-hosted
+  short_description: Self-hosted vehicle maintenance and fuel log tracker.
+  description: LubeLogger is a self-hosted vehicle service record and fuel mileage
+    tracker. Log oil changes, tire rotations, repairs, and fuel fill-ups to
+    track costs and maintenance schedules for all your vehicles.
+  usecases:
+    - Log and track vehicle maintenance history and costs.
+    - Monitor fuel efficiency and mileage over time.
+    - Receive reminders for upcoming scheduled maintenance.
+  website: https://lubelogger.com
