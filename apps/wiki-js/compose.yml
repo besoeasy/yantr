@@ -1,0 +1,47 @@
+services:
+  wiki-js:
+    image: linuxserver/wikijs:latest
+    container_name: wiki-js
+    labels:
+      yantr.app: wiki-js
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - wikijs_config:/config
+      - wikijs_data:/data
+    restart: unless-stopped
+volumes:
+  wikijs_config: null
+  wikijs_data: null
+x-yantr:
+  name: Wiki.js
+  tags:
+    - documentation
+    - wiki
+    - notes
+    - productivity
+    - self-hosted
+  short_description: Modern, powerful wiki platform with Markdown support,
+    versioning, and 80+ auth providers.
+  description: Wiki.js is a modern, powerful and extensible open-source wiki
+    software. It features a beautiful and intuitive interface, Markdown support
+    with live preview, syntax highlighting for code, diagram support (Mermaid,
+    PlantUML), and powerful versioning with diff view. It integrates with over
+    80...
+  usecases:
+    - Create a personal knowledge base for notes, tutorials, and documentation
+      that you fully control.
+    - Set up a team wiki for company documentation, SOPs, and internal knowledge
+      sharing.
+    - Build a public documentation site for your open-source project with
+      version control.
+    - Use as an intranet for your homelab with access controlled by your
+      preferred auth provider.
+  website: https://github.com/requarks/wiki
+  logo: QmdFpskYSKmBYLyBWGSnqronCxH2V3kxSLiDBHmCCWGVRs
+  notes:
+    - Requires PostgreSQL, MySQL, or MariaDB for data storage
+    - Supports LDAP and SAML for enterprise authentication
+    - Can export to static HTML for hosting anywhere
