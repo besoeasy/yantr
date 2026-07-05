@@ -1,0 +1,46 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n
+    labels:
+      yantr.app: n8n
+      yantr.service.5678: Web UI
+      yantr.port.5678: HTTP
+    ports:
+      - "5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      N8N_PORT: 5678
+    restart: unless-stopped
+volumes:
+  n8n_data: null
+x-yantr:
+  name: n8n
+  tags:
+    - productivity
+    - tools
+    - automation
+    - workflow
+    - self-hosted
+  short_description: Powerful workflow automation platform with 400+ integrations
+    and no-code automation builder.
+  description: n8n is a self-hosted workflow automation platform with a visual
+    no-code builder and 400+ integrations. It supports webhooks, scheduled
+    triggers, error handling, and complex logic—useful for automating
+    notifications, data sync, backups, reporting, and AI-enhanced workflows.
+  usecases:
+    - Automate notifications by connecting services - get Slack alerts when
+      GitHub issues are created or when a sensor triggers.
+    - Sync data between apps - automatically copy new rows from Airtable to
+      Google Sheets, or backup form submissions to a database.
+    - Create self-service portals - let users trigger predefined workflows
+      without technical knowledge.
+    - Build AI workflows - chain LLM calls, vector databases, and other AI
+      services for document processing or chatbots.
+  website: https://docs.n8n.io
+  logo: QmT4ncfKSqhVEpoQi7FZpzyRyHemgXDjqXX896esZtMxGM
+  notes:
+    - Data stays on your server - no cloud dependency for automation logic
+    - Webhooks can trigger workflows in real-time
+    - Can be exposed for external triggers or used internally only
