@@ -1,0 +1,76 @@
+services:
+  shugur-relay:
+    image: ghcr.io/shugur-network/relay:latest
+    container_name: shugur-relay
+    restart: unless-stopped
+    ports:
+      - "8080"
+      - "9090"
+    volumes:
+      - ./config.yaml:/config.yaml:ro
+    environment:
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+      METRICS_PORT: 8181
+      RELAY_NAME: relay-on-yantr
+      DB_HOST: cockroachdb
+      DB_PORT: 26257
+    command: /usr/local/bin/relay start --config /config.yaml --db-host cockroachdb
+      --db-port 26257
+    depends_on:
+      cockroachdb:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - (command -v wget >/dev/null && wget -q --spider
+          http://localhost:8080/api/info) || (command -v curl >/dev/null && curl
+          -fsI http://localhost:8080/api/info)
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    labels:
+      yantr.app: shugur-relay
+      yantr.service.8080: Relay
+      yantr.port.8080: HTTP
+  cockroachdb:
+    image: cockroachdb/cockroach:latest
+    container_name: shugur-cockroachdb
+    command: start-single-node --insecure
+    volumes:
+      - cockroach-data:/cockroach/cockroach-data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - curl -fsS http://localhost:8080/health?ready=1 >/dev/null
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      yantr.app: shugur-relay
+      yantr.service.8080: Relay
+      yantr.port.8080: HTTP
+volumes:
+  cockroach-data: null
+x-yantr:
+  name: Shugur Relay
+  tags:
+    - network
+    - social
+    - database
+    - storage
+    - utility
+  short_description: High-performance nostr relay with distributed database.
+  description: High-performance nostr relay with distributed database. Shugur
+    Relay is a self-hosted application focused on network, social, database,
+    storage. It can be deployed on any device via Docker Compose. It supports a
+    wide range of use cases for homelabs and self-hosted infrastructure.
+  usecases:
+    - Self-host Shugur Relay on your home server to high-performance nostr relay
+      with distributed database without depending on third-party cloud services.
+    - Use Shugur Relay to manage your network workflows privately, keeping all
+      data under your control on local infrastructure.
+  website: https://github.com/Shugur-Network/relay
+  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
