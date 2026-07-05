@@ -1,9 +1,10 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { LoaderCircle, LockKeyhole, UserRound } from '@lucide/vue'
+import { Copy, Check, LoaderCircle, LockKeyhole } from '@lucide/vue'
 import { useNotification } from '../composables/useNotification'
 import { useYantrAuth } from '../composables/useYantrAuth'
+import { derivePrivateKey, getPublicKey } from '../utils/crypto.js'
 
 const { t } = useI18n()
 const toast = useNotification()
@@ -13,6 +14,36 @@ const password = ref('')
 const pin = ref('')
 const submitting = ref(false)
 const localError = ref('')
+
+// ─── Live public key derivation ───────────────────────────────────────────────
+const derivedPublicKey = ref('')
+const derivingKey = ref(false)
+const copied = ref(false)
+let deriveTimer = null
+
+watch([password, pin], ([pw, p]) => {
+  derivedPublicKey.value = ''
+  clearTimeout(deriveTimer)
+  if (!pw || !p) return
+  deriveTimer = setTimeout(async () => {
+    derivingKey.value = true
+    try {
+      const priv = await derivePrivateKey(pw, p)
+      derivedPublicKey.value = getPublicKey(priv)
+    } catch {
+      derivedPublicKey.value = ''
+    } finally {
+      derivingKey.value = false
+    }
+  }, 300)
+})
+
+async function copyPublicKey() {
+  if (!derivedPublicKey.value) return
+  await navigator.clipboard.writeText(derivedPublicKey.value)
+  copied.value = true
+  setTimeout(() => { copied.value = false }, 2000)
+}
 
 // Background mouse canvas
 const bgCanvas = ref(null)
@@ -215,14 +246,36 @@ onUnmounted(() => {
               />
             </div>
 
-            <!-- Setup note -->
-            <p v-if="isSetup" class="text-[12px] text-(--text-secondary) leading-relaxed">
-              Set a strong password and a PIN to generate your secure session key.
-            </p>
-
-            <!-- Login note: device-bound key -->
+            <!-- Live public key display -->
+            <div v-if="derivedPublicKey || derivingKey" class="rounded-2xl bg-(--surface-muted) px-4 py-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-semibold tracking-[1.5px] text-(--text-secondary)">
+                  {{ isSetup ? 'YOUR PUBLIC KEY' : 'DERIVED PUBLIC KEY' }}
+                </span>
+                <button
+                  v-if="derivedPublicKey"
+                  type="button"
+                  @click="copyPublicKey"
+                  class="flex items-center gap-1 text-[10px] font-medium text-(--text-secondary) hover:text-(--text-primary) transition-colors"
+                >
+                  <Check v-if="copied" class="h-3 w-3 text-green-500" />
+                  <Copy v-else class="h-3 w-3" />
+                  <span>{{ copied ? 'Copied' : 'Copy' }}</span>
+                </button>
+              </div>
+              <div v-if="derivingKey" class="flex items-center gap-2 text-(--text-secondary)">
+                <LoaderCircle class="h-3 w-3 animate-spin" />
+                <span class="text-[11px]">Deriving key…</span>
+              </div>
+              <p v-else class="font-mono text-[10px] break-all leading-relaxed text-(--text-primary) select-all">
+                {{ derivedPublicKey }}
+              </p>
+              <p v-if="isSetup" class="mt-2 text-[10px] text-(--text-secondary) leading-relaxed">
+                Save this to restrict access: <code class="font-mono">-e YANTR_ADMIN_PUBLIC_KEY=&lt;key&gt;</code>
+              </p>
+            </div>
             <p v-else class="text-[12px] text-(--text-secondary) leading-relaxed">
-              Enter your password and PIN to derive your session key and unlock Yantr.
+              {{ isSetup ? 'Set a password and PIN — your public key will appear here.' : 'Enter your password and PIN to derive your session key.' }}
             </p>
 
             <!-- Error -->
