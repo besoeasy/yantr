@@ -64,7 +64,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
     <div class="relative z-10 flex items-start justify-between mb-6">
       <div class="flex items-center gap-4">
         <!-- Icon Container -->
-        <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-zinc-700 transition-all duration-500">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-500">
            <Clock class="w-5 h-5 text-gray-400 dark:text-zinc-500 group-hover:text-violet-500 transition-colors" />
         </div>
         
@@ -102,7 +102,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
             <div class="text-3xl font-bold text-gray-400 dark:text-zinc-600 tracking-tighter leading-none">
               0m
             </div>
-            <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+            <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
                {{ t('quickMetrics.averageUptime.systemIdle') }}
             </div>
          </div>

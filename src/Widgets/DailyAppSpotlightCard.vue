@@ -117,7 +117,7 @@ const stateLabel = computed(() => {
     v-if="dailyApp"
     type="button"
     @click="handleSelect"
-    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full"
+    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full"
   >
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -126,7 +126,7 @@ const stateLabel = computed(() => {
       <!-- header -->
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg bg-amber-50 dark:bg-amber-500/10 border border-amber-100 dark:border-amber-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
             <Sparkles class="w-4.5 h-4.5 text-amber-600 dark:text-amber-400" />
           </div>
           <div class="min-w-0">
@@ -174,7 +174,7 @@ const stateLabel = computed(() => {
 
       <!-- Arrow indicator -->
       <div class="absolute bottom-5 right-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
-        <div class="w-8 h-8 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center border border-amber-100 dark:border-amber-500/20">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center">
            <ArrowUpRight class="w-4 h-4 text-amber-600 dark:text-amber-400" />
         </div>
       </div>
@@ -184,11 +184,11 @@ const stateLabel = computed(() => {
 
   <div
     v-else-if="loadFailed"
-    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden border border-gray-100 dark:border-zinc-800 text-left w-full p-5 min-h-72"
+    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden text-left w-full p-5 min-h-72"
   >
     <div class="flex h-full flex-col gap-5">
       <div class="flex items-center gap-3 min-w-0">
-        <div class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 flex items-center justify-center shrink-0">
+        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
           <AlertCircle class="w-4.5 h-4.5 text-red-600 dark:text-red-400" />
         </div>
         <div class="min-w-0">

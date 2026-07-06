@@ -85,7 +85,7 @@ const displayLocation = computed(() => {
     <div class="relative z-10 flex items-start justify-between mb-6">
       <div class="flex items-center gap-4">
         <!-- Icon Container -->
-        <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:border-zinc-700 transition-all duration-500">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-all duration-500">
            <Globe class="w-5 h-5 text-gray-400 dark:text-zinc-500 group-hover:text-blue-500 transition-colors" />
         </div>
         
@@ -106,7 +106,7 @@ const displayLocation = computed(() => {
       
       <button 
          @click="loadIdentity({ force: true })"
-         class="p-2 rounded-md text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors"
+         class="p-2 rounded-md text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 dark:hover:bg-zinc-900/50 transition-colors"
       >
          <RefreshCw :size="14" :class="{ 'animate-spin': loading }" />
       </button>
@@ -116,7 +116,7 @@ const displayLocation = computed(() => {
     <div class="relative z-10 flex-1 flex flex-col justify-end gap-5">
       
       <!-- Error State -->
-      <div v-if="error" class="bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-lg p-3 flex items-start gap-3">
+      <div v-if="error" class="bg-red-50/50 dark:bg-red-900/10 rounded-lg p-3 flex items-start gap-3">
         <AlertCircle class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <div>
           <div class="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">{{ t('quickMetrics.machineIdentity.connectionFailed') }}</div>
@@ -133,35 +133,35 @@ const displayLocation = computed(() => {
              <ShieldCheck v-if="identity?.ip" class="w-3.5 h-3.5 text-green-500" />
            </div>
            
-           <div v-if="loading && !identity" class="h-8 w-32 bg-gray-100 dark:bg-zinc-800 rounded animate-pulse"></div>
+           <div v-if="loading && !identity" class="h-8 w-32 rounded animate-pulse"></div>
            <div v-else class="text-3xl font-bold font-mono tracking-tighter text-gray-900 dark:text-white break-all transition-colors duration-300 group-hover/ip:text-blue-600 dark:group-hover/ip:text-blue-400">
              {{ displayIp }}
            </div>
          </div>
 
          <!-- Details Grid -->
-         <div class="grid grid-cols-1 gap-3 pt-4 border-t border-gray-100 dark:border-zinc-800/80">
+         <div class="grid grid-cols-1 gap-3 pt-4">
            <div class="flex items-center gap-3 group/location" @mouseenter="isLocationHovered = true" @mouseleave="isLocationHovered = false">
-              <div class="w-6 h-6 rounded flex items-center justify-center bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 shrink-0 group-hover/location:border-gray-200 dark:group-hover/location:border-zinc-700/50 transition-colors">
+              <div class="w-6 h-6 rounded flex items-center justify-center shrink-0 transition-colors">
                  <MapPin class="w-3 h-3 text-gray-400 dark:text-zinc-500 group-hover/location:text-blue-500 transition-colors" />
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('quickMetrics.machineIdentity.location') }}</span>
-                   <div v-if="loading && !identity" class="h-3 w-16 bg-gray-100 dark:bg-zinc-800 rounded animate-pulse"></div>
+                   <div v-if="loading && !identity" class="h-3 w-16 rounded animate-pulse"></div>
                    <span v-else class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate transition-colors duration-300 group-hover/location:text-gray-900 dark:group-hover/location:text-white" :title="locationText">{{ displayLocation }}</span>
                 </div>
               </div>
            </div>
            
            <div class="flex items-center gap-3">
-              <div class="w-6 h-6 rounded flex items-center justify-center bg-gray-50 dark:bg-zinc-900/50 border border-gray-100 dark:border-zinc-800/50 shrink-0">
+              <div class="w-6 h-6 rounded flex items-center justify-center shrink-0">
                  <Server class="w-3 h-3 text-gray-400 dark:text-zinc-500" />
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center justify-between">
                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">{{ t('quickMetrics.machineIdentity.provider') }}</span>
-                   <div v-if="loading && !identity" class="h-3 w-16 bg-gray-100 dark:bg-zinc-800 rounded animate-pulse"></div>
+                   <div v-if="loading && !identity" class="h-3 w-16 rounded animate-pulse"></div>
                    <span v-else class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">{{ ispText }}</span>
                 </div>
               </div>

@@ -59,7 +59,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800 text-left w-full min-h-72">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full min-h-72">
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -67,7 +67,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
       <!-- header -->
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg bg-pink-50 dark:bg-pink-500/10 border border-pink-100 dark:border-pink-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
             <Heart class="w-4.5 h-4.5 text-pink-600 dark:text-pink-400 group-hover:text-pink-500 transition-colors" />
           </div>
           <div class="min-w-0">
@@ -77,7 +77,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
             </div>
           </div>
         </div>
-        <div class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900/50 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
+        <div class="flex items-center justify-center w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
            <Github class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-pink-500" />
         </div>
       </div>
@@ -115,7 +115,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
               :href="link.href"
               target="_blank"
               rel="noopener noreferrer"
-              class="group/link flex h-10 items-center justify-center gap-2 rounded-xl bg-gray-50 dark:bg-zinc-900/70 text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-300 hover:text-gray-900 dark:hover:text-white border border-transparent dark:hover:border-zinc-700/50"
+              class="group/link flex h-10 items-center justify-center gap-2 rounded-xl text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-300 hover:text-gray-900 dark:hover:text-white"
             >
               <component :is="link.icon" class="h-3.5 w-3.5" />
               <span class="text-[10px] font-bold uppercase tracking-widest">{{ link.title }}</span>
@@ -124,7 +124,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
         </div>
 
         <!-- Build Info -->
-        <div class="mt-6 flex items-center justify-between border-t border-gray-100 dark:border-zinc-800/60 pt-4">
+        <div class="mt-6 flex items-center justify-between pt-4">
           <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
             <GitBranch class="h-3.5 w-3.5" />
             <span>{{ buildTimeAgo }}</span>

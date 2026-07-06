@@ -53,7 +53,7 @@ function goToProxies() {
   <div
     v-if="proxies.length > 0"
     @click="goToProxies"
-    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 border border-gray-100 dark:border-zinc-800"
+    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
   >
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -62,7 +62,7 @@ function goToProxies() {
       <!-- header -->
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
+          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
             <ShieldCheck class="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div class="min-w-0">
@@ -97,7 +97,7 @@ function goToProxies() {
 
       <!-- Arrow indicator -->
       <div class="absolute bottom-5 right-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
-        <div class="w-8 h-8 rounded-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center border border-gray-100 dark:border-zinc-800">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center">
            <ArrowUpRight class="w-4 h-4 text-gray-600 dark:text-zinc-400" />
         </div>
       </div>

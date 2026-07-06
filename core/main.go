@@ -265,17 +265,12 @@ func authMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		shared.Log("debug", fmt.Sprintf("[auth] %s %s", r.Method, path))
+
 		cfg, err := auth.LoadAuthConfig(false)
 		if err != nil {
 			shared.Log("warn", "[auth] LoadAuthConfig error: "+err.Error())
 			jsonErr(w, http.StatusServiceUnavailable, "SETUP_REQUIRED", "Setup required")
 			return
-		}
-		if cfg == nil {
-			shared.Log("debug", "[auth] no admin configured yet (cfg=nil)")
-		} else {
-			shared.Log("debug", "[auth] admin key loaded: "+cfg.PublicKeyHex)
 		}
 
 		token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
@@ -284,8 +279,6 @@ func authMiddleware(next http.Handler) http.Handler {
 		}
 		if token == "" {
 			shared.Log("warn", "[auth] no token in request")
-		} else {
-			shared.Log("debug", fmt.Sprintf("[auth] token present (len=%d)", len(token)))
 		}
 
 		if cfg == nil {
@@ -296,7 +289,7 @@ func authMiddleware(next http.Handler) http.Handler {
 				jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 				return
 			}
-			shared.Log("debug", "[auth] bootstrap: attempting to register first public key from token")
+
 			newCfg, bootstrapErr := auth.BootstrapFromToken(token)
 			if bootstrapErr != nil {
 				shared.Log("warn", "[auth] bootstrap failed: "+bootstrapErr.Error())
@@ -313,11 +306,10 @@ func authMiddleware(next http.Handler) http.Handler {
 			jsonErr(w, http.StatusUnauthorized, "UNAUTHORIZED", "Unauthorized")
 			return
 		}
-		shared.Log("debug", "[auth] token verified OK")
+
 		next.ServeHTTP(w, r)
 	})
 }
-
 
 // ─── Browse proxy ─────────────────────────────────────────────────────────────
 

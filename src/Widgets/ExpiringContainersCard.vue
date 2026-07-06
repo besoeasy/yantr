@@ -105,7 +105,7 @@ const urgencyLabel = computed(() => {
         </div>
       </div>
       
-      <div class="px-2 py-1 rounded-md bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 flex items-center gap-1.5">
+      <div class="px-2 py-1 rounded-md flex items-center gap-1.5">
          <span class="text-[11px] font-bold text-gray-900 dark:text-white">{{ stats.count }}</span>
          <span class="text-[10px] font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wider">{{ t('quickMetrics.expiringContainers.tracking') }}</span>
       </div>
@@ -137,7 +137,7 @@ const urgencyLabel = computed(() => {
       <!-- Mini List (Next 3) -->
       <div class="shrink-0 w-32 flex flex-col gap-1.5">
          <div v-for="item in stats.items.slice(0, 3)" :key="item.id" 
-              class="relative flex items-center justify-between gap-2 text-xs py-1 border-b border-gray-100 dark:border-zinc-800 last:border-0 group/item">
+              class="relative flex items-center justify-between gap-2 text-xs py-1 group/item">
             <div class="truncate text-[11px] text-gray-600 dark:text-zinc-400 font-medium max-w-[60%] transition-colors group-hover/item:text-gray-900 dark:group-hover/item:text-white">
               {{ item.name }}
             </div>
