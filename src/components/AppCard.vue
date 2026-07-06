@@ -56,7 +56,7 @@ function handleClick() {
     @keydown.enter.prevent="handleClick"
     @keydown.space.prevent="handleClick"
     :class="[
-      'group relative flex h-full flex-col overflow-hidden rounded-xl bg-(--surface) p-5 smooth-shadow transition-all duration-300',
+      'group relative flex h-full flex-col overflow-hidden rounded-xl bg-white dark:bg-[#0A0A0A] p-5 smooth-shadow transition-all duration-300',
       isInteractive
         ? 'cursor-pointer hover:-translate-y-0.5'
         : 'cursor-default'
