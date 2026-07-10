@@ -56,83 +56,71 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(139,92,246,0.4)] dark:hover:shadow-[0_20px_40px_-15px_rgba(139,92,246,0.3)] text-left w-full min-h-[320px] border border-violet-100/50 dark:border-white/5 bg-gradient-to-br from-violet-50/50 to-fuchsia-50/50 dark:from-[#111827] dark:to-[#09090b]">
-    
-    <!-- Animated Gradient Glow -->
-    <div class="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,_rgba(139,92,246,0.15)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(139,92,246,0.12)_0%,_transparent_40%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none group-hover:animate-[spin_20s_linear_infinite]"></div>
-
-    <!-- Massive Watermark Icon -->
-    <Clock class="absolute -bottom-10 -right-10 w-72 h-72 text-violet-500/10 dark:text-violet-400/[0.03] rotate-[-20deg] group-hover:rotate-0 group-hover:scale-110 transition-all duration-700 ease-out pointer-events-none" />
-
-    <div class="relative z-10 p-7 flex flex-col h-full gap-4">
-      <!-- Header -->
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-4">
-          <!-- Gorgeous Icon Block -->
-          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-violet-400 to-fuchsia-600 shadow-xl shadow-violet-500/30 group-hover:shadow-violet-500/50 transition-all duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
-            <Clock class="w-7 h-7 text-white drop-shadow-md z-10" />
-          </div>
-          <div>
-            <h3 class="text-xl font-black text-violet-950 dark:text-white tracking-tight leading-none group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-              {{ t('quickMetrics.averageUptime.title') }}
-            </h3>
-            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600/70 dark:text-zinc-500 mt-2">
+  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+    <div class="flex w-full items-start justify-between">
+      <div class="flex items-center gap-4">
+        <!-- Minimal Icon Block -->
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+          <Clock class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+        </div>
+        <div>
+          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+            {{ t('quickMetrics.averageUptime.title') }}
+          </h3>
+          <div class="mt-2 flex items-center gap-1.5">
+            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
               {{ t('quickMetrics.averageUptime.systemStability') }}
-            </p>
+            </span>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Main Body -->
-      <div class="mt-auto pt-6 flex flex-col relative z-10">
-        
-        <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-700/60 dark:text-zinc-500 mb-1 drop-shadow-sm">
-          {{ t('quickMetrics.averageUptime.timeActive') }}
+    <!-- Main Body -->
+    <div class="relative z-10 mt-auto flex flex-col pt-6">
+      <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+        {{ t('quickMetrics.averageUptime.timeActive') }}
+      </div>
+      
+      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-1 sm:text-5xl dark:text-white">
+        {{ stats.formatted }}
+      </div>
+
+      <!-- Nested Minimal Container for details -->
+      <div class="grid grid-cols-5 gap-3">
+        <!-- Stats Card -->
+        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+            <Zap class="h-3.5 w-3.5" />
+            <span class="text-[9px] font-semibold uppercase tracking-widest">Active</span>
+          </div>
+          <div class="text-2xl font-black leading-none tracking-tight text-zinc-900 tabular-nums dark:text-white">
+             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Apps</span>
+          </div>
         </div>
         
-        <div class="text-5xl font-black tracking-tighter text-violet-950 dark:text-white mb-8 drop-shadow-sm group-hover:-translate-y-1 transition-transform duration-500">
-          {{ stats.formatted }}
-        </div>
-
-        <!-- Nested Glass Container for details -->
-        <div class="grid grid-cols-5 gap-3">
-          
-          <div class="col-span-2 p-4 rounded-[16px] bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 flex flex-col justify-center gap-1.5 group-hover:bg-white/90 dark:group-hover:bg-white/[0.03] transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-sm">
-            <div class="flex items-center gap-1.5 text-violet-800/60 dark:text-zinc-400">
-              <Zap class="w-3.5 h-3.5 text-violet-500" />
-              <span class="text-[9px] font-bold uppercase tracking-widest">Active</span>
-            </div>
-            <div class="text-2xl font-black text-violet-950 dark:text-white tabular-nums tracking-tight leading-none">
-               {{ stats.count }} <span class="text-[10px] font-black uppercase text-violet-700/60 dark:text-gray-400 tracking-widest">Apps</span>
-            </div>
-          </div>
-          
-          <div class="col-span-3 p-4 rounded-[16px] bg-gradient-to-r from-violet-100/50 to-fuchsia-100/50 dark:from-violet-950/40 dark:to-fuchsia-950/40 backdrop-blur-xl border border-white dark:border-violet-900/50 flex flex-col justify-end items-center group-hover:shadow-md transition-all duration-300 relative overflow-hidden h-[72px] shadow-[0_4px_12px_rgba(139,92,246,0.05)] dark:shadow-none">
-             
-             <!-- Bar Visual inside the glass panel -->
-             <div class="absolute inset-0 flex items-end justify-between px-4 pb-2 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                <div
-                  v-for="(h, i) in bars"
-                  :key="i"
-                  class="w-2.5 rounded-t-md transition-all duration-500 ease-out bg-violet-300/60 dark:bg-zinc-700/50 group-hover:bg-violet-500/90 group-hover:shadow-[0_0_12px_rgba(139,92,246,0.6)]"
-                  :style="{ 
-                    height: `${h * 100}%`, 
-                    transitionDelay: `${i * 30}ms` 
-                  }"
-                ></div>
-                <!-- Activity Line -->
-                <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-30" viewBox="0 0 100 64" preserveAspectRatio="none">
-                   <path 
-                     d="M0 50 C 20 50, 20 10, 40 30 S 60 50, 80 20 L 100 40" 
-                     fill="none" 
-                     stroke="currentColor" 
-                     stroke-width="2" 
-                     class="text-violet-500"
-                   />
-                </svg>
-             </div>
-          </div>
+        <!-- Mini Bar Chart -->
+        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">
+           <div class="absolute inset-0 flex items-end justify-between px-4 pb-2">
+              <div
+                v-for="(h, i) in bars"
+                :key="i"
+                class="w-2.5 rounded-t-md bg-zinc-200 transition-all duration-500 ease-out group-hover:bg-zinc-800 dark:bg-zinc-800 dark:group-hover:bg-zinc-200"
+                :style="{ 
+                  height: `${h * 100}%`, 
+                  transitionDelay: `${i * 30}ms` 
+                }"
+              ></div>
+              <svg class="absolute inset-0 h-full w-full pointer-events-none opacity-10 dark:opacity-20" viewBox="0 0 100 64" preserveAspectRatio="none">
+                 <path 
+                   d="M0 50 C 20 50, 20 10, 40 30 S 60 50, 80 20 L 100 40" 
+                   fill="none" 
+                   stroke="currentColor" 
+                   stroke-width="2" 
+                   class="text-zinc-900 dark:text-white"
+                 />
+              </svg>
+           </div>
         </div>
       </div>
     </div>
