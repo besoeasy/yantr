@@ -1,0 +1,30 @@
+x-yantr:
+  name: "Cloudflared Web"
+  tags: [network, tunnel, utility, cloudflare, proxy]
+  short_description: "A Cloudflare tunnel client (cloudflared) with a convenient Web UI."
+  description: >
+    A Docker image that packages the official Cloudflare tunnel client (cloudflared)
+    along with a user-friendly Web UI. Easily manage your secure tunnels to expose
+    local applications to the outside world without opening incoming firewall ports,
+    enhancing security.
+  usecases: ["Expose local apps to internet.", "Create secure tunnels.", "Manage cloudflared via UI."]
+  website: "https://hub.docker.com/r/wisdomsky/cloudflared-web"
+
+services:
+  cloudflared-web:
+    image: wisdomsky/cloudflared-web:latest
+    container_name: cloudflared-web
+    restart: unless-stopped
+    network_mode: host
+    labels:
+      yantr.app: "cloudflared-web"
+      yantr.service.14333: "Web UI"
+      yantr.port.14333: "HTTP"
+    volumes:
+      - cloudflared_web_data:/config
+    environment:
+      WEBUI_PORT: "14333"
+      TZ: ${TZ:-UTC}
+
+volumes:
+  cloudflared_web_data:
