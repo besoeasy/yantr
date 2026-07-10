@@ -143,35 +143,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] font-sans text-gray-900 dark:text-white pb-20">
+  <div class="min-h-screen bg-white pb-20 font-sans text-zinc-900 dark:bg-[#0A0A0A] dark:text-white">
     <!-- Header -->
-    <header class="bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 sticky top-0 z-30">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50">
-              <Layers class="w-5 h-5 text-gray-700 dark:text-zinc-300" />
+    <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-[#0A0A0A]/80">
+      <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+              <Layers class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
             </div>
             <div>
-              <h1 class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('images.title') }}</h1>
-              <p class="text-xs font-medium text-gray-500 dark:text-zinc-500">{{ t('images.subtitle') }}</p>
+              <h1 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white">{{ t('images.title') }}</h1>
+              <p class="text-xs font-semibold text-zinc-500">{{ t('images.subtitle') }}</p>
             </div>
           </div>
           
           <div class="flex items-center gap-3">
             <SearchInput v-model="searchQuery" :placeholder="t('images.searchPlaceholder')" />
-            <button @click="fetchImages" class="p-2 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 hover:border-gray-300 dark:hover:border-zinc-600 rounded-lg transition-colors shrink-0 group">
-              <Database class="w-4 h-4 text-gray-600 dark:text-zinc-400 group-hover:text-blue-500 transition-colors" :class="{ 'animate-spin text-blue-500': loading }" />
+            <button @click="fetchImages" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
+              <Database class="h-4 w-4 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white" :class="{ 'animate-spin': loading }" />
             </button>
           </div>
         </div>
       </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <main class="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
       
       <!-- Stats Overview -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard :label="t('images.totalImages')" :value="imagesData.total || 0" :icon="Box" accent="blue" />
         <StatCard :label="t('images.inUse')" :value="imagesData.used || 0" :icon="Check" accent="green" />
         <StatCard :label="t('images.unused')" :value="imagesData.unused || 0" :icon="AlertTriangle" accent="amber" />
@@ -198,8 +198,8 @@ onMounted(() => {
             <button v-if="currentTab === 'unused' && filteredUnused.length > 0"
               @click="deleteAllUnusedImages"
               :disabled="deletingAllImages"
-              class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 hover:text-red-700 dark:text-red-500 dark:hover:text-red-400 transition-colors flex items-center gap-2 px-3 py-1.5 rounded-md border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
-              <Trash2 class="w-3 h-3" />
+              class="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-red-600 transition-colors hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/10 dark:text-red-500 dark:hover:bg-red-900/20">
+              <Trash2 class="h-3 w-3" />
               {{ deletingAllImages ? t('images.cleaning') : t('images.pruneAll') }}
             </button>
           </template>
@@ -207,35 +207,35 @@ onMounted(() => {
 
         <!-- Active View -->
         <transition name="fade" mode="out-in">
-          <div v-if="currentTab === 'active'" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden">
+          <div v-if="currentTab === 'active'" class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
              <div class="overflow-x-auto">
-             <table class="w-full text-left border-collapse">
+             <table class="w-full border-collapse text-left">
                 <thead>
-                   <tr class="text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-[0.2em] border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/20">
+                   <tr class="border-b border-zinc-200 bg-zinc-50 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
                       <th class="px-6 py-4">{{ t('images.tag') }}</th>
-                      <th class="px-6 py-4 w-32">{{ t('images.shortId') }}</th>
-                      <th class="px-6 py-4 w-32">{{ t('images.size') }}</th>
-                      <th class="px-6 py-4 w-48">{{ t('images.created') }}</th>
-                      <th class="px-4 py-4 w-24">{{ t('images.status') }}</th>
+                      <th class="w-32 px-6 py-4">{{ t('images.shortId') }}</th>
+                      <th class="w-32 px-6 py-4">{{ t('images.size') }}</th>
+                      <th class="w-48 px-6 py-4">{{ t('images.created') }}</th>
+                      <th class="w-24 px-4 py-4">{{ t('images.status') }}</th>
                    </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-zinc-800 text-sm font-medium">
+                <tbody class="divide-y divide-zinc-200 text-sm font-medium dark:divide-zinc-800">
                    <tr v-if="filteredUsed.length === 0">
-                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">{{ t('images.noActiveImages') }}</td>
+                      <td colspan="5" class="px-6 py-12 text-center text-sm text-zinc-500">{{ t('images.noActiveImages') }}</td>
                    </tr>
-                   <tr v-for="image in filteredUsed" :key="image.id" class="group hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
-                      <td class="px-6 py-4 text-gray-900 dark:text-white">
+                   <tr v-for="image in filteredUsed" :key="image.id" class="group transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                      <td class="px-6 py-4 text-zinc-900 dark:text-white">
                          <div class="flex flex-col gap-1">
                             <span v-for="tag in image.tags" :key="tag" class="break-all">{{ tag }}</span>
                          </div>
                       </td>
-                      <td class="px-6 py-4 font-mono text-gray-500 dark:text-zinc-400 text-xs">{{ image.shortId }}</td>
-                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ image.size }} MB</td>
-                      <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ image.created }}</td>
+                      <td class="px-6 py-4 font-mono text-xs text-zinc-500 dark:text-zinc-400">{{ image.shortId }}</td>
+                      <td class="tabular-nums px-6 py-4 text-zinc-600 dark:text-zinc-300">{{ image.size }} MB</td>
+                      <td class="px-6 py-4 text-xs text-zinc-500">{{ image.created }}</td>
                       <td class="px-4 py-4 text-right">
                          <div class="flex items-center justify-end gap-1.5">
-                            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-500">{{ t('images.inUseStatus') }}</span>
+                            <div class="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500"></div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-500">{{ t('images.inUseStatus') }}</span>
                          </div>
                       </td>
                    </tr>
@@ -245,36 +245,36 @@ onMounted(() => {
            </div>
   
            <!-- Unused View -->
-          <div v-else-if="currentTab === 'unused'" class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden">
+          <div v-else-if="currentTab === 'unused'" class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black">
              <div class="overflow-x-auto">
-             <table class="w-full text-left border-collapse">
+             <table class="w-full border-collapse text-left">
                 <thead>
-                   <tr class="text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-[0.2em] border-b border-gray-200 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/20">
+                   <tr class="border-b border-zinc-200 bg-zinc-50 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
                       <th class="px-6 py-4">{{ t('images.tag') }}</th>
-                      <th class="px-6 py-4 w-32">{{ t('images.shortId') }}</th>
-                      <th class="px-6 py-4 w-32">{{ t('images.size') }}</th>
-                      <th class="px-6 py-4 w-48">{{ t('images.created') }}</th>
-                      <th class="px-4 py-4 w-24">{{ t('images.action') }}</th>
+                      <th class="w-32 px-6 py-4">{{ t('images.shortId') }}</th>
+                      <th class="w-32 px-6 py-4">{{ t('images.size') }}</th>
+                      <th class="w-48 px-6 py-4">{{ t('images.created') }}</th>
+                      <th class="w-24 px-4 py-4">{{ t('images.action') }}</th>
                    </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-zinc-800 text-sm font-medium">
+                <tbody class="divide-y divide-zinc-200 text-sm font-medium dark:divide-zinc-800">
                    <tr v-if="filteredUnused.length === 0">
-                      <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-zinc-500 text-sm">{{ t('images.noUnusedImages') }}</td>
+                      <td colspan="5" class="px-6 py-12 text-center text-sm text-zinc-500">{{ t('images.noUnusedImages') }}</td>
                    </tr>
-                   <tr v-for="image in filteredUnused" :key="image.id" class="group hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors">
-                      <td class="px-6 py-4 text-gray-900 dark:text-white">
+                   <tr v-for="image in filteredUnused" :key="image.id" class="group transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
+                      <td class="px-6 py-4 text-zinc-900 dark:text-white">
                          <div class="flex flex-col gap-1">
                             <span v-for="tag in image.tags" :key="tag" class="break-all">{{ tag }}</span>
                          </div>
                       </td>
-                      <td class="px-6 py-4 font-mono text-gray-500 dark:text-zinc-400 text-xs">{{ image.shortId }}</td>
-                      <td class="px-6 py-4 text-gray-600 dark:text-zinc-300 tabular-nums">{{ image.size }} MB</td>
-                      <td class="px-6 py-4 text-gray-500 dark:text-zinc-500 text-xs">{{ image.created }}</td>
+                      <td class="px-6 py-4 font-mono text-xs text-zinc-500 dark:text-zinc-400">{{ image.shortId }}</td>
+                      <td class="tabular-nums px-6 py-4 text-zinc-600 dark:text-zinc-300">{{ image.size }} MB</td>
+                      <td class="px-6 py-4 text-xs text-zinc-500">{{ image.created }}</td>
                       <td class="px-4 py-4 text-right">
                          <button @click="deleteImage(image.id, image.tags[0])" 
-                            class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                            class="rounded-lg p-2 text-zinc-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-600 focus:opacity-100 group-hover:opacity-100 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                             :title="t('images.deleteImage')">
-                            <Trash2 class="w-4 h-4" />
+                            <Trash2 class="h-4 w-4" />
                          </button>
                       </td>
                    </tr>
