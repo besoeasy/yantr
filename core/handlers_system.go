@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	dockerctr "github.com/docker/docker/api/types/container"
@@ -389,6 +390,20 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Load catalog once to check customapp flag per project.
+	catalog, _ := apps.GetCatalogCached(false)
+	isCustomApp := func(baseID string) bool {
+		if catalog == nil {
+			return false
+		}
+		for i := range catalog.Apps {
+			if catalog.Apps[i].ID == baseID {
+				return catalog.Apps[i].CustomApp
+			}
+		}
+		return false
+	}
+
 	var allStdout, allStderr strings.Builder
 	updatedCount := 0
 
@@ -400,6 +415,13 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		baseID := getBaseAppID(projectID)
+
+		// Guard: never auto-update customapp stacks (locally built images have no registry).
+		if isCustomApp(baseID) {
+			shared.Log("warn", fmt.Sprintf("[update] skipping customapp stack %s — auto-update disabled", projectID))
+			continue
+		}
+
 		appPath := filepath.Join(apps.GetAppsDir(), baseID)
 		ref := compose.GetProjectComposeRef(appPath, projectID)
 
@@ -419,21 +441,34 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		allStderr.WriteString(errPull + "\n")
 
 		if exitPull != 0 {
-			shared.Log("error", fmt.Sprintf("[update] pull failed for %s", projectID))
+			shared.Log("error", fmt.Sprintf("[update] pull failed for %s (exit=%d)", projectID, exitPull))
 			continue
 		}
+
+		// Detect whether any image was actually newer before recreating.
+		// We only check pull output — this avoids relying on locale-sensitive
+		// strings from 'up' which vary across Docker/Compose versions.
+		pullCombined := strings.ToLower(outPull + "\n" + errPull)
+		newerImage := strings.Contains(pullCombined, "downloaded newer image") ||
+			strings.Contains(pullCombined, "pull complete") ||
+			strings.Contains(pullCombined, "digest:")
 
 		shared.Log("info", fmt.Sprintf("[update] recreating stack: %s", projectID))
 		upCtx, upCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		upArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "up", "-d")
-		outUp, errUp, _, _ := spawnExec(upCtx, cmdName, upArgs, env, appPath)
+		outUp, errUp, exitUp, _ := spawnExec(upCtx, cmdName, upArgs, env, appPath)
 		upCancel()
 
 		allStdout.WriteString(outUp + "\n")
 		allStderr.WriteString(errUp + "\n")
 
-		// If outUp/errUp contains "Started" or "Recreated", or "Pulled", it was updated
-		if strings.Contains(outUp, "Started") || strings.Contains(outUp, "Recreated") || strings.Contains(errUp, "Started") || strings.Contains(errUp, "Recreated") || strings.Contains(outPull, "Downloaded newer image") || strings.Contains(errPull, "Downloaded newer image") {
+		if exitUp != 0 {
+			shared.Log("error", fmt.Sprintf("[update] 'up -d' failed for %s (exit=%d)", projectID, exitUp))
+			continue
+		}
+
+		// Count as updated only when a newer image was pulled AND the stack came up cleanly.
+		if newerImage {
 			updatedCount++
 			shared.Log("info", fmt.Sprintf("[update] stack %s was updated", projectID))
 			telemetry.TrackUpdatesForContainers([]string{projectID})
@@ -451,12 +486,21 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		} else {
 			allStdout.WriteString(wOut + "\n")
 			allStderr.WriteString(wErr + "\n")
-			
+
+			// Count only the containers that Watchtower actually mentions by name as updated.
+			// This avoids overcounting when only a subset of the requested containers had updates.
 			wCombined := strings.ToLower(wOut + "\n" + wErr)
-			if strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated") {
-				updatedCount += len(watchtowerNames)
-				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(watchtowerNames, ", ")))
-				telemetry.TrackUpdatesForContainers(watchtowerNames)
+			var updatedNames []string
+			for _, name := range watchtowerNames {
+				if strings.Contains(wCombined, strings.ToLower(name)) &&
+					(strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")) {
+					updatedNames = append(updatedNames, name)
+				}
+			}
+			if len(updatedNames) > 0 {
+				updatedCount += len(updatedNames)
+				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(updatedNames, ", ")))
+				telemetry.TrackUpdatesForContainers(updatedNames)
 			} else {
 				shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(watchtowerNames, ", "), wExit))
 			}
@@ -483,39 +527,93 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// selfUpdateMu guards selfUpdateScheduled to prevent double-scheduling.
+var (
+	selfUpdateMu        sync.Mutex
+	selfUpdateScheduled bool
+)
+
+// findSelfContainerName resolves the name of the Yantr container.
+// Priority:
+//  1. YANTR_CONTAINER_NAME env var (explicit override)
+//  2. Scan running containers for one whose image contains the YANTR_IMAGE
+//     value (default: "yantr") — covers any tag / registry prefix.
+//  3. Hard fallback: "yantr"
+func findSelfContainerName() string {
+	if name := os.Getenv("YANTR_CONTAINER_NAME"); name != "" {
+		return name
+	}
+	imageName := strings.ToLower(coalesce(os.Getenv("YANTR_IMAGE"), "yantr"))
+	ctrs, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
+	if err == nil {
+		for _, c := range ctrs {
+			if strings.Contains(strings.ToLower(c.Image), imageName) && len(c.Names) > 0 {
+				name := strings.TrimPrefix(c.Names[0], "/")
+				shared.Log("info", fmt.Sprintf("[update:self] resolved container %q from image %q", name, c.Image))
+				return name
+			}
+		}
+	}
+	shared.Log("warn", "[update:self] could not resolve container by image, falling back to \"yantr\"")
+	return "yantr"
+}
+
+const selfUpdateDelay = 10 * time.Minute
+
 func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
-	name := coalesce(os.Getenv("YANTR_CONTAINER_NAME"), "yantr")
-	shared.Log("info", "[update] self-update requested for container: "+name)
-	stdout, stderr, exitCode, err := runWatchtower([]string{name})
-	if err != nil {
-		shared.Log("error", "[update] self-update watchtower error: "+err.Error())
-		jsonErr(w, 500, "SELF_UPDATE_FAILED", err.Error())
+	selfUpdateMu.Lock()
+	if selfUpdateScheduled {
+		selfUpdateMu.Unlock()
+		jsonErr(w, 409, "UPDATE_ALREADY_SCHEDULED", "A self-update is already scheduled")
 		return
 	}
-	if stdout != "" {
+	selfUpdateScheduled = true
+	selfUpdateMu.Unlock()
+
+	name := findSelfContainerName()
+	shared.Log("info", fmt.Sprintf("[update:self] update scheduled in %.0f min for container: %s", selfUpdateDelay.Minutes(), name))
+
+	// Respond immediately — Watchtower will stop this container, so we must
+	// send the response before the update fires.
+	jsonResp(w, 200, map[string]interface{}{
+		"success":      true,
+		"scheduled":    true,
+		"container":    name,
+		"delaySeconds": int(selfUpdateDelay.Seconds()),
+	})
+
+	go func() {
+		defer func() {
+			selfUpdateMu.Lock()
+			selfUpdateScheduled = false
+			selfUpdateMu.Unlock()
+		}()
+
+		time.Sleep(selfUpdateDelay)
+
+		shared.Log("info", "[update:self] delay elapsed — running watchtower for: "+name)
+		stdout, stderr, exitCode, err := runWatchtower([]string{name})
+		if err != nil {
+			shared.Log("error", "[update:self] watchtower error: "+err.Error())
+			return
+		}
 		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
 			if line != "" {
 				shared.Log("info", "[update:self] "+line)
 			}
 		}
-	}
-	if stderr != "" {
 		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
 			if line != "" {
 				shared.Log("info", "[update:self] "+line)
 			}
 		}
-	}
-	wCombined := strings.ToLower(stdout + "\n" + stderr)
-	updated := strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")
-	if updated {
-		shared.Log("info", "[update:self] Yantr updated — restart may be required")
-	} else {
-		shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
-	}
-	jsonResp(w, 200, map[string]interface{}{"success": true, "exitCode": exitCode, "output": stdout, "warnings": stderr})
-
-	if updated {
-		telemetry.TrackSelfUpdate(1, version)
-	}
+		wCombined := strings.ToLower(stdout + "\n" + stderr)
+		updated := strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")
+		if updated {
+			shared.Log("info", "[update:self] Yantr updated — restarting")
+			telemetry.TrackSelfUpdate(1, version)
+		} else {
+			shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
+		}
+	}()
 }
