@@ -464,28 +464,6 @@ func main() {
 		}
 	}()
 
-	// Self-update scheduler — checks for a new Yantr image every 3 hours.
-	// Override interval via YANTR_AUTOUPDATE_INTERVAL (e.g. "6h", "30m").
-	// runSelfUpdateNow blocks until Watchtower finishes, so ticks are
-	// naturally serialized — no mutex needed.
-	go func() {
-		selfUpdateInterval := 3 * time.Hour
-		if v := os.Getenv("YANTR_AUTOUPDATE_INTERVAL"); v != "" {
-			if d, err := time.ParseDuration(v); err == nil && d >= time.Minute {
-				selfUpdateInterval = d
-			} else {
-				shared.Log("warn", fmt.Sprintf("[update:self] invalid YANTR_AUTOUPDATE_INTERVAL %q, using default 3h", v))
-			}
-		}
-		shared.Log("info", fmt.Sprintf("🔄 Self-update scheduler started (interval=%s)", selfUpdateInterval))
-		ticker := time.NewTicker(selfUpdateInterval)
-		defer ticker.Stop()
-		for range ticker.C {
-			shared.Log("info", "[update:self] scheduled check triggered")
-			runSelfUpdateNow(findSelfContainerName())
-		}
-	}()
-
 	// Server startup log
 	shared.Log("info", strings.Repeat("=", 50))
 	shared.Log("info", "🚀 Yantr Core Server Started (Go)")
