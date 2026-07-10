@@ -268,20 +268,20 @@ async function deployApp() {
 </script>
 
 <template>
-  <div class="space-y-6 sticky top-24">
+  <div class="sticky top-24 space-y-6">
     <!-- Custom App Notice -->
-    <div v-if="app.customapp" class="flex items-start gap-3 rounded-xl border border-purple-200 dark:border-purple-500/20 bg-purple-50 dark:bg-purple-500/10 px-4 py-3">
-      <div class="w-2 h-2 rounded-full bg-purple-500 shrink-0 mt-1"></div>
+    <div v-if="app.customapp" class="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50 px-5 py-4 dark:border-purple-500/20 dark:bg-purple-500/10">
+      <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-purple-500"></div>
       <div>
-        <div class="text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-0.5">Custom App Built by Yantr Team</div>
-        <p class="text-[11px] text-purple-700 dark:text-purple-300 leading-relaxed">This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled.</p>
+        <div class="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400">Custom App Built by Yantr Team</div>
+        <p class="text-[11px] leading-relaxed text-purple-700 dark:text-purple-300">This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled.</p>
       </div>
     </div>
 
     <!-- Configuration -->
-    <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-5">
-      <div class="flex items-center justify-between mb-5">
-        <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
+    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           {{ t('appDetail.configuration') }}
         </h2>
       </div>
@@ -290,37 +290,37 @@ async function deployApp() {
         <!-- Environment Vars -->
         <div v-if="app.environment?.length > 0" class="space-y-4">
           <div v-for="env in app.environment" :key="env.envVar" class="space-y-1.5">
-            <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">
+            <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
               {{ env.name }}
               <div class="flex items-center gap-2">
                 <button
                   v-if="getGeneratorRule(env.envVar)"
                   @click="generateEnvValue(env.envVar)"
                   type="button"
-                  class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                  class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
                 >
                   {{ t('appDetail.generate') }}
                 </button>
-                <span v-if="env.default" class="text-[9px] font-mono text-gray-400 dark:text-zinc-500 border border-gray-200 dark:border-zinc-800 px-1.5 py-0.5 rounded">{{ env.default }}</span>
+                <span v-if="env.default" class="rounded border border-zinc-200 px-1.5 py-0.5 font-mono text-[9px] text-zinc-500 dark:border-zinc-800">{{ env.default }}</span>
               </div>
             </label>
             <input
               v-model="envValues[env.envVar]"
               type="text"
               :placeholder="env.default || t('appDetail.value')"
-              class="w-full bg-transparent border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+              class="w-full rounded-xl border border-zinc-200 bg-transparent px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
             />
-            <p v-if="env.description" class="text-[10px] text-gray-500 dark:text-zinc-500 leading-tight">{{ env.description }}</p>
+            <p v-if="env.description" class="leading-tight text-[10px] text-zinc-500">{{ env.description }}</p>
           </div>
         </div>
 
         <!-- Custom / Extra Environment Variables -->
-        <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
+        <div class="space-y-3 border-t border-zinc-100 pt-5 dark:border-zinc-800">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('appDetail.customVars') }}</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('appDetail.customVars') }}</span>
             <button
               @click="addExtraEnvRow"
-              class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+              class="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-900 transition-colors hover:text-black dark:text-white dark:hover:text-zinc-300"
             >
               <Plus :size="11" />
               {{ t('appDetail.addCustomVar') }}
@@ -332,41 +332,41 @@ async function deployApp() {
                 v-model="row.key"
                 type="text"
                 :placeholder="t('appDetail.varName')"
-                class="w-2/5 bg-transparent border border-gray-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all uppercase"
+                class="w-2/5 rounded-xl border border-zinc-200 bg-transparent px-2.5 py-2 font-mono text-xs uppercase text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />
-              <span class="text-gray-400 dark:text-zinc-600 text-xs shrink-0">=</span>
+              <span class="shrink-0 text-xs text-zinc-400 dark:text-zinc-600">=</span>
               <input
                 v-model="row.value"
                 type="text"
                 :placeholder="t('appDetail.varValue')"
-                class="flex-1 bg-transparent border border-gray-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
+                class="flex-1 rounded-xl border border-zinc-200 bg-transparent px-2.5 py-2 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />
               <button
                 @click="removeExtraEnvRow(i)"
-                class="shrink-0 p-1.5 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all"
+                class="shrink-0 rounded-md p-1.5 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
               >
                 <X :size="13" />
               </button>
             </div>
           </div>
-          <p v-else class="text-[10px] text-gray-400 dark:text-zinc-600">{{ t('appDetail.customVarsHint') }}</p>
+          <p v-else class="text-[10px] text-zinc-400 dark:text-zinc-600">{{ t('appDetail.customVarsHint') }}</p>
         </div>
 
         <!-- Options Toggles -->
-        <div class="space-y-3 pt-4 border-t border-gray-100 dark:border-zinc-800">
+        <div class="space-y-3 border-t border-zinc-100 pt-5 dark:border-zinc-800">
 
           <!-- Temporary Install -->
-          <div class="rounded-lg border border-gray-200 dark:border-zinc-800 p-3 transition-colors bg-gray-50 dark:bg-zinc-900/30">
+          <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900/50">
               <div class="flex items-start gap-3">
-                  <input type="checkbox" id="temp-install" v-model="temporaryInstall" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
+                  <input type="checkbox" id="temp-install" v-model="temporaryInstall" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-zinc-300 bg-transparent text-black focus:ring-black focus:ring-offset-0 dark:border-zinc-700 dark:text-white dark:focus:ring-white" />
                   <div class="flex-1">
-                      <label for="temp-install" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">{{ t('appDetail.temporaryInstall') }}</label>
-                      <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">{{ t('appDetail.temporaryInstallDesc') }}</p>
+                      <label for="temp-install" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">{{ t('appDetail.temporaryInstall') }}</label>
+                      <p class="mt-0.5 text-[10px] text-zinc-500">{{ t('appDetail.temporaryInstallDesc') }}</p>
                   </div>
               </div>
               
-              <div v-if="temporaryInstall" class="mt-3 pl-6">
-                  <select v-model.number="expirationHours" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg p-2 text-[11px] font-bold uppercase tracking-wider text-gray-900 dark:text-white focus:border-blue-500 focus:outline-none transition-colors cursor-pointer">
+              <div v-if="temporaryInstall" class="mt-4 pl-7">
+                  <select v-model.number="expirationHours" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white">
                       <option :value="1">{{ t('appDetail.1hour') }}</option>
                       <option :value="6">{{ t('appDetail.6hours') }}</option>
                       <option :value="12">{{ t('appDetail.12hours') }}</option>
@@ -380,28 +380,28 @@ async function deployApp() {
           </div>
 
           <!-- Basic Authentication -->
-          <div class="rounded-lg border border-gray-200 dark:border-zinc-800 p-3 transition-colors bg-gray-50 dark:bg-zinc-900/30">
+          <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900/50">
              <div class="flex items-start gap-3">
-                  <input type="checkbox" id="enable-auth" v-model="enableAuth" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
+                  <input type="checkbox" id="enable-auth" v-model="enableAuth" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-zinc-300 bg-transparent text-black focus:ring-black focus:ring-offset-0 dark:border-zinc-700 dark:text-white dark:focus:ring-white" />
                   <div class="flex-1">
-                      <label for="enable-auth" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">Enable Basic Auth</label>
-                      <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">Protect this app with a username and password</p>
+                      <label for="enable-auth" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">Enable Basic Auth</label>
+                      <p class="mt-0.5 text-[10px] text-zinc-500">Protect this app with a username and password</p>
                   </div>
              </div>
 
-              <div v-if="enableAuth" class="mt-4 pl-1 space-y-4">
+              <div v-if="enableAuth" class="mt-5 space-y-4 pl-1">
                   <div class="space-y-1.5">
-                      <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Proxy Port
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-gray-400 dark:text-zinc-500">Caddy listens here (public)</span>
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Proxy Port
+                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">Caddy listens here (public)</span>
                       </label>
-                      <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                      <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>
                   <!-- Target Port: shown when app exposes multiple ports -->
                   <div v-if="infoPorts.length > 0" class="space-y-1.5">
-                      <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Target Port
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-gray-400 dark:text-zinc-500">App's internal port to proxy to</span>
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Target Port
+                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">App's internal port to proxy to</span>
                       </label>
-                      <select v-model.number="authTargetPort" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all cursor-pointer">
+                      <select v-model.number="authTargetPort" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white">
                         <option :value="0">Auto-detect (first HTTP port)</option>
                         <option v-for="p in infoPorts" :key="p.port" :value="p.port">
                           :{{ p.port }} — {{ p.label }} ({{ p.protocol }})
@@ -409,46 +409,46 @@ async function deployApp() {
                       </select>
                   </div>
                   <div class="space-y-1.5">
-                      <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">Username</label>
-                      <input v-model="authUsername" type="text" placeholder="admin" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Username</label>
+                      <input v-model="authUsername" type="text" placeholder="admin" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>
                   <div class="space-y-1.5">
-                      <label class="w-full text-[10px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-widest flex items-center justify-between">
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
                         Password
-                        <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">Generate</button>
+                        <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">Generate</button>
                       </label>
-                      <input v-model="authPassword" type="text" placeholder="Secret password" class="w-full bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-xs font-mono text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+                      <input v-model="authPassword" type="text" placeholder="Secret password" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>
               </div>
           </div>
 
           <!-- Custom Ports -->
-          <div v-if="allPorts.length > 0" class="rounded-lg border border-gray-200 dark:border-zinc-800 p-3 transition-colors bg-gray-50 dark:bg-zinc-900/30">
+          <div v-if="allPorts.length > 0" class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900/50">
              <div class="flex items-start gap-3">
-                  <input type="checkbox" id="custom-ports" v-model="customizePorts" class="mt-0.5 w-4 h-4 shrink-0 rounded border-gray-300 dark:border-zinc-700 text-black dark:text-white focus:ring-black dark:focus:ring-white focus:ring-offset-0 cursor-pointer bg-transparent" />
+                  <input type="checkbox" id="custom-ports" v-model="customizePorts" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-zinc-300 bg-transparent text-black focus:ring-black focus:ring-offset-0 dark:border-zinc-700 dark:text-white dark:focus:ring-white" />
                   <div class="flex-1">
-                      <label for="custom-ports" class="block text-[11px] font-bold text-gray-900 dark:text-zinc-100 cursor-pointer uppercase tracking-wider">{{ t('appDetail.portMapping') }}</label>
-                      <p class="text-[10px] text-gray-500 dark:text-zinc-500 mt-0.5">{{ t('appDetail.advancedConfig') }}</p>
+                      <label for="custom-ports" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">{{ t('appDetail.portMapping') }}</label>
+                      <p class="mt-0.5 text-[10px] text-zinc-500">{{ t('appDetail.advancedConfig') }}</p>
                   </div>
              </div>
 
-              <div v-if="customizePorts" class="mt-4 pl-1 space-y-4">
+              <div v-if="customizePorts" class="mt-5 space-y-4 pl-1">
                   <div v-for="port in allPorts" :key="port.hostPort + '/' + port.protocol" class="space-y-1.5">
-                      <div class="flex items-center justify-between text-[10px] font-mono font-medium text-gray-500 uppercase tracking-wider">
+                      <div class="flex items-center justify-between font-mono text-[10px] font-bold uppercase tracking-wider text-zinc-500">
                           <span>{{ t('appDetail.internal') }}: {{ port.containerPort }} ({{ port.protocol }})</span>
                       </div>
                       <div class="flex items-center gap-2">
-                          <span class="text-gray-400 text-sm">→</span>
+                          <span class="text-sm text-zinc-400">→</span>
                           <input
                           v-model="customPortMappings[port.hostPort + '/' + port.protocol]"
                           type="number"
                           :placeholder="port.hostPort"
-                          class="flex-1 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:border-blue-500 focus:outline-none transition-colors"
+                          class="flex-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-2 font-mono text-xs transition-colors focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:focus:border-white dark:focus:ring-white"
                           />
                       </div>
                       <!-- Port Status -->
                       <div v-if="customPortMappings[port.hostPort + '/' + port.protocol]" class="flex items-center justify-end">
-                          <div class="flex items-center gap-1.5 text-[9px] uppercase font-bold tracking-wider">
+                          <div class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-wider">
                               <span :class="{
                                   'text-red-500': getPortStatus(port).status === 'conflict',
                                   'text-yellow-500': getPortStatus(port).status === 'warning',
@@ -470,10 +470,10 @@ async function deployApp() {
            <button
              @click="deployApp"
              :disabled="!canDeploy"
-             class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 rounded-xl text-xs font-bold uppercase tracking-wider transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+             class="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 px-4 py-3 text-xs font-bold uppercase tracking-wider text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
            >
               <span v-if="deploying" class="flex items-center justify-center gap-2">
-                 <span class="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+                 <span class="h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
                  {{ t('appDetail.initializing') }}
               </span>
               <span v-else class="flex items-center justify-center gap-2">
@@ -481,7 +481,7 @@ async function deployApp() {
                  {{ instanceCount > 0 ? t('appDetail.deployAnother') : t('appDetail.installApp') }}
               </span>
            </button>
-           <div v-if="instanceCount > 0" class="text-center mt-3 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
+           <div v-if="instanceCount > 0" class="mt-3 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500">
               {{ instanceCount }} {{ instanceCount !== 1 ? t('appDetail.activeInstancesPlural') : t('appDetail.activeInstances') }} {{ t('appDetail.running') }}
            </div>
         </div>

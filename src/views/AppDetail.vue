@@ -94,15 +94,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-zinc-100 font-sans selection:bg-blue-500/30">
+  <div class="min-h-screen bg-white pb-20 font-sans text-zinc-900 selection:bg-blue-500/30 dark:bg-[#0A0A0A] dark:text-zinc-100">
     
     <!-- Loading State -->
-    <div v-if="loading" class="flex flex-col items-center justify-center min-h-[60vh]">
-      <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin mb-6"></div>
-      <div class="font-bold text-[10px] tracking-widest text-gray-400 dark:text-zinc-500 uppercase">{{ t('appDetail.retrievingManifest') }}</div>
+    <div v-if="loading" class="flex min-h-[60vh] flex-col items-center justify-center">
+      <div class="mb-6 h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t('appDetail.retrievingManifest') }}</div>
     </div>
 
-    <div v-else-if="app" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div v-else-if="app" class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-12">
 
         <!-- Left Column: Information & Specs -->
         <div class="lg:col-span-8">
