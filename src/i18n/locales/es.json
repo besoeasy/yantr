@@ -630,5 +630,11 @@
     },
     "setupNote": "Se generará una clave segura y se almacenará en su navegador.",
     "loginNote": "Su clave está almacenada en este navegador."
+  },
+  "openSourceCard": {
+    "label": "Open Source",
+    "title": "Yantr is Open Source.",
+    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "cta": "Star on GitHub"
   }
 }

@@ -630,5 +630,11 @@
     },
     "setupNote": "安全なキーが生成され、ブラウザに保存されます。",
     "loginNote": "キーはこのブラウザに保存されています。"
+  },
+  "openSourceCard": {
+    "label": "Open Source",
+    "title": "Yantr is Open Source.",
+    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "cta": "Star on GitHub"
   }
 }

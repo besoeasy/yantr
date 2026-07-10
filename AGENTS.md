@@ -167,16 +167,15 @@ volumes:
   my_app_data:
 ```
 
-### Frontend (from `.github/copilot-instructions.md`)
-- CSS tokens: `--bg-body`, `--text-primary`, `--text-secondary`, `--surface`, `--surface-muted`
-- Flat surfaces only — no gradients, glass morphism, backdrop-filter
-- No borders/rings unless required; use `smooth-shadow`/`smooth-shadow-lg` for elevation
-- Mobile-first, no horizontal scroll, 44x44 tap targets
-- Lucide icons only; every interactive element needs hover state
-- Buttons: leading Lucide icon unless space constrained
-- Animations: subtle, use existing motion tokens
-- Compact card/list layouts over dense tables
-- Dashboard cards: minimal identity-card style (quiet header, one strong focal line, ≤2 detail rows, clear bottom action); no nested backgrounds, pills, borders, rings, or dividers; emphasis via spacing/typography/icons/hover motion
+### Frontend (Design Language)
+- **Aesthetic**: Neobrutalist / Minimalist (inspired by Vercel/Linear). High contrast, pure monochrome shells, and sharp geometry.
+- **Card Containers**: Pure backgrounds (`bg-white dark:bg-black`) framed by crisp 1px borders (`border-zinc-200 dark:border-zinc-800`). Absolutely NO colorful gradients, heavy glassmorphism, or oversized drop shadows.
+- **Hover States**: Subtle and crisp. Elevate by 1px (`hover:-translate-y-1`), darken borders (`hover:border-zinc-300 dark:hover:border-zinc-700`), and apply a refined shadow (`hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]`).
+- **Typography**: High contrast, grayscale text. Use strong typography (`text-zinc-900 dark:text-white`) for primary data and subdued grays (`text-zinc-500`) for secondary text.
+- **Interactive Elements (Buttons/Badges)**: Solid, high-contrast pills. Primary CTAs should use inverted monochrome (`bg-zinc-900 text-white` in light mode, `bg-white text-zinc-900` in dark mode). Badges/Tags use subtle zinc fills (`bg-zinc-100 dark:bg-zinc-900`).
+- **Animations**: Minimal and technical. Use radar-like pulsing (`animate-ping`) for active status dots. Keep transitions fast and professional (`duration-300`).
+- **Icons**: Lucide icons only. Keep them small, sharp, and bordered when placed in distinct icon blocks (e.g., `h-12 w-12 rounded-xl border border-zinc-200 bg-zinc-50`).
+- **Layout**: Compact card/list layouts. Avoid dense tables. Ensure 44x44 tap targets on mobile.
 
 ### Backend
 - Architecture: See the main Architecture section above for `core/` package layout.

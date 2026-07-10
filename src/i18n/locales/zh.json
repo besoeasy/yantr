@@ -630,5 +630,11 @@
     },
     "setupNote": "系统将生成安全密钥并存储在您的浏览器中。",
     "loginNote": "您的密钥已存储在此浏览器中。"
+  },
+  "openSourceCard": {
+    "label": "Open Source",
+    "title": "Yantr is Open Source.",
+    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "cta": "Star on GitHub"
   }
 }
