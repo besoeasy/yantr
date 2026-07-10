@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	dockerctr "github.com/docker/docker/api/types/container"
@@ -526,12 +525,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		"warnings":     allStderr.String(),
 	})
 }
-
-// selfUpdateMu guards selfUpdateScheduled to prevent double-scheduling.
-var (
-	selfUpdateMu        sync.Mutex
-	selfUpdateScheduled bool
-)
 
 // findSelfContainerName resolves the name of the Yantr container.
 // Priority:
