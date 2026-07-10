@@ -87,6 +87,17 @@
       "open": "Ouvrir",
       "services": "services",
       "service": "service"
+    },
+    "dailyAppCard": {
+      "featuredToday": "En vedette aujourd'hui",
+      "subtitle": "Une sélection quotidienne de votre catalogue",
+      "noDescription": "Aucune description disponible pour cette application.",
+      "rotatesDaily": "Actualisé chaque jour",
+      "viewApp": "Voir l'application",
+      "openOverview": "Ouvrir l'application",
+      "installed": "Installé",
+      "available": "Disponible",
+      "running": "Actif ({count})"
     }
   },
   "apps": {
@@ -163,7 +174,14 @@
     "installedSuccessfully": "{name} installée avec succès ! 🎉",
     "deploymentFailed": "Échec du déploiement",
     "deploymentTimeout": "Délai de déploiement dépassé - {name} prend plus de temps que prévu",
-    "deploymentFailedMessage": "Échec du déploiement : {message}"
+    "deploymentFailedMessage": "Échec du déploiement : {message}",
+    "generate": "Générer",
+    "generateSecure": "Générer Sécurisé",
+    "generatedValue": "Valeur générée pour {envVar}",
+    "generatedValuesCount": "{count} valeur(s) sécurisée(s) générée(s)",
+    "generationFailed": "Impossible de générer une valeur correspondant à cette règle",
+    "invalidGeneratorRule": "Règle regex de générateur invalide",
+    "noGeneratorForVariable": "Aucune règle de générateur trouvée pour cette application"
   },
   "container": {
     "status": "Statut",
@@ -400,7 +418,39 @@
     "updateComplete": "{count} conteneur(s) mis à jour vers la dernière image",
     "updateAlreadyLatest": "Déjà à jour — aucune nouvelle image trouvée",
     "updateFailed": "Échec de la mise à jour",
-    "updateTimedOut": "Mise à jour expirée — le téléchargement de l'image a pris trop de temps"
+    "updateTimedOut": "Mise à jour expirée — le téléchargement de l'image a pris trop de temps",
+    "openAnotherPort": "Ouvrir un autre port",
+    "auth": "Authentification",
+    "openAnotherPortHint": "Utilisez la syntaxe Docker. Exemples : 9000:9000, 9000 pour une attribution automatique, ou 53:53/udp.",
+    "portMappingLabel": "Mappage de Port",
+    "portMappingHint": "Si vous entrez 9000, Docker attribue un port hôte aléatoire pour le port 9000 du conteneur.",
+    "openPortAction": "Ouvrir le port",
+    "openingPortAction": "Ouverture…",
+    "portFormInvalid": "Entrez un mappage de port Docker valide.",
+    "openingPort": "Ouverture de {portMapping}…",
+    "portOpened": "{portMapping} ouvert",
+    "failedToOpenPort": "Échec de l'ouverture du port",
+    "builtByYantr": "Créé par Yantr",
+    "customAppNoUpdate": "Cette application a été créée par l'équipe Yantr et ne prend pas en charge les mises à jour automatiques.",
+    "caddyAuthTitle": "Authentification",
+    "caddyAuthHeading": "Protéger avec Caddy Auth Proxy",
+    "caddyAuthHint": "Activez le proxy Caddy intégré pour ajouter une authentification de base devant cette application.",
+    "caddyAuthTargetPort": "Port du Conteneur",
+    "caddyAuthTargetHint": "Le port sur lequel cette application est actuellement en cours d'exécution.",
+    "caddyAuthServePort": "Port Protégé",
+    "caddyAuthServeHint": "Nouveau port sur lequel Caddy écoutera (protégé par mot de passe).",
+    "caddyAuthUser": "Nom d'utilisateur",
+    "caddyAuthPass": "Mot de passe",
+    "caddyAuthPassHint": "Laissez vide pour ignorer l'authentification.",
+    "caddyAuthDeploy": "Activer le Proxy Auth",
+    "caddyAuthDeploying": "Activation…",
+    "caddyAuthDeployed": "Proxy auth activé !",
+    "caddyAuthFailed": "Échec de la configuration du proxy auth",
+    "caddyAuthDisable": "Désactiver",
+    "caddyAuthDisabled": "Proxy auth désactivé",
+    "caddyAuthServePortRequired": "Entrez un port protégé avant d'activer.",
+    "caddyAuthTargetPortRequired": "Entrez le port de l'application avant d'activer.",
+    "caddyProxiesRunning": "Proxys Actifs"
   },
   "appCard": {
     "active": "Actif ({count})",
@@ -552,5 +602,33 @@
     "title": "Financez Yantr. Gratuit pour toujours.",
     "description": "Soutenez Yantr via GitHub Sponsors — gardez le projet gratuit et influencez directement sa direction.",
     "cta": "Sponsoriser sur GitHub"
+  },
+  "authGate": {
+    "bootingTitle": "Préparation",
+    "bootingSubtitle": "Vérification de la configuration…",
+    "bootingState": "Restauration de la session…",
+    "setupTitle": "Configurer Yantr",
+    "setupSubtitle": "Définissez un mot de passe et un code PIN pour commencer.",
+    "loginTitle": "Se connecter",
+    "loginSubtitle": "Entrez votre mot de passe et code PIN pour déverrouiller.",
+    "username": "Nom d'utilisateur",
+    "usernamePlaceholder": "utilisateur",
+    "seedNote": "Clé stockée localement. Connectez-vous depuis cet appareil.",
+    "setupAction": "Créer un compte",
+    "loginAction": "Se connecter",
+    "working": "Travail en cours…",
+    "messages": {
+      "setupComplete": "Identité créée.",
+      "loginComplete": "Déverrouillé.",
+      "publicKeyCopied": "Clé publique copiée."
+    },
+    "errors": {
+      "usernameRequired": "Nom d'utilisateur requis.",
+      "passwordLength": "Le mot de passe doit comporter au moins 8 caractères.",
+      "generic": "Échoué.",
+      "copyFailed": "Échec de la copie."
+    },
+    "setupNote": "Une clé sécurisée sera générée et stockée dans votre navigateur.",
+    "loginNote": "Votre clé est stockée dans ce navigateur."
   }
 }

@@ -87,6 +87,17 @@
       "open": "打开",
       "services": "个服务",
       "service": "个服务"
+    },
+    "dailyAppCard": {
+      "featuredToday": "今日精选",
+      "subtitle": "从您的目录中每日精选",
+      "noDescription": "此应用程序没有可用描述。",
+      "rotatesDaily": "每天更新",
+      "viewApp": "查看应用",
+      "openOverview": "打开运行中的应用",
+      "installed": "已安装",
+      "available": "可用",
+      "running": "运行中 ({count})"
     }
   },
   "apps": {
@@ -163,7 +174,14 @@
     "installedSuccessfully": "{name} 安装成功! 🎉",
     "deploymentFailed": "部署失败",
     "deploymentTimeout": "部署超时 - {name} 耗时比预期更长",
-    "deploymentFailedMessage": "部署失败: {message}"
+    "deploymentFailedMessage": "部署失败: {message}",
+    "generate": "生成",
+    "generateSecure": "安全生成",
+    "generatedValue": "为 {envVar} 生成的值",
+    "generatedValuesCount": "生成了 {count} 个安全值",
+    "generationFailed": "未能生成匹配该规则的值",
+    "invalidGeneratorRule": "无效的生成器规则",
+    "noGeneratorForVariable": "未找到此应用的安全生成器规则"
   },
   "container": {
     "status": "状态",
@@ -400,7 +418,39 @@
     "updateComplete": "{count} 个容器已更新至最新镜像",
     "updateAlreadyLatest": "已是最新版本 — 未找到新镜像",
     "updateFailed": "更新失败",
-    "updateTimedOut": "更新超时 — 镜像拉取耗时过长"
+    "updateTimedOut": "更新超时 — 镜像拉取耗时过长",
+    "openAnotherPort": "打开其他端口",
+    "auth": "认证",
+    "openAnotherPortHint": "使用 Docker 端口语法，例如 9000:9000 或 53:53/udp。",
+    "portMappingLabel": "端口映射",
+    "portMappingHint": "如果您仅输入 9000，Docker 将为容器端口 9000 分配一个随机主机端口。",
+    "openPortAction": "打开端口",
+    "openingPortAction": "正在打开…",
+    "portFormInvalid": "请输入有效的 Docker 端口映射。",
+    "openingPort": "正在打开 {portMapping}…",
+    "portOpened": "已打开 {portMapping}",
+    "failedToOpenPort": "打开端口失败",
+    "builtByYantr": "由 Yantr 构建",
+    "customAppNoUpdate": "此应用由 Yantr 团队定制构建，不支持自动更新。",
+    "caddyAuthTitle": "认证",
+    "caddyAuthHeading": "使用 Caddy Auth Proxy 保护",
+    "caddyAuthHint": "启用内置的 Caddy 代理以在此应用程序前添加基本身份验证。",
+    "caddyAuthTargetPort": "容器端口",
+    "caddyAuthTargetHint": "此应用程序当前运行的端口。",
+    "caddyAuthServePort": "保护端口",
+    "caddyAuthServeHint": "Caddy 将监听的新端口（受密码保护）。",
+    "caddyAuthUser": "用户名",
+    "caddyAuthPass": "密码",
+    "caddyAuthPassHint": "留空以跳过身份验证。",
+    "caddyAuthDeploy": "启用 Auth Proxy",
+    "caddyAuthDeploying": "正在启用…",
+    "caddyAuthDeployed": "Auth Proxy 已启用！",
+    "caddyAuthFailed": "配置 Auth Proxy 失败",
+    "caddyAuthDisable": "禁用",
+    "caddyAuthDisabled": "Auth Proxy 已禁用",
+    "caddyAuthServePortRequired": "在启用之前输入保护端口。",
+    "caddyAuthTargetPortRequired": "在启用之前输入应用端口。",
+    "caddyProxiesRunning": "活动代理"
   },
   "appCard": {
     "active": "活动 ({count})",
@@ -552,5 +602,33 @@
     "title": "资助 Yantr，让它永久免费。",
     "description": "通过 GitHub Sponsors 支持 Yantr — 保持项目免费，并直接影响其发展方向。",
     "cta": "在 GitHub 上赞助"
+  },
+  "authGate": {
+    "bootingTitle": "准备中",
+    "bootingSubtitle": "正在检查配置…",
+    "bootingState": "正在恢复会话…",
+    "setupTitle": "设置 Yantr",
+    "setupSubtitle": "设置密码和 PIN 以开始。",
+    "loginTitle": "登录",
+    "loginSubtitle": "输入您的密码和 PIN 以解锁。",
+    "username": "用户名",
+    "usernamePlaceholder": "用户名",
+    "seedNote": "密钥存储在本地。请从此设备登录。",
+    "setupAction": "创建账户",
+    "loginAction": "登录",
+    "working": "工作中…",
+    "messages": {
+      "setupComplete": "身份已创建。",
+      "loginComplete": "已解锁。",
+      "publicKeyCopied": "公钥已复制。"
+    },
+    "errors": {
+      "usernameRequired": "需要用户名。",
+      "passwordLength": "密码长度必须至少为 8 个字符。",
+      "generic": "失败。",
+      "copyFailed": "复制失败。"
+    },
+    "setupNote": "系统将生成安全密钥并存储在您的浏览器中。",
+    "loginNote": "您的密钥已存储在此浏览器中。"
   }
 }

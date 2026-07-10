@@ -87,6 +87,17 @@
       "open": "Открыть",
       "services": "сервисы",
       "service": "сервис"
+    },
+    "dailyAppCard": {
+      "featuredToday": "Приложение дня",
+      "subtitle": "Ежедневная подборка из вашего каталога",
+      "noDescription": "Описание недоступно.",
+      "rotatesDaily": "Обновляется каждый день",
+      "viewApp": "Смотреть приложение",
+      "openOverview": "Открыть приложение",
+      "installed": "Установлено",
+      "available": "Доступно",
+      "running": "Активно ({count})"
     }
   },
   "apps": {
@@ -163,7 +174,14 @@
     "installedSuccessfully": "{name} успешно установлено! 🎉",
     "deploymentFailed": "Ошибка развёртывания",
     "deploymentTimeout": "Тайм-аут развёртывания — {name} занимает больше времени, чем ожидалось",
-    "deploymentFailedMessage": "Ошибка развёртывания: {message}"
+    "deploymentFailedMessage": "Ошибка развёртывания: {message}",
+    "generate": "Сгенерировать",
+    "generateSecure": "Сгенерировать безопасно",
+    "generatedValue": "Сгенерировано значение для {envVar}",
+    "generatedValuesCount": "Сгенерировано {count} безопасных значений",
+    "generationFailed": "Не удалось сгенерировать значение",
+    "invalidGeneratorRule": "Недопустимое правило генератора",
+    "noGeneratorForVariable": "Правило безопасной генерации не найдено"
   },
   "container": {
     "status": "Статус",
@@ -400,7 +418,39 @@
     "updateComplete": "{count} контейнер(ов) обновлено до последнего образа",
     "updateAlreadyLatest": "Уже актуально — новых образов не найдено",
     "updateFailed": "Ошибка обновления",
-    "updateTimedOut": "Тайм-аут обновления — загрузка образа заняла слишком много времени"
+    "updateTimedOut": "Тайм-аут обновления — загрузка образа заняла слишком много времени",
+    "openAnotherPort": "Открыть другой порт",
+    "auth": "Аутентификация",
+    "openAnotherPortHint": "Используйте синтаксис Docker. Например: 9000:9000, 9000 для авто или 53:53/udp.",
+    "portMappingLabel": "Проброс портов",
+    "portMappingHint": "Если вы введете 9000, Docker назначит случайный порт хоста для контейнера.",
+    "openPortAction": "Открыть порт",
+    "openingPortAction": "Открытие…",
+    "portFormInvalid": "Введите правильный порт Docker.",
+    "openingPort": "Открытие {portMapping}…",
+    "portOpened": "Открыт {portMapping}",
+    "failedToOpenPort": "Не удалось открыть порт",
+    "builtByYantr": "Создано Yantr",
+    "customAppNoUpdate": "Это приложение создано командой Yantr и не поддерживает автообновления.",
+    "caddyAuthTitle": "Аутентификация",
+    "caddyAuthHeading": "Защитить через Caddy Auth Proxy",
+    "caddyAuthHint": "Включите встроенный прокси Caddy для базовой авторизации.",
+    "caddyAuthTargetPort": "Порт контейнера",
+    "caddyAuthTargetHint": "Порт, на котором работает приложение.",
+    "caddyAuthServePort": "Защищенный порт",
+    "caddyAuthServeHint": "Новый порт для прокси с паролем.",
+    "caddyAuthUser": "Пользователь",
+    "caddyAuthPass": "Пароль",
+    "caddyAuthPassHint": "Оставьте пустым, чтобы пропустить.",
+    "caddyAuthDeploy": "Включить Auth Proxy",
+    "caddyAuthDeploying": "Включение…",
+    "caddyAuthDeployed": "Auth Proxy включен!",
+    "caddyAuthFailed": "Ошибка при включении Auth Proxy",
+    "caddyAuthDisable": "Выключить",
+    "caddyAuthDisabled": "Auth Proxy выключен",
+    "caddyAuthServePortRequired": "Введите защищенный порт.",
+    "caddyAuthTargetPortRequired": "Введите порт приложения.",
+    "caddyProxiesRunning": "Активные прокси"
   },
   "appCard": {
     "active": "Активно ({count})",
@@ -552,5 +602,33 @@
     "title": "Поддержи Yantr. Свободный навсегда.",
     "description": "Поддержите Yantr через GitHub Sponsors — проект остаётся бесплатным, а вы напрямую влияете на его развитие.",
     "cta": "Стать спонсором на GitHub"
+  },
+  "authGate": {
+    "bootingTitle": "Подготовка",
+    "bootingSubtitle": "Проверка конфигурации…",
+    "bootingState": "Восстановление сеанса…",
+    "setupTitle": "Настроить Yantr",
+    "setupSubtitle": "Задайте пароль и PIN для начала.",
+    "loginTitle": "Войти",
+    "loginSubtitle": "Введите пароль и PIN для разблокировки.",
+    "username": "Имя пользователя",
+    "usernamePlaceholder": "пользователь",
+    "seedNote": "Ключ хранится локально. Войдите с этого устройства.",
+    "setupAction": "Создать",
+    "loginAction": "Войти",
+    "working": "Работаем…",
+    "messages": {
+      "setupComplete": "Профиль создан.",
+      "loginComplete": "Разблокировано.",
+      "publicKeyCopied": "Открытый ключ скопирован."
+    },
+    "errors": {
+      "usernameRequired": "Имя пользователя обязательно.",
+      "passwordLength": "Пароль не менее 8 символов.",
+      "generic": "Ошибка.",
+      "copyFailed": "Не удалось скопировать."
+    },
+    "setupNote": "Ключ будет сгенерирован и сохранен в вашем браузере.",
+    "loginNote": "Ваш ключ сохранен в этом браузере."
   }
 }

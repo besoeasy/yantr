@@ -87,6 +87,17 @@
       "open": "Abrir",
       "services": "servicios",
       "service": "servicio"
+    },
+    "dailyAppCard": {
+      "featuredToday": "Destacado de hoy",
+      "subtitle": "Una selección diaria determinista de tu catálogo",
+      "noDescription": "No hay descripción disponible para esta aplicación.",
+      "rotatesDaily": "Se actualiza todos los días",
+      "viewApp": "Ver aplicación",
+      "openOverview": "Abrir aplicación en ejecución",
+      "installed": "Instalado",
+      "available": "Disponible",
+      "running": "Activo ({count})"
     }
   },
   "apps": {
@@ -163,7 +174,14 @@
     "installedSuccessfully": "¡{name} instalada con éxito! 🎉",
     "deploymentFailed": "Error en el despliegue",
     "deploymentTimeout": "Tiempo de espera agotado: {name} está tardando más de lo esperado",
-    "deploymentFailedMessage": "Error en el despliegue: {message}"
+    "deploymentFailedMessage": "Error en el despliegue: {message}",
+    "generate": "Generar",
+    "generateSecure": "Generar Seguro",
+    "generatedValue": "Valor generado para {envVar}",
+    "generatedValuesCount": "Se generaron {count} valores seguros",
+    "generationFailed": "No se pudo generar un valor que coincida con esta regla",
+    "invalidGeneratorRule": "Regla regex del generador inválida",
+    "noGeneratorForVariable": "No se encontró ninguna regla de generador seguro para esta aplicación"
   },
   "container": {
     "status": "Estado",
@@ -400,7 +418,39 @@
     "updateComplete": "{count} contenedor(es) actualizado(s) a la última imagen",
     "updateAlreadyLatest": "Ya está actualizado — no se encontraron nuevas imágenes",
     "updateFailed": "Error en la actualización",
-    "updateTimedOut": "Actualización agotada — la descarga de la imagen tardó demasiado"
+    "updateTimedOut": "Actualización agotada — la descarga de la imagen tardó demasiado",
+    "openAnotherPort": "Abrir Otro Puerto",
+    "auth": "Autenticación",
+    "openAnotherPortHint": "Use la sintaxis de puertos de Docker. Ejemplos: 9000:9000, 9000 para asignación automática, o 53:53/udp.",
+    "portMappingLabel": "Mapeo de Puertos",
+    "portMappingHint": "Si ingresa solo 9000, Docker asigna un puerto de host aleatorio para el puerto 9000 del contenedor.",
+    "openPortAction": "Abrir Puerto",
+    "openingPortAction": "Abriendo…",
+    "portFormInvalid": "Ingrese un mapeo de puertos de Docker válido.",
+    "openingPort": "Abriendo {portMapping}…",
+    "portOpened": "Abierto {portMapping}",
+    "failedToOpenPort": "Error al abrir el puerto",
+    "builtByYantr": "Construido por Yantr",
+    "customAppNoUpdate": "Esta aplicación fue construida por el equipo de Yantr y no admite actualizaciones automáticas.",
+    "caddyAuthTitle": "Autenticación",
+    "caddyAuthHeading": "Proteger con Caddy Auth Proxy",
+    "caddyAuthHint": "Habilite el proxy de Caddy integrado para agregar autenticación básica frente a esta aplicación.",
+    "caddyAuthTargetPort": "Puerto del Contenedor",
+    "caddyAuthTargetHint": "El puerto en el que se ejecuta esta aplicación actualmente.",
+    "caddyAuthServePort": "Puerto Protegido",
+    "caddyAuthServeHint": "Nuevo puerto en el que escuchará Caddy (protegido por contraseña).",
+    "caddyAuthUser": "Nombre de usuario",
+    "caddyAuthPass": "Contraseña",
+    "caddyAuthPassHint": "Dejar en blanco para omitir la autenticación.",
+    "caddyAuthDeploy": "Habilitar Auth Proxy",
+    "caddyAuthDeploying": "Habilitando…",
+    "caddyAuthDeployed": "¡Auth proxy habilitado!",
+    "caddyAuthFailed": "Error al configurar auth proxy",
+    "caddyAuthDisable": "Deshabilitar",
+    "caddyAuthDisabled": "Auth proxy deshabilitado",
+    "caddyAuthServePortRequired": "Ingrese un puerto protegido antes de habilitar.",
+    "caddyAuthTargetPortRequired": "Ingrese el puerto de la aplicación antes de habilitar.",
+    "caddyProxiesRunning": "Proxies Activos"
   },
   "appCard": {
     "active": "Activo ({count})",
@@ -552,5 +602,33 @@
     "title": "Financia Yantr. Libre para siempre.",
     "description": "Apoya Yantr en GitHub Sponsors — mantén el proyecto gratuito e influye directamente en su dirección.",
     "cta": "Patrocinar en GitHub"
+  },
+  "authGate": {
+    "bootingTitle": "Preparando",
+    "bootingSubtitle": "Comprobando configuración…",
+    "bootingState": "Restaurando sesión…",
+    "setupTitle": "Configurar Yantr",
+    "setupSubtitle": "Establece una contraseña y un PIN para comenzar.",
+    "loginTitle": "Iniciar sesión",
+    "loginSubtitle": "Ingresa tu contraseña y PIN para desbloquear.",
+    "username": "Nombre de usuario",
+    "usernamePlaceholder": "usuario",
+    "seedNote": "Clave almacenada localmente. Inicia sesión desde este dispositivo.",
+    "setupAction": "Crear cuenta",
+    "loginAction": "Iniciar sesión",
+    "working": "Trabajando…",
+    "messages": {
+      "setupComplete": "Identidad creada.",
+      "loginComplete": "Desbloqueado.",
+      "publicKeyCopied": "Clave pública copiada."
+    },
+    "errors": {
+      "usernameRequired": "Nombre de usuario requerido.",
+      "passwordLength": "La contraseña debe tener al menos 8 caracteres.",
+      "generic": "Fallido.",
+      "copyFailed": "Error al copiar."
+    },
+    "setupNote": "Se generará una clave segura y se almacenará en su navegador.",
+    "loginNote": "Su clave está almacenada en este navegador."
   }
 }

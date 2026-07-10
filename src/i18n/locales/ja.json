@@ -87,6 +87,17 @@
       "open": "開く",
       "services": "サービス",
       "service": "サービス"
+    },
+    "dailyAppCard": {
+      "featuredToday": "今日のおすすめ",
+      "subtitle": "カタログからの毎日のピックアップ",
+      "noDescription": "このアプリの説明はありません。",
+      "rotatesDaily": "毎日更新",
+      "viewApp": "アプリを見る",
+      "openOverview": "アプリを開く",
+      "installed": "インストール済み",
+      "available": "利用可能",
+      "running": "実行中 ({count})"
     }
   },
   "apps": {
@@ -163,7 +174,14 @@
     "installedSuccessfully": "{name}のインストールが完了しました！🎉",
     "deploymentFailed": "デプロイに失敗しました",
     "deploymentTimeout": "デプロイタイムアウト - {name}の処理に予想以上の時間がかかっています",
-    "deploymentFailedMessage": "デプロイに失敗しました: {message}"
+    "deploymentFailedMessage": "デプロイに失敗しました: {message}",
+    "generate": "生成",
+    "generateSecure": "安全に生成",
+    "generatedValue": "{envVar}の生成値",
+    "generatedValuesCount": "{count}個の安全な値を生成しました",
+    "generationFailed": "値の生成に失敗しました",
+    "invalidGeneratorRule": "無効な正規表現ルール",
+    "noGeneratorForVariable": "このアプリに安全なジェネレータールールが見つかりません"
   },
   "container": {
     "status": "ステータス",
@@ -400,7 +418,39 @@
     "updateComplete": "{count} 個のコンテナが最新イメージに更新されました",
     "updateAlreadyLatest": "最新の状態です — 新しいイメージは見つかりませんでした",
     "updateFailed": "更新失敗",
-    "updateTimedOut": "更新がタイムアウトしました — イメージの取得に時間がかかりすぎました"
+    "updateTimedOut": "更新がタイムアウトしました — イメージの取得に時間がかかりすぎました",
+    "openAnotherPort": "別のポートを開く",
+    "auth": "認証",
+    "openAnotherPortHint": "Dockerのポート構文を使用してください。例：9000:9000、自動割り当ての場合は9000、または53:53/udp。",
+    "portMappingLabel": "ポートマッピング",
+    "portMappingHint": "9000と入力した場合、Dockerはコンテナポート9000に対してランダムなホストポートを割り当てます。",
+    "openPortAction": "ポートを開く",
+    "openingPortAction": "開いています…",
+    "portFormInvalid": "有効なDockerポートマッピングを入力してください。",
+    "openingPort": "{portMapping}を開いています…",
+    "portOpened": "{portMapping}が開きました",
+    "failedToOpenPort": "ポートを開けませんでした",
+    "builtByYantr": "Yantrによるビルド",
+    "customAppNoUpdate": "このアプリはYantrチームによってカスタムビルドされており、自動更新をサポートしていません。",
+    "caddyAuthTitle": "認証",
+    "caddyAuthHeading": "Caddy Auth Proxyで保護",
+    "caddyAuthHint": "組み込みのCaddyプロキシを有効にして、このアプリの前に基本認証を追加します。",
+    "caddyAuthTargetPort": "コンテナポート",
+    "caddyAuthTargetHint": "このアプリが現在実行されているポート。",
+    "caddyAuthServePort": "保護されたポート",
+    "caddyAuthServeHint": "Caddyがリッスンする新しいポート（パスワード保護付き）。",
+    "caddyAuthUser": "ユーザー名",
+    "caddyAuthPass": "パスワード",
+    "caddyAuthPassHint": "認証をスキップするには空白のままにします。",
+    "caddyAuthDeploy": "Authプロキシを有効にする",
+    "caddyAuthDeploying": "有効にしています…",
+    "caddyAuthDeployed": "Authプロキシが有効になりました！",
+    "caddyAuthFailed": "Authプロキシの構成に失敗しました",
+    "caddyAuthDisable": "無効にする",
+    "caddyAuthDisabled": "Authプロキシを無効にしました",
+    "caddyAuthServePortRequired": "有効にする前に保護されたポートを入力してください。",
+    "caddyAuthTargetPortRequired": "有効にする前にアプリのポートを入力してください。",
+    "caddyProxiesRunning": "アクティブなプロキシ"
   },
   "appCard": {
     "active": "アクティブ ({count})",
@@ -552,5 +602,33 @@
     "title": "Yantr を支援して、永遠に無料で。",
     "description": "GitHub Sponsors で Yantr を支援 — プロジェクトを無料に保ち、その方向性に直接影響を与えましょう。",
     "cta": "GitHub でスポンサーになる"
+  },
+  "authGate": {
+    "bootingTitle": "準備中",
+    "bootingSubtitle": "構成を確認しています…",
+    "bootingState": "セッションを復元しています…",
+    "setupTitle": "Yantrのセットアップ",
+    "setupSubtitle": "パスワードとPINを設定して開始します。",
+    "loginTitle": "サインイン",
+    "loginSubtitle": "パスワードとPINを入力してロックを解除します。",
+    "username": "ユーザー名",
+    "usernamePlaceholder": "ユーザー名",
+    "seedNote": "キーはローカルに保存されます。このデバイスからサインインしてください。",
+    "setupAction": "アカウント作成",
+    "loginAction": "サインイン",
+    "working": "処理中…",
+    "messages": {
+      "setupComplete": "IDが作成されました。",
+      "loginComplete": "ロック解除されました。",
+      "publicKeyCopied": "公開鍵がコピーされました。"
+    },
+    "errors": {
+      "usernameRequired": "ユーザー名が必要です。",
+      "passwordLength": "パスワードは8文字以上である必要があります。",
+      "generic": "失敗しました。",
+      "copyFailed": "コピーに失敗しました。"
+    },
+    "setupNote": "安全なキーが生成され、ブラウザに保存されます。",
+    "loginNote": "キーはこのブラウザに保存されています。"
   }
 }
