@@ -42,7 +42,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full min-h-72">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-indigo-500/20 dark:hover:shadow-indigo-500/20 text-left w-full min-h-72">
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -56,7 +56,7 @@ onUnmounted(() => {
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("home.toolsNavCard.systemTools") }}</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-indigo-600 dark:text-indigo-400">
-              <span class="text-[10px] font-bold uppercase tracking-wider">Management</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">Management</span>
             </div>
           </div>
         </div>

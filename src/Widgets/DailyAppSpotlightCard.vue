@@ -117,7 +117,7 @@ const stateLabel = computed(() => {
     v-if="dailyApp"
     type="button"
     @click="handleSelect"
-    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full"
+    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-amber-500/20 dark:hover:shadow-amber-500/20 text-left w-full"
   >
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -143,7 +143,7 @@ const stateLabel = computed(() => {
               ]"
             >
               <div class="w-1.5 h-1.5 rounded-full bg-current" :class="{ 'animate-pulse': appState === 'running' }"></div>
-              <span class="text-[10px] font-bold uppercase tracking-wider">{{ stateLabel }}</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">{{ stateLabel }}</span>
             </div>
           </div>
         </div>
@@ -193,12 +193,12 @@ const stateLabel = computed(() => {
         </div>
         <div class="min-w-0">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("home.dailyAppCard.featuredToday") }}</h3>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mt-1.5 block">Error</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400 mt-1.5 block">Error</span>
         </div>
       </div>
 
       <div class="mt-auto pt-6 pb-2">
-        <div class="text-3xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
           {{ t("common.error") }}
         </div>
         <div class="text-sm font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-2">

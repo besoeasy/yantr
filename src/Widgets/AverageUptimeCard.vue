@@ -56,7 +56,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-violet-500/20 dark:hover:shadow-violet-500/20">
     
     <!-- Hover Accents -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -74,7 +74,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
           </h3>
           <div class="flex items-center gap-2 mt-1 text-gray-500 dark:text-zinc-400">
              <Activity class="w-3 h-3" />
-             <span class="text-[11px] font-medium uppercase tracking-wider">
+             <span class="text-[11px] font-medium uppercase tracking-widest">
                {{ t('quickMetrics.averageUptime.systemStability') }}
              </span>
           </div>
@@ -102,7 +102,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
             <div class="text-3xl font-bold text-gray-400 dark:text-zinc-600 tracking-tighter leading-none">
               0m
             </div>
-            <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+            <div class="mt-3 inline-block text-[10px] font-semibold px-2 py-1 rounded text-gray-500 dark:text-zinc-400 uppercase tracking-widest">
                {{ t('quickMetrics.averageUptime.systemIdle') }}
             </div>
          </div>

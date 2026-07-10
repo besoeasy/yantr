@@ -114,7 +114,7 @@ async function deploy() {
 
 <template>
   <!-- Setup state: no cloudflared container found -->
-  <div v-if="!cloudflaredContainer" class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:-translate-y-0.5 text-left w-full min-h-72">
+  <div v-if="!cloudflaredContainer" class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/20 dark:hover:shadow-orange-500/20 hover:-translate-y-0.5 text-left w-full min-h-72">
     <div class="absolute top-0 left-0 w-full h-0.5 bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
     <transition
@@ -143,19 +143,19 @@ async function deploy() {
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Cloudflared</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-orange-600 dark:text-orange-400">
-              <span class="text-[10px] font-bold uppercase tracking-wider">Secure Tunnel</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-1.5 shrink-0">
           <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-500">Not Installed</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">Not Installed</span>
         </div>
       </div>
 
       <!-- Main content -->
       <div class="mt-auto pt-6 flex flex-col relative z-10">
-        <div class="text-3xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-2">
+        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-2">
           Secure Tunnel
         </div>
         <div class="text-xs text-gray-500 dark:text-zinc-400 font-medium mb-5">
@@ -232,7 +232,7 @@ async function deploy() {
   </div>
 
   <!-- Status state: cloudflared container exists -->
-  <div v-else class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:-translate-y-0.5 text-left w-full min-h-72">
+  <div v-else class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/20 dark:hover:shadow-orange-500/20 hover:-translate-y-0.5 text-left w-full min-h-72">
     <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
 
     <div class="relative z-10 p-5 flex flex-col h-full gap-4">
@@ -245,7 +245,7 @@ async function deploy() {
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Cloudflared</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-orange-600 dark:text-orange-400">
-              <span class="text-[10px] font-bold uppercase tracking-wider">Secure Tunnel</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
             </div>
           </div>
         </div>
@@ -255,7 +255,7 @@ async function deploy() {
       </div>
 
       <div class="mt-auto pt-6 flex flex-col relative z-10">
-        <div class="text-3xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-4">
+        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-4">
           Secure Tunnel
         </div>
 

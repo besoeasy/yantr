@@ -59,7 +59,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full min-h-72">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-pink-500/20 dark:hover:shadow-pink-500/20 text-left w-full min-h-72">
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -73,7 +73,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">{{ t("sponsorCard.label") }}</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-pink-600 dark:text-pink-400">
-              <span class="text-[10px] font-bold uppercase tracking-wider">{{ t("home.externalLinks.resources") }}</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">{{ t("home.externalLinks.resources") }}</span>
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
             <GitBranch class="h-3.5 w-3.5" />
             <span>{{ buildTimeAgo }}</span>
           </div>
-          <div class="text-[10px] font-mono font-bold tracking-wider text-gray-300 dark:text-zinc-600" :title="buildTimestamp">
+          <div class="text-[10px] font-mono font-bold tracking-widest text-gray-300 dark:text-zinc-600" :title="buildTimestamp">
             {{ rawBuildTimestamp ? rawBuildTimestamp.split('T')[0] : 'DEV' }}
           </div>
         </div>

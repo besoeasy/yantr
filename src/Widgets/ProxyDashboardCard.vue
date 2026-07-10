@@ -53,7 +53,7 @@ function goToProxies() {
   <div
     v-if="proxies.length > 0"
     @click="goToProxies"
-    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
+    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/20"
   >
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -69,9 +69,9 @@ function goToProxies() {
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">Active Proxies</h3>
             <div v-if="caddyRunning" class="flex items-center gap-1.5 mt-1.5">
               <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Live</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Live</span>
             </div>
-            <div v-else class="text-[10px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider mt-1.5">Stopped</div>
+            <div v-else class="text-[10px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-widest mt-1.5">Stopped</div>
           </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">

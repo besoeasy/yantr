@@ -76,7 +76,7 @@ const displayLocation = computed(() => {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20">
     
     <!-- Hover Accents -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -97,7 +97,7 @@ const displayLocation = computed(() => {
              <div class="w-1.5 h-1.5 rounded-full"
                   :class="error ? 'bg-red-500' : loading ? 'bg-amber-500 animate-pulse' : 'bg-green-500'">
              </div>
-             <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+             <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-widest">
                {{ loading ? t('quickMetrics.machineIdentity.updating') : error ? t('quickMetrics.machineIdentity.offline') : t('quickMetrics.machineIdentity.connected') }}
              </span>
           </div>
@@ -119,7 +119,7 @@ const displayLocation = computed(() => {
       <div v-if="error" class="bg-red-50/50 dark:bg-red-900/10 rounded-lg p-3 flex items-start gap-3">
         <AlertCircle class="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
         <div>
-          <div class="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">{{ t('quickMetrics.machineIdentity.connectionFailed') }}</div>
+          <div class="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.connectionFailed') }}</div>
           <div class="text-[11px] leading-tight text-red-500/80 dark:text-red-400/80 mt-1 line-clamp-2">{{ error }}</div>
         </div>
       </div>

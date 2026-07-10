@@ -198,7 +198,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 text-left w-full min-h-72">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20 text-left w-full min-h-72">
     <!-- top accent line -->
     <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -216,11 +216,11 @@ onUnmounted(() => {
         </div>
         <div class="min-w-0">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
-          <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mt-1.5 block">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400 mt-1.5 block">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</span>
         </div>
       </div>
       <div class="mt-auto pt-6 pb-2">
-        <div class="text-3xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
           {{ t("common.error") }}
         </div>
         <div class="text-sm font-medium text-gray-500 dark:text-zinc-400 mt-2 line-clamp-2">
@@ -240,7 +240,7 @@ onUnmounted(() => {
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-emerald-600 dark:text-emerald-400">
               <div class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
-              <span class="text-[10px] font-bold uppercase tracking-wider">{{ t("quickMetrics.hostMetrics.online") }}</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.online") }}</span>
             </div>
           </div>
         </div>

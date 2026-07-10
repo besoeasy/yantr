@@ -74,7 +74,7 @@ const urgencyLabel = computed(() => {
 <template>
   <div
     v-if="stats.count > 0"
-    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40"
+    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl p-6 overflow-hidden transition-all duration-400 hover:shadow-2xl hover:shadow-rose-500/20 dark:hover:shadow-rose-500/20"
   >
     <!-- Hover Accents -->
     <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
@@ -98,7 +98,7 @@ const urgencyLabel = computed(() => {
             <div class="w-1.5 h-1.5 rounded-full"
                  :class="[isCritical ? 'bg-red-500 animate-pulse' : 'bg-amber-500']">
             </div>
-            <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider">
+            <span class="text-[11px] font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-widest">
               {{ urgencyLabel }}
             </span>
           </div>
@@ -107,7 +107,7 @@ const urgencyLabel = computed(() => {
       
       <div class="px-2 py-1 rounded-md flex items-center gap-1.5">
          <span class="text-[11px] font-bold text-gray-900 dark:text-white">{{ stats.count }}</span>
-         <span class="text-[10px] font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-wider">{{ t('quickMetrics.expiringContainers.tracking') }}</span>
+         <span class="text-[10px] font-medium text-gray-500 dark:text-zinc-500 uppercase tracking-widest">{{ t('quickMetrics.expiringContainers.tracking') }}</span>
       </div>
     </div>
 

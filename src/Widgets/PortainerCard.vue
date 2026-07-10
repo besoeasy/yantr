@@ -66,7 +66,7 @@ function formatUptime(ms) {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-black/5 dark:hover:shadow-black/40 hover:-translate-y-0.5 text-left w-full min-h-72 cursor-pointer" @click="router.push('/apps/portainer')">
+  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-cyan-500/20 dark:hover:shadow-cyan-500/20 hover:-translate-y-0.5 text-left w-full min-h-72 cursor-pointer" @click="router.push('/apps/portainer')">
     <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" :class="isRunning ? 'bg-cyan-500' : 'bg-gray-500'"></div>
 
     <div class="relative z-10 p-5 flex flex-col h-full gap-4">
@@ -79,7 +79,7 @@ function formatUptime(ms) {
           <div class="min-w-0">
             <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Portainer</h3>
             <div class="flex items-center gap-1.5 mt-1.5 text-cyan-600 dark:text-cyan-400">
-              <span class="text-[10px] font-bold uppercase tracking-wider">Advanced Manager</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest">Advanced Manager</span>
             </div>
           </div>
         </div>
@@ -89,7 +89,7 @@ function formatUptime(ms) {
       </div>
 
       <div class="mt-auto pt-6 flex flex-col relative z-10">
-        <div class="text-3xl sm:text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-4">
+        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-4">
           Advanced GUI
         </div>
 
