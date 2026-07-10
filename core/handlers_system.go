@@ -560,6 +560,36 @@ func findSelfContainerName() string {
 
 const selfUpdateDelay = 10 * time.Minute
 
+// runSelfUpdateNow runs Watchtower for the given container name and logs the result.
+// Must always be called from a goroutine — Watchtower may stop this process if
+// a newer image is available.
+func runSelfUpdateNow(name string) {
+	shared.Log("info", "[update:self] running watchtower for: "+name)
+	stdout, stderr, exitCode, err := runWatchtower([]string{name})
+	if err != nil {
+		shared.Log("error", "[update:self] watchtower error: "+err.Error())
+		return
+	}
+	for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
+		if line != "" {
+			shared.Log("info", "[update:self] "+line)
+		}
+	}
+	for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
+		if line != "" {
+			shared.Log("info", "[update:self] "+line)
+		}
+	}
+	wCombined := strings.ToLower(stdout + "\n" + stderr)
+	updated := strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")
+	if updated {
+		shared.Log("info", "[update:self] Yantr updated — restarting")
+		telemetry.TrackSelfUpdate(1, version)
+	} else {
+		shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
+	}
+}
+
 func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 	selfUpdateMu.Lock()
 	if selfUpdateScheduled {
@@ -588,32 +618,7 @@ func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
 			selfUpdateScheduled = false
 			selfUpdateMu.Unlock()
 		}()
-
 		time.Sleep(selfUpdateDelay)
-
-		shared.Log("info", "[update:self] delay elapsed — running watchtower for: "+name)
-		stdout, stderr, exitCode, err := runWatchtower([]string{name})
-		if err != nil {
-			shared.Log("error", "[update:self] watchtower error: "+err.Error())
-			return
-		}
-		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
-			if line != "" {
-				shared.Log("info", "[update:self] "+line)
-			}
-		}
-		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
-			if line != "" {
-				shared.Log("info", "[update:self] "+line)
-			}
-		}
-		wCombined := strings.ToLower(stdout + "\n" + stderr)
-		updated := strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")
-		if updated {
-			shared.Log("info", "[update:self] Yantr updated — restarting")
-			telemetry.TrackSelfUpdate(1, version)
-		} else {
-			shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
-		}
+		runSelfUpdateNow(name)
 	}()
 }
