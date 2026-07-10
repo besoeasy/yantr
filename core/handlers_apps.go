@@ -31,6 +31,8 @@ func handleApps(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{"success": true, "count": cat.Count, "apps": cat.Apps})
 }
 
+var imageRe = regexp.MustCompile(`image:\s*([^\s\n]+)`)
+
 func handleCheckArch(w http.ResponseWriter, r *http.Request) {
 	appID := chi.URLParam(r, "id")
 	if !validAppID.MatchString(appID) {
@@ -43,8 +45,7 @@ func handleCheckArch(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 404, "APP_NOT_FOUND", "App not found")
 		return
 	}
-	re := regexp.MustCompile(`image:\s*([^\s\n]+)`)
-	m := re.FindSubmatch(content)
+	m := imageRe.FindSubmatch(content)
 	if m == nil {
 		jsonErr(w, 400, "IMAGE_NOT_FOUND", "Could not extract image name from compose file")
 		return
