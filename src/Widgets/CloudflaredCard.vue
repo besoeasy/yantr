@@ -113,57 +113,63 @@ async function deploy() {
 </script>
 
 <template>
-  <!-- Setup state: no cloudflared container found -->
-  <div v-if="!cloudflaredContainer" class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/20 dark:hover:shadow-orange-500/20 hover:-translate-y-0.5 text-left w-full min-h-72">
-    <div class="absolute top-0 left-0 w-full h-0.5 bg-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+  <div class="relative group h-full flex flex-col rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.4)] dark:hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.3)] text-left w-full min-h-[320px] border border-orange-100/50 dark:border-white/5 bg-gradient-to-br from-orange-50/50 to-amber-50/50 dark:from-[#111827] dark:to-[#09090b]">
+    
+    <!-- Animated Gradient Glow -->
+    <div class="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,_rgba(249,115,22,0.15)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(249,115,22,0.12)_0%,_transparent_40%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none group-hover:animate-[spin_20s_linear_infinite]"></div>
 
-    <transition
-      enter-active-class="transition-all duration-500 ease-out"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-    >
-      <div v-if="deploySuccess" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 dark:bg-[#0A0A0A]/95 rounded-xl gap-3">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center">
-          <CheckCircle class="w-6 h-6 text-green-600 dark:text-green-500" />
-        </div>
-        <div class="text-center">
-          <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tunnel Deployed</p>
-          <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">Container starting…</p>
-        </div>
-      </div>
-    </transition>
+    <!-- Massive Watermark Icon -->
+    <Cloud class="absolute -bottom-8 -right-8 w-64 h-64 text-orange-500/10 dark:text-orange-400/[0.03] rotate-[-20deg] group-hover:rotate-0 group-hover:scale-110 transition-all duration-700 ease-out pointer-events-none" />
 
-    <div class="relative z-10 p-5 flex flex-col h-full gap-4">
-      <!-- header -->
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-            <Cloud class="w-4.5 h-4.5 text-orange-600 dark:text-orange-400 group-hover:text-orange-500 transition-colors" />
+    <!-- Setup state: no cloudflared container found -->
+    <div v-if="!cloudflaredContainer" class="relative z-10 p-7 flex flex-col h-full gap-4">
+      <transition
+        enter-active-class="transition-all duration-500 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+      >
+        <div v-if="deploySuccess" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 dark:bg-[#0A0A0A]/95 rounded-[24px] gap-3">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center">
+            <CheckCircle class="w-6 h-6 text-green-600 dark:text-green-500" />
           </div>
-          <div class="min-w-0">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Cloudflared</h3>
-            <div class="flex items-center gap-1.5 mt-1.5 text-orange-600 dark:text-orange-400">
-              <span class="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
+          <div class="text-center">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">Tunnel Deployed</p>
+            <p class="text-[11px] text-gray-500 dark:text-zinc-400 mt-1 uppercase tracking-widest font-medium">Container starting…</p>
+          </div>
+        </div>
+      </transition>
+
+      <!-- Header -->
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <!-- Gorgeous Icon Block -->
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-orange-400 to-amber-600 shadow-xl shadow-orange-500/30 group-hover:shadow-orange-500/50 transition-all duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <Cloud class="w-7 h-7 text-white drop-shadow-md z-10" />
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-orange-950 dark:text-white tracking-tight leading-none group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Cloudflared</h3>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600/70 dark:text-zinc-500">Secure Tunnel</span>
             </div>
           </div>
         </div>
-        <div class="flex items-center gap-1.5 shrink-0">
-          <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">Not Installed</span>
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-md shadow-sm transition-colors duration-500 bg-white/80 border-gray-200 dark:bg-zinc-800/80 dark:border-zinc-700">
+           <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse relative"></div>
+           <span class="text-[9px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">Not Installed</span>
         </div>
       </div>
 
       <!-- Main content -->
       <div class="mt-auto pt-6 flex flex-col relative z-10">
-        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-2">
+        <div class="text-4xl font-black tracking-tighter text-orange-950 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-2 drop-shadow-sm group-hover:-translate-y-1 duration-500">
           Secure Tunnel
         </div>
-        <div class="text-xs text-gray-500 dark:text-zinc-400 font-medium mb-5">
+        <div class="text-xs text-orange-800/70 dark:text-zinc-400 font-medium mb-5">
            Connect your Yantr apps securely without exposing any ports.
         </div>
         
         <div>
-          <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500 mb-2">Tunnel Token</label>
           <div class="relative">
             <input
               v-model="tunnelToken"
@@ -171,15 +177,15 @@ async function deploy() {
               placeholder="eyJhIjoiY…"
               autocomplete="off"
               spellcheck="false"
-              class="w-full rounded-xl px-4 py-3 text-sm font-mono text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-600 outline-none transition-all duration-300 pr-10"
+              class="w-full rounded-[16px] px-4 py-3 text-sm font-mono text-gray-900 dark:text-white placeholder-orange-300 dark:placeholder-zinc-600 outline-none transition-all duration-300 pr-10 bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-sm"
               :class="tunnelToken.trim() === ''
-                ? 'border-gray-200 dark:border-zinc-800 focus:border-orange-400 dark:focus:border-orange-500 focus:ring-1 focus:ring-orange-400/20'
+                ? 'focus:border-orange-400 dark:focus:border-orange-500 focus:ring-1 focus:ring-orange-400/20'
                 : isValidToken
-                  ? 'border-green-300 dark:border-green-600 focus:border-green-400 focus:ring-1 focus:ring-green-400/20'
+                  ? 'border-emerald-300 dark:border-emerald-600 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/20'
                   : 'border-red-300 dark:border-red-700 focus:border-red-400 focus:ring-1 focus:ring-red-400/20'"
             />
             <div class="absolute right-3.5 top-1/2 -translate-y-1/2">
-              <CheckCircle v-if="isValidToken" class="w-4 h-4 text-green-500" />
+              <CheckCircle v-if="isValidToken" class="w-4 h-4 text-emerald-500" />
               <AlertCircle v-else-if="tunnelToken.trim()" class="w-4 h-4 text-red-400" />
             </div>
           </div>
@@ -193,7 +199,7 @@ async function deploy() {
           leave-from-class="opacity-100 translate-y-0"
           leave-to-class="opacity-0 translate-y-1"
         >
-          <div v-if="deployError" class="mt-3 flex items-center gap-2 p-3 rounded-xl">
+          <div v-if="deployError" class="mt-3 flex items-center gap-2 p-3 rounded-[12px] bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/50">
             <AlertCircle class="w-4 h-4 text-red-500 shrink-0" />
             <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ deployError }}</p>
           </div>
@@ -204,7 +210,7 @@ async function deploy() {
             href="https://one.dash.cloudflare.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="group/link flex h-11 items-center justify-center gap-2 rounded-xl text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all duration-300 hover:text-gray-900 dark:hover:text-white"
+            class="group/link flex h-11 items-center justify-center gap-2 rounded-[16px] text-orange-700/60 dark:text-zinc-400 bg-white/40 dark:bg-white/5 backdrop-blur-xl border border-white dark:border-white/5 hover:bg-white/80 dark:hover:bg-zinc-800 transition-all duration-300 hover:text-orange-900 dark:hover:text-white shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-none"
           >
             <Key class="w-3.5 h-3.5" />
             <span class="text-[11px] font-bold uppercase tracking-widest">Get Token</span>
@@ -214,80 +220,82 @@ async function deploy() {
           <button
             @click="deploy"
             :disabled="!isValidToken || deploying"
-            class="group/cta relative flex h-11 w-full items-center justify-center gap-2 rounded-xl transition-all duration-300 overflow-hidden text-white shadow-md"
+            class="group/cta relative flex h-11 w-full items-center justify-center gap-2 rounded-[16px] transition-all duration-300 overflow-hidden text-white shadow-md border border-transparent"
             :class="isValidToken && !deploying
-              ? 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/20 active:scale-[0.98]'
-              : 'bg-gray-300 dark:bg-zinc-700 text-gray-500 dark:text-zinc-500 shadow-none cursor-not-allowed'"
+              ? 'bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 shadow-orange-500/30 hover:shadow-orange-500/50 active:scale-[0.98]'
+              : 'bg-gray-300 dark:bg-zinc-700 text-gray-500 dark:text-zinc-500 shadow-none cursor-not-allowed opacity-50'"
           >
             <div class="flex items-center gap-2 relative z-10">
               <Loader v-if="deploying" class="w-4 h-4 animate-spin" />
-              <Cloud v-else class="w-4 h-4" />
-              <span class="text-[11px] font-bold uppercase tracking-widest">{{ deploying ? 'Deploying…' : 'Deploy Tunnel' }}</span>
+              <Cloud v-else class="w-4 h-4 drop-shadow-sm" />
+              <span class="text-[11px] font-bold uppercase tracking-widest drop-shadow-sm">{{ deploying ? 'Deploying…' : 'Deploy Tunnel' }}</span>
             </div>
-            <div v-if="isValidToken && !deploying" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-out"></div>
+            <div v-if="isValidToken && !deploying" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/cta:translate-x-full transition-transform duration-700 ease-out mix-blend-overlay"></div>
           </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Status state: cloudflared container exists -->
-  <div v-else class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/20 dark:hover:shadow-orange-500/20 hover:-translate-y-0.5 text-left w-full min-h-72">
-    <div class="absolute top-0 left-0 w-full h-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
-
-    <div class="relative z-10 p-5 flex flex-col h-full gap-4">
-      <!-- header -->
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-            <Cloud class="w-4.5 h-4.5 text-orange-600 dark:text-orange-400 group-hover:text-orange-500 transition-colors" />
+    <!-- Status state: cloudflared container exists -->
+    <div v-else class="relative z-10 p-7 flex flex-col h-full gap-4">
+      <!-- Header -->
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <!-- Gorgeous Icon Block -->
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-orange-400 to-amber-600 shadow-xl shadow-orange-500/30 group-hover:shadow-orange-500/50 transition-all duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <Cloud class="w-7 h-7 text-white drop-shadow-md z-10" />
           </div>
-          <div class="min-w-0">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none truncate">Cloudflared</h3>
-            <div class="flex items-center gap-1.5 mt-1.5 text-orange-600 dark:text-orange-400">
-              <span class="text-[10px] font-bold uppercase tracking-widest">Secure Tunnel</span>
-            </div>
+          <div>
+            <h3 class="text-xl font-black text-orange-950 dark:text-white tracking-tight leading-none group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Cloudflared</h3>
+            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600/70 dark:text-zinc-500 mt-2">Secure Tunnel</p>
           </div>
         </div>
-        <div class="flex items-center justify-center w-8 h-8 rounded-full opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0">
-           <ArrowRight class="w-4 h-4 text-gray-400 dark:text-zinc-500 group-hover:text-orange-500" />
+        
+        <!-- Premium Status Pill -->
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border backdrop-blur-md shadow-sm transition-colors duration-500" :class="isRunning ? 'bg-white/80 border-emerald-100 dark:bg-emerald-900/30 dark:border-emerald-500/30' : 'bg-white/80 border-red-100 dark:bg-red-900/30 dark:border-red-500/30'">
+           <div class="w-2 h-2 rounded-full relative">
+              <div class="absolute inset-0 rounded-full animate-ping opacity-75" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
+              <div class="relative w-full h-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
+           </div>
+           <span class="text-[9px] font-black uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'">
+             {{ isRunning ? 'Online' : 'Offline' }}
+           </span>
         </div>
       </div>
 
+      <!-- Main Body -->
       <div class="mt-auto pt-6 flex flex-col relative z-10">
-        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white transition-colors line-clamp-1 leading-[1.1] mb-4">
+        
+        <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-700/60 dark:text-zinc-500 mb-1 drop-shadow-sm">
+          Connection Status
+        </div>
+        <div class="text-4xl font-black tracking-tighter text-orange-950 dark:text-white mb-6 drop-shadow-sm group-hover:-translate-y-1 transition-transform duration-500">
           Secure Tunnel
         </div>
 
-        <div class="grid grid-cols-2 gap-2 mb-4">
-          <div class="p-4 rounded-xl flex flex-col gap-1">
-            <div class="flex items-center gap-1.5 text-gray-500 dark:text-zinc-400">
-              <Cloud v-if="isRunning" class="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              <CloudOff v-else class="w-3.5 h-3.5 text-red-500 shrink-0" />
-              <span class="text-[10px] font-bold uppercase tracking-widest">{{ isRunning ? 'Uptime' : 'Status' }}</span>
+        <!-- Nested Glass Container for details -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3.5 rounded-[16px] bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 flex flex-col gap-1.5 group-hover:bg-white/90 dark:group-hover:bg-white/[0.03] transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-sm">
+            <div class="flex items-center gap-2 text-orange-800/60 dark:text-zinc-400">
+              <Cloud v-if="isRunning" class="w-3.5 h-3.5 text-emerald-500" />
+              <CloudOff v-else class="w-3.5 h-3.5 text-red-500" />
+              <span class="text-[9px] font-bold uppercase tracking-widest">{{ isRunning ? 'Uptime' : 'Status' }}</span>
             </div>
-            <div class="text-sm font-bold text-gray-900 dark:text-white tabular-nums tracking-tight">
-              {{ isRunning ? formatUptime(uptimeMs) : 'Offline' }}
+            <div class="text-sm font-black text-orange-950 dark:text-white tabular-nums tracking-tight">
+               {{ isRunning ? formatUptime(uptimeMs) : 'Offline' }}
             </div>
           </div>
-
-          <div class="p-4 rounded-xl flex flex-col gap-1">
-            <div class="flex items-center gap-1.5 text-gray-500 dark:text-zinc-400">
+          
+          <div class="p-3.5 rounded-[16px] bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 flex flex-col gap-1.5 group-hover:bg-white/90 dark:group-hover:bg-white/[0.03] transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-sm">
+            <div class="flex items-center gap-2 text-orange-800/60 dark:text-zinc-400">
               <Globe class="w-3.5 h-3.5" />
-              <span class="text-[10px] font-bold uppercase tracking-widest">Version</span>
+              <span class="text-[9px] font-bold uppercase tracking-widest">Version</span>
             </div>
-            <div class="text-sm font-bold text-gray-900 dark:text-white font-mono truncate tracking-tight">{{ imageVersion }}</div>
+            <div class="text-sm font-black text-orange-950 dark:text-white font-mono truncate tracking-tight">
+               {{ imageVersion }}
+            </div>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between pt-4">
-           <div class="flex items-center gap-2">
-             <Shield class="w-3.5 h-3.5" :class="isRunning ? 'text-emerald-500 dark:text-emerald-400' : 'text-red-500 dark:text-red-400'" />
-             <span class="text-[10px] font-bold uppercase tracking-widest" :class="isRunning ? 'text-emerald-600 dark:text-emerald-500' : 'text-red-600 dark:text-red-500'">
-               {{ isRunning ? 'Active — No Ports Exposed' : 'Tunnel Unavailable' }}
-             </span>
-           </div>
-           <span class="text-[10px] text-gray-400 dark:text-zinc-500 font-mono truncate max-w-24 text-right">{{ containerName }}</span>
         </div>
 
       </div>

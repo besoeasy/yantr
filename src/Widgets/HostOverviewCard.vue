@@ -109,7 +109,7 @@ const workloadStats = computed(() => [
     key: "images",
     label: t("home.overviewPulseCard.images"),
     value: imagesCount.value,
-    tone: "text-green-500",
+    tone: "text-emerald-500",
   },
   {
     key: "temp",
@@ -198,87 +198,100 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20 text-left w-full min-h-72">
-    <!-- top accent line -->
-    <div class="absolute top-0 left-0 w-full h-0.5 bg-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+  <div class="relative group h-full flex flex-col rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.4)] dark:hover:shadow-[0_20px_40px_-15px_rgba(59,130,246,0.3)] text-left w-full min-h-[320px] border border-blue-100/50 dark:border-white/5 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 dark:from-[#111827] dark:to-[#09090b]">
+    
+    <!-- Animated Gradient Glow -->
+    <div class="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,_rgba(59,130,246,0.15)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(59,130,246,0.12)_0%,_transparent_40%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none group-hover:animate-[spin_20s_linear_infinite]"></div>
 
-    <div v-if="loading" class="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 p-5 h-full text-center">
-      <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
-        <Server class="w-4.5 h-4.5 text-blue-600 dark:text-blue-400 animate-pulse" />
+    <!-- Massive Watermark Icon -->
+    <Server class="absolute -bottom-8 -right-8 w-64 h-64 text-blue-500/10 dark:text-blue-400/[0.03] rotate-[-20deg] group-hover:rotate-0 group-hover:scale-110 transition-all duration-700 ease-out pointer-events-none" />
+
+    <div v-if="loading" class="relative z-10 flex flex-1 flex-col items-center justify-center gap-3 p-7 h-full text-center">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-blue-500/10 dark:bg-blue-500/20">
+        <Server class="w-7 h-7 text-blue-600 dark:text-blue-400 animate-pulse" />
       </div>
-      <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-gray-500 dark:text-zinc-500">{{ t("quickMetrics.hostMetrics.scanningHost") }}</span>
+      <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-500/60 dark:text-zinc-500">{{ t("quickMetrics.hostMetrics.scanningHost") }}</span>
     </div>
 
-    <div v-else-if="error" class="relative z-10 flex flex-1 flex-col gap-4 p-5 h-full">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
-          <Activity class="w-4.5 h-4.5 text-red-600 dark:text-red-400" />
-        </div>
-        <div class="min-w-0">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400 mt-1.5 block">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</span>
-        </div>
+    <div v-else-if="error" class="relative z-10 flex flex-1 flex-col gap-4 p-7 h-full">
+      <div class="flex items-center gap-4">
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-400 to-rose-600 shadow-xl shadow-red-500/30">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <Activity class="w-7 h-7 text-white drop-shadow-md z-10" />
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-red-950 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
+            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600/70 dark:text-red-400 mt-2">{{ t("quickMetrics.hostMetrics.connectionFailed") }}</p>
+          </div>
       </div>
       <div class="mt-auto pt-6 pb-2">
-        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
+        <div class="text-4xl font-black tracking-tighter text-red-950 dark:text-white leading-[1.1]">
           {{ t("common.error") }}
         </div>
-        <div class="text-sm font-medium text-gray-500 dark:text-zinc-400 mt-2 line-clamp-2">
+        <div class="text-sm font-medium text-red-800/60 dark:text-zinc-400 mt-2 line-clamp-2">
           {{ error }}
         </div>
       </div>
     </div>
 
-    <div v-else class="relative z-10 p-5 flex flex-col gap-4 h-full">
-      <!-- header -->
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-            <Server class="w-4.5 h-4.5 text-blue-600 dark:text-blue-400" />
+    <div v-else class="relative z-10 p-7 flex flex-col gap-4 h-full">
+      <!-- Header -->
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <!-- Gorgeous Icon Block -->
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-blue-400 to-indigo-600 shadow-xl shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <Server class="w-7 h-7 text-white drop-shadow-md z-10" />
           </div>
-          <div class="min-w-0">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("quickMetrics.hostMetrics.hostSystem") }}</h3>
-            <div class="flex items-center gap-1.5 mt-1.5 text-emerald-600 dark:text-emerald-400">
-              <div class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
-              <span class="text-[10px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.online") }}</span>
+          <div>
+            <h3 class="text-xl font-black text-blue-950 dark:text-white tracking-tight leading-none group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              {{ t("quickMetrics.hostMetrics.hostSystem") }}
+            </h3>
+            <div class="flex items-center gap-1.5 mt-2">
+              <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600/90 dark:text-emerald-500">{{ t("quickMetrics.hostMetrics.online") }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="mt-auto pt-6 pb-2 flex flex-col relative z-10 pr-4">
-        <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-[1.1] mb-2">
+      <!-- Main Body -->
+      <div class="mt-auto pt-4 flex flex-col relative z-10">
+        
+        <div class="text-4xl sm:text-5xl font-black tracking-tighter text-blue-950 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-[1.1] mb-2 drop-shadow-sm group-hover:-translate-y-1 duration-500">
           {{ osInfo.name }}
         </div>
         
-        <div class="text-xs text-gray-500 dark:text-zinc-400 line-clamp-1 truncate font-medium">
+        <div class="text-[11px] font-bold uppercase tracking-[0.15em] text-blue-700/60 dark:text-zinc-500 line-clamp-1 truncate drop-shadow-sm mb-4">
           {{ osInfo.type }} • {{ osInfo.arch }} • {{ osInfo.kernel }}
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 mt-3">
-           <template v-for="stat in workloadStats" :key="stat.key">
-              <div class="flex items-center gap-1.5 text-[11px] font-medium">
-                 <span class="text-gray-400 dark:text-zinc-500 uppercase tracking-widest">{{ stat.label }}</span>
-                 <span :class="['font-bold', stat.tone]">{{ stat.value }}</span>
+        <!-- Nested Glass Containers -->
+        <div class="grid grid-cols-3 gap-2">
+           <div class="col-span-3 grid grid-cols-4 gap-2">
+              <!-- Workload stats pills -->
+              <div v-for="stat in workloadStats" :key="stat.key" class="p-2 rounded-[12px] bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 flex flex-col items-center justify-center gap-1 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-sm">
+                 <span class="text-[8px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest text-center leading-none">{{ stat.label }}</span>
+                 <span :class="['text-sm font-black', stat.tone]">{{ stat.value }}</span>
               </div>
-           </template>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3 mt-4 pt-4">
-           <div class="flex flex-col">
-              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.processors") }}</span>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ displayCores }} <span class="text-gray-400 dark:text-zinc-500 font-medium text-xs">{{ t("quickMetrics.hostMetrics.cores") }}</span></span>
            </div>
-           <div class="flex flex-col">
-              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.memory") }}</span>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight">{{ displayMemParts.value }} <span class="text-gray-400 dark:text-zinc-500 font-medium text-xs">{{ displayMemParts.unit }}</span></span>
-           </div>
-           <div class="flex flex-col min-w-0">
-              <span class="text-[10px] font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mb-1">{{ t("quickMetrics.hostMetrics.dockerVol") }}</span>
-              <span class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight truncate">
-                {{ storageInfo.usedFormatted }}
-                <span v-if="storageInfo.total > 0" class="text-gray-400 dark:text-zinc-500 font-medium text-xs">/ {{ displayStoragePercent }}%</span>
-              </span>
+           
+           <div class="col-span-3 grid grid-cols-3 gap-2 mt-2">
+              <div class="p-3 rounded-[16px] bg-gradient-to-r from-blue-100/50 to-indigo-100/50 dark:from-blue-950/40 dark:to-indigo-950/40 backdrop-blur-xl border border-white dark:border-blue-900/50 flex flex-col gap-1 shadow-[0_4px_12px_rgba(59,130,246,0.05)] dark:shadow-none">
+                  <span class="text-[9px] font-bold text-blue-700/60 dark:text-zinc-500 uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.processors") }}</span>
+                  <span class="text-sm font-black text-blue-950 dark:text-white tracking-tight">{{ displayCores }} <span class="text-blue-700/60 dark:text-zinc-500 font-bold text-[10px] uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.cores") }}</span></span>
+              </div>
+              <div class="p-3 rounded-[16px] bg-gradient-to-r from-blue-100/50 to-indigo-100/50 dark:from-blue-950/40 dark:to-indigo-950/40 backdrop-blur-xl border border-white dark:border-blue-900/50 flex flex-col gap-1 shadow-[0_4px_12px_rgba(59,130,246,0.05)] dark:shadow-none">
+                  <span class="text-[9px] font-bold text-blue-700/60 dark:text-zinc-500 uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.memory") }}</span>
+                  <span class="text-sm font-black text-blue-950 dark:text-white tracking-tight">{{ displayMemParts.value }} <span class="text-blue-700/60 dark:text-zinc-500 font-bold text-[10px] uppercase tracking-widest">{{ displayMemParts.unit }}</span></span>
+              </div>
+              <div class="p-3 rounded-[16px] bg-gradient-to-r from-blue-100/50 to-indigo-100/50 dark:from-blue-950/40 dark:to-indigo-950/40 backdrop-blur-xl border border-white dark:border-blue-900/50 flex flex-col gap-1 shadow-[0_4px_12px_rgba(59,130,246,0.05)] dark:shadow-none truncate">
+                  <span class="text-[9px] font-bold text-blue-700/60 dark:text-zinc-500 uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.dockerVol") }}</span>
+                  <span class="text-sm font-black text-blue-950 dark:text-white tracking-tight truncate">
+                    {{ storageInfo.usedFormatted }}
+                    <span v-if="storageInfo.total > 0" class="text-blue-700/60 dark:text-zinc-500 font-bold text-[10px] uppercase tracking-widest">/ {{ displayStoragePercent }}%</span>
+                  </span>
+              </div>
            </div>
         </div>
       </div>

@@ -117,92 +117,106 @@ const stateLabel = computed(() => {
     v-if="dailyApp"
     type="button"
     @click="handleSelect"
-    class="cursor-pointer relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-amber-500/20 dark:hover:shadow-amber-500/20 text-left w-full"
+    class="relative group h-full flex flex-col rounded-[24px] overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.4)] dark:hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.3)] text-left w-full min-h-[320px] cursor-pointer border border-amber-100/50 dark:border-white/5 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-[#1a150f] dark:to-[#0f0a09]"
   >
-    <!-- top accent line -->
-    <div class="absolute top-0 left-0 w-full h-0.5 bg-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <!-- Animated Gradient Glow -->
+    <div class="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_50%_50%,_rgba(245,158,11,0.15)_0%,_transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,_rgba(245,158,11,0.12)_0%,_transparent_40%)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none group-hover:animate-[spin_20s_linear_infinite]"></div>
 
-    <div class="relative z-10 p-5 flex flex-col gap-4 h-full min-h-72">
+    <!-- Massive Watermark Icon -->
+    <Sparkles class="absolute -bottom-8 -right-8 w-64 h-64 text-amber-500/10 dark:text-amber-400/[0.03] rotate-[-20deg] group-hover:rotate-0 group-hover:scale-110 transition-all duration-700 ease-out pointer-events-none" />
+
+    <div class="relative z-10 p-7 flex flex-col h-full gap-4 w-full">
       <!-- header -->
-      <div class="flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110">
-            <Sparkles class="w-4.5 h-4.5 text-amber-600 dark:text-amber-400" />
+      <div class="flex items-start justify-between w-full">
+        <div class="flex items-center gap-4">
+          <!-- Gorgeous Icon Block -->
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-amber-400 to-orange-600 shadow-xl shadow-amber-500/30 group-hover:shadow-amber-500/50 transition-all duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <Sparkles class="w-7 h-7 text-white drop-shadow-md z-10" />
           </div>
-          <div class="min-w-0">
-            <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("home.dailyAppCard.featuredToday") }}</h3>
+          <div>
+            <h3 class="text-xl font-black text-amber-950 dark:text-white tracking-tight leading-none group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{{ t("home.dailyAppCard.featuredToday") }}</h3>
             
             <div
               :class="[
-                'flex items-center gap-1.5 mt-1.5',
+                'flex items-center gap-1.5 mt-2',
                 appState === 'running'
-                  ? 'text-emerald-600 dark:text-emerald-400'
+                  ? 'text-emerald-600 dark:text-emerald-500'
                   : appState === 'installed'
-                    ? 'text-blue-600 dark:text-blue-400'
-                    : 'text-amber-600 dark:text-amber-400'
+                    ? 'text-blue-600 dark:text-blue-500'
+                    : 'text-amber-600/70 dark:text-amber-500'
               ]"
             >
               <div class="w-1.5 h-1.5 rounded-full bg-current" :class="{ 'animate-pulse': appState === 'running' }"></div>
-              <span class="text-[10px] font-bold uppercase tracking-widest">{{ stateLabel }}</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.2em]">{{ stateLabel }}</span>
             </div>
           </div>
         </div>
+        
+        <!-- App Logo (top right) -->
         <div class="flex items-center gap-2 shrink-0">
-           <div class="w-10 h-10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 opacity-90">
+           <div class="w-12 h-12 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
               <AppLogo
                 :logo="dailyApp?.logo"
                 :name="dailyApp?.name"
                 :seed="dailyApp?.id || dailyApp?.name"
-                img-class="h-full w-full object-contain"
-                icon-class="h-8 w-8 text-gray-200 dark:text-zinc-800 transition-colors duration-300 group-hover:text-amber-500/30"
+                img-class="h-full w-full object-contain filter drop-shadow-sm"
+                icon-class="h-10 w-10 text-amber-900/10 dark:text-zinc-800 transition-colors duration-300 group-hover:text-amber-500/30"
               />
            </div>
         </div>
       </div>
 
-      <div class="mt-auto pt-6 pb-2 flex flex-col gap-1.5 relative z-10 pr-6">
-        <div class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2 leading-[1.1]">
-          {{ dailyApp?.name }}
-        </div>
-        <p v-if="dailyApp?.short_description" class="text-sm text-gray-500 dark:text-zinc-400 line-clamp-2 mt-1 leading-relaxed max-w-[90%]">
-          {{ dailyApp.short_description }}
-        </p>
-        <div class="text-xs font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-2 truncate">
+      <!-- Main Body -->
+      <div class="mt-auto pt-6 flex flex-col relative z-10">
+        
+        <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-700/60 dark:text-zinc-500 mb-1 drop-shadow-sm">
           {{ primaryTag || "App" }}
         </div>
-      </div>
-
-      <!-- Arrow indicator -->
-      <div class="absolute bottom-5 right-5 opacity-0 -translate-x-2 translate-y-2 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-300">
-        <div class="w-8 h-8 rounded-full flex items-center justify-center">
-           <ArrowUpRight class="w-4 h-4 text-amber-600 dark:text-amber-400" />
+        <div class="text-4xl sm:text-5xl font-black tracking-tighter text-amber-950 dark:text-white transition-colors line-clamp-2 leading-[1.1] mb-2 drop-shadow-sm group-hover:-translate-y-1 duration-500">
+          {{ dailyApp?.name }}
+        </div>
+        <p v-if="dailyApp?.short_description" class="text-sm font-medium text-amber-900/60 dark:text-zinc-400 line-clamp-2 leading-relaxed max-w-[90%]">
+          {{ dailyApp.short_description }}
+        </p>
+        
+        <!-- Arrow indicator at bottom right -->
+        <div class="absolute bottom-0 right-0 opacity-0 -translate-x-4 translate-y-4 group-hover:opacity-100 group-hover:translate-x-0 group-hover:translate-y-0 transition-all duration-500">
+          <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white dark:border-white/5 shadow-sm hover:bg-amber-50 hover:border-amber-200 hover:text-amber-600 transition-colors duration-300">
+             <ArrowUpRight class="w-5 h-5 text-amber-600 dark:text-amber-400" />
+          </div>
         </div>
       </div>
-
     </div>
   </button>
 
+  <!-- Error State -->
   <div
     v-else-if="loadFailed"
-    class="relative group h-full flex flex-col bg-white dark:bg-[#0A0A0A] rounded-xl overflow-hidden text-left w-full p-5 min-h-72"
+    class="relative group h-full flex flex-col rounded-[24px] overflow-hidden transition-all duration-500 text-left w-full min-h-[320px] border border-red-100/50 dark:border-white/5 bg-gradient-to-br from-red-50/50 to-rose-50/50 dark:from-[#1a0f12] dark:to-[#0f090a]"
   >
-    <div class="flex h-full flex-col gap-5">
-      <div class="flex items-center gap-3 min-w-0">
-        <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0">
-          <AlertCircle class="w-4.5 h-4.5 text-red-600 dark:text-red-400" />
-        </div>
-        <div class="min-w-0">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white tracking-tight leading-none">{{ t("home.dailyAppCard.featuredToday") }}</h3>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400 mt-1.5 block">Error</span>
+    <AlertCircle class="absolute -bottom-8 -right-8 w-64 h-64 text-red-500/10 dark:text-red-400/[0.03] rotate-[-20deg] pointer-events-none" />
+
+    <div class="relative z-10 p-7 flex flex-col h-full gap-4">
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-4">
+          <div class="relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br from-red-400 to-rose-600 shadow-xl shadow-red-500/30">
+            <div class="absolute inset-0 bg-white/30 dark:bg-white/20 rounded-2xl rounded-bl-none opacity-50 dark:opacity-40 mix-blend-overlay"></div>
+            <AlertCircle class="w-7 h-7 text-white drop-shadow-md z-10" />
+          </div>
+          <div>
+            <h3 class="text-xl font-black text-red-950 dark:text-white tracking-tight leading-none">{{ t("home.dailyAppCard.featuredToday") }}</h3>
+            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-600/70 dark:text-red-400 mt-2">Error</p>
+          </div>
         </div>
       </div>
 
-      <div class="mt-auto pt-6 pb-2">
-        <div class="text-4xl font-black tracking-tighter text-gray-900 dark:text-white leading-[1.1]">
-          {{ t("common.error") }}
-        </div>
-        <div class="text-sm font-bold text-gray-400 dark:text-zinc-500 uppercase tracking-widest mt-2">
+      <div class="mt-auto pt-6 flex flex-col relative z-10">
+        <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-red-700/60 dark:text-zinc-500 mb-1 drop-shadow-sm">
           Failed to load
+        </div>
+        <div class="text-4xl font-black tracking-tighter text-red-950 dark:text-white mb-2 drop-shadow-sm">
+          {{ t("common.error") }}
         </div>
       </div>
     </div>
