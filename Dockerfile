@@ -49,9 +49,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 ENV YANTR_SERVE_UI=true
 ENV NODE_ENV=production
 
-# OFFICIAL=true is set by GitHub CI when building ghcr.io/besoeasy/yantr.
-# Local builds leave it false — the self-update loop in entrypoint.sh is skipped.
-ARG OFFICIAL=false
-ENV YANTR_OFFICIAL=${OFFICIAL}
-
 ENTRYPOINT ["/entrypoint.sh"]
