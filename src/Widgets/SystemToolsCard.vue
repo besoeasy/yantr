@@ -71,7 +71,7 @@ onUnmounted(() => {
       </div>
 
       <!-- Main Body -->
-      <div class="mt-auto pt-6 flex flex-col relative z-10 pr-[120px]">
+      <div class="mt-auto pt-6 flex flex-col relative z-10 pr-[180px]">
         
         <div class="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-700/60 dark:text-zinc-500 mb-1 drop-shadow-sm">
           System Overview
@@ -80,7 +80,7 @@ onUnmounted(() => {
         <div class="text-5xl font-black tracking-tighter text-indigo-950 dark:text-white mb-2 drop-shadow-sm group-hover:-translate-y-1 transition-transform duration-500">
           Active
         </div>
-        <div class="text-[11px] font-medium text-indigo-800/60 dark:text-zinc-400 mt-1 leading-relaxed">
+        <div class="text-[11px] font-medium text-indigo-800/60 dark:text-zinc-400 mt-1 leading-relaxed line-clamp-3">
           Manage system resources, monitor live logs, and clean up environments.
         </div>
       </div>
