@@ -108,6 +108,7 @@ func sweepExpiredContainers() {
 					}
 				}
 			}
+			compose.DeleteProjectCompose(appPath, projectID)
 		}
 	}
 

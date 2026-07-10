@@ -211,6 +211,8 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 		_ = docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
 	}
 
+	compose.DeleteProjectCompose(appPath, projectID)
+
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
 		"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
