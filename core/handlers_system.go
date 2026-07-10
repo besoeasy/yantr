@@ -589,36 +589,3 @@ func runSelfUpdateNow(name string) {
 		shared.Log("info", fmt.Sprintf("[update:self] no update found (exit=%d)", exitCode))
 	}
 }
-
-func handleAutoupdateSelf(w http.ResponseWriter, r *http.Request) {
-	selfUpdateMu.Lock()
-	if selfUpdateScheduled {
-		selfUpdateMu.Unlock()
-		jsonErr(w, 409, "UPDATE_ALREADY_SCHEDULED", "A self-update is already scheduled")
-		return
-	}
-	selfUpdateScheduled = true
-	selfUpdateMu.Unlock()
-
-	name := findSelfContainerName()
-	shared.Log("info", fmt.Sprintf("[update:self] update scheduled in %.0f min for container: %s", selfUpdateDelay.Minutes(), name))
-
-	// Respond immediately — Watchtower will stop this container, so we must
-	// send the response before the update fires.
-	jsonResp(w, 200, map[string]interface{}{
-		"success":      true,
-		"scheduled":    true,
-		"container":    name,
-		"delaySeconds": int(selfUpdateDelay.Seconds()),
-	})
-
-	go func() {
-		defer func() {
-			selfUpdateMu.Lock()
-			selfUpdateScheduled = false
-			selfUpdateMu.Unlock()
-		}()
-		time.Sleep(selfUpdateDelay)
-		runSelfUpdateNow(name)
-	}()
-}

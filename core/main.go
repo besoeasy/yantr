@@ -422,7 +422,6 @@ func main() {
 	r.Get("/api/proxy", handleProxyList)
 	r.Post("/api/proxy/reload", handleProxyReload)
 	r.Post("/api/autoupdate/run", handleAutoupdateRun)
-	r.Post("/api/autoupdate/self", handleAutoupdateSelf)
 
 	// SPA static serving (production)
 	distDir := getDistDir()
