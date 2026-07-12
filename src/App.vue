@@ -90,26 +90,6 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 h-14 z-50 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800">
       <div class="h-full flex items-center px-4 gap-2">
 
-        <!-- Logo -->
-        <a
-          href="https://yantr.org"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group flex items-center gap-[0.18em] select-none rounded-lg px-2 py-1 mr-2 transition-transform duration-300 ease-out hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900/20 dark:focus-visible:ring-white/20"
-          aria-label="Open Yantr website"
-          title="yantr.org"
-        >
-          <span aria-hidden="true" class="flex items-end gap-[0.05em] text-[1.25rem] font-black uppercase leading-none text-black dark:text-white tracking-tight">
-            <span class="inline-block will-change-transform transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110" style="transition-delay: 0ms">Y</span>
-            <span class="inline-block will-change-transform transition-transform duration-300 ease-out group-hover:rotate-6  group-hover:scale-110" style="transition-delay: 30ms">A</span>
-            <span class="inline-block will-change-transform transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110" style="transition-delay: 60ms">N</span>
-            <span class="inline-block will-change-transform transition-transform duration-300 ease-out group-hover:rotate-6  group-hover:scale-110" style="transition-delay: 90ms">T</span>
-            <span class="inline-block will-change-transform transition-transform duration-300 ease-out group-hover:-rotate-6 group-hover:scale-110" style="transition-delay: 120ms">R</span>
-          </span>
-        </a>
-
-        <!-- Divider -->
-        <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 mx-1"></div>
 
         <!-- Nav Links -->
         <nav class="flex items-center gap-1">
