@@ -1,40 +1,15 @@
-# Yantr — Agent Instructions
+# Yantr — App Authoring Instructions
 
-## Project Overview
-Self-hosted app store running as a Docker container alongside existing OS. Vue 3 frontend + **Go** API backend managing Docker Compose stacks via Docker socket.
+## App Structure
 
-## Commands
+Each app lives in `apps/<app-name>/compose.yml` — a single file with no `info.json`.
 
-| Command | Purpose |
-|---------|----------|
-| `npm run dev` | Start Vite dev server (proxies `/api` to `localhost:5252`) |
-| `npm run build` | Build production Vue app to `dist/` |
-| `npm run preview` | Preview production build |
-| `npm run docker` | Build & run Docker image with host network + Docker socket |
-| `npm run website` | Build static website to `website/` |
-| `node check.js` | Validate all apps in `apps/` (run after any app changes) |
-
-## Architecture
-
-**Frontend** (`src/`): Vue 3 + Vue Router + Pinia (implicit), Tailwind CSS v4
-
-**Backend** (`core/`): Go HTTP server on port 5252 (replaces `daemon/`)
-- Entry: `core/main.go` (HTTP server → routes → Caddy subprocess)
-- Packages: `auth/` (HMAC-SHA256 token auth), `apps/` (catalog reader), `compose/` (YAML ops), `caddy/` (reverse proxy), `docker/` (SDK client), `selfinstall/` (bootstrap), `shared/` (logging), `system/` (IP identity)
-- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`
-- Volume browser: `browser.go` manages dufs subprocess instances per volume
-
-**Apps Catalog** (`apps/`): 130+ apps, each with a single `compose.yml` that carries both the Docker Compose service definition and all app metadata under the `x-yantr` extension key. `info.json` is deprecated — do not create new ones.
-
-## Critical Conventions
-
-NO NEED FOR BEING BACKWARD COMPATIBLE, PREFER CLEAN FEATURE IMPLEMENTATION IF YOU CAN.
+All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fields, so the file remains fully deployable.
 
 ### x-yantr Metadata Block
-All app metadata lives in the top-level `x-yantr` key of `compose.yml`. Docker Compose ignores `x-*` extension fields, so the file remains fully deployable.
 
 **Required fields:**
-- `name` — display name
+- `name` — display name (lowercase, alphanumeric only, no spaces)
 - `tags` — 3–5 lowercase strings
 - `short_description` — 50–100 chars
 - `description` — 200–300 chars (use YAML `>` block scalar for multi-line)
@@ -44,96 +19,104 @@ All app metadata lives in the top-level `x-yantr` key of `compose.yml`. Docker C
 **Optional fields:**
 - `logo` — IPFS CID (upload at `https://originless.besoeasy.com/upload`); omit if no logo yet
 - `notes` — list of strings explaining manual setup steps
-- `customapp` — boolean; `true` for Yantr-built apps with Dockerfile (shows "Built by Yantr" badge, disables auto-update)
+- `customapp` — boolean; `true` for Yantr-built apps with Dockerfile
 - `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
 
-**YAML style rule — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
+**YAML style — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
 ```yaml
-# ✅ compact flow sequence (STRICTLY REQUIRED)
-tags: [tools, utility, self-hosted, homelab, docker, open-source]
+# ✅ correct
+tags: [tools, utility, self-hosted, homelab, docker]
 usecases: ["Use case one.", "Use case two."]
 notes: ["Note one.", "Note two."]
 
-# ❌ block sequence (STRICTLY PROHIBITED for flat arrays; check.js WILL fail)
+# ❌ wrong — check.js WILL fail
 tags:
   - tools
   - utility
 ```
-Use block sequences only when list items are objects with sub-fields (e.g. `env_generators`).
 
 ### Port Labels on Services
-Port metadata is declared directly on each service via labels — collocated with the `ports:` declaration it describes.
 
-**CRITICAL RULE:** `labels` MUST ALWAYS be defined as a map (key-value dictionary) and NEVER as a sequence/array (`- KEY=VALUE`). This is strictly enforced.
-Additionally, the `yantr.app: "app-name"` label is **strictly required** on all services because the backend uses it for identification.
+`labels` MUST always be a map (key-value dict), never a sequence. `yantr.app` is strictly required on every service.
 
 ```yaml
-# Pattern: yantr.app: "app-name"                ← REQUIRED by backend
-#          yantr.port.{PORT_NUMBER}: "PROTOCOL"
-#          yantr.service.{PORT_NUMBER}: "Name"  ← per-port human-readable name
 labels:
   yantr.app: "my-app"
-  yantr.service.8080: "Web UI"   # name for port 8080
-  yantr.port.8080: "HTTP"        # port 8080 speaks HTTP
-
-# Multi-port example — each port gets its own name
-labels:
-  yantr.app: "my-app"
-  yantr.service.80: "Web UI"
-  yantr.port.80: "HTTP"
-  yantr.service.443: "Web UI (TLS)"
-  yantr.port.443: "HTTPS"
-  yantr.service.51413: "Peer"
-  yantr.port.51413: "TCP"
+  yantr.service.8080: "Web UI"
+  yantr.port.8080: "HTTP"
 ```
 
 Supported protocols: `HTTP`, `HTTPS`, `TCP`, `UDP`
 
-
-### x-auth Block (Optional, Deploy-time Only)
-Yantr reads `x-auth` at deploy time to configure a Caddy basic-auth proxy in front of the app. Docker Compose ignores `x-*` fields. The password is **never stored in container labels or visible via `docker inspect`** — Yantr bcrypts it, writes to Caddy config, then discards the plain text.
+### x-auth Block (Optional)
 
 ```yaml
 x-auth:
   port: 3002       # Caddy listens here (auth-protected public port)
-  username: admin  # basic auth username
-  password: secret # plain text — bcrypted by Yantr at deploy time, then discarded
-```
-
-**How it works:**
-- App runs on its native port (e.g. `3000`) — internal only
-- Caddy listens on `x-auth.port` (e.g. `3002`) with basicauth → reverse proxies to `3000`
-- Users access the app on port `3002` with username/password
-- Omit `x-auth` entirely for apps that need no auth
-
-```yaml
-# Full example with auth
-x-yantr:
-  name: "My App" - always small caps no space only - and alpbets and number allowed
-  ...
-
-x-auth:
-  port: 3002
   username: admin
-  password: secret
-
-services:
-  my-app:
-    ports:
-      - "3000"
-    labels:
-      yantr.app: "my-app"
-      yantr.service.3000: "Web UI"
-      yantr.port.3000: "HTTP"
+  password: secret # bcrypted by Yantr at deploy time, then discarded
 ```
 
-### Minimal App Example
+## Critical Rules
+
+### 1. Always Use Docker Volumes
+All persistent data MUST use named Docker volumes — never bind mounts. Declare every volume at the top-level `volumes:` key.
 
 ```yaml
-# compose.yml — single file, no info.json needed
+# ✅ correct
+volumes:
+  - my_app_data:/data
+
+volumes:
+  my_app_data:
+
+# ❌ wrong
+volumes:
+  - ./data:/data
+```
+
+### 2. Always Use Latest Images
+Always use the `:latest` tag (or the upstream's equivalent rolling tag). Never pin to a specific version number.
+
+```yaml
+# ✅ correct
+image: ghcr.io/example/my-app:latest
+
+# ❌ wrong
+image: ghcr.io/example/my-app:1.2.3
+```
+
+### 3. Logo Must Be an IPFS CID
+The `logo` field must be a valid IPFS CID string. Upload images at `https://originless.besoeasy.com/upload`. Omit the field entirely if no logo is available — do not use URLs or local paths.
+
+```yaml
+# ✅ correct
+logo: "bafybeig..."
+
+# ❌ wrong
+logo: "https://example.com/logo.png"
+```
+
+### 4. Prefer Auto Port Assignment — Avoid Mapped Ports
+Use Docker's automatic port assignment `"8080"` instead of explicit host mappings `"8080:8080"`. Only use mapped ports when the app absolutely cannot function without a fixed host port (e.g. a VPN or peer protocol that must bind to a specific port).
+
+```yaml
+# ✅ correct — let Docker assign the host port
+ports:
+  - "8080"
+
+# ❌ wrong — avoid unless the app cannot work without it
+ports:
+  - "8080:8080"
+```
+
+## Minimal App Example
+
+```yaml
+# apps/my-app/compose.yml
 x-yantr:
-  name: "My App"
-  logo: "VALID IPFS CID or empty"
+  name: "myapp"
+  logo: "bafybeig..."
   tags: [productivity, self-hosted, webapp, tools, docker]
   short_description: "Self-hosted note-taking app."
   description: >
@@ -167,36 +150,8 @@ volumes:
   my_app_data:
 ```
 
-### Frontend (Design Language)
-- **Aesthetic**: Neobrutalist / Minimalist (inspired by Vercel/Linear). High contrast, pure monochrome shells, and sharp geometry.
-- **Card Containers**: Pure backgrounds (`bg-white dark:bg-black`) framed by crisp 1px borders (`border-zinc-200 dark:border-zinc-800`). Absolutely NO colorful gradients, heavy glassmorphism, or oversized drop shadows.
-- **Hover States**: Subtle and crisp. Elevate by 1px (`hover:-translate-y-1`), darken borders (`hover:border-zinc-300 dark:hover:border-zinc-700`), and apply a refined shadow (`hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)]`).
-- **Typography**: High contrast, grayscale text. Use strong typography (`text-zinc-900 dark:text-white`) for primary data and subdued grays (`text-zinc-500`) for secondary text.
-- **Interactive Elements (Buttons/Badges)**: Solid, high-contrast pills. Primary CTAs should use inverted monochrome (`bg-zinc-900 text-white` in light mode, `bg-white text-zinc-900` in dark mode). Badges/Tags use subtle zinc fills (`bg-zinc-100 dark:bg-zinc-900`).
-- **Animations**: Minimal and technical. Use radar-like pulsing (`animate-ping`) for active status dots. Keep transitions fast and professional (`duration-300`).
-- **Icons**: Lucide icons only. Keep them small, sharp, and bordered when placed in distinct icon blocks (e.g., `h-12 w-12 rounded-xl border border-zinc-200 bg-zinc-50`).
-- **Layout**: Compact card/list layouts. Avoid dense tables. Ensure 44x44 tap targets on mobile.
+## Validation
 
-### Backend
-- Architecture: See the main Architecture section above for `core/` package layout.
-- API: Most `/api/*` and all `/browse/*` routes require a Bearer token (JWT) after initial setup.
-- Public paths: `/api/health`, `/api/version`, `/api/setup/status`, `/api/setup/admin`, `/api/auth/login`.
-- Docker socket: Expected at `/var/run/docker.sock` (mounted into the container).
-
-## Docker Build
-- Multi-stage: Node LTS frontend builder → Go Alpine backend builder → Alpine final
-- Final image installs: `docker-cli`, `docker-cli-compose`, `wget`, `dufs`, `caddy`
-- Copies: `dist/`, compiled `yantr` binary, `apps/`
-- Healthcheck: `wget -qO- http://127.0.0.1:5252/api/health >/dev/null 2>&1`
-- Runs: `/app/yantr`
-
-## Testing / Validation
-- No formal test suite — `node check.js` is the primary validation
-- `check.js` fails if `compose.yml` uses `${VAR}` without a default and `x-yantr.env_generators` is missing the matching entry
-- Manual verification: `npm run docker` → open `http://localhost:5252`
-
-## Key Files to Reference
-- `check.js` — validation rules (run after app changes)
-- `core/shared/shared.go` — Docker socket path, logging, shared constants
-- `core/auth/auth.go` — HMAC-SHA256 JWT auth implementation
-- `core/compose/compose.go` — Docker Compose YAML parsing and deployment logic
+Run `node check.js` after any app changes. It will fail if:
+- `compose.yml` uses `${VAR}` without a default and `env_generators` is missing the matching entry
+- Flat arrays use block sequences instead of flow sequences
