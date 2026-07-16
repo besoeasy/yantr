@@ -8,10 +8,13 @@ import UnderlineTabBar from '../components/UnderlineTabBar.vue'
 import { useNotification } from '../composables/useNotification'
 import { useI18n } from 'vue-i18n'
 import { useYantrAuth } from '../composables/useYantrAuth'
+import { useApiUrl } from '../composables/useApiUrl'
+import { expectApiSuccess } from '../composables/useApiResponse'
 
 const toast = useNotification()
 const { t } = useI18n()
 const { openVolumeBrowser } = useYantrAuth()
+const { apiUrl } = useApiUrl()
 
 const volumesData = ref({})
 const loading = ref(false)
@@ -79,9 +82,9 @@ const browsingVolumes = computed(() => {
 async function fetchVolumes() {
   loading.value = true
   try {
-    const res = await fetch('/api/volumes')
-    const data = await res.json()
-    if (data.success) volumesData.value = data
+    const res = await fetch(`${apiUrl.value}/api/volumes`)
+    const data = await expectApiSuccess(res, t('volumes.failedToStartBrowser'))
+    volumesData.value = data
   } catch {
   } finally {
     loading.value = false
@@ -91,18 +94,15 @@ async function fetchVolumes() {
 async function startBrowsing(volumeName) {
   actionLoading.value[volumeName] = true
   try {
-    const response = await fetch(`/api/volumes/${volumeName}/browse`, {
+    const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ expiryMinutes: 0 }),
     })
-    const data = await response.json()
-    if (data.success) {
-      toast.success(t('volumes.browserStarted'))
-      await fetchVolumes()
-      
-      openVolumeBrowser(volumeName)
-    }
+    await expectApiSuccess(response, t('volumes.failedToStartBrowser'))
+    toast.success(t('volumes.browserStarted'))
+    await fetchVolumes()
+    openVolumeBrowser(volumeName)
   } catch {
     toast.error(t('volumes.failedToStartBrowser'))
   } finally {
@@ -113,12 +113,10 @@ async function startBrowsing(volumeName) {
 async function stopBrowsing(volumeName) {
   actionLoading.value[volumeName] = true
   try {
-    const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'DELETE' })
-    const data = await response.json()
-    if (data.success) {
-      toast.success(t('volumes.browserStopped'))
-      await fetchVolumes()
-    }
+    const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, { method: 'DELETE' })
+    await expectApiSuccess(response, t('volumes.failedToStopBrowser'))
+    toast.success(t('volumes.browserStopped'))
+    await fetchVolumes()
   } catch {
     toast.error(t('volumes.failedToStopBrowser'))
   } finally {
@@ -131,14 +129,10 @@ async function deleteVolume(volumeName) {
 
   deletingVolume.value = volumeName
   try {
-    const response = await fetch(`/api/volumes/${volumeName}`, { method: 'DELETE' })
-    const data = await response.json()
-    if (data.success) {
-      toast.success(t('volumes.volumeDeleted'))
-      await fetchVolumes()
-    } else {
-      toast.error(t('volumes.deletionFailed', { message: data.message }))
-    }
+    const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}`, { method: 'DELETE' })
+    await expectApiSuccess(response, t('volumes.deletionFailed', { message: '' }))
+    toast.success(t('volumes.volumeDeleted'))
+    await fetchVolumes()
   } catch (error) {
     toast.error(t('volumes.deletionFailed', { message: error.message }))
   } finally {
@@ -156,10 +150,10 @@ async function deleteAllUnusedVolumes() {
   try {
     for (const volume of volumesData.value.unusedVolumes) {
       try {
-        const response = await fetch(`/api/volumes/${volume.name}`, { method: 'DELETE' })
-        const data = await response.json()
-        if (data.success) deleted++
-      } catch (error) {}
+        const response = await fetch(`${apiUrl.value}/api/volumes/${volume.name}`, { method: 'DELETE' })
+        await expectApiSuccess(response)
+        deleted++
+      } catch {}
     }
     toast.success(t('volumes.cleanedUp', { count: deleted }))
     await fetchVolumes()
