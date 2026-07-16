@@ -25,8 +25,3 @@ export function formatDuration(ms) {
   return `${seconds}s`
 }
 
-export function formatMinutesAsDuration(minutes) {
-  const value = Number(minutes)
-  if (!Number.isFinite(value)) return 'N/A'
-  return formatDuration(value * 60000)
-}

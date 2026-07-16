@@ -84,8 +84,7 @@ async function fetchImages() {
     if (data.success) {
       imagesData.value = data
     }
-  } catch (error) {
-    console.error('Failed to fetch images:', error)
+  } catch {
   } finally {
     loading.value = false
   }

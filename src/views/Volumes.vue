@@ -82,15 +82,13 @@ async function fetchVolumes() {
     const res = await fetch('/api/volumes')
     const data = await res.json()
     if (data.success) volumesData.value = data
-  } catch (error) {
-    console.error(error)
+  } catch {
   } finally {
     loading.value = false
   }
 }
 
 async function startBrowsing(volumeName) {
-  console.log(`[Volumes] Starting volume browser for volume: ${volumeName}`);
   actionLoading.value[volumeName] = true
   try {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, {
@@ -104,11 +102,8 @@ async function startBrowsing(volumeName) {
       await fetchVolumes()
       
       openVolumeBrowser(volumeName)
-    } else {
-      console.error(`[Volumes] Failed to start browser for volume: ${volumeName}`, data);
     }
-  } catch (error) {
-    console.error(`[Volumes] Error starting browser for volume: ${volumeName}`, error);
+  } catch {
     toast.error(t('volumes.failedToStartBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
@@ -116,7 +111,6 @@ async function startBrowsing(volumeName) {
 }
 
 async function stopBrowsing(volumeName) {
-  console.log(`[Volumes] Stopping volume browser for volume: ${volumeName}`);
   actionLoading.value[volumeName] = true
   try {
     const response = await fetch(`/api/volumes/${volumeName}/browse`, { method: 'DELETE' })
@@ -124,11 +118,8 @@ async function stopBrowsing(volumeName) {
     if (data.success) {
       toast.success(t('volumes.browserStopped'))
       await fetchVolumes()
-    } else {
-      console.error(`[Volumes] Failed to stop browser for volume: ${volumeName}`, data);
     }
-  } catch (error) {
-    console.error(`[Volumes] Error stopping browser for volume: ${volumeName}`, error);
+  } catch {
     toast.error(t('volumes.failedToStopBrowser'))
   } finally {
     delete actionLoading.value[volumeName]

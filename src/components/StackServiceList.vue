@@ -67,8 +67,7 @@ async function fetchContainerStats(svcId) {
     if (expandedServiceId.value === svcId) {
       containerStats.value = data.stats
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
   }
 }
 
@@ -81,8 +80,7 @@ async function fetchContainerLogs(svcId = expandedServiceId.value) {
     if (expandedServiceId.value === svcId) {
       containerLogs.value = Array.isArray(data.logs) ? data.logs : []
     }
-  } catch (err) {
-    console.error(err)
+  } catch {
   } finally {
     refreshingLogs.value = false
   }

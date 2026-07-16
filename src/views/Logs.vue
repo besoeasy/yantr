@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useApiUrl } from '../composables/useApiUrl'
 import { useNotification } from '../composables/useNotification'
 import { expectApiSuccess } from '../composables/useApiResponse'
-import { FileText, AlertCircle, Info, RefreshCw, Terminal, Pause, Play, Trash2, Search, ArrowDown } from '@lucide/vue'
+import { RefreshCw, Terminal, Pause, Play, Trash2, Search, ArrowDown } from '@lucide/vue'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()

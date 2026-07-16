@@ -129,7 +129,6 @@ export async function generateAuthToken() {
 }
 
 export function openVolumeBrowser(volumeName) {
-  console.log(`[Volume Browser] Opening browser for volume: ${volumeName}`)
   const url = new URL(`/browse/${volumeName}/`, window.location.origin)
   window.open(url.toString(), '_blank')
 }

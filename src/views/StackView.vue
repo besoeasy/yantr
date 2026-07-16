@@ -213,7 +213,6 @@ async function fetchStack() {
       router.push("/");
     }
   } catch (e) {
-    console.error("Failed to load stack:", e);
     toast.error(t("stackView.failedToLoadStack"));
   } finally {
     loading.value = false;
@@ -243,7 +242,6 @@ async function removeStack() {
       throw new Error(data.message || t("stackView.removalFailed"));
     }
   } catch (e) {
-    console.error("Remove error:", e);
     toast.error(t("stackView.failedToRemove", { error: e.message }));
   } finally {
     removing.value = false;
@@ -255,7 +253,6 @@ async function removeStack() {
 // ── Volume browsing ──────────────────────────────────────────────────────────
 
 async function browseVolume(volumeName, expiryMinutes = 60) {
-  console.log(`[StackView] Starting volume browser for volume: ${volumeName} (Expiry: ${expiryMinutes}m)`);
   browsingVolume.value[volumeName] = true;
   showVolumeMenu.value[volumeName] = false;
   try {
@@ -270,10 +267,8 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
       toast.success(t("stackView.volumeBrowserStarted", { expiry: expiryText }));
       openVolumeBrowser(volumeName);
     } else {
-      console.error(`[StackView] Failed to start browser for volume: ${volumeName}`, data);
     }
   } catch (e) {
-    console.error(`[StackView] Error starting browser for volume: ${volumeName}`, e);
     toast.error(t("stackView.failedToStartVolumeBrowser"));
   } finally {
     delete browsingVolume.value[volumeName];
