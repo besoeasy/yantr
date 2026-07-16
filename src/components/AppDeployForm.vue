@@ -213,7 +213,7 @@ async function deployApp() {
 
     if (enableAuth.value) {
       if (!authPort.value || !authUsername.value || !authPassword.value) {
-        toast.error("Please fill all authentication fields");
+        toast.error(t('appDeployForm.fillAuthFields'));
         deploying.value = false;
         return;
       }
@@ -273,8 +273,8 @@ async function deployApp() {
     <div v-if="app.customapp" class="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50 px-5 py-4 dark:border-purple-500/20 dark:bg-purple-500/10">
       <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-purple-500"></div>
       <div>
-        <div class="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400">Custom App Built by Yantr Team</div>
-        <p class="text-[11px] leading-relaxed text-purple-700 dark:text-purple-300">This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled.</p>
+        <div class="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400">{{ t('appDeployForm.customAppTitle') }}</div>
+        <p class="text-[11px] leading-relaxed text-purple-700 dark:text-purple-300">{{ t('appDeployForm.customAppDesc') }}</p>
       </div>
     </div>
 
@@ -384,38 +384,38 @@ async function deployApp() {
              <div class="flex items-start gap-3">
                   <input type="checkbox" id="enable-auth" v-model="enableAuth" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-zinc-300 bg-transparent text-black focus:ring-black focus:ring-offset-0 dark:border-zinc-700 dark:text-white dark:focus:ring-white" />
                   <div class="flex-1">
-                      <label for="enable-auth" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">Enable Basic Auth</label>
-                      <p class="mt-0.5 text-[10px] text-zinc-500">Protect this app with a username and password</p>
+                      <label for="enable-auth" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">{{ t('appDeployForm.enableBasicAuth') }}</label>
+                      <p class="mt-0.5 text-[10px] text-zinc-500">{{ t('appDeployForm.enableBasicAuthDesc') }}</p>
                   </div>
              </div>
 
               <div v-if="enableAuth" class="mt-5 space-y-4 pl-1">
                   <div class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Proxy Port
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">Caddy listens here (public)</span>
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.proxyPort') }}
+                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">{{ t('appDeployForm.proxyPortHint') }}</span>
                       </label>
                       <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>
                   <!-- Target Port: shown when app exposes multiple ports -->
                   <div v-if="infoPorts.length > 0" class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Target Port
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">App's internal port to proxy to</span>
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.targetPort') }}
+                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">{{ t('appDeployForm.targetPortHint') }}</span>
                       </label>
                       <select v-model.number="authTargetPort" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white">
-                        <option :value="0">Auto-detect (first HTTP port)</option>
+                        <option :value="0">{{ t('appDeployForm.autoDetect') }}</option>
                         <option v-for="p in infoPorts" :key="p.port" :value="p.port">
                           :{{ p.port }} — {{ p.label }} ({{ p.protocol }})
                         </option>
                       </select>
                   </div>
                   <div class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">Username</label>
+                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.username') }}</label>
                       <input v-model="authUsername" type="text" placeholder="admin" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>
                   <div class="space-y-1.5">
                       <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
-                        Password
-                        <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">Generate</button>
+                        {{ t('appDeployForm.password') }}
+                        <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">{{ t('appDeployForm.generate') }}</button>
                       </label>
                       <input v-model="authPassword" type="text" placeholder="Secret password" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
                   </div>

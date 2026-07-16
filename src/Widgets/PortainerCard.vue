@@ -1,12 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Container, Activity, ArrowRight, LayoutGrid } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 
 const router = useRouter()
+const { t } = useI18n()
 const { apiUrl } = useApiUrl()
 const { currentTime } = useCurrentTime()
 
@@ -77,7 +79,7 @@ function formatUptime(ms) {
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Portainer</h3>
-            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Docker Environment</p>
+            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('portainerCard.dockerEnvironment') }}</p>
           </div>
         </div>
         
@@ -88,7 +90,7 @@ function formatUptime(ms) {
               <div class="relative h-full w-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-zinc-500'"></div>
            </div>
            <span class="text-[9px] font-bold uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-400' : 'text-zinc-500 dark:text-zinc-400'">
-             {{ isRunning ? 'Online' : 'Offline' }}
+             {{ isRunning ? t('portainerCard.online') : t('portainerCard.offline') }}
            </span>
         </div>
       </div>
@@ -97,10 +99,10 @@ function formatUptime(ms) {
       <div class="relative z-10 mt-auto flex flex-col pt-6">
         
         <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          {{ isRunning ? 'Current Uptime' : 'App Status' }}
+          {{ isRunning ? t('portainerCard.currentUptime') : t('portainerCard.appStatus') }}
         </div>
         <div class="mb-8 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 sm:text-5xl dark:text-white">
-          {{ isRunning ? formatUptime(uptimeMs) : 'Ready' }}
+          {{ isRunning ? formatUptime(uptimeMs) : t('portainerCard.ready') }}
         </div>
 
         <!-- Nested Containers for details -->
@@ -108,16 +110,16 @@ function formatUptime(ms) {
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Activity class="h-3.5 w-3.5" :class="isRunning ? 'text-emerald-500' : 'text-zinc-400'" />
-              <span class="text-[9px] font-semibold uppercase tracking-widest">State</span>
+              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('portainerCard.state') }}</span>
             </div>
             <div class="tabular-nums text-sm font-black tracking-tight text-zinc-900 dark:text-white">
-               {{ isRunning ? 'Running' : 'Stopped' }}
+               {{ isRunning ? t('portainerCard.running') : t('portainerCard.stopped') }}
             </div>
           </div>
           
           <div class="group/btn relative flex items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-900 p-3.5 transition-colors duration-300 hover:bg-black dark:border-zinc-800 dark:bg-zinc-100 dark:hover:bg-white">
             <div class="relative z-10 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-white transition-colors dark:text-zinc-900">
-               {{ isRunning ? 'Manage' : 'Install' }}
+               {{ isRunning ? t('portainerCard.manage') : t('portainerCard.install') }}
                <ArrowRight class="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
             </div>
           </div>

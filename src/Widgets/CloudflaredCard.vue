@@ -127,8 +127,8 @@ async function deploy() {
             <CheckCircle class="h-6 w-6 text-emerald-600 dark:text-emerald-500" />
           </div>
           <div class="text-center">
-            <p class="text-sm font-bold tracking-tight text-zinc-900 dark:text-white">Tunnel Deployed</p>
-            <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Container starting…</p>
+            <p class="text-sm font-bold tracking-tight text-zinc-900 dark:text-white">{{ t('cloudflaredCard.tunnelDeployed') }}</p>
+            <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.containerStarting') }}</p>
           </div>
         </div>
       </transition>
@@ -143,23 +143,23 @@ async function deploy() {
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Cloudflared</h3>
             <div class="mt-2 flex items-center gap-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Secure Tunnel</span>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.secureTunnel') }}</span>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900/50">
            <div class="relative h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500"></div>
-           <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Not Installed</span>
+           <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.notInstalled') }}</span>
         </div>
       </div>
 
       <!-- Main content -->
       <div class="relative z-10 mt-auto flex flex-col pt-6">
         <div class="mb-2 line-clamp-1 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
-          Secure Tunnel
+          {{ t('cloudflaredCard.secureTunnel') }}
         </div>
         <div class="mb-5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-           Connect your Yantr apps securely without exposing any ports.
+           {{ t('cloudflaredCard.description') }}
         </div>
         
         <div>
@@ -206,7 +206,7 @@ async function deploy() {
             class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all duration-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
           >
             <Key class="h-3.5 w-3.5" />
-            <span class="text-[11px] font-bold uppercase tracking-widest">Get Token</span>
+            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
             <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-300 group-hover/link:translate-x-0.5" />
           </a>
 
@@ -221,7 +221,7 @@ async function deploy() {
             <div class="relative z-10 flex items-center gap-2">
               <Loader v-if="deploying" class="h-4 w-4 animate-spin" />
               <Cloud v-else class="h-4 w-4" />
-              <span class="text-[11px] font-bold uppercase tracking-widest">{{ deploying ? 'Deploying…' : 'Deploy Tunnel' }}</span>
+              <span class="text-[11px] font-bold uppercase tracking-widest">{{ deploying ? t('cloudflaredCard.deploying') : t('cloudflaredCard.deployTunnel') }}</span>
             </div>
           </button>
         </div>
@@ -239,7 +239,7 @@ async function deploy() {
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Cloudflared</h3>
-            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Secure Tunnel</p>
+            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.secureTunnel') }}</p>
           </div>
         </div>
         
@@ -250,7 +250,7 @@ async function deploy() {
               <div class="relative h-full w-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
            </div>
            <span class="text-[9px] font-bold uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'">
-             {{ isRunning ? 'Online' : 'Offline' }}
+             {{ isRunning ? t('cloudflaredCard.online') : t('cloudflaredCard.offline') }}
            </span>
         </div>
       </div>
@@ -259,10 +259,10 @@ async function deploy() {
       <div class="relative z-10 mt-auto flex flex-col pt-6">
         
         <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          Connection Status
+          {{ t('cloudflaredCard.connectionStatus') }}
         </div>
         <div class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
-          Secure Tunnel
+          {{ t('cloudflaredCard.secureTunnel') }}
         </div>
 
         <!-- Nested Containers for details -->
@@ -271,17 +271,17 @@ async function deploy() {
             <div class="flex items-center gap-2 text-zinc-500">
               <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
               <CloudOff v-else class="h-3.5 w-3.5 text-red-500" />
-              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ isRunning ? 'Uptime' : 'Status' }}</span>
+              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ isRunning ? t('cloudflaredCard.uptime') : t('cloudflaredCard.status') }}</span>
             </div>
             <div class="tabular-nums text-sm font-black tracking-tight text-zinc-900 dark:text-white">
-               {{ isRunning ? formatUptime(uptimeMs) : 'Offline' }}
+               {{ isRunning ? formatUptime(uptimeMs) : t('cloudflaredCard.offline') }}
             </div>
           </div>
           
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Globe class="h-3.5 w-3.5" />
-              <span class="text-[9px] font-semibold uppercase tracking-widest">Version</span>
+              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('cloudflaredCard.version') }}</span>
             </div>
             <div class="truncate font-mono text-sm font-black tracking-tight text-zinc-900 dark:text-white">
                {{ imageVersion }}

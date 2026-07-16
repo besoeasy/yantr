@@ -166,10 +166,10 @@ async function deploy() {
       <!-- Main content -->
       <div class="relative z-10 mt-auto flex flex-col pt-6">
         <div class="mb-2 line-clamp-1 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
-          Private Access
+          {{ t('tailscaleCard.privateAccess') }}
         </div>
         <div class="mb-5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-           Join this host to your Tailscale network and reach services securely.
+           {{ t('tailscaleCard.description') }}
         </div>
         
         <div>
@@ -277,7 +277,7 @@ async function deploy() {
               <div class="relative h-full w-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
            </div>
            <span class="text-[9px] font-bold uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'">
-             {{ isRunning ? 'Online' : 'Offline' }}
+             {{ isRunning ? t('tailscaleCard.online') : t('tailscaleCard.offline') }}
            </span>
         </div>
       </div>
@@ -286,10 +286,10 @@ async function deploy() {
       <div class="relative z-10 mt-auto flex flex-col pt-6">
         
         <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          Connection Status
+          {{ t('tailscaleCard.connectionStatus') }}
         </div>
         <div class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
-          Private Access
+          {{ t('tailscaleCard.privateAccess') }}
         </div>
 
         <!-- Nested Containers for details -->

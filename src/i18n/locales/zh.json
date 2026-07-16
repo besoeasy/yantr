@@ -636,5 +636,65 @@
     "title": "Yantr is Open Source.",
     "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
     "cta": "Star on GitHub"
+  },
+  "cloudflaredCard": {
+    "secureTunnel": "Secure Tunnel",
+    "notInstalled": "Not Installed",
+    "tunnelDeployed": "Tunnel Deployed",
+    "containerStarting": "Container starting…",
+    "description": "Connect your Yantr apps securely without exposing any ports.",
+    "getToken": "Get Token",
+    "deployTunnel": "Deploy Tunnel",
+    "deploying": "Deploying…",
+    "online": "Online",
+    "offline": "Offline",
+    "connectionStatus": "Connection Status",
+    "uptime": "Uptime",
+    "status": "Status",
+    "version": "Version"
+  },
+  "portainerCard": {
+    "dockerEnvironment": "Docker Environment",
+    "online": "Online",
+    "offline": "Offline",
+    "currentUptime": "Current Uptime",
+    "appStatus": "App Status",
+    "ready": "Ready",
+    "state": "State",
+    "running": "Running",
+    "stopped": "Stopped",
+    "manage": "Manage",
+    "install": "Install"
+  },
+  "tailscaleCard": {
+    "privateAccess": "Private Access",
+    "description": "Join this host to your Tailscale network and reach services securely.",
+    "online": "Online",
+    "offline": "Offline",
+    "connectionStatus": "Connection Status"
+  },
+  "proxiesView": {
+    "title": "Active Proxies",
+    "subtitle": "Manage and view all running Caddy proxy routes",
+    "caddyLive": "Caddy Live",
+    "reloadConfig": "Reload Config",
+    "noProxies": "No active proxies",
+    "noProxiesDesc": "There are currently no active proxies configured through Caddy.",
+    "loading": "Loading proxies…"
+  },
+  "appDeployForm": {
+    "customAppTitle": "Custom App Built by Yantr Team",
+    "customAppDesc": "This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled.",
+    "enableBasicAuth": "Enable Basic Auth",
+    "enableBasicAuthDesc": "Protect this app with a username and password",
+    "proxyPort": "Proxy Port",
+    "proxyPortHint": "Caddy listens here (public)",
+    "targetPort": "Target Port",
+    "targetPortHint": "App's internal port to proxy to",
+    "autoDetect": "Auto-detect (first HTTP port)",
+    "username": "Username",
+    "password": "Password",
+    "generate": "Generate",
+    "fillAuthFields": "Please fill all authentication fields"
   }
 }

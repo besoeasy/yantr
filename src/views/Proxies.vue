@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ShieldCheck, RefreshCw, Globe, User, ArrowLeft } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useRouter } from 'vue-router'
 
 const { apiUrl } = useApiUrl()
+const { t } = useI18n()
 const router = useRouter()
 
 const proxies = ref([])
@@ -60,14 +62,14 @@ async function reload() {
           <ArrowLeft class="w-5 h-5 text-gray-600 dark:text-zinc-400" />
         </button>
         <div>
-          <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Active Proxies</h1>
-          <p class="text-sm text-gray-500 dark:text-zinc-400 mt-1">Manage and view all running Caddy proxy routes</p>
+          <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ t('proxiesView.title') }}</h1>
+          <p class="text-sm text-gray-500 dark:text-zinc-400 mt-1">{{ t('proxiesView.subtitle') }}</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <div v-if="caddyRunning" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20">
           <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span class="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Caddy Live</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">{{ t('proxiesView.caddyLive') }}</span>
         </div>
         <button
           @click="reload"
@@ -75,7 +77,7 @@ async function reload() {
           class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-[#0A0A0A] hover:bg-gray-50 dark:hover:bg-zinc-900 text-sm font-semibold transition-all shadow-sm disabled:opacity-50 text-gray-700 dark:text-zinc-300 active:scale-95"
         >
           <RefreshCw class="w-4 h-4 text-gray-500" :class="{ 'animate-spin': loading }" />
-          <span class="hidden sm:inline">Reload Config</span>
+          <span class="hidden sm:inline">{{ t('proxiesView.reloadConfig') }}</span>
         </button>
       </div>
     </div>
@@ -85,14 +87,14 @@ async function reload() {
       <div class="w-16 h-16 rounded-2xl bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center mb-4 shadow-sm">
         <ShieldCheck class="w-8 h-8 text-gray-400 dark:text-zinc-500" />
       </div>
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">No active proxies</h3>
-      <p class="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto">There are currently no active proxies configured through Caddy.</p>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('proxiesView.noProxies') }}</h3>
+      <p class="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto">{{ t('proxiesView.noProxiesDesc') }}</p>
     </div>
 
     <!-- Loading State -->
     <div v-else-if="loading && proxies.length === 0" class="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-3xl shadow-sm">
       <RefreshCw class="w-8 h-8 text-gray-400 dark:text-zinc-500 animate-spin mb-4" />
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">Loading proxies...</h3>
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('proxiesView.loading') }}</h3>
     </div>
 
     <!-- Proxy List -->
