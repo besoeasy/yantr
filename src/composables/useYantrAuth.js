@@ -30,18 +30,18 @@ let bootstrapPromise = null
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
 function getStoredPrivateKeyHex() {
-  return sessionStorage.getItem(PRIVATE_KEY_STORAGE) || ''
+  return localStorage.getItem(PRIVATE_KEY_STORAGE) || ''
 }
 
 function storeIdentity(privateKeyHex) {
   authState.privateKeyHex = privateKeyHex
-  sessionStorage.setItem(PRIVATE_KEY_STORAGE, privateKeyHex)
+  localStorage.setItem(PRIVATE_KEY_STORAGE, privateKeyHex)
 }
 
 function clearStoredIdentity() {
   authState.privateKeyHex = ''
   authState.authenticated  = false
-  sessionStorage.removeItem(PRIVATE_KEY_STORAGE)
+  localStorage.removeItem(PRIVATE_KEY_STORAGE)
 }
 
 function setUnauthenticated(message = '') {
