@@ -1,0 +1,29 @@
+x-yantr:
+  name: omniroute
+  tags: [ai, proxy, gateway, llm, self-hosted]
+  short_description: Unified AI gateway that routes requests to 250+ LLM providers through one endpoint.
+  description: >
+    OmniRoute is a free, self-hosted AI gateway that lets you connect to
+    over 250 LLM providers — including 90+ free options — through a single
+    endpoint. It supports Claude Code, Codex, Cursor, Cline, Copilot, and
+    more, with built-in rate limiting, caching, and a web dashboard.
+  usecases: ["Route all your AI tool requests (Claude Code, Codex, Cursor, Copilot) through one self-hosted proxy endpoint.", "Access dozens of free LLM providers without managing separate API keys for each service."]
+  website: "https://github.com/diegosouzapw/OmniRoute"
+
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    container_name: omniroute
+    labels:
+      yantr.app: omniroute
+      yantr.service.20128: Dashboard
+      yantr.port.20128: HTTP
+    stop_grace_period: 40s
+    ports:
+      - "20128"
+    volumes:
+      - omniroute_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  omniroute_data: null
