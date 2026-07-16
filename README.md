@@ -5,7 +5,7 @@
 **A self-hosted app store that runs alongside your OS — not instead of it.**
 
 [![Docker](https://img.shields.io/badge/Docker-ghcr.io-0db7ed?style=flat-square&logo=docker&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
-[![License](https://img.shields.io/badge/License-ISC-blue?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-blue?style=flat-square)](LICENSE)
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
 
