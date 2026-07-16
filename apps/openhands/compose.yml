@@ -1,0 +1,29 @@
+x-yantr:
+  name: openhands
+  tags: [ai, development, agent, self-hosted, canvas]
+  short_description: AI coding agent with web-based canvas interface for development projects.
+  description: >
+    OpenHands is an AI development environment with a web canvas interface for
+    planning, executing, and managing AI-assisted coding projects. It supports
+    conversation history, file browsing, and integration with various AI providers.
+  usecases: ["Code entire applications by describing what you want to build and letting AI agents implement them.", "Build and test projects collaboratively with AI assistance while maintaining full control over your code.", "Use the web canvas interface to plan and track development work in a visual way."]
+  website: "https://github.com/all-hands-ai/OpenHands"
+
+services:
+  openhands:
+    image: ghcr.io/openhands/agent-canvas:latest
+    container_name: openhands
+    labels:
+      yantr.app: openhands
+      yantr.service.8000: Canvas UI
+      yantr.port.8000: HTTP
+    ports:
+      - "8000"
+    volumes:
+      - openhands_data:/home/openhands/.openhands
+      - projects_data:/projects
+    restart: unless-stopped
+
+volumes:
+  openhands_data: null
+  projects_data: null
