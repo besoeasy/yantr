@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ArrowUpRight, GitBranch, ExternalLink, Heart } from "@lucide/vue";
+import { ArrowUpRight, GitBranch, ExternalLink } from "@lucide/vue";
 import { h } from 'vue';
 
 const Github = (props, context) => h('svg', {
@@ -24,7 +24,6 @@ const { t } = useI18n();
 
 const links = [
   { title: t("home.externalLinks.reportIssue"), href: "https://github.com/besoeasy/yantr/issues", icon: ExternalLink },
-  { title: t("sponsorCard.label"), href: "https://github.com/sponsors/besoeasy", icon: Heart },
 ];
 
 const rawBuildTimestamp = import.meta.env.VITE_BUILD_TIMESTAMP;
@@ -108,7 +107,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
         </a>
 
         <!-- Minor Links grid -->
-        <div class="grid grid-cols-2 gap-2.5">
+        <div class="grid grid-cols-1 gap-2.5">
           <a
             v-for="link in links"
             :key="link.title"
