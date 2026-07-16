@@ -9,10 +9,8 @@ import {
   Box,
 } from '@lucide/vue'
 import { useAppStore } from '../stores/app'
-import { useAuthStore } from '../stores/auth'
 
 const appStore = useAppStore()
-const authStore = useAuthStore()
 
 const loading = ref(true)
 const actionLoading = ref({}) // { [containerId]: 'start' | 'stop' | 'restart' | null }
@@ -23,10 +21,10 @@ async function loadContainers() {
   loading.value = false
 }
 
-async function containerAction(containerId, action) {
+  async function containerAction(containerId, action) {
   actionLoading.value = { ...actionLoading.value, [containerId]: action }
   try {
-    await authStore.apiFetch(`/api/containers/${containerId}/${action}`, { method: 'POST' })
+    await appStore.apiFetch(`/api/containers/${containerId}/${action}`, { method: 'POST' })
     await appStore.fetchContainers()
   } catch {
     // silently fail; UI will reflect state on next refresh
