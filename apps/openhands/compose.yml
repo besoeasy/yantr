@@ -7,7 +7,7 @@ x-yantr:
     planning, executing, and managing AI-assisted coding projects. It supports
     conversation history, file browsing, and integration with various AI providers.
   usecases: ["Code entire applications by describing what you want to build and letting AI agents implement them.", "Build and test projects collaboratively with AI assistance while maintaining full control over your code.", "Use the web canvas interface to plan and track development work in a visual way."]
-  website: "https://github.com/all-hands-ai/OpenHands"
+  website: "https://github.com/OpenHands/OpenHands"
 
 services:
   openhands:
