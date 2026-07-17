@@ -1,0 +1,37 @@
+x-yantr:
+  name: shellbox
+  customapp: true
+  tags: [ssh, terminal, shell, linux, self-hosted]
+  short_description: "Self-hosted SSH server with password and sudo access."
+  description: >
+    A self-hosted SSH server based on LinuxServer's OpenSSH image.
+    Provides password-based SSH access with optional sudo privileges.
+    Useful for remote shell access, development sandboxes, and
+    running commands on a remote Linux environment.
+  usecases: ["Remote shell access via SSH.", "Run commands in a sandboxed Linux environment."]
+  website: "https://github.com/linuxserver/docker-openssh-server"
+  env_generators:
+    USER_NAME: { length: 10, charset: alpha }
+    USER_PASSWORD: { length: 20, charset: alnum_symbols }
+
+services:
+  shellbox:
+    image: lscr.io/linuxserver/openssh-server:latest
+    container_name: shellbox
+    environment:
+      USER_NAME: ${USER_NAME}
+      USER_PASSWORD: ${USER_PASSWORD}
+      PASSWORD_ACCESS: "true"
+      SUDO_ACCESS: "true"
+    ports:
+      - "2222"
+    volumes:
+      - data:/config
+    labels:
+      yantr.app: "shellbox"
+      yantr.service.2222: "SSH"
+      yantr.port.2222: "TCP"
+    restart: unless-stopped
+
+volumes:
+  data:
