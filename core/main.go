@@ -257,6 +257,16 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func securityHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
@@ -379,6 +389,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(corsMiddleware)
 	r.Use(authMiddleware)
+	r.Use(securityHeadersMiddleware)
 
 	// Browse proxy
 	r.HandleFunc("/browse/*", browseProxyHandler)
