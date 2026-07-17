@@ -285,9 +285,6 @@ func authMiddleware(next http.Handler) http.Handler {
 
 		token := auth.ExtractBearerToken(r.Header.Get("Authorization"))
 		if token == "" {
-			token = r.URL.Query().Get("token")
-		}
-		if token == "" {
 			shared.Log("warn", "[auth] no token in request")
 		}
 
