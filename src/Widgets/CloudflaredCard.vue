@@ -1,10 +1,11 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted} from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Cloud, CloudOff, Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe, Wifi } from '@lucide/vue'
+import { Cloud, CloudOff, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
+import { formatUptime } from '../utils/metrics'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -62,29 +63,11 @@ const imageVersion = computed(() => {
 
 const containerName = computed(() => cloudflaredContainer.value?.name || '—')
 
-function formatUptime(ms) {
-  if (ms === null) return '—'
-  const s = Math.floor(ms / 1000)
-  if (s < 60) return `${s}s`
-  const m = Math.floor(s / 60)
-  if (m < 60) return `${m}m`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ${m % 60}m`
-  const d = Math.floor(h / 24)
-  return `${d}d ${h % 24}h`
-}
-
 // --- Setup / Deploy ---
 const tunnelToken = ref('')
 const deploying = ref(false)
 const deployError = ref('')
 const deploySuccess = ref(false)
-
-const features = [
-  { icon: Shield, label: 'No port forwarding' },
-  { icon: Globe, label: 'Auto HTTPS' },
-  { icon: Wifi, label: 'Zero-trust access' },
-]
 
 const isValidToken = computed(() => tunnelToken.value.trim().length > 20)
 

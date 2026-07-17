@@ -5,6 +5,7 @@ import { Wifi, WifiOff, Shield, ArrowRight, Key, CheckCircle, AlertCircle, Loade
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
+import { formatUptime } from '../utils/metrics'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -68,18 +69,6 @@ const exposedPorts = computed(() => {
   const pub = [...new Set(ports.filter(p => p.PublicPort).map(p => p.PublicPort))]
   return pub.length ? pub.slice(0, 3).join(', ') : null
 })
-
-function formatUptime(ms) {
-  if (ms === null) return '—'
-  const s = Math.floor(ms / 1000)
-  if (s < 60) return `${s}s`
-  const m = Math.floor(s / 60)
-  if (m < 60) return `${m}m`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ${m % 60}m`
-  const d = Math.floor(h / 24)
-  return `${d}d ${h % 24}h`
-}
 
 // --- Setup / Deploy ---
 const authKey = ref('')

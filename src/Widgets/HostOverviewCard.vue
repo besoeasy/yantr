@@ -119,34 +119,6 @@ const workloadStats = computed(() => [
   },
 ]);
 
-const hostSummaryStats = computed(() => [
-  {
-    key: "cpu",
-    label: t("quickMetrics.hostMetrics.processors"),
-    value: String(displayCores.value),
-    suffix: t("quickMetrics.hostMetrics.cores"),
-    tone: "text-blue-500",
-  },
-  {
-    key: "memory",
-    label: t("quickMetrics.hostMetrics.memory"),
-    value: displayMemParts.value.value,
-    suffix: displayMemParts.value.unit,
-    tone: "text-violet-500",
-  },
-  {
-    key: "storage",
-    label: t("quickMetrics.hostMetrics.dockerVol"),
-    value: storageInfo.value.total > 0
-      ? `${storageInfo.value.usedFormatted} / ${storageInfo.value.totalFormatted}`
-      : storageInfo.value.hasData
-        ? storageInfo.value.usedFormatted
-        : "0 B",
-    suffix: storageInfo.value.total > 0 ? `${displayStoragePercent.value}%` : "",
-    tone: "text-emerald-500",
-  },
-]);
-
 watch(systemInfo, (info) => {
   if (!info) return;
   countUpTo(displayCores, info.cpu?.cores ?? 0);
