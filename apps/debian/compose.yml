@@ -1,5 +1,6 @@
 x-yantr:
   name: Debian
+  customapp: true
   tags: [ linux, debian, ssh, terminal, server ]
   short_description: Debian Linux container with SSH server for remote shell access.
   description: A self-hosted Debian 13 environment with OpenSSH server. Creates a
