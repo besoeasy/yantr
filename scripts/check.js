@@ -171,39 +171,42 @@ async function checkCompose(appName, composePath) {
       );
     }
 
-    // yantr.service.{PORT} is required for each port
-    const hasPortServiceLabel = Object.keys(labels).some((k) => /^yantr\.service\.\d+$/.test(k));
-    if (!hasPortServiceLabel) {
-      fail(
-        appName,
-        `compose.yml service "${svcName}" is missing a service label`,
-        'Add a per-port label like yantr.service.8080: "Web UI" for each port'
-      );
-    }
-
-    // at least one yantr.port.N label required
-    const portLabels = Object.keys(labels).filter((k) => k.startsWith("yantr.port."));
-    if (portLabels.length === 0) {
-      fail(
-        appName,
-        `compose.yml service "${svcName}" has no port labels`,
-        'Add at least one "yantr.port.{N}: PROTOCOL" label, e.g. yantr.port.8080: "HTTP"'
-      );
-    }
-
-    // validate each yantr.port.N label
-    for (const key of portLabels) {
-      const portNum = key.replace("yantr.port.", "");
-      if (!/^\d+$/.test(portNum)) {
-        fail(appName, `compose.yml service "${svcName}" has invalid port label key: ${key}`, "Port must be a number, e.g. yantr.port.8080");
-      }
-      const protocol = labels[key];
-      if (!["HTTP", "HTTPS", "TCP", "UDP"].includes(protocol?.toUpperCase())) {
+    // yantr.service.{PORT} is required for each port — skip for services with no exposed ports
+    const hasExposedPorts = Array.isArray(svc.ports) && svc.ports.length > 0;
+    if (hasExposedPorts) {
+      const hasPortServiceLabel = Object.keys(labels).some((k) => /^yantr\.service\.\d+$/.test(k));
+      if (!hasPortServiceLabel) {
         fail(
           appName,
-          `compose.yml service "${svcName}" has invalid protocol "${protocol}" on label ${key}`,
-          'Allowed values: HTTP, HTTPS, TCP, UDP'
+          `compose.yml service "${svcName}" is missing a service label`,
+          'Add a per-port label like yantr.service.8080: "Web UI" for each port'
         );
+      }
+
+      // at least one yantr.port.N label required
+      const portLabels = Object.keys(labels).filter((k) => k.startsWith("yantr.port."));
+      if (portLabels.length === 0) {
+        fail(
+          appName,
+          `compose.yml service "${svcName}" has no port labels`,
+          'Add at least one "yantr.port.{N}: PROTOCOL" label, e.g. yantr.port.8080: "HTTP"'
+        );
+      }
+
+      // validate each yantr.port.N label
+      for (const key of portLabels) {
+        const portNum = key.replace("yantr.port.", "");
+        if (!/^\d+$/.test(portNum)) {
+          fail(appName, `compose.yml service "${svcName}" has invalid port label key: ${key}`, "Port must be a number, e.g. yantr.port.8080");
+        }
+        const protocol = labels[key];
+        if (!["HTTP", "HTTPS", "TCP", "UDP"].includes(protocol?.toUpperCase())) {
+          fail(
+            appName,
+            `compose.yml service "${svcName}" has invalid protocol "${protocol}" on label ${key}`,
+            'Allowed values: HTTP, HTTPS, TCP, UDP'
+          );
+        }
       }
     }
 

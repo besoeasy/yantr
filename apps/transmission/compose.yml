@@ -1,38 +1,20 @@
+# apps/transmission/compose.yml
 x-yantr:
-  name: Transmission
-  tags: [ download, network, torrent, p2p, self-hosted ]
-  short_description: Fast, lightweight BitTorrent client with web interface and
-    native Docker support.
-  description: Transmission is a fast, lightweight BitTorrent client that runs as
-    a daemon with a web interface. It's known for its low resource usage,
-    simplicity, and reliability. Features include a web UI for remote
-    management, magnet link support, peer exchange, DHT, encryption, bandwidth
-    scheduling,...
-  usecases:
-    [
-      "Download Linux ISOs, open-source software, and public domain media via
-        BitTorrent.",
-      Set up automated downloads using watch folders - drop a .torrent file
-        and it starts downloading automatically.,
-      Build a headless download server that runs in the background and can be
-        controlled from any browser.,
-      Integrate with Sonarr/Radarr for automated media downloading.
-    ]
-  website: https://transmissionbt.com/
-  logo: QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ
-  notes:
-    [
-      Web interface runs on port 9091 by default,
-      Peer port is 51413 - needs to be accessible for optimal downloads,
-      LinuxServer.io image includes VPN and automatic cleanup features
-    ]
+  name: transmission
+  customapp: true
+  tags: [torrent, download, p2p, self-hosted, docker]
+  short_description: "BitTorrent client with auto-cleanup of old downloads."
+  description: >
+    A self-hosted Transmission BitTorrent client with automatic cleanup
+    of downloads older than 30 days. A lightweight Alpine sidecar runs
+    a daily job that removes expired files and empty directories to keep
+    disk usage in check. Has a web interface for managing torrents and
+    monitoring active downloads.
+  usecases: ["Download torrents.", "Auto-clean old files after 30 days.", "Self-host media downloads."]
+  website: "https://transmissionbt.com/"
   env_generators:
-    TRANSMISSION_USER:
-      length: 8
-      charset: alpha
-    TRANSMISSION_PASS:
-      length: 16
-      charset: alnum_symbols
+    TRANSMISSION_USER: { length: 12, charset: alpha }
+    TRANSMISSION_PASS: { length: 20, charset: alnum_symbols }
 
 services:
   transmission:
@@ -48,14 +30,33 @@ services:
       - "9091"
       - "51413"
       - 51413/udp
-    restart: unless-stopped
     labels:
-      yantr.app: transmission
-      yantr.service.9091: Web Interface
-      yantr.port.9091: HTTP
+      yantr.app: "transmission"
+      yantr.service.9091: "Web Interface"
+      yantr.port.9091: "HTTP"
+    restart: unless-stopped
+
+  cleanup:
+    image: alpine:latest
+    container_name: transmission-cleanup
+    labels:
+      yantr.app: "transmission"
+    volumes:
+      - transmission_downloads:/downloads
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache findutils > /dev/null 2>&1
+        while true; do
+          echo "[cleanup] Removing files older than 30 days..."
+          find /downloads -type f -mtime +30 -delete 2>/dev/null
+          find /downloads -type d -empty -delete 2>/dev/null
+          echo "[cleanup] Done. Sleeping 24h."
+          sleep 86400
+        done
+    restart: unless-stopped
 
 volumes:
   transmission_config:
-    name: transmission_config
   transmission_downloads:
-    name: transmission_downloads
