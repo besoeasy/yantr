@@ -1,0 +1,61 @@
+x-yantr:
+  name: transmission-autoclean
+  customapp: true
+  tags: [torrent, download, p2p, self-hosted, docker]
+  short_description: "BitTorrent client with auto-cleanup of old downloads."
+  description: >
+    A self-hosted Transmission BitTorrent client with automatic cleanup
+    of downloads older than 30 days. A lightweight Alpine sidecar runs
+    a daily job that removes expired files and empty directories to keep
+    disk usage in check. Has a web interface for managing torrents and
+    monitoring active downloads.
+  usecases: ["Download torrents.", "Auto-clean old files after 30 days.", "Self-host media downloads."]
+  website: "https://transmissionbt.com/"
+  env_generators:
+    TRANSMISSION_USER: { length: 12, charset: alpha }
+    TRANSMISSION_PASS: { length: 20, charset: alnum_symbols }
+
+services:
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: transmission-autoclean
+    environment:
+      USER: ${TRANSMISSION_USER}
+      PASS: ${TRANSMISSION_PASS}
+    volumes:
+      - transmission_ac_config:/config
+      - transmission_ac_downloads:/downloads
+    ports:
+      - "9091"
+      - "51413"
+      - 51413/udp
+    labels:
+      yantr.app: "transmission-autoclean"
+      yantr.service.9091: "Web Interface"
+      yantr.port.9091: "HTTP"
+    restart: unless-stopped
+
+  cleanup:
+    image: alpine:latest
+    container_name: transmission-autoclean-cleanup
+    labels:
+      yantr.app: "transmission-autoclean"
+    volumes:
+      - transmission_ac_downloads:/downloads
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache findutils > /dev/null 2>&1
+        while true; do
+          echo "[cleanup] Removing files older than 30 days..."
+          find /downloads -type f -mtime +30 -delete 2>/dev/null
+          find /downloads -type d -empty -delete 2>/dev/null
+          echo "[cleanup] Done. Sleeping 24h."
+          sleep 86400
+        done
+    restart: unless-stopped
+
+volumes:
+  transmission_ac_config:
+  transmission_ac_downloads:
