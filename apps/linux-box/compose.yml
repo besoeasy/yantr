@@ -1,5 +1,5 @@
 x-yantr:
-  name: Debian
+  name: linux-box
   customapp: true
   tags: [ linux, debian, ssh, terminal, server ]
   short_description: Debian Linux container with SSH server for remote shell access.
@@ -41,7 +41,7 @@ services:
     hostname: linux-box
     restart: unless-stopped
     labels:
-      yantr.app: debian
+      yantr.app: "linux-box"
       yantr.service.22: SSH
       yantr.port.22: TCP
     environment:
