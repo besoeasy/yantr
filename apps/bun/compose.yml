@@ -1,0 +1,26 @@
+x-yantr:
+  name: "bun"
+  customapp: true
+  tags: [javascript, bun, runtime, docker, self-hosted]
+  short_description: "Bun JavaScript runtime for fast modern web development."
+  description: >
+    A Bun container providing a fast JavaScript runtime, bundler, transpiler,
+    and package manager in a single tool. Bun's speed and built-in tooling
+    make it ideal for modern web development and high-performance applications.
+  usecases: ["Build high-performance JavaScript applications.", "Bundle and transpile modern web projects."]
+  website: "https://bun.sh/"
+
+services:
+  bun:
+    image: oven/bun:latest
+    container_name: bun
+    labels:
+      yantr.app: "bun"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - bun_data:/data
+    restart: unless-stopped
+
+volumes:
+  bun_data:

@@ -1,0 +1,26 @@
+x-yantr:
+  name: "alpine"
+  customapp: true
+  tags: [linux, alpine, minimal, docker, self-hosted]
+  short_description: "Minimal Alpine Linux container for lightweight workloads."
+  description: >
+    A lightweight Alpine Linux container ideal for running minimal workloads,
+    scripts, and utility tasks. Alpine's small footprint makes it perfect for
+    resource-constrained environments and quick experimentation.
+  usecases: ["Run lightweight utility scripts.", "Experiment with minimal Linux environments."]
+  website: "https://alpinelinux.org/"
+
+services:
+  alpine:
+    image: alpine:latest
+    container_name: alpine
+    labels:
+      yantr.app: "alpine"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - alpine_data:/data
+    restart: unless-stopped
+
+volumes:
+  alpine_data:

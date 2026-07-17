@@ -1,0 +1,26 @@
+x-yantr:
+  name: "debian"
+  customapp: true
+  tags: [linux, debian, stable, docker, self-hosted]
+  short_description: "Stable Debian Linux container for general-purpose workloads."
+  description: >
+    A stable and reliable Debian Linux container suitable for general-purpose
+    workloads, development environments, and server applications. Debian's
+    extensive package repository provides access to thousands of software packages.
+  usecases: ["Host general-purpose server applications.", "Set up a stable development environment."]
+  website: "https://www.debian.org/"
+
+services:
+  debian:
+    image: debian:latest
+    container_name: debian
+    labels:
+      yantr.app: "debian"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - debian_data:/data
+    restart: unless-stopped
+
+volumes:
+  debian_data:

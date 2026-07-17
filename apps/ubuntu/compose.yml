@@ -1,0 +1,26 @@
+x-yantr:
+  name: "ubuntu"
+  customapp: true
+  tags: [linux, ubuntu, docker, self-hosted, dev]
+  short_description: "Ubuntu LTS Linux container for versatile workloads."
+  description: >
+    An Ubuntu LTS Linux container providing a versatile and widely-supported
+    platform for development, deployment, and experimentation. Ubuntu's large
+    community and up-to-date packages make it a popular choice for many use cases.
+  usecases: ["Deploy applications on a popular Linux platform.", "Build and test software in a familiar environment."]
+  website: "https://ubuntu.com/"
+
+services:
+  ubuntu:
+    image: ubuntu:lts
+    container_name: ubuntu
+    labels:
+      yantr.app: "ubuntu"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ubuntu_data:/data
+    restart: unless-stopped
+
+volumes:
+  ubuntu_data:

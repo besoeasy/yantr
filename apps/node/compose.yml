@@ -1,0 +1,26 @@
+x-yantr:
+  name: "node"
+  customapp: true
+  tags: [nodejs, javascript, dev, docker, self-hosted]
+  short_description: "Node.js LTS environment for JavaScript applications."
+  description: >
+    A Node.js LTS container providing a ready-to-use JavaScript runtime
+    environment for building and running server-side applications, REST APIs,
+    and CLI tools. Includes npm for easy dependency management and development.
+  usecases: ["Run JavaScript server applications.", "Develop and test Node.js projects."]
+  website: "https://nodejs.org/"
+
+services:
+  node:
+    image: node:lts
+    container_name: node
+    labels:
+      yantr.app: "node"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - node_data:/data
+    restart: unless-stopped
+
+volumes:
+  node_data:
