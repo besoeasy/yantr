@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">GUPT app icon</title>
+  <desc id="desc">Dark square with the original stylized GUPT mark.</desc>
+  <defs>
+    <linearGradient id="bg" x1="28" x2="228" y1="28" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#18181b" />
+      <stop offset="1" stop-color="#27272a" />
+    </linearGradient>
+    <linearGradient id="accent" x1="64" x2="192" y1="64" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#facc15" />
+      <stop offset="1" stop-color="#fb7185" />
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" fill="url(#bg)" />
+  <path d="M128 51c-42.35 0-77 34.65-77 77s34.65 77 77 77c23.15 0 44.15-10.25 58.3-26.5v-32.4H131.5v-32H218.3v77.25C199.1 217.2 165.7 232 128 232C70.55 232 24 185.45 24 128S70.55 24 128 24c29.35 0 55.9 12.15 74.75 31.7L180.6 77C167.35 61.05 148.7 51 128 51Z" fill="url(#accent)" />
+  <circle cx="180.5" cy="75.5" r="13" fill="#fafafa" fill-opacity="0.92" />
+</svg>
