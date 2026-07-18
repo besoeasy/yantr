@@ -91,8 +91,11 @@ onUnmounted(() => {
       <div class="h-full flex items-center px-4 gap-2">
 
         <!-- Brand Mark -->
-        <router-link to="/home" class="brand-mark mr-2 select-none shrink-0">
-          <span class="brand-text text-sm font-semibold tracking-tight text-black dark:text-white">yantr</span>
+        <router-link
+          to="/home"
+          class="brand-mark nav-item flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white transition-all duration-200 mr-2 shrink-0"
+        >
+          <span class="brand-text">yantr</span>
         </router-link>
 
         <!-- Divider -->
@@ -195,24 +198,8 @@ onUnmounted(() => {
 
 <style scoped>
 /* Brand mark — pulse animation on hover */
-.brand-mark {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.125rem 0.25rem;
-  border-radius: 0.5rem;
-  transition: background-color 200ms ease;
-}
-
 .brand-mark:hover .brand-text {
   animation: brand-pulse 1.4s ease-in-out infinite;
-}
-
-.brand-mark:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-:global(.dark) .brand-mark:hover {
-  background-color: rgba(255, 255, 255, 0.06);
 }
 
 @keyframes brand-pulse {
