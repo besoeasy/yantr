@@ -1,0 +1,36 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="swirlRed" x1="120" y1="120" x2="380" y2="380">
+      <stop offset="0%" stop-color="#D1003F"/>
+      <stop offset="100%" stop-color="#A80030"/>
+    </linearGradient>
+  </defs>
+
+  <path
+    d="
+      M 170 95
+      C 245 40, 360 65, 395 155
+      C 425 230, 380 300, 310 315
+      C 245 330, 200 290, 200 235
+      C 200 185, 240 150, 285 150
+      C 325 150, 350 175, 350 210
+      C 350 245, 325 270, 295 270
+      C 265 270, 245 250, 245 225
+      C 245 205, 258 190, 278 190
+      C 295 190, 308 202, 308 218
+      C 308 232, 300 240, 290 245
+      M 165 95
+      C 150 190, 175 295, 260 370
+      C 330 430, 290 455, 210 420
+      C 135 387, 90 315, 90 235
+      C 90 155, 120 110, 165 95
+    "
+    fill="none"
+    stroke="url(#swirlRed)"
+    stroke-width="18"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+</svg>
