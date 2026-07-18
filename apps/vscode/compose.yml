@@ -20,7 +20,6 @@ x-yantr:
         extensions, and workspace configurations."
     ]
   website: https://github.com/coder/code-server
-  logo: QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX
   notes:
     [
       The password for the web UI is auto-generated on install (strong random

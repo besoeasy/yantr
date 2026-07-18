@@ -14,7 +14,6 @@ x-yantr:
       Share albums with friends and family.
     ]
   website: https://photoprism.app/
-  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   env_generators:
     PHOTOPRISM_ADMIN_PASSWORD:
       length: 16

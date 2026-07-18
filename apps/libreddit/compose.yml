@@ -13,7 +13,6 @@ x-yantr:
       Use as alternative to official Reddit.
     ]
   website: https://github.com/spikecodes/libreddit
-  logo: QmTieAKkWAmA12gchbEJiBGZZK64hsuKQYRtSbibJ9qWxF
   notes: [ No JavaScript - works without it, Zero tracking, Fast and lightweight ]
 
 services:

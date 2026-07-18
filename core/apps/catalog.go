@@ -118,7 +118,6 @@ func GetCatalogCached(forceRefresh bool) (*Catalog, error) {
 // xYantr matches the x-yantr extension block in compose.yml.
 type xYantr struct {
 	Name             string                  `yaml:"name"`
-	Logo             string                  `yaml:"logo"`
 	Tags             []string                `yaml:"tags"`
 	ShortDescription string                  `yaml:"short_description"`
 	Description      string                  `yaml:"description"`
@@ -205,7 +204,7 @@ func loadCatalog() (*Catalog, error) {
 			app := App{
 				ID:               entry.Name(),
 				Name:             meta.Name,
-				Logo:             shared.NormalizeAppLogo(meta.Logo, appPath),
+				Logo:             shared.NormalizeAppLogo(appPath),
 				Tags:             tags,
 				Ports:            ports,
 				ShortDescription: meta.ShortDescription,

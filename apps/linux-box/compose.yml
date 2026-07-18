@@ -14,7 +14,6 @@ x-yantr:
         Debian environment."
     ]
   website: https://www.debian.org/
-  logo: QmRBnPQrx3BfAUDeCB7Y5Qcy5zp2a1XAFVuZ6Ek2RHro89
   notes:
     [
       "Connect with: ssh <USERNAME>@<host> -p <mapped-port>",

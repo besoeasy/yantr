@@ -15,7 +15,6 @@ x-yantr:
         all data under your control on local infrastructure."
     ]
   website: https://github.com/JhumanJ/opnform
-  logo: QmSmhDZydYp9xYPVCs19mvom1nMB7Cy7wrZxdtEXgbQtRT
 
 services:
   opnform:

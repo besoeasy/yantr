@@ -14,7 +14,6 @@ x-yantr:
       Track what you've watched.
     ]
   website: https://github.com/Stremio/stremio-web
-  logo: QmUJ8LsjmfsZdPybvXWkAJsEJYadr8D6L1iqXvgtC48hfX
   notes:
     [
       This deploys the Stremio streaming server only (not the web UI). Use

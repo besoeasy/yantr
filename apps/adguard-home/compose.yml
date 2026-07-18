@@ -21,7 +21,6 @@ x-yantr:
         requests to ad and tracking servers before they load.
     ]
   website: https://adguard.com/en/adguard-home/overview.html
-  logo: QmSBZ3r1XdbMZ9CiUUvtQvfL9HYjLGMF4nqftRJ2XHAS3j
   notes:
     [
       Requires port 53 (DNS) to be available on the host,

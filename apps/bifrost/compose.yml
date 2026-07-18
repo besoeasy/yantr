@@ -15,13 +15,10 @@ x-yantr:
       "Add observability, caching, and failover to self-hosted AI workloads."
     ]
   website: https://docs.getbifrost.ai/
-  logo: QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX
   notes:
     [
       Provider API keys still need to be configured after deployment.,
       App data is stored in a Docker volume mounted at /app/data.,
-      Logo is a temporary placeholder and should be replaced with the final
-        IPFS CID later.
     ]
 
 services:

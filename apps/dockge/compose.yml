@@ -15,7 +15,6 @@ x-yantr:
       Organize multiple compose projects in one place.
     ]
   website: https://github.com/louislam/dockge
-  logo: QmXUGnzPpcRuGks5CJB6we1cFcBW2qPau9FZUs98wPGFJL
   notes:
     [
       Requires Docker socket access,

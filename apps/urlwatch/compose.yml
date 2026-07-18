@@ -15,7 +15,6 @@ x-yantr:
       Check if websites are down.
     ]
   website: https://github.com/thp/urlwatch
-  logo: QmWkNcdYSyueiheQwyHXyjkXrxcGdKLcYGBbcECLiJ6c3W
   notes:
     [
       Diff highlighting shows changes,

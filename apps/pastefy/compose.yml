@@ -15,7 +15,6 @@ x-yantr:
       Use the API to create pastes from scripts or CI/CD pipelines.
     ]
   website: https://docs.pastefy.app
-  logo: QmdxTLj7i7cdJW7VPeeYnxsjC2ZXr6SZYgMkHW3pwNwB7C
   notes:
     [
       Supports both guest and authenticated users,

@@ -19,7 +19,6 @@ x-yantr:
         services for document processing or chatbots."
     ]
   website: https://docs.n8n.io
-  logo: QmT4ncfKSqhVEpoQi7FZpzyRyHemgXDjqXX896esZtMxGM
   notes:
     [
       Data stays on your server - no cloud dependency for automation logic,

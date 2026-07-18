@@ -25,7 +25,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://api.github.com" crossorigin />
-    <link rel="dns-prefetch" href="https://ipfs.io" />
 
     <!-- Structured data: WebSite -->
     <script type="application/ld+json">
@@ -1164,11 +1163,7 @@
       }
 
       function getLogoUrl(app) {
-        return app.logo
-          ? app.logo.startsWith("http")
-            ? app.logo
-            : `https://ipfs.io/ipfs/${app.logo}`
-          : `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
       }
 
       function createAppPillMarkup(app) {
@@ -1364,8 +1359,6 @@
           const apps = data.apps;
           if (!apps || !apps.length) return;
 
-          const appsWithLogo = apps.filter((app) => app.logo);
-
           // Scale orbit radii to viewport — smaller on mobile
           const minDim = Math.min(window.innerWidth, window.innerHeight);
           const scale = Math.max(0.45, Math.min(1, minDim / 700));
@@ -1378,7 +1371,7 @@
           ];
 
           const totalNeeded = rings.reduce((s, ring) => s + ring.count, 0);
-          const selectedApps = getRandomUniqueItems(appsWithLogo, totalNeeded);
+          const selectedApps = getRandomUniqueItems(apps, totalNeeded);
 
           // Subtle orbit guide circles
           for (const ring of rings) {

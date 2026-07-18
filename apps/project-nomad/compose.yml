@@ -15,7 +15,6 @@ x-yantr:
       "Host a private, secure knowledge base for offline use."
     ]
   website: https://www.projectnomad.us
-  logo: QmTWne8qF7iFEo6oG3VJaUXY5veCD9Q7aDXSg1V5Jyz2Ai
   notes:
     [
       Requires Docker socket access for container orchestration.,

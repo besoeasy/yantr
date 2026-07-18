@@ -17,7 +17,6 @@ x-yantr:
         without installing any native app.
     ]
   website: https://gupt.app
-  logo: QmRUCVqYvkWeQs9PkZgc3icHr4uY6jQsbs1y4cHa2umjCV
   notes:
     [
       No backend required — the app connects directly to public or private

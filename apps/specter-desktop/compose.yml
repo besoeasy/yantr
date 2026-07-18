@@ -15,7 +15,6 @@ x-yantr:
       Air-gapped transaction signing.
     ]
   website: https://specter.solutions/desktop
-  logo: QmdHMdrWHAFAcEpJZgJsv2kFnTZRR5x1A5x12KNHW2LqGY
   notes:
     [
       Requires Bitcoin node connection,

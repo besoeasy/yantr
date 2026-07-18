@@ -14,7 +14,6 @@ x-yantr:
       Host secure file storage with signed upload/download URLs.
     ]
   website: https://supabase.com/docs/guides/self-hosting
-  logo: QmSupabaseLogoCID1234567890abcdef1234567890abc
   notes:
     [
       Adjust SUPABASE_JWT_SECRET and database password for production.,

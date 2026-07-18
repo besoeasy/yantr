@@ -13,7 +13,6 @@ x-yantr:
       Receive failure alerts and pause prints automatically with AI plugins.
     ]
   website: https://octoprint.org
-  logo: QmPKKDsiocEzBfk6K8w9JtA92Z1Xib1RpP71fAk57VokwW
   notes:
     [
       Privileged mode is required to access the 3D printer USB serial port.,

@@ -13,7 +13,6 @@ x-yantr:
       Download entire playlists.
     ]
   website: https://github.com/alexta69/metube
-  logo: QmVHF6jueKh11T7LVbBC6NCCs2tuMo7Af7tKfWJEdXSkwQ
   notes:
     [
       Based on yt-dlp - supports 1700+ sites,

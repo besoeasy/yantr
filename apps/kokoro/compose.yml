@@ -16,7 +16,6 @@ x-yantr:
         under your control on local infrastructure."
     ]
   website: https://github.com/remsky/Kokoro-FastAPI
-  logo: Qmc3MXRpboBnU5sBsyDAyMGvaPge5vTbEwfFN3P13R5q5Z
 
 services:
   kokoro:

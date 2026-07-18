@@ -21,7 +21,6 @@ x-yantr:
         confidential work documents.
     ]
   website: https://github.com/PrivateBin/PrivateBin
-  logo: QmWNmuv1fVzwz63qzbD1RHwX6MbNk5xAUwC5RR2ZsPeiGj
   notes:
     [
       "The encryption key is in the URL anchor (#), which is never sent to the

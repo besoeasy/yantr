@@ -15,7 +15,6 @@ x-yantr:
       Share media files for Plex/Jellyfin to scan.
     ]
   website: https://github.com/dockur/samba
-  logo: QmYNjTj44mLCz5SZrWR9GkWU94bZw7hvqZZuFAwJJcsWU7
   notes:
     [
       SMB port 445 - no need for older NetBIOS,

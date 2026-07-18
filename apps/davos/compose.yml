@@ -13,7 +13,6 @@ x-yantr:
       Schedule downloads for off-peak hours.
     ]
   website: https://github.com/linuxserver/docker-davos
-  logo: QmVN8Wpn8RgjPwR7ggoVxPjKqE4GzYN69uZGMiyQmu792X
   notes:
     [
       Supports FTP and SFTP,

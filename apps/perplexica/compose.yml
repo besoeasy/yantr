@@ -13,7 +13,6 @@ x-yantr:
       Private AI search.
     ]
   website: https://github.com/ItzCrazyKns/Perplexica
-  logo: QmXkTfV5b7aUepUyRLpo9C26P34LWrRyNcQTewFSZjezYc
   notes:
     [
       Requires Ollama or OpenAI API,

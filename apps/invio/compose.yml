@@ -16,7 +16,6 @@ x-yantr:
         data under your control on local infrastructure."
     ]
   website: https://github.com/kittendevv/Invio/wiki
-  logo: QmTxfLAvG4LnESZyVJ6dWMzXqJpaDYyTmKEhLxEux6PAH3
 
 services:
   invio:

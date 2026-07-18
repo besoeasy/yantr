@@ -13,7 +13,6 @@ x-yantr:
       Sign into alternate accounts without altering your main browser
     ]
   website: https://docs.linuxserver.io/images/docker-ungoogled-chromium
-  logo: QmdLAeb991RKKxSK13JEJHFHHkAC9GBPRbuP7XUFA2nSij
   notes:
     [
       Exposing this container to the Internet is not recommended.,

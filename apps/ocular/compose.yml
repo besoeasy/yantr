@@ -17,7 +17,6 @@ x-yantr:
         used by the app.
     ]
   website: https://simonwep.github.io/ocular/
-  logo: QmOcularLogoCID1234567890abcdef1234567890abcef
   notes:
     [
       Ocular expects HTTPS by default for secure cookies; set

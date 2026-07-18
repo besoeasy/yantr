@@ -14,7 +14,6 @@ x-yantr:
       Private AI assistant gateway.
     ]
   website: https://github.com/zeroclaw-labs/zeroclaw
-  logo: Qmex7mP7CtY1uo7a2erXmuNrvQdY6aw5FTQtxpJjAbiu8v
   notes:
     [
       Multiple LLM provider support,

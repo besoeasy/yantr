@@ -19,7 +19,6 @@ x-yantr:
         sending data to third parties.
     ]
   website: https://github.com/nextcloud/server
-  logo: QmU23rKmzJwT93oCrnprdGJQBv4VaPiaZ6re88qbfmVE2u
   notes:
     [
       Requires a database connection during setup; point it at a MariaDB stack

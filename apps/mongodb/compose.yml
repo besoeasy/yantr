@@ -17,7 +17,6 @@ x-yantr:
         schemas.
     ]
   website: https://github.com/mongodb/mongo
-  logo: QmZYsae4jNFSyXC696vjkyiqSAR6DBGo4zKSgMGdE7ZSzy
   notes:
     [
       Default port is 27017 for client connections,

@@ -18,7 +18,6 @@ x-yantr:
       Block annoying ads and tracking parameters from URLs automatically.
     ]
   website: https://docs.searxng.org
-  logo: QmRbiaDWHNx6f9MvCpQ3PedjZd7A9szb2NbM9DMCvDvLtH
   notes:
     [
       No tracking or logging of search queries by default,

@@ -17,7 +17,6 @@ x-yantr:
       Set up zero-trust access - require login before reaching your services.
     ]
   website: https://github.com/cloudflare/cloudflared
-  logo: Qmcyr4xpG4SZdBp9VorVjRrvHqHoQzCu9YHCQZGNC5ck8T
   notes:
     [
       Requires a Cloudflare account and tunnel token,

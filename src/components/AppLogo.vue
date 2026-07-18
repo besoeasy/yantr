@@ -32,34 +32,12 @@ const props = defineProps({
 const fallbackIcons = [Bot, Box, Database, Globe, Package, Server];
 const imageFailed = ref(false);
 
-const CID_V0_REGEX = /^Qm[1-9A-HJ-NP-Za-km-z]{44}$/;
-const CID_V1_REGEX = /^b[a-z2-7]{20,}$/;
-
 watch(
   () => props.logo,
   () => {
     imageFailed.value = false;
   }
 );
-
-function isLikelyIpfsCid(value) {
-  return CID_V0_REGEX.test(value) || CID_V1_REGEX.test(value);
-}
-
-function extractIpfsCidFromUrl(value) {
-  try {
-    const url = new URL(value);
-    const hostParts = url.hostname.split(".");
-    if (hostParts.length >= 3 && hostParts[1] === "ipfs") {
-      return hostParts[0] || null;
-    }
-
-    const pathMatch = url.pathname.match(/\/ipfs\/([^/?#]+)/);
-    return pathMatch?.[1] || null;
-  } catch {
-    return null;
-  }
-}
 
 function normalizeLogoUrl(value) {
   if (typeof value !== "string") return null;
@@ -69,14 +47,7 @@ function normalizeLogoUrl(value) {
   // Relative paths (e.g. /api/apps/{id}/logo) — use as-is
   if (trimmed.startsWith("/")) return trimmed;
 
-  if (trimmed.includes("://")) {
-    const cid = extractIpfsCidFromUrl(trimmed);
-    if (cid && !isLikelyIpfsCid(cid)) return null;
-    return trimmed;
-  }
-
-  if (!isLikelyIpfsCid(trimmed)) return null;
-  return `https://ipfs.io/ipfs/${trimmed}`;
+  return null;
 }
 
 function pickFallbackIndex(seedValue) {

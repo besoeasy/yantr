@@ -19,7 +19,6 @@ x-yantr:
         controls and access restrictions.
     ]
   website: https://jellyfin.org/
-  logo: QmcsxWwZb9CZYsG5EvAEVwqjEw2FeX3KroZD5rvo87XWMZ
   notes:
     [
       "Hardware transcoding requires appropriate GPU drivers (Intel Quick

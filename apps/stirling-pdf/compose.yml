@@ -15,7 +15,6 @@ x-yantr:
       Add or remove password protection from PDFs.
     ]
   website: https://github.com/Stirling-Tools/Stirling-PDF
-  logo: QmZ6nmAP1oSgpfd4N7oAYNEJrRqgQTPGndZPyN2vwmyjBE
   notes:
     [
       All processing done locally - no data leaves your server,

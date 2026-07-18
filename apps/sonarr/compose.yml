@@ -20,7 +20,6 @@ x-yantr:
         watching.
     ]
   website: https://github.com/linuxserver/docker-sonarr
-  logo: QmSH43o5suJ8UUngEiPGFWedxTdDk9SFDe2GVLNqSkFhJb
   notes:
     [
       Requires a download client (Usenet or BitTorrent),

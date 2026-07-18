@@ -15,7 +15,6 @@ x-yantr:
       Use as a simple messaging system for family or team.
     ]
   website: https://github.com/gotify/server
-  logo: QmfUMSBFU2WKRyvG9kQa4fzRU8Apr7rC3N8HkYSL7gY5XX
   notes:
     [
       Simple REST API for sending messages,

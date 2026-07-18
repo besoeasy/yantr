@@ -17,7 +17,6 @@ x-yantr:
         pointing Agent Zero at your preferred model endpoint."
     ]
   website: https://github.com/agent0ai/agent-zero
-  logo: QmRBVG7DQaWrFKa6aj9pmqshzJSL1TzSkBZTYJqvj1rrSw
   notes:
     [
       Set ALLOWED_ORIGINS to a comma-separated list of allowed origins (e.g.

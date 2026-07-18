@@ -15,7 +15,6 @@ x-yantr:
         under your control on local infrastructure."
     ]
   website: https://github.com/moltis-org/moltis
-  logo: Qmd7xtrfkc5GfXhxpXsSECPHDYzyyHbu7YYXMzQWZ5sagd
 
 services:
   moltis:

@@ -16,7 +16,6 @@ x-yantr:
       Use filters and categories to organize feeds by topic or priority.
     ]
   website: https://github.com/FreshRSS/FreshRSS
-  logo: QmeS63xjuJXpVGUXP5B78naYoBcrcL7H5ZprF13kLZJUMq
   notes:
     [
       Supports OPML import for migrating from other feed readers,

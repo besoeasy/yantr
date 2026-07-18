@@ -14,7 +14,6 @@ x-yantr:
         all data under your control on local infrastructure."
     ]
   website: https://codeberg.org/highghlow/just-download
-  logo: Qmc9ChgqKxSUXJ37gC8ndutwEmzCic4QQrgTaxPCffuV6V
 
 services:
   just-download:

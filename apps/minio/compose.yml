@@ -15,7 +15,6 @@ x-yantr:
       Run AI/ML workloads that need S3-compatible storage for datasets.
     ]
   website: https://min.io
-  logo: QmWgS8CxKS7UYSgNNp6nqsTLYwMF5tk8cQfroTgyvxsbQ7
   notes:
     [
       "Console runs on port 9001, API on port 9000",

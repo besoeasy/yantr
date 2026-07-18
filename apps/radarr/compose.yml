@@ -18,7 +18,6 @@ x-yantr:
       Get notified when movies are available in your wanted quality profile.
     ]
   website: https://github.com/linuxserver/docker-radarr
-  logo: QmfNn5gZnB1QYxXdumJ3Xw4jz9o18H2Zmub5F2NXU4h8wv
   notes:
     [
       "Requires a download client (qBittorrent, Transmission, or Usenet)",

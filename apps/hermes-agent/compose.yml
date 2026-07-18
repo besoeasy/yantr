@@ -17,7 +17,6 @@ x-yantr:
         dashboard and ensure agent services are always running.
     ]
   website: https://github.com/NousResearch/hermes
-  logo: QmVSqCDAJgJKMgBjJvfkwJYpDg7YhR3UFiKx3CS4RdhV5J
   notes:
     [
       Set HERMES_API_KEY to a strong secret before exposing the gateway — both

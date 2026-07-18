@@ -16,7 +16,6 @@ x-yantr:
       Integrate with image generation models for a complete AI experience.
     ]
   website: https://github.com/open-webui/open-webui
-  logo: QmVDEiXJcSXvSWsx5DhRvMoufg3j2H7jK1Yv8ijAZfBEtv
   notes:
     [
       Requires Ollama to be running with models downloaded,

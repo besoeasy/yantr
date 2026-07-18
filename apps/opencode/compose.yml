@@ -14,7 +14,6 @@ x-yantr:
       Collaborative development.
     ]
   website: https://github.com/anomalyco/opencode
-  logo: Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA
   notes: [ Browser-based IDE, AI assistant integration, Terminal access ]
 
 services:

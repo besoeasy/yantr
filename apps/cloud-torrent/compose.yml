@@ -14,7 +14,6 @@ x-yantr:
       Basic torrent management without bloat.
     ]
   website: https://github.com/jpillora/cloud-torrent
-  logo: QmdPAfpuG5zkJs4GMX2DJ4xhKYq8vkT98TMjHgecAwkQVL
   notes: [ Magnet link support, Streaming while downloading, Simple and lightweight ]
 
 services:

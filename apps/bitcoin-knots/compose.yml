@@ -16,7 +16,6 @@ x-yantr:
       Support the Bitcoin network by relaying transactions.
     ]
   website: https://bitcoinknots.org
-  logo: QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ
   notes:
     [
       Full sync requires ~600GB+ and growing,

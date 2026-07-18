@@ -16,7 +16,6 @@ x-yantr:
       Use as a privacy-focused browsing solution on headless servers.
     ]
   website: https://github.com/domistyle/docker-tor-browser
-  logo: QmaVTPSKHnzenoUpqydsnNHQ45WJDtRxxjnqzVqK4MiB38
   notes:
     [
       Accessed via VNC in browser - no local installation needed,

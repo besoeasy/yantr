@@ -90,15 +90,10 @@ function checkXYantr(appName, meta, hasLogoSvg) {
     fail(appName, 'x-yantr missing "name"', "Must be a non-empty string.");
   }
 
-  // logo — IPFS CID (optional); logo.svg in the app folder is auto-detected
+  // logo — if present, warn if logo.svg also exists (logo.svg is auto-detected)
   if (typeof meta.logo === "string" && meta.logo.trim()) {
-    const logo = meta.logo.trim();
     if (hasLogoSvg) {
       warn(appName, '"logo" field is set but logo.svg exists in the folder', 'Remove the "logo" field — logo.svg is auto-detected.');
-    } else if (logo.includes("://")) {
-      warn(appName, '"logo" looks like a URL', `Should be an IPFS CID, got: "${logo}"`);
-    } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(logo) && !/^baf[a-zA-Z0-9]+$/.test(logo)) {
-      warn(appName, '"logo" does not look like a valid IPFS CID', `Got: "${logo}"`);
     }
   }
 

@@ -15,7 +15,6 @@ x-yantr:
       Host Git repositories using the GRASP protocol
     ]
   website: https://github.com/fiatjaf/pyramid
-  logo: QmWhbSnNbgBASZSX42RDfgUkZb6gKytRJyV3yRbr3YzYxr
   notes:
     [
       Public access is required for full function (use reverse proxy or

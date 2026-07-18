@@ -14,7 +14,6 @@ x-yantr:
       Offline-first personal knowledge base.
     ]
   website: https://github.com/besoeasy/zeronote
-  logo: Qmbdks6yn4TrP2hfFZJ1dZPW84kYhrWoXDj4tLBtpWfRiF
   notes: [ Server cannot read your notes, Offline-first design, Local encryption ]
 
 services:

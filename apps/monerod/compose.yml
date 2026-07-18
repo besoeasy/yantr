@@ -14,7 +14,6 @@ x-yantr:
       Avoid using public RPC nodes that could deanonymize you.
     ]
   website: https://github.com/sethforprivacy/simple-monerod
-  logo: QmarnKCoBY8ZQRnK319Sv9QDdKrUKfnpYteZ71XiswoP8y
   notes:
     [
       Pruned mode uses less disk space (~50GB vs 100GB+),

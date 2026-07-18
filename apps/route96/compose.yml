@@ -15,15 +15,11 @@ x-yantr:
       Pair with a Nostr relay (e.g. strfry) for a fully self-hosted Nostr node.
     ]
   website: https://github.com/v0l/route96
-  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
   notes:
     [
       Set the public_url in the config to match how you access this server
         (e.g. via a Cloudflare tunnel or Caddy proxy) so Nostr clients get
         correct media URLs.,
-      The default logo is a placeholder — upload the Route96 SVG icon to
-        originless.besoeasy.com and update this field with the resulting IPFS
-        CID.
     ]
 
 services:

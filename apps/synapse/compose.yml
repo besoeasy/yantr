@@ -8,7 +8,6 @@ x-yantr:
     Matrix servers while giving complete control over messaging data.
   usecases: [ Host your own chat and rooms., Federate with other Matrix servers. ]
   website: https://matrix.org/docs/projects/server/synapse
-  logo: QmUzgkYv5zvG6AvU5NuzH4b59G2Uxg8P4AAA11111111AA
   notes: [ Set SYNAPSE_SERVER_NAME and TLS correctly before production use. ]
 
 services:

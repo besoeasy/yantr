@@ -20,7 +20,6 @@ x-yantr:
         for native container health checks.
     ]
   website: https://github.com/louislam/uptime-kuma/wiki
-  logo: Qmb7LeUwFtcWpkpbiyzEPYPecX8iXNZMtvjag9WyrCDmLV
   notes:
     [
       "Supports over 30 monitoring types including HTTP, TCP, Ping, DNS, and

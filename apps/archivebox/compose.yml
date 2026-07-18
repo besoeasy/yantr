@@ -19,7 +19,6 @@ x-yantr:
         links.
     ]
   website: https://github.com/ArchiveBox/ArchiveBox
-  logo: QmRjtdvzpWZSjsbR8rBfisLjtkBPEoXttwyen6F72BTYHv
   notes:
     [
       First run creates an admin user with the credentials set via

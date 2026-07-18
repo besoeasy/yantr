@@ -20,7 +20,6 @@ x-yantr:
         preferred auth provider.
     ]
   website: https://github.com/requarks/wiki
-  logo: QmdFpskYSKmBYLyBWGSnqronCxH2V3kxSLiDBHmCCWGVRs
   notes:
     [
       "Requires PostgreSQL, MySQL, or MariaDB for data storage",

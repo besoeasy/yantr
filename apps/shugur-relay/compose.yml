@@ -15,7 +15,6 @@ x-yantr:
         all data under your control on local infrastructure."
     ]
   website: https://github.com/Shugur-Network/relay
-  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
 
 services:
   shugur-relay:

@@ -20,7 +20,6 @@ x-yantr:
         while keeping your data on your own server.
     ]
   website: https://github.com/dani-garcia/vaultwarden/wiki
-  logo: QmUPKRipoMCZT3VCYVCoxe3z5WpDhfpb7v4HH1dDKedQaQ
   notes:
     [
       Requires HTTPS for browser extensions to work properly,

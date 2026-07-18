@@ -18,7 +18,6 @@ x-yantr:
         sites."
     ]
   website: https://github.com/linuxserver/Heimdall
-  logo: QmURGit77px6MrQiuco9TGGgg3z9rkhcWs3MZ5pfSpzCE4
   notes:
     [
       Simple YAML-based configuration for adding apps,

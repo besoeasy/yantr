@@ -16,7 +16,6 @@ x-yantr:
         data under your control on local infrastructure."
     ]
   website: https://github.com/fccview/jotty
-  logo: QmaCFEHEEBeqHMxCD3JKPx5AQJpoU4VFAXru85xRm5qeXV
 
 services:
   jotty:

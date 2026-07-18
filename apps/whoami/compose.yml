@@ -15,7 +15,6 @@ x-yantr:
       Debug Docker networking and port forwarding.
     ]
   website: https://github.com/traefik/whoami
-  logo: QmZvfwKJRMrMvzUyRyrLJjShVCsGozSAPDrCq6Vg1Fpde5
   notes:
     [
       Tiny image - only displays request info,

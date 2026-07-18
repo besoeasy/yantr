@@ -19,7 +19,6 @@ x-yantr:
         and advertising domains before they load.
     ]
   website: https://docs.pi-hole.net
-  logo: QmYbagd1HGhQkxjcgj8KvEGc3ASyubA7MuVSZokJkSmpBr
   notes:
     [
       Requires port 53 (DNS) to be available on the host,

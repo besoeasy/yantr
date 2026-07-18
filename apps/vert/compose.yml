@@ -16,7 +16,6 @@ x-yantr:
         conversions remain private and on your own infrastructure.
     ]
   website: https://github.com/VERT-sh/VERT
-  logo: QmNN7eRPuJSg4Jw7BEhvhFQEyAyNcLnvMnsqHA2XBYy2dM
   notes:
     [
       Video conversion requires the optional vertd daemon for local

@@ -15,7 +15,6 @@ x-yantr:
       Use as a personal relay for your own notes.
     ]
   website: https://github.com/hoytech/strfry
-  logo: QmNR4kyKJs3sZwdRJZ47z5feUWn6S8aJw31wzZrXK2fVcD
   notes:
     [
       "Uses LMDB for fast, high-capacity storage",

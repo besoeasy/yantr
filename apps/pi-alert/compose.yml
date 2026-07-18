@@ -16,7 +16,6 @@ x-yantr:
       Identify all devices on your network with vendor recognition.
     ]
   website: https://github.com/jokobsk/pi.alert
-  logo: QmSB7NetcjxcyHU5T7hJht4N7RLLvcanARni6Cy8yTjra3
   notes:
     [
       Scans via ARP to discover all devices on network,

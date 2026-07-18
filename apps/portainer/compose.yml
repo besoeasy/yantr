@@ -18,7 +18,6 @@ x-yantr:
       "Manage Docker images - pull, build, tag, and push to registries."
     ]
   website: https://docs.portainer.io
-  logo: QmXyDE7nzzoUS8dez7bWBgeP2X2xkJ6XesJ7QSWUsvdV5F
   notes:
     [
       Requires access to Docker socket (/var/run/docker.sock),

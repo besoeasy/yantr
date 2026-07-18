@@ -15,7 +15,6 @@ x-yantr:
       View historical data by exporting to time-series databases.
     ]
   website: https://nicolargo.github.io/glances/
-  logo: QmVa2UDC7pALhMyoiXgQsThyF9QszT2f7WcK168k7AGXhf
   notes:
     [
       Requires host PID namespace for full process monitoring,

@@ -13,7 +13,6 @@ x-yantr:
       Convert images to different formats.
     ]
   website: https://github.com/C4illin/ConvertX
-  logo: QmafozB6D4dw51adzoPyrCwTTCATQv1nbVwZPME6yzDWF7
   notes: [ Multiple format support, Local processing only, Web interface for easy use ]
 
 services:

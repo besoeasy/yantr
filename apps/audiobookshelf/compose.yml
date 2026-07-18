@@ -13,7 +13,6 @@ x-yantr:
       Track listening progress across devices.
     ]
   website: https://www.audiobookshelf.org/
-  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 services:
   audiobookshelf:

@@ -13,7 +13,6 @@ x-yantr:
       Share feeds and integrations with automation pipelines.
     ]
   website: https://miniflux.app/
-  logo: QmMinifluxLogoCID1234567890abcdef1234567890abc
   notes:
     [
       Set a secure ADMIN_PASSWORD before public exposure.,

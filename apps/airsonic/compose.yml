@@ -14,7 +14,6 @@ x-yantr:
       Access your music library remotely via the web interface.
     ]
   website: https://github.com/airsonic/airsonic
-  logo: Qmb3YsRHNpn9L5CFLVLM3C4h7wNtMXcGsmXYn2uofZaiHK
   notes:
     [
       Supports transcoding for format compatibility,

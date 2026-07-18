@@ -12,7 +12,6 @@ x-yantr:
       Keep analytics GDPR-friendly without third-party scripts.
     ]
   website: https://plausible.io/docs/self-hosting
-  logo: QmPlausibleLogoCID1234567890abcdef1234567890ab
   notes: [ Change SECRET_KEY_BASE and database credentials before going public. ]
 
 services:

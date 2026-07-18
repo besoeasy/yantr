@@ -14,7 +14,6 @@ x-yantr:
       Create complex home automation routines without cloud dependency.
     ]
   website: https://www.home-assistant.io
-  logo: QmPgmuH851guhPKsA5hDv78HCiwvL79czkXX8PXY6SSCL1
   notes:
     [
       Home Assistant runs in host network mode to discover local devices.,

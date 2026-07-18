@@ -14,7 +14,6 @@ x-yantr:
         keeping all data under your control on local infrastructure."
     ]
   website: https://bitcoinknots.org
-  logo: QmagcjChBhrPKmd1S2XyQw9dCddbWn7izbtNR4gscbA1kQ
   env_generators:
     BITCOIN_RPC_USER:
       length: 8

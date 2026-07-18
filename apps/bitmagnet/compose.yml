@@ -14,7 +14,6 @@ x-yantr:
         automated media acquisition."
     ]
   website: https://bitmagnet.io
-  logo: QmX2bA23zVjnxGeQgwUfv3XXuascGnnBX33ap7CWWknrXP
   notes:
     [
       Bitmagnet bundles its own PostgreSQL instance — no separate database

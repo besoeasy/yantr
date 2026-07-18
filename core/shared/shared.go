@@ -86,49 +86,14 @@ func NowMs() int64 {
 	return time.Now().UnixMilli()
 }
 
-// IsLikelyIPFSCid returns true if the string looks like a CIDv0 or CIDv1.
-func IsLikelyIPFSCid(value string) bool {
-	if len(value) == 46 && len(value) > 2 && value[:2] == "Qm" {
-		return true
-	}
-	if len(value) > 20 && value[0] == 'b' {
-		return true
-	}
-	return false
-}
-
-// NormalizeAppLogo converts a raw logo field to a full URL or returns empty string.
-// If logoRaw is empty, it checks for logo.svg in appPath and returns a local API URL.
-func NormalizeAppLogo(logoRaw string, appPath string) string {
-	if logoRaw == "" {
-		// Auto-detect logo.svg in the app folder
-		if appPath != "" {
-			svgPath := appPath + "/logo.svg"
-			if info, err := os.Stat(svgPath); err == nil && !info.IsDir() {
-				// Extract app ID from appPath (last directory component)
-				appID := filepath.Base(appPath)
-				return "/api/apps/" + appID + "/logo"
-			}
+// NormalizeAppLogo returns a logo URL. If logo.svg exists in appPath, returns a local API URL.
+func NormalizeAppLogo(appPath string) string {
+	if appPath != "" {
+		svgPath := appPath + "/logo.svg"
+		if info, err := os.Stat(svgPath); err == nil && !info.IsDir() {
+			appID := filepath.Base(appPath)
+			return "/api/apps/" + appID + "/logo"
 		}
-		return ""
-	}
-	if contains(logoRaw, "://") {
-		return logoRaw
-	}
-	if IsLikelyIPFSCid(logoRaw) {
-		return "https://ipfs.io/ipfs/" + logoRaw
 	}
 	return ""
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
-		func() bool {
-			for i := 0; i <= len(s)-len(substr); i++ {
-				if s[i:i+len(substr)] == substr {
-					return true
-				}
-			}
-			return false
-		}())
 }

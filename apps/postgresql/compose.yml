@@ -18,7 +18,6 @@ x-yantr:
       Use pgvector extension for storing and querying AI embeddings.
     ]
   website: https://github.com/postgres/postgres
-  logo: QmSmV8pEZ4EcmdQPZ9wsBovGFSXBxxgKTpk1H9woR79a6S
   notes:
     [
       Requires POSTGRES_PASSWORD environment variable,

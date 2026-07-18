@@ -13,7 +13,6 @@ x-yantr:
       Dashboard for homelab services.
     ]
   website: https://github.com/rmountjoy92/dashmachine
-  logo: QmTvbLNZMCyEQmcFBbY7EkKq9hnJTPy8ut4hAYRH3Xxaiw
   notes: [ Media discovery features, Bookmark organization, Theme customization ]
 
 services:

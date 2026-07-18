@@ -19,7 +19,6 @@ x-yantr:
       Integrate with Sonarr/Radarr for automated media downloading.
     ]
   website: https://transmissionbt.com/
-  logo: QmYNJtjCxWhoKS78Nvjfm7fc9dqA49QiGHUQBryYSmwsdQ
   notes:
     [
       Web interface runs on port 9091 by default,

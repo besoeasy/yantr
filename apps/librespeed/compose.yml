@@ -14,7 +14,6 @@ x-yantr:
       Share a private speed test with your ISP for troubleshooting.
     ]
   website: https://github.com/librespeed/speedtest
-  logo: QmSPU6HmY4jRjanybWFDGQapEbSoY6ii4nc7MSUjicS5Xd
   notes:
     [
       No tracking or data collection - runs entirely locally,

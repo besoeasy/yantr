@@ -16,7 +16,6 @@ x-yantr:
         under your control on local infrastructure."
     ]
   website: https://openclaw.ai
-  logo: QmRdr8gQqpGLXkZc53NcQV3i71931yNQqYrLhpaWEpTMwp
 
 services:
   openclaw:

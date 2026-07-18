@@ -17,7 +17,6 @@ x-yantr:
       Create a multi-author blog or news site with user registration and roles.
     ]
   website: https://github.com/WordPress/WordPress
-  logo: QmfTeVfmHVGfwU4Q99TUT9xvGWc3s4RjPR3kzahnjqppKP
   notes:
     [
       Requires a MySQL-compatible database connection during setup; pair it

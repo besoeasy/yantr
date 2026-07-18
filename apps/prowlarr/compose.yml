@@ -16,7 +16,6 @@ x-yantr:
       Auto-discover new releases across all your indexers.
     ]
   website: https://github.com/linuxserver/docker-prowlarr
-  logo: Qma8EiYwcHKzMtqS8vbvtGCtRApdWnhMszeZCECuuoMzz7
   notes:
     [
       Supports both Usenet (NZB) and BitTorrent protocols,

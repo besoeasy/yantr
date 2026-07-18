@@ -19,7 +19,6 @@ x-yantr:
         services and bookmarks.
     ]
   website: https://github.com/homarr-labs/homarr
-  logo: QmXrjcV7SukGrmAgqF3tHVCu2LTYYGkhADumKY74AHzLf4
   notes:
     [
       Docker integration available for showing container status,

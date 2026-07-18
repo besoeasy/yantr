@@ -15,7 +15,6 @@ x-yantr:
       Drop it into any tool or platform via the simple REST API in minutes.
     ]
   website: https://github.com/besoeasy/Originless
-  logo: QmWMCDAFxDjqfYRjjaqRx4UCt7ZF9TK6r5SpZEWWko9c63
   notes:
     [
       Set STORAGE_MAX to control how much disk space IPFS can use — defaults

@@ -16,7 +16,6 @@ x-yantr:
         support.
     ]
   website: https://www.seafile.com/en/home/
-  logo: QmSeafileLogoCID1234567890abcdef1234567890abcd
   notes:
     [
       Set the admin email in the deploy form before first launch; the default

@@ -14,7 +14,6 @@ x-yantr:
       Watch media remotely on any device.
     ]
   website: https://www.plex.tv/
-  logo: QmQ895arqXLgtBSGNRz6zzR88XtWH8uGbcKKcko84Ba2Wr
   notes:
     [
       "To claim your server, you may need to use an SSH tunnel if you are

@@ -15,7 +15,6 @@ x-yantr:
         installation.
     ]
   website: https://github.com/linuxserver/docker-bambustudio
-  logo: Qma92doZsMdGrS46v8GqXCgvzomrXKZPm3fFgjmwd8k9RA
   notes:
     [
       Shared memory size is set to 1GB which is required for the slicer engine.,

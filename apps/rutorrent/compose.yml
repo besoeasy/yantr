@@ -14,7 +14,6 @@ x-yantr:
       Advanced torrent management.
     ]
   website: https://github.com/linuxserver/docker-rutorrent
-  logo: QmPt2kfbSDSajzcshVCrR3ZYyNZTzWYqEg6cTiYQPYhmMr
   notes: [ Frontend for rtorrent, Many plugins available, RSS automation support ]
 
 services:

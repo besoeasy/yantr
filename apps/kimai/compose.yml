@@ -9,7 +9,6 @@ x-yantr:
     optional LDAP/OAuth authentication in self-hosted deployments.
   usecases: [ Track time and projects., Generate invoices and reports for clients. ]
   website: https://www.kimai.org/documentation/installation/docker/
-  logo: QmP8tqys6U1Y9zVqMksp9RjRX4d1GvTcjA3333333333AA
   notes: [ Set strong secrets and use external database volume backups. ]
 
 services:

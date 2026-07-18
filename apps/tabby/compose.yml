@@ -14,7 +14,6 @@ x-yantr:
       Display weather and time at a glance.
     ]
   website: https://github.com/parksauce/tabby
-  logo: QmcQ3CYdea4rtPmwJTSggcFYvpKcSpSqSQMbS9RdWjzTWS
   notes:
     [
       Uses MariaDB for database storage,

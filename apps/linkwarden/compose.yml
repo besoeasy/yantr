@@ -15,7 +15,6 @@ x-yantr:
       Preserve important web resources that might disappear from the internet.
     ]
   website: https://github.com/linkwarden/linkwarden
-  logo: QmXS2iBXkfwvLA2iiVGCxj8sY3j8KKCf2NGz6hCgiuSeQU
   notes:
     [
       Uses PostgreSQL database for storage,

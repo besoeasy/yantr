@@ -71,7 +71,6 @@ function parseAppFolder(appId, appPath) {
     return {
       id: appId,
       name: meta.name,
-      logo: meta.logo || null,
       tags: Array.isArray(meta.tags) ? meta.tags : [],
       ports,
       short_description: meta.short_description || '',
@@ -155,11 +154,7 @@ function buildAppsJson() {
 }
 
 function getLogoUrl(app) {
-  if (!app?.logo) {
-    return `https://ui-avatars.com/api/?name=${encodeURIComponent(app?.name || app?.id || 'App')}&background=random&color=fff&bold=true`;
-  }
-
-  return app.logo.startsWith('http') ? app.logo : `https://ipfs.io/ipfs/${app.logo}`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(app?.name || app?.id || 'App')}&background=random&color=fff&bold=true`;
 }
 
 function toAppViewModel(app) {

@@ -13,7 +13,6 @@ x-yantr:
       Integrated search with plugins.
     ]
   website: https://github.com/linuxserver/docker-qbittorrent
-  logo: QmU3rohmjuaXYNe37FDEcG2P6BL8t4fzu4WvNA69voFteA
   notes: [ Web UI runs on port 8080, Peer port is 6881, Search plugins available ]
 
 services:

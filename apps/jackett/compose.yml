@@ -16,7 +16,6 @@ x-yantr:
       "Use with multiple PVR apps (TV, movies, music) through one integration."
     ]
   website: https://github.com/Jackett/Jackett
-  logo: QmQs2oSE9ccQrueSFPw6ZPXCVHk2rFuT54HUyZAApSoqDJ
   notes:
     [
       API key required for connecting PVR apps,

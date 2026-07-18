@@ -17,7 +17,6 @@ x-yantr:
         shared public infrastructure.
     ]
   website: https://github.com/sikkacrypto/sikka
-  logo: QmYqfKnZRxC7iFb6ZhpXyvYng72q2YAby2BB8Y7JfhhMLr
   notes:
     [
       Set miner to a valid lower-case sikka1... bech32m address to enable the

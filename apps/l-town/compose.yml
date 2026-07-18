@@ -8,7 +8,6 @@ x-yantr:
     apps. Configure volumes if you need to persist state.
   usecases: [ Self-host multiplayer demos., Host lightweight web/socket apps. ]
   website: https://github.com/besoeasy/l-town
-  logo: QmamhV9FcGDvdmxDeEcV2RH28kNRnEFEZy75fCGfuvgMSc
   notes:
     [
       No persistent volumes configured by default.,

@@ -17,7 +17,6 @@ x-yantr:
         WiFi.
     ]
   website: https://tailscale.com
-  logo: QmTXkGMa8gn9aHA9tuywRnn15DvxhSz4hVZQjMSUWbR2Mz
   notes:
     [
       Port 41641 UDP must be open in your firewall for peer connections,

@@ -19,7 +19,6 @@ x-yantr:
         container updates.
     ]
   website: https://github.com/getwud/wud
-  logo: QmX6QQoKKb1K5BG5m4mEdde3TYi6TALkFcmGjc1VKo7Mrv
   notes:
     [
       Requires access to Docker socket (/var/run/docker.sock) to inspect

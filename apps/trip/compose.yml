@@ -16,7 +16,6 @@ x-yantr:
         data under your control on local infrastructure."
     ]
   website: https://github.com/itskovacs/trip
-  logo: QmcxepcQDfmK7gcGSdWPNuyFR1oqR4qeG5jvetn2qYHg8z
 
 services:
   trip:

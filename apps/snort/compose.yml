@@ -15,7 +15,6 @@ x-yantr:
       Send and receive direct messages on the Nostr network.
     ]
   website: https://git.v0l.io/Kieran/snort
-  logo: QmQG28hMnofAKwXt6F6FD3ZBhwmeCAotfqy92e6Pbkhs44
   notes:
     [
       Works with any Nostr relay,

@@ -21,7 +21,6 @@ x-yantr:
         parent's house) into one network."
     ]
   website: https://www.wireguard.com
-  logo: QmYvWBezgveN9KZARJeAczC6p8mUMsYAwLyV8NKRNHKNCi
   notes:
     [
       Requires UDP port 51820 open in your firewall for VPN connections,

@@ -13,7 +13,6 @@ x-yantr:
       Remote torrent management.
     ]
   website: https://deluge-torrent.org/
-  logo: QmRrKHf3JqMSib9iUfHGrNB6ViXpJmEEoNyJtkr1PB3E33
   notes:
     [
       Web UI on port 8112,

@@ -19,7 +19,6 @@ x-yantr:
         rTorrent from a single unified dashboard."
     ]
   website: https://movie-pilot.org/
-  logo: QmYhcfGgTfDj5Eb8srdJMzJBhmnw1ctWpJZgF5efb3aSfb
   notes:
     [
       Default Web UI is on port 3000; API backend listens on port 3001,

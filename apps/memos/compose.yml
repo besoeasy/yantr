@@ -15,7 +15,6 @@ x-yantr:
       Use as a minimalist knowledge base with tags for organization.
     ]
   website: https://github.com/usememos/memos
-  logo: QmVYAHxdTDQqw3DDm6YRk6EvgmuWtMDae8Z8LQaCVqYZ2B
   notes:
     [
       Very lightweight - runs well on minimal hardware,

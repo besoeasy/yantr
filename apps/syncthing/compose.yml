@@ -19,7 +19,6 @@ x-yantr:
       Share files with family members using device-to-device synchronization.
     ]
   website: https://syncthing.net/
-  logo: Qmd864pdeSwReg9hfWERXdNiDCEqN7w3urE2416cWNGFSm
   notes:
     [
       Uses ports 22000 (TCP) and 21027 (UDP) for synchronization,

@@ -18,7 +18,6 @@ x-yantr:
         cache — so no financial information ever leaves your own server."
     ]
   website: https://github.com/monetr/monetr
-  logo: QmcCMxEJW5eKHx5f8J9bB65P56A5yqHqdBpvCQtPujMVru
   notes:
     [
       Set MONETR_DB_PASSWORD to a strong secret before first run — both the

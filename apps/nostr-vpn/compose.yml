@@ -15,7 +15,6 @@ x-yantr:
         with other Nostr users.
     ]
   website: https://github.com/mmalmi/nostr-vpn
-  logo: QmUTShSH3pWFQKj2nNhzNk6UwYy2qmEm3wNhn98sEFcmsW
   notes:
     [
       The daemon requires NET_ADMIN capability and access to /dev/net/tun for

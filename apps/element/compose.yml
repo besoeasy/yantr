@@ -17,7 +17,6 @@ x-yantr:
         platforms."
     ]
   website: https://element.io
-  logo: QmWMcjdA7izomrqwuW6D8JT8y75K7jCANqnDMYxZRzmzHU
   notes:
     [
       This is just the web client - requires a Matrix homeserver (Synapse) for

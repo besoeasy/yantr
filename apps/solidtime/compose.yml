@@ -13,7 +13,6 @@ x-yantr:
       Team time management.
     ]
   website: https://www.solidtime.io/
-  logo: QmQD7h1kicXUF4aQBtzwg6aYqZiDKUofxRtusbRCNUMgw6
   notes:
     [
       Uses PostgreSQL database,

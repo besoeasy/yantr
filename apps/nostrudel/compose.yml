@@ -17,7 +17,6 @@ x-yantr:
       Stream live content from Zap.Stream directly within the client interface.
     ]
   website: https://github.com/hzrd149/nostrudel
-  logo: QmQd78JBNgAnVAAk6Ux6Jo3tHUXLyzjYeaRZ1EXwMFzHNe
   notes:
     [
       Requires a CORS proxy service for full functionality,

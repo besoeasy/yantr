@@ -17,7 +17,6 @@ x-yantr:
       Analyze your trading history and profit/loss over time.
     ]
   website: https://rotki.com/
-  logo: QmXg6Zmw6rFktbgFCFkuEA15BfK3fJGLUTuZqm53GwWa1z
   notes:
     [
       API integration with major exchanges for automatic updates,

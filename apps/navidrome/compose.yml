@@ -13,7 +13,6 @@ x-yantr:
       Share music collections with friends and family.
     ]
   website: https://www.navidrome.org/
-  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 services:
   navidrome:

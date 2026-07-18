@@ -16,7 +16,6 @@ x-yantr:
       Use deduplication to minimize storage requirements.
     ]
   website: https://www.duplicati.com
-  logo: QmX52qWfGH9q5mPvjT3mfmf6ag6BUW8fGwGX1WrbPxfqn8
   notes:
     [
       "Supports SFTP, FTP, WebDAV, B2, S3, and many cloud backends",

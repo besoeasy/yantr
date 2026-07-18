@@ -14,7 +14,6 @@ x-yantr:
         all data under your control on local infrastructure."
     ]
   website: https://github.com/appsmithorg/appsmith
-  logo: QmcEzSU5HXbZ9jiG6ZAY4PrqHRq2ddhQnfT2gcpXg34kuy
 
 services:
   appsmith:

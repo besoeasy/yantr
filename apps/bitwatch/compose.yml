@@ -15,7 +15,6 @@ x-yantr:
         under your control on local infrastructure."
     ]
   website: https://github.com/zapomatic/bitwatch
-  logo: QmX4wcMVLo1mvb38iyH9xQfmXyB9DAdLesDqvsFjhU7iP8
 
 services:
   bitwatch:

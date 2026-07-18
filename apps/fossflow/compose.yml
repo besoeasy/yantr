@@ -14,7 +14,6 @@ x-yantr:
       Build isometric flowcharts.
     ]
   website: https://github.com/stan-smith/FossFLOW
-  logo: QmRAuJY5TKuw91AVqu6ci9yAvRaimuGDzBoVYqftE7oo8q
   notes: [ Auto-save enabled, Export to PNG/SVG, Offline capable ]
 
 services:

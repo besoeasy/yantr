@@ -18,7 +18,6 @@ x-yantr:
         alternative.
     ]
   website: https://github.com/egzola/bitbalance
-  logo: QmcWGfoqE5yyzKkBreQjbgMHevxXjeCNVaMtZMpm8Sg9Mo
   notes:
     [
       "Set ELECTRUM_HOST and ELECTRUM_PORT environment variables to point to

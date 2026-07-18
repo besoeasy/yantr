@@ -14,7 +14,6 @@ x-yantr:
       Detect faces and objects in photos offline.
     ]
   website: https://immich.app/
-  logo: QmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   env_generators:
     DB_PASSWORD:
       length: 32
