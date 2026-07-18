@@ -56,6 +56,20 @@ var publicPaths = map[string]bool{
 	"/api/auth/login":   true,
 }
 
+// appLogoPathPattern matches /api/apps/{id}/logo — the logo SVG endpoint.
+// Logos are rendered by the SPA as plain <img src="..."> tags, which bypass
+// the JS fetch interceptor and therefore never carry an Authorization header.
+// They are static assets scoped to a known app ID, so they're treated as public.
+var appLogoPathPattern = regexp.MustCompile(`^/api/apps/[a-z0-9][a-z0-9_-]*/logo$`)
+
+// isPublicPath reports whether a request path bypasses auth.
+func isPublicPath(path string) bool {
+	if publicPaths[path] {
+		return true
+	}
+	return appLogoPathPattern.MatchString(path)
+}
+
 // ─── Response helpers ─────────────────────────────────────────────────────────
 
 func jsonResp(w http.ResponseWriter, status int, body interface{}) {
@@ -271,7 +285,7 @@ func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 		isProtected := strings.HasPrefix(path, "/api/")
-		if !isProtected || publicPaths[path] {
+		if !isProtected || isPublicPath(path) {
 			next.ServeHTTP(w, r)
 			return
 		}
