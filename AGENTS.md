@@ -17,7 +17,7 @@ All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fie
 - `website` — https:// URL
 
 **Optional fields:**
-- `logo` — IPFS CID (upload at `https://originless.besoeasy.com/upload`); omit if no logo yet
+- `logo` — IPFS CID (upload at `https://originless.besoeasy.com/upload`); omit if using `logo.svg` or no logo
 - `notes` — list of strings explaining manual setup steps
 - `customapp` — boolean; `true` for Yantr-built apps with Dockerfile
 - `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
@@ -86,11 +86,14 @@ image: ghcr.io/example/my-app:latest
 image: ghcr.io/example/my-app:1.2.3
 ```
 
-### 3. Logo Must Be an IPFS CID
-The `logo` field must be a valid IPFS CID string. Upload images at `https://originless.besoeasy.com/upload`. Omit the field entirely if no logo is available — do not use URLs or local paths.
+### 3. Logo — SVG or IPFS CID
+Place a `logo.svg` in the app folder alongside `compose.yml` (auto-detected, no field needed). SVGs must be square, minimum 256×256. Alternatively, set `logo` to an IPFS CID. Omit the field entirely if no logo is available — do not use URLs.
 
 ```yaml
-# ✅ correct
+# ✅ correct — local SVG (auto-detected, no logo field needed)
+# apps/my-app/logo.svg  (256x256 or larger, square)
+
+# ✅ correct — IPFS CID
 logo: "bafybeig..."
 
 # ❌ wrong
@@ -116,7 +119,6 @@ ports:
 # apps/my-app/compose.yml
 x-yantr:
   name: "myapp"
-  logo: "bafybeig..."
   tags: [productivity, self-hosted, webapp, tools, docker]
   short_description: "Self-hosted note-taking app."
   description: >

@@ -1,0 +1,32 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="250" y1="50" x2="250" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8B6CF6"/>
+      <stop offset="100%" stop-color="#0F5BEA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded diamond -->
+  <rect
+    x="90"
+    y="90"
+    width="320"
+    height="320"
+    rx="32"
+    ry="32"
+    fill="url(#bgGradient)"
+    transform="rotate(45 250 250)"
+  />
+
+  <!-- Play icon -->
+  <path
+    d="M225 170
+       C225 164 230 160 236 164
+       L330 231
+       C337 236 337 246 330 251
+       L236 318
+       C230 322 225 318 225 312
+       Z"
+    fill="#FFFFFF"
+  />
+</svg>

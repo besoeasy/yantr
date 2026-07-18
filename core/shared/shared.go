@@ -2,6 +2,8 @@
 package shared
 
 import (
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -96,8 +98,18 @@ func IsLikelyIPFSCid(value string) bool {
 }
 
 // NormalizeAppLogo converts a raw logo field to a full URL or returns empty string.
-func NormalizeAppLogo(logoRaw string) string {
+// If logoRaw is empty, it checks for logo.svg in appPath and returns a local API URL.
+func NormalizeAppLogo(logoRaw string, appPath string) string {
 	if logoRaw == "" {
+		// Auto-detect logo.svg in the app folder
+		if appPath != "" {
+			svgPath := appPath + "/logo.svg"
+			if info, err := os.Stat(svgPath); err == nil && !info.IsDir() {
+				// Extract app ID from appPath (last directory component)
+				appID := filepath.Base(appPath)
+				return "/api/apps/" + appID + "/logo"
+			}
+		}
 		return ""
 	}
 	if contains(logoRaw, "://") {

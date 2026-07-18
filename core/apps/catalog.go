@@ -205,7 +205,7 @@ func loadCatalog() (*Catalog, error) {
 			app := App{
 				ID:               entry.Name(),
 				Name:             meta.Name,
-				Logo:             shared.NormalizeAppLogo(meta.Logo),
+				Logo:             shared.NormalizeAppLogo(meta.Logo, appPath),
 				Tags:             tags,
 				Ports:            ports,
 				ShortDescription: meta.ShortDescription,

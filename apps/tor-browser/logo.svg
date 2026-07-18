@@ -1,0 +1,45 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="500">
+      <stop offset="0%" stop-color="#A020F0"/>
+      <stop offset="100%" stop-color="#4B007D"/>
+    </linearGradient>
+
+    <linearGradient id="disc" x1="0" y1="100" x2="0" y2="400">
+      <stop offset="0%" stop-color="#F8F6FC"/>
+      <stop offset="100%" stop-color="#D9C9F2"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="500" height="500" fill="url(#bg)"/>
+
+  <!-- Right rings -->
+  <circle cx="250" cy="250" r="120"
+          fill="none"
+          stroke="#F4EFFA"
+          stroke-width="22"/>
+
+  <circle cx="250" cy="250" r="82"
+          fill="none"
+          stroke="#F4EFFA"
+          stroke-width="18"/>
+
+  <circle cx="250" cy="250" r="45"
+          fill="none"
+          stroke="#F4EFFA"
+          stroke-width="16"/>
+
+  <!-- Left half disc -->
+  <path d="
+    M250 130
+    A120 120 0 0 0 250 370
+    L250 130
+    Z"
+    fill="url(#disc)"
+    stroke="#E7DDF5"
+    stroke-width="3"/>
+
+  <!-- Center fill -->
+  <circle cx="250" cy="250" r="22" fill="#6A1B9A"/>
+</svg>

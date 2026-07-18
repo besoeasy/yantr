@@ -341,6 +341,22 @@ func browseProxyHandler(w http.ResponseWriter, r *http.Request) {
 
 // ─── Handlers: apps ───────────────────────────────────────────────────────────
 
+func handleAppLogo(w http.ResponseWriter, r *http.Request) {
+	appID := chi.URLParam(r, "id")
+	if !validAppID.MatchString(appID) {
+		http.Error(w, "invalid app id", http.StatusBadRequest)
+		return
+	}
+	svgPath := filepath.Join(getAppsDir(), appID, "logo.svg")
+	if _, err := os.Stat(svgPath); err != nil {
+		http.Error(w, "logo not found", http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "image/svg+xml")
+	w.Header().Set("Cache-Control", "public, max-age=3600")
+	http.ServeFile(w, r, svgPath)
+}
+
 // ─── Handlers: containers ─────────────────────────────────────────────────────
 
 // ─── Handlers: stacks ─────────────────────────────────────────────────────────
@@ -401,6 +417,7 @@ func main() {
 	// Protected routes
 	r.Get("/api/logs", handleLogs)
 	r.Get("/api/apps", handleApps)
+	r.Get("/api/apps/{id}/logo", handleAppLogo)
 	r.Get("/api/apps/{id}/check-arch", handleCheckArch)
 	r.Post("/api/deploy", handleDeploy)
 	r.Get("/api/containers", handleContainers)

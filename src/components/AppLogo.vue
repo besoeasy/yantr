@@ -66,6 +66,9 @@ function normalizeLogoUrl(value) {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
+  // Relative paths (e.g. /api/apps/{id}/logo) — use as-is
+  if (trimmed.startsWith("/")) return trimmed;
+
   if (trimmed.includes("://")) {
     const cid = extractIpfsCidFromUrl(trimmed);
     if (cid && !isLikelyIpfsCid(cid)) return null;

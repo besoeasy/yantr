@@ -11,7 +11,7 @@ import path from "path";
 import YAML from "yaml";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { readFile, readdir } from "fs/promises";
+import { readFile, readdir, stat } from "fs/promises";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -30,18 +30,72 @@ function warn(appName, rule, detail) {
   if (detail) console.warn(`   ${detail}`);
 }
 
+// ── SVG helpers ────────────────────────────────────────────────────────────────
+
+function parseSvgDimensions(svgContent) {
+  // Try width/height attributes first: width="256" height="256"
+  const widthMatch = svgContent.match(/\bwidth="(\d+(?:\.\d+)?)"/);
+  const heightMatch = svgContent.match(/\bheight="(\d+(?:\.\d+)?)"/);
+  if (widthMatch && heightMatch) {
+    return { width: Number(widthMatch[1]), height: Number(heightMatch[1]) };
+  }
+  // Fall back to viewBox="0 0 W H"
+  const viewBoxMatch = svgContent.match(/\bviewBox="[\s]*(\-?[\d.]+)[\s,]+(\-?[\d.]+)[\s,]+(\d+(?:\.\d+)?)[\s,]+(\d+(?:\.\d+)?)\s*"/);
+  if (viewBoxMatch) {
+    return { width: Number(viewBoxMatch[3]), height: Number(viewBoxMatch[4]) };
+  }
+  return null;
+}
+
+async function checkLogoSvg(appName, appDir) {
+  const svgPath = path.join(appDir, "logo.svg");
+  let svgStat;
+  try {
+    svgStat = await stat(svgPath);
+    if (!svgStat.isFile()) return null;
+  } catch {
+    return null; // no logo.svg
+  }
+
+  const content = await readFile(svgPath, "utf-8");
+
+  // Must be an SVG
+  if (!content.includes("<svg")) {
+    fail(appName, 'logo.svg is not a valid SVG file', "File must be an SVG image.");
+  }
+
+  const dims = parseSvgDimensions(content);
+  if (!dims) {
+    fail(appName, 'logo.svg is missing width/height or viewBox', 'Add width and height attributes or a viewBox to the <svg> tag.');
+  }
+
+  // Must be square
+  if (dims.width !== dims.height) {
+    fail(appName, `logo.svg must be square (${dims.width}x${dims.height})`, "Width and height must be equal.");
+  }
+
+  // Minimum 256x256
+  if (dims.width < 256 || dims.height < 256) {
+    fail(appName, `logo.svg is too small (${dims.width}x${dims.height})`, "Minimum dimensions are 256x256.");
+  }
+
+  return svgPath;
+}
+
 // ── x-yantr block rules ────────────────────────────────────────────────────────
 
-function checkXYantr(appName, meta) {
+function checkXYantr(appName, meta, hasLogoSvg) {
   // name
   if (!meta.name || typeof meta.name !== "string" || !meta.name.trim()) {
     fail(appName, 'x-yantr missing "name"', "Must be a non-empty string.");
   }
 
-  // logo — optional IPFS CID; empty or missing is allowed
+  // logo — IPFS CID (optional); logo.svg in the app folder is auto-detected
   if (typeof meta.logo === "string" && meta.logo.trim()) {
     const logo = meta.logo.trim();
-    if (logo.includes("://")) {
+    if (hasLogoSvg) {
+      warn(appName, '"logo" field is set but logo.svg exists in the folder', 'Remove the "logo" field — logo.svg is auto-detected.');
+    } else if (logo.includes("://")) {
       warn(appName, '"logo" looks like a URL', `Should be an IPFS CID, got: "${logo}"`);
     } else if (!/^Qm[a-zA-Z0-9]{44}$/.test(logo) && !/^baf[a-zA-Z0-9]+$/.test(logo)) {
       warn(appName, '"logo" does not look like a valid IPFS CID', `Got: "${logo}"`);
@@ -144,7 +198,10 @@ async function checkCompose(appName, composePath) {
     }
   }
 
-  checkXYantr(appName, meta);
+  const appDir = path.dirname(composePath);
+  const hasLogoSvg = !!(await checkLogoSvg(appName, appDir));
+
+  checkXYantr(appName, meta, hasLogoSvg);
 
   const services = compose?.services ?? {};
   if (Object.keys(services).length === 0) {
