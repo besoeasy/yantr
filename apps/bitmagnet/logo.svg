@@ -1,0 +1,39 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Magnet -->
+  <path
+    d="
+      M 90 30
+      H 130
+      V 250
+      A 120 120 0 0 0 370 250
+      V 30
+      H 410
+      V 250
+      A 160 160 0 0 1 90 250
+      Z
+    "
+    fill="#4758B8"
+    stroke="#FFFFFF"
+    stroke-width="3"
+  />
+
+  <!-- Left Pole -->
+  <rect
+    x="48"
+    y="45"
+    width="65"
+    height="75"
+    rx="3"
+    fill="#E8E8E8"
+  />
+
+  <!-- Right Pole -->
+  <rect
+    x="387"
+    y="45"
+    width="65"
+    height="75"
+    rx="3"
+    fill="#E8E8E8"
+  />
+</svg>
