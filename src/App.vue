@@ -90,17 +90,6 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 h-14 z-50 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800">
       <div class="h-full flex items-center px-4 gap-2">
 
-        <!-- Brand Mark -->
-        <router-link
-          to="/home"
-          class="brand-mark nav-item flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white transition-all duration-200 mr-2 shrink-0"
-        >
-          <span class="brand-text">yantr</span>
-        </router-link>
-
-        <!-- Divider -->
-        <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 shrink-0"></div>
-
         <!-- Nav Links -->
         <nav class="flex items-center gap-1">
           <router-link
@@ -197,16 +186,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Brand mark — pulse animation on hover */
-.brand-mark:hover .brand-text {
-  animation: brand-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes brand-pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.45; transform: scale(0.96); }
-}
-
 /* Navigation item active/hover */
 .nav-item {
   position: relative;
