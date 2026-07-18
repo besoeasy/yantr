@@ -91,11 +91,8 @@ onUnmounted(() => {
       <div class="h-full flex items-center px-4 gap-2">
 
         <!-- Brand Mark -->
-        <router-link to="/home" class="flex items-center gap-2 mr-2 select-none shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-5 h-5 text-black dark:text-white">
-            <text x="50" y="60" font-size="60" font-weight="bold" text-anchor="middle" fill="currentColor">⚙</text>
-          </svg>
-          <span class="text-sm font-semibold tracking-tight text-black dark:text-white">yantr</span>
+        <router-link to="/home" class="brand-mark mr-2 select-none shrink-0">
+          <span class="brand-text text-sm font-semibold tracking-tight text-black dark:text-white">yantr</span>
         </router-link>
 
         <!-- Divider -->
@@ -197,6 +194,32 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+/* Brand mark — pulse animation on hover */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.5rem;
+  transition: background-color 200ms ease;
+}
+
+.brand-mark:hover .brand-text {
+  animation: brand-pulse 1.4s ease-in-out infinite;
+}
+
+.brand-mark:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+:global(.dark) .brand-mark:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+@keyframes brand-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.96); }
+}
+
 /* Navigation item active/hover */
 .nav-item {
   position: relative;
