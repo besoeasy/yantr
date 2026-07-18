@@ -1,0 +1,91 @@
+<svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="outerGrad" x1="120" y1="40" x2="400" y2="460">
+      <stop offset="0%" stop-color="#7EA6D8"/>
+      <stop offset="100%" stop-color="#1F4A8A"/>
+    </linearGradient>
+
+    <linearGradient id="innerGrad" x1="180" y1="120" x2="380" y2="420">
+      <stop offset="0%" stop-color="#AFC6E3"/>
+      <stop offset="100%" stop-color="#6E96C8"/>
+    </linearGradient>
+
+    <radialGradient id="glow" cx="50%" cy="48%" r="45%">
+      <stop offset="0%" stop-color="#DCE8F5" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#DCE8F5" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="10" dy="15" stdDeviation="12"
+                    flood-color="#000000"
+                    flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Main drop -->
+  <path
+    d="M250 20
+       C320 120 440 230 440 330
+       C440 430 365 480 250 480
+       C135 480 60 430 60 330
+       C60 230 180 120 250 20Z"
+    fill="url(#outerGrad)"
+    filter="url(#shadow)"
+  />
+
+  <!-- Inner border -->
+  <path
+    d="M250 40
+       C310 130 410 230 410 325
+       C410 410 350 455 250 455
+       C150 455 90 410 90 325
+       C90 230 190 130 250 40Z"
+    fill="none"
+    stroke="#C9D8EC"
+    stroke-width="12"
+    opacity="0.7"
+  />
+
+  <!-- Dark inner body -->
+  <path
+    d="M120 210
+       C150 120 330 120 390 260
+       C420 330 390 410 250 445
+       C140 430 90 360 120 210Z"
+    fill="#1E4685"
+    opacity="0.85"
+  />
+
+  <!-- Soft glow -->
+  <ellipse
+    cx="250"
+    cy="280"
+    rx="150"
+    ry="130"
+    fill="url(#glow)"
+  />
+
+  <!-- Light crescent -->
+  <path
+    d="M250 190
+       C340 180 395 235 405 320
+       C410 370 390 405 360 430
+       C250 410 180 380 145 330
+       C120 290 130 235 165 205
+       C190 185 220 175 250 190Z"
+    fill="url(#innerGrad)"
+    opacity="0.95"
+  />
+
+  <!-- Top translucent highlight -->
+  <path
+    d="M150 150
+       C260 90 380 140 420 260
+       C380 190 320 150 250 150
+       C210 150 180 150 150 150Z"
+    fill="#FFFFFF"
+    opacity="0.18"
+  />
+
+</svg>
