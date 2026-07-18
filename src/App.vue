@@ -90,6 +90,16 @@ onUnmounted(() => {
     <header class="fixed top-0 left-0 right-0 h-14 z-50 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800">
       <div class="h-full flex items-center px-4 gap-2">
 
+        <!-- Brand Mark -->
+        <router-link to="/home" class="flex items-center gap-2 mr-2 select-none shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-5 h-5 text-black dark:text-white">
+            <text x="50" y="60" font-size="60" font-weight="bold" text-anchor="middle" fill="currentColor">⚙</text>
+          </svg>
+          <span class="text-sm font-semibold tracking-tight text-black dark:text-white">yantr</span>
+        </router-link>
+
+        <!-- Divider -->
+        <div class="w-px h-5 bg-gray-200 dark:bg-zinc-800 shrink-0"></div>
 
         <!-- Nav Links -->
         <nav class="flex items-center gap-1">
