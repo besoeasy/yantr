@@ -1,0 +1,41 @@
+x-yantr:
+  name: Gancio
+  tags: [calendar, events, community, social, self-hosted]
+  short_description: A shared community calendar for activists, collectives, and neighborhoods.
+  description: >
+    Gancio is a free, open-source community calendar for local
+    communities, activists, and collectives. It lets people share and
+    discover events with support for federation via ActivityPub, Nostr,
+    and RSS feeds. Includes tagging, filtering, and a clean
+    mobile-friendly interface.
+  usecases: ["Publish and discover local community events on a shared calendar.", "Federate events across instances using ActivityPub and Nostr.", "Organize neighborhood or collective activities with tagging and filtering."]
+  website: https://gancio.org
+  notes: ["After first start, log in with admin/admin and change the default password immediately.", "Set the instance name and description from the admin settings panel."]
+  env_generators:
+    DB_PASSWORD: {length: 20, charset: alnum}
+
+services:
+  gancio:
+    image: gancio/gancio:latest
+    container_name: gancio
+    labels:
+      yantr.app: "gancio"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - gancio_data:/gancio
+    environment:
+      TZ: ${TZ:-UTC}
+      DB_TYPE: ${DB_TYPE:-sqlite}
+      DB_HOST: ${DB_HOST:-}
+      DB_USER: ${DB_USER:-}
+      DB_PASSWORD: ${DB_PASSWORD:-}
+      DB_NAME: ${DB_NAME:-gancio}
+      NOSTR_NSEC: ${NOSTR_NSEC:-}
+      NOSTR_NPUB: ${NOSTR_NPUB:-}
+    restart: unless-stopped
+
+volumes:
+  gancio_data:

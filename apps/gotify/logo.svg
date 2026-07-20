@@ -14,24 +14,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns:i="&amp;ns_ai;"><defs
-   id="defs138" /><sodipodi:namedview
-   id="namedview136"
-   pagecolor="#ffffff"
-   bordercolor="#666666"
-   borderopacity="1.0"
-   inkscape:pageshadow="2"
-   inkscape:pageopacity="0.0"
-   inkscape:pagecheckerboard="0"
-   showgrid="false"
-   inkscape:zoom="1.7451395"
-   inkscape:cx="319.4587"
-   inkscape:cy="362.14869"
-   inkscape:window-width="2556"
-   inkscape:window-height="1340"
-   inkscape:window-x="2560"
-   inkscape:window-y="72"
-   inkscape:window-maximized="1"
-   inkscape:current-layer="g129" />
+   id="defs138" />
 <style
    type="text/css"
    id="style2">
@@ -58,17 +41,7 @@
 	.st20{fill:url(#SVGID_7_);}
 	.st21{fill:url(#SVGID_8_);}
 </style>
-<switch
-   id="switch133">
-	<foreignObject
-   requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
-   x="0"
-   y="0"
-   width="1"
-   height="1">
-		
-	</foreignObject>
-	<g
+<g
    i:extraneous="self"
    id="g131">
 		<g
@@ -289,6 +262,5 @@
 			
 		</g>
 	</g>
-</switch>
 
 </svg>

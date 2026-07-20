@@ -1,0 +1,149 @@
+x-yantr:
+  name: Jitsi Meet
+  tags: [video, communication, meeting, self-hosted, webrtc]
+  short_description: Fully encrypted, open-source video conferencing with no account needed.
+  description: >
+    Jitsi Meet is a free, open-source video conferencing solution that runs
+    entirely on your own hardware. It supports unlimited encrypted meetings,
+    screen sharing, collaborative editing, and recording — all from a web
+    browser with no downloads required. Includes XMPP chat and SIP gateway
+    integration.
+  usecases: ["Host secure team meetings without third-party services.", "Set up a private video call platform for your organization.", "Replace Zoom or Google Meet with a self-hosted alternative."]
+  website: https://jitsi.org
+  notes: ["Set PUBLIC_URL to your domain (e.g. https://meet.example.com) for production use.", "The video bridge (jvb) needs a publicly accessible UDP port for media."]
+
+services:
+  web:
+    image: jitsi/web:latest
+    container_name: jitsi-web
+    labels:
+      yantr.app: "jitsi-meet"
+      yantr.service.443: "HTTPS"
+      yantr.port.443: "HTTPS"
+    ports:
+      - "443"
+      - "80"
+    volumes:
+      - jitsi_meet_config:/config
+      - jitsi_meet_letsencrypt:/etc/letsencrypt
+    environment:
+      TZ: ${TZ:-UTC}
+      PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
+      ENABLE_LETSENCRYPT: ${ENABLE_LETSENCRYPT:-0}
+      ENABLE_HTTP_REDIRECT: ${ENABLE_HTTP_REDIRECT:-1}
+      DISABLE_HTTPS: ${DISABLE_HTTPS:-0}
+      XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
+      XMPP_SERVER: xmpp:5222
+      XMPP_BOSH_URL_BASE: http://xmpp:5280
+      XMPP_AUTH_DOMAIN: auth.meet.jitsi
+      XMPP_INTERNAL_MUC_DOMAIN: internal-muc.meet.jitsi
+      XMPP_GUEST_DOMAIN: guest.meet.jitsi
+      XMPP_MUC_DOMAIN: muc.meet.jitsi
+      XMPP_RECORDER_DOMAIN: recorder.meet.jitsi
+      ETHERPAD_PUBLIC_URL: ${ETHERPAD_URL:-https://pad.meet.jitsi}
+      ENABLE_COLIBRI_WEBSOCKET: 1
+      ENABLE_LIVESTREAMING: ${ENABLE_LIVESTREAMING:-0}
+      ENABLE_RECORDING: ${ENABLE_RECORDING:-0}
+      ENABLE_TRANSCRIPTIONS: ${ENABLE_TRANSCRIPTIONS:-0}
+      JIBRI_BREWERY_MUC: jibribrewery
+      JIBRI_XMPP_USER: jibri
+      JIBRI_XMPP_PASSWORD: ${JIBRI_XMPP_PASSWORD:-}
+      JIBRI_RECORDING_DIR: /recording
+      JIBRI_FINALIZE_RECORDING_SCRIPT_PATH: /config/finalize.sh
+      JIGASI_XMPP_USER: jigasi
+      JIGASI_XMPP_PASSWORD: ${JIGASI_XMPP_PASSWORD:-}
+      JIGASI_BREWERY_MUC: jigasibrewery
+      JIGASI_SIPURI: ${JIGASI_SIPURI:-}
+      JIGASI_SIP_PASSWORD: ${JIGASI_SIP_PASSWORD:-}
+      JIGASI_SIP_SERVER: ${JIGASI_SIP_SERVER:-}
+      MATTERMOST_ENABLED: ${MATTERMOST_ENABLED:-0}
+      ENABLE_AUTH: ${ENABLE_AUTH:-0}
+      AUTH_TYPE: ${AUTH_TYPE:-internal}
+      ENABLE_GUESTS: ${ENABLE_GUESTS:-1}
+      GR_MAX_PARTICIPANTS: ${GR_MAX_PARTICIPANTS:-50}
+      GR_MAX_FPS: ${GR_MAX_FPS:-30}
+      GR_MAX_BITRATE: ${GR_MAX_BITRATE:-2500}
+    restart: unless-stopped
+
+  xmpp:
+    image: jitsi/prosody:latest
+    container_name: jitsi-xmpp
+    labels:
+      yantr.app: "jitsi-meet"
+    volumes:
+      - jitsi_meet_config:/config
+      - jitsi_meet_prosody:/prosody-plugins-custom
+    environment:
+      TZ: ${TZ:-UTC}
+      PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
+      XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
+      XMPP_AUTH_DOMAIN: auth.meet.jitsi
+      XMPP_MUC_DOMAIN: muc.meet.jitsi
+      XMPP_INTERNAL_MUC_DOMAIN: internal-muc.meet.jitsi
+      XMPP_GUEST_DOMAIN: guest.meet.jitsi
+      XMPP_RECORDER_DOMAIN: recorder.meet.jitsi
+      XMPP_MODULES: ${XMPP_MODULES:-}
+      XMPP_INTERNAL_MUC_MODULES: ${XMPP_INTERNAL_MUC_MODULES:-}
+      XMPP_MUC_MODULES: ${XMPP_MUC_MODULES:-}
+      XMPP_MUC_CONFIGURATION: ${XMPP_MUC_CONFIGURATION:-}
+      ENABLE_AUTH: ${ENABLE_AUTH:-0}
+      AUTH_TYPE: ${AUTH_TYPE:-internal}
+      JIBRI_XMPP_USER: jibri
+      JIBRI_XMPP_PASSWORD: ${JIBRI_XMPP_PASSWORD:-}
+      JIGASI_XMPP_USER: jigasi
+      JIGASI_XMPP_PASSWORD: ${JIGASI_XMPP_PASSWORD:-}
+      JIGASI_SIP_URI: ${JIGASI_SIPURI:-}
+    restart: unless-stopped
+
+  jicofo:
+    image: jitsi/jicofo:latest
+    container_name: jitsi-jicofo
+    labels:
+      yantr.app: "jitsi-meet"
+    volumes:
+      - jitsi_meet_config:/config
+    environment:
+      TZ: ${TZ:-UTC}
+      XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
+      XMPP_AUTH_DOMAIN: auth.meet.jitsi
+      XMPP_SERVER: xmpp:5222
+      JIBRI_XMPP_USER: jibri
+      JIBRI_XMPP_PASSWORD: ${JIBRI_XMPP_PASSWORD:-}
+      JIGASI_XMPP_USER: jigasi
+      JIGASI_XMPP_PASSWORD: ${JIGASI_XMPP_PASSWORD:-}
+      JIGASI_BREWERY_MUC: jigasibrewery
+      JIBRI_BREWERY_MUC: jibribrewery
+      ENABLE_AUTH: ${ENABLE_AUTH:-0}
+      AUTH_TYPE: ${AUTH_TYPE:-internal}
+    restart: unless-stopped
+
+  jvb:
+    image: jitsi/jvb:latest
+    container_name: jitsi-jvb
+    labels:
+      yantr.app: "jitsi-meet"
+      yantr.service.10000: "WebRTC"
+      yantr.port.10000: "UDP"
+    ports:
+      - "10000:10000/udp"
+    volumes:
+      - jitsi_meet_config:/config
+    environment:
+      TZ: ${TZ:-UTC}
+      PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
+      XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
+      XMPP_AUTH_DOMAIN: auth.meet.jitsi
+      XMPP_SERVER: xmpp:5222
+      JVB_AUTH_USER: jvb
+      JVB_AUTH_PASSWORD: ${JVB_AUTH_PASSWORD:-}
+      JVB_BREWERY_MUC: jibribrewery
+      JVB_PORT: 10000
+      JVB_TCP_HARVESTER_DISABLED: ${JVB_TCP_HARVESTER_DISABLED:-true}
+      JVB_UDP_PORT: 10000
+      OWM_APPID: ${OWM_APPID:-}
+    restart: unless-stopped
+
+volumes:
+  jitsi_meet_config:
+  jitsi_meet_letsencrypt:
+  jitsi_meet_prosody:

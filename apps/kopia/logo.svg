@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#1A1A2E"/>
+  <g transform="translate(128,118)">
+    <path d="M-60,10 C-60,-40 -30,-70 20,-70 C70,-70 80,-30 60,10 L50,40 L-50,40 Z" fill="#2F80FF" opacity="0.9"/>
+    <path d="M-40,20 C-40,-20 -15,-50 20,-50 C55,-50 60,-20 50,20 L40,44 L-40,44 Z" fill="#1A1A2E"/>
+    <path d="M-25,30 C-25,5 0,-15 25,-15 C50,-15 50,5 40,30 L25,44 L-25,44 Z" fill="#2F80FF" opacity="0.7"/>
+  </g>
+  <text x="128" y="210" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="32" fill="white">KOPIA</text>
+</svg>

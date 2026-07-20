@@ -1,0 +1,61 @@
+x-yantr:
+  name: Woodpecker CI
+  tags: [ci, cd, automation, devops, self-hosted]
+  short_description: Community-built CI/CD engine with great extensibility and Gitea integration.
+  description: >
+    Woodpecker CI is a simple yet powerful CI/CD engine with great
+    extensibility. It is a community fork of Drone that supports GitHub,
+    GitLab, Gitea, Bitbucket, and more. Pipelines are defined as YAML in
+    your repository and run as lightweight Docker containers or Kubernetes
+    pods.
+  usecases: ["Run CI/CD pipelines for your self-hosted Gitea or Forgejo repositories.", "Automate testing, building, and deploying code with YAML-based pipelines.", "Replace hosted CI services with a fully self-controlled solution."]
+  website: https://woodpecker-ci.org
+  notes: ["Configure your Git provider OAuth credentials as WOODPECKER_GITHUB_CLIENT and WOODPECKER_GITHUB_SECRET.", "The agent auto-registers using WOODPECKER_AGENT_SECRET — set it to the same value on both services."]
+  env_generators:
+    WOODPECKER_AGENT_SECRET: {length: 32, charset: hex}
+    WOODPECKER_HOST: {length: 20, charset: alpha}
+    WOODPECKER_GITHUB_CLIENT: {length: 40, charset: hex}
+    WOODPECKER_GITHUB_SECRET: {length: 40, charset: hex}
+
+services:
+  server:
+    image: woodpeckerci/woodpecker-server:latest
+    container_name: woodpecker-server
+    labels:
+      yantr.app: "woodpecker"
+      yantr.service.8000: "Web UI"
+      yantr.port.8000: "HTTP"
+    ports:
+      - "8000"
+    volumes:
+      - woodpecker_data:/var/lib/woodpecker
+    environment:
+      TZ: ${TZ:-UTC}
+      WOODPECKER_OPEN: ${WOODPECKER_OPEN:-true}
+      WOODPECKER_HOST: ${WOODPECKER_HOST}
+      WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET}
+      WOODPECKER_DATABASE_DRIVER: ${WOODPECKER_DATABASE_DRIVER:-sqlite3}
+      WOODPECKER_DATABASE_DATASOURCE: ${WOODPECKER_DATABASE_DATASOURCE:-/var/lib/woodpecker/woodpecker.sqlite}
+      WOODPECKER_GITHUB: ${WOODPECKER_GITHUB:-true}
+      WOODPECKER_GITHUB_CLIENT: ${WOODPECKER_GITHUB_CLIENT}
+      WOODPECKER_GITHUB_SECRET: ${WOODPECKER_GITHUB_SECRET}
+      WOODPECKER_REPO_OWNERS: ${WOODPECKER_REPO_OWNERS:-}
+    restart: unless-stopped
+
+  agent:
+    image: woodpeckerci/woodpecker-agent:latest
+    container_name: woodpecker-agent
+    labels:
+      yantr.app: "woodpecker"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      TZ: ${TZ:-UTC}
+      WOODPECKER_SERVER: server:9000
+      WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET}
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  woodpecker_data:

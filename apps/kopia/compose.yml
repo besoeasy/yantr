@@ -1,0 +1,43 @@
+x-yantr:
+  name: Kopia
+  tags: [backup, storage, encryption, utility, self-hosted]
+  short_description: Fast and secure open-source backup/restore with client-side encryption.
+  description: >
+    Kopia is a cross-platform backup/restore tool that provides fast,
+    encrypted, deduplicated, and compressed snapshots. It supports local
+    and cloud storage backends including S3, B2, Google Cloud, Azure, and
+    SFTP. Includes a web UI for browsing snapshots, restoring files, and
+    managing policies.
+  usecases: ["Create encrypted, deduplicated backups of critical data to cloud storage.", "Browse and restore individual files from any backup snapshot.", "Manage backup policies and schedules through an intuitive web dashboard."]
+  website: https://kopia.io
+  notes: ["Set KOPIA_PASSWORD to a strong password for repository encryption.", "Configure your storage backend via environment variables after first run."]
+  env_generators:
+    KOPIA_PASSWORD: {length: 24, charset: alnum_symbols}
+    KOPIA_SERVER_PASSWORD: {length: 24, charset: alnum_symbols}
+
+services:
+  kopia:
+    image: kopia/kopia:latest
+    container_name: kopia
+    labels:
+      yantr.app: "kopia"
+      yantr.service.51515: "Web UI"
+      yantr.port.51515: "HTTP"
+    ports:
+      - "51515"
+    volumes:
+      - kopia_config:/app/config
+      - kopia_cache:/app/cache
+      - kopia_repository:/repository
+    environment:
+      TZ: ${TZ:-UTC}
+      KOPIA_PASSWORD: ${KOPIA_PASSWORD}
+      KOPIA_SERVER_USERNAME: ${KOPIA_SERVER_USERNAME:-admin}
+      KOPIA_SERVER_PASSWORD: ${KOPIA_SERVER_PASSWORD}
+      KOPIARepositoryConfig: ${KOPIA_REPOSITORY_CONFIG:-}
+    restart: unless-stopped
+
+volumes:
+  kopia_config:
+  kopia_cache:
+  kopia_repository:
