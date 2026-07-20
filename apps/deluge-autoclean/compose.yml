@@ -1,0 +1,64 @@
+x-yantr:
+  name: deluge-autoclean
+  tags: [torrent, download, p2p, self-hosted, docker]
+  short_description: "Deluge BitTorrent client with auto-cleanup of old downloads."
+  description: >
+    A self-hosted Deluge BitTorrent client with automatic cleanup of
+    downloads older than 30 days. A lightweight Alpine sidecar runs a
+    daily job that removes expired files and empty directories. Features
+    a plugin-based architecture with a web interface for managing
+    torrents and monitoring activity.
+  usecases: ["Download torrents.", "Auto-clean old files after 30 days.", "Self-host media downloads."]
+  website: "https://deluge-torrent.org/"
+  notes: ["Default web UI password is 'deluge'.", "Change the default password after first login."]
+  env_generators:
+    DELUGE_PASSWORD: {length: 20, charset: alnum_symbols}
+
+services:
+  deluge:
+    image: linuxserver/deluge:latest
+    container_name: deluge-autoclean
+    environment:
+      TZ: ${TZ:-UTC}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      DELUGE_PASSWORD: ${DELUGE_PASSWORD}
+    volumes:
+      - deluge_ac_config:/config
+      - deluge_ac_downloads:/downloads
+    ports:
+      - "8112"
+      - "6881"
+      - 6881/udp
+    labels:
+      yantr.app: "deluge-autoclean"
+      yantr.service.8112: "Web UI"
+      yantr.port.8112: "HTTP"
+      yantr.service.6881: "BitTorrent Peers"
+      yantr.port.6881: "TCP"
+    restart: unless-stopped
+
+  cleanup:
+    image: alpine:latest
+    container_name: deluge-autoclean-cleanup
+    labels:
+      yantr.app: "deluge-autoclean"
+    volumes:
+      - deluge_ac_downloads:/downloads
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        sleep 60
+        while true; do
+          echo "[cleanup] Removing files older than 30 days..."
+          find /downloads -type f -mtime +30 -delete 2>/dev/null
+          find /downloads -type d -empty -delete 2>/dev/null
+          echo "[cleanup] Done. Sleeping 24h."
+          sleep 86400
+        done
+    restart: unless-stopped
+
+volumes:
+  deluge_ac_config:
+  deluge_ac_downloads:

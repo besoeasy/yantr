@@ -1,6 +1,5 @@
 x-yantr:
   name: transmission-autoclean
-  customapp: true
   tags: [torrent, download, p2p, self-hosted, docker]
   short_description: "BitTorrent client with auto-cleanup of old downloads."
   description: >
@@ -11,6 +10,7 @@ x-yantr:
     monitoring active downloads.
   usecases: ["Download torrents.", "Auto-clean old files after 30 days.", "Self-host media downloads."]
   website: "https://transmissionbt.com/"
+  notes: ["Web UI on port 9091.", "Change default credentials after first login."]
   env_generators:
     TRANSMISSION_USER: { length: 12, charset: alpha }
     TRANSMISSION_PASS: { length: 20, charset: alnum_symbols }
@@ -20,6 +20,7 @@ services:
     image: linuxserver/transmission:latest
     container_name: transmission-autoclean
     environment:
+      TZ: ${TZ:-UTC}
       USER: ${TRANSMISSION_USER}
       PASS: ${TRANSMISSION_PASS}
     volumes:
@@ -33,6 +34,8 @@ services:
       yantr.app: "transmission-autoclean"
       yantr.service.9091: "Web Interface"
       yantr.port.9091: "HTTP"
+      yantr.service.51413: "BitTorrent Peers"
+      yantr.port.51413: "TCP"
     restart: unless-stopped
 
   cleanup:
@@ -46,7 +49,7 @@ services:
     command:
       - -c
       - |
-        apk add --no-cache findutils > /dev/null 2>&1
+        sleep 60
         while true; do
           echo "[cleanup] Removing files older than 30 days..."
           find /downloads -type f -mtime +30 -delete 2>/dev/null
