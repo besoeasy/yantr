@@ -1,0 +1,24 @@
+x-yantr:
+  name: Holesail
+  website: https://holesail.io
+  tags: ["networking", "tunnel", "utility"]
+  short_description: "Share services on your server without opening router ports"
+  description: "Holesail is a lightweight networking tunnel that lets you share a service on your server with someone else without opening ports in your router. All that the other user needs is a system that can run Node.js to use the Holesail CLI."
+  usecases: ["Share a service running on your server with a friend", "Connect to a service on a machine that you don't want to add to a full Tailscale network"]
+  notes: ["You'll need one of Holesail's apps (available at holesail.io) to connect to a Holesail tunnel.", "This app will only work on Linux as it requires host network mode.", "To expose the Yantr control plane over Holesail, set HS_FORWARD_PORT to 5252.","For Yantr apps, set HS_FORWARD_PORT to the port shown to you as the app's web UI in Yantr.", "Your connection key is the HS_KEY variable preceded by 'hs://s000'.", "Don't share the key with people you don't trust to access a service.", "To reset a connection key, delete and recreate the stack."]
+  env_generators:
+    HS_KEY: {length: 64, charset: hex}
+
+services:
+  main:
+    environment:
+      - MODE=server
+      - PORT=${HS_FORWARD_PORT:-5252}
+      - HOST=127.0.0.1
+      - KEY=${HS_KEY}
+      - PUBLIC=false
+    network_mode: host
+    labels:
+      yantr.app: "holesail"
+    restart: unless-stopped
+    image: holesail/holesail:latest
