@@ -1,0 +1,82 @@
+x-yantr:
+  name: Listmonk
+  tags: [email, marketing, newsletter, self-hosted, privacy]
+  short_description: High-performance self-hosted newsletter and mailing list
+    manager with a modern web dashboard.
+  description: >
+    Listmonk is a self-hosted, high-performance newsletter and mailing list
+    manager with a modern dashboard. It supports templated campaigns, bulk
+    mailing, subscriber management, and multi-list workflows. Runs on a single
+    binary with PostgreSQL — no external services or SaaS subscriptions needed.
+    Designed for privacy-conscious teams that want full control over their
+    mailing lists.
+  usecases:
+    [
+      "Send newsletter campaigns and transactional emails to your subscriber
+        lists without relying on third-party email services.",
+      "Manage subscriber lists, segment audiences, and track open rates and
+        click-throughs from a self-hosted dashboard.",
+    ]
+  website: https://listmonk.app
+  env_generators:
+    LISTMONK_DB_PASSWORD: { length: 24, charset: alnum }
+
+services:
+  listmonk:
+    image: listmonk/listmonk:latest
+    container_name: listmonk
+    labels:
+      yantr.app: listmonk
+      yantr.service.9000: Web UI
+      yantr.port.9000: HTTP
+    ports:
+      - "9000"
+    environment:
+      app__address: "0.0.0.0:9000"
+      app__database_host: listmonk-db
+      app__database_port: "5432"
+      app__database_user: listmonk
+      app__database: listmonk
+      app__database_password: ${LISTMONK_DB_PASSWORD}
+      app__redis_host: listmonk-redis
+      app__redis_port: "6379"
+    depends_on:
+      listmonk-db:
+        condition: service_healthy
+      listmonk-redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  listmonk-db:
+    image: postgres:latest
+    container_name: listmonk-db
+    labels:
+      yantr.app: listmonk
+    environment:
+      POSTGRES_DB: listmonk
+      POSTGRES_USER: listmonk
+      POSTGRES_PASSWORD: ${LISTMONK_DB_PASSWORD}
+    volumes:
+      - listmonk_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U listmonk"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  listmonk-redis:
+    image: redis:latest
+    container_name: listmonk-redis
+    labels:
+      yantr.app: listmonk
+    volumes:
+      - listmonk_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  listmonk_db_data:
+  listmonk_redis_data:

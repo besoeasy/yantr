@@ -1,0 +1,106 @@
+x-yantr:
+  name: Hoarder
+  tags: [bookmarks, ai, self-hosted, productivity, archive]
+  short_description: AI-powered bookmarking app that auto-tags and organizes
+    your links, images, and notes.
+  description: >
+    Hoarder is a self-hosted bookmarking app that uses AI to automatically
+    tag and organize your saved links, images, and notes. It features a clean
+    web UI with full-text search, browser extensions, and optional integration
+    with OpenAI or Ollama for smart auto-tagging.
+  usecases:
+    [
+      "Save and automatically organize bookmarks, articles, and screenshots
+        with AI-powered auto-tagging and full-text search.",
+      "Replace cloud bookmark services like Raindrop or Pocket with a
+        self-hosted alternative that keeps your data private.",
+    ]
+  website: https://github.com/hoarder-app/hoarder
+  env_generators:
+    HOARDER_DB_PASSWORD: { length: 24, charset: alnum }
+    NEXTAUTH_SECRET: { length: 32, charset: hex }
+
+services:
+  hoarder:
+    image: ghcr.io/hoarder-app/hoarder:latest
+    container_name: hoarder
+    labels:
+      yantr.app: hoarder
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      DATA_DIR: /data
+      DATABASE_URL: postgresql://hoarder:${HOARDER_DB_PASSWORD}@hoarder-db:5432/hoarder
+      REDIS_URL: redis://hoarder-redis:6379
+      OLLAMA_BASE_URL: ""
+      OPENAI_BASE_URL: ""
+      OPENAI_API_KEY: ""
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: http://localhost:3000
+    depends_on:
+      hoarder-db:
+        condition: service_healthy
+      hoarder-redis:
+        condition: service_healthy
+    volumes:
+      - hoarder_data:/data
+    restart: unless-stopped
+
+  hoarder-worker:
+    image: ghcr.io/hoarder-app/hoarder:latest
+    container_name: hoarder-worker
+    labels:
+      yantr.app: hoarder
+    command: pnpm run worker
+    environment:
+      DATA_DIR: /data
+      DATABASE_URL: postgresql://hoarder:${HOARDER_DB_PASSWORD}@hoarder-db:5432/hoarder
+      REDIS_URL: redis://hoarder-redis:6379
+      OLLAMA_BASE_URL: ""
+      OPENAI_BASE_URL: ""
+      OPENAI_API_KEY: ""
+    depends_on:
+      hoarder-db:
+        condition: service_healthy
+      hoarder-redis:
+        condition: service_healthy
+    volumes:
+      - hoarder_data:/data
+    restart: unless-stopped
+
+  hoarder-db:
+    image: postgres:latest
+    container_name: hoarder-db
+    labels:
+      yantr.app: hoarder
+    environment:
+      POSTGRES_DB: hoarder
+      POSTGRES_USER: hoarder
+      POSTGRES_PASSWORD: ${HOARDER_DB_PASSWORD}
+    volumes:
+      - hoarder_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hoarder"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  hoarder-redis:
+    image: redis:latest
+    container_name: hoarder-redis
+    labels:
+      yantr.app: hoarder
+    volumes:
+      - hoarder_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  hoarder_data:
+  hoarder_db_data:
+  hoarder_redis_data:

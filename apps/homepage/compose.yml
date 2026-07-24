@@ -1,0 +1,38 @@
+x-yantr:
+  name: Homepage
+  tags: [dashboard, monitoring, self-hosted, homepage, homelab]
+  short_description: >
+    A highly customizable homepage for organizing services, widgets, and
+    bookmarks in a single clean dashboard.
+  description: >
+    Homepage is a self-hosted application dashboard that aggregates information
+    from 50+ services including Docker, Pi-hole, Emby, and more. It supports
+    widgets for weather, calendars, bookmarks, and system metrics with a clean
+    YAML-based configuration. Highly customizable themes and layouts make it
+    easy to build a personalized start page for your homelab.
+  usecases:
+    [
+      "Create a personalized dashboard that aggregates all your self-hosted
+        services in one place with real-time status indicators.",
+      "Monitor Docker containers, system resources, and third-party APIs from
+        a single beautiful interface.",
+    ]
+  website: https://gethomepage.dev
+
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    labels:
+      yantr.app: homepage
+      yantr.service.3000: Dashboard
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    volumes:
+      - homepage_config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped
+
+volumes:
+  homepage_config:

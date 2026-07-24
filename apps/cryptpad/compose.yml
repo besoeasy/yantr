@@ -1,0 +1,42 @@
+x-yantr:
+  name: CryptPad
+  tags: [productivity, collaboration, encryption, self-hosted, documents]
+  short_description: End-to-end encrypted collaborative editor for documents,
+    spreadsheets, and forms — zero-knowledge.
+  description: >
+    CryptPad is a zero-knowledge, end-to-end encrypted collaborative editor
+    supporting documents, spreadsheets, and kanban boards. All data is
+    encrypted in the browser before reaching the server, so the host cannot
+    read your content. Features real-time collaboration and version history.
+  usecases:
+    [
+      "Collaborate on documents, spreadsheets, and presentations with
+        real-time editing and zero-knowledge encryption.",
+      "Replace Google Docs and Notion with a self-hosted alternative that
+        ensures your data is never accessible to the server operator.",
+    ]
+  website: https://cryptpad.org
+
+services:
+  cryptpad:
+    image: cryptpad/cryptpad:latest
+    container_name: cryptpad
+    labels:
+      yantr.app: cryptpad
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      CPAD_MAIN_DOMAIN: http://localhost:3000
+      CPAD_CONF: /cryptpad/config/config.js
+    volumes:
+      - cryptpad_data:/cryptpad/blob
+      - cryptpad_customization:/cryptpad/customize
+      - cryptpad_config:/cryptpad/config
+    restart: unless-stopped
+
+volumes:
+  cryptpad_data:
+  cryptpad_customization:
+  cryptpad_config:

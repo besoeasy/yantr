@@ -1,0 +1,40 @@
+x-yantr:
+  name: Linkding
+  tags: [bookmarks, productivity, self-hosted, manager, privacy]
+  short_description: Minimal and fast self-hosted bookmark manager with
+    full-text search and browser extensions.
+  description: >
+    Linkding is a self-hosted bookmark manager that is minimal yet powerful.
+    It supports full-text search, tags, archives, and browser extensions for
+    one-click saving. The interface is clean and distraction-free, designed for
+    people who want fast bookmark management without the bloat. Integrates
+    with AI tools for auto-tagging and supports bulk imports from popular
+    bookmark services.
+  usecases:
+    [
+      "Organize and quickly find your bookmarks with full-text search, tags,
+        and a clean distraction-free interface.",
+      "Import bookmarks from browsers and other services, then access them
+        from any device with browser extension support.",
+    ]
+  website: https://github.com/sissbruecker/linkding
+
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    container_name: linkding
+    labels:
+      yantr.app: linkding
+      yantr.service.9090: Web UI
+      yantr.port.9090: HTTP
+    ports:
+      - "9090"
+    environment:
+      LD_SUPERUSER_NAME: ${LD_SUPERUSER_NAME}
+      LD_SUPERUSER_PASSWORD: ${LD_SUPERUSER_PASSWORD}
+    volumes:
+      - linkding_data:/etc/linkding/data
+    restart: unless-stopped
+
+volumes:
+  linkding_data:

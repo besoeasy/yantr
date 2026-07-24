@@ -1,0 +1,111 @@
+x-yantr:
+  name: Authentik
+  tags: [security, sso, authentication, self-hosted, identity]
+  short_description: Open-source identity provider with SSO, SAML, and OAuth2
+    — a self-hosted Auth0 alternative.
+  description: >
+    Authentik is an open-source identity provider supporting SSO, SAML, OAuth2,
+    LDAP, and SCIM protocols. It provides a unified login portal for all your
+    self-hosted apps with MFA, user groups, and role-based access control.
+    Easily integrate with Traefik and Nginx using the outpost architecture.
+  usecases:
+    [
+      "Add single sign-on to all your self-hosted apps with one centralized
+        login portal supporting MFA and social providers.",
+      "Replace Auth0 or Okta with a self-hosted identity provider that
+        integrates with Traefik and Nginx reverse proxies.",
+    ]
+  website: https://goauthentik.io
+  env_generators:
+    AUTHENTIK_SECRET_KEY: { length: 32, charset: hex }
+    AUTHENTIK_DB_PASSWORD: { length: 24, charset: alnum }
+
+services:
+  authentik-server:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-server
+    labels:
+      yantr.app: authentik
+      yantr.service.9000: Web UI
+      yantr.port.9000: HTTP
+    ports:
+      - "9000"
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_REDIS__PORT: "6379"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
+      AUTHENTIK_POSTGRESQL__PORT: "5432"
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    volumes:
+      - authentik_media:/media
+      - authentik_templates:/templates
+    restart: unless-stopped
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:latest
+    container_name: authentik-worker
+    labels:
+      yantr.app: authentik
+    environment:
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_REDIS__PORT: "6379"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-db
+      AUTHENTIK_POSTGRESQL__PORT: "5432"
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+    command: worker
+    depends_on:
+      authentik-db:
+        condition: service_healthy
+      authentik-redis:
+        condition: service_healthy
+    volumes:
+      - authentik_media:/media
+      - authentik_templates:/templates
+    restart: unless-stopped
+
+  authentik-db:
+    image: postgres:latest
+    container_name: authentik-db
+    labels:
+      yantr.app: authentik
+    environment:
+      POSTGRES_DB: authentik
+      POSTGRES_USER: authentik
+      POSTGRES_PASSWORD: ${AUTHENTIK_DB_PASSWORD}
+    volumes:
+      - authentik_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authentik"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  authentik-redis:
+    image: redis:latest
+    container_name: authentik-redis
+    labels:
+      yantr.app: authentik
+    volumes:
+      - authentik_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  authentik_db_data:
+  authentik_redis_data:
+  authentik_media:
+  authentik_templates:

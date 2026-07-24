@@ -1,0 +1,87 @@
+x-yantr:
+  name: Activepieces
+  tags: [automation, workflow, self-hosted, productivity, integration]
+  short_description: Open-source no-code workflow automation with 150+
+    integrations, a free alternative to Zapier.
+  description: >
+    Activepieces is an open-source workflow automation platform with over 150
+    integrations including Google Sheets, Slack, GitHub, and Notion. Build
+    automations visually with a drag-and-drop flow builder, no coding needed.
+    Fully self-hosted with no vendor lock-in or usage limits.
+  usecases:
+    [
+      "Automate repetitive tasks like data entry, notifications, and file
+        syncing between your favorite SaaS tools.",
+      "Build custom workflows that trigger on events from webhooks, schedules,
+        or app integrations without writing code.",
+    ]
+  website: https://activepieces.com
+  env_generators:
+    AP_JWT_SECRET: { length: 32, charset: hex }
+    AP_ENCRYPTION_KEY: { length: 32, charset: hex }
+    AP_POSTGRES_PASSWORD: { length: 24, charset: alnum }
+
+services:
+  activepieces:
+    image: ghcr.io/activepieces/activepieces:latest
+    container_name: activepieces
+    labels:
+      yantr.app: activepieces
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      AP_ENGINE_EXECUTABLE_PATH: dist/packages/engine/main.js
+      AP_ENVIRONMENT: prod
+      AP_PORT: 8080
+      AP_JWT_SECRET: ${AP_JWT_SECRET}
+      AP_ENCRYPTION_KEY: ${AP_ENCRYPTION_KEY}
+      AP_ENGINE_RUN_ASYNCHRONOUSLY: false
+      AP_POSTGRES_DATABASE: activepieces
+      AP_POSTGRES_HOST: activepieces-db
+      AP_POSTGRES_PORT: "5432"
+      AP_POSTGRES_USERNAME: postgres
+      AP_POSTGRES_PASSWORD: ${AP_POSTGRES_PASSWORD}
+      AP_REDIS_HOST: activepieces-redis
+      AP_REDIS_PORT: "6379"
+    depends_on:
+      activepieces-db:
+        condition: service_healthy
+      activepieces-redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  activepieces-db:
+    image: postgres:latest
+    container_name: activepieces-db
+    labels:
+      yantr.app: activepieces
+    environment:
+      POSTGRES_DB: activepieces
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${AP_POSTGRES_PASSWORD}
+    volumes:
+      - activepieces_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+  activepieces-redis:
+    image: redis:latest
+    container_name: activepieces-redis
+    labels:
+      yantr.app: activepieces
+    volumes:
+      - activepieces_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  activepieces_db_data:
+  activepieces_redis_data:
