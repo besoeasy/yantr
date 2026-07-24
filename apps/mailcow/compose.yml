@@ -1,0 +1,72 @@
+x-yantr:
+  name: Mailcow
+  tags: [ email, smtp, imap, server, self-hosted ]
+  short_description: Self-hosted email server with webmail, anti-spam, and DKIM/DMARC support.
+  description: >
+    Mailcow is a fully featured self-hosted email server suite with a modern
+    web UI (SOGo), Postfix, Dovecot, Rspamd anti-spam, ClamAV antivirus,
+    and automatic SSL. It handles SMTP, IMAP, POP3, and includes a webmail
+    interface with calendar and contacts.
+  usecases:
+    [
+      "Run your own email server with full control over your data — SMTP, IMAP,
+        POP3, webmail, calendar, and contacts in one stack.",
+      "Replace Google Workspace or Microsoft 365 email hosting with a
+        self-hosted solution on your own domain.",
+      "Get built-in anti-spam via Rspamd, virus scanning via ClamAV, and
+        automatic TLS certificate management."
+    ]
+  website: https://github.com/mailcow/mailcow-dockerized
+  customapp: true
+  notes:
+    [
+      "Run ./generate_config.sh from the repo to initialize mailcow.conf with
+        your hostname and secrets.",
+      "Minimum 2.5 GB RAM (disable ClamAV below this threshold).",
+      "Default admin credentials are admin / moohoo — change immediately.",
+      "Requires a domain with MX, A, SPF, DKIM, and DMARC DNS records
+        configured."
+    ]
+
+services:
+  mailcow-mailserver:
+    image: ghcr.io/mailcow/postfix:latest
+    container_name: mailcow-mailserver
+    labels:
+      yantr.app: mailcow
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+      yantr.service.443: Web UI (HTTPS)
+      yantr.port.443: HTTPS
+      yantr.service.25: SMTP
+      yantr.port.25: SMTP
+      yantr.service.465: SMTPS
+      yantr.port.465: SMTPS
+      yantr.service.587: Submission
+      yantr.port.587: SMTP
+      yantr.service.143: IMAP
+      yantr.port.143: TCP
+      yantr.service.993: IMAPS
+      yantr.port.993: TCP
+    ports:
+      - "80"
+      - "443"
+      - "25"
+      - "465"
+      - "587"
+      - "143"
+      - "993"
+    environment:
+      TZ: ${TZ:-Europe/Berlin}
+    volumes:
+      - mailcow_mysql_data:/var/lib/mysql
+      - mailcow_redis_data:/var/lib/redis
+      - mailcow_crypt_data:/var/lib/crypt
+      - mailcow_clamd_data:/var/lib/clamav
+    restart: unless-stopped
+
+volumes:
+  mailcow_mysql_data: null
+  mailcow_redis_data: null
+  mailcow_crypt_data: null
+  mailcow_clamd_data: null

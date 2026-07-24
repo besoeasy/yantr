@@ -1,0 +1,87 @@
+x-yantr:
+  name: Paperless-ngx
+  tags: [ documents, ocr, scanning, productivity, self-hosted ]
+  short_description: Document management system with OCR, search, and automatic classification.
+  description: >
+    Paperless-ngx is an open-source document management system that turns your
+    physical paperwork into a searchable, auto-tagged digital archive. It
+    supports OCR on scanned documents, automatic classifier matching, full-text
+    search, and integrations with scanners and email ingestion.
+  usecases:
+    [
+      "Go paperless by scanning receipts, tax documents, and contracts into a
+        fully searchable digital archive with automatic OCR.",
+      "Auto-classify incoming documents using built-in machine learning
+        classifiers that learn from your tagging patterns.",
+      "Integrate with a document scanner or email to automatically ingest and
+        process new documents as they arrive."
+    ]
+  website: https://github.com/paperless-ngx/paperless-ngx
+  env_generators:
+    PAPERLESS_SECRET_KEY: { length: 48, charset: hex }
+    POSTGRES_PASSWORD: { length: 24, charset: alnum }
+  notes:
+    [
+      "Set PAPERLESS_ADMIN_USER and PAPERLESS_ADMIN_PASSWORD to auto-create
+        the initial superuser.",
+      "Place documents in the 'consume' volume to auto-import them.",
+      "Optional Gotenberg and Tika services can be added for advanced document
+        conversion and OCR."
+    ]
+
+services:
+  paperless-ngx:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    container_name: paperless-ngx
+    labels:
+      yantr.app: paperless-ngx
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    ports:
+      - "8000"
+    environment:
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
+      PAPERLESS_ADMIN_USER: ${PAPERLESS_ADMIN_USER:-admin}
+      PAPERLESS_ADMIN_PASSWORD: ${PAPERLESS_ADMIN_PASSWORD:-changeme}
+      PAPERLESS_TIME_ZONE: ${TZ:-UTC}
+      PAPERLESS_OCR_LANGUAGE: eng
+    volumes:
+      - paperless_data:/usr/src/paperless/data
+      - paperless_media:/usr/src/paperless/media
+      - paperless_consume:/usr/src/paperless/consume
+      - paperless_export:/usr/src/paperless/export
+    depends_on:
+      - paperless-broker
+      - paperless-db
+    restart: unless-stopped
+
+  paperless-broker:
+    image: redis:7-alpine
+    container_name: paperless-broker
+    volumes:
+      - paperless_redis_data:/data
+    restart: unless-stopped
+
+  paperless-db:
+    image: postgres:16-alpine
+    container_name: paperless-db
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - paperless_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  paperless_data: null
+  paperless_media: null
+  paperless_consume: null
+  paperless_export: null
+  paperless_redis_data: null
+  paperless_pgdata: null

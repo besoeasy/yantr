@@ -1,0 +1,68 @@
+x-yantr:
+  name: World Monitor
+  tags: [ ai, dashboard, news, geopolitics, osint ]
+  short_description: Real-time global intelligence dashboard with AI-powered news aggregation.
+  description: >
+    World Monitor is a real-time global intelligence dashboard that aggregates
+    500+ curated news feeds across 15 categories with AI synthesis. It features
+    a dual map engine, geopolitical monitoring, finance radar, country
+    instability indexing, and local AI via Ollama — all in a single self-hosted
+    interface.
+  usecases:
+    [
+      "Monitor global events in real time with AI-synthesized news briefs across
+        geopolitics, military, finance, and disaster categories.",
+      "Track country instability, market movements, and energy prices on an
+        interactive 3D globe with 56 map layer types.",
+      "Run fully local intelligence analysis using Ollama for AI summarization
+        without sending data to external APIs."
+    ]
+  website: https://github.com/koala73/worldmonitor
+  customapp: true
+  env_generators:
+    RELAY_SHARED_SECRET: { length: 64, charset: hex }
+    REDIS_PASSWORD: { length: 32, charset: hex }
+    REDIS_TOKEN: { length: 32, charset: hex }
+  notes:
+    [
+      "Requires building from source — clone the repo and run docker compose
+        up.",
+      "After first start, run ./scripts/run-seeders.sh to populate data.",
+      "Optional API keys for GROQ, OpenRouter, Finnhub, and NASA can be added
+        in .env for enhanced data sources."
+    ]
+
+services:
+  worldmonitor:
+    image: ghcr.io/koala73/worldmonitor:latest
+    container_name: worldmonitor
+    build:
+      context: .
+    labels:
+      yantr.app: worldmonitor
+      yantr.service.3000: Dashboard
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      RELAY_SHARED_SECRET: ${RELAY_SHARED_SECRET}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_TOKEN: ${REDIS_TOKEN}
+    volumes:
+      - worldmonitor_data:/app/data
+    depends_on:
+      - worldmonitor-redis
+    restart: unless-stopped
+
+  worldmonitor-redis:
+    image: redis:7-alpine
+    container_name: worldmonitor-redis
+    command: >
+      sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
+    volumes:
+      - worldmonitor_redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  worldmonitor_data: null
+  worldmonitor_redis_data: null

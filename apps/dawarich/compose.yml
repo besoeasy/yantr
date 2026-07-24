@@ -1,0 +1,115 @@
+x-yantr:
+  name: Dawarich
+  tags: [ maps, location, privacy, tracking, self-hosted ]
+  short_description: Self-hosted alternative to Google Timeline for location history tracking.
+  description: >
+    Dawarich is a self-hosted web app that replaces Google Timeline. It lets you
+    track your location history, visualize it on interactive maps, create trips,
+    analyze travel patterns, and share locations with family — all on your own
+    hardware with full data ownership.
+  usecases:
+    [
+      "Replace Google Timeline and track your personal location history without
+        sending data to Google servers.",
+      "Visualize past trips on interactive maps with heatmap, points, and
+        fog-of-war layers.",
+      "Integrate with Immich or Photoprism to automatically import geotagged
+        photos and display them on your timeline."
+    ]
+  website: https://github.com/Freika/dawarich
+  env_generators:
+    DATABASE_PASSWORD: { length: 24, charset: alnum }
+    SECRET_KEY_BASE: { length: 64, charset: hex }
+  notes:
+    [
+      "Default login is demo@dawarich.app with password safepassword — change
+        it immediately.",
+      "Track your location using Dawarich iOS/Android apps, OwnTracks, GPSLogger,
+        or Overland.",
+      "Import existing location history from Google Takeout, GPX, or GeoJSON
+        files."
+    ]
+
+services:
+  dawarich-app:
+    image: freika/dawarich:latest
+    container_name: dawarich-app
+    labels:
+      yantr.app: dawarich
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      REDIS_URL: redis://dawarich-redis:6379
+      DATABASE_HOST: dawarich-db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: dawarich_development
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_ENV: production
+      SELF_HOSTED: "true"
+      STORE_GEODATA: "true"
+      TIME_ZONE: ${TZ:-UTC}
+      APPLICATION_HOSTS: "localhost,::1,127.0.0.1"
+    volumes:
+      - dawarich_shared:/shared
+      - dawarich_public:/public
+      - dawarich_storage:/storage
+    depends_on:
+      - dawarich-db
+      - dawarich-redis
+    restart: unless-stopped
+
+  dawarich-sidekiq:
+    image: freika/dawarich:latest
+    container_name: dawarich-sidekiq
+    command: bundle exec sidekiq
+    labels:
+      yantr.app: dawarich
+    environment:
+      REDIS_URL: redis://dawarich-redis:6379
+      DATABASE_HOST: dawarich-db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_NAME: dawarich_development
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      RAILS_ENV: production
+      SELF_HOSTED: "true"
+      STORE_GEODATA: "true"
+    volumes:
+      - dawarich_shared:/shared
+      - dawarich_public:/public
+      - dawarich_storage:/storage
+    depends_on:
+      - dawarich-db
+      - dawarich-redis
+    restart: unless-stopped
+
+  dawarich-db:
+    image: postgis/postgis:16-3.4
+    container_name: dawarich-db
+    labels:
+      yantr.app: dawarich
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: dawarich_development
+    volumes:
+      - dawarich_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  dawarich-redis:
+    image: redis:7-alpine
+    container_name: dawarich-redis
+    labels:
+      yantr.app: dawarich
+    restart: unless-stopped
+
+volumes:
+  dawarich_db_data: null
+  dawarich_shared: null
+  dawarich_public: null
+  dawarich_storage: null

@@ -1,0 +1,47 @@
+x-yantr:
+  name: Gatus
+  tags: [ monitoring, uptime, health, alerting, self-hosted ]
+  short_description: Uptime monitoring with response times, alerts, and a clean dashboard.
+  description: >
+    Gatus is a developer-oriented health dashboard that evaluates the health of
+    REST endpoints, TCP sockets, ICMP pings, DNS queries, and more. It tracks
+    response times, conditions, and uptime percentages with alerting via Slack,
+    PagerDuty, Telegram, and other channels.
+  usecases:
+    [
+      "Monitor the uptime and response times of your self-hosted services and
+        get alerted via Slack, Telegram, or email when something goes down.",
+      "Track SLA compliance by monitoring HTTP endpoints with custom conditions
+        on status codes, response bodies, and latency.",
+      "Build a public or internal status page backed by real-time health checks
+        across multiple protocols."
+    ]
+  website: https://github.com/TwiN/gatus
+  notes:
+    [
+      "Configure endpoints in config/config.yaml — mount your config directory.",
+      "Supports alerting via Slack, Discord, Telegram, PagerDuty, Twilio,
+        Microsoft Teams, and more.",
+      "Can store results in SQLite or PostgreSQL for historical analysis."
+    ]
+
+services:
+  gatus:
+    image: twinproduction/gatus:latest
+    container_name: gatus
+    labels:
+      yantr.app: gatus
+      yantr.service.8080: Dashboard
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - gatus_config:/config
+      - gatus_data:/data
+    restart: unless-stopped
+
+volumes:
+  gatus_config: null
+  gatus_data: null

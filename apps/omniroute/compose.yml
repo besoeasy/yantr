@@ -1,14 +1,33 @@
 x-yantr:
-  name: omniroute
-  tags: [ai, proxy, gateway, llm, self-hosted]
-  short_description: Unified AI gateway that routes requests to 250+ LLM providers through one endpoint.
+  name: OmniRoute
+  tags: [ ai, llm, gateway, proxy, self-hosted ]
+  short_description: Free AI gateway routing 290+ providers through one OpenAI-compatible endpoint.
   description: >
-    OmniRoute is a free, self-hosted AI gateway that lets you connect to
-    over 250 LLM providers — including 90+ free options — through a single
-    endpoint. It supports Claude Code, Codex, Cursor, Cline, Copilot, and
-    more, with built-in rate limiting, caching, and a web dashboard.
-  usecases: ["Route all your AI tool requests (Claude Code, Codex, Cursor, Copilot) through one self-hosted proxy endpoint.", "Access dozens of free LLM providers without managing separate API keys for each service."]
-  website: "https://github.com/diegosouzapw/OmniRoute"
+    OmniRoute is a free, self-hosted AI gateway that aggregates 290+ LLM
+    providers (90+ with free tiers) behind a single OpenAI-compatible endpoint.
+    It features auto-fallback across providers, token compression saving 15-95%,
+    smart routing strategies, and works with Claude Code, Cursor, Codex, Cline,
+    and Copilot out of the box.
+  usecases:
+    [
+      "Route all your AI coding tools through one endpoint with automatic
+        failover when a provider hits rate limits.",
+      "Save up to 95% on token costs using built-in RTK and Caveman compression
+        across free and paid LLM tiers.",
+      "Run a local AI proxy that supports every major provider — OpenAI,
+        Anthropic, Google, DeepSeek, Mistral, and 280+ more."
+    ]
+  website: https://github.com/diegosouzapw/OmniRoute
+  env_generators:
+    REDIS_PASSWORD: { length: 32, charset: hex }
+  notes:
+    [
+      "OmniRoute works out of the box with keyless free providers — no API keys
+        needed to start.",
+      "Add API keys for paid providers via the web dashboard after deployment.",
+      "Use the 'auto' model name for smart routing across all connected
+        providers."
+    ]
 
 services:
   omniroute:
@@ -18,12 +37,26 @@ services:
       yantr.app: omniroute
       yantr.service.20128: Dashboard
       yantr.port.20128: HTTP
-    stop_grace_period: 40s
     ports:
       - "20128"
+    environment:
+      DATA_DIR: /app/data
+      PORT: 20128
+      REDIS_URL: redis://omniroute-redis:6379
     volumes:
       - omniroute_data:/app/data
+    depends_on:
+      - omniroute-redis
+    restart: unless-stopped
+    stop_grace_period: 40s
+
+  omniroute-redis:
+    image: redis:7-alpine
+    container_name: omniroute-redis
+    volumes:
+      - omniroute_redis_data:/data
     restart: unless-stopped
 
 volumes:
   omniroute_data: null
+  omniroute_redis_data: null

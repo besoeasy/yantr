@@ -1,0 +1,44 @@
+x-yantr:
+  name: Glance
+  tags: [ dashboard, homepage, monitoring, productivity, self-hosted ]
+  short_description: Self-hosted dashboard aggregating feeds, weather, calendars, and more.
+  description: >
+    Glance is a self-hosted dashboard that aggregates all your important
+    information in one place — RSS feeds, Reddit, YouTube channels, weather,
+    calendars, stocks, Docker containers, and more. Highly customizable with a
+    clean, responsive UI and YAML-based configuration.
+  usecases:
+    [
+      "Create a personalized homepage that shows RSS feeds, weather, calendar
+        events, and to-do lists at a glance.",
+      "Monitor your self-hosted services by embedding status checks, Docker
+        container stats, and server metrics.",
+      "Aggregate content from Reddit, Hacker News, YouTube, and GitHub releases
+        in a single unified view."
+    ]
+  website: https://github.com/glanceapp/glance
+  notes:
+    [
+      "Configure via glance.yml — mount your config file to /app/glance.yml.",
+      "Supports custom themes, CSS, and JavaScript for full personalization.",
+      "No database required — all configuration is file-based."
+    ]
+
+services:
+  glance:
+    image: glanceapp/glance:latest
+    container_name: glance
+    labels:
+      yantr.app: glance
+      yantr.service.8080: Dashboard
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      TZ: ${TZ:-UTC}
+    volumes:
+      - glance_config:/app/config
+    restart: unless-stopped
+
+volumes:
+  glance_config: null

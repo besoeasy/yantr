@@ -1,0 +1,57 @@
+x-yantr:
+  name: Beszel
+  tags: [ monitoring, server, docker, metrics, self-hosted ]
+  short_description: Lightweight server monitoring with Docker container stats in a clean dashboard.
+  description: >
+    Beszel is a lightweight server monitoring hub that tracks CPU, memory, disk
+    I/O, network traffic, and Docker container stats in a clean real-time
+    dashboard. It includes alerting, history, and a simple agent that runs on
+    each monitored host — much lighter than Prometheus + Grafana.
+  usecases:
+    [
+      "Monitor your homelab servers and Docker containers from a single
+        dashboard with real-time CPU, memory, and network stats.",
+      "Get alerts when server resources exceed thresholds or containers stop
+        unexpectedly.",
+      "Track historical performance data across multiple hosts without the
+        overhead of a full observability stack."
+    ]
+  website: https://github.com/henrygd/beszel
+  env_generators:
+    BESZEL_AGENT_TOKEN: { length: 32, charset: hex }
+  notes:
+    [
+      "The hub provides the web UI — add agents from the Settings page after
+        first login.",
+      "Agent communicates via SSH or WebSocket — expose only the hub port.",
+      "Default hub port is 8090 — configure via Beszel settings."
+    ]
+
+services:
+  beszel-hub:
+    image: henrygd/beszel:latest
+    container_name: beszel-hub
+    labels:
+      yantr.app: beszel
+      yantr.service.8090: Dashboard
+      yantr.port.8090: HTTP
+    ports:
+      - "8090"
+    volumes:
+      - beszel_hub_data:/beszel_data
+    restart: unless-stopped
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    labels:
+      yantr.app: beszel
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      LISTEN: 45876
+    restart: unless-stopped
+
+volumes:
+  beszel_hub_data: null
