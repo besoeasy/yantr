@@ -1,0 +1,66 @@
+x-yantr:
+  name: RustDesk Server
+  tags: [ remote-desktop, screenshare, vpn, self-hosted ]
+  short_description: Self-hosted relay server for RustDesk remote desktop connections.
+  description: >
+    RustDesk Server is the self-hosted relay server for RustDesk, an open-source
+    remote desktop application. By running your own relay, you ensure all
+    remote desktop traffic stays on your infrastructure instead of routing
+    through third-party servers — giving you full control and privacy.
+  usecases:
+    [
+      "Self-host the relay server for RustDesk remote desktop so all connection
+        traffic stays on your infrastructure.",
+      "Provide remote access to family members or team devices without relying
+        on TeamViewer or AnyDesk third-party servers.",
+      "Route RustDesk connections through your own server for lower latency and
+        full control over access."
+    ]
+  website: https://github.com/rustdesk/rustdesk-server
+  notes:
+    [
+      "Install RustDesk clients from rustdesk.com and point them at your
+        server.",
+      "The hbbs container handles ID registration and hbbr handles relay —
+        both are required.",
+      "The key pair is auto-generated on first run. Copy id_ed25519 and
+        id_ed25519.pub from hbbs for persistence."
+    ]
+
+services:
+  rustdesk-hbbs:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbs
+    command: hbbs
+    labels:
+      yantr.app: rustdesk-server
+      yantr.service.21115: ID Server
+      yantr.port.21115: TCP
+      yantr.service.21118: Web Client
+      yantr.port.21118: HTTP
+    ports:
+      - "21115"
+      - "21116"
+      - "21118"
+    volumes:
+      - rustdesk_data:/root
+    depends_on:
+      - rustdesk-hbbr
+    restart: unless-stopped
+
+  rustdesk-hbbr:
+    image: rustdesk/rustdesk-server:latest
+    container_name: rustdesk-hbbr
+    command: hbbr
+    labels:
+      yantr.app: rustdesk-server
+      yantr.service.21117: Relay Server
+      yantr.port.21117: TCP
+    ports:
+      - "21117"
+    volumes:
+      - rustdesk_data:/root
+    restart: unless-stopped
+
+volumes:
+  rustdesk_data: null

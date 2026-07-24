@@ -1,0 +1,69 @@
+x-yantr:
+  name: Metabase
+  tags: [ analytics, bi, database, visualization, self-hosted ]
+  short_description: Business intelligence and analytics — ask questions of your data without SQL.
+  description: >
+    Metabase is an open-source business intelligence tool that lets anyone in
+    your company ask questions of your data through a simple visual interface.
+    No SQL knowledge required — just point it at a database and start exploring
+    with charts, dashboards, and scheduled reports.
+  usecases:
+    [
+      "Let non-technical team members explore business data and build
+        dashboards by clicking through a visual query builder — no SQL needed.",
+      "Connect to PostgreSQL, MySQL, MongoDB, BigQuery, or 20+ other data
+        sources and create interactive charts and reports.",
+      "Schedule automated email reports and set up alerts when key metrics
+        cross defined thresholds."
+    ]
+  website: https://github.com/metabase/metabase
+  env_generators:
+    MB_DB_PASS: { length: 24, charset: alnum }
+  notes:
+    [
+      "Works out of the box with an embedded H2 database for getting started
+        quickly.",
+      "For production, use PostgreSQL by setting MB_DB_TYPE=postgres and the
+        related MB_DB_* variables.",
+      "Connect data sources via Admin > Databases after first login."
+    ]
+
+services:
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    labels:
+      yantr.app: metabase
+      yantr.service.3000: Analytics
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: ${MB_DB_PASS}
+      MB_DB_HOST: metabase-db
+    volumes:
+      - metabase_data:/metabase-data
+    depends_on:
+      - metabase-db
+    restart: unless-stopped
+
+  metabase-db:
+    image: postgres:16-alpine
+    container_name: metabase-db
+    labels:
+      yantr.app: metabase
+    environment:
+      POSTGRES_DB: metabase
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: ${MB_DB_PASS}
+    volumes:
+      - metabase_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  metabase_data: null
+  metabase_db_data: null

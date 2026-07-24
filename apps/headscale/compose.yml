@@ -1,0 +1,46 @@
+x-yantr:
+  name: Headscale
+  tags: [ vpn, networking, zerotrust, wireguard, self-hosted ]
+  short_description: Self-hosted Tailscale control server for WireGuard mesh VPN.
+  description: >
+    Headscale is an open-source, self-hosted implementation of the Tailscale
+    control server. It gives you the power of Tailscale's mesh VPN — automatic
+    NAT traversal, encrypted device-to-device connections, and access control —
+    running entirely on your own infrastructure.
+  usecases:
+    [
+      "Set up a self-hosted mesh VPN that connects all your devices with
+        automatic NAT traversal and WireGuard encryption — no external accounts
+        needed.",
+      "Replace Tailscale's cloud control server with your own instance for
+        full control over your network coordination.",
+      "Define access control policies to control which devices can reach which
+        services across your network."
+    ]
+  website: https://github.com/juanfont/headscale
+  env_generators:
+    TZ: { length: 1, charset: alpha }
+  notes:
+    [
+      "Headscale uses SQLite by default — no external database needed.",
+      "Generate auth keys via 'headscale nodes generate-key' after deployment.",
+      "Use Tailscale clients (tailscale up --login-server http://your-server)
+        to join devices to your network."
+    ]
+
+services:
+  headscale:
+    image: headscale/headscale:latest
+    container_name: headscale
+    labels:
+      yantr.app: headscale
+      yantr.service.8080: Admin API
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - headscale_data:/var/lib/headscale
+    restart: unless-stopped
+
+volumes:
+  headscale_data: null

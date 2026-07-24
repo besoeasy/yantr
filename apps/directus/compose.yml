@@ -1,0 +1,79 @@
+x-yantr:
+  name: Directus
+  tags: [ cms, api, headless, database, self-hosted ]
+  short_description: Headless CMS and API layer on top of any SQL database.
+  description: >
+    Directus is a flexible, open-source headless CMS that wraps any SQL
+    database with a real-time REST and GraphQL API. It provides a no-code
+    admin panel for managing content, users, flows, and automations — turning
+    your database into a full-featured content platform without vendor
+    lock-in.
+  usecases:
+    [
+      "Instantly wrap an existing SQL database with a REST and GraphQL API —
+        manage content through a visual admin panel without writing backend
+        code.",
+      "Build content-driven websites and apps with a flexible data model that
+        adapts to your schema, not the other way around.",
+      "Create automated workflows with Flows — trigger webhooks, send emails,
+        and run custom logic on content changes."
+    ]
+  website: https://github.com/directus/directus
+  env_generators:
+    KEY: { length: 32, charset: hex }
+    SECRET: { length: 48, charset: hex }
+    ADMIN_PASSWORD: { length: 20, charset: alnum_symbols }
+  notes:
+    [
+      "Default admin login is admin@example.com / d1r3ctu5 — change
+        immediately.",
+      "Supports PostgreSQL, MySQL, MariaDB, SQLite, MS SQL, and CockroachDB.",
+      "Mount the extensions volume to /directus/extensions for custom
+        plugins."
+    ]
+
+services:
+  directus:
+    image: directus/directus:latest
+    container_name: directus
+    labels:
+      yantr.app: directus
+      yantr.service.8055: CMS
+      yantr.port.8055: HTTP
+    ports:
+      - "8055"
+    environment:
+      KEY: ${KEY}
+      SECRET: ${SECRET}
+      DB_CLIENT: pg
+      DB_HOST: directus-db
+      DB_PORT: 5432
+      DB_DATABASE: directus
+      DB_USER: directus
+      DB_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - directus_uploads:/directus/uploads
+      - directus_extensions:/directus/extensions
+    depends_on:
+      - directus-db
+    restart: unless-stopped
+
+  directus-db:
+    image: postgres:16-alpine
+    container_name: directus-db
+    labels:
+      yantr.app: directus
+    environment:
+      POSTGRES_DB: directus
+      POSTGRES_USER: directus
+      POSTGRES_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - directus_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  directus_uploads: null
+  directus_extensions: null
+  directus_db_data: null

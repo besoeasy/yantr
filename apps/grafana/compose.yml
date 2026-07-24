@@ -1,0 +1,49 @@
+x-yantr:
+  name: Grafana
+  tags: [ monitoring, visualization, metrics, dashboards, self-hosted ]
+  short_description: Open-source analytics and monitoring with beautiful, customizable dashboards.
+  description: >
+    Grafana is the open-source standard for monitoring and observability. It
+    lets you query, visualize, alert on, and understand your metrics no matter
+    where they are stored. Connects to Prometheus, InfluxDB, Elasticsearch,
+    Loki, and dozens of other data sources for rich, interactive dashboards.
+  usecases:
+    [
+      "Build beautiful, interactive dashboards that visualize metrics from
+        Prometheus, InfluxDB, Elasticsearch, or any supported data source.",
+      "Set up alerting rules that notify you via Slack, email, PagerDuty, or
+        Telegram when metrics cross defined thresholds.",
+      "Combine data from multiple sources — Prometheus for infrastructure,
+        Loki for logs, Tempo for traces — in a single unified view."
+    ]
+  website: https://github.com/grafana/grafana
+  env_generators:
+    GF_SECURITY_ADMIN_PASSWORD: { length: 20, charset: alnum_symbols }
+  notes:
+    [
+      "Default admin credentials are admin / admin — change on first login.",
+      "Connect data sources via the UI at /datasources after deployment.",
+      "Supports plugins from the Grafana catalog for additional panels and
+        data sources."
+    ]
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    labels:
+      yantr.app: grafana
+      yantr.service.3000: Dashboard
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  grafana_data: null

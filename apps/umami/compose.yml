@@ -1,0 +1,64 @@
+x-yantr:
+  name: Umami
+  tags: [ analytics, privacy, web, tracking, self-hosted ]
+  short_description: Privacy-focused web analytics — a clean Google Analytics alternative.
+  description: >
+    Umami is a self-hosted, privacy-focused web analytics tool that gives you
+    clean insights without tracking users or using cookies. It provides a simple
+    dashboard with real-time visitor counts, traffic sources, popular pages, and
+    device breakdowns — all without compromising visitor privacy.
+  usecases:
+    [
+      "Track website traffic and visitor behavior without using cookies or
+        sending data to Google — fully GDPR compliant out of the box.",
+      "Monitor real-time visitors, traffic sources, and popular pages with a
+        clean single-page dashboard.",
+      "Replace Google Analytics on multiple websites with a single self-hosted
+        instance you fully control."
+    ]
+  website: https://github.com/umami-software/umami
+  env_generators:
+    POSTGRES_PASSWORD: { length: 24, charset: alnum }
+    NEXTAUTH_SECRET: { length: 48, charset: hex }
+  notes:
+    [
+      "Default login is admin / umami — change the password immediately.",
+      "Add the tracking script to your site: <script defer data-domain="yourdomain.com" src="https://your-umami-domain.com/script.js"></script>",
+      "Supports MySQL, PostgreSQL, or SQLite for the database backend."
+    ]
+
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:latest
+    container_name: umami
+    labels:
+      yantr.app: umami
+      yantr.service.3000: Analytics
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    environment:
+      DATABASE_URL: postgresql://umami:${POSTGRES_PASSWORD}@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: http://localhost:3000
+      APP_URL: http://localhost:3000
+    depends_on:
+      - umami-db
+    restart: unless-stopped
+
+  umami-db:
+    image: postgres:16-alpine
+    container_name: umami-db
+    labels:
+      yantr.app: umami
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - umami_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  umami_db_data: null

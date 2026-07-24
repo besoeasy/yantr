@@ -1,0 +1,45 @@
+x-yantr:
+  name: Dashy
+  tags: [ dashboard, homepage, monitoring, productivity, self-hosted ]
+  short_description: Feature-rich personal dashboard with widgets, status checks, and themes.
+  description: >
+    Dashy is a highly customizable, self-hosted personal dashboard homepage
+    with built-in status checking, widget support, theme engine, icon packs,
+    and a UI editor. It lets you organize all your links, services, and
+    information in one beautiful interface.
+  usecases:
+    [
+      "Create a personalized homepage that aggregates all your important links,
+        services, and information in one beautiful interface.",
+      "Monitor your self-hosted services with built-in uptime status checks
+        displayed right on your dashboard.",
+      "Customize themes, layouts, and widgets using the visual UI editor or
+        YAML configuration."
+    ]
+  website: https://github.com/Lissy93/dashy
+  notes:
+    [
+      "Configure via conf.yml mounted to /app/public/conf.yml.",
+      "Access the built-in UI editor at /settings for visual customization.",
+      "Optional: add authentication via environment variables for private
+        dashboards."
+    ]
+
+services:
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    labels:
+      yantr.app: dashy
+      yantr.service.8080: Dashboard
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      NODE_ENV: production
+    volumes:
+      - dashy_config:/app/public/conf.yml
+    restart: unless-stopped
+
+volumes:
+  dashy_config: null

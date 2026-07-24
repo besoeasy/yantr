@@ -1,0 +1,70 @@
+x-yantr:
+  name: Ghost
+  tags: [ cms, blog, newsletter, publishing, self-hosted ]
+  short_description: Professional publishing platform for blogs, newsletters, and memberships.
+  description: >
+    Ghost is a powerful, open-source publishing platform designed for
+    professional journalists and bloggers. It provides a beautiful editor,
+    built-in SEO tools, native newsletter and subscription support, and a
+    membership system — all self-hosted with full control over your content
+    and audience.
+  usecases:
+    [
+      "Publish professional blogs and newsletters with a built-in editor,
+        native SEO optimization, and subscription management.",
+      "Run a membership site with free and paid tiers, email newsletters, and
+        Stripe payment integration.",
+      "Replace Medium, Substack, or WordPress for a focused, fast, and clean
+        publishing experience you fully control."
+    ]
+  website: https://github.com/TryGhost/Ghost
+  env_generators:
+    MYSQL_ROOT_PASSWORD: { length: 24, charset: alnum }
+  notes:
+    [
+      "Requires MySQL 8 — the compose file includes it automatically.",
+      "Set url to your public domain for proper SEO and email delivery.",
+      "Install themes via the Ghost admin panel at /ghost."
+    ]
+
+services:
+  ghost:
+    image: ghost:latest
+    container_name: ghost
+    labels:
+      yantr.app: ghost
+      yantr.service.2368: Blog
+      yantr.port.2368: HTTP
+    ports:
+      - "2368"
+    environment:
+      url: http://localhost:2368
+      database__client: mysql
+      database__connection__host: ghost-db
+      database__connection__port: 3306
+      database__connection__user: ghost
+      database__connection__password: ${MYSQL_ROOT_PASSWORD}
+      database__connection__database: ghost
+    volumes:
+      - ghost_content:/var/lib/ghost/content
+    depends_on:
+      - ghost-db
+    restart: unless-stopped
+
+  ghost-db:
+    image: mysql:8
+    container_name: ghost-db
+    labels:
+      yantr.app: ghost
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ghost
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ghost_db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  ghost_content: null
+  ghost_db_data: null
