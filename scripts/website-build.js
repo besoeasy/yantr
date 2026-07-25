@@ -67,6 +67,7 @@ function parseAppFolder(appId, appPath) {
     const serviceName = Object.keys(services)[0] || null;
     const image = serviceName ? (services[serviceName]?.image || null) : null;
     const ports = parsePortLabels(services);
+    const hasLogo = fs.existsSync(path.join(appPath, 'logo.svg'));
 
     return {
       id: appId,
@@ -80,6 +81,7 @@ function parseAppFolder(appId, appPath) {
       notes: Array.isArray(meta.notes) ? meta.notes : [],
       image,
       serviceName,
+      hasLogo,
     };
   } catch (error) {
     console.error(`❌ Error parsing ${appId}/compose.yml:`, error.message);
@@ -153,8 +155,15 @@ function buildAppsJson() {
   console.log(`🏷️  Tags: ${output.meta.tags.length}`);
 }
 
-function getLogoUrl(app) {
+function fallbackLogoUrl(app) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(app?.name || app?.id || 'App')}&background=random&color=fff&bold=true`;
+}
+
+function getLogoUrl(app) {
+  if (app?.hasLogo) {
+    return `/apps/${app.id}/logo.svg`;
+  }
+  return fallbackLogoUrl(app);
 }
 
 function toAppViewModel(app) {
@@ -174,6 +183,7 @@ function toAppViewModel(app) {
     short_description: app?.short_description || '',
     description: app?.description || app?.short_description || 'No description available.',
     usecases: Array.isArray(app?.usecases) ? app.usecases : [],
+    hasLogo: Boolean(app?.hasLogo),
     logoUrl: getLogoUrl(app),
     summary,
     primaryTag,
@@ -217,6 +227,12 @@ function buildPages() {
     const appDir = path.join(appsOutputDir, app.id);
     fs.mkdirSync(appDir, { recursive: true });
 
+    if (app.hasLogo) {
+      const src = path.join(appsDir, app.id, 'logo.svg');
+      const dest = path.join(appDir, 'logo.svg');
+      fs.copyFileSync(src, dest);
+    }
+
     const relatedApps = getRelatedApps(app, apps);
 
     const pageDescription = app.short_description
@@ -230,7 +246,7 @@ function buildPages() {
       pageTitle: `Self-Host ${app.name} with Docker | Yantr`,
       pageDescription,
       pageUrl: app.appUrl,
-      imageUrl: app.logoUrl,
+      imageUrl: app.hasLogo ? `${siteUrl}${app.logoUrl}` : app.logoUrl,
     });
 
     fs.writeFileSync(path.join(appDir, 'index.html'), html, 'utf8');

@@ -1163,6 +1163,9 @@
       }
 
       function getLogoUrl(app) {
+        if (app.hasLogo) {
+          return `./apps/${app.id}/logo.svg`;
+        }
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true`;
       }
 
