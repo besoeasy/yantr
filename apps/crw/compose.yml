@@ -1,0 +1,33 @@
+x-yantr:
+  name: crw
+  tags: [web, scraper, crawler, api, developer-tools]
+  short_description: Fast web scraper and crawler API, alternative to Firecrawl and Tavily.
+  description: >
+    CRW is a fast, lightweight web scraper and crawler API built in Rust. It serves
+    as a self-hosted alternative to Firecrawl and Tavily, providing HTML-to-Markdown
+    conversion, web search, and structured data extraction. Includes an MCP server
+    for AI agent integration.
+  usecases:
+    [
+      "Scrape websites and convert pages to clean Markdown for AI/LLM processing.",
+      "Build a self-hosted web search API for your applications without external dependencies.",
+      "Use as an MCP server to give AI agents the ability to browse and extract web content.",
+    ]
+  website: https://github.com/us/crw
+  notes:
+    [
+      "Drop-in Firecrawl-compatible API for easy migration",
+      "Built in Rust for high performance and low resource usage",
+    ]
+
+services:
+  crw:
+    image: ghcr.io/us/crw:latest
+    container_name: crw
+    labels:
+      yantr.app: crw
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    ports:
+      - "3000"
+    restart: unless-stopped
