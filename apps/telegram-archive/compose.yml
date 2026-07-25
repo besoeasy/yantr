@@ -1,0 +1,46 @@
+x-yantr:
+  name: telegram-archive
+  tags: [telegram, backup, archive, chat, privacy]
+  short_description: Automated Telegram history backup with a local web viewer.
+  description: >
+    Telegram Archive is a self-hosted tool for backing up your Telegram chat history
+    with automated, incremental backups. It includes a local web viewer that feels
+    just like the real Telegram app. Supports media downloads, public channel archiving,
+    and scheduled incremental backups.
+  usecases:
+    [
+      "Automatically back up all your Telegram chat history with incremental updates.",
+      "Browse archived Telegram messages in a familiar web-based interface.",
+      "Archive public Telegram channels and groups for offline reference.",
+    ]
+  website: https://github.com/GeiserX/Telegram-Archive
+  notes:
+    [
+      "Requires Telegram API credentials from my.telegram.org/apps",
+      "Initial authentication requires running the init_auth.sh script",
+    ]
+
+services:
+  telegram-archive:
+    image: drumsergio/telegram-archive:latest
+    container_name: telegram-archive
+    labels:
+      yantr.app: telegram-archive
+      yantr.service.8000: Web UI
+      yantr.port.8000: HTTP
+    environment:
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+      TELEGRAM_PHONE: ${TELEGRAM_PHONE}
+      VIEWER_USERNAME: ${VIEWER_USERNAME:-admin}
+      VIEWER_PASSWORD: ${VIEWER_PASSWORD}
+      SCHEDULE: "0 */6 * * *"
+      DOWNLOAD_MEDIA: "true"
+    ports:
+      - "8000"
+    volumes:
+      - telegram_archive_data:/data
+    restart: unless-stopped
+
+volumes:
+  telegram_archive_data:
