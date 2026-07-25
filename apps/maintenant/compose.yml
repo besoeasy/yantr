@@ -1,0 +1,43 @@
+x-yantr:
+  name: maintenant
+  tags: [monitoring, uptime, status-page, devops, self-hosted]
+  short_description: Drop a container and your stack is monitored.
+  description: >
+    Maintenant is a lightweight, self-hosted uptime monitoring tool. Drop in a
+    single container and it automatically discovers and monitors your Docker
+    services. Features include alerting, SSL monitoring, status pages, and
+    heartbeat checks. Built with Go for minimal resource usage.
+  usecases:
+    [
+      "Automatically discover and monitor all Docker containers on your host.",
+      "Get instant alerts when services go down via notifications or webhooks.",
+      "Create a public status page showing the health of your self-hosted services.",
+    ]
+  website: https://maintenant.dev
+  notes:
+    [
+      "Requires Docker socket mount for automatic container discovery",
+      "SQLite database stored in /data volume for persistence",
+    ]
+
+services:
+  maintenant:
+    image: ghcr.io/kolapsis/maintenant:latest
+    container_name: maintenant
+    labels:
+      yantr.app: maintenant
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    environment:
+      MAINTENANT_ADDR: "0.0.0.0:8080"
+      MAINTENANT_DB: /data/maintenant.db
+    ports:
+      - "8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - maintenant_data:/data
+    restart: unless-stopped
+
+volumes:
+  maintenant_data:
