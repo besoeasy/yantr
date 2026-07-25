@@ -1,0 +1,45 @@
+x-yantr:
+  name: hometube
+  tags: [media, video, downloader, youtube, homelab]
+  short_description: Friendly video downloader that organizes content for Jellyfin and Plex.
+  description: >
+    HomeTube is a self-hosted video downloader that manages single video URLs
+    into organized content structures for automatic home media server experiences.
+    It uses yt-dlp under the hood and integrates directly with Jellyfin and Plex
+    libraries. Features include playlist support, SponsorBlock, subtitle embedding,
+    and quality selection.
+  usecases:
+    [
+      "Download YouTube videos and automatically organize them into Jellyfin or Plex compatible folder structures.",
+      "Build a personal video archive with proper metadata, thumbnails, and subtitle files.",
+      "Download entire playlists or channels with automatic naming and folder organization.",
+    ]
+  website: https://github.com/EgalitarianMonkey/hometube
+  notes:
+    [
+      "YouTube cookies file is strongly recommended for reliable downloads",
+      "Supports Jellyfin and Plex integration for automatic library updates",
+    ]
+
+services:
+  hometube:
+    image: ghcr.io/egalitarianmonkey/hometube:latest
+    container_name: hometube
+    labels:
+      yantr.app: hometube
+      yantr.service.8501: Web UI
+      yantr.port.8501: HTTP
+    environment:
+      TZ: ${TZ:-UTC}
+      UI_LANGUAGE: en
+      LANGUAGE_PRIMARY: en
+    ports:
+      - "8501"
+    volumes:
+      - hometube_videos:/data/videos
+      - hometube_tmp:/data/tmp
+    restart: unless-stopped
+
+volumes:
+  hometube_videos:
+  hometube_tmp:
