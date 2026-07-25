@@ -1,0 +1,42 @@
+x-yantr:
+  name: traefik-manager
+  tags: [network, proxy, traefik, reverse-proxy, tools]
+  short_description: Clean self-hosted web UI for managing your Traefik reverse proxy.
+  description: >
+    Traefik Manager is a self-hosted web interface for managing Traefik reverse
+    proxy configurations. It provides a clean UI to create, edit, and manage
+    routers, services, middlewares, and TLS certificates without editing YAML files
+    manually. Supports TOTP-based 2FA, backup/restore, and dynamic config reloading.
+  usecases:
+    [
+      "Visually manage Traefik routers, services, and middlewares without editing config files.",
+      "Create and manage TLS certificates and Let's Encrypt configuration through a web interface.",
+      "Back up and restore your entire Traefik configuration with one click.",
+    ]
+  website: https://github.com/chr0nzz/traefik-manager
+  notes:
+    [
+      "Requires access to Traefik's dynamic configuration file",
+      "Supports TOTP-based two-factor authentication",
+    ]
+
+services:
+  traefik-manager:
+    image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
+    labels:
+      yantr.app: traefik-manager
+      yantr.service.5000: Web UI
+      yantr.port.5000: HTTP
+    environment:
+      COOKIE_SECURE: "false"
+    ports:
+      - "5000"
+    volumes:
+      - traefik_manager_config:/app/config
+      - traefik_manager_backups:/app/backups
+    restart: unless-stopped
+
+volumes:
+  traefik_manager_config:
+  traefik_manager_backups:
