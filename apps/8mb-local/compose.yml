@@ -1,0 +1,44 @@
+x-yantr:
+  name: 8mb.local
+  tags: [video, media, compressor, ffmpeg, tools]
+  short_description: Self-hosted local video compressor with a clean web interface.
+  description: >
+    8mb.local is a free, self-hosted video compression web UI designed for
+    performance and ease of use. Inspired by 8mb.video, it runs entirely on your
+    own hardware using FFmpeg with optional GPU acceleration. Compress videos
+    without uploading them to any external service.
+  usecases:
+    [
+      "Compress large video files before sharing them with friends or colleagues.",
+      "Reduce video sizes for social media uploads while maintaining quality.",
+      "Batch compress videos using GPU acceleration for fast processing.",
+    ]
+  website: https://github.com/JMS1717/8mb.local
+  notes:
+    [
+      "GPU acceleration available with NVIDIA GPUs using --gpus all flag",
+      "CPU-only mode works out of the box without additional configuration",
+    ]
+
+services:
+  8mb-local:
+    image: jms1717/8mblocal:latest
+    container_name: 8mb-local
+    labels:
+      yantr.app: 8mb-local
+      yantr.service.8001: Web UI
+      yantr.port.8001: HTTP
+    environment:
+      AUTH_ENABLED: "false"
+      FILE_RETENTION_HOURS: "1"
+      WORKER_CONCURRENCY: "4"
+    ports:
+      - "8001"
+    volumes:
+      - 8mb_local_uploads:/app/uploads
+      - 8mb_local_outputs:/app/outputs
+    restart: unless-stopped
+
+volumes:
+  8mb_local_uploads:
+  8mb_local_outputs:
