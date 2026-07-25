@@ -1,0 +1,37 @@
+x-yantr:
+  name: drydock
+  tags: [docker, containers, updates, monitoring, devops]
+  short_description: Open source container update monitoring with 23 registries.
+  description: >
+    Drydock is an open-source container update monitoring tool that checks 23
+    container registries for new image versions. It provides a modern dashboard
+    with notification triggers, audit logging, OIDC authentication, and Prometheus
+    metrics. A lightweight alternative to Watchtower.
+  usecases:
+    [
+      "Monitor all your Docker containers for available image updates across 23 registries.",
+      "Get notified via 20+ notification triggers when container updates are available.",
+      "Track container update history with audit logs and Prometheus metrics.",
+    ]
+  website: https://getdrydock.com
+  notes:
+    [
+      "Requires Docker socket mount or socket proxy for container monitoring",
+      "Authentication required by default (configure admin credentials)",
+    ]
+
+services:
+  drydock:
+    image: codeswhat/drydock:latest
+    container_name: drydock
+    labels:
+      yantr.app: drydock
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    environment:
+      DD_ANONYMOUS_AUTH_CONFIRM: "true"
+    ports:
+      - "3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
