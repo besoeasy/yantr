@@ -1,0 +1,40 @@
+x-yantr:
+  name: qbitwebui
+  tags: [torrent, download, qbittorrent, media, homelab]
+  short_description: Modern web interface for managing qBittorrent instances.
+  description: >
+    QbitWebUI is a modern, mobile-friendly web interface for managing qBittorrent
+    instances. It supports cross-seed integration, Prowlarr/Servarr connectivity,
+    and provides a clean PWA experience. Features include real-time torrent
+    monitoring, advanced search, and remote management from any device.
+  usecases:
+    [
+      "Manage your qBittorrent downloads from any device with a modern, responsive web interface.",
+      "Integrate with Prowlarr and Servarr for automated torrent search and download management.",
+      "Use cross-seed to automatically find and add cross-seeds for your existing torrents.",
+    ]
+  website: https://mkbula.github.io/qbitwebui/
+  notes:
+    [
+      "Requires a running qBittorrent instance to connect to",
+      "Generate an encryption key with: openssl rand -hex 32",
+    ]
+
+services:
+  qbitwebui:
+    image: ghcr.io/mkbula/qbitwebui:latest
+    container_name: qbitwebui
+    labels:
+      yantr.app: qbitwebui
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    environment:
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    ports:
+      - "3000"
+    volumes:
+      - qbitwebui_data:/data
+    restart: unless-stopped
+
+volumes:
+  qbitwebui_data:
