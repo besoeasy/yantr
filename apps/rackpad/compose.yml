@@ -1,0 +1,40 @@
+x-yantr:
+  name: rackpad
+  tags: [homelab, inventory, networking, infrastructure, ipam]
+  short_description: Self-hosted infrastructure inventory and operations for homelabs.
+  description: >
+    Rackpad is a self-hosted infrastructure inventory and operations tool designed
+    for homelabs and labs. Track racks, devices, ports, cables, IP addresses, VLANs,
+    WiFi networks, and compute resources. Features network discovery, SNMP monitoring,
+    and a clean web interface for managing your entire lab infrastructure.
+  usecases:
+    [
+      "Document and manage your homelab racks, devices, and cable connections.",
+      "Track IP addresses, VLANs, and network assignments across your infrastructure.",
+      "Discover and monitor devices on your network with automatic scanning.",
+    ]
+  website: https://rackpad.net
+  notes:
+    [
+      "SQLite database stored in /data volume",
+      "Network discovery works best with host networking mode",
+    ]
+
+services:
+  rackpad:
+    image: ghcr.io/kobii-git/rackpad:latest
+    container_name: rackpad
+    labels:
+      yantr.app: rackpad
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000"
+    volumes:
+      - rackpad_data:/data
+    restart: unless-stopped
+
+volumes:
+  rackpad_data:
