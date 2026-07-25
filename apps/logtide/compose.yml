@@ -1,0 +1,51 @@
+x-yantr:
+  name: logtide
+  tags: [logs, monitoring, observability, devops, self-hosted]
+  short_description: Open-source self-hosted log management, privacy-first.
+  description: >
+    Logtide is an open-source, self-hosted log management platform that serves as
+    a privacy-first alternative to Datadog and ELK. Lightweight, GDPR-compliant,
+    and deployable in minutes with Docker. Features SvelteKit frontend, TimescaleDB
+    backend, and a clean dashboard for searching and analyzing logs.
+  usecases:
+    [
+      "Centralize logs from all your self-hosted services in one searchable dashboard.",
+      "Monitor application errors and debug issues without sending data to external services.",
+      "Comply with GDPR by keeping all log data on your own infrastructure.",
+    ]
+  website: https://logtide.dev
+  notes:
+    [
+      "Lightweight setup available with PostgreSQL + backend + frontend",
+      "TimescaleDB recommended for optimal time-series log performance",
+    ]
+
+services:
+  logtide-db:
+    image: timescale/timescaledb:latest-pg16
+    container_name: logtide-db
+    environment:
+      POSTGRES_DB: logtide
+      POSTGRES_USER: logtide
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-logtide}
+    volumes:
+      - logtide_db:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  logtide:
+    image: logtide/backend:latest
+    container_name: logtide-app
+    labels:
+      yantr.app: logtide
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    environment:
+      DATABASE_URL: postgresql://logtide:${POSTGRES_PASSWORD:-logtide}@logtide-db:5432/logtide
+    ports:
+      - "3000"
+    depends_on:
+      - logtide-db
+    restart: unless-stopped
+
+volumes:
+  logtide_db:
