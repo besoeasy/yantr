@@ -1,0 +1,41 @@
+x-yantr:
+  name: spotsync-web
+  tags: [music, spotify, downloader, media, self-hosted]
+  short_description: Self-hosted music downloader with Spotify web UI integration.
+  description: >
+    SpotSync Web is a self-hosted music downloader that provides a Spotify-like
+    web interface for downloading music. It uses spotdl under the hood to download
+    tracks from Spotify with metadata, album art, and lyrics. Features include
+    batch downloads, playlist support, and a clean web interface.
+  usecases:
+    [
+      "Download music from Spotify tracks and playlists for offline listening.",
+      "Build a personal music library with proper metadata and album artwork.",
+      "Batch download entire playlists with a single click through the web interface.",
+    ]
+  website: https://github.com/mahi64675/SpotSync-Web
+  notes:
+    [
+      "Requires FFmpeg installed in the container (included in image)",
+      "Spotify OAuth token required for authentication",
+    ]
+
+services:
+  spotsync-web:
+    image: mahi64675/spotsync-web:latest
+    container_name: spotsync-web
+    labels:
+      yantr.app: spotsync-web
+      yantr.service.9791: Web UI
+      yantr.port.9791: HTTP
+    environment:
+      SONOLOOM_PORT: "9791"
+      SONOLOOM_MAX_CONCURRENCY: "3"
+    ports:
+      - "9791"
+    volumes:
+      - spotsync_web_data:/app/output
+    restart: unless-stopped
+
+volumes:
+  spotsync_web_data:
