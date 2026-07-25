@@ -1,0 +1,41 @@
+x-yantr:
+  name: patchpanda
+  tags: [docker, updates, compose, devops, homelab]
+  short_description: Self-hostable Docker Compose stack update manager.
+  description: >
+    PatchPanda is a self-hosted tool that monitors your Docker Compose stacks for
+    available updates and helps you apply them safely. It watches your compose files,
+    checks for new image versions, and provides a clean web interface to review and
+    apply updates with rollback support.
+  usecases:
+    [
+      "Monitor all your Docker Compose stacks for available image updates.",
+      "Review and apply updates through a clean web interface instead of CLI.",
+      "Get notifications via Discord or Apprise when updates are available.",
+    ]
+  website: https://github.com/dkorecko/PatchPanda
+  notes:
+    [
+      "Requires Docker socket mount and access to compose files",
+      "GitHub credentials needed for container registry authentication",
+    ]
+
+services:
+  patchpanda:
+    image: ghcr.io/dkorecko/patchpanda:latest
+    container_name: patchpanda
+    labels:
+      yantr.app: patchpanda
+      yantr.service.5093: Web UI
+      yantr.port.5093: HTTP
+    environment:
+      BASE_URL: http://localhost:5093
+    ports:
+      - "5093"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - patchpanda_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  patchpanda_data:
