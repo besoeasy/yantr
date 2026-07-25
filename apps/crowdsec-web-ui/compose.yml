@@ -1,0 +1,42 @@
+x-yantr:
+  name: crowdsec-web-ui
+  tags: [security, crowdsec, firewall, monitoring, dashboard]
+  short_description: Self-hosted dashboard for CrowdSec security engine.
+  description: >
+    CrowdSec Web UI is a self-hosted dashboard for CrowdSec, the collaborative
+    security engine. It lets you investigate alerts, manage decisions (bans,
+    CAPTCHAs), monitor runtime metrics, and configure notifications from a clean,
+    responsive web interface.
+  usecases:
+    [
+      "Monitor and investigate CrowdSec security alerts through a visual dashboard.",
+      "Manage ban decisions and security rules without using the command line.",
+      "Configure notifications via Gotify, MQTT, ntfy, and other channels.",
+    ]
+  website: https://github.com/TheDuffman85/crowdsec-web-ui
+  notes:
+    [
+      "Requires a running CrowdSec LAPI instance",
+      "Register the Web UI with: cscli machines add",
+    ]
+
+services:
+  crowdsec-web-ui:
+    image: ghcr.io/theduffman85/crowdsec-web-ui:latest
+    container_name: crowdsec-web-ui
+    labels:
+      yantr.app: crowdsec-web-ui
+      yantr.service.3000: Web UI
+      yantr.port.3000: HTTP
+    environment:
+      CONFIG_INSTANCE_LAPI_URL: http://crowdsec:8080
+      CONFIG_INSTANCE_LAPI_AUTH_TYPE: password
+      CONFIG_AUTH_ENABLED: "true"
+    ports:
+      - "3000"
+    volumes:
+      - crowdsec_web_ui_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  crowdsec_web_ui_data:
