@@ -1,0 +1,38 @@
+x-yantr:
+  name: sencho
+  tags: [docker, compose, management, devops, self-hosted]
+  short_description: Self-hosted Docker Compose management platform.
+  description: >
+    Sencho is a self-hosted platform for managing Docker Compose stacks across
+    single or multiple hosts. It provides a web interface to deploy, monitor, and
+    manage your compose-based applications with a compose-first workflow.
+  usecases:
+    [
+      "Deploy and manage Docker Compose applications through a web interface.",
+      "Monitor the health and logs of your compose stacks from one dashboard.",
+      "Manage compose deployments across multiple hosts from a single pane of glass.",
+    ]
+  website: https://sencho.io
+  notes:
+    [
+      "Requires Docker socket mount for container management",
+      "Host paths must match container paths exactly (1:1 Compose Path Rule)",
+    ]
+
+services:
+  sencho:
+    image: saelix/sencho:latest
+    container_name: sencho
+    labels:
+      yantr.app: sencho
+      yantr.service.1852: Web UI
+      yantr.port.1852: HTTP
+    ports:
+      - "1852"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - sencho_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  sencho_data:
