@@ -1,0 +1,40 @@
+x-yantr:
+  name: poznote
+  tags: [notes, productivity, documentation, wiki, self-hosted]
+  short_description: Self-hosted note-taking and documentation platform.
+  description: >
+    Poznote is a self-hosted note-taking and documentation platform designed for
+    simplicity and efficiency. It provides a clean interface for creating, organizing,
+    and searching notes with support for tasks, to-do lists, and markdown. Runs
+    entirely on your own hardware with no external dependencies.
+  usecases:
+    [
+      "Create and organize personal notes and documentation in a self-hosted environment.",
+      "Manage tasks and to-do lists alongside your notes in one unified platform.",
+      "Build a searchable knowledge base that runs entirely on your own server.",
+    ]
+  website: https://poznote.com
+  notes:
+    [
+      "Default credentials: admin_change_me / admin (change on first login)",
+      "OIDC login available for SSO integration",
+    ]
+
+services:
+  poznote:
+    image: poznote/poznote:latest
+    container_name: poznote
+    labels:
+      yantr.app: poznote
+      yantr.service.8040: Web UI
+      yantr.port.8040: HTTP
+    environment:
+      HTTP_WEB_PORT: "8040"
+    ports:
+      - "8040"
+    volumes:
+      - poznote_data:/var/www/html/data
+    restart: unless-stopped
+
+volumes:
+  poznote_data:
