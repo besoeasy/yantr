@@ -1,4 +1,53 @@
 <svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#FF9800"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">CF</text>
+  <defs>
+    <linearGradient id="coinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7931a"/>
+      <stop offset="100%" stop-color="#e8850e"/>
+    </linearGradient>
+    <linearGradient id="chartGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#00c853" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#00c853" stop-opacity="0.4"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="48" fill="url(#bgGrad)"/>
+
+  <!-- Coin -->
+  <circle cx="128" cy="128" r="72" fill="url(#coinGrad)"/>
+  <circle cx="128" cy="128" r="64" fill="none" stroke="#ffb74d" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Bitcoin B symbol -->
+  <path d="M128,72 L128,64 M128,192 L128,184" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+  <path d="M108,72 C108,72 128,68 138,72 C148,76 148,88 138,92 L108,92 M108,92 C108,92 128,88 138,92 C148,96 148,108 138,112 L108,112"
+        fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M108,112 L138,112 C148,116 148,128 138,132 C128,136 108,132 108,132 L108,112"
+        fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Rising chart line -->
+  <polyline points="60,190 90,170 120,180 150,150 180,130 210,100"
+            fill="none" stroke="#00c853" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  
+  <!-- Chart area fill -->
+  <polygon points="60,190 90,170 120,180 150,150 180,130 210,100 210,200 60,200"
+           fill="url(#chartGrad)"/>
+
+  <!-- Chart dots -->
+  <circle cx="60" cy="190" r="4" fill="#00c853"/>
+  <circle cx="90" cy="170" r="4" fill="#00c853"/>
+  <circle cx="120" cy="180" r="4" fill="#00c853"/>
+  <circle cx="150" cy="150" r="4" fill="#00c853"/>
+  <circle cx="180" cy="130" r="4" fill="#00c853"/>
+  <circle cx="210" cy="100" r="5" fill="#00c853" filter="url(#glow)"/>
 </svg>
