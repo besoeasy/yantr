@@ -3,7 +3,7 @@ import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { 
   Copy, Check, LoaderCircle, LockKeyhole, Eye, EyeOff, AlertTriangle,
-  ShieldCheck, Sparkles, KeyRound, Download, RefreshCw, CheckCircle2,
+  ShieldCheck, Sparkles, KeyRound, Download, CheckCircle2,
   ArrowRight, ArrowLeft, Shield
 } from '@lucide/vue'
 import { useNotification } from '../composables/useNotification'
@@ -40,7 +40,7 @@ const strengthCriteria = computed(() => {
 const strength = computed(() => {
   const pw = password.value
   const p = pin.value
-  if (!pw || !p) return { label: 'Empty', score: 0, color: 'bg-zinc-600', textColor: 'text-zinc-400' }
+  if (!pw || !p) return { label: 'Empty', score: 0, color: 'bg-slate-300', textColor: 'text-slate-400' }
   let score = 0
   if (pw.length >= 8) score += 1
   if (pw.length >= 12) score += 1
@@ -48,10 +48,10 @@ const strength = computed(() => {
   if (/[^A-Za-z0-9]/.test(pw)) score += 1
   if (p.length >= 4) score += 1
   
-  if (score <= 2) return { label: 'Weak', score: 1, color: 'bg-rose-500', textColor: 'text-rose-400' }
-  if (score <= 3) return { label: 'Fair', score: 2, color: 'bg-amber-500', textColor: 'text-amber-400' }
-  if (score <= 4) return { label: 'Good', score: 3, color: 'bg-blue-500', textColor: 'text-blue-400' }
-  return { label: 'Strong', score: 4, color: 'bg-emerald-500', textColor: 'text-emerald-400' }
+  if (score <= 2) return { label: 'Weak', score: 1, color: 'bg-rose-500', textColor: 'text-rose-600' }
+  if (score <= 3) return { label: 'Fair', score: 2, color: 'bg-amber-500', textColor: 'text-amber-600' }
+  if (score <= 4) return { label: 'Good', score: 3, color: 'bg-blue-500', textColor: 'text-blue-600' }
+  return { label: 'Strong', score: 4, color: 'bg-emerald-500', textColor: 'text-emerald-600' }
 })
 
 // ─── Random Key Generator ───────────────────────────────────────────────────
@@ -108,7 +108,7 @@ const formattedPublicKey = computed(() => {
 
 const keyAvatarGradient = computed(() => {
   if (!derivedPublicKey.value || derivedPublicKey.value.length < 64) {
-    return 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)'
+    return 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
   }
   const hex = derivedPublicKey.value
   const c1 = `#${hex.slice(0, 6)}`
@@ -154,11 +154,11 @@ on the server or database. If lost, your account cannot be recovered.
   toast.success('Backup file downloaded')
 }
 
-// Background mouse canvas
+// ─── Mouse Follow Canvas Animation (Pure White Theme) ─────────────────────────
 const bgCanvas = ref(null)
 let canvasCtx = null
-let dots = []
-let mouse = { x: 0, y: 0, active: false }
+let particles = []
+let mouse = { x: -500, y: -500, targetX: -500, targetY: -500, active: false }
 let raf = null
 
 const isSetup = computed(() => !authState.configured)
@@ -274,64 +274,127 @@ function initBackground() {
   resize()
   window.addEventListener('resize', resize)
 
-  dots = []
-  const count = Math.min(160, Math.floor((canvas.width * canvas.height) / 12000))
+  particles = []
+  const count = Math.min(100, Math.floor((canvas.width * canvas.height) / 15000))
   for (let i = 0; i < count; i++) {
-    dots.push({
+    particles.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
-      size: 0.8 + Math.random() * 1.1,
-      baseX: 0,
-      baseY: 0,
-      vx: (Math.random() - 0.5) * 0.15,
-      vy: (Math.random() - 0.5) * 0.15,
+      size: 1.5 + Math.random() * 2.5,
+      baseX: Math.random() * canvas.width,
+      baseY: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      color: Math.random() > 0.5 ? 'rgba(99, 102, 241, 0.25)' : 'rgba(168, 85, 247, 0.2)'
     })
   }
-  dots.forEach(d => { d.baseX = d.x; d.baseY = d.y })
 
   window.addEventListener('mousemove', handleMouse)
   window.addEventListener('mouseleave', handleMouseLeave)
   animateBackground()
 }
 
-function handleMouse(e) { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true }
-function handleMouseLeave() { mouse.active = false }
+function handleMouse(e) {
+  mouse.x = e.clientX
+  mouse.y = e.clientY
+  if (!mouse.active) {
+    mouse.targetX = e.clientX
+    mouse.targetY = e.clientY
+  }
+  mouse.active = true
+}
+
+function handleMouseLeave() {
+  mouse.active = false
+}
 
 function animateBackground() {
   const canvas = bgCanvas.value
   const ctx = canvasCtx
   if (!ctx || !canvas) return
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  const isDark = document.documentElement.classList.contains('dark')
-  const dotColor = isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(15, 23, 42, 0.12)'
-  const lineColor = isDark ? 'rgba(148, 163, 184, 0.08)' : 'rgba(15, 23, 42, 0.07)'
-  const mx = mouse.x; const my = mouse.y; const influence = mouse.active ? 78 : 0
-
-  ctx.fillStyle = dotColor
-  for (let i = 0; i < dots.length; i++) {
-    const d = dots[i]
-    if (mouse.active) {
-      const dx = mx - d.x; const dy = my - d.y
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      if (dist < influence) {
-        const force = (influence - dist) / influence
-        d.x = d.x + (dx / dist) * force * -0.9
-        d.y = d.y + (dy / dist) * force * -0.9
-      }
-    }
-    d.x += (d.baseX - d.x) * 0.012 + d.vx
-    d.y += (d.baseY - d.y) * 0.012 + d.vy
-    ctx.beginPath(); ctx.arc(d.x, d.y, d.size, 0, Math.PI * 2); ctx.fill()
-    if (mouse.active) {
-      const dx = mx - d.x; const dy = my - d.y
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist < 92 && dist > 4) {
-        ctx.strokeStyle = lineColor; ctx.lineWidth = 0.7
-        ctx.beginPath(); ctx.moveTo(d.x, d.y); ctx.lineTo(mx, my); ctx.stroke()
-      }
-    }
+  // Smooth lerp mouse coordinates for organic follow feel
+  if (mouse.active) {
+    mouse.targetX += (mouse.x - mouse.targetX) * 0.1
+    mouse.targetY += (mouse.y - mouse.targetY) * 0.1
   }
+
+  // Clear canvas with crisp white
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+  // 1. Mouse Spotlight Gradient Glow (Interactive white theme aura)
+  if (mouse.active) {
+    const radius = 450
+    const grad = ctx.createRadialGradient(
+      mouse.targetX, mouse.targetY, 0,
+      mouse.targetX, mouse.targetY, radius
+    )
+    grad.addColorStop(0, 'rgba(99, 102, 241, 0.09)')
+    grad.addColorStop(0.4, 'rgba(168, 85, 247, 0.04)')
+    grad.addColorStop(1, 'rgba(255, 255, 255, 0)')
+    ctx.fillStyle = grad
+    ctx.beginPath()
+    ctx.arc(mouse.targetX, mouse.targetY, radius, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 2. Interactive Particles & Follow filaments
+  const mx = mouse.targetX
+  const my = mouse.targetY
+  const influenceRadius = 140
+
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i]
+
+    // Particle motion
+    p.x += p.vx
+    p.y += p.vy
+
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1
+
+    // Magnetic interaction with cursor follow
+    if (mouse.active) {
+      const dx = mx - p.x
+      const dy = my - p.y
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1
+      if (dist < influenceRadius) {
+        const force = (influenceRadius - dist) / influenceRadius
+        p.x -= (dx / dist) * force * 1.5
+        p.y -= (dy / dist) * force * 1.5
+
+        // Draw connecting light line to mouse
+        ctx.strokeStyle = `rgba(99, 102, 241, ${0.25 * force})`
+        ctx.lineWidth = 0.8
+        ctx.beginPath()
+        ctx.moveTo(p.x, p.y)
+        ctx.lineTo(mx, my)
+        ctx.stroke()
+      }
+    }
+
+    // Draw particle node
+    ctx.fillStyle = p.color
+    ctx.beginPath()
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 3. Smooth Glowing Cursor Ring Follower
+  if (mouse.active) {
+    ctx.lineWidth = 1.5
+    ctx.strokeStyle = 'rgba(99, 102, 241, 0.35)'
+    ctx.beginPath()
+    ctx.arc(mouse.targetX, mouse.targetY, 18, 0, Math.PI * 2)
+    ctx.stroke()
+
+    ctx.fillStyle = 'rgba(99, 102, 241, 0.6)'
+    ctx.beginPath()
+    ctx.arc(mouse.targetX, mouse.targetY, 3, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
   raf = requestAnimationFrame(animateBackground)
 }
 
@@ -343,51 +406,52 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-(--bg-body) text-(--text-primary) relative overflow-hidden flex items-center justify-center p-4">
+  <div class="min-h-screen bg-white text-slate-900 relative overflow-hidden flex items-center justify-center p-4">
+    <!-- Interactive Mouse Follow Canvas -->
     <canvas
       ref="bgCanvas"
-      class="fixed inset-0 z-0 pointer-events-none opacity-85"
+      class="fixed inset-0 z-0 pointer-events-none"
     />
 
-    <div class="relative z-10 w-full max-w-[420px]">
+    <div class="relative z-10 w-full max-w-[440px]">
       <!-- Brand Header -->
       <div class="text-center mb-8">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-(--surface-muted) border border-(--border-subtle) text-[11px] font-bold tracking-[3px] text-(--text-secondary) select-none shadow-xs">
-          <Shield class="h-3.5 w-3.5 text-indigo-500" />
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold tracking-[2.5px] uppercase select-none shadow-xs">
+          <Shield class="h-3.5 w-3.5 text-indigo-600" />
           <span>YANTR IDENTITY</span>
         </div>
-        <h1 class="mt-3.5 text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-(--text-primary)">
+        <h1 class="mt-4 text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
           {{ title }}
         </h1>
-        <p class="mt-2 text-xs sm:text-sm text-(--text-secondary) max-w-sm mx-auto">
+        <p class="mt-2 text-xs sm:text-sm text-slate-500 max-w-sm mx-auto font-medium">
           {{ isSetup ? 'Derive your stateless Ed25519 cryptographic key pair.' : t('authGate.loginSubtitle') }}
         </p>
       </div>
 
-      <!-- Main Card -->
+      <!-- Main Card: Pure White with Soft Elevation & No Harsh Borders -->
       <div
-        class="relative rounded-3xl bg-(--surface) border border-(--border-subtle) shadow-2xl px-6 py-7 transition-all duration-300 backdrop-blur-xl"
+        class="relative rounded-3xl bg-white/95 shadow-2xl shadow-indigo-100/60 p-7 sm:p-8 transition-all duration-300 backdrop-blur-md"
         :class="{ 'opacity-60 pointer-events-none': authState.booting }"
       >
         <!-- Booting Spinner -->
         <div v-if="authState.booting" class="flex items-center justify-center min-h-[180px]">
-          <div class="flex items-center gap-3 text-sm font-medium text-(--text-secondary)">
-            <LoaderCircle class="h-5 w-5 animate-spin text-indigo-500" />
+          <div class="flex items-center gap-3 text-sm font-semibold text-slate-500">
+            <LoaderCircle class="h-5 w-5 animate-spin text-indigo-600" />
             <span>{{ t('authGate.bootingState') }}</span>
           </div>
         </div>
 
-        <form v-else @submit.prevent="handleFormSubmit" class="space-y-5">
+        <form v-else @submit.prevent="handleFormSubmit" class="space-y-6">
           <!-- Step Wizard Nav (Setup Mode) -->
           <div v-if="isSetup" class="space-y-3">
-            <div class="flex items-center justify-between px-1">
-              <span class="text-[11px] font-bold uppercase tracking-wider text-(--text-secondary)">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Step {{ activeTab + 1 }} of 3: {{ steps[activeTab].title }}
               </span>
               <button 
                 type="button" 
                 @click="generateRandomSecret" 
-                class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-500 hover:text-indigo-400 transition-colors"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
               >
                 <Sparkles class="h-3.5 w-3.5" />
                 <span>Auto-Generate</span>
@@ -401,8 +465,8 @@ onUnmounted(() => {
                 :key="step.id"
                 type="button"
                 @click="goToStep(step.id)"
-                class="h-1.5 rounded-full transition-all duration-300"
-                :class="activeTab >= step.id ? 'bg-indigo-500 shadow-xs' : 'bg-(--surface-muted)'"
+                class="h-2 rounded-full transition-all duration-300"
+                :class="activeTab >= step.id ? 'bg-indigo-600 shadow-sm shadow-indigo-200' : 'bg-slate-100'"
               />
             </div>
           </div>
@@ -411,12 +475,12 @@ onUnmounted(() => {
           <template v-if="!isSetup || activeTab === 0">
             <!-- Password Input -->
             <div>
-              <div class="text-[11px] font-bold tracking-wider uppercase text-(--text-secondary) mb-1.5 flex items-center justify-between">
+              <div class="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2 flex items-center justify-between">
                 <span class="flex items-center gap-1.5">
-                  <LockKeyhole class="h-3.5 w-3.5 text-indigo-500" />
+                  <LockKeyhole class="h-3.5 w-3.5 text-indigo-600" />
                   <span>PASSWORD</span>
                 </span>
-                <span v-if="isSetup && password" class="text-[10px] font-semibold" :class="strength.textColor">
+                <span v-if="isSetup && password" class="text-xs font-bold" :class="strength.textColor">
                   {{ strength.label }}
                 </span>
               </div>
@@ -427,12 +491,12 @@ onUnmounted(() => {
                   :type="showPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter secure master password"
-                  class="w-full bg-(--surface-muted) border border-(--border-subtle) rounded-2xl px-4 py-3.5 pr-11 text-sm font-medium placeholder:text-(--text-secondary)/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                  class="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 rounded-2xl px-4 py-3.5 pr-11 text-sm font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all"
                 />
                 <button
                   type="button"
                   @click="showPassword = !showPassword"
-                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-(--text-secondary) hover:text-(--text-primary) transition-colors p-1"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
                   tabindex="-1"
                 >
                   <Eye v-if="showPassword" class="h-4 w-4" />
@@ -443,8 +507,8 @@ onUnmounted(() => {
 
             <!-- PIN Input -->
             <div>
-              <div class="text-[11px] font-bold tracking-wider uppercase text-(--text-secondary) mb-1.5 flex items-center gap-1.5">
-                <LockKeyhole class="h-3.5 w-3.5 text-indigo-500" />
+              <div class="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2 flex items-center gap-1.5">
+                <LockKeyhole class="h-3.5 w-3.5 text-indigo-600" />
                 <span>PIN CODE</span>
               </div>
               <div class="relative">
@@ -454,12 +518,12 @@ onUnmounted(() => {
                   inputmode="numeric"
                   autocomplete="off"
                   placeholder="Enter numeric PIN (e.g. 1234)"
-                  class="w-full bg-(--surface-muted) border border-(--border-subtle) rounded-2xl px-4 py-3.5 pr-11 text-sm font-medium placeholder:text-(--text-secondary)/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                  class="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 rounded-2xl px-4 py-3.5 pr-11 text-sm font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all"
                 />
                 <button
                   type="button"
                   @click="showPin = !showPin"
-                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-(--text-secondary) hover:text-(--text-primary) transition-colors p-1"
+                  class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
                   tabindex="-1"
                 >
                   <Eye v-if="showPin" class="h-4 w-4" />
@@ -469,27 +533,27 @@ onUnmounted(() => {
             </div>
 
             <!-- Strength Criteria checklist (Setup mode) -->
-            <div v-if="isSetup && (password || pin)" class="p-3 rounded-2xl bg-(--surface-muted)/60 border border-(--border-subtle) space-y-1.5">
-              <div class="flex items-center justify-between text-xs font-semibold mb-2">
-                <span class="text-(--text-secondary)">Credential Strength</span>
-                <div class="flex gap-1">
+            <div v-if="isSetup && (password || pin)" class="p-4 rounded-2xl bg-slate-50 space-y-2">
+              <div class="flex items-center justify-between text-xs font-bold mb-2">
+                <span class="text-slate-500">Credential Strength</span>
+                <div class="flex gap-1.5">
                   <div 
                     v-for="i in 4" 
                     :key="i"
                     class="h-1.5 w-5 rounded-full transition-colors"
-                    :class="i <= strength.score ? strength.color : 'bg-zinc-700/40'"
+                    :class="i <= strength.score ? strength.color : 'bg-slate-200'"
                   />
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+              <div class="grid grid-cols-2 gap-2 text-xs">
                 <div 
                   v-for="(item, idx) in strengthCriteria" 
                   :key="idx" 
                   class="flex items-center gap-1.5"
-                  :class="item.met ? 'text-emerald-500 font-medium' : 'text-(--text-secondary)/60'"
+                  :class="item.met ? 'text-emerald-600 font-semibold' : 'text-slate-400'"
                 >
-                  <CheckCircle2 v-if="item.met" class="h-3 w-3 shrink-0" />
-                  <div v-else class="h-3 w-3 rounded-full border border-current opacity-40 shrink-0" />
+                  <CheckCircle2 v-if="item.met" class="h-3.5 w-3.5 shrink-0" />
+                  <div v-else class="h-3.5 w-3.5 rounded-full bg-slate-200 shrink-0" />
                   <span>{{ item.label }}</span>
                 </div>
               </div>
@@ -500,7 +564,7 @@ onUnmounted(() => {
               v-if="isSetup"
               type="button"
               @click="goToStep(1)"
-              class="w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-[0.985] text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-indigo-500/25"
+              class="w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.985] text-white text-sm font-bold tracking-wide transition-all shadow-lg shadow-indigo-500/25"
             >
               <span>Continue to Confirmation</span>
               <ArrowRight class="h-4 w-4" />
@@ -509,20 +573,20 @@ onUnmounted(() => {
 
           <!-- STEP 1: Confirmation (Setup Mode Only) -->
           <template v-if="isSetup && activeTab === 1">
-            <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs flex items-start gap-2.5">
-              <AlertTriangle class="h-4 w-4 shrink-0 mt-0.5" />
+            <div class="p-4 rounded-2xl bg-amber-50 text-amber-800 text-xs font-medium flex items-start gap-2.5">
+              <AlertTriangle class="h-4 w-4 shrink-0 mt-0.5 text-amber-600" />
               <span>Confirm both credentials carefully. Your Ed25519 identity key is derived directly from them.</span>
             </div>
 
             <!-- Confirm Password -->
             <div>
-              <div class="text-[11px] font-bold tracking-wider uppercase text-(--text-secondary) mb-1.5 flex items-center justify-between">
+              <div class="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2 flex items-center justify-between">
                 <span class="flex items-center gap-1.5">
-                  <ShieldCheck class="h-3.5 w-3.5 text-indigo-500" />
+                  <ShieldCheck class="h-3.5 w-3.5 text-indigo-600" />
                   <span>CONFIRM PASSWORD</span>
                 </span>
-                <span v-if="passwordConfirm && password === passwordConfirm" class="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
-                  <Check class="h-3 w-3" /> Matches
+                <span v-if="passwordConfirm && password === passwordConfirm" class="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                  <Check class="h-3.5 w-3.5" /> Matches
                 </span>
               </div>
               <input
@@ -531,19 +595,19 @@ onUnmounted(() => {
                 type="password"
                 autocomplete="off"
                 placeholder="Re-enter master password"
-                class="w-full bg-(--surface-muted) border border-(--border-subtle) rounded-2xl px-4 py-3.5 text-sm font-medium placeholder:text-(--text-secondary)/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                class="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 rounded-2xl px-4 py-3.5 text-sm font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all"
               />
             </div>
 
             <!-- Confirm PIN -->
             <div>
-              <div class="text-[11px] font-bold tracking-wider uppercase text-(--text-secondary) mb-1.5 flex items-center justify-between">
+              <div class="text-xs font-bold tracking-wider uppercase text-slate-500 mb-2 flex items-center justify-between">
                 <span class="flex items-center gap-1.5">
-                  <ShieldCheck class="h-3.5 w-3.5 text-indigo-500" />
+                  <ShieldCheck class="h-3.5 w-3.5 text-indigo-600" />
                   <span>CONFIRM PIN</span>
                 </span>
-                <span v-if="pinConfirm && pin === pinConfirm" class="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
-                  <Check class="h-3 w-3" /> Matches
+                <span v-if="pinConfirm && pin === pinConfirm" class="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                  <Check class="h-3.5 w-3.5" /> Matches
                 </span>
               </div>
               <input
@@ -552,16 +616,16 @@ onUnmounted(() => {
                 inputmode="numeric"
                 autocomplete="off"
                 placeholder="Re-enter PIN"
-                class="w-full bg-(--surface-muted) border border-(--border-subtle) rounded-2xl px-4 py-3.5 text-sm font-medium placeholder:text-(--text-secondary)/50 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                class="w-full bg-slate-50 hover:bg-slate-100/80 focus:bg-white text-slate-900 rounded-2xl px-4 py-3.5 text-sm font-semibold placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 transition-all"
               />
             </div>
 
             <!-- Actions Step 1 -->
-            <div class="flex gap-2 pt-1">
+            <div class="flex gap-2.5 pt-1">
               <button
                 type="button"
                 @click="goToStep(0)"
-                class="flex-1 h-12 flex items-center justify-center gap-1.5 rounded-2xl bg-(--surface-muted) hover:bg-(--surface-muted)/80 text-(--text-primary) text-sm font-semibold transition-all"
+                class="flex-1 h-12 flex items-center justify-center gap-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-all"
               >
                 <ArrowLeft class="h-4 w-4" />
                 <span>Back</span>
@@ -570,7 +634,7 @@ onUnmounted(() => {
                 type="button"
                 @click="goToStep(2)"
                 :disabled="!passwordConfirm || !pinConfirm || password !== passwordConfirm || pin !== pinConfirm"
-                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
+                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white text-sm font-bold transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
               >
                 <span>Review Key</span>
                 <ArrowRight class="h-4 w-4" />
@@ -581,38 +645,38 @@ onUnmounted(() => {
           <!-- STEP 2: Identity Key Review (Setup) / Key Badge (Login) -->
           <template v-if="(!isSetup) || (isSetup && activeTab === 2)">
             <!-- Key Card Component -->
-            <div class="rounded-2xl border border-indigo-500/30 bg-gradient-to-b from-indigo-500/10 to-transparent p-4 space-y-3">
+            <div class="rounded-2xl bg-slate-50 p-4.5 space-y-3">
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
+                <div class="flex items-center gap-3">
                   <div 
-                    class="h-8 w-8 rounded-xl shadow-xs transition-all duration-500" 
+                    class="h-9 w-9 rounded-xl shadow-xs transition-all duration-500" 
                     :style="{ background: keyAvatarGradient }"
                   />
                   <div>
-                    <div class="text-xs font-bold tracking-wide uppercase text-(--text-primary)">
+                    <div class="text-xs font-extrabold tracking-wide uppercase text-slate-800">
                       {{ isSetup ? 'Generated Ed25519 Public Key' : 'Session Public Key' }}
                     </div>
-                    <div class="text-[10px] text-(--text-secondary)">
+                    <div class="text-[11px] text-slate-500 font-medium">
                       {{ derivedPublicKey ? `Identity Fingerprint: ${derivedPublicKey.slice(0, 8)}...` : 'Enter credentials above' }}
                     </div>
                   </div>
                 </div>
 
-                <div v-if="derivedPublicKey" class="flex gap-1">
+                <div v-if="derivedPublicKey" class="flex gap-1.5">
                   <button
                     type="button"
                     @click="copyPublicKey"
-                    class="p-2 rounded-xl bg-(--surface-muted) hover:bg-(--surface-muted)/80 text-(--text-secondary) hover:text-(--text-primary) transition-colors"
+                    class="p-2 rounded-xl bg-white shadow-xs hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
                     title="Copy Public Key"
                   >
-                    <Check v-if="copied" class="h-4 w-4 text-emerald-500" />
+                    <Check v-if="copied" class="h-4 w-4 text-emerald-600" />
                     <Copy v-else class="h-4 w-4" />
                   </button>
                   <button
                     v-if="isSetup"
                     type="button"
                     @click="downloadKeyBackup"
-                    class="p-2 rounded-xl bg-(--surface-muted) hover:bg-(--surface-muted)/80 text-(--text-secondary) hover:text-(--text-primary) transition-colors"
+                    class="p-2 rounded-xl bg-white shadow-xs hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-colors"
                     title="Download Key Backup"
                   >
                     <Download class="h-4 w-4" />
@@ -621,38 +685,38 @@ onUnmounted(() => {
               </div>
 
               <!-- Key Code Box -->
-              <div v-if="derivingKey" class="flex items-center justify-center py-4 text-xs text-(--text-secondary) gap-2">
-                <LoaderCircle class="h-4 w-4 animate-spin text-indigo-500" />
+              <div v-if="derivingKey" class="flex items-center justify-center py-4 text-xs font-medium text-slate-500 gap-2">
+                <LoaderCircle class="h-4 w-4 animate-spin text-indigo-600" />
                 <span>Computing cryptographic Ed25519 key...</span>
               </div>
-              <div v-else-if="derivedPublicKey" class="bg-(--bg-body) border border-(--border-subtle) rounded-xl p-3 font-mono text-[11px] break-all leading-relaxed text-indigo-400 selection:bg-indigo-500 selection:text-white">
+              <div v-else-if="derivedPublicKey" class="bg-slate-900 rounded-2xl p-3.5 font-mono text-[11px] break-all leading-relaxed text-indigo-300 selection:bg-indigo-500 selection:text-white">
                 {{ formattedPublicKey }}
               </div>
-              <div v-else class="text-xs text-(--text-secondary) italic py-2 text-center">
+              <div v-else class="text-xs text-slate-400 italic py-2 text-center">
                 Key will be derived when Password and PIN are entered.
               </div>
 
               <!-- Backup Notice -->
-              <p v-if="isSetup && derivedPublicKey" class="text-[11px] text-(--text-secondary) leading-snug">
-                💡 <span class="font-semibold text-(--text-primary)">Save this key:</span> Pass it as <code class="bg-(--surface-muted) px-1.5 py-0.5 rounded text-indigo-400 font-mono text-[10px]">YANTR_ADMIN_PUBLIC_KEY</code> to enforce server-side identity verification.
+              <p v-if="isSetup && derivedPublicKey" class="text-[11px] text-slate-500 leading-snug font-medium">
+                💡 <span class="font-bold text-slate-700">Save this key:</span> Pass it as <code class="bg-white px-1.5 py-0.5 rounded text-indigo-600 font-mono text-[10px] font-bold shadow-2xs">YANTR_ADMIN_PUBLIC_KEY</code> to enforce server-side identity verification.
               </p>
             </div>
 
             <!-- Error Banner -->
             <div
               v-if="localError || authState.error"
-              class="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-medium flex items-center gap-2"
+              class="p-4 rounded-2xl bg-rose-50 text-rose-700 text-xs font-semibold flex items-center gap-2.5"
             >
-              <AlertTriangle class="h-4 w-4 shrink-0" />
+              <AlertTriangle class="h-4 w-4 shrink-0 text-rose-600" />
               <span>{{ localError || authState.error }}</span>
             </div>
 
             <!-- Final Submit Actions -->
-            <div v-if="isSetup" class="flex gap-2 pt-1">
+            <div v-if="isSetup" class="flex gap-2.5 pt-1">
               <button
                 type="button"
                 @click="goToStep(1)"
-                class="flex-1 h-12 flex items-center justify-center gap-1.5 rounded-2xl bg-(--surface-muted) hover:bg-(--surface-muted)/80 text-(--text-primary) text-sm font-semibold transition-all"
+                class="flex-1 h-12 flex items-center justify-center gap-1.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-all"
               >
                 <ArrowLeft class="h-4 w-4" />
                 <span>Back</span>
@@ -660,7 +724,7 @@ onUnmounted(() => {
               <button
                 type="submit"
                 :disabled="submitting || !derivedPublicKey"
-                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-[0.985] disabled:opacity-60 text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
+                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.985] disabled:opacity-60 text-white text-sm font-bold tracking-wide transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
               >
                 <LoaderCircle v-if="submitting" class="h-4 w-4 animate-spin" />
                 <Sparkles v-else class="h-4 w-4" />
@@ -673,7 +737,7 @@ onUnmounted(() => {
               v-else
               type="submit"
               :disabled="submitting || !password || !pin"
-              class="group w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-500 active:scale-[0.985] disabled:opacity-60 text-white text-sm font-semibold tracking-wide transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
+              class="group w-full flex h-12 items-center justify-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.985] disabled:opacity-60 text-white text-sm font-bold tracking-wide transition-all shadow-lg shadow-indigo-500/25 disabled:cursor-not-allowed"
             >
               <LoaderCircle v-if="submitting" class="h-4 w-4 animate-spin" />
               <LockKeyhole v-else class="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
@@ -684,8 +748,8 @@ onUnmounted(() => {
       </div>
 
       <!-- Footer Note -->
-      <div class="mt-6 text-center text-xs tracking-wide text-(--text-secondary) flex items-center justify-center gap-1.5">
-        <ShieldCheck class="h-3.5 w-3.5 text-indigo-500" />
+      <div class="mt-6 text-center text-xs tracking-wide font-medium text-slate-400 flex items-center justify-center gap-1.5">
+        <ShieldCheck class="h-3.5 w-3.5 text-indigo-600" />
         <span>{{ t('authGate.seedNote') }}</span>
       </div>
     </div>
