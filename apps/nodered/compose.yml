@@ -36,7 +36,6 @@ services:
     volumes:
       - nodered_data:/data
     environment:
-      TZ: ${TZ:-UTC}
     restart: unless-stopped
 
 volumes:

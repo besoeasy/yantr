@@ -34,7 +34,6 @@ services:
     container_name: ntfy
     command: serve
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "80"
     volumes:

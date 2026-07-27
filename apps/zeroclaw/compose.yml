@@ -28,7 +28,6 @@ services:
     container_name: zeroclaw
     restart: unless-stopped
     environment:
-      TZ: ${TZ:-UTC}
       API_KEY: ${API_KEY:-}
       PROVIDER: ${PROVIDER:-openrouter}
       ZEROCLAW_ALLOW_PUBLIC_BIND: "true"

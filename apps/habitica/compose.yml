@@ -28,7 +28,6 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
     environment:
-      TZ: ${TZ:-UTC}
       NODE_DB_URI: mongodb://habitica-mongo:27017/habitica
       BASE_URL: http://localhost:3000
     command: "sh -c \"perl -0pi -e 's/upgradeInsecureRequests: IS_PROD \\? \\[\\] :

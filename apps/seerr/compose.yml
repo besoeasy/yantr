@@ -33,7 +33,6 @@ services:
       yantr.service.5055: Web UI
       yantr.port.5055: HTTP
     environment:
-      TZ: ${TZ:-UTC}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     ports:
       - "5055"

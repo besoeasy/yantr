@@ -46,7 +46,6 @@ services:
     ports:
       - "8065"
     environment:
-      TZ: ${TZ:-UTC}
       MM_SQLSETTINGS_DRIVERNAME: postgres
       MM_SQLSETTINGS_DATASOURCE: postgres://mattermost:${POSTGRES_PASSWORD}@mattermost-db:5432/mattermost?sslmode=disable&connect_timeout=10
       MM_SERVICESETTINGS_SITEURL: ""

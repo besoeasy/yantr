@@ -36,7 +36,6 @@ services:
     privileged: true
     shm_size: 128mb
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "8971"
       - "5000"

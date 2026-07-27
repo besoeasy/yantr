@@ -60,7 +60,6 @@ services:
     ports:
       - "3000"
     environment:
-      TZ: ${TZ:-UTC}
       APP_URL: ""
       APP_SECRET: ${APP_SECRET}
       DATABASE_URL: postgresql://docmostuser:${POSTGRES_PASSWORD}@docmost-db:5432/docmost?sslmode=disable

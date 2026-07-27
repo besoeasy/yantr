@@ -34,7 +34,6 @@ services:
       - "3000"
       - "22"
     environment:
-      TZ: ${TZ:-UTC}
       FORGEJO__security__INSTALL_LOCK: "false"
     volumes:
       - forgejo_data:/var/lib/gitea

@@ -17,7 +17,6 @@ services:
     labels:
       yantr.app: "bun"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - bun_data:/data
     restart: unless-stopped

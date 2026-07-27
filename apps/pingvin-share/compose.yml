@@ -25,7 +25,6 @@ services:
       yantr.port.3000: HTTP
     restart: unless-stopped
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "3000"
     volumes:

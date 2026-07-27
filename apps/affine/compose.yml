@@ -96,7 +96,6 @@ services:
     ports:
       - "3010"
     environment:
-      TZ: ${TZ:-UTC}
       AFFINE_CONFIG_PATH: /root/.affine/config
       REDIS_SERVER_HOST: affine-redis
       DATABASE_URL: postgres://affine:${POSTGRES_PASSWORD}@affine-db:5432/affine

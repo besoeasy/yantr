@@ -23,7 +23,6 @@ services:
       yantr.service.13378: Web UI
       yantr.port.13378: HTTP
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "13378"
     volumes:

@@ -33,7 +33,6 @@ services:
       yantr.service.9001: MQTT over WebSockets
       yantr.port.9001: TCP
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "1883"
       - "9001"

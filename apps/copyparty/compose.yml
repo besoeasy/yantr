@@ -24,7 +24,6 @@ services:
       yantr.port.3923: HTTP
     restart: unless-stopped
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "3923"
     volumes:

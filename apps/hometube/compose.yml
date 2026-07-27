@@ -30,7 +30,6 @@ services:
       yantr.service.8501: Web UI
       yantr.port.8501: HTTP
     environment:
-      TZ: ${TZ:-UTC}
       UI_LANGUAGE: en
       LANGUAGE_PRIMARY: en
     ports:

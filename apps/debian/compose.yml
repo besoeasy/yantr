@@ -17,7 +17,6 @@ services:
     labels:
       yantr.app: "debian"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - debian_data:/data
     restart: unless-stopped

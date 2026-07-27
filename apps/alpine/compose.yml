@@ -17,7 +17,6 @@ services:
     labels:
       yantr.app: "alpine"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - alpine_data:/data
     restart: unless-stopped

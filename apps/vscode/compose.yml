@@ -46,7 +46,6 @@ services:
       SUDO_PASSWORD: ${PASSWORD}
       PUID: "1000"
       PGID: "1000"
-      TZ: ${TZ:-UTC}
     ports:
       - "8443"
     volumes:

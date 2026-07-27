@@ -17,7 +17,6 @@ services:
     labels:
       yantr.app: "node"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - node_data:/data
     restart: unless-stopped

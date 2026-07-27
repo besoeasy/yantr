@@ -53,7 +53,6 @@ services:
     ports:
       - "8080"
     environment:
-      TZ: ${TZ:-UTC}
       APP_KEY: ${APP_KEY}
       DB_HOST: firefly-iii-db
       DB_PORT: 3306

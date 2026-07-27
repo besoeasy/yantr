@@ -38,7 +38,6 @@ services:
       yantr.service.8000: Web UI
       yantr.port.8000: HTTP
     environment:
-      TZ: ${TZ:-UTC}
       DATABASE_URL: postgres://plausible:changeme@plausible-db:5432/plausible
       SECRET_KEY_BASE: changeme
       BASE_URL: http://localhost:8000

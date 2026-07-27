@@ -35,7 +35,6 @@ services:
     ports:
       - "8080"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - glance_config:/app/config
     restart: unless-stopped

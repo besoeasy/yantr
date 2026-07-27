@@ -30,7 +30,6 @@ services:
       yantr.port.5000: HTTP
     privileged: true
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "5000"
     volumes:

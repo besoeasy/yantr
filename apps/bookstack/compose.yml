@@ -50,7 +50,6 @@ services:
     ports:
       - "80"
     environment:
-      TZ: ${TZ:-UTC}
       APP_URL: ""
       DB_HOST: bookstack-db
       DB_PORT: 3306

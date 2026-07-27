@@ -22,7 +22,6 @@ services:
       yantr.service.8448: Federation
       yantr.port.8448: HTTPS
     environment:
-      TZ: ${TZ:-UTC}
       SYNAPSE_SERVER_NAME: ${SYNAPSE_SERVER_NAME:-matrix.local}
       SYNAPSE_REPORT_STATS: no
       SYNAPSE_CONFIG_PATH: /data/homeserver.yaml

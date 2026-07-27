@@ -47,7 +47,6 @@ services:
       NB_MANAGEMENT_URL: ${NB_MANAGEMENT_URL:-https://api.wiretrustee.com:443}
       NB_ADMIN_URL: ${NB_ADMIN_URL:-https://app.netbird.io:443}
       NB_SETUP_KEY: ${NB_SETUP_KEY}
-      TZ: ${TZ:-UTC}
     volumes:
       - netbird_config:/etc/netbird
     restart: unless-stopped

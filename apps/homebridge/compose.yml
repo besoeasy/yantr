@@ -29,7 +29,6 @@ services:
       yantr.port.8581: HTTP
     network_mode: host
     environment:
-      TZ: ${TZ:-UTC}
       HOMEBRIDGE_CONFIG_UI_PORT: "8581"
     volumes:
       - homebridge_data:/homebridge

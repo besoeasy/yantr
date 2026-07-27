@@ -30,7 +30,6 @@ services:
       - kopia_cache:/app/cache
       - kopia_repository:/repository
     environment:
-      TZ: ${TZ:-UTC}
       KOPIA_PASSWORD: ${KOPIA_PASSWORD}
       KOPIA_SERVER_USERNAME: ${KOPIA_SERVER_USERNAME:-admin}
       KOPIA_SERVER_PASSWORD: ${KOPIA_SERVER_PASSWORD}

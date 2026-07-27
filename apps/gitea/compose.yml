@@ -51,7 +51,6 @@ services:
       - "3000"
       - "2222"
     environment:
-      TZ: ${TZ:-UTC}
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: gitea-db:5432
       GITEA__database__NAME: gitea

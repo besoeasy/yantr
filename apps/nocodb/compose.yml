@@ -54,7 +54,6 @@ services:
     ports:
       - "8080"
     environment:
-      TZ: ${TZ:-UTC}
       NC_DB: pg://nocodb-postgres:5432?u=nocodb&p=${POSTGRES_PASSWORD}&d=nocodb
     volumes:
       - nocodb_data:/usr/app/data

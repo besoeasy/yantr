@@ -30,7 +30,6 @@ services:
       yantr.port.6052: HTTP
     network_mode: host
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - esphome_config:/config
     restart: unless-stopped

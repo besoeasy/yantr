@@ -54,7 +54,6 @@ services:
     ports:
       - "3456"
     environment:
-      TZ: ${TZ:-UTC}
       VIKUNJA_DATABASE_TYPE: mysql
       VIKUNJA_DATABASE_HOST: vikunja-db
       VIKUNJA_DATABASE_DATABASE: vikunja

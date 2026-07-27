@@ -51,7 +51,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - nomad_update_shared:/app/update-shared
     environment:
-      TZ: ${TZ:-UTC}
       NODE_ENV: production
       PORT: 8080
       LOG_LEVEL: info

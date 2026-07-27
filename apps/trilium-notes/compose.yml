@@ -26,7 +26,6 @@ services:
     ports:
       - "8080"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - trilium_data:/home/node/trilium-data
 

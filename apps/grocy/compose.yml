@@ -24,7 +24,6 @@ services:
       yantr.service.80: Web UI
       yantr.port.80: HTTP
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "80"
     volumes:

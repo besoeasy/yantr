@@ -27,7 +27,6 @@ services:
     volumes:
       - gancio_data:/gancio
     environment:
-      TZ: ${TZ:-UTC}
       DB_TYPE: ${DB_TYPE:-sqlite}
       DB_HOST: ${DB_HOST:-}
       DB_USER: ${DB_USER:-}

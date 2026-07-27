@@ -30,7 +30,6 @@ services:
     volumes:
       - woodpecker_data:/var/lib/woodpecker
     environment:
-      TZ: ${TZ:-UTC}
       WOODPECKER_OPEN: ${WOODPECKER_OPEN:-true}
       WOODPECKER_HOST: ${WOODPECKER_HOST}
       WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET}
@@ -50,7 +49,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      TZ: ${TZ:-UTC}
       WOODPECKER_SERVER: server:9000
       WOODPECKER_AGENT_SECRET: ${WOODPECKER_AGENT_SECRET}
     depends_on:

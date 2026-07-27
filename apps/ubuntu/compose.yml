@@ -17,7 +17,6 @@ services:
     labels:
       yantr.app: "ubuntu"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - ubuntu_data:/data
     restart: unless-stopped

@@ -37,7 +37,6 @@ services:
       - "8080"
     environment:
       NODE_ENV: production
-      TZ: ${TZ:-UTC}
     volumes:
       - dashy_data:/app/user-data
     restart: unless-stopped

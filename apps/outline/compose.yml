@@ -68,7 +68,6 @@ services:
     ports:
       - "3000"
     environment:
-      TZ: ${TZ:-UTC}
       NODE_ENV: production
       SECRET_KEY: ${SECRET_KEY}
       UTILS_SECRET: ${UTILS_SECRET}

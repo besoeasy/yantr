@@ -26,6 +26,5 @@ services:
     ports:
       - "80"
     environment:
-      TZ: ${TZ:-UTC}
 
 volumes: {}

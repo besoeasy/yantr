@@ -26,7 +26,6 @@ services:
     ports:
       - "8083"
     environment:
-      TZ: ${TZ:-UTC}
     volumes:
       - calibre_web_config:/config
       - calibre_web_books:/books

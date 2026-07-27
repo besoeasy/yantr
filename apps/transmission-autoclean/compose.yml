@@ -20,7 +20,6 @@ services:
     image: linuxserver/transmission:latest
     container_name: transmission-autoclean
     environment:
-      TZ: ${TZ:-UTC}
       USER: ${TRANSMISSION_USER}
       PASS: ${TRANSMISSION_PASS}
     volumes:

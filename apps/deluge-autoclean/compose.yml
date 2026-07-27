@@ -19,7 +19,6 @@ services:
     image: linuxserver/deluge:latest
     container_name: deluge-autoclean
     environment:
-      TZ: ${TZ:-UTC}
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
       DELUGE_PASSWORD: ${DELUGE_PASSWORD}

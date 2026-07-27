@@ -82,7 +82,6 @@ services:
     ports:
       - "8000"
     environment:
-      TZ: ${TZ:-UTC}
       PAPERLESS_REDIS: redis://paperless-broker:6379
       PAPERLESS_DBHOST: paperless-db
       PAPERLESS_DBNAME: paperless

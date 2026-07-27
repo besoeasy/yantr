@@ -24,7 +24,6 @@ services:
       - cloudflared_web_data:/config
     environment:
       WEBUI_PORT: "14333"
-      TZ: ${TZ:-UTC}
 
 volumes:
   cloudflared_web_data:

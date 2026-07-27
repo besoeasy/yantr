@@ -27,7 +27,6 @@ services:
       - jitsi_meet_config:/config
       - jitsi_meet_letsencrypt:/etc/letsencrypt
     environment:
-      TZ: ${TZ:-UTC}
       PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
       ENABLE_LETSENCRYPT: ${ENABLE_LETSENCRYPT:-0}
       ENABLE_HTTP_REDIRECT: ${ENABLE_HTTP_REDIRECT:-1}
@@ -74,7 +73,6 @@ services:
       - jitsi_meet_config:/config
       - jitsi_meet_prosody:/prosody-plugins-custom
     environment:
-      TZ: ${TZ:-UTC}
       PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
       XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
       XMPP_AUTH_DOMAIN: auth.meet.jitsi
@@ -103,7 +101,6 @@ services:
     volumes:
       - jitsi_meet_config:/config
     environment:
-      TZ: ${TZ:-UTC}
       XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
       XMPP_AUTH_DOMAIN: auth.meet.jitsi
       XMPP_SERVER: xmpp:5222
@@ -129,7 +126,6 @@ services:
     volumes:
       - jitsi_meet_config:/config
     environment:
-      TZ: ${TZ:-UTC}
       PUBLIC_URL: ${PUBLIC_URL:-https://meet.example.com}
       XMPP_DOMAIN: ${XMPP_DOMAIN:-meet.jitsi}
       XMPP_AUTH_DOMAIN: auth.meet.jitsi

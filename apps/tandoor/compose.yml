@@ -30,7 +30,6 @@ services:
       yantr.service.80: Web UI
       yantr.port.80: HTTP
     environment:
-      TZ: ${TZ:-UTC}
       SECRET_KEY: ${SECRET_KEY}
       TANDOOR_PORT: 80
       ALLOWED_HOSTS: "*"

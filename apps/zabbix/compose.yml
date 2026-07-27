@@ -40,7 +40,6 @@ services:
       POSTGRES_USER: zabbix
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       ZBX_SERVER_HOST: zabbix-server
-      PHP_TZ: ${TZ:-UTC}
     depends_on:
       - zabbix-server
       - zabbix-database

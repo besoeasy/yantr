@@ -34,7 +34,6 @@ services:
       yantr.service.443: HTTPS Proxy
       yantr.port.443: HTTPS
     environment:
-      TZ: ${TZ:-UTC}
     ports:
       - "81"
       - "80"

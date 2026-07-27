@@ -52,7 +52,6 @@ services:
       TA_USERNAME: ${TA_USERNAME:-tubearchivist}
       TA_PASSWORD: ${TA_PASSWORD}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      TZ: ${TZ:-UTC}
     depends_on:
       - tubearchivist-es
       - tubearchivist-redis
