@@ -1,8 +1,8 @@
 x-yantr:
   name: Camofox Browser
   tags: [ browser, proxy, privacy, webui, self-hosted ]
-  short_description: Headless browser with REST API for web automation,
-    screenshots, and data extraction.
+  short_description: Anti-detection headless browser with REST API, VNC
+    login, screenshots, and data extraction.
   description: Headless Chromium browser container with a REST API for web
     automation. Supports screenshot capture, PDF generation, dynamic data
     extraction, and form automation. Uses stealth techniques to avoid bot
@@ -24,8 +24,10 @@ x-yantr:
     [
       API key is required and auto-generated on first deploy via the env
         generator,
-      Default port 9377 serves the REST API endpoint,
-      Based on Chromium - expect ~500MB+ RAM usage
+      Port 9377 serves the REST API endpoint,
+      Port 6080 provides noVNC web UI for interactive browser access (enable
+        with ENABLE_VNC=1),
+      Based on Camoufox (Firefox fork) - expect ~500MB+ RAM usage
     ]
   env_generators:
     CAMOFOX_API_KEY:
@@ -38,15 +40,19 @@ services:
     container_name: camofox
     environment:
       CAMOFOX_API_KEY: ${CAMOFOX_API_KEY}
+      ENABLE_VNC: "1"
     volumes:
       - camofox_data:/home/node/.camofox
     ports:
       - "9377"
+      - "6080"
     restart: unless-stopped
     labels:
       yantr.app: camofox
-      yantr.service.9377: Web UI
+      yantr.service.9377: REST API
       yantr.port.9377: HTTP
+      yantr.service.6080: noVNC Browser UI
+      yantr.port.6080: HTTP
 
 volumes:
   camofox_data:
