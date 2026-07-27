@@ -1,0 +1,27 @@
+x-yantr:
+  name: "databasement"
+  tags: [database, backup, utility, self-hosted, docker]
+  short_description: "Automated database backup management and restore tool."
+  description: >
+    A self-hosted database backup manager that supports scheduling,
+    storing, and restoring backups across multiple database engines.
+    Keep your data safe with automated backup pipelines.
+  usecases: ["Schedule automatic backups.", "Restore from snapshots.", "Manage backup retention."]
+  website: "https://github.com/David-Crty/databasement"
+
+services:
+  databasement:
+    image: ghcr.io/david-crty/databasement:latest
+    container_name: databasement
+    labels:
+      yantr.app: "databasement"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - databasement_data:/data
+    restart: unless-stopped
+
+volumes:
+  databasement_data:

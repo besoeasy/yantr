@@ -1,0 +1,27 @@
+x-yantr:
+  name: "imgpush"
+  tags: [images, upload, sharing, self-hosted, docker]
+  short_description: "Simple self-hosted image upload and sharing service."
+  description: >
+    A minimal and clean self-hosted image upload service with a modern web
+    interface. Upload images via browser or API and get shareable links
+    instantly. Supports multiple image formats and quick sharing.
+  usecases: ["Quickly upload and share screenshots.", "Host images for forums and chats."]
+  website: "https://github.com/hauxir/imgpush"
+
+services:
+  imgpush:
+    image: hauxir/imgpush:latest
+    container_name: imgpush
+    labels:
+      yantr.app: "imgpush"
+      yantr.service.5000: "Web UI"
+      yantr.port.5000: "HTTP"
+    ports:
+      - "5000"
+    volumes:
+      - imgpush_data:/data
+    restart: unless-stopped
+
+volumes:
+  imgpush_data:

@@ -1,0 +1,30 @@
+x-yantr:
+  name: "temps"
+  tags: [monitoring, analytics, self-hosted, docker, devops]
+  short_description: "Open-source Vercel, Sentry, PostHog, and Pingdom alternative."
+  description: >
+    A self-hosted platform combining uptime monitoring, error tracking,
+    product analytics, and deployment tools. Replaces multiple SaaS
+    services with a single lightweight stack you fully control.
+  usecases: ["Monitor uptime and errors.", "Track product analytics.", "Manage deployments."]
+  website: "https://github.com/gotempsh/temps"
+
+services:
+  temps:
+    image: ghcr.io/gotempsh/temps:latest
+    container_name: temps
+    labels:
+      yantr.app: "temps"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    ports:
+      - "8080"
+    volumes:
+      - temps_data:/data
+    restart: unless-stopped
+
+volumes:
+  temps_data:

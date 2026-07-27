@@ -1,0 +1,26 @@
+x-yantr:
+  name: "paaster"
+  tags: [pastebin, encryption, security, self-hosted, docker]
+  short_description: "Secure encrypted pastebin with client-side encryption."
+  description: >
+    A privacy-focused pastebin that encrypts all content client-side before
+    sending. Zero-knowledge design means even the server cannot read your pastes.
+  usecases: ["Share sensitive code snippets securely.", "Store private notes with E2E encryption."]
+  website: "https://github.com/WardPearce/Paaster"
+
+services:
+  paaster:
+    image: ghcr.io/wardpearce/paaster:latest
+    container_name: paaster
+    labels:
+      yantr.app: "paaster"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - paaster_data:/data
+    restart: unless-stopped
+
+volumes:
+  paaster_data:

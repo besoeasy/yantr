@@ -1,0 +1,27 @@
+x-yantr:
+  name: "jump"
+  tags: [dashboard, startpage, monitoring, self-hosted, docker]
+  short_description: "Self-hosted startpage and service status monitoring dashboard."
+  description: >
+    A clean and minimal self-hosted startpage that doubles as a service status
+    monitor. Create a personalized homepage with links to your services and see
+    their real-time availability at a glance every day.
+  usecases: ["Create a custom browser startpage.", "Monitor service availability."]
+  website: "https://github.com/daledavies/jump"
+
+services:
+  jump:
+    image: daledavies/jump:latest
+    container_name: jump
+    labels:
+      yantr.app: "jump"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - jump_data:/data
+    restart: unless-stopped
+
+volumes:
+  jump_data:

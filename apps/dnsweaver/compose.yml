@@ -1,0 +1,26 @@
+x-yantr:
+  name: "dnsweaver"
+  tags: [dns, records, docker, networking, self-hosted, docker]
+  short_description: "Automatic DNS record management for Docker containers."
+  description: >
+    DNSWeaver automatically creates and updates DNS records for your Docker containers,
+    simplifying DNS management across your infrastructure.
+  usecases: ["Auto-manage DNS records for Docker.", "Simplify DNS configuration."]
+  website: "https://github.com/maxfield-allison/dnsweaver"
+
+services:
+  dnsweaver:
+    image: ghcr.io/maxfield-allison/dnsweaver:latest
+    container_name: dnsweaver
+    labels:
+      yantr.app: "dnsweaver"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - dnsweaver_data:/data
+    restart: unless-stopped
+
+volumes:
+  dnsweaver_data:

@@ -1,0 +1,29 @@
+x-yantr:
+  name: "hastic-server"
+  tags: [security, camera, analytics, self-hosted, docker]
+  short_description: "Pattern analysis and object detection for security cameras."
+  description: >
+    An AI-powered server that detects patterns, objects, and anomalies
+    in security camera footage. Train custom detectors and receive
+    real-time alerts when suspicious activity is detected.
+  usecases: ["Detect intruders via camera.", "Monitor for unusual patterns.", "Train custom AI detectors."]
+  website: "https://github.com/hastic-zzz/hastic-server"
+
+services:
+  hastic-server:
+    image: ghcr.io/hastic-zzz/hastic-server:latest
+    container_name: hastic-server
+    labels:
+      yantr.app: "hastic-server"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      HASTIC_API_KEY: ${HASTIC_API_KEY}
+    ports:
+      - "8080"
+    volumes:
+      - hastic_data:/data
+    restart: unless-stopped
+
+volumes:
+  hastic_data:

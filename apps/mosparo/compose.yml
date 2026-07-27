@@ -1,0 +1,29 @@
+x-yantr:
+  name: "mosparo"
+  tags: [spam, forms, security, self-hosted, docker]
+  short_description: "Modern spam protection for web forms."
+  description: >
+    A self-hosted spam protection tool that uses advanced techniques
+    to block automated submissions on your web forms. Works as a
+    drop-in replacement for CAPTCHA with better user experience.
+  usecases: ["Protect web forms from spam.", "Block automated bot submissions.", "Replace CAPTCHA on websites."]
+  website: "https://github.com/mosparo/mosparo"
+
+services:
+  mosparo:
+    image: mosparo/mosparo:latest
+    container_name: mosparo
+    labels:
+      yantr.app: "mosparo"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      MOSPARO_DATABASE_URL: ${MOSPARO_DATABASE_URL}
+    ports:
+      - "8080"
+    volumes:
+      - mosparo_data:/data
+    restart: unless-stopped
+
+volumes:
+  mosparo_data:

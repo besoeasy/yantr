@@ -1,0 +1,27 @@
+x-yantr:
+  name: "streamdock"
+  tags: [iptv, streaming, media, self-hosted, docker]
+  short_description: "Self-hosted web-based IPTV player for watching live TV streams."
+  description: >
+    A self-hosted web-based IPTV player that lets you watch live TV streams
+    directly in your browser. Import M3U playlists and enjoy your favorite
+    channels from any device on your home network with a clean interface.
+  usecases: ["Watch live TV streams in the browser.", "Manage IPTV playlists centrally."]
+  website: "https://github.com/limmer55/streamdock"
+
+services:
+  streamdock:
+    image: ghcr.io/limmer55/streamdock:latest
+    container_name: streamdock
+    labels:
+      yantr.app: "streamdock"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - streamdock_data:/data
+    restart: unless-stopped
+
+volumes:
+  streamdock_data:

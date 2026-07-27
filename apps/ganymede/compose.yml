@@ -1,0 +1,26 @@
+x-yantr:
+  name: "ganymede"
+  tags: [twitch, archiving, media, self-hosted, docker]
+  short_description: "Twitch VOD archiver and downloader."
+  description: >
+    A self-hosted Twitch VOD archiver. Automatically download and store Twitch
+    streams, highlights, and VODs with a management web interface.
+  usecases: ["Archive Twitch streams automatically.", "Download and manage Twitch VODs."]
+  website: "https://github.com/Zibbp/ganymede"
+
+services:
+  ganymede:
+    image: ghcr.io/zibbp/ganymede:latest
+    container_name: ganymede
+    labels:
+      yantr.app: "ganymede"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - ganymede_data:/data
+    restart: unless-stopped
+
+volumes:
+  ganymede_data:

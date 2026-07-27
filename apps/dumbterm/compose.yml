@@ -1,0 +1,26 @@
+x-yantr:
+  name: "dumbterm"
+  tags: [terminal, web, shell, self-hosted, docker]
+  short_description: "Simple web-based terminal emulator for your server."
+  description: >
+    DumbTerm is a lightweight web terminal that lets you access your server's
+    command line through any browser. Perfect for remote administration and quick access.
+  usecases: ["Access server terminal via browser.", "Remote command line administration."]
+  website: "https://github.com/DumbWareio/DumbTerm"
+
+services:
+  dumbterm:
+    image: ghcr.io/dumbwareio/dumbterm:latest
+    container_name: dumbterm
+    labels:
+      yantr.app: "dumbterm"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - dumbterm_data:/data
+    restart: unless-stopped
+
+volumes:
+  dumbterm_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "pangolin"
+  tags: [networking, proxy, tunneling, self-hosted, docker]
+  short_description: "Reverse proxy with built-in tunneling and access control."
+  description: >
+    A self-hosted reverse proxy with integrated tunneling, authentication,
+    and access control. Expose internal services securely without opening
+    ports, with support for WireGuard tunnels and identity providers.
+  usecases: ["Expose internal services securely.", "Tunnel traffic through WireGuard.", "Control access with SSO."]
+  website: "https://github.com/fosrl/pangolin"
+
+services:
+  pangolin:
+    image: ghcr.io/fosrl/pangolin:latest
+    container_name: pangolin
+    labels:
+      yantr.app: "pangolin"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - pangolin_data:/data
+    restart: unless-stopped
+
+volumes:
+  pangolin_data:

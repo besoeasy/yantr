@@ -1,0 +1,26 @@
+x-yantr:
+  name: "koito"
+  tags: [music, scrobbler, tracking, self-hosted, docker]
+  short_description: "Modern scrobbler for tracking your music listening habits."
+  description: >
+    Koito is a self-hosted music scrobbler that tracks what you listen to across
+    different platforms, giving you insights into your music habits and history.
+  usecases: ["Track music listening history.", "Scrobble from multiple music services."]
+  website: "https://github.com/gabehf/koito"
+
+services:
+  koito:
+    image: ghcr.io/gabehf/koito:latest
+    container_name: koito
+    labels:
+      yantr.app: "koito"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - koito_data:/data
+    restart: unless-stopped
+
+volumes:
+  koito_data:

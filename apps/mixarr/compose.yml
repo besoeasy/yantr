@@ -1,0 +1,26 @@
+x-yantr:
+  name: "mixarr"
+  tags: [music, lidarr, media, self-hosted, docker]
+  short_description: "Music discovery companion for Lidarr."
+  description: >
+    A companion app for Lidarr that helps you discover new music. Browse
+    recommendations, explore genres, and queue albums for download.
+  usecases: ["Discover new artists and albums.", "Queue music for Lidarr to download."]
+  website: "https://github.com/aquantumofdonuts/mixarr"
+
+services:
+  mixarr:
+    image: ghcr.io/aquantumofdonuts/mixarr:latest
+    container_name: mixarr
+    labels:
+      yantr.app: "mixarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - mixarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  mixarr_data:

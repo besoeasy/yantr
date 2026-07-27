@@ -1,0 +1,27 @@
+x-yantr:
+  name: "espial"
+  tags: [bookmarks, links, archiving, self-hosted, docker]
+  short_description: "Self-hosted bookmarking server for organizing and archiving links."
+  description: >
+    A self-hosted bookmarking server inspired by Pinboard for saving and
+    organizing your bookmarks with tags and full-text search. Keep a personal
+    archive of interesting web content under your complete control.
+  usecases: ["Archive bookmarks with full-text search.", "Organize links with tags and filters."]
+  website: "https://github.com/jonschoning/espial"
+
+services:
+  espial:
+    image: jonschoning/espial:latest
+    container_name: espial
+    labels:
+      yantr.app: "espial"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - espial_data:/data
+    restart: unless-stopped
+
+volumes:
+  espial_data:

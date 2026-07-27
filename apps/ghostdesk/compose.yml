@@ -1,0 +1,26 @@
+x-yantr:
+  name: "ghostdesk"
+  tags: [ai, desktop, automation, productivity, self-hosted, docker]
+  short_description: "AI-powered desktop automation and control system."
+  description: >
+    GhostDesk is an AI-driven desktop automation tool that can control your computer
+    through natural language commands, automating repetitive tasks.
+  usecases: ["Automate desktop tasks with AI.", "Control computer via natural language."]
+  website: "https://github.com/YV17labs/GhostDesk"
+
+services:
+  ghostdesk:
+    image: ghcr.io/yy17labs/ghostdesk:latest
+    container_name: ghostdesk
+    labels:
+      yantr.app: "ghostdesk"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - ghostdesk_data:/data
+    restart: unless-stopped
+
+volumes:
+  ghostdesk_data:

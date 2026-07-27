@@ -1,15 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#F59E0B"/>
-      <stop offset="25%" style="stop-color:#EF4444"/>
-      <stop offset="50%" style="stop-color:#A855F7"/>
-      <stop offset="75%" style="stop-color:#3B82F6"/>
-      <stop offset="100%" style="stop-color:#10B981"/>
-    </linearGradient>
-  </defs>
-  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
-  <rect x="72" y="72" width="112" height="112" rx="24" fill="none" stroke="white" stroke-width="6"/>
-  <circle cx="128" cy="128" r="32" fill="none" stroke="white" stroke-width="6"/>
-  <circle cx="164" cy="92" r="8" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#1a1a2e"/>
+  <rect x="55" y="55" width="68" height="68" rx="14" fill="none" stroke="#f06292" stroke-width="8"/>
+  <rect x="133" y="55" width="68" height="68" rx="14" fill="none" stroke="#f06292" stroke-width="8"/>
+  <rect x="55" y="133" width="68" height="68" rx="14" fill="none" stroke="#f06292" stroke-width="8"/>
+  <rect x="133" y="133" width="68" height="68" rx="14" fill="none" stroke="#f06292" stroke-width="8"/>
+  <circle cx="175" cy="167" r="12" fill="none" stroke="#f06292" stroke-width="6"/>
 </svg>

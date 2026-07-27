@@ -1,0 +1,26 @@
+x-yantr:
+  name: "opentrashmail"
+  tags: [email, disposable, privacy, self-hosted, docker]
+  short_description: "Disposable email service to protect your privacy online."
+  description: >
+    OpenTrashmail is a self-hosted disposable email service that lets you create
+    temporary email addresses to protect your real inbox from spam and unwanted messages.
+  usecases: ["Create disposable email addresses.", "Protect your real inbox from spam."]
+  website: "https://github.com/HaschekSolutions/OpenTrashmail"
+
+services:
+  opentrashmail:
+    image: hascheksolutions/opentrashmail:latest
+    container_name: opentrashmail
+    labels:
+      yantr.app: "opentrashmail"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - opentrashmail_data:/data
+    restart: unless-stopped
+
+volumes:
+  opentrashmail_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "nodyx"
+  tags: [community, forum, chat, self-hosted, docker]
+  short_description: "Self-hosted community platform with forum discussions and chat."
+  description: >
+    A self-hosted community platform that combines forum discussions with
+    real-time chat capabilities. Build and manage your own online community
+    with threaded discussions, channels, and direct messaging features.
+  usecases: ["Create a community discussion forum.", "Enable real-time chat for members."]
+  website: "https://github.com/Pokled/nodyx"
+
+services:
+  nodyx:
+    image: ghcr.io/pokled/nodyx:latest
+    container_name: nodyx
+    labels:
+      yantr.app: "nodyx"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - nodyx_data:/data
+    restart: unless-stopped
+
+volumes:
+  nodyx_data:

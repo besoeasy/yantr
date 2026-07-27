@@ -1,0 +1,26 @@
+x-yantr:
+  name: "bindery"
+  tags: [usenet, books, downloading, self-hosted, docker]
+  short_description: "Usenet-based book downloader with automation."
+  description: >
+    A self-hosted book downloader that searches and downloads books from Usenet
+    indexes. Automate your book acquisition pipeline with search and queuing.
+  usecases: ["Download books from Usenet automatically.", "Build an automated book acquisition pipeline."]
+  website: "https://github.com/vavallee/bindery"
+
+services:
+  bindery:
+    image: ghcr.io/vavallee/bindery:latest
+    container_name: bindery
+    labels:
+      yantr.app: "bindery"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - bindery_data:/data
+    restart: unless-stopped
+
+volumes:
+  bindery_data:

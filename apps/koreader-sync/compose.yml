@@ -1,0 +1,26 @@
+x-yantr:
+  name: "koreader-sync"
+  tags: [reading, ebooks, sync, koreader, self-hosted, docker]
+  short_description: "Sync reading positions across KOReader devices."
+  description: >
+    KOReader Sync is a self-hosted server that syncs your reading positions,
+    bookmarks, and highlights across all your devices running KOReader.
+  usecases: ["Sync reading progress across devices.", "Backup ebook highlights and notes."]
+  website: "https://github.com/b1n4ryj4n/koreader-sync"
+
+services:
+  koreader-sync:
+    image: ghcr.io/b1n4ryj4n/koreader-sync:latest
+    container_name: koreader-sync
+    labels:
+      yantr.app: "koreader-sync"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - koreader_sync_data:/data
+    restart: unless-stopped
+
+volumes:
+  koreader_sync_data:

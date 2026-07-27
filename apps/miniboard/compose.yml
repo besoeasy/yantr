@@ -1,0 +1,27 @@
+x-yantr:
+  name: "miniboard"
+  tags: [dashboard, monitoring, uptime, self-hosted, docker]
+  short_description: "Lightweight self-hosted dashboard with uptime monitoring features."
+  description: >
+    A lightweight self-hosted dashboard that monitors your services and displays
+    real-time uptime statistics. Simple YAML configuration with a clean interface
+    for tracking the health and availability of all your homelab services.
+  usecases: ["Monitor service uptime in real-time.", "Get a quick overview of system health."]
+  website: "https://github.com/aceberg/miniboard"
+
+services:
+  miniboard:
+    image: aceberg/miniboard:latest
+    container_name: miniboard
+    labels:
+      yantr.app: "miniboard"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - miniboard_data:/data
+    restart: unless-stopped
+
+volumes:
+  miniboard_data:

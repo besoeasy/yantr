@@ -1,0 +1,27 @@
+x-yantr:
+  name: "wanderer"
+  tags: [hiking, trails, outdoor, self-hosted, docker]
+  short_description: "Track and manage hiking trails and outdoor activities."
+  description: >
+    A self-hosted hiking trail tracker for logging routes, recording
+    GPS tracks, and discovering new trails. Plan hikes, share routes,
+    and keep a personal database of your outdoor adventures.
+  usecases: ["Record hiking GPS tracks.", "Discover new trails nearby.", "Plan and share routes."]
+  website: "https://github.com/koenvh/wanderer"
+
+services:
+  wanderer:
+    image: ghcr.io/koenvh/wanderer:latest
+    container_name: wanderer
+    labels:
+      yantr.app: "wanderer"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - wanderer_data:/data
+    restart: unless-stopped
+
+volumes:
+  wanderer_data:

@@ -1,0 +1,26 @@
+x-yantr:
+  name: "cloudmacs"
+  tags: [editor, emacs, productivity, self-hosted, docker]
+  short_description: "Access your Emacs editor through a web browser."
+  description: >
+    CloudMacs brings your Emacs environment to the browser, allowing you to edit
+    files and work on projects from anywhere without installing Emacs locally.
+  usecases: ["Edit files with Emacs in browser.", "Remote Emacs workspace access."]
+  website: "https://github.com/karlicoss/cloudmacs"
+
+services:
+  cloudmacs:
+    image: ghcr.io/karlicoss/cloudmacs:latest
+    container_name: cloudmacs
+    labels:
+      yantr.app: "cloudmacs"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - cloudmacs_data:/data
+    restart: unless-stopped
+
+volumes:
+  cloudmacs_data:

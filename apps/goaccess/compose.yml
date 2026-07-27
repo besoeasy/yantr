@@ -1,0 +1,27 @@
+x-yantr:
+  name: "goaccess"
+  tags: [analytics, logs, monitoring, self-hosted, docker]
+  short_description: "Real-time web log analyzer and interactive viewer."
+  description: >
+    A self-hosted real-time web log analyzer that provides fast and
+    comprehensive HTTP traffic statistics. View interactive HTML
+    reports or terminal dashboards for Apache, Nginx, and other logs.
+  usecases: ["Analyze web server logs.", "Monitor traffic in real time.", "Generate HTML analytics reports."]
+  website: "https://github.com/allinurl/goaccess"
+
+services:
+  goaccess:
+    image: ghcr.io/allinurl/goaccess:latest
+    container_name: goaccess
+    labels:
+      yantr.app: "goaccess"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - goaccess_data:/data
+    restart: unless-stopped
+
+volumes:
+  goaccess_data:

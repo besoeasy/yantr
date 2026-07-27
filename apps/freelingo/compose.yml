@@ -1,0 +1,27 @@
+x-yantr:
+  name: "freelingo"
+  tags: [education, language, learning, self-hosted, docker]
+  short_description: "Self-hosted language learning application with spaced repetition."
+  description: >
+    A self-hosted language learning app that helps you study new languages
+    effectively through spaced repetition and interactive exercises. Track your
+    progress over time and build vocabulary at your own comfortable pace.
+  usecases: ["Learn new vocabulary with spaced repetition.", "Track language learning progress."]
+  website: "https://github.com/ArtCC/freelingo"
+
+services:
+  freelingo:
+    image: ghcr.io/artcc/freelingo:latest
+    container_name: freelingo
+    labels:
+      yantr.app: "freelingo"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - freelingo_data:/data
+    restart: unless-stopped
+
+volumes:
+  freelingo_data:

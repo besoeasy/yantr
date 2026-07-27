@@ -1,0 +1,27 @@
+x-yantr:
+  name: "containerflow"
+  tags: [docker, visualization, architecture, self-hosted, docker]
+  short_description: "Self-hosted Docker container architecture visualization tool."
+  description: >
+    A self-hosted tool that visualizes your Docker container architecture and
+    inter-container relationships. See how your containers, networks, and volumes
+    connect together in an interactive diagram for better understanding.
+  usecases: ["Visualize Docker container architecture.", "Understand container network relationships."]
+  website: "https://github.com/RGJorge/ContainerFlow"
+
+services:
+  containerflow:
+    image: ghcr.io/rgjorge/containerflow:latest
+    container_name: containerflow
+    labels:
+      yantr.app: "containerflow"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - containerflow_data:/data
+    restart: unless-stopped
+
+volumes:
+  containerflow_data:

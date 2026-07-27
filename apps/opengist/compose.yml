@@ -1,0 +1,30 @@
+x-yantr:
+  name: "opengist"
+  tags: [code, snippets, gists, self-hosted, docker, git]
+  short_description: "Self-hosted GitHub Gist alternative and code snippet manager."
+  description: >
+    A self-hosted service for creating and managing code snippets and
+    gists. Supports Git push/pull, syntax highlighting, public and
+    private gists, and a clean web interface for browsing.
+  usecases: ["Store code snippets.", "Share gists publicly.", "Version snippet history with Git."]
+  website: "https://github.com/thomicdc/opengist"
+
+services:
+  opengist:
+    image: ghcr.io/thomicdc/opengist:latest
+    container_name: opengist
+    labels:
+      yantr.app: "opengist"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      OG_SECRET: ${OG_SECRET}
+      OG_BASE_URL: ${APP_URL:-http://localhost:8080}
+    ports:
+      - "8080"
+    volumes:
+      - opengist_data:/data
+    restart: unless-stopped
+
+volumes:
+  opengist_data:

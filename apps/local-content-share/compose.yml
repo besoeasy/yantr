@@ -1,0 +1,27 @@
+x-yantr:
+  name: "local-content-share"
+  tags: [files, sharing, self-hosted, docker, utility]
+  short_description: "Simple file sharing with a browser-based frontend."
+  description: >
+    A lightweight self-hosted file sharing tool with a clean web interface.
+    Share files on your local network or via tunneling without cloud
+    dependencies. Drag, drop, and share instantly.
+  usecases: ["Share files on local network.", "Send files via browser link.", "Transfer files between devices."]
+  website: "https://github.com/Tanq16/local-content-share"
+
+services:
+  local-content-share:
+    image: ghcr.io/tanq16/local-content-share:latest
+    container_name: local-content-share
+    labels:
+      yantr.app: "local-content-share"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - local_content_share_data:/data
+    restart: unless-stopped
+
+volumes:
+  local_content_share_data:

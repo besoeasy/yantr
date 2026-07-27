@@ -1,0 +1,27 @@
+x-yantr:
+  name: "leafwiki"
+  tags: [wiki, knowledge, documentation, self-hosted, docker]
+  short_description: "Self-hosted wiki application for personal knowledge management."
+  description: >
+    A self-hosted wiki application for building your personal knowledge base.
+    Create, link, and organize wiki pages with a clean editor and powerful
+    search to help you find information quickly when you need it.
+  usecases: ["Build a personal knowledge base.", "Document projects and processes."]
+  website: "https://github.com/perber/leafwiki"
+
+services:
+  leafwiki:
+    image: ghcr.io/perber/leafwiki:latest
+    container_name: leafwiki
+    labels:
+      yantr.app: "leafwiki"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - leafwiki_data:/data
+    restart: unless-stopped
+
+volumes:
+  leafwiki_data:

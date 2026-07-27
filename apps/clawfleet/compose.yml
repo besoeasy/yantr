@@ -1,0 +1,26 @@
+x-yantr:
+  name: "clawfleet"
+  tags: [ai, agents, deployment, automation, self-hosted, docker]
+  short_description: "Deploy and manage fleets of AI agents."
+  description: >
+    ClawFleet is a platform for deploying, managing, and orchestrating fleets
+    of AI agents, making it easy to run multiple autonomous agents at scale.
+  usecases: ["Deploy multiple AI agents.", "Orchestrate agent workflows."]
+  website: "https://github.com/clawfleet/ClawFleet"
+
+services:
+  clawfleet:
+    image: ghcr.io/clawfleet/clawfleet:latest
+    container_name: clawfleet
+    labels:
+      yantr.app: "clawfleet"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - clawfleet_data:/data
+    restart: unless-stopped
+
+volumes:
+  clawfleet_data:

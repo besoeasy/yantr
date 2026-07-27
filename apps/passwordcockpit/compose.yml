@@ -1,0 +1,27 @@
+x-yantr:
+  name: "passwordcockpit"
+  tags: [passwords, security, vault, self-hosted, docker]
+  short_description: "Self-hosted password manager for secure credential and key storage."
+  description: >
+    A self-hosted password manager that securely stores your credentials, API
+    keys, and other sensitive information. Access your passwords from anywhere
+    while keeping full control over your own data at all times.
+  usecases: ["Store passwords and credentials securely.", "Share credentials with team members."]
+  website: "https://github.com/passwordcockpit/passwordcockpit"
+
+services:
+  passwordcockpit:
+    image: passwordcockpit/passwordcockpit:latest
+    container_name: passwordcockpit
+    labels:
+      yantr.app: "passwordcockpit"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    volumes:
+      - passwordcockpit_data:/data
+    restart: unless-stopped
+
+volumes:
+  passwordcockpit_data:

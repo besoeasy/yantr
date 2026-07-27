@@ -1,0 +1,27 @@
+x-yantr:
+  name: "linkbreeze"
+  tags: [links, bio, social, self-hosted, docker]
+  short_description: "Self-hosted link-in-bio platform for your personal online presence."
+  description: >
+    A self-hosted link-in-bio platform that lets you create a customizable
+    landing page for all your important links. Share one single URL that connects
+    people to everything you do across the entire internet.
+  usecases: ["Create a personalized link-in-bio page.", "Share all your profiles with one link."]
+  website: "https://github.com/Manak-hash/LinkBreeze"
+
+services:
+  linkbreeze:
+    image: ghcr.io/manak-hash/linkbreeze:latest
+    container_name: linkbreeze
+    labels:
+      yantr.app: "linkbreeze"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - linkbreeze_data:/data
+    restart: unless-stopped
+
+volumes:
+  linkbreeze_data:

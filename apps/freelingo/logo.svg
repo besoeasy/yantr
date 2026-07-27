@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#1a1a2e"/>
+  <g transform="translate(128,128)">
+    <text x="0" y="8" text-anchor="middle" fill="#ab47bc" font-size="48" font-family="serif" font-style="italic">Aa</text>
+    <path d="M -35 -25 L -35 25" stroke="#ab47bc" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-25" cy="-15" r="4" fill="#ab47bc"/>
+    <circle cx="-25" cy="5" r="4" fill="#ab47bc"/>
+    <circle cx="-25" cy="25" r="4" fill="#ab47bc"/>
+  </g>
+</svg>

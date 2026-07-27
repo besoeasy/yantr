@@ -1,0 +1,26 @@
+x-yantr:
+  name: "picpeak"
+  tags: [photos, sharing, photography, self-hosted, docker]
+  short_description: "Photo sharing service designed for photographers."
+  description: >
+    A self-hosted photo sharing platform built for photographers. Upload,
+    organize, and share high-resolution images with metadata support.
+  usecases: ["Share photo portfolios with clients.", "Organize and showcase photography work."]
+  website: "https://github.com/PicPeak/picpeak"
+
+services:
+  picpeak:
+    image: ghcr.io/picpeak/picpeak:latest
+    container_name: picpeak
+    labels:
+      yantr.app: "picpeak"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - picpeak_data:/data
+    restart: unless-stopped
+
+volumes:
+  picpeak_data:

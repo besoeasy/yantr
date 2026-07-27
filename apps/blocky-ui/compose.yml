@@ -1,0 +1,21 @@
+x-yantr:
+  name: "blocky-ui"
+  tags: [dns, network, adblock, webui, self-hosted, docker]
+  short_description: "Web UI for Blocky DNS proxy and ad-blocker."
+  description: >
+    A graphical web interface for managing Blocky DNS proxy. Monitor queries,
+    manage allowlists and blocklists, and configure DNS settings visually.
+  usecases: ["Monitor DNS query logs.", "Manage ad-blocking lists via a web UI."]
+  website: "https://github.com/GabrielDuarteM/blocky-ui"
+
+services:
+  blocky-ui:
+    image: ghcr.io/gabeduarte/blocky-ui:latest
+    container_name: blocky-ui
+    labels:
+      yantr.app: "blocky-ui"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    restart: unless-stopped

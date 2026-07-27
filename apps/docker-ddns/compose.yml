@@ -1,0 +1,26 @@
+x-yantr:
+  name: "docker-ddns"
+  tags: [dns, dynamic, networking, docker, self-hosted, docker]
+  short_description: "Dynamic DNS service for Docker containers."
+  description: >
+    Docker DDNS automatically updates DNS records when Docker containers start
+    or stop, keeping your DNS entries current with running services.
+  usecases: ["Auto-update DNS for containers.", "Dynamic DNS management for Docker."]
+  website: "https://github.com/dstapp/docker-ddns"
+
+services:
+  docker-ddns:
+    image: ghcr.io/dstapp/docker-ddns:latest
+    container_name: docker-ddns
+    labels:
+      yantr.app: "docker-ddns"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - docker_ddns_data:/data
+    restart: unless-stopped
+
+volumes:
+  docker_ddns_data:

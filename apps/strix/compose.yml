@@ -1,0 +1,26 @@
+x-yantr:
+  name: "strix"
+  tags: [camera, network, discovery, security, self-hosted, docker]
+  short_description: "Smart IP camera stream finder and manager."
+  description: >
+    Strix is a tool that discovers and manages IP camera streams on your network,
+    making it easy to find and monitor all your security cameras.
+  usecases: ["Discover IP cameras on network.", "Manage camera streams centrally."]
+  website: "https://github.com/eduard256/Strix"
+
+services:
+  strix:
+    image: ghcr.io/eduard256/strix:latest
+    container_name: strix
+    labels:
+      yantr.app: "strix"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - strix_data:/data
+    restart: unless-stopped
+
+volumes:
+  strix_data:

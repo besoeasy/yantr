@@ -1,0 +1,27 @@
+x-yantr:
+  name: "autokuma"
+  tags: [monitoring, uptime, automation, self-hosted, docker]
+  short_description: "Auto-create Uptime Kuma monitors from Docker container labels."
+  description: >
+    A self-hosted service that automatically creates Uptime Kuma monitors based
+    on your Docker container labels. Eliminate manual monitor configuration and
+    keep your uptime monitoring perfectly in sync with your infrastructure.
+  usecases: ["Auto-discover and monitor Docker services.", "Sync Uptime Kuma with container labels."]
+  website: "https://github.com/BigBoot/AutoKuma"
+
+services:
+  autokuma:
+    image: ghcr.io/bigboot/autokuma:latest
+    container_name: autokuma
+    labels:
+      yantr.app: "autokuma"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - autokuma_data:/data
+    restart: unless-stopped
+
+volumes:
+  autokuma_data:

@@ -1,47 +1,26 @@
 x-yantr:
-  name: foldergram
-  tags: [photos, media, gallery, instagram, self-hosted]
-  short_description: Folder-based Instagram-style photo and video gallery app.
+  name: "foldergram"
+  tags: [gallery, photos, media, self-hosted, docker]
+  short_description: "Instagram-style photo and video gallery from folders."
   description: >
-    Foldergram is a self-hosted, folder-based photo and video gallery that gives
-    you an Instagram-like experience from your own media files. Point it at your
-    photo folders and get a beautiful, browsable gallery with automatic thumbnails,
-    video support via FFmpeg, and a progressive web app interface.
-  usecases:
-    [
-      "Browse your personal photo and video collection in an Instagram-style interface.",
-      "Share family photo albums by pointing the gallery at shared folders on your NAS.",
-      "Create a self-hosted media gallery that works offline as a progressive web app.",
-    ]
-  website: https://foldergram.github.io
-  notes:
-    [
-      "Supports both photos and videos via built-in FFmpeg",
-      "Progressive web app for mobile-friendly offline access",
-    ]
+    A self-hosted photo and video gallery that works like Instagram. Point it
+    at folders on your filesystem and browse your media in a beautiful grid.
+  usecases: ["Browse family photos in a gallery view.", "Organize and view photo collections."]
+  website: "https://github.com/foldergram/foldergram"
 
 services:
   foldergram:
     image: ghcr.io/foldergram/foldergram:latest
     container_name: foldergram
     labels:
-      yantr.app: foldergram
-      yantr.service.4141: Web UI
-      yantr.port.4141: HTTP
-    environment:
-      NODE_ENV: production
-      SERVER_PORT: "4141"
+      yantr.app: "foldergram"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
     ports:
-      - "4141"
+      - "8080"
     volumes:
-      - foldergram_gallery:/app/data/gallery
-      - foldergram_db:/app/data/db
-      - foldergram_thumbnails:/app/data/thumbnails
-      - foldergram_previews:/app/data/previews
+      - foldergram_data:/data
     restart: unless-stopped
 
 volumes:
-  foldergram_gallery:
-  foldergram_db:
-  foldergram_thumbnails:
-  foldergram_previews:
+  foldergram_data:

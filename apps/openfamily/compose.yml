@@ -1,0 +1,26 @@
+x-yantr:
+  name: "openfamily"
+  tags: [family, organizer, productivity, self-hosted, docker]
+  short_description: "Family organizer for managing schedules and tasks."
+  description: >
+    OpenFamily helps families stay organized with shared calendars, task lists,
+    and communication tools all in one self-hosted platform.
+  usecases: ["Coordinate family schedules.", "Manage shared task lists."]
+  website: "https://github.com/NexaFlowFrance/OpenFamily"
+
+services:
+  openfamily:
+    image: ghcr.io/nexaflowfrance/openfamily:latest
+    container_name: openfamily
+    labels:
+      yantr.app: "openfamily"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - openfamily_data:/data
+    restart: unless-stopped
+
+volumes:
+  openfamily_data:

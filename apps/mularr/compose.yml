@@ -1,0 +1,26 @@
+x-yantr:
+  name: "mularr"
+  tags: [amule, filesharing, p2p, self-hosted, docker]
+  short_description: "aMule web UI with Arr stack integration."
+  description: >
+    A web interface for aMule with built-in integration for the *arr stack.
+    Manage your eDonkey2000 and Kad downloads alongside Sonarr and Radarr.
+  usecases: ["Manage aMule downloads via web UI.", "Integrate P2P downloads with media management."]
+  website: "https://github.com/joecarl/mularr"
+
+services:
+  mularr:
+    image: ghcr.io/joecarl/mularr:latest
+    container_name: mularr
+    labels:
+      yantr.app: "mularr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - mularr_data:/data
+    restart: unless-stopped
+
+volumes:
+  mularr_data:

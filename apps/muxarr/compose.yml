@@ -1,0 +1,26 @@
+x-yantr:
+  name: "muxarr"
+  tags: [muxing, ffmpeg, media, self-hosted, docker]
+  short_description: "Audio and subtitle track stripper for media files."
+  description: >
+    A tool for stripping, extracting, and manipulating audio and subtitle tracks
+    from video files. Built around FFmpeg with a web-based management interface.
+  usecases: ["Remove unwanted audio tracks from video files.", "Extract subtitle tracks for editing."]
+  website: "https://github.com/KirovAir/muxarr"
+
+services:
+  muxarr:
+    image: ghcr.io/kirovair/muxarr:latest
+    container_name: muxarr
+    labels:
+      yantr.app: "muxarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - muxarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  muxarr_data:

@@ -1,0 +1,31 @@
+x-yantr:
+  name: "mercure"
+  tags: [real-time, push, protocol, self-hosted, docker, api]
+  short_description: "Real-time push protocol server using Mercure hub."
+  description: >
+    A self-hosted server implementing the Mercure protocol for real-time
+    push notifications via Server-Sent Events. Compatible with any
+    client supporting the standard Mercure specification.
+  usecases: ["Push real-time updates to clients.", "Implement live notifications.", "Build reactive web applications."]
+  website: "https://github.com/dunglas/mercure"
+
+services:
+  mercure:
+    image: dunglas/mercure:latest
+    container_name: mercure
+    labels:
+      yantr.app: "mercure"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_KEY}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_KEY}
+    ports:
+      - "80"
+    volumes:
+      - mercure_data:/data
+    restart: unless-stopped
+
+volumes:
+  mercure_data:

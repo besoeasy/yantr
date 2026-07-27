@@ -1,0 +1,27 @@
+x-yantr:
+  name: "wreeto"
+  tags: [knowledge, management, notes, self-hosted, docker]
+  short_description: "Self-hosted knowledge management and note-taking application."
+  description: >
+    A self-hosted knowledge management tool for organizing your thoughts, notes,
+    and project documentation in one place. Create interconnected pages and build
+    a personal wiki that grows and evolves with your knowledge.
+  usecases: ["Manage project knowledge and documentation.", "Create interconnected note networks."]
+  website: "https://github.com/chrisvel/wreeto_official"
+
+services:
+  wreeto:
+    image: ghcr.io/chrisvel/wreeto_official:latest
+    container_name: wreeto
+    labels:
+      yantr.app: "wreeto"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - wreeto_data:/data
+    restart: unless-stopped
+
+volumes:
+  wreeto_data:

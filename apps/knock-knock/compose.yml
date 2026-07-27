@@ -1,0 +1,26 @@
+x-yantr:
+  name: "knock-knock"
+  tags: [honeypot, security, monitoring, self-hosted, docker]
+  short_description: "Honeypot dashboard to detect intruders on your network."
+  description: >
+    Knock-Knock is a honeypot dashboard that monitors and logs unauthorized
+    access attempts, helping you identify potential security threats.
+  usecases: ["Monitor unauthorized access attempts.", "Detect network intrusions."]
+  website: "https://github.com/djkurlander/knock-knock"
+
+services:
+  knock-knock:
+    image: ghcr.io/djkurlander/knock-knock:latest
+    container_name: knock-knock
+    labels:
+      yantr.app: "knock-knock"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - knock_knock_data:/data
+    restart: unless-stopped
+
+volumes:
+  knock_knock_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "apprise"
+  tags: [notifications, gateway, utility, self-hosted, docker]
+  short_description: "Universal notification gateway for all major platforms."
+  description: >
+    A self-hosted notification API that supports over 80 services
+    including Slack, Telegram, Discord, email, and more. Send
+    notifications through a simple REST API with a unified interface.
+  usecases: ["Send alerts to multiple services.", "Integrate notifications in apps.", "Unified notification API."]
+  website: "https://github.com/caronc/apprise-api"
+
+services:
+  apprise:
+    image: ghcr.io/caronc/apprise:latest
+    container_name: apprise
+    labels:
+      yantr.app: "apprise"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - apprise_data:/data
+    restart: unless-stopped
+
+volumes:
+  apprise_data:

@@ -1,0 +1,52 @@
+x-yantr:
+  name: "flarum"
+  tags: [forum, community, self-hosted, docker, php]
+  short_description: "Modern, fast, and extensible forum platform."
+  description: >
+    A next-generation forum software that is simple, powerful, and
+    extensible. Built with PHP and designed for ease of use, Flarum
+    makes setting up an online community effortless.
+  usecases: ["Host a community forum.", "Discuss topics with your team.", "Build an Q&A site."]
+  website: "https://github.com/mondediefr/docker-flarum"
+
+services:
+  flarum:
+    image: mondediefr/flarum:latest
+    container_name: flarum
+    labels:
+      yantr.app: "flarum"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    environment:
+      DB_HOST: db
+      DB_NAME: flarum
+      DB_USER: ${DB_USER:-flarum}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DRIVER: mysql
+      FLARUM_ADMIN_USER: ${ADMIN_USER:-admin}
+      FLARUM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      FLARUM_ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      FLARUM_APP_URL: ${APP_URL:-http://localhost}
+    ports:
+      - "80"
+    volumes:
+      - flarum_data:/data
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mariadb:latest
+    container_name: flarum-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: flarum
+      MYSQL_USER: ${DB_USER:-flarum}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - flarum_db:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  flarum_data:
+  flarum_db:

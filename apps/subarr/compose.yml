@@ -1,0 +1,27 @@
+x-yantr:
+  name: "subarr"
+  tags: [subtitles, media, plex, self-hosted, docker]
+  short_description: "Subtitle coordination layer for media servers."
+  description: >
+    A subtitle management service that coordinates subtitle downloads across
+    your media stack. Integrates with popular media servers for automatic
+    subtitle retrieval and management.
+  usecases: ["Automatically fetch subtitles for media.", "Manage subtitle preferences across libraries."]
+  website: "https://github.com/coaxk/subarr"
+
+services:
+  subarr:
+    image: ghcr.io/coaxk/subarr:latest
+    container_name: subarr
+    labels:
+      yantr.app: "subarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - subarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  subarr_data:

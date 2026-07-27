@@ -1,35 +1,27 @@
 x-yantr:
-  name: Invio
-  tags: [ productivity, utility, self-hosted, homelab, docker ]
-  short_description: Self-hosted invoicing without the bloat. Self-host it with
-    Docker using Yantr.
-  description: Self-hosted invoicing without the bloat. Self-host it with Docker
-    using Yantr. Invio is a self-hosted application focused on productivity,
-    utility, self-hosted, homelab. It can be deployed on any device via Docker
-    Compose.
-  usecases:
-    [
-      Self-host Invio on your home server to self-hosted invoicing without the
-        bloat. self-host it with docker using yantr without depending on
-        third-party cloud services.,
-      "Use Invio to manage your productivity workflows privately, keeping all
-        data under your control on local infrastructure."
-    ]
-  website: https://github.com/kittendevv/Invio/wiki
+  name: "invio"
+  tags: [invoicing, finance, business, self-hosted, docker]
+  short_description: "Self-hosted invoicing application for freelancers and small business."
+  description: >
+    A self-hosted invoicing tool designed for freelancers and small businesses.
+    Create professional invoices, track payment status, and manage your billing
+    without third-party fees or monthly subscription costs forever.
+  usecases: ["Create and send professional invoices.", "Track payment status and history."]
+  website: "https://github.com/kittendevv/Invio"
 
 services:
   invio:
     image: ghcr.io/kittendevv/invio:latest
     container_name: invio
     labels:
-      yantr.app: invio
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
+      yantr.app: "invio"
+      yantr.service.4000: "Web UI"
+      yantr.port.4000: "HTTP"
     ports:
-      - "3000"
+      - "4000"
     volumes:
-      - invio_data:/app/data
+      - invio_data:/data
     restart: unless-stopped
 
 volumes:
-  invio_data: null
+  invio_data:

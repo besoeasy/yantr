@@ -1,0 +1,27 @@
+x-yantr:
+  name: "labby"
+  tags: [dashboard, homelab, monitoring, self-hosted, docker]
+  short_description: "Clean self-hosted homelab dashboard for organizing services."
+  description: >
+    A clean and modern self-hosted dashboard designed for homelab enthusiasts.
+    Organize your services, monitor their status, and access everything from a
+    single beautiful interface with customizable layouts and themes.
+  usecases: ["Centralize homelab service access.", "Monitor all self-hosted services."]
+  website: "https://github.com/samuelloranger/labby"
+
+services:
+  labby:
+    image: ghcr.io/samuelloranger/labby:latest
+    container_name: labby
+    labels:
+      yantr.app: "labby"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - labby_data:/data
+    restart: unless-stopped
+
+volumes:
+  labby_data:

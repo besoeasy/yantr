@@ -1,0 +1,27 @@
+x-yantr:
+  name: "cherry"
+  tags: [bookmarks, links, organization, self-hosted, docker]
+  short_description: "Self-hosted bookmark management and link organization service."
+  description: >
+    A beautiful self-hosted bookmark service for organizing your favorite links
+    and web resources. Save, tag, and search through your bookmarks with a clean
+    and minimal interface designed for personal link management.
+  usecases: ["Organize and tag web bookmarks.", "Search through saved links quickly."]
+  website: "https://github.com/haishanh/cherry"
+
+services:
+  cherry:
+    image: ghcr.io/haishanh/cherry:latest
+    container_name: cherry
+    labels:
+      yantr.app: "cherry"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - cherry_data:/data
+    restart: unless-stopped
+
+volumes:
+  cherry_data:

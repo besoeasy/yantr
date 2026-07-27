@@ -1,0 +1,27 @@
+x-yantr:
+  name: "statainer"
+  tags: [docker, monitoring, containers, self-hosted, docker]
+  short_description: "Self-hosted Docker container monitoring and management dashboard."
+  description: >
+    A self-hosted monitoring tool specifically designed for Docker containers.
+    Track resource usage, logs, and health status of all your containers from
+    a single intuitive dashboard with real-time updates and alerts.
+  usecases: ["Monitor Docker container resource usage.", "View container logs in real-time."]
+  website: "https://github.com/Drakonis96/statainer"
+
+services:
+  statainer:
+    image: ghcr.io/drakonis96/statainer:latest
+    container_name: statainer
+    labels:
+      yantr.app: "statainer"
+      yantr.service.5000: "Web UI"
+      yantr.port.5000: "HTTP"
+    ports:
+      - "5000"
+    volumes:
+      - statainer_data:/data
+    restart: unless-stopped
+
+volumes:
+  statainer_data:

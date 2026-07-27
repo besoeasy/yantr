@@ -1,0 +1,26 @@
+x-yantr:
+  name: "void"
+  tags: [filehosting, storage, self-hosted, docker]
+  short_description: "Self-hosted file hosting service with clean UI."
+  description: >
+    A lightweight file hosting service. Upload, manage, and share files through
+    a minimal web interface with drag-and-drop support.
+  usecases: ["Host files for personal access.", "Share files via direct links."]
+  website: "https://github.com/AlphaNecron/Void"
+
+services:
+  void:
+    image: ghcr.io/alphane cron/void:latest
+    container_name: void
+    labels:
+      yantr.app: "void"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - void_data:/data
+    restart: unless-stopped
+
+volumes:
+  void_data:

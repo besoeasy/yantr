@@ -1,0 +1,26 @@
+x-yantr:
+  name: "skysend"
+  tags: [filesharing, encryption, privacy, self-hosted, docker]
+  short_description: "Encrypted file sharing with expiring links."
+  description: >
+    A secure and encrypted file sharing service. Upload files and share them
+    via expiring links. Supports large files with end-to-end encryption.
+  usecases: ["Send large files securely.", "Share files with automatic expiry."]
+  website: "https://github.com/Skyfay/SkySend"
+
+services:
+  skysend:
+    image: ghcr.io/skyfay/skysend:latest
+    container_name: skysend
+    labels:
+      yantr.app: "skysend"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - skysend_data:/data
+    restart: unless-stopped
+
+volumes:
+  skysend_data:

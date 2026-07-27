@@ -1,0 +1,27 @@
+x-yantr:
+  name: "netmap"
+  tags: [network, homelab, topology, self-hosted, docker]
+  short_description: "Self-hosted homelab network overview and topology mapping tool."
+  description: >
+    A self-hosted tool that visualizes your homelab network topology and device
+    connections. Automatically discover devices and map connections between them
+    to get a clear overview of your entire network infrastructure.
+  usecases: ["Visualize homelab network topology.", "Discover devices on your network."]
+  website: "https://github.com/xoriin/NetMap"
+
+services:
+  netmap:
+    image: ghcr.io/xoriin/netmap:latest
+    container_name: netmap
+    labels:
+      yantr.app: "netmap"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - netmap_data:/data
+    restart: unless-stopped
+
+volumes:
+  netmap_data:

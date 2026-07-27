@@ -1,0 +1,28 @@
+x-yantr:
+  name: "dockerify-android"
+  tags: [android, emulator, self-hosted, docker, development]
+  short_description: "Run an Android emulator inside a Docker container."
+  description: >
+    A Docker-based Android emulator accessible via browser. Use it for
+    testing Android apps, running APK files, and development workflows
+    without needing a physical device or local emulator setup.
+  usecases: ["Test Android apps in browser.", "Run APKs remotely.", "CI/CD Android builds."]
+  website: "https://github.com/Shmayro/dockerify-android"
+
+services:
+  dockerify-android:
+    image: ghcr.io/shmayro/dockerify-android:latest
+    container_name: dockerify-android
+    labels:
+      yantr.app: "dockerify-android"
+      yantr.service.6080: "Web UI"
+      yantr.port.6080: "HTTP"
+    privileged: true
+    ports:
+      - "6080"
+    volumes:
+      - dockerify_android_data:/data
+    restart: unless-stopped
+
+volumes:
+  dockerify_android_data:

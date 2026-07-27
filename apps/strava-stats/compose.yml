@@ -1,0 +1,31 @@
+x-yantr:
+  name: "strava-stats"
+  tags: [fitness, strava, analytics, self-hosted, docker]
+  short_description: "Self-hosted dashboard for Strava activity statistics."
+  description: >
+    A self-hosted analytics dashboard that pulls your Strava data and
+    displays detailed statistics, charts, and insights about your
+    running, cycling, and fitness activities.
+  usecases: ["View Strava activity stats.", "Track fitness progress over time.", "Analyze workout performance."]
+  website: "https://github.com/henry-woody/strava-stats"
+
+services:
+  strava-stats:
+    image: ghcr.io/henry-woody/strava-stats:latest
+    container_name: strava-stats
+    labels:
+      yantr.app: "strava-stats"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      STRAVA_CLIENT_ID: ${STRAVA_CLIENT_ID}
+      STRAVA_CLIENT_SECRET: ${STRAVA_CLIENT_SECRET}
+      STRAVA_REFRESH_TOKEN: ${STRAVA_REFRESH_TOKEN}
+    ports:
+      - "8080"
+    volumes:
+      - strava_stats_data:/data
+    restart: unless-stopped
+
+volumes:
+  strava_stats_data:

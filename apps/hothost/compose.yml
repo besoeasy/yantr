@@ -1,0 +1,27 @@
+x-yantr:
+  name: "hothost"
+  tags: [monitoring, server, http, self-hosted, docker]
+  short_description: "Beautiful self-hosted server and HTTP endpoint monitoring tool."
+  description: >
+    A beautiful self-hosted server and HTTP monitoring tool with a modern UI.
+    Track the status of your websites and services with automatic checks,
+    receive alerts when something goes down, and view detailed uptime history.
+  usecases: ["Monitor HTTP endpoints for availability.", "Track server health and response times."]
+  website: "https://github.com/devforth/hothost"
+
+services:
+  hothost:
+    image: devforth/hothost:latest
+    container_name: hothost
+    labels:
+      yantr.app: "hothost"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - hothost_data:/data
+    restart: unless-stopped
+
+volumes:
+  hothost_data:

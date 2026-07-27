@@ -1,0 +1,26 @@
+x-yantr:
+  name: "tymeslot"
+  tags: [scheduling, meetings, calendar, self-hosted, docker]
+  short_description: "Modern meeting scheduling platform to book appointments."
+  description: >
+    Tymeslot is a self-hosted scheduling tool that lets others book meetings
+    based on your availability, eliminating back-and-forth emails.
+  usecases: ["Let clients book meetings.", "Manage appointment scheduling."]
+  website: "https://github.com/Tymeslot/tymeslot"
+
+services:
+  tymeslot:
+    image: ghcr.io/tymeslot/tymeslot:latest
+    container_name: tymeslot
+    labels:
+      yantr.app: "tymeslot"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - tymeslot_data:/data
+    restart: unless-stopped
+
+volumes:
+  tymeslot_data:

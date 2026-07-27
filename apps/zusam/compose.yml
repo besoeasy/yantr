@@ -1,0 +1,27 @@
+x-yantr:
+  name: "zusam"
+  tags: [sharing, groups, privacy, self-hosted, docker]
+  short_description: "Self-hosted private group content sharing and collaboration platform."
+  description: >
+    A self-hosted platform for private group content sharing. Create invite-only
+    groups with friends or family and share links, files, and notes securely.
+    Keep your shared content completely away from public platforms.
+  usecases: ["Share content privately with groups.", "Create invite-only sharing spaces."]
+  website: "https://github.com/zusam/zusam"
+
+services:
+  zusam:
+    image: zusam/zusam:latest
+    container_name: zusam
+    labels:
+      yantr.app: "zusam"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - zusam_data:/data
+    restart: unless-stopped
+
+volumes:
+  zusam_data:

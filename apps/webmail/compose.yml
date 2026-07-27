@@ -1,0 +1,30 @@
+x-yantr:
+  name: "webmail"
+  tags: [email, webmail, self-hosted, docker, jmap]
+  short_description: "Modern JMAP webmail client for Stalwart mail server."
+  description: >
+    A lightweight webmail interface designed to work with the Stalwart
+    mail server via the JMAP protocol. Provides a clean and fast email
+    experience with modern web standards and minimal resource usage.
+  usecases: ["Read email in browser.", "Manage mail folders.", "Compose and send messages."]
+  website: "https://github.com/bulwarkmail/webmail"
+
+services:
+  webmail:
+    image: ghcr.io/bulwarkmail/webmail:latest
+    container_name: webmail
+    labels:
+      yantr.app: "webmail"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      JMAP_HOST: ${JMAP_HOST:-localhost}
+      JMAP_PORT: ${JMAP_PORT:-443}
+    ports:
+      - "8080"
+    volumes:
+      - webmail_data:/data
+    restart: unless-stopped
+
+volumes:
+  webmail_data:

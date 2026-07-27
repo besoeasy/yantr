@@ -1,39 +1,26 @@
 x-yantr:
-  name: poznote
-  tags: [notes, productivity, documentation, wiki, self-hosted]
-  short_description: Self-hosted note-taking and documentation platform.
+  name: "poznote"
+  tags: [notes, productivity, writing, self-hosted, docker]
+  short_description: "Self-hosted note-taking platform for capturing and organizing ideas."
   description: >
-    Poznote is a self-hosted note-taking and documentation platform designed for
-    simplicity and efficiency. It provides a clean interface for creating, organizing,
-    and searching notes with support for tasks, to-do lists, and markdown. Runs
-    entirely on your own hardware with no external dependencies.
-  usecases:
-    [
-      "Create and organize personal notes and documentation in a self-hosted environment.",
-      "Manage tasks and to-do lists alongside your notes in one unified platform.",
-      "Build a searchable knowledge base that runs entirely on your own server.",
-    ]
-  website: https://poznote.com
-  notes:
-    [
-      "Default credentials: admin_change_me / admin (change on first login)",
-      "OIDC login available for SSO integration",
-    ]
+    A self-hosted note-taking platform with a focus on simplicity and complete
+    privacy. Write, organize, and search through your notes without worrying
+    about third-party services ever gaining access to your personal thoughts.
+  usecases: ["Capture and organize notes daily.", "Search through personal knowledge base."]
+  website: "https://github.com/timothepoznanski/poznote"
 
 services:
   poznote:
-    image: poznote/poznote:latest
+    image: ghcr.io/timothepoznanski/poznote:latest
     container_name: poznote
     labels:
-      yantr.app: poznote
-      yantr.service.8040: Web UI
-      yantr.port.8040: HTTP
-    environment:
-      HTTP_WEB_PORT: "8040"
+      yantr.app: "poznote"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
     ports:
-      - "8040"
+      - "8080"
     volumes:
-      - poznote_data:/var/www/html/data
+      - poznote_data:/data
     restart: unless-stopped
 
 volumes:

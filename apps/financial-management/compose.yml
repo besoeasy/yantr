@@ -1,0 +1,26 @@
+x-yantr:
+  name: "financial-management"
+  tags: [finance, budget, accounting, self-hosted, docker]
+  short_description: "Personal finance and budget management dashboard."
+  description: >
+    A self-hosted home finance dashboard. Track income, expenses, budgets,
+    and financial goals with charts and reports in a clean interface.
+  usecases: ["Track monthly income and expenses.", "Set and monitor budget goals."]
+  website: "https://github.com/LuoDi-Nate/financial-management"
+
+services:
+  financial-management:
+    image: ghcr.io/luodi-nate/financial-management:latest
+    container_name: financial-management
+    labels:
+      yantr.app: "financial-management"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - financial_management_data:/data
+    restart: unless-stopped
+
+volumes:
+  financial_management_data:

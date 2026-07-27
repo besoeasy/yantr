@@ -1,0 +1,26 @@
+x-yantr:
+  name: "homebutler"
+  tags: [homelab, chat, management, ai, self-hosted, docker]
+  short_description: "Manage your homelab through chat-based interface."
+  description: >
+    HomeButler is a chat-based homelab management tool that lets you control
+    your Docker containers and services through natural language conversations.
+  usecases: ["Manage homelab via chat commands.", "Control Docker services with AI."]
+  website: "https://github.com/Higangssh/homebutler"
+
+services:
+  homebutler:
+    image: ghcr.io/higangssh/homebutler:latest
+    container_name: homebutler
+    labels:
+      yantr.app: "homebutler"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - homebutler_data:/data
+    restart: unless-stopped
+
+volumes:
+  homebutler_data:

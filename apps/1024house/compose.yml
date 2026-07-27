@@ -1,0 +1,26 @@
+x-yantr:
+  name: "1024house"
+  tags: [family, couples, productivity, self-hosted, docker]
+  short_description: "Shared digital space for couples and families."
+  description: >
+    A private shared space for couples and families. Share notes, tasks,
+    photos, and memories in a beautiful and intimate digital home.
+  usecases: ["Share daily moments with your partner.", "Manage family tasks and reminders."]
+  website: "https://github.com/bbblackclark/1024house"
+
+services:
+  1024house:
+    image: ghcr.io/bbblackclark/1024house:latest
+    container_name: 1024house
+    labels:
+      yantr.app: "1024house"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - house_1024_data:/data
+    restart: unless-stopped
+
+volumes:
+  house_1024_data:

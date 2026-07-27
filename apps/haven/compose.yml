@@ -1,0 +1,27 @@
+x-yantr:
+  name: "haven"
+  tags: [chat, messaging, privacy, self-hosted, docker]
+  short_description: "Self-hosted private encrypted chat application for secure messaging."
+  description: >
+    A self-hosted private chat application focused on privacy and security.
+    Communicate with friends and family through encrypted messages without
+    relying on third-party services or centralized platforms for chatting.
+  usecases: ["Have private conversations with encryption.", "Self-host your own messaging platform."]
+  website: "https://github.com/ancsemi/Haven"
+
+services:
+  haven:
+    image: ghcr.io/ancsemi/haven:latest
+    container_name: haven
+    labels:
+      yantr.app: "haven"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - haven_data:/data
+    restart: unless-stopped
+
+volumes:
+  haven_data:

@@ -1,0 +1,26 @@
+x-yantr:
+  name: "scrumboy"
+  tags: [kanban, project-management, productivity, self-hosted, docker]
+  short_description: "Kanban-style project management board."
+  description: >
+    A self-hosted Kanban board for project management. Organize tasks into
+    columns, assign priorities, and track progress across projects.
+  usecases: ["Manage project tasks on a Kanban board.", "Track team workflow and priorities."]
+  website: "https://github.com/markrai/scrumboy"
+
+services:
+  scrumboy:
+    image: ghcr.io/markrai/scrumboy:latest
+    container_name: scrumboy
+    labels:
+      yantr.app: "scrumboy"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - scrumboy_data:/data
+    restart: unless-stopped
+
+volumes:
+  scrumboy_data:

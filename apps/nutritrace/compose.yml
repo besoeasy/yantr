@@ -1,0 +1,26 @@
+x-yantr:
+  name: "nutritrace"
+  tags: [health, nutrition, fitness, self-hosted, docker]
+  short_description: "Personal nutrition and calorie tracking app."
+  description: >
+    A self-hosted nutrition tracker. Log meals, track calories and macros,
+    set nutritional goals, and monitor your dietary habits over time.
+  usecases: ["Log daily meals and calories.", "Track macro and micronutrient intake."]
+  website: "https://github.com/TraceApps/nutritrace"
+
+services:
+  nutritrace:
+    image: ghcr.io/traceapps/nutritrace:latest
+    container_name: nutritrace
+    labels:
+      yantr.app: "nutritrace"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - nutritrace_data:/data
+    restart: unless-stopped
+
+volumes:
+  nutritrace_data:

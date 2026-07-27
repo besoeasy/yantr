@@ -1,0 +1,32 @@
+x-yantr:
+  name: "postiz"
+  tags: [social-media, scheduling, marketing, self-hosted, docker]
+  short_description: "Open-source social media scheduling and management tool."
+  description: >
+    A self-hosted social media scheduler that lets you plan, schedule,
+    and publish content across multiple platforms from one dashboard.
+    Includes analytics, content calendar, and AI-powered features.
+  usecases: ["Schedule social posts.", "Manage multiple accounts.", "Analyze post performance."]
+  website: "https://github.com/gitroomhq/postiz-app"
+
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz:latest
+    container_name: postiz
+    labels:
+      yantr.app: "postiz"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${APP_URL:-http://localhost:8080}
+    ports:
+      - "8080"
+    volumes:
+      - postiz_data:/data
+    restart: unless-stopped
+
+volumes:
+  postiz_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "adventure-log"
+  tags: [travel, logging, trips, self-hosted, docker]
+  short_description: "Log and visualize your adventures and trips."
+  description: >
+    A self-hosted application for logging adventures, trips, and
+    travel experiences. Map your journeys, attach photos, and keep
+    a beautiful record of all your explorations.
+  usecases: ["Log travel adventures.", "Map trip routes and locations.", "Store travel photos and memories."]
+  website: "https://github.com/seanmorley15/adventureLog"
+
+services:
+  adventure-log:
+    image: ghcr.io/seanmorley15/adventurelog:latest
+    container_name: adventure-log
+    labels:
+      yantr.app: "adventure-log"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - adventure_log_data:/data
+    restart: unless-stopped
+
+volumes:
+  adventure_log_data:

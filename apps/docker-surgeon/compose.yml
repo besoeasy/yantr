@@ -1,0 +1,26 @@
+x-yantr:
+  name: "docker-surgeon"
+  tags: [docker, health, monitoring, self-hosted, docker]
+  short_description: "Automatic restart for unhealthy Docker containers."
+  description: >
+    Docker Surgeon monitors your container health and automatically restarts
+    unhealthy containers, ensuring your services stay running smoothly.
+  usecases: ["Auto-restart unhealthy containers.", "Monitor container health status."]
+  website: "https://github.com/kRYstall9/docker-surgeon"
+
+services:
+  docker-surgeon:
+    image: ghcr.io/krystall9/docker-surgeon:latest
+    container_name: docker-surgeon
+    labels:
+      yantr.app: "docker-surgeon"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - docker_surgeon_data:/data
+    restart: unless-stopped
+
+volumes:
+  docker_surgeon_data:

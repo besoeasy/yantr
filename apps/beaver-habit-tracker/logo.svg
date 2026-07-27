@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="48" fill="#1a1a2e"/>
+  <g transform="translate(128,128)">
+    <rect x="-40" y="-32" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <rect x="-10" y="-32" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <rect x="20" y="-32" width="20" height="20" rx="4" fill="#7209b7"/>
+    <rect x="-40" y="-2" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <rect x="-10" y="-2" width="20" height="20" rx="4" fill="#f72585"/>
+    <rect x="20" y="-2" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <rect x="-40" y="28" width="20" height="20" rx="4" fill="#7209b7"/>
+    <rect x="-10" y="28" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <rect x="20" y="28" width="20" height="20" rx="4" fill="#4cc9f0"/>
+    <polyline points="-32,-24 -16,-10 -32,4" fill="none" stroke="#1a1a2e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="-2,-24 12,-10 -2,4" fill="none" stroke="#1a1a2e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="28,-24 42,-10 28,4" fill="none" stroke="#1a1a2e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

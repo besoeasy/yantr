@@ -1,0 +1,26 @@
+x-yantr:
+  name: "librarr"
+  tags: [books, audiobooks, manga, self-hosted, docker]
+  short_description: "Book, audiobook, and manga downloader and manager."
+  description: >
+    A self-hosted book, audiobook, and manga management tool. Download,
+    organize, and read your digital library from a single interface.
+  usecases: ["Manage your ebook collection.", "Download audiobooks and manga."]
+  website: "https://github.com/JeremiahM37/librarr"
+
+services:
+  librarr:
+    image: ghcr.io/jeremiahm37/librarr:latest
+    container_name: librarr
+    labels:
+      yantr.app: "librarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - librarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  librarr_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "docker-compose-maker"
+  tags: [docker, utility, generator, self-hosted, devops]
+  short_description: "Visual Docker Compose file generator and editor."
+  description: >
+    A web-based tool for generating Docker Compose files visually. Configure
+    services, networks, volumes, and environment variables through a
+    friendly interface and export ready-to-use compose files.
+  usecases: ["Generate compose files visually.", "Edit existing compose configs.", "Learn Docker Compose syntax."]
+  website: "https://github.com/homarr/docker-compose-maker"
+
+services:
+  docker-compose-maker:
+    image: ghcr.io/homarr/docker-compose-maker:latest
+    container_name: docker-compose-maker
+    labels:
+      yantr.app: "docker-compose-maker"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - docker_compose_maker_data:/data
+    restart: unless-stopped
+
+volumes:
+  docker_compose_maker_data:

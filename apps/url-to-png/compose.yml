@@ -1,0 +1,27 @@
+x-yantr:
+  name: "url-to-png"
+  tags: [screenshot, utility, api, self-hosted, docker]
+  short_description: "Self-hosted service to convert any URL to a PNG screenshot image."
+  description: >
+    A self-hosted service that converts any URL to a high-quality PNG screenshot.
+    Use the API to capture website snapshots for previews, archiving, or automated
+    testing without relying on external third-party screenshot services.
+  usecases: ["Generate website preview thumbnails.", "Capture web pages for archiving."]
+  website: "https://github.com/jasonraimondi/url-to-png"
+
+services:
+  url-to-png:
+    image: ghcr.io/jasonraimondi/url-to-png:latest
+    container_name: url-to-png
+    labels:
+      yantr.app: "url-to-png"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - url-to-png_data:/data
+    restart: unless-stopped
+
+volumes:
+  url-to-png_data:

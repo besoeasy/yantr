@@ -1,0 +1,32 @@
+x-yantr:
+  name: "typebot"
+  tags: [forms, chatbot, productivity, self-hosted, docker]
+  short_description: "Open-source conversational form and chatbot builder."
+  description: >
+    A visual builder for creating conversational forms, chatbots, and
+    interactive flows. Drag and drop blocks to design engaging user
+    experiences without writing any code.
+  usecases: ["Build chatbots visually.", "Create interactive forms.", "Automate lead generation."]
+  website: "https://github.com/baptistejamin/typebot"
+
+services:
+  typebot:
+    image: ghcr.io/baptistejamin/typebot:latest
+    container_name: typebot
+    labels:
+      yantr.app: "typebot"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      NEXTAUTH_URL: ${APP_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      ENCRYPTION_SECRET: ${ENCRYPTION_SECRET}
+    ports:
+      - "3000"
+    volumes:
+      - typebot_data:/data
+    restart: unless-stopped
+
+volumes:
+  typebot_data:

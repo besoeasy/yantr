@@ -1,0 +1,26 @@
+x-yantr:
+  name: "wishlist"
+  tags: [shopping, productivity, self-hosted, docker]
+  short_description: "Self-hosted wishlist for tracking items you want."
+  description: >
+    A personal wishlist manager. Track items you want to buy, organize by
+    category, and share your wishlist with friends and family.
+  usecases: ["Track items you want to purchase.", "Share a wishlist with family for gift ideas."]
+  website: "https://github.com/cmintey/wishlist"
+
+services:
+  wishlist:
+    image: ghcr.io/cmintey/wishlist:latest
+    container_name: wishlist
+    labels:
+      yantr.app: "wishlist"
+      yantr.service.5000: "Web UI"
+      yantr.port.5000: "HTTP"
+    ports:
+      - "5000"
+    volumes:
+      - wishlist_data:/data
+    restart: unless-stopped
+
+volumes:
+  wishlist_data:

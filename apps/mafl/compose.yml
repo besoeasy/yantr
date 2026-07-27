@@ -1,0 +1,27 @@
+x-yantr:
+  name: "mafl"
+  tags: [homepage, dashboard, self-hosted, docker, startpage]
+  short_description: "Minimalistic and customizable homepage for your services."
+  description: >
+    A lightweight self-hosted homepage that aggregates links, services,
+    and widgets into a clean dashboard. Fully configurable via YAML with
+    a simple and elegant interface for daily use.
+  usecases: ["Organize service links.", "Build a custom startpage.", "Display live widgets."]
+  website: "https://github.com/hywax/mafl"
+
+services:
+  mafl:
+    image: ghcr.io/hywax/mafl:latest
+    container_name: mafl
+    labels:
+      yantr.app: "mafl"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - mafl_data:/data
+    restart: unless-stopped
+
+volumes:
+  mafl_data:

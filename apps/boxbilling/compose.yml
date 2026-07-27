@@ -1,0 +1,26 @@
+x-yantr:
+  name: "boxbilling"
+  tags: [billing, business, saas, self-hosted, docker]
+  short_description: "Complete billing and client management solution."
+  description: >
+    BoxBilling is a full-featured billing system for managing clients, invoices,
+    payments, and products for your hosting or SaaS business.
+  usecases: ["Manage client invoices.", "Process payments and subscriptions."]
+  website: "https://github.com/boxbilling/boxbilling"
+
+services:
+  boxbilling:
+    image: boxbilling/boxbilling:latest
+    container_name: boxbilling
+    labels:
+      yantr.app: "boxbilling"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    volumes:
+      - boxbilling_data:/data
+    restart: unless-stopped
+
+volumes:
+  boxbilling_data:

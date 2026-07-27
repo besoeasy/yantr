@@ -1,0 +1,26 @@
+x-yantr:
+  name: "metadata-remote"
+  tags: [music, metadata, tags, self-hosted, docker]
+  short_description: "Edit music file metadata from any device remotely."
+  description: >
+    Metadata Remote lets you edit music file tags and metadata from any device
+    through a web interface, making it easy to organize your music library.
+  usecases: ["Edit music file tags remotely.", "Organize music library metadata."]
+  website: "https://github.com/wow-signal-dev/metadata-remote"
+
+services:
+  metadata-remote:
+    image: ghcr.io/wow-signal-dev/metadata-remote:latest
+    container_name: metadata-remote
+    labels:
+      yantr.app: "metadata-remote"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - metadata_remote_data:/data
+    restart: unless-stopped
+
+volumes:
+  metadata_remote_data:

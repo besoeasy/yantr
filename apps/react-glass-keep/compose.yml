@@ -1,0 +1,26 @@
+x-yantr:
+  name: "react-glass-keep"
+  tags: [notes, productivity, google-keep, self-hosted, docker]
+  short_description: "Self-hosted alternative to Google Keep notes app."
+  description: >
+    React Glass Keep is a beautiful, self-hosted note-taking app inspired by
+    Google Keep with support for labels, colors, and real-time sync.
+  usecases: ["Take and organize notes.", "Create labeled notes with colors."]
+  website: "https://github.com/nikunjsingh93/react-glass-keep"
+
+services:
+  react-glass-keep:
+    image: ghcr.io/nikunjsingh93/react-glass-keep:latest
+    container_name: react-glass-keep
+    labels:
+      yantr.app: "react-glass-keep"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - react_glass_keep_data:/data
+    restart: unless-stopped
+
+volumes:
+  react_glass_keep_data:

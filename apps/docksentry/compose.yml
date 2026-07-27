@@ -1,0 +1,26 @@
+x-yantr:
+  name: "docksentry"
+  tags: [docker, updates, notifications, monitoring, self-hosted, docker]
+  short_description: "Docker update manager with notification support."
+  description: >
+    DockSentry monitors your Docker containers for available updates and sends
+    notifications when new versions are released, keeping your stack current.
+  usecases: ["Monitor Docker image updates.", "Get notified of available updates."]
+  website: "https://github.com/amayer1983/docksentry"
+
+services:
+  docksentry:
+    image: ghcr.io/amayer1983/docksentry:latest
+    container_name: docksentry
+    labels:
+      yantr.app: "docksentry"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - docksentry_data:/data
+    restart: unless-stopped
+
+volumes:
+  docksentry_data:

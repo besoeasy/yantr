@@ -1,0 +1,27 @@
+x-yantr:
+  name: "pictshare"
+  tags: [media, images, pastebin, self-hosted, docker]
+  short_description: "Self-hosted image, video, and pastebin hosting service."
+  description: >
+    A lightweight self-hosted service for sharing images, videos, and text snippets
+    with others. Supports drag-and-drop uploads with instant shareable links and
+    optional expiry settings for temporary content that auto-deletes.
+  usecases: ["Share images and videos with others.", "Create temporary pastebin entries."]
+  website: "https://github.com/HaschekSolutions/pictshare"
+
+services:
+  pictshare:
+    image: hascheksolutions/pictshare:latest
+    container_name: pictshare
+    labels:
+      yantr.app: "pictshare"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    volumes:
+      - pictshare_data:/data
+    restart: unless-stopped
+
+volumes:
+  pictshare_data:

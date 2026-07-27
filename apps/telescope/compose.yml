@@ -1,0 +1,21 @@
+x-yantr:
+  name: "telescope"
+  tags: [logs, monitoring, webui, self-hosted, docker]
+  short_description: "Web log viewer UI for browsing and searching container logs."
+  description: >
+    A web-based log viewer that lets you browse, search, and filter logs from
+    your Docker containers through a clean and intuitive interface.
+  usecases: ["View container logs in real-time.", "Search and filter log entries."]
+  website: "https://github.com/iamtelescope/telescope"
+
+services:
+  telescope:
+    image: iamtelescope/telescope:latest
+    container_name: telescope
+    labels:
+      yantr.app: "telescope"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    restart: unless-stopped
