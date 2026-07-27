@@ -16,13 +16,13 @@ x-yantr:
       "Customize themes, layouts, and widgets using the visual UI editor or
         YAML configuration."
     ]
-  website: https://github.com/Lissy93/dashy
+  website: https://dashy.to
   notes:
     [
-      "Configure via conf.yml mounted to /app/public/conf.yml.",
-      "Access the built-in UI editor at /settings for visual customization.",
-      "Optional: add authentication via environment variables for private
-        dashboards."
+      "Edit conf.yml inside the mounted /app/user-data directory
+      (where you can also put icons, assets, and any extra config files).",
+      "Basic config editing can also be done via the UI and written back to the YAML config.",
+      "Authentication (built-in login, OIDC, Keycloak, or header auth) is set up conf.yml"
     ]
 
 services:
@@ -37,9 +37,10 @@ services:
       - "8080"
     environment:
       NODE_ENV: production
+      TZ: ${TZ:-UTC}
     volumes:
-      - dashy_config:/app/public/conf.yml
+      - dashy_data:/app/user-data
     restart: unless-stopped
 
 volumes:
-  dashy_config: null
+  dashy_data:
