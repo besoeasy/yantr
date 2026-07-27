@@ -1,6 +1,9 @@
 <script setup>
-import { useRoute } from "vue-router";
-import { Box, Home, Moon, Sun, Check } from "@lucide/vue";
+import { useRoute, useRouter } from "vue-router";
+import { 
+  Box, Home, Moon, Sun, Check, Shield, 
+  HardDrive, Terminal, Network, Lock
+} from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
 import { onMounted, onUnmounted, ref, computed } from "vue";
@@ -8,13 +11,20 @@ import { useI18n } from "vue-i18n";
 import { useYantrAuth } from './composables/useYantrAuth';
 
 const route = useRoute();
+const router = useRouter();
 const { locale, t } = useI18n();
-const { authState, bootstrapYantrAuth } = useYantrAuth();
+const { authState, bootstrapYantrAuth, logoutYantr } = useYantrAuth();
 const theme = ref("dark");
 const showLanguageMenu = ref(false);
 const languageMenuRef = ref(null);
 
 const isActive = (name) => route.name === name;
+
+const navItems = [
+  { name: "home", path: "/home", label: "Home", icon: Home },
+  { name: "apps", path: "/apps", label: "Apps", icon: Box },
+  { name: "logs", path: "/logs", label: "Logs", icon: Terminal },
+];
 
 const setTheme = (nextTheme) => {
   theme.value = nextTheme;
@@ -41,6 +51,11 @@ const setLocale = (newLocale) => {
   showLanguageMenu.value = false;
 };
 
+function handleLockSession() {
+  logoutYantr();
+  router.push("/");
+}
+
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'zh', name: '中文', flag: '🇨🇳' },
@@ -65,7 +80,6 @@ onMounted(() => {
   setTheme(stored || (prefersLight ? "light" : "dark"));
   bootstrapYantrAuth();
 
-  // Auto-detect browser language on first visit
   if (!localStorage.getItem('yantr-locale')) {
     const browserLang = navigator.language?.slice(0, 2);
     const match = languages.find(l => l.code === browserLang);
@@ -81,103 +95,134 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-[#FAFAFA] text-black dark:bg-[#0A0A0A] dark:text-white">
+  <div class="min-h-screen flex flex-col bg-white text-slate-900 dark:bg-[#09090b] dark:text-zinc-100 font-sans antialiased">
     <NotificationBanner />
     <AuthGate v-if="authState.booting || !authState.authenticated" />
     <template v-else>
 
-    <!-- Top Bar -->
-    <header class="fixed top-0 left-0 right-0 h-14 z-50 bg-white/90 dark:bg-[#0A0A0A]/90 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800">
-      <div class="h-full flex items-center px-4 gap-2">
-
-        <!-- Nav Links -->
-        <nav class="flex items-center gap-1">
-          <router-link
-            to="/home"
-            :class="isActive('home')
-              ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
-              : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white'"
-            class="nav-item flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+    <!-- Sleek Full-Width Minimalist Header -->
+    <header class="fixed top-0 left-0 right-0 h-16 z-50 bg-white/80 dark:bg-[#09090b]/80 backdrop-blur-xl border-b border-slate-100 dark:border-zinc-800/80 transition-colors">
+      <div class="h-full max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
+        
+        <!-- Left: Brand Identifier -->
+        <div class="flex items-center gap-6">
+          <router-link 
+            to="/home" 
+            class="text-base font-black tracking-wider uppercase text-slate-900 dark:text-white hover:opacity-80 transition-opacity select-none"
           >
-            <Home :size="15" />
-            <span>{{ t('nav.home') }}</span>
+            YANTR
           </router-link>
 
+          <!-- Divider -->
+          <div class="hidden sm:block h-5 w-px bg-slate-200 dark:bg-zinc-800"></div>
+
+          <!-- Main Nav Pills (Desktop) -->
+          <nav class="hidden md:flex items-center gap-1.5">
+            <router-link
+              v-for="item in navItems"
+              :key="item.name"
+              :to="item.path"
+              :class="[
+                'px-3.5 py-1.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2',
+                isActive(item.name)
+                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
+                  : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-zinc-800/60'
+              ]"
+            >
+              <component :is="item.icon" :size="14" />
+              <span>{{ item.label }}</span>
+            </router-link>
+          </nav>
+        </div>
+
+        <!-- Mobile Nav Pills -->
+        <nav class="flex md:hidden items-center gap-1 overflow-x-auto py-1">
           <router-link
-            to="/apps"
-            :class="isActive('apps')
-              ? 'bg-black text-white dark:bg-white dark:text-black shadow-sm'
-              : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white'"
-            class="nav-item flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200"
+            v-for="item in navItems"
+            :key="item.name"
+            :to="item.path"
+            :class="[
+              'p-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center',
+              isActive(item.name)
+                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
+                : 'text-slate-500 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800'
+            ]"
+            :title="item.label"
           >
-            <Box :size="15" />
-            <span>{{ t('nav.apps') }}</span>
+            <component :is="item.icon" :size="16" />
           </router-link>
         </nav>
 
-        <!-- Spacer -->
-        <div class="flex-1"></div>
-
-        <!-- Right Actions -->
-        <div class="flex items-center gap-1">
-          <!-- Language Picker -->
+        <!-- Right Controls & Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Language Picker Dropdown -->
           <div class="relative" ref="languageMenuRef">
             <button
               type="button"
               @click="toggleLanguageMenu"
-              class="action-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white transition-all duration-200"
+              class="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800/80 transition-all duration-200"
               :title="t('nav.language')"
             >
-              <span class="text-base leading-none select-none">{{ activeLanguage.flag }}</span>
-              <span class="text-xs font-medium hidden sm:inline">{{ activeLanguage.name }}</span>
+              <span class="text-sm select-none">{{ activeLanguage.flag }}</span>
+              <span class="hidden sm:inline font-bold uppercase tracking-wider text-[11px]">{{ activeLanguage.code }}</span>
             </button>
 
-            <!-- Language Dropdown -->
+            <!-- Popover Menu -->
             <transition
               enter-active-class="transition-all duration-200 ease-out"
-              enter-from-class="opacity-0 -translate-y-2"
-              enter-to-class="opacity-100 translate-y-0"
+              enter-from-class="opacity-0 scale-95 -translate-y-1"
+              enter-to-class="opacity-100 scale-100 translate-y-0"
               leave-active-class="transition-all duration-150 ease-in"
-              leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-2"
+              leave-from-class="opacity-100 scale-100 translate-y-0"
+              leave-to-class="opacity-0 scale-95 -translate-y-1"
             >
               <div
                 v-if="showLanguageMenu"
-                class="absolute right-0 top-full mt-2 bg-white dark:bg-zinc-900 rounded-xl shadow-2xl border border-gray-200 dark:border-zinc-700 py-1.5 min-w-44 z-50 overflow-hidden"
+                class="absolute right-0 top-full mt-2 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-slate-100 dark:border-zinc-800 py-1.5 min-w-44 z-50 overflow-hidden"
               >
                 <button
                   v-for="lang in languages"
                   :key="lang.code"
                   @click="setLocale(lang.code)"
-                  class="w-full px-3 py-2 flex items-center gap-3 transition-colors relative"
+                  class="w-full px-3.5 py-2 flex items-center gap-3 transition-colors relative"
                   :class="locale === lang.code
-                    ? 'bg-gray-50 dark:bg-zinc-800 text-black dark:text-white'
-                    : 'text-gray-600 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white'"
+                    ? 'bg-slate-50 dark:bg-zinc-800/80 text-slate-900 dark:text-white font-bold'
+                    : 'text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800/50 hover:text-slate-900 dark:hover:text-white font-medium'"
                 >
-                  <span v-if="locale === lang.code" class="absolute left-0 top-1 bottom-1 w-0.5 rounded-full bg-blue-500" />
-                  <span class="text-lg leading-none select-none">{{ lang.flag }}</span>
-                  <span class="flex-1 text-left text-sm font-medium tracking-tight">{{ lang.name }}</span>
-                  <Check v-if="locale === lang.code" :size="12" class="text-blue-500 shrink-0" />
+                  <span v-if="locale === lang.code" class="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full bg-indigo-600" />
+                  <span class="text-base leading-none select-none">{{ lang.flag }}</span>
+                  <span class="flex-1 text-left text-xs font-semibold tracking-tight">{{ lang.name }}</span>
+                  <Check v-if="locale === lang.code" :size="14" class="text-indigo-600 dark:text-indigo-400 shrink-0" />
                 </button>
               </div>
             </transition>
           </div>
 
-          <!-- Theme Toggle -->
+          <!-- Theme Switcher -->
           <button
             type="button"
             @click="toggleTheme"
-            class="action-btn w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800/60 hover:text-black dark:hover:text-white transition-all duration-200"
+            class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/80 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
             :title="theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')"
           >
-            <component :is="theme === 'dark' ? Sun : Moon" :size="17" class="transition-transform duration-300 group-hover:scale-110" />
+            <component :is="theme === 'dark' ? Sun : Moon" :size="16" class="transition-transform duration-300 hover:scale-110" />
+          </button>
+
+          <!-- Lock / Logout Button -->
+          <button
+            type="button"
+            @click="handleLockSession"
+            class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-200"
+            title="Lock Yantr Session"
+          >
+            <Lock :size="16" />
           </button>
         </div>
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-1 min-h-screen pt-14">
+    <!-- Main Content Container -->
+    <main class="flex-1 min-h-screen pt-16">
       <router-view :key="route.fullPath" />
     </main>
 
@@ -186,48 +231,5 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Navigation item active/hover */
-.nav-item {
-  position: relative;
-  overflow: hidden;
-}
-
-.nav-item::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 0.5rem;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.nav-item:active::after {
-  animation: ripple 500ms ease-out;
-}
-
-/* Action button */
-.action-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.action-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 0.5rem;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.action-btn:active::after {
-  animation: ripple 500ms ease-out;
-}
-
-@keyframes ripple {
-  from { opacity: 1; transform: scale(0.5); }
-  to   { opacity: 0; transform: scale(2.5); }
-}
+/* Smooth transition effects */
 </style>
