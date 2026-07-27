@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#1f1f3a"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4fc3f7"/>
+      <stop offset="100%" stop-color="#0288d1"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ba68c8"/>
+      <stop offset="100%" stop-color="#7b1fa2"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Grid of widget panels -->
+  <!-- Row 1 -->
+  <rect x="44" y="48" width="88" height="56" rx="8" fill="url(#blue)" opacity="0.85"/>
+  <rect x="144" y="48" width="68" height="56" rx="8" fill="url(#purple)" opacity="0.7"/>
+  <!-- Row 2 -->
+  <rect x="44" y="116" width="56" height="56" rx="8" fill="url(#purple)" opacity="0.75"/>
+  <rect x="112" y="116" width="100" height="56" rx="8" fill="url(#blue)" opacity="0.7"/>
+  <!-- Row 3 -->
+  <rect x="44" y="184" width="100" height="44" rx="8" fill="#4fc3f7" opacity="0.5"/>
+  <rect x="156" y="184" width="56" height="44" rx="8" fill="#ba68c8" opacity="0.55"/>
+  <!-- Widget content hints -->
+  <!-- Sparkline in large panel -->
+  <polyline points="54,88 64,80 74,86 84,72 94,78 104,68 114,76 120,72" stroke="#fff" stroke-width="2" fill="none" opacity="0.6" stroke-linecap="round"/>
+  <!-- Chart bars in purple panel -->
+  <rect x="152" y="78" width="6" height="18" rx="1" fill="#fff" opacity="0.5"/>
+  <rect x="162" y="72" width="6" height="24" rx="1" fill="#fff" opacity="0.5"/>
+  <rect x="172" y="82" width="6" height="14" rx="1" fill="#fff" opacity="0.5"/>
+  <rect x="182" y="68" width="6" height="28" rx="1" fill="#fff" opacity="0.5"/>
+  <rect x="192" y="76" width="6" height="20" rx="1" fill="#fff" opacity="0.5"/>
+  <!-- Dot status indicators -->
+  <circle cx="56" cy="132" r="4" fill="#4caf50"/>
+  <circle cx="68" cy="132" r="4" fill="#ff9800"/>
+  <circle cx="80" cy="132" r="4" fill="#4caf50"/>
+  <!-- Text lines in blue panel -->
+  <rect x="122" y="132" width="70" height="5" rx="2" fill="#fff" opacity="0.4"/>
+  <rect x="122" y="142" width="50" height="5" rx="2" fill="#fff" opacity="0.3"/>
+  <rect x="122" y="152" width="60" height="5" rx="2" fill="#fff" opacity="0.25"/>
+</svg>

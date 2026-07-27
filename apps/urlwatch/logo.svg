@@ -1,4 +1,15 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#0D47A1"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Uw</text>
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="UrlWatch logo">
+  <rect width="256" height="256" rx="56" fill="#0F172A"/>
+  <circle cx="128" cy="128" r="96" fill="none" stroke="#1E293B" stroke-width="2"/>
+
+  <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 56 128 C 88 80 168 80 200 128 C 168 176 88 176 56 128 Z" stroke="#38BDF8" stroke-width="11"/>
+    <circle cx="128" cy="128" r="26" fill="#38BDF8" stroke="none"/>
+    <circle cx="136" cy="120" r="10" fill="#0F172A" stroke="none"/>
+  </g>
+
+  <path d="M 56 196 L 88 196 L 100 178 L 116 214 L 130 188 L 140 196 L 200 196"
+        fill="none" stroke="#34D399" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 200 196 L 168 196 L 156 214 L 140 178 L 126 204 L 116 196 L 56 196"
+        fill="none" stroke="#34D399" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/>
 </svg>

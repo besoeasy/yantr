@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1a14"/>
+      <stop offset="100%" stop-color="#142e22"/>
+    </linearGradient>
+    <linearGradient id="pie1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27ae60"/>
+      <stop offset="100%" stop-color="#2ecc71"/>
+    </linearGradient>
+    <linearGradient id="pie2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16a085"/>
+      <stop offset="100%" stop-color="#1abc9c"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2ecc71"/>
+      <stop offset="100%" stop-color="#27ae60"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <circle cx="108" cy="112" r="56" fill="url(#pie1)" opacity="0.85"/>
+  <path d="M108,112 L108,56 A56,56 0 0,1 156,88 Z" fill="url(#pie2)" opacity="0.85"/>
+  <path d="M108,112 L60,140 A56,56 0 0,1 108,56 Z" fill="#27ae60" opacity="0.4"/>
+  <circle cx="108" cy="112" r="18" fill="#0a1a14"/>
+  <path d="M172,68 L192,68 L192,108 Q192,136 172,156 L164,148 Q180,132 180,108 L180,80 L172,80 Z" fill="url(#shield)" opacity="0.85"/>
+  <path d="M176,90 L188,90 M176,102 L184,102" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+  <rect x="48" y="184" width="32" height="40" rx="6" fill="#27ae60" opacity="0.5"/>
+  <rect x="92" y="172" width="32" height="52" rx="6" fill="#2ecc71" opacity="0.5"/>
+  <rect x="136" y="180" width="32" height="44" rx="6" fill="#16a085" opacity="0.5"/>
+  <rect x="180" y="192" width="32" height="32" rx="6" fill="#1abc9c" opacity="0.5"/>
+</svg>

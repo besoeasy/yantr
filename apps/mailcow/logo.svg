@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5d4037"/>
+      <stop offset="100%" stop-color="#1b0000"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Mailbox body -->
+  <rect x="64" y="120" width="72" height="80" rx="8" fill="none" stroke="#bcaaa4" stroke-width="5"/>
+  <!-- Mailbox top (rounded) -->
+  <path d="M64 120 Q64 92 100 92 Q136 92 136 120" fill="none" stroke="#bcaaa4" stroke-width="5"/>
+  <path d="M64 120 Q64 92 100 92 Q136 92 136 120" fill="#5d4037" opacity="0.5"/>
+  <!-- Mail slot -->
+  <rect x="76" y="108" width="48" height="8" rx="4" fill="#bcaaa4" opacity="0.5"/>
+  <!-- Mailbox post -->
+  <rect x="92" y="200" width="16" height="32" rx="3" fill="#bcaaa4"/>
+  <!-- Mail envelope sticking out -->
+  <rect x="144" y="72" width="72" height="52" rx="6" fill="none" stroke="#d7ccc8" stroke-width="4"/>
+  <path d="M144 72 L180 100 L216 72" fill="none" stroke="#d7ccc8" stroke-width="3"/>
+  <!-- Envelope back angle -->
+  <path d="M144 124 L172 100" fill="none" stroke="#d7ccc8" stroke-width="2" opacity="0.5"/>
+  <path d="M216 124 L188 100" fill="none" stroke="#d7ccc8" stroke-width="2" opacity="0.5"/>
+  <!-- Cow spot accent -->
+  <ellipse cx="92" cy="152" rx="10" ry="8" fill="#bcaaa4" opacity="0.2"/>
+  <ellipse cx="116" cy="168" rx="8" ry="6" fill="#bcaaa4" opacity="0.2"/>
+  <ellipse cx="80" cy="176" rx="6" ry="5" fill="#bcaaa4" opacity="0.15"/>
+  <!-- Flag -->
+  <line x1="136" y1="120" x2="136" y2="80" stroke="#bcaaa4" stroke-width="3"/>
+  <path d="M136 80 L160 88 L136 96" fill="#d7ccc8" opacity="0.7"/>
+</svg>

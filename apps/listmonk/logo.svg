@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c62828"/>
+      <stop offset="100%" stop-color="#560000"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Envelope body -->
+  <rect x="48" y="80" width="160" height="108" rx="10" fill="none" stroke="#ef9a9a" stroke-width="5"/>
+  <!-- Envelope flap -->
+  <path d="M48 80 L128 140 L208 80" fill="none" stroke="#ef9a9a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M48 80 L128 140 L208 80" fill="#c62828" opacity="0.4"/>
+  <!-- Inner fold lines -->
+  <line x1="48" y1="188" x2="96" y2="136" stroke="#ef9a9a" stroke-width="2.5" opacity="0.4"/>
+  <line x1="208" y1="188" x2="160" y2="136" stroke="#ef9a9a" stroke-width="2.5" opacity="0.4"/>
+  <!-- Send arrow -->
+  <path d="M172 196 L216 172 L172 148 L180 172 Z" fill="#ffcdd2"/>
+  <line x1="180" y1="172" x2="140" y2="172" stroke="#ffcdd2" stroke-width="4" stroke-linecap="round"/>
+  <!-- Motion lines -->
+  <line x1="116" y1="164" x2="136" y2="172" stroke="#ef9a9a" stroke-width="2" opacity="0.5"/>
+  <line x1="116" y1="180" x2="136" y2="172" stroke="#ef9a9a" stroke-width="2" opacity="0.5"/>
+</svg>

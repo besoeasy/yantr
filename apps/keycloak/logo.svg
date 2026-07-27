@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f57f17"/>
+      <stop offset="100%" stop-color="#e65100"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Lock body -->
+  <rect x="88" y="116" width="80" height="64" rx="10" fill="none" stroke="#fff3e0" stroke-width="5"/>
+  <!-- Lock shackle -->
+  <path d="M104 116 L104 92 Q104 68 128 68 Q152 68 152 92 L152 116" fill="none" stroke="#fff3e0" stroke-width="5" stroke-linecap="round"/>
+  <!-- Keyhole -->
+  <circle cx="128" cy="140" r="8" fill="#fff3e0"/>
+  <rect x="125" y="144" width="6" height="16" rx="2" fill="#fff3e0"/>
+  <!-- Key icon -->
+  <circle cx="184" cy="192" r="16" fill="none" stroke="#ffe0b2" stroke-width="4"/>
+  <line x1="200" y1="192" x2="232" y2="192" stroke="#ffe0b2" stroke-width="4" stroke-linecap="round"/>
+  <line x1="220" y1="192" x2="220" y2="202" stroke="#ffe0b2" stroke-width="3" stroke-linecap="round"/>
+  <line x1="228" y1="192" x2="228" y2="198" stroke="#ffe0b2" stroke-width="3" stroke-linecap="round"/>
+  <!-- Shield accent -->
+  <path d="M128 196 L128 208" stroke="#ffe0b2" stroke-width="2.5" opacity="0.4"/>
+  <path d="M120 204 L128 212 L136 204" fill="none" stroke="#ffe0b2" stroke-width="2.5" opacity="0.4"/>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0a0a1a"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00e676"/>
+      <stop offset="100%" stop-color="#00c853"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Server rack outline -->
+  <rect x="56" y="52" width="144" height="152" rx="12" fill="none" stroke="#00e676" stroke-width="3" opacity="0.4"/>
+  <!-- Server unit 1 -->
+  <rect x="68" y="64" width="120" height="32" rx="6" fill="#00e676" opacity="0.15"/>
+  <circle cx="84" cy="80" r="5" fill="#00e676"/>
+  <rect x="96" y="76" width="40" height="8" rx="2" fill="#00e676" opacity="0.4"/>
+  <!-- Server unit 2 -->
+  <rect x="68" y="104" width="120" height="32" rx="6" fill="#00e676" opacity="0.15"/>
+  <circle cx="84" cy="120" r="5" fill="#00e676"/>
+  <rect x="96" y="116" width="40" height="8" rx="2" fill="#00e676" opacity="0.4"/>
+  <!-- Server unit 3 -->
+  <rect x="68" y="144" width="120" height="32" rx="6" fill="#00e676" opacity="0.15"/>
+  <circle cx="84" cy="160" r="5" fill="#00e676"/>
+  <rect x="96" y="156" width="40" height="8" rx="2" fill="#00e676" opacity="0.4"/>
+  <!-- Pulse line overlay -->
+  <polyline points="140,70 155,70 160,62 165,88 170,58 175,82 180,70 210,70" stroke="#00e676" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="140,120 150,120 155,112 160,128 165,108 170,124 175,120 210,120" stroke="#00e676" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+  <polyline points="140,165 148,165 152,158 156,172 160,154 164,168 168,165 210,165" stroke="#00e676" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+</svg>

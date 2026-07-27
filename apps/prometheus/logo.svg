@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0a0a"/>
+      <stop offset="100%" stop-color="#2d1212"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="50%" stop-color="#e67e22"/>
+      <stop offset="100%" stop-color="#f1c40f"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#e67e22"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <ellipse cx="128" cy="200" rx="52" ry="14" fill="#e74c3c" opacity="0.3"/>
+  <rect x="118" y="140" width="20" height="68" rx="6" fill="#c0392b" opacity="0.7"/>
+  <path d="M128,40 Q156,70 152,100 Q148,130 128,140 Q108,130 104,100 Q100,70 128,40 Z" fill="url(#flame)" opacity="0.9"/>
+  <path d="M128,60 Q144,78 142,96 Q140,114 128,124 Q116,114 114,96 Q112,78 128,60 Z" fill="#f1c40f" opacity="0.6"/>
+  <ellipse cx="128" cy="88" rx="56" ry="10" stroke="url(#ring)" stroke-width="4" fill="none" opacity="0.6" transform="rotate(-15 128 88)"/>
+  <ellipse cx="128" cy="88" rx="70" ry="14" stroke="url(#ring)" stroke-width="4" fill="none" opacity="0.4" transform="rotate(10 128 88)"/>
+  <ellipse cx="128" cy="88" rx="84" ry="18" stroke="url(#ring)" stroke-width="3" fill="none" opacity="0.25" transform="rotate(-5 128 88)"/>
+</svg>

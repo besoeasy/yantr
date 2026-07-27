@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="100%" stop-color="#162040"/>
+    </linearGradient>
+    <linearGradient id="monitor" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c3e50"/>
+      <stop offset="100%" stop-color="#34495e"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#2980b9"/>
+    </linearGradient>
+    <linearGradient id="relay" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00b4d8"/>
+      <stop offset="100%" stop-color="#0096c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="32" y="56" width="88" height="64" rx="10" fill="url(#monitor)"/>
+  <rect x="40" y="64" width="72" height="48" rx="6" fill="url(#screen)" opacity="0.85"/>
+  <rect x="60" y="120" width="32" height="12" rx="3" fill="#2c3e50"/>
+  <rect x="48" y="132" width="56" height="8" rx="4" fill="#2c3e50"/>
+  <rect x="136" y="56" width="88" height="64" rx="10" fill="url(#monitor)"/>
+  <rect x="144" y="64" width="72" height="48" rx="6" fill="url(#screen)" opacity="0.85"/>
+  <rect x="164" y="120" width="32" height="12" rx="3" fill="#2c3e50"/>
+  <rect x="152" y="132" width="56" height="8" rx="4" fill="#2c3e50"/>
+  <path d="M124,88 L132,82 L132,94 Z" fill="url(#relay)"/>
+  <line x1="120" y1="88" x2="136" y2="88" stroke="url(#relay)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M132,88 Q144,76 156,88" stroke="url(#relay)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M100,88 Q88,76 76,88" stroke="url(#relay)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <rect x="64" y="156" width="128" height="56" rx="10" fill="url(#monitor)" opacity="0.6"/>
+  <rect x="72" y="164" width="112" height="40" rx="6" fill="url(#screen)" opacity="0.5"/>
+  <line x1="128" y1="120" x2="128" y2="156" stroke="#00b4d8" stroke-width="3" stroke-dasharray="6 4" opacity="0.5"/>
+</svg>

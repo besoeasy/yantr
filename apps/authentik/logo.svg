@@ -1,0 +1,35 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00c2ff"/>
+      <stop offset="100%" stop-color="#0070f3"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e27"/>
+      <stop offset="100%" stop-color="#111638"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="48" fill="url(#bgGrad)"/>
+
+  <!-- Shield shape -->
+  <path d="M128,44 L184,72 C184,72 188,136 188,160 C188,192 160,216 128,228 C96,216 68,192 68,160 C68,136 72,72 72,72 Z"
+        fill="url(#shieldGrad)" opacity="0.15" stroke="url(#shieldGrad)" stroke-width="2.5"/>
+
+  <!-- Keyhole - person silhouette -->
+  <circle cx="128" cy="116" r="22" fill="none" stroke="url(#shieldGrad)" stroke-width="3" filter="url(#glow)"/>
+  <path d="M128,144 C112,144 100,156 100,172 L100,180 C100,180 116,188 128,188 C140,188 156,180 156,180 L156,172 C156,156 144,144 128,144 Z"
+        fill="none" stroke="url(#shieldGrad)" stroke-width="3" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <!-- Decorative arcs -->
+  <path d="M80,88 Q128,68 176,88" fill="none" stroke="#00c2ff" stroke-width="1.5" opacity="0.3"/>
+  <path d="M72,200 Q128,220 184,200" fill="none" stroke="#0070f3" stroke-width="1.5" opacity="0.3"/>
+</svg>

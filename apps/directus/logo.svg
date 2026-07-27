@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f0f2a"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5c6bc0"/>
+      <stop offset="100%" stop-color="#3949ab"/>
+    </linearGradient>
+    <linearGradient id="api" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#26c6da"/>
+      <stop offset="100%" stop-color="#00838f"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Database cylinder -->
+  <ellipse cx="128" cy="80" rx="44" ry="16" fill="#5c6bc0" opacity="0.8"/>
+  <path d="M84 80 v64 c0 9 20 16 44 16 s44-7 44-16 v-64" fill="#3949ab" opacity="0.6"/>
+  <ellipse cx="128" cy="144" rx="44" ry="16" fill="#3949ab" opacity="0.7"/>
+  <!-- Database lines -->
+  <ellipse cx="128" cy="100" rx="44" ry="12" fill="none" stroke="#5c6bc0" stroke-width="1.5" opacity="0.4"/>
+  <ellipse cx="128" cy="120" rx="44" ry="12" fill="none" stroke="#5c6bc0" stroke-width="1.5" opacity="0.4"/>
+  <!-- API arrows (outgoing) -->
+  <!-- Arrow right -->
+  <path d="M180 110 h32" stroke="#26c6da" stroke-width="3" stroke-linecap="round"/>
+  <path d="M206 102 l8 8 -8 8" stroke="#26c6da" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow left -->
+  <path d="M76 110 h-32" stroke="#26c6da" stroke-width="3" stroke-linecap="round"/>
+  <path d="M50 102 l-8 8 8 8" stroke="#26c6da" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Arrow up -->
+  <path d="M128 64 v-28" stroke="#26c6da" stroke-width="3" stroke-linecap="round"/>
+  <path d="M120 44 l8-8 8 8" stroke="#26c6da" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Connection dots -->
+  <circle cx="220" cy="110" r="4" fill="#26c6da"/>
+  <circle cx="36" cy="110" r="4" fill="#26c6da"/>
+  <circle cx="128" cy="28" r="4" fill="#26c6da"/>
+  <!-- Subtle glow behind db -->
+  <circle cx="128" cy="110" r="50" fill="#5c6bc0" opacity="0.06"/>
+</svg>

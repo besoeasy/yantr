@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a148c"/>
+      <stop offset="100%" stop-color="#1a0033"/>
+    </linearGradient>
+    <linearGradient id="tunnel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ce93d8"/>
+      <stop offset="100%" stop-color="#7b1fa2"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Tunnel body - ellipse outer -->
+  <ellipse cx="128" cy="128" rx="80" ry="52" fill="none" stroke="#ce93d8" stroke-width="5"/>
+  <!-- Tunnel inner ring -->
+  <ellipse cx="128" cy="128" rx="56" ry="36" fill="none" stroke="#ab47bc" stroke-width="4" opacity="0.7"/>
+  <!-- Tunnel core -->
+  <ellipse cx="128" cy="128" rx="32" ry="20" fill="none" stroke="#e1bee7" stroke-width="3" opacity="0.5"/>
+  <!-- Center glow -->
+  <ellipse cx="128" cy="128" rx="14" ry="9" fill="#ce93d8" opacity="0.6"/>
+  <!-- Left entry arrow -->
+  <path d="M36 128 L54 118 L54 138 Z" fill="#e1bee7"/>
+  <!-- Right exit arrow -->
+  <path d="M220 128 L202 118 L202 138 Z" fill="#e1bee7"/>
+  <!-- Flow lines -->
+  <line x1="44" y1="116" x2="72" y2="116" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+  <line x1="44" y1="128" x2="68" y2="128" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+  <line x1="44" y1="140" x2="72" y2="140" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+  <line x1="184" y1="116" x2="212" y2="116" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+  <line x1="188" y1="128" x2="212" y2="128" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+  <line x1="184" y1="140" x2="212" y2="140" stroke="#ce93d8" stroke-width="2" opacity="0.4"/>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d2818"/>
+      <stop offset="100%" stop-color="#1a3a2a"/>
+    </linearGradient>
+    <linearGradient id="doc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27ae60"/>
+      <stop offset="100%" stop-color="#2ecc71"/>
+    </linearGradient>
+    <linearGradient id="sheet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2980b9"/>
+      <stop offset="100%" stop-color="#3498db"/>
+    </linearGradient>
+    <linearGradient id="slide" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c0392b"/>
+      <stop offset="100%" stop-color="#e74c3c"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="32" y="52" width="68" height="86" rx="10" fill="url(#doc)"/>
+  <line x1="46" y1="74" x2="86" y2="74" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+  <line x1="46" y1="88" x2="80" y2="88" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  <line x1="46" y1="102" x2="72" y2="102" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  <line x1="46" y1="116" x2="66" y2="116" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+  <rect x="94" y="52" width="68" height="86" rx="10" fill="url(#sheet)"/>
+  <line x1="108" y1="72" x2="148" y2="72" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <line x1="108" y1="86" x2="148" y2="86" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <line x1="108" y1="100" x2="148" y2="100" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <line x1="108" y1="114" x2="148" y2="114" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <line x1="118" y1="62" x2="118" y2="128" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <line x1="138" y1="62" x2="138" y2="128" stroke="#fff" stroke-width="3" opacity="0.7"/>
+  <rect x="156" y="52" width="68" height="86" rx="10" fill="url(#slide)"/>
+  <polygon points="182,80 182,116 208,98" fill="#fff" opacity="0.85"/>
+  <rect x="44" y="156" width="168" height="44" rx="8" fill="#27ae60" opacity="0.15"/>
+  <rect x="44" y="156" width="56" height="44" rx="8" fill="#27ae60" opacity="0.4"/>
+  <rect x="100" y="156" width="56" height="44" rx="8" fill="#2980b9" opacity="0.4"/>
+  <rect x="156" y="156" width="56" height="44" rx="8" fill="#c0392b" opacity="0.4"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1b5e20"/>
+      <stop offset="100%" stop-color="#0a2e0a"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Shield -->
+  <path d="M128 44 L178 68 L178 118 Q178 164 128 188 Q78 164 78 118 L78 68 Z" fill="none" stroke="#66bb6a" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M128 58 L168 78 L168 116 Q168 154 128 174 Q88 154 88 116 L88 78 Z" fill="#1b5e20" opacity="0.5"/>
+  <!-- Network nodes -->
+  <circle cx="128" cy="100" r="8" fill="#66bb6a"/>
+  <circle cx="104" cy="124" r="6" fill="#81c784"/>
+  <circle cx="152" cy="124" r="6" fill="#81c784"/>
+  <circle cx="116" cy="148" r="5" fill="#a5d6a7"/>
+  <circle cx="140" cy="148" r="5" fill="#a5d6a7"/>
+  <!-- Network lines -->
+  <line x1="128" y1="100" x2="104" y2="124" stroke="#66bb6a" stroke-width="2.5" opacity="0.7"/>
+  <line x1="128" y1="100" x2="152" y2="124" stroke="#66bb6a" stroke-width="2.5" opacity="0.7"/>
+  <line x1="104" y1="124" x2="116" y2="148" stroke="#66bb6a" stroke-width="2.5" opacity="0.7"/>
+  <line x1="152" y1="124" x2="140" y2="148" stroke="#66bb6a" stroke-width="2.5" opacity="0.7"/>
+  <line x1="116" y1="148" x2="140" y2="148" stroke="#66bb6a" stroke-width="2.5" opacity="0.7"/>
+  <!-- W for WireGuard -->
+  <path d="M112 198 L120 212 L128 200 L136 212 L144 198" fill="none" stroke="#66bb6a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

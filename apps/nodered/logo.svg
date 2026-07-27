@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1b2e"/>
+      <stop offset="100%" stop-color="#1a0f1b"/>
+    </linearGradient>
+    <linearGradient id="node1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c0392b"/>
+      <stop offset="100%" stop-color="#e74c3c"/>
+    </linearGradient>
+    <linearGradient id="node2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d35400"/>
+      <stop offset="100%" stop-color="#e67e22"/>
+    </linearGradient>
+    <linearGradient id="node3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8e44ad"/>
+      <stop offset="100%" stop-color="#9b59b6"/>
+    </linearGradient>
+    <linearGradient id="conn" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#e67e22"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <line x1="86" y1="86" x2="170" y2="86" stroke="url(#conn)" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  <line x1="86" y1="170" x2="170" y2="170" stroke="url(#conn)" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  <line x1="170" y1="86" x2="170" y2="170" stroke="#9b59b6" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  <rect x="56" y="60" width="60" height="52" rx="12" fill="url(#node1)"/>
+  <rect x="140" y="60" width="60" height="52" rx="12" fill="url(#node2)"/>
+  <rect x="140" y="144" width="60" height="52" rx="12" fill="url(#node3)"/>
+  <rect x="56" y="144" width="60" height="52" rx="12" fill="#27ae60"/>
+  <circle cx="86" cy="86" r="6" fill="#fff" opacity="0.9"/>
+  <circle cx="170" cy="86" r="6" fill="#fff" opacity="0.9"/>
+  <circle cx="170" cy="170" r="6" fill="#fff" opacity="0.9"/>
+  <circle cx="86" cy="170" r="6" fill="#fff" opacity="0.9"/>
+</svg>

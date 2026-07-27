@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#006064"/>
+      <stop offset="100%" stop-color="#002f33"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Monitor -->
+  <rect x="44" y="48" width="168" height="116" rx="10" fill="none" stroke="#80deea" stroke-width="5"/>
+  <rect x="54" y="58" width="148" height="96" rx="4" fill="#004d52"/>
+  <!-- Browser frame - top bar -->
+  <rect x="58" y="62" width="140" height="20" rx="3" fill="#00838f" opacity="0.6"/>
+  <!-- Browser dots -->
+  <circle cx="70" cy="72" r="4" fill="#ef5350"/>
+  <circle cx="82" cy="72" r="4" fill="#ffc107"/>
+  <circle cx="94" cy="72" r="4" fill="#66bb6a"/>
+  <!-- Browser URL bar -->
+  <rect x="106" y="66" width="80" height="12" rx="3" fill="#00acc1" opacity="0.4"/>
+  <!-- Content area -->
+  <rect x="62" y="86" width="132" height="64" rx="2" fill="#00695c" opacity="0.3"/>
+  <!-- Lines representing content -->
+  <line x1="72" y1="96" x2="132" y2="96" stroke="#80deea" stroke-width="2" opacity="0.5"/>
+  <line x1="72" y1="106" x2="112" y2="106" stroke="#80deea" stroke-width="2" opacity="0.4"/>
+  <line x1="72" y1="116" x2="148" y2="116" stroke="#80deea" stroke-width="2" opacity="0.3"/>
+  <line x1="72" y1="126" x2="120" y2="126" stroke="#80deea" stroke-width="2" opacity="0.3"/>
+  <!-- VNC cursor -->
+  <polygon points="148,98 148,118 156,112 164,124 168,121 160,109 168,109" fill="#e0f7fa" opacity="0.9"/>
+  <!-- Monitor stand -->
+  <rect x="110" y="164" width="36" height="8" rx="2" fill="#80deea"/>
+  <rect x="96" y="172" width="64" height="6" rx="3" fill="#80deea"/>
+  <!-- Signal waves -->
+  <path d="M200 56 Q216 68 200 80" fill="none" stroke="#80deea" stroke-width="2.5" opacity="0.5"/>
+  <path d="M210 48 Q232 68 210 88" fill="none" stroke="#80deea" stroke-width="2.5" opacity="0.35"/>
+</svg>

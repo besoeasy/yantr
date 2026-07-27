@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0277bd"/>
+      <stop offset="100%" stop-color="#01425a"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Link chain 1 -->
+  <path d="M72 100 Q72 72 100 72 L112 72" fill="none" stroke="#4fc3f7" stroke-width="6" stroke-linecap="round"/>
+  <rect x="92" y="88" width="40" height="24" rx="12" fill="none" stroke="#4fc3f7" stroke-width="5"/>
+  <!-- Link chain 2 -->
+  <path d="M152 100 Q152 72 180 72 L192 72" fill="none" stroke="#29b6f6" stroke-width="6" stroke-linecap="round" opacity="0.6"/>
+  <rect x="132" y="88" width="40" height="24" rx="12" fill="none" stroke="#29b6f6" stroke-width="5" opacity="0.6"/>
+  <!-- Bookmark -->
+  <path d="M80 128 L80 212 L128 188 L176 212 L176 128 Z" fill="none" stroke="#b3e5fc" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M80 128 L80 212 L128 188 L176 212 L176 128 Z" fill="#0277bd" opacity="0.4"/>
+  <!-- Bookmark inner line -->
+  <line x1="100" y1="148" x2="156" y2="148" stroke="#b3e5fc" stroke-width="2.5" opacity="0.5"/>
+  <line x1="100" y1="164" x2="140" y2="164" stroke="#b3e5fc" stroke-width="2.5" opacity="0.4"/>
+  <!-- Small link accent -->
+  <path d="M180 160 Q200 148 200 168 Q200 188 180 188" fill="none" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+</svg>

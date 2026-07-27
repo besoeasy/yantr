@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0f0a"/>
+      <stop offset="100%" stop-color="#2d1a12"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e67e22"/>
+      <stop offset="100%" stop-color="#f39c12"/>
+    </linearGradient>
+    <linearGradient id="php" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <ellipse cx="128" cy="130" rx="70" ry="56" fill="url(#db)" opacity="0.85"/>
+  <ellipse cx="128" cy="116" rx="70" ry="22" fill="#f39c12" opacity="0.5"/>
+  <line x1="58" y1="116" x2="198" y2="116" stroke="#1a0f0a" stroke-width="3" opacity="0.3"/>
+  <line x1="58" y1="130" x2="198" y2="130" stroke="#1a0f0a" stroke-width="3" opacity="0.3"/>
+  <line x1="58" y1="144" x2="198" y2="144" stroke="#1a0f0a" stroke-width="3" opacity="0.3"/>
+  <path d="M164,72 L184,72 L184,104 L172,104 L172,88 L164,88 Z" fill="url(#php)" opacity="0.9"/>
+  <circle cx="168" cy="108" r="8" fill="url(#php)" opacity="0.9"/>
+  <rect x="56" y="180" width="144" height="32" rx="8" fill="#e67e22" opacity="0.2"/>
+  <rect x="64" y="186" width="40" height="20" rx="4" fill="#e67e22" opacity="0.5"/>
+  <rect x="112" y="186" width="40" height="20" rx="4" fill="#e67e22" opacity="0.5"/>
+  <rect x="160" y="186" width="32" height="20" rx="4" fill="#e67e22" opacity="0.5"/>
+</svg>

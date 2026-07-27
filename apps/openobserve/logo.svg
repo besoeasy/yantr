@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0a2e"/>
+      <stop offset="100%" stop-color="#2d1b4e"/>
+    </linearGradient>
+    <linearGradient id="eye" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8e44ad"/>
+      <stop offset="100%" stop-color="#9b59b6"/>
+    </linearGradient>
+    <linearGradient id="iris" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#3498db"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M48,128 Q128,56 208,128 Q128,200 48,128 Z" stroke="url(#eye)" stroke-width="8" fill="none" opacity="0.9"/>
+  <circle cx="128" cy="128" r="32" fill="url(#eye)" opacity="0.8"/>
+  <circle cx="128" cy="128" r="16" fill="url(#iris)"/>
+  <circle cx="128" cy="128" r="7" fill="#fff" opacity="0.7"/>
+  <path d="M56,72 Q80,56 104,72" stroke="url(#wave)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M52,56 Q80,36 108,56" stroke="url(#wave)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <path d="M152,72 Q176,56 200,72" stroke="url(#wave)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M148,56 Q176,36 204,56" stroke="url(#wave)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <path d="M64,184 Q96,196 128,184 Q160,172 192,184" stroke="#3498db" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <path d="M56,200 Q96,216 136,200 Q176,184 200,200" stroke="#3498db" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.3"/>
+</svg>

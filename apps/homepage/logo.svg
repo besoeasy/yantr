@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bf360c"/>
+      <stop offset="100%" stop-color="#4e1100"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- House roof -->
+  <path d="M128 52 L56 116 L68 116 L68 188 L188 188 L188 116 L200 116 Z" fill="none" stroke="#ff8a65" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M128 52 L56 116 L200 116 Z" fill="#bf360c" opacity="0.4"/>
+  <!-- Grid inside house -->
+  <line x1="116" y1="116" x2="116" y2="188" stroke="#ff8a65" stroke-width="2" opacity="0.5"/>
+  <line x1="140" y1="116" x2="140" y2="188" stroke="#ff8a65" stroke-width="2" opacity="0.5"/>
+  <line x1="164" y1="116" x2="164" y2="188" stroke="#ff8a65" stroke-width="2" opacity="0.5"/>
+  <line x1="68" y1="140" x2="188" y2="140" stroke="#ff8a65" stroke-width="2" opacity="0.5"/>
+  <line x1="68" y1="164" x2="188" y2="164" stroke="#ff8a65" stroke-width="2" opacity="0.5"/>
+  <!-- Grid dots -->
+  <circle cx="104" cy="128" r="4" fill="#ffab91"/>
+  <circle cx="128" cy="128" r="4" fill="#ffab91"/>
+  <circle cx="152" cy="128" r="4" fill="#ffab91"/>
+  <circle cx="176" cy="128" r="4" fill="#ffab91"/>
+  <circle cx="104" cy="152" r="4" fill="#ffab91"/>
+  <circle cx="128" cy="152" r="4" fill="#ffab91"/>
+  <circle cx="152" cy="152" r="4" fill="#ffab91"/>
+  <circle cx="176" cy="152" r="4" fill="#ffab91"/>
+  <circle cx="104" cy="176" r="4" fill="#ffab91"/>
+  <circle cx="128" cy="176" r="4" fill="#ffab91"/>
+  <circle cx="152" cy="176" r="4" fill="#ffab91"/>
+  <circle cx="176" cy="176" r="4" fill="#ffab91"/>
+  <!-- Door -->
+  <rect x="80" y="156" width="20" height="32" rx="3" fill="#ff8a65" opacity="0.3"/>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1923"/>
+      <stop offset="100%" stop-color="#1a2a3a"/>
+    </linearGradient>
+    <linearGradient id="db" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2980b9"/>
+      <stop offset="100%" stop-color="#3498db"/>
+    </linearGradient>
+    <linearGradient id="gear" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7f8c8d"/>
+      <stop offset="100%" stop-color="#95a5a6"/>
+    </linearGradient>
+    <linearGradient id="elephant" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#2ecc71"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <ellipse cx="110" cy="120" rx="62" ry="52" fill="url(#db)" opacity="0.85"/>
+  <ellipse cx="110" cy="108" rx="62" ry="20" fill="#3498db" opacity="0.5"/>
+  <line x1="48" y1="108" x2="172" y2="108" stroke="#0f1923" stroke-width="3" opacity="0.3"/>
+  <line x1="48" y1="120" x2="172" y2="120" stroke="#0f1923" stroke-width="3" opacity="0.3"/>
+  <line x1="48" y1="132" x2="172" y2="132" stroke="#0f1923" stroke-width="3" opacity="0.3"/>
+  <circle cx="196" cy="172" r="40" fill="url(#gear)" opacity="0.85"/>
+  <circle cx="196" cy="172" r="18" fill="#0f1923"/>
+  <rect x="156" y="168" width="80" height="8" rx="4" fill="url(#gear)" opacity="0.85"/>
+  <rect x="192" y="132" width="8" height="80" rx="4" fill="url(#gear)" opacity="0.85"/>
+  <rect x="172" y="148" width="8" height="48" rx="4" fill="url(#gear)" opacity="0.6" transform="rotate(45 176 172)"/>
+  <rect x="208" y="148" width="8" height="48" rx="4" fill="url(#gear)" opacity="0.6" transform="rotate(45 212 172)"/>
+</svg>

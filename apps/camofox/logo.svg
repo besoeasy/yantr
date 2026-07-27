@@ -1,4 +1,68 @@
 <svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#6B4E3D"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#F5A623">C</text>
+  <defs>
+    <linearGradient id="foxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b35"/>
+      <stop offset="100%" stop-color="#e85d26"/>
+    </linearGradient>
+    <linearGradient id="maskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d5016"/>
+      <stop offset="50%" stop-color="#3d6b1e"/>
+      <stop offset="100%" stop-color="#4a7c22"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="48" fill="url(#bgGrad)"/>
+
+  <!-- Fox head silhouette -->
+  <g transform="translate(128,128)">
+    <!-- Left ear -->
+    <path d="M-62,-72 L-42,-108 L-22,-62 Z" fill="url(#foxGrad)"/>
+    <!-- Right ear -->
+    <path d="M62,-72 L42,-108 L22,-62 Z" fill="url(#foxGrad)"/>
+    
+    <!-- Head shape -->
+    <path d="M0,-58 C-52,-58 -72,-20 -72,18 C-72,56 -42,88 0,108 C42,88 72,56 72,18 C72,-20 52,-58 0,-58 Z"
+          fill="url(#foxGrad)"/>
+    
+    <!-- Inner ears -->
+    <path d="M-55,-68 L-40,-98 L-25,-60 Z" fill="#ff8c5a" opacity="0.6"/>
+    <path d="M55,-68 L40,-98 L25,-60 Z" fill="#ff8c5a" opacity="0.6"/>
+    
+    <!-- White face patch -->
+    <path d="M0,-20 C-32,-20 -48,8 -48,32 C-48,52 -28,72 0,82 C28,72 48,52 48,32 C48,8 32,-20 0,-20 Z"
+          fill="#fff" opacity="0.95"/>
+    
+    <!-- Camouflage mask -->
+    <path d="M-48,8 C-48,-4 -32,-16 0,-16 C32,-16 48,-4 48,8 C48,20 32,28 0,28 C-32,28 -48,20 -48,8 Z"
+          fill="url(#maskGrad)"/>
+    
+    <!-- Eyes - glowing through the mask -->
+    <ellipse cx="-22" cy="12" rx="8" ry="6" fill="#00ff88" filter="url(#glow)" opacity="0.9"/>
+    <ellipse cx="22" cy="12" rx="8" ry="6" fill="#00ff88" filter="url(#glow)" opacity="0.9"/>
+    
+    <!-- Pupils -->
+    <ellipse cx="-22" cy="12" rx="3" ry="5" fill="#0a0e27"/>
+    <ellipse cx="22" cy="12" rx="3" ry="5" fill="#0a0e27"/>
+    
+    <!-- Nose -->
+    <path d="M0,38 L-8,30 L8,30 Z" fill="#1a1a2e"/>
+    
+    <!-- Whisker dots -->
+    <circle cx="-36" cy="42" r="2" fill="#1a1a2e" opacity="0.4"/>
+    <circle cx="-28" cy="46" r="2" fill="#1a1a2e" opacity="0.4"/>
+    <circle cx="36" cy="42" r="2" fill="#1a1a2e" opacity="0.4"/>
+    <circle cx="28" cy="46" r="2" fill="#1a1a2e" opacity="0.4"/>
+  </g>
 </svg>

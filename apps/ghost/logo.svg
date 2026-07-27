@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f0f20"/>
+    </linearGradient>
+    <linearGradient id="ghost" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#b0bec5"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Ghost body -->
+  <path d="M128 56 c-40 0-64 32-64 72 v64 c0 0 8-16 16-16 s16 16 24 16 16-16 24-16 16 16 24 16 16-16 24-16 24 16 24 16 v-64 c0-40-24-72-64-72z" fill="url(#ghost)" opacity="0.9"/>
+  <!-- Eyes -->
+  <ellipse cx="108" cy="112" rx="10" ry="12" fill="#1a1a2e"/>
+  <ellipse cx="148" cy="112" rx="10" ry="12" fill="#1a1a2e"/>
+  <!-- Eye glints -->
+  <circle cx="112" cy="108" r="3" fill="#fff" opacity="0.8"/>
+  <circle cx="152" cy="108" r="3" fill="#fff" opacity="0.8"/>
+  <!-- Subtle glow -->
+  <ellipse cx="128" cy="130" rx="50" ry="40" fill="#ffffff" opacity="0.05"/>
+  <!-- Bottom wave (ghost tail effect) -->
+  <path d="M68 192 Q96 180 128 192 Q160 204 188 192" stroke="#ffffff" stroke-width="1.5" fill="none" opacity="0.15"/>
+</svg>

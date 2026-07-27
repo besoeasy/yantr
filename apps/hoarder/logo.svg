@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e65100"/>
+      <stop offset="100%" stop-color="#bf360c"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Bookmark tag -->
+  <path d="M96 52 L96 188 L128 168 L160 188 L160 52 Z" fill="none" stroke="#ffcc80" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M96 52 L96 188 L128 168 L160 188 L160 52 Z" fill="#e65100" opacity="0.6"/>
+  <!-- Inner detail -->
+  <path d="M108 68 L108 170 L128 156 L148 170 L148 68 Z" fill="none" stroke="#ffcc80" stroke-width="2" opacity="0.5"/>
+  <!-- Sparkle 1 -->
+  <path d="M192 72 L196 82 L206 82 L198 88 L200 98 L192 92 L184 98 L186 88 L178 82 L188 82 Z" fill="#ffe0b2"/>
+  <!-- Sparkle 2 -->
+  <path d="M56 88 L58 94 L64 94 L60 98 L61 104 L56 100 L51 104 L52 98 L48 94 L54 94 Z" fill="#ffcc80" opacity="0.7"/>
+  <!-- Sparkle 3 -->
+  <path d="M196 152 L198 157 L203 157 L199 160 L200 165 L196 162 L192 165 L193 160 L189 157 L194 157 Z" fill="#ffcc80" opacity="0.5"/>
+</svg>

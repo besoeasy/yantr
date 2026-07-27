@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a2744"/>
+      <stop offset="100%" stop-color="#0d1b2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Monitor -->
+  <rect x="52" y="56" width="152" height="108" rx="10" fill="none" stroke="#4fc3f7" stroke-width="5"/>
+  <rect x="62" y="66" width="132" height="88" rx="4" fill="#1b3a5c"/>
+  <!-- Remote cursor -->
+  <polygon points="92,100 92,130 104,122 114,136 120,132 110,118 122,118" fill="#4fc3f7"/>
+  <!-- Small secondary cursor -->
+  <polygon points="140,82 140,100 148,95 154,105 158,102 152,92 160,92" fill="#81d4fa" opacity="0.6"/>
+  <!-- Monitor stand -->
+  <rect x="110" y="164" width="36" height="8" rx="2" fill="#4fc3f7"/>
+  <rect x="96" y="172" width="64" height="6" rx="3" fill="#4fc3f7"/>
+  <!-- Connection dots -->
+  <circle cx="68" cy="146" r="3" fill="#29b6f6"/>
+  <circle cx="78" cy="146" r="3" fill="#29b6f6"/>
+</svg>

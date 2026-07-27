@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e94560"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Puzzle piece 1 (top-left) -->
+  <path d="M68 78 h32 v12 c0 8 6 14 14 14 s14-6 14-14 v-12 h32 v32 h-12 c-8 0-14 6-14 14 s6 14 14 14 h12 v32 h-32 v-12 c0-8-6-14-14-14 s-14 6-14 14 v12 h-32 v-32 h12 c8 0 14-6 14-14 s-6-14-14-14 h-12 z" fill="#e94560" opacity="0.9"/>
+  <!-- Puzzle piece 2 (bottom-right) -->
+  <path d="M148 148 h28 v10 c0 7 5 12 12 12 s12-5 12-12 v-10 h28 v28 h-10 c-7 0-12 5-12 12 s5 12 12 12 h10 v28 h-28 v-10 c0-7-5-12-12-12 s-12 5-12 12 v10 h-28 v-28 h10 c7 0 12-5 12-12 s-5-12-12-12 h-10 z" fill="#533483" opacity="0.9"/>
+  <!-- Connection lines -->
+  <line x1="110" y1="120" x2="148" y2="148" stroke="#e94560" stroke-width="3" opacity="0.6"/>
+  <circle cx="110" cy="120" r="6" fill="#e94560"/>
+  <circle cx="148" cy="148" r="6" fill="#533483"/>
+  <!-- Small node dots -->
+  <circle cx="80" cy="95" r="4" fill="#fff" opacity="0.7"/>
+  <circle cx="170" cy="165" r="4" fill="#fff" opacity="0.7"/>
+</svg>

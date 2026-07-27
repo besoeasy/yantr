@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0a2e"/>
+      <stop offset="100%" stop-color="#1a1a4e"/>
+    </linearGradient>
+    <linearGradient id="globe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2980b9"/>
+      <stop offset="100%" stop-color="#3498db"/>
+    </linearGradient>
+    <linearGradient id="dot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+    <linearGradient id="line1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <circle cx="128" cy="128" r="80" fill="url(#globe)" opacity="0.85"/>
+  <ellipse cx="128" cy="128" rx="30" ry="80" fill="none" stroke="#0a0a2e" stroke-width="3" opacity="0.3"/>
+  <ellipse cx="128" cy="128" rx="56" ry="80" fill="none" stroke="#0a0a2e" stroke-width="3" opacity="0.25"/>
+  <ellipse cx="128" cy="128" rx="80" ry="30" fill="none" stroke="#0a0a2e" stroke-width="3" opacity="0.3"/>
+  <ellipse cx="128" cy="128" rx="80" ry="56" fill="none" stroke="#0a0a2e" stroke-width="3" opacity="0.25"/>
+  <circle cx="100" cy="100" r="8" fill="url(#dot)" opacity="0.9"/>
+  <circle cx="100" cy="100" r="14" fill="url(#dot)" opacity="0.2"/>
+  <circle cx="160" cy="116" r="6" fill="#e74c3c" opacity="0.9"/>
+  <circle cx="160" cy="116" r="10" fill="#e74c3c" opacity="0.2"/>
+  <circle cx="120" cy="152" r="7" fill="#f39c12" opacity="0.9"/>
+  <circle cx="120" cy="152" r="12" fill="#f39c12" opacity="0.2"/>
+  <circle cx="148" cy="88" r="5" fill="#2ecc71" opacity="0.9"/>
+  <circle cx="148" cy="88" r="9" fill="#2ecc71" opacity="0.2"/>
+  <line x1="100" y1="100" x2="160" y2="116" stroke="url(#line1)" stroke-width="2" opacity="0.4"/>
+  <line x1="160" y1="116" x2="120" y2="152" stroke="url(#line1)" stroke-width="2" opacity="0.4"/>
+  <line x1="120" y1="152" x2="100" y2="100" stroke="url(#line1)" stroke-width="2" opacity="0.4"/>
+  <line x1="100" y1="100" x2="148" y2="88" stroke="url(#line1)" stroke-width="2" opacity="0.3"/>
+  <line x1="148" y1="88" x2="160" y2="116" stroke="url(#line1)" stroke-width="2" opacity="0.3"/>
+</svg>

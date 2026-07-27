@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#1a0f2e"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ff6d00"/>
+      <stop offset="40%" stop-color="#ff9100"/>
+      <stop offset="100%" stop-color="#ffab00"/>
+    </linearGradient>
+    <linearGradient id="flame2" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#e65100"/>
+      <stop offset="100%" stop-color="#ff6d00"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <!-- Torch handle -->
+  <rect x="116" y="160" width="24" height="56" rx="4" fill="#5d4037" opacity="0.8"/>
+  <rect x="112" y="152" width="32" height="16" rx="4" fill="#6d4c41" opacity="0.7"/>
+  <!-- Outer flame -->
+  <path d="M128 44 c-20 28-40 48-40 72 0 24 18 40 40 40 s40-16 40-40 c0-24-20-48-40-72z" fill="url(#flame)" opacity="0.8"/>
+  <!-- Inner flame -->
+  <path d="M128 72 c-12 18-22 30-22 44 0 14 10 22 22 22 s22-8 22-22 c0-14-10-26-22-44z" fill="url(#flame2)" opacity="0.9"/>
+  <!-- Core flame -->
+  <path d="M128 96 c-6 10-12 16-12 24 0 6 5 10 12 10 s12-4 12-10 c0-8-6-14-12-24z" fill="#ffab00"/>
+  <!-- Flame glow -->
+  <circle cx="128" cy="110" r="50" fill="#ff6d00" opacity="0.08"/>
+  <!-- Ember sparks -->
+  <circle cx="108" cy="68" r="2" fill="#ffab00" opacity="0.6"/>
+  <circle cx="148" cy="76" r="1.5" fill="#ff9100" opacity="0.5"/>
+  <circle cx="120" cy="56" r="1.5" fill="#ffab00" opacity="0.4"/>
+</svg>
