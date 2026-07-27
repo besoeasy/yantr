@@ -1,0 +1,44 @@
+x-yantr:
+  name: OnlyOffice
+  tags: [ documents, collaboration, office, productivity, self-hosted ]
+  short_description: Self-hosted office suite for creating and editing documents,
+    spreadsheets, and presentations.
+  description: >
+    OnlyOffice Docs is a self-hosted office suite compatible with Microsoft
+    Office formats. It supports real-time collaborative editing of documents,
+    spreadsheets, and presentations through a web interface. Integrates with
+    Nextcloud, ownCloud, and other platforms for seamless document management.
+  usecases:
+    [
+      Collaboratively edit Word, Excel, and PowerPoint files in real time.,
+      Replace Google Docs or Microsoft 365 with a self-hosted alternative.,
+      Integrate with Nextcloud for seamless document management.
+    ]
+  website: https://www.onlyoffice.com
+  notes:
+    [
+      "Requires adequate RAM — 2 GB minimum recommended for the document server.",
+      "For production, place behind a reverse proxy with SSL termination.",
+      "Community Edition is free; Enterprise adds additional features."
+    ]
+
+services:
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice
+    labels:
+      yantr.app: onlyoffice
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - onlyoffice_data:/var/www/onlyoffice/Data
+      - onlyoffice_log:/var/log/onlyoffice
+    restart: unless-stopped
+
+volumes:
+  onlyoffice_data: null
+  onlyoffice_log: null

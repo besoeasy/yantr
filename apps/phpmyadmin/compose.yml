@@ -1,0 +1,42 @@
+x-yantr:
+  name: phpMyAdmin
+  tags: [ database, mysql, admin, devops, self-hosted ]
+  short_description: Free, open-source web tool written in PHP for managing
+    MySQL and MariaDB servers.
+  description: >
+    phpMyAdmin is a free, open-source web application written in PHP for
+    managing MySQL and MariaDB servers. It provides a web-based interface
+    for database administration, SQL queries, user management, import/export,
+    and server configuration. Widely used for quick MySQL administration.
+  usecases:
+    [
+      Manage MySQL and MariaDB databases through a web browser.,
+      Import and export databases in SQL, CSV, and other formats.,
+      Execute SQL queries and manage user permissions without CLI access.
+    ]
+  website: https://www.phpmyadmin.net
+  notes:
+    [
+      "Connect to your MySQL server by setting the PMA_HOST environment variable.",
+      "For production, always use HTTPS and restrict access.",
+      "Supports multiple server configurations via the Config storage feature."
+    ]
+
+services:
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    labels:
+      yantr.app: phpmyadmin
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "8080"
+    environment:
+      PMA_HOST: ${PMA_HOST:-mariadb}
+      PMA_PORT: ${PMA_PORT:-3306}
+      PMA_USER: ${PMA_USER:-root}
+      UPLOAD_LIMIT: 100M
+    restart: unless-stopped
+
+volumes: null

@@ -1,0 +1,43 @@
+x-yantr:
+  name: Baikal
+  tags: [ calendar, contacts, caldav, carddav, self-hosted ]
+  short_description: Lightweight CalDAV and CardDAV server for syncing
+    contacts and calendars across devices.
+  description: >
+    Baikal is a lightweight CalDAV and CardDAV server based on PHP and
+    MySQL or SQLite. It provides a clean web-based admin interface for
+    managing users, address books, and calendars. Compatible with all
+    major CalDAV/CardDAV clients including iOS, Android, macOS, and
+    Thunderbird.
+  usecases:
+    [
+      Sync contacts and calendars between iOS, Android, and desktop clients.,
+      Self-host your personal or team address book and calendar infrastructure.",
+      Migrate from Google Contacts and Calendar to a self-hosted solution.
+    ]
+  website: https://github.com/sabre-io/Baikal
+  notes:
+    [
+      "Run the web installer at /admin/ on first launch to configure the database.",
+      "Supports both SQLite and MySQL/MariaDB backends.",
+      "Pair with Radical or another CalDAV server for redundancy."
+    ]
+
+services:
+  baikal:
+    image: ckulka/baikal:nginx
+    container_name: baikal
+    labels:
+      yantr.app: baikal
+      yantr.service.80: Web UI
+      yantr.port.80: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - baikal_data:/var/www/baikal/Specific
+      - baikal_config:/var/www/baikal/config
+    restart: unless-stopped
+
+volumes:
+  baikal_data: null
+  baikal_config: null

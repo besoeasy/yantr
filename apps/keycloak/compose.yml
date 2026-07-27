@@ -1,0 +1,63 @@
+x-yantr:
+  name: Keycloak
+  tags: [ security, sso, authentication, identity, self-hosted ]
+  short_description: Open-source identity and access management solution with
+    SSO, OAuth2, and SAML support.
+  description: >
+    Keycloak is an open-source identity and access management solution that
+    provides single sign-on (SSO) with modern protocols like OpenID Connect,
+    OAuth2, and SAML 2.0. It includes user federation, identity brokering,
+    and fine-grained authorization for securing applications and APIs.
+  usecases:
+    [
+      Add single sign-on to your applications with minimal code changes.,
+      Centralize user management with role-based access control.,
+      Secure APIs with OAuth2 tokens and fine-grained authorization policies.
+    ]
+  website: https://www.keycloak.org
+  notes:
+    [
+      "Set KC_BOOTSTRAP_ADMIN_USERNAME and KC_BOOTSTRAP_ADMIN_PASSWORD on first run.",
+      "Production deployments should use PostgreSQL or MySQL as the database backend.",
+      "Realm configuration can be imported from a JSON file at startup."
+    ]
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    labels:
+      yantr.app: keycloak
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    command: start
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN_USER:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_HOSTNAME: ${KC_HOSTNAME:-localhost}
+    depends_on:
+      - keycloak-db
+    restart: unless-stopped
+  keycloak-db:
+    image: postgres:latest
+    container_name: keycloak-db
+    labels:
+      yantr.app: keycloak
+      yantr.service.5432: PostgreSQL
+      yantr.port.5432: TCP
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  keycloak_db_data: null

@@ -1,0 +1,44 @@
+x-yantr:
+  name: KasmVNC
+  tags: [ remote-desktop, browser, vnc, security, self-hosted ]
+  short_description: Browser-accessible VNC server that streams your desktop
+    session through an HTML5 web client.
+  description: >
+    KasmVNC is an open-source remote desktop solution that makes any desktop
+    accessible through a web browser. It streams the VNC session as a
+    lightweight video stream, providing a smooth remote desktop experience
+    without requiring any client software. Supports clipboard sharing,
+    file transfer, and session recording.
+  usecases:
+    [
+      Provide browser-based remote access to a Linux desktop environment.,
+      Run a disposable browsing environment accessible from any device.,
+      Stream a graphical workspace to users without requiring VNC clients.
+    ]
+  website: https://kasmweb.com
+  notes: [
+      "Default credentials are kasm_user / password — change immediately.",
+      "For persistent sessions, mount a volume to /home/kasm-user.",
+      "Good companion with browser isolation and secure access use cases."
+    ]
+
+services:
+  kasmvnc:
+    image: kasmweb/core-ubuntu-jammy:latest
+    container_name: kasmvnc
+    labels:
+      yantr.app: kasmvnc
+      yantr.service.6901: Web UI
+      yantr.port.6901: HTTP
+    ports:
+      - "6901"
+    environment:
+      KASM_USER: ${KASM_USER:-kasm_user}
+      KASM_PASSWORD: ${KASM_PASSWORD}
+    shm_size: "2g"
+    volumes:
+      - kasmvnc_data:/home/kasm-user
+    restart: unless-stopped
+
+volumes:
+  kasmvnc_data: null

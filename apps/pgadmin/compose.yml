@@ -1,0 +1,43 @@
+x-yantr:
+  name: pgAdmin
+  tags: [ database, postgresql, admin, devops, self-hosted ]
+  short_description: Feature-rich web-based administration and development platform
+    for PostgreSQL.
+  description: >
+    pgAdmin is the most popular open-source administration and development
+    platform for PostgreSQL. It provides a web-based UI for managing databases,
+    running queries, monitoring performance, and managing users and permissions.
+    Supports all PostgreSQL versions and most PostgreSQL extensions.
+  usecases:
+    [
+      Manage PostgreSQL databases through an intuitive web interface.,
+      Run and debug SQL queries with the built-in query tool.,
+      Monitor database performance and inspect query execution plans.
+    ]
+  website: https://www.pgadmin.org
+  notes:
+    [
+      "Set PGADMIN_DEFAULT_EMAIL and PGADMIN_DEFAULT_PASSWORD on first run.",
+      "For production, use a persistent volume and place behind a reverse proxy.",
+      "Supports multiple server connections for managing several databases."
+    ]
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    labels:
+      yantr.app: pgadmin
+      yantr.service.5050: Web UI
+      yantr.port.5050: HTTP
+    ports:
+      - "5050"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+
+volumes:
+  pgadmin_data: null

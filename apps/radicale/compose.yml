@@ -1,0 +1,46 @@
+x-yantr:
+  name: Radicale
+  tags: [ calendar, contacts, caldav, carddav, self-hosted ]
+  short_description: Lightweight, self-hosted CalDAV and CardDAV server for
+    syncing calendars and contacts across devices.
+  description: >
+    Radicale is a lightweight, self-hosted CalDAV and CardDAV server for
+    storing and sharing calendars and contact lists. It supports standard
+    protocols, making it compatible with Thunderbird, Apple Calendar,
+    DAVx5, and other CalDAV/CardDAV clients. Simple to set up with minimal
+    dependencies.
+  usecases:
+    [
+      Sync calendars and contacts across all your devices without third-party services.,
+      Share calendars with family or team members using built-in access control.,
+      Replace Google Calendar and Contacts with a privacy-respecting alternative.
+    ]
+  website: https://radicale.org
+  notes:
+    [
+      "Create user credentials in the htpasswd file before first start.",
+      "Calendars and contacts are stored in the data volume.",
+      "Compatible with virtually all CalDAV/CardDAV clients."
+    ]
+
+services:
+  radicale:
+    image: tomsquest/docker-radicale:latest
+    container_name: radicale
+    labels:
+      yantr.app: radicale
+      yantr.service.5232: Web UI
+      yantr.port.5232: HTTP
+    ports:
+      - "5232"
+    volumes:
+      - radicale_data:/data
+      - radicale_config:/config
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  radicale_data: null
+  radicale_config: null

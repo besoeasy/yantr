@@ -1,0 +1,44 @@
+x-yantr:
+  name: LiveKit
+  tags: [ video, communication, webrtc, real-time, self-hosted ]
+  short_description: Open-source WebRTC SFU for building real-time video, audio,
+    and data applications.
+  description: >
+    LiveKit is an open-source WebRTC Selective Forwarding Unit (SFU) for
+    building real-time video, audio, and data applications. It handles the
+    heavy lifting of WebRTC infrastructure including signaling, TURN server,
+    and media routing. Use it to build video calls, live streaming, and
+    interactive broadcasting into your own apps.
+  usecases:
+    [
+      Embed real-time video and audio in your own applications.,
+      Build custom video conferencing or live streaming platforms.,
+      Create interactive broadcasting and audience participation features.
+    ]
+  website: https://livekit.io
+  notes:
+    [
+      "Generate an API key and secret via livekit-cli or the server config.",
+      "Requires a public IP or TURN server for NAT traversal.",
+      "Works well with Next.js, React, and other web frameworks."
+    ]
+
+services:
+  livekit:
+    image: livekit/livekit-server:latest
+    container_name: livekit
+    labels:
+      yantr.app: livekit
+      yantr.service.7880: Web UI
+      yantr.port.7880: HTTP
+    ports:
+      - "7880"
+      - "7881:7881/udp"
+      - "50000-50100:50000-50100/udp"
+    command: --config /etc/livekit.yaml --node-ip ${LIVEKIT_NODE_IP:-auto}
+    volumes:
+      - livekit_config:/etc/livekit
+    restart: unless-stopped
+
+volumes:
+  livekit_config: null

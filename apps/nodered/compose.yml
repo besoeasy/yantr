@@ -1,0 +1,43 @@
+x-yantr:
+  name: Node-RED
+  tags: [ automation, iot, workflow, development, self-hosted ]
+  short_description: Flow-based visual programming tool for wiring together
+    hardware, APIs, and online services.
+  description: >
+    Node-RED is a flow-based development tool for visual programming of
+    event-driven applications. It provides a browser-based editor for wiring
+    together devices, APIs, and services using a rich library of nodes. Ideal
+    for IoT automation, home automation, and integrating disparate systems
+    with minimal code.
+  usecases:
+    [
+      Wire together IoT devices and sensors into automated workflows.,
+      Integrate APIs and webhooks for event-driven automation.,
+      Build dashboards for monitoring and controlling connected devices.
+    ]
+  website: https://nodered.org
+  notes:
+    [
+      "Install additional nodes via the Palette Manager in the browser UI.",
+      "Flows are stored in the volume and persist across restarts.",
+      "Useful companion for MQTT, Zigbee2MQTT, and ESPHome setups."
+    ]
+
+services:
+  nodered:
+    image: nodered/node-red:latest
+    container_name: nodered
+    labels:
+      yantr.app: nodered
+      yantr.service.1880: Web UI
+      yantr.port.1880: HTTP
+    ports:
+      - "1880"
+    volumes:
+      - nodered_data:/data
+    environment:
+      TZ: ${TZ:-UTC}
+    restart: unless-stopped
+
+volumes:
+  nodered_data: null

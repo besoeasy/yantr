@@ -1,0 +1,42 @@
+x-yantr:
+  name: Collabora
+  tags: [ documents, collaboration, office, productivity, self-hosted ]
+  short_description: LibreOffice-based online office suite for collaborative
+    document editing in your browser.
+  description: >
+    Collabora Online Development Edition is a powerful LibreOffice-based online
+    office suite that runs in your browser. It supports editing and collaboration
+    on Writer, Calc, and Impress documents. Integrates with Nextcloud, ownCloud,
+    and other storage backends for seamless document workflows.
+  usecases:
+    [
+      Edit and collaborate on LibreOffice-compatible documents in a browser.,
+      Integrate with Nextcloud for in-browser document editing.,
+      Self-host a full office suite without licensing fees.
+    ]
+  website: https://www.collaboraoffice.com
+  notes:
+    [
+      "Ensure the host has sufficient CPU for LibreOffice rendering.",
+      "Set the coolwsd --o:storage.wopi.host option to allowlist your integration.",
+      "Runs in coolwsd mode by default — suitable for single-server setups."
+    ]
+
+services:
+  collabora:
+    image: collabora/code:latest
+    container_name: collabora
+    labels:
+      yantr.app: collabora
+      yantr.service.9980: Web UI
+      yantr.port.9980: HTTP
+    ports:
+      - "9980"
+    environment:
+      domain: ${COLLABORA_DOMAIN:-localhost}
+      extra_params: --o:ssl.enable=false
+    cap_add:
+      - MKNOD
+    restart: unless-stopped
+
+volumes: null

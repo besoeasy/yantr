@@ -1,0 +1,56 @@
+x-yantr:
+  name: Guacamole
+  tags: [ remote-desktop, guacamole, vnc, rdp, self-hosted ]
+  short_description: Clientless remote desktop gateway supporting VNC, RDP, SSH,
+    and Telnet through a web browser.
+  description: >
+    Apache Guacamole is a clientless remote desktop gateway that provides
+    remote access to desktops through a web browser using standard protocols
+    like VNC, RDP, and SSH. No plugins or client software are required —
+    users simply open a browser to access their remote environments.
+  usecases:
+    [
+      Access remote desktops (VNC, RDP) from any device with a web browser.,
+      Provide centralized, audited access to servers and workstations.,
+      Enable remote work without requiring VPN clients or installed software.
+    ]
+  website: https://guacamole.apache.org
+  notes:
+    [
+      "guacd is the proxy daemon — Guacamole connects to it internally.",
+      "Configure remote connections through the web UI after first login.",
+      "Supports TOTP and RADIUS for multi-factor authentication."
+    ]
+
+services:
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guacamole
+    labels:
+      yantr.app: guacamole
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      GUACD_HOSTNAME: guacd
+      MYSQL_HOSTNAME: ${GUAC_MYSQL_HOST:-}
+      MYSQL_DATABASE: ${GUAC_MYSQL_DB:-guacamole}
+      MYSQL_USER: ${GUAC_MYSQL_USER:-guacamole}
+      MYSQL_PASSWORD: ${GUAC_MYSQL_PASSWORD:-}
+    depends_on:
+      - guacd
+    restart: unless-stopped
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guacd
+    labels:
+      yantr.app: guacamole
+      yantr.service.4822: Guacamole Daemon
+      yantr.port.4822: TCP
+    volumes:
+      - guacd_data:/var/lib/guacamole
+    restart: unless-stopped
+
+volumes:
+  guacd_data: null

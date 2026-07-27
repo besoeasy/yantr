@@ -1,0 +1,47 @@
+x-yantr:
+  name: Prometheus
+  tags: [ monitoring, metrics, alerting, devops, self-hosted ]
+  short_description: Open-source systems monitoring and alerting toolkit with
+    a dimensional data model.
+  description: >
+    Prometheus is an open-source monitoring and alerting toolkit designed for
+    reliability. It collects metrics via a pull model, stores them in a
+    time-series database, and supports a powerful query language (PromQL) for
+    analysis. Paired with Grafana, it provides deep visibility into
+    infrastructure, applications, and business metrics.
+  usecases:
+    [
+      Collect and store metrics from servers, containers, and applications.,
+      Create alerts with Alertmanager for threshold-based notifications.,
+      Use PromQL to build dashboards and analyze system performance.
+    ]
+  website: https://prometheus.io
+  notes:
+    [
+      "Pair with Grafana for visualization and dashboarding.",
+      "Scrape targets by adding them to prometheus.yml in the volume.",
+      "Includes built-in service discovery for Docker and Kubernetes."
+    ]
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    labels:
+      yantr.app: prometheus
+      yantr.service.9090: Web UI
+      yantr.port.9090: HTTP
+    ports:
+      - "9090"
+    volumes:
+      - prometheus_data:/prometheus
+      - prometheus_config:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=30d"
+      - "--web.enable-lifecycle"
+    restart: unless-stopped
+
+volumes:
+  prometheus_data: null
+  prometheus_config: null
