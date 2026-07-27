@@ -1,4 +1,29 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#009688"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Tg</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0d3a"/>
+      <stop offset="100%" stop-color="#100624"/>
+    </linearGradient>
+    <linearGradient id="clk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="tag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <circle cx="98" cy="128" r="46" fill="none" stroke="url(#clk)" stroke-width="4"/>
+  <circle cx="98" cy="128" r="4" fill="url(#clk)"/>
+  <line x1="98" y1="128" x2="98" y2="96" stroke="url(#clk)" stroke-width="4.5" stroke-linecap="round"/>
+  <line x1="98" y1="128" x2="126" y2="136" stroke="url(#clk)" stroke-width="3.5" stroke-linecap="round"/>
+  <g stroke="url(#clk)" stroke-width="2.5" opacity="0.55">
+    <line x1="98" y1="88" x2="98" y2="94"/>
+    <line x1="98" y1="162" x2="98" y2="168"/>
+    <line x1="58" y1="128" x2="64" y2="128"/>
+    <line x1="132" y1="128" x2="138" y2="128"/>
+  </g>
+  <path d="M152 94 h44 q8 0 8 8 v32 q0 8 -8 8 h-44 l-18 -24 z" fill="none" stroke="url(#tag)" stroke-width="3.5" stroke-linejoin="round"/>
+  <circle cx="174" cy="118" r="5" fill="url(#tag)"/>
 </svg>

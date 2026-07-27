@@ -1,4 +1,36 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#00BCD4"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">S3</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d2a3a"/>
+      <stop offset="100%" stop-color="#061a24"/>
+    </linearGradient>
+    <linearGradient id="cyl" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="arr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <g opacity="0.95">
+    <rect x="88" y="50" width="80" height="34" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="50" rx="40" ry="10" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="84" rx="40" ry="10" fill="url(#cyl)"/>
+  </g>
+  <g opacity="0.78">
+    <rect x="88" y="110" width="80" height="34" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="110" rx="40" ry="10" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="144" rx="40" ry="10" fill="url(#cyl)"/>
+  </g>
+  <g opacity="0.6">
+    <rect x="88" y="170" width="80" height="34" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="170" rx="40" ry="10" fill="url(#cyl)"/>
+    <ellipse cx="128" cy="204" rx="40" ry="10" fill="url(#cyl)"/>
+  </g>
+  <path d="M68 70 Q48 70 48 100 Q48 130 68 130" fill="none" stroke="url(#arr)" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="68,126 60,118 60,134" fill="url(#arr)"/>
+  <path d="M188 186 Q208 186 208 156 Q208 128 188 128" fill="none" stroke="url(#arr)" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="188,132 196,140 196,124" fill="url(#arr)"/>
 </svg>

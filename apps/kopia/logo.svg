@@ -1,9 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
-  <rect width="256" height="256" rx="48" fill="#1A1A2E"/>
-  <g transform="translate(128,118)">
-    <path d="M-60,10 C-60,-40 -30,-70 20,-70 C70,-70 80,-30 60,10 L50,40 L-50,40 Z" fill="#2F80FF" opacity="0.9"/>
-    <path d="M-40,20 C-40,-20 -15,-50 20,-50 C55,-50 60,-20 50,20 L40,44 L-40,44 Z" fill="#1A1A2E"/>
-    <path d="M-25,30 C-25,5 0,-15 25,-15 C50,-15 50,5 40,30 L25,44 L-25,44 Z" fill="#2F80FF" opacity="0.7"/>
-  </g>
-  <text x="128" y="210" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="32" fill="white">KOPIA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003b36"/>
+      <stop offset="100%" stop-color="#002620"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00b894"/>
+      <stop offset="100%" stop-color="#00a86b"/>
+    </linearGradient>
+    <linearGradient id="disk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00cec9"/>
+      <stop offset="100%" stop-color="#0984e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M 128 38 L 200 64 V 135 Q 200 184 128 214 Q 56 184 56 135 V 64 Z" fill="url(#shield)" opacity="0.92"/>
+  <circle cx="128" cy="125" r="36" fill="url(#disk)"/>
+  <circle cx="128" cy="125" r="14" fill="#003b36" opacity="0.6"/>
+  <rect x="100" y="122" width="56" height="6" rx="3" fill="#003b36" opacity="0.5"/>
+  <rect x="108" y="114" width="40" height="4" rx="2" fill="#003b36" opacity="0.3"/>
+  <path d="M 175 105 A 58 58 0 0 0 88 90" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="82,95 95,82 97,100" fill="#fff"/>
 </svg>

@@ -1,4 +1,23 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#FF0000"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Y</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a0d0d"/>
+      <stop offset="100%" stop-color="#240606"/>
+    </linearGradient>
+    <linearGradient id="ply" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="tray" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <circle cx="128" cy="88" r="42" fill="none" stroke="url(#ply)" stroke-width="4"/>
+  <polygon points="110,66 110,110 146,88" fill="url(#ply)"/>
+  <rect x="76" y="152" width="104" height="44" rx="8" fill="none" stroke="url(#tray)" stroke-width="3.5"/>
+  <line x1="128" y1="128" x2="128" y2="162" stroke="url(#tray)" stroke-width="3.5" stroke-linecap="round"/>
+  <polyline points="114,150 128,164 142,150" fill="none" stroke="url(#tray)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="90" y1="182" x2="166" y2="182" stroke="url(#tray)" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
 </svg>

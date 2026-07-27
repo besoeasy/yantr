@@ -1,4 +1,19 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#1A237E"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFD54F">L</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d0a3d"/>
+      <stop offset="100%" stop-color="#1a001a"/>
+    </linearGradient>
+    <linearGradient id="magnet" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="50%" stop-color="#ff4757"/>
+      <stop offset="100%" stop-color="#a29bfe"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M 86 175 V 130 Q 86 100 128 100 Q 170 100 170 130 V 175" fill="none" stroke="url(#magnet)" stroke-width="14" stroke-linecap="round"/>
+  <rect x="86" y="175" width="14" height="10" rx="4" fill="#ff4757"/>
+  <rect x="156" y="175" width="14" height="10" rx="4" fill="#48dbfb"/>
+  <circle cx="130" cy="95" r="34" fill="none" stroke="#00d2ff" stroke-width="8"/>
+  <line x1="153" y1="118" x2="185" y2="150" stroke="#00d2ff" stroke-width="8" stroke-linecap="round"/>
 </svg>

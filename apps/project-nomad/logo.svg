@@ -1,4 +1,29 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#3E2723"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#8D6E63">N</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a332a"/>
+      <stop offset="100%" stop-color="#0d1f19"/>
+    </linearGradient>
+    <linearGradient id="grn" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gld" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="64" y="142" width="128" height="12" rx="4" fill="#374151"/>
+  <rect x="72" y="54" width="112" height="88" rx="6" fill="#1f2937" stroke="url(#grn)" stroke-width="2"/>
+  <rect x="78" y="60" width="100" height="76" rx="4" fill="#111827"/>
+  <circle cx="128" cy="98" r="24" fill="none" stroke="url(#gld)" stroke-width="2.5"/>
+  <path d="M128 74 V122 M104 98 H152" stroke="url(#gld)" stroke-width="2.5" stroke-linecap="round"/>
+  <polygon points="128,78 125,88 131,88" fill="url(#gld)"/>
+  <polygon points="128,118 125,108 131,108" fill="url(#gld)"/>
+  <polygon points="148,98 138,95 138,101" fill="url(#gld)"/>
+  <polygon points="108,98 118,95 118,101" fill="url(#gld)"/>
+  <circle cx="128" cy="98" r="3" fill="url(#gld)"/>
+  <rect x="125" y="86" width="6" height="24" rx="2" fill="url(#grn)" opacity="0.4"/>
+  <rect x="118" y="93" width="20" height="6" rx="2" fill="url(#grn)" opacity="0.4"/>
 </svg>

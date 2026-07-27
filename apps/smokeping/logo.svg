@@ -1,4 +1,32 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#607D8B"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#B0BEC5">Sp</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3a2a0d"/>
+      <stop offset="100%" stop-color="#241a06"/>
+    </linearGradient>
+    <linearGradient id="grf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="nod" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <g stroke="#6b7280" stroke-width="1" opacity="0.25">
+    <line x1="52" y1="60" x2="52" y2="196"/>
+    <line x1="52" y1="196" x2="204" y2="196"/>
+    <line x1="52" y1="128" x2="204" y2="128"/>
+    <line x1="52" y1="78" x2="204" y2="78"/>
+    <line x1="90" y1="60" x2="90" y2="196"/>
+    <line x1="128" y1="60" x2="128" y2="196"/>
+    <line x1="166" y1="60" x2="166" y2="196"/>
+  </g>
+  <polyline points="60,184 90,140 128,98 166,120 196,78" fill="none" stroke="url(#grf)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="128" cy="98" r="9" fill="url(#nod)"/>
+  <circle cx="196" cy="78" r="9" fill="url(#nod)"/>
+  <path d="M128 98 Q162 56 196 78" fill="none" stroke="url(#grf)" stroke-width="2" stroke-dasharray="5,4" opacity="0.55"/>
+  <line x1="128" y1="98" x2="128" y2="58" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,4" opacity="0.4"/>
+  <line x1="196" y1="78" x2="196" y2="48" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3,4" opacity="0.4"/>
 </svg>

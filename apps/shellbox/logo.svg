@@ -1,4 +1,26 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#263238"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#00E676">Sb</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d2e3a"/>
+      <stop offset="100%" stop-color="#081f24"/>
+    </linearGradient>
+    <linearGradient id="sh" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="key" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="48" y="64" width="100" height="80" rx="8" fill="#1a2e33" stroke="url(#sh)" stroke-width="3"/>
+  <line x1="48" y1="86" x2="148" y2="86" stroke="url(#sh)" stroke-width="3"/>
+  <circle cx="66" cy="75" r="3" fill="url(#sh)" opacity="0.6"/>
+  <polyline points="72,108 84,116 72,124" fill="none" stroke="url(#sh)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="88" y="114" width="14" height="4" rx="2" fill="url(#sh)"/>
+  <circle cx="188" cy="104" r="18" fill="none" stroke="url(#key)" stroke-width="4"/>
+  <rect x="202" y="96" width="24" height="16" rx="3" fill="url(#key)"/>
+  <rect x="220" y="96" width="6" height="6" rx="1" fill="url(#key)" opacity="0.7"/>
+  <rect x="220" y="106" width="6" height="6" rx="1" fill="url(#key)" opacity="0.7"/>
 </svg>

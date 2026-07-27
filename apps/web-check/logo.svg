@@ -1,4 +1,24 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#1B5E20"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Wc</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e2229"/>
+      <stop offset="100%" stop-color="#12151a"/>
+    </linearGradient>
+    <linearGradient id="mag" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#94a3b8"/>
+      <stop offset="100%" stop-color="#64748b"/>
+    </linearGradient>
+    <linearGradient id="glb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <circle cx="106" cy="118" r="42" fill="none" stroke="url(#glb)" stroke-width="3"/>
+  <ellipse cx="106" cy="118" rx="20" ry="42" fill="none" stroke="url(#glb)" stroke-width="1.5" opacity="0.55"/>
+  <ellipse cx="106" cy="118" rx="42" ry="15" fill="none" stroke="url(#glb)" stroke-width="1.5" opacity="0.55"/>
+  <ellipse cx="106" cy="118" rx="10" ry="42" fill="none" stroke="url(#glb)" stroke-width="1.5" opacity="0.25" transform="rotate(45 106 118)"/>
+  <circle cx="162" cy="76" r="30" fill="none" stroke="url(#mag)" stroke-width="5"/>
+  <line x1="184" y1="98" x2="212" y2="126" stroke="url(#mag)" stroke-width="5" stroke-linecap="round"/>
+  <path d="M146 60 Q154 56 164 60" fill="none" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
 </svg>

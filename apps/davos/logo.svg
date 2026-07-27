@@ -1,4 +1,19 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#37474F"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#4FC3F7">Dv</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004e64"/>
+      <stop offset="100%" stop-color="#002c3d"/>
+    </linearGradient>
+    <linearGradient id="icon" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f5d4"/>
+      <stop offset="100%" stop-color="#00b4d8"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M 65 105 H 191 L 175 185 Q 172 195 162 195 H 94 Q 84 195 81 185 Z" fill="url(#icon)" opacity="0.9"/>
+  <line x1="90" y1="130" x2="166" y2="130" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="95" y1="150" x2="161" y2="150" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="90" y1="170" x2="166" y2="170" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="128" y1="60" x2="128" y2="105" stroke="url(#icon)" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="115,90 128,73 141,90" fill="url(#icon)"/>
 </svg>

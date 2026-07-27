@@ -1,4 +1,28 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#E91E63"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Mp</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5c1010"/>
+      <stop offset="100%" stop-color="#330000"/>
+    </linearGradient>
+    <linearGradient id="rocket" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="60" y="130" width="136" height="65" rx="6" fill="#ecf0f1"/>
+  <polygon points="60,130 196,130 60,195" fill="#1a1a2e"/>
+  <polygon points="196,130 196,195 60,195" fill="#ecf0f1"/>
+  <line x1="76" y1="130" x2="86" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <line x1="96" y1="130" x2="106" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <line x1="116" y1="130" x2="126" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <line x1="136" y1="130" x2="146" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <line x1="156" y1="130" x2="166" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <line x1="176" y1="130" x2="186" y2="195" stroke="#ecf0f1" stroke-width="4"/>
+  <rect x="60" y="121" width="55" height="11" rx="3" fill="#8B4513"/>
+  <path d="M 128 40 Q 116 72 116 95 Q 116 112 128 118 Q 140 112 140 95 Q 140 72 128 40 Z" fill="url(#rocket)"/>
+  <path d="M 108 105 L 117 115 L 117 103 Z" fill="url(#rocket)"/>
+  <path d="M 148 105 L 139 115 L 139 103 Z" fill="url(#rocket)"/>
+  <circle cx="128" cy="82" r="8" fill="#48dbfb"/>
+  <path d="M 119 118 Q 128 135 137 118 Z" fill="#feca57"/>
 </svg>

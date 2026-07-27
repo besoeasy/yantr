@@ -1,4 +1,35 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#FF5722"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Or</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#003d1a"/>
+      <stop offset="100%" stop-color="#001a0a"/>
+    </linearGradient>
+    <linearGradient id="pole" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00b894"/>
+      <stop offset="100%" stop-color="#00a86b"/>
+    </linearGradient>
+    <linearGradient id="sign1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00cec9"/>
+      <stop offset="100%" stop-color="#0984e3"/>
+    </linearGradient>
+    <linearGradient id="sign2" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#00cec9"/>
+      <stop offset="100%" stop-color="#0984e3"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="122" y="85" width="12" height="135" rx="5" fill="url(#pole)"/>
+  <rect x="134" y="95" width="58" height="26" rx="6" fill="url(#sign1)"/>
+  <polygon points="192,108 206,108 198,95" fill="url(#sign1)"/>
+  <rect x="64" y="138" width="58" height="26" rx="6" fill="url(#sign2)"/>
+  <polygon points="64,151 50,151 58,138" fill="url(#sign2)"/>
+  <line x1="92" y1="55" x2="128" y2="38" stroke="#ff6b6b" stroke-width="3" stroke-linecap="round"/>
+  <line x1="128" y1="38" x2="164" y2="55" stroke="#48dbfb" stroke-width="3" stroke-linecap="round"/>
+  <line x1="92" y1="55" x2="164" y2="55" stroke="#feca57" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="92" cy="55" r="12" fill="#ff6b6b"/>
+  <circle cx="128" cy="38" r="12" fill="#48dbfb"/>
+  <circle cx="164" cy="55" r="12" fill="#feca57"/>
+  <circle cx="92" cy="55" r="4" fill="#fff" opacity="0.5"/>
+  <circle cx="128" cy="38" r="4" fill="#fff" opacity="0.5"/>
+  <circle cx="164" cy="55" r="4" fill="#fff" opacity="0.5"/>
 </svg>

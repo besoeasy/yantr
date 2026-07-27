@@ -1,4 +1,24 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#4285F4"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Wh</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1f3a"/>
+      <stop offset="100%" stop-color="#061424"/>
+    </linearGradient>
+    <linearGradient id="srch" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="shd" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M128 64 v84 q0 18 -36 34 q-36 -16 -36 -34 v-84 l36 -22 z" fill="none" stroke="url(#shd)" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M128 76 v64 q0 10 -24 20 q-24 -10 -24 -20 v-64 l24 -16 z" fill="url(#shd)" opacity="0.3"/>
+  <rect x="52" y="100" width="152" height="48" rx="24" fill="#1e293b" stroke="url(#srch)" stroke-width="2.5"/>
+  <circle cx="88" cy="124" r="12" fill="none" stroke="url(#srch)" stroke-width="2.5"/>
+  <line x1="98" y1="134" x2="108" y2="144" stroke="url(#srch)" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="128" y="118" width="4" height="12" rx="2" fill="url(#srch)" opacity="0.8"/>
+  <rect x="52" y="140" width="96" height="3" rx="1.5" fill="url(#srch)" opacity="0.35"/>
 </svg>

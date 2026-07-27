@@ -1,4 +1,25 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#F44336"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Pi</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001a0a"/>
+      <stop offset="100%" stop-color="#000d05"/>
+    </linearGradient>
+    <linearGradient id="arc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00ff88"/>
+      <stop offset="100%" stop-color="#00b894"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M 55 205 A 55 55 0 0 1 110 150" fill="none" stroke="url(#arc)" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 55 205 A 90 90 0 0 1 145 115" fill="none" stroke="url(#arc)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="6,6"/>
+  <path d="M 55 205 A 128 128 0 0 1 183 77" fill="none" stroke="url(#arc)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="10,8"/>
+  <line x1="55" y1="205" x2="170" y2="90" stroke="#00ff88" stroke-width="2" opacity="0.35"/>
+  <circle cx="90" cy="168" r="7" fill="#ff6b6b"/>
+  <circle cx="55" cy="205" r="6" fill="#00ff88"/>
+  <circle cx="125" cy="150" r="6" fill="#48dbfb"/>
+  <circle cx="150" cy="125" r="5" fill="#feca57"/>
+  <circle cx="170" cy="100" r="7" fill="#ff9ff3"/>
+  <circle cx="105" cy="140" r="4" fill="#00ff88" opacity="0.7"/>
+  <circle cx="80" cy="180" r="4" fill="#a29bfe"/>
+  <circle cx="140" cy="138" r="3" fill="#fff" opacity="0.5"/>
 </svg>

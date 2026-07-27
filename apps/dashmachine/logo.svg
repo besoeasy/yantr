@@ -1,4 +1,27 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#4CAF50"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">D</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1b69"/>
+      <stop offset="100%" stop-color="#1a0a3e"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="68" y="68" width="52" height="52" rx="10" fill="#3b82f6" opacity="0.9"/>
+  <rect x="136" y="68" width="52" height="52" rx="10" fill="#10b981" opacity="0.9"/>
+  <rect x="68" y="136" width="52" height="52" rx="10" fill="#f59e0b" opacity="0.9"/>
+  <rect x="136" y="136" width="52" height="52" rx="10" fill="#ec4899" opacity="0.9"/>
+  <circle cx="94" cy="94" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <circle cx="94" cy="94" r="4" fill="#fff"/>
+  <line x1="94" y1="81" x2="94" y2="85" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="94" y1="103" x2="94" y2="107" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="81" y1="94" x2="85" y2="94" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="103" y1="94" x2="107" y2="94" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="150" y="86" width="6" height="18" rx="2" fill="#fff"/>
+  <rect x="159" y="78" width="6" height="26" rx="2" fill="#fff"/>
+  <rect x="168" y="93" width="6" height="11" rx="2" fill="#fff"/>
+  <path d="M 82 160 v 14 q 0 3 3 3 h 18 q 3 0 3 -3 v -8 q 0 -3 -3 -3 h -9 l -4 -4 q -2 -2 -4 -2 h -4 q -3 0 -3 3 z" fill="none" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+  <circle cx="162" cy="162" r="10" fill="none" stroke="#fff" stroke-width="2.5"/>
+  <ellipse cx="162" cy="162" rx="10" ry="3.5" fill="none" stroke="#fff" stroke-width="1.5"/>
+  <line x1="152" y1="162" x2="172" y2="162" stroke="#fff" stroke-width="1.5"/>
+  <line x1="162" y1="152" x2="162" y2="172" stroke="#fff" stroke-width="1.5" opacity="0.5"/>
 </svg>

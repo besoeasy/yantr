@@ -1,4 +1,22 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#F44336"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">Fs</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a0000"/>
+      <stop offset="100%" stop-color="#2d0000"/>
+    </linearGradient>
+    <linearGradient id="controller" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#ee5a24"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="65" y="95" width="126" height="45" rx="16" fill="url(#controller)"/>
+  <rect x="50" y="115" width="32" height="48" rx="14" fill="url(#controller)"/>
+  <rect x="174" y="115" width="32" height="48" rx="14" fill="url(#controller)"/>
+  <rect x="78" y="108" width="14" height="8" rx="3" fill="#1a1a2e" opacity="0.4"/>
+  <rect x="98" y="108" width="14" height="8" rx="3" fill="#1a1a2e" opacity="0.4"/>
+  <circle cx="168" cy="118" r="6" fill="#1a1a2e" opacity="0.4"/>
+  <circle cx="184" cy="130" r="6" fill="#1a1a2e" opacity="0.4"/>
+  <circle cx="160" cy="132" r="6" fill="#1a1a2e" opacity="0.4"/>
+  <path d="M 115 103 L 115 132 L 140 117.5 Z" fill="#fff"/>
 </svg>

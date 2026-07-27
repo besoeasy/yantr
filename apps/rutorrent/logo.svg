@@ -1,4 +1,27 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#4CAF50"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">rT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#12122e"/>
+      <stop offset="100%" stop-color="#0a0a1e"/>
+    </linearGradient>
+    <linearGradient id="term" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="dl" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="56" y="48" width="144" height="88" rx="8" fill="#1e1e2e" stroke="url(#term)" stroke-width="2"/>
+  <circle cx="74" cy="66" r="4" fill="#f87171"/>
+  <circle cx="90" cy="66" r="4" fill="#fbbf24"/>
+  <circle cx="106" cy="66" r="4" fill="#34d399"/>
+  <line x1="64" y1="88" x2="96" y2="88" stroke="url(#term)" stroke-width="3" stroke-linecap="round"/>
+  <polyline points="96,84 104,88 96,92" fill="none" stroke="url(#term)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="108" y="86" width="10" height="4" fill="url(#term)" opacity="0.8"/>
+  <rect x="100" y="158" width="56" height="32" rx="6" fill="none" stroke="url(#dl)" stroke-width="3"/>
+  <line x1="128" y1="142" x2="128" y2="170" stroke="url(#dl)" stroke-width="3.5" stroke-linecap="round"/>
+  <polyline points="116,160 128,172 140,160" fill="none" stroke="url(#dl)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

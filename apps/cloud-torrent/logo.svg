@@ -1,4 +1,23 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#2196F3"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FFFFFF">CT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f3443"/>
+      <stop offset="100%" stop-color="#1a2980"/>
+    </linearGradient>
+    <linearGradient id="cloud" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e0f7fa"/>
+      <stop offset="100%" stop-color="#80deea"/>
+    </linearGradient>
+    <linearGradient id="magnet" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#feca57"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <path d="M 60 145 C 60 115 80 90 115 95 C 125 60 175 55 195 85 C 225 80 240 110 235 140 C 245 155 235 175 215 175 H 75 C 50 175 50 145 60 145 Z" fill="url(#cloud)"/>
+  <line x1="128" y1="115" x2="128" y2="148" stroke="#0288d1" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="115,140 128,158 141,140" fill="#0288d1"/>
+  <path d="M 88 178 H 102 V 200 Q 102 220 128 220 Q 154 220 154 200 V 178 H 168" fill="none" stroke="url(#magnet)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="88" y="178" width="14" height="10" rx="3" fill="#ff4757"/>
+  <rect x="154" y="178" width="14" height="10" rx="3" fill="#48dbfb"/>
 </svg>

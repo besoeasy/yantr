@@ -1,11 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8B5CF6"/>
-      <stop offset="100%" style="stop-color:#6D28D9"/>
+      <stop offset="0%" stop-color="#0f0c29"/>
+      <stop offset="100%" stop-color="#302b63"/>
+    </linearGradient>
+    <linearGradient id="strip" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00d2ff"/>
+      <stop offset="100%" stop-color="#3a7bd5"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#feca57"/>
     </linearGradient>
   </defs>
   <rect width="256" height="256" rx="48" fill="url(#bg)"/>
-  <text x="128" y="130" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">8MB</text>
-  <text x="128" y="175" font-family="Arial, sans-serif" font-size="24" fill="white" opacity="0.8" text-anchor="middle">.local</text>
+  <rect x="78" y="40" width="100" height="176" rx="8" fill="url(#strip)" opacity="0.92"/>
+  <rect x="78" y="52" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="76" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="100" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="124" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="148" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="172" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="78" y="196" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="52" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="76" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="100" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="124" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="148" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="172" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="172" y="196" width="6" height="14" rx="3" fill="#0f0c29" opacity="0.35"/>
+  <rect x="92" y="56" width="72" height="32" rx="3" fill="#0f0c29" opacity="0.2"/>
+  <rect x="92" y="96" width="72" height="32" rx="3" fill="#0f0c29" opacity="0.15"/>
+  <rect x="92" y="136" width="72" height="32" rx="3" fill="#0f0c29" opacity="0.2"/>
+  <rect x="92" y="176" width="72" height="32" rx="3" fill="#0f0c29" opacity="0.15"/>
+  <line x1="88" y1="92" x2="168" y2="92" stroke="#0f0c29" stroke-width="1.5" opacity="0.25"/>
+  <line x1="88" y1="132" x2="168" y2="132" stroke="#0f0c29" stroke-width="1.5" opacity="0.25"/>
+  <line x1="88" y1="172" x2="168" y2="172" stroke="#0f0c29" stroke-width="1.5" opacity="0.25"/>
+  <path d="M 52 128 L 72 106 V 150 Z" fill="url(#arrow)"/>
+  <path d="M 204 128 L 184 106 V 150 Z" fill="url(#arrow)"/>
 </svg>

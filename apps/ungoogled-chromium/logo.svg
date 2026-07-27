@@ -1,4 +1,25 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="128" cy="128" r="128" fill="#690000"/>
-  <text x="128" y="145" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="bold" font-size="120" fill="#FF1F20">UC</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1a3a"/>
+      <stop offset="100%" stop-color="#061024"/>
+    </linearGradient>
+    <linearGradient id="win" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="shd" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="url(#bg)"/>
+  <rect x="44" y="52" width="168" height="132" rx="8" fill="#1e293b" stroke="url(#win)" stroke-width="2"/>
+  <rect x="44" y="52" width="168" height="32" rx="8" fill="#0f172a"/>
+  <rect x="44" y="78" width="168" height="6" fill="#0f172a"/>
+  <rect x="56" y="58" width="56" height="20" rx="4" fill="#1e293b"/>
+  <rect x="120" y="58" width="40" height="20" rx="4" fill="#334155"/>
+  <rect x="56" y="94" width="144" height="12" rx="6" fill="#334155"/>
+  <path d="M128 112 v34 q0 14 -28 26 q-28 -12 -28 -26 v-34 l28 -16 z" fill="url(#shd)" opacity="0.9"/>
+  <path d="M128 116 v26 q0 8 -20 17 q-20 -9 -20 -17 v-26 l20 -12 z" fill="#0d1a3a" opacity="0.4"/>
 </svg>
