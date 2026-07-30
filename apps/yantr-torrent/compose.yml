@@ -1,23 +1,39 @@
 x-yantr:
-  name: yantr-downloader
-  tags: [torrent, download, p2p, webdav, files]
-  short_description: "Torrent downloader with WebDAV and auto-cleanup."
+  name: yantr-torrent
+  tags: [torrent, download, p2p, webdav, storage]
+  short_description: "All-in-one torrent downloader with WebDAV file access and automatic cleanup."
+  description: >
+    A lightweight self-hosted torrent download server combining Deluge BitTorrent client
+    and Dufs WebDAV file manager. Easily stream, download, and manage your torrent files
+    over WebDAV, featuring automatic cleanup of old downloads and low system overhead.
+  usecases: ["Download torrents using Deluge Web UI.", "Access and stream downloaded files via WebDAV.", "Automatically delete downloads older than 30 days."]
+  website: "https://github.com/besoeasy/yantr"
+  customapp: true
+  notes: ["Deluge Web UI default password is 'deluge' (change on first login).", "WebDAV file browser is accessible on port 5000 with file upload/download permissions."]
 
 services:
   downloader:
     build: .
-    container_name: yantr-downloader
-    volumes:
-      - config:/config
-      - downloads:/downloads
+    container_name: yantr-torrent
+    labels:
+      yantr.app: "yantr-torrent"
+      yantr.service.8112: "Deluge Web UI"
+      yantr.port.8112: "HTTP"
+      yantr.service.5000: "WebDAV File Browser"
+      yantr.port.5000: "HTTP"
+      yantr.service.58946: "BitTorrent Peer Listening Port"
+      yantr.port.58946: "TCP"
     ports:
-      - "8112:8112"      # Deluge Web UI
-      - "58846:58846"    # Deluge daemon
-      - "58946:58946"    # Deluge incoming
-      - "58946:58946/udp"
-      - "5000:5000"      # Dufs/WebDAV
+      - "8112"
+      - "58846"
+      - "58946"
+      - "58946/udp"
+      - "5000"
+    volumes:
+      - yantr_torrent_config:/config
+      - yantr_torrent_downloads:/downloads
     restart: unless-stopped
 
 volumes:
-  config:
-  downloads:
+  yantr_torrent_config:
+  yantr_torrent_downloads:
