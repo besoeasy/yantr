@@ -103,21 +103,8 @@ onUnmounted(() => {
     <!-- Desktop Vertical Sidebar -->
     <aside class="hidden md:flex fixed top-0 bottom-0 left-0 w-20 flex-col items-center justify-between py-6 px-3 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-r border-slate-200/80 dark:border-zinc-800/80 z-50 transition-colors">
       
-      <!-- Top: Brand Logo -->
-      <div class="flex flex-col items-center">
-        <router-link
-          to="/home"
-          class="group flex flex-col items-center justify-center select-none rounded-xl p-2 transition-transform duration-300 hover:scale-105"
-          title="YANTR Dashboard"
-        >
-          <span class="text-xs font-black tracking-widest uppercase text-slate-900 dark:text-white leading-tight text-center">
-            YAN<br/>TR
-          </span>
-        </router-link>
-      </div>
-
-      <!-- Center Navigation Items -->
-      <nav class="flex flex-col items-center gap-3">
+      <!-- Center Navigation Items (Top-aligned) -->
+      <nav class="flex flex-col items-center gap-3 pt-2">
         <router-link
           v-for="item in navItems"
           :key="item.name"
