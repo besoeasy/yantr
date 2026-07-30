@@ -25,7 +25,6 @@ x-yantr:
 services:
   samba:
     image: dockurr/samba:latest
-    container_name: samba
     environment:
       NAME: ${SAMBA_NAME:-Data}
       USER: ${SAMBA_USER:-admin}

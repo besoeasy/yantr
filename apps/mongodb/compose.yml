@@ -27,7 +27,6 @@ x-yantr:
 services:
   mongodb:
     image: mongo:latest
-    container_name: mongodb
     labels:
       yantr.app: mongodb
       yantr.service.27017: Database

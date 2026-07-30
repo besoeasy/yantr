@@ -40,7 +40,6 @@ x-yantr:
 services:
   vscode:
     image: lscr.io/linuxserver/code-server:latest
-    container_name: vscode
     environment:
       PASSWORD: ${PASSWORD}
       SUDO_PASSWORD: ${PASSWORD}

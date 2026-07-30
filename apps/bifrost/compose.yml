@@ -24,7 +24,6 @@ x-yantr:
 services:
   bifrost:
     image: maximhq/bifrost:latest
-    container_name: bifrost
     labels:
       yantr.app: bifrost
       yantr.service.8080: Web UI

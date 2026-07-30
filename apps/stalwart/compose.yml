@@ -34,7 +34,6 @@ x-yantr:
 services:
   stalwart:
     image: stalwartlabs/stalwart:latest
-    container_name: stalwart
     ports:
       - "8080"
       - "25"

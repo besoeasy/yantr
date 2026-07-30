@@ -18,7 +18,6 @@ x-yantr:
 services:
   just-download:
     image: codeberg.org/highghlow/just-download:v1.0.9
-    container_name: just-download
     labels:
       yantr.app: just-download
       yantr.service.5000: Web UI

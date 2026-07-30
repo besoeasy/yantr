@@ -34,7 +34,6 @@ x-yantr:
 services:
   penpot-frontend:
     image: penpotapp/frontend:latest
-    container_name: penpot-frontend
     ports:
       - "8080"
     volumes:
@@ -52,7 +51,6 @@ services:
       yantr.port.8080: HTTP
   penpot-backend:
     image: penpotapp/backend:latest
-    container_name: penpot-backend
     volumes:
       - penpot_assets:/opt/data/assets
     environment:
@@ -78,7 +76,6 @@ services:
       yantr.port.8080: HTTP
   penpot-exporter:
     image: penpotapp/exporter:latest
-    container_name: penpot-exporter
     environment:
       PENPOT_PUBLIC_URI: http://penpot-frontend:8080
       PENPOT_REDIS_URI: redis://penpot-redis/0
@@ -89,7 +86,6 @@ services:
       yantr.port.8080: HTTP
   penpot-db:
     image: postgres:15-alpine
-    container_name: penpot-db
     environment:
       POSTGRES_DB: penpot
       POSTGRES_USER: penpot
@@ -103,7 +99,6 @@ services:
       yantr.port.8080: HTTP
   penpot-redis:
     image: redis:7-alpine
-    container_name: penpot-redis
     volumes:
       - penpot_redis:/data
     restart: unless-stopped

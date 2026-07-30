@@ -12,7 +12,6 @@ x-yantr:
 services:
   openhands:
     image: ghcr.io/openhands/agent-canvas:latest
-    container_name: openhands
     labels:
       yantr.app: openhands
       yantr.service.8000: Canvas UI

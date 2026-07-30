@@ -25,7 +25,6 @@ x-yantr:
 services:
   gotify:
     image: ghcr.io/gotify/server
-    container_name: gotify
     labels:
       yantr.app: gotify
       yantr.service.80: Web UI

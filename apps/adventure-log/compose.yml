@@ -12,7 +12,6 @@ x-yantr:
 services:
   adventure-log:
     image: ghcr.io/seanmorley15/adventurelog:latest
-    container_name: adventure-log
     labels:
       yantr.app: "adventure-log"
       yantr.service.8080: "Web UI"

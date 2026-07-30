@@ -12,7 +12,6 @@ x-yantr:
 services:
   autokuma:
     image: ghcr.io/bigboot/autokuma:latest
-    container_name: autokuma
     labels:
       yantr.app: "autokuma"
       yantr.service.8080: "Web UI"

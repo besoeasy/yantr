@@ -16,7 +16,6 @@ x-yantr:
 services:
   app:
     image: ghcr.io/hargata/lubelogger:latest
-    container_name: lubelogger-app
     labels:
       yantr.app: lubelogger
       yantr.service.8080: Web UI

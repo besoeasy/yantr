@@ -44,7 +44,6 @@ services:
     stdin_open: true
     tty: true
     image: jxxghp/moviepilot-v2:latest
-    container_name: moviepilot
     hostname: moviepilot
     ports:
       - "3000"

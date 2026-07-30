@@ -12,7 +12,6 @@ x-yantr:
 services:
   invio:
     image: ghcr.io/kittendevv/invio:latest
-    container_name: invio
     labels:
       yantr.app: "invio"
       yantr.service.4000: "Web UI"

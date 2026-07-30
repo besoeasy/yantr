@@ -27,7 +27,6 @@ x-yantr:
 services:
   db:
     image: mariadb:10.11
-    container_name: vikunja-db
     restart: unless-stopped
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
@@ -43,7 +42,6 @@ services:
       yantr.port.3456: HTTP
   web:
     image: vikunja/vikunja:latest
-    container_name: vikunja-web
     restart: unless-stopped
     depends_on:
       - db

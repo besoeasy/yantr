@@ -28,7 +28,6 @@ x-yantr:
 services:
   portainer:
     image: portainer/portainer-ce:latest
-    container_name: portainer
     labels:
       yantr.app: portainer
       yantr.service.9443: Web UI

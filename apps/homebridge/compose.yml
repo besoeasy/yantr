@@ -22,7 +22,6 @@ x-yantr:
 services:
   server:
     image: homebridge/homebridge:latest
-    container_name: homebridge
     labels:
       yantr.app: homebridge
       yantr.service.8581: Web UI

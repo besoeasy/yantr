@@ -24,7 +24,6 @@ x-yantr:
 services:
   emby:
     image: linuxserver/emby:latest
-    container_name: emby
     volumes:
       - emby-config:/config
       - emby-media:/data

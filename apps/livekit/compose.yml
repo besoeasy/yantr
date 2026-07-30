@@ -26,7 +26,6 @@ x-yantr:
 services:
   livekit:
     image: livekit/livekit-server:latest
-    container_name: livekit
     labels:
       yantr.app: livekit
       yantr.service.7880: Web UI

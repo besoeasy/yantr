@@ -17,7 +17,6 @@ x-yantr:
 services:
   web:
     image: ghcr.io/mealie-recipes/mealie:latest
-    container_name: mealie-web
     restart: unless-stopped
     labels:
       yantr.app: mealie

@@ -23,7 +23,6 @@ x-yantr:
 services:
   maintenant:
     image: ghcr.io/kolapsis/maintenant:latest
-    container_name: maintenant
     labels:
       yantr.app: maintenant
       yantr.service.8080: Web UI

@@ -30,7 +30,6 @@ x-yantr:
 services:
   rustdesk-hbbs:
     image: rustdesk/rustdesk-server:latest
-    container_name: rustdesk-hbbs
     command: hbbs
     labels:
       yantr.app: rustdesk-server
@@ -50,7 +49,6 @@ services:
 
   rustdesk-hbbr:
     image: rustdesk/rustdesk-server:latest
-    container_name: rustdesk-hbbr
     command: hbbr
     labels:
       yantr.app: rustdesk-server

@@ -39,7 +39,6 @@ x-yantr:
 services:
   seafile-db:
     image: mariadb:10.6
-    container_name: seafile-db
     restart: unless-stopped
     labels:
       yantr.app: seafile
@@ -54,7 +53,6 @@ services:
       - seafile_db:/var/lib/mysql
   seafile:
     image: seafileltd/seafile-mc:latest
-    container_name: seafile
     restart: unless-stopped
     labels:
       yantr.app: seafile

@@ -11,7 +11,6 @@ x-yantr:
 services:
   mixarr:
     image: ghcr.io/aquantumofdonuts/mixarr:latest
-    container_name: mixarr
     labels:
       yantr.app: "mixarr"
       yantr.service.8080: "Web UI"

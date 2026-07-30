@@ -18,7 +18,6 @@ x-yantr:
 services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
     volumes:
       - qbittorrent-config:/config
       - qbittorrent-downloads:/downloads

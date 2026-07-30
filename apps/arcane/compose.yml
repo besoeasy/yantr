@@ -12,7 +12,6 @@ x-yantr:
 services:
   arcane:
     image: ghcr.io/arcane-ops/arcane:latest
-    container_name: arcane
     labels:
       yantr.app: "arcane"
       yantr.service.8080: "Web UI"

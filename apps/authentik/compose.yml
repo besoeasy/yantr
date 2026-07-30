@@ -23,7 +23,6 @@ x-yantr:
 services:
   authentik-server:
     image: ghcr.io/goauthentik/server:latest
-    container_name: authentik-server
     labels:
       yantr.app: authentik
       yantr.service.9000: Web UI
@@ -51,7 +50,6 @@ services:
 
   authentik-worker:
     image: ghcr.io/goauthentik/server:latest
-    container_name: authentik-worker
     labels:
       yantr.app: authentik
     environment:
@@ -76,7 +74,6 @@ services:
 
   authentik-db:
     image: postgres:latest
-    container_name: authentik-db
     labels:
       yantr.app: authentik
     environment:
@@ -93,7 +90,6 @@ services:
 
   authentik-redis:
     image: redis:latest
-    container_name: authentik-redis
     labels:
       yantr.app: authentik
     volumes:

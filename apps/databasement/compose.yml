@@ -12,7 +12,6 @@ x-yantr:
 services:
   databasement:
     image: ghcr.io/david-crty/databasement:latest
-    container_name: databasement
     labels:
       yantr.app: "databasement"
       yantr.service.8080: "Web UI"

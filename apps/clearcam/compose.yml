@@ -11,7 +11,6 @@ x-yantr:
 services:
   clearcam:
     image: ghcr.io/roryclear/clearcam:latest
-    container_name: clearcam
     labels:
       yantr.app: "clearcam"
       yantr.service.8080: "Web UI"

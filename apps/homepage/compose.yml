@@ -22,7 +22,6 @@ x-yantr:
 services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
-    container_name: homepage
     labels:
       yantr.app: homepage
       yantr.service.3000: Dashboard

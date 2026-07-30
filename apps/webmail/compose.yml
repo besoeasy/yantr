@@ -12,7 +12,6 @@ x-yantr:
 services:
   webmail:
     image: ghcr.io/bulwarkmail/webmail:latest
-    container_name: webmail
     labels:
       yantr.app: "webmail"
       yantr.service.8080: "Web UI"

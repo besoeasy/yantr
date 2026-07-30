@@ -130,7 +130,6 @@ x-yantr:
 services:
   my-app:
     image: ghcr.io/example/my-app:latest
-    container_name: my-app
     labels:
       yantr.app: "my-app"
       yantr.service.8080: "Web UI"

@@ -17,7 +17,6 @@ x-yantr:
 services:
   gancio:
     image: gancio/gancio:latest
-    container_name: gancio
     labels:
       yantr.app: "gancio"
       yantr.service.3000: "Web UI"

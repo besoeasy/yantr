@@ -12,7 +12,6 @@ x-yantr:
 services:
   typebot:
     image: ghcr.io/baptistejamin/typebot:latest
-    container_name: typebot
     labels:
       yantr.app: "typebot"
       yantr.service.3000: "Web UI"

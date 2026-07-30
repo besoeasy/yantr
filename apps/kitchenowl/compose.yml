@@ -23,7 +23,6 @@ x-yantr:
 services:
   web:
     image: tombursch/kitchenowl:latest
-    container_name: kitchenowl-web
     labels:
       yantr.app: kitchenowl
       yantr.service.8080: Web UI
@@ -44,7 +43,6 @@ services:
     restart: unless-stopped
   db:
     image: postgres:latest
-    container_name: kitchenowl-db
     environment:
       POSTGRES_DB: kitchenowl
       POSTGRES_USER: kitchenowl

@@ -26,7 +26,6 @@ x-yantr:
 services:
   tor-browser:
     image: domistyle/tor-browser
-    container_name: tor-browser
     ports:
       - "5800"
     labels:

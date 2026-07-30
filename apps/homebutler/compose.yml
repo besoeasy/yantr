@@ -11,7 +11,6 @@ x-yantr:
 services:
   homebutler:
     image: ghcr.io/higangssh/homebutler:latest
-    container_name: homebutler
     labels:
       yantr.app: "homebutler"
       yantr.service.8080: "Web UI"

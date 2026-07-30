@@ -25,7 +25,6 @@ x-yantr:
 services:
   stirling-pdf:
     image: frooodle/s-pdf:latest
-    container_name: stirling-pdf
     labels:
       yantr.app: stirling-pdf
       yantr.service.8080: Web UI

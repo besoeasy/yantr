@@ -32,7 +32,6 @@ x-yantr:
 services:
   wud:
     image: getwud/wud
-    container_name: wud
     labels:
       yantr.app: wud
       yantr.service.3000: Web UI

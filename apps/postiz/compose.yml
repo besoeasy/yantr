@@ -12,7 +12,6 @@ x-yantr:
 services:
   postiz:
     image: ghcr.io/gitroomhq/postiz:latest
-    container_name: postiz
     labels:
       yantr.app: "postiz"
       yantr.service.8080: "Web UI"

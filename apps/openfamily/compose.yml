@@ -11,7 +11,6 @@ x-yantr:
 services:
   openfamily:
     image: ghcr.io/nexaflowfrance/openfamily:latest
-    container_name: openfamily
     labels:
       yantr.app: "openfamily"
       yantr.service.8080: "Web UI"

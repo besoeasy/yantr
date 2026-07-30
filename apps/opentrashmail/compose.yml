@@ -11,7 +11,6 @@ x-yantr:
 services:
   opentrashmail:
     image: hascheksolutions/opentrashmail:latest
-    container_name: opentrashmail
     labels:
       yantr.app: "opentrashmail"
       yantr.service.8080: "Web UI"

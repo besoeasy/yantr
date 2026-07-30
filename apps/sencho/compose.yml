@@ -22,7 +22,6 @@ x-yantr:
 services:
   sencho:
     image: saelix/sencho:latest
-    container_name: sencho
     labels:
       yantr.app: sencho
       yantr.service.1852: Web UI

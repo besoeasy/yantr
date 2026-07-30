@@ -30,7 +30,6 @@ x-yantr:
 services:
   umami:
     image: ghcr.io/umami-software/umami:latest
-    container_name: umami
     labels:
       yantr.app: umami
       yantr.service.3000: Analytics
@@ -49,7 +48,6 @@ services:
 
   umami-db:
     image: postgres:16-alpine
-    container_name: umami-db
     labels:
       yantr.app: umami
     environment:

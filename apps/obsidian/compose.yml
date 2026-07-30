@@ -27,7 +27,6 @@ x-yantr:
 services:
   obsidian:
     image: linuxserver/obsidian:latest
-    container_name: obsidian
     security_opt:
       - seccomp:unconfined
     environment:

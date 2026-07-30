@@ -12,7 +12,6 @@ x-yantr:
 services:
   statainer:
     image: ghcr.io/drakonis96/statainer:latest
-    container_name: statainer
     labels:
       yantr.app: "statainer"
       yantr.service.5000: "Web UI"

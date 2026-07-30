@@ -13,7 +13,6 @@ x-yantr:
 services:
   cloudflared-web:
     image: wisdomsky/cloudflared-web:latest
-    container_name: cloudflared-web
     restart: unless-stopped
     network_mode: host
     labels:

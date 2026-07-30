@@ -19,7 +19,6 @@ x-yantr:
 services:
   zeronote:
     image: ghcr.io/besoeasy/zeronote:main
-    container_name: zeronote
     hostname: zeronote
     volumes:
       - zeronote_data:/app/data

@@ -33,7 +33,6 @@ x-yantr:
 services:
   owncloud:
     image: owncloud/server:latest
-    container_name: owncloud
     ports:
       - "8080"
     environment:
@@ -62,7 +61,6 @@ services:
       yantr.port.8080: HTTP
   owncloud-mariadb:
     image: mariadb:10.11
-    container_name: owncloud-mariadb
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_USER: owncloud
@@ -81,7 +79,6 @@ services:
       yantr.port.8080: HTTP
   owncloud-redis:
     image: redis:6-alpine
-    container_name: owncloud-redis
     command:
       - --databases
       - "1"

@@ -25,7 +25,6 @@ x-yantr:
 services:
   memos:
     image: neosmemo/memos:stable
-    container_name: memos
     volumes:
       - memos_data:/var/opt/memos
     ports:

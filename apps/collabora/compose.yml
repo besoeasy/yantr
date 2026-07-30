@@ -25,7 +25,6 @@ x-yantr:
 services:
   collabora:
     image: collabora/code:latest
-    container_name: collabora
     labels:
       yantr.app: collabora
       yantr.service.9980: Web UI

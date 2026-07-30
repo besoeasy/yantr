@@ -33,7 +33,6 @@ x-yantr:
 services:
   privatebin:
     image: privatebin/nginx-fpm-alpine:latest
-    container_name: privatebin
     labels:
       yantr.app: privatebin
       yantr.service.8080: Web UI

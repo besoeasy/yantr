@@ -12,7 +12,6 @@ x-yantr:
 services:
   goaccess:
     image: ghcr.io/allinurl/goaccess:latest
-    container_name: goaccess
     labels:
       yantr.app: "goaccess"
       yantr.service.8080: "Web UI"

@@ -18,7 +18,6 @@ x-yantr:
 services:
   libreddit:
     image: ceramicwhite/libreddit:0.22.9
-    container_name: libreddit
     labels:
       yantr.app: libreddit
       yantr.service.7420: Web UI

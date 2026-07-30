@@ -21,7 +21,6 @@ x-yantr:
 services:
   redis:
     image: redis:7-alpine
-    container_name: affine-redis
     restart: unless-stopped
     volumes:
       - affine_redis:/data
@@ -39,7 +38,6 @@ services:
       yantr.port.3010: HTTP
   db:
     image: postgres:16-alpine
-    container_name: affine-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: affine
@@ -60,7 +58,6 @@ services:
       yantr.port.3010: HTTP
   migration:
     image: ghcr.io/toeverything/affine:latest
-    container_name: affine-migration
     depends_on:
       db:
         condition: service_healthy
@@ -84,7 +81,6 @@ services:
       yantr.port.3010: HTTP
   web:
     image: ghcr.io/toeverything/affine:latest
-    container_name: affine-web
     restart: unless-stopped
     depends_on:
       migration:

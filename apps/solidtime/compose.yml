@@ -23,7 +23,6 @@ x-yantr:
 services:
   solidtime:
     image: solidtime/solidtime:0.11.5
-    container_name: solidtime
     labels:
       yantr.app: solidtime
       yantr.service.8000: Web UI
@@ -61,7 +60,6 @@ services:
       retries: 3
   solidtime-scheduler:
     image: solidtime/solidtime:0.11.5
-    container_name: solidtime-scheduler
     environment:
       APP_ENV: production
       CONTAINER_MODE: scheduler
@@ -82,7 +80,6 @@ services:
       yantr.port.8000: HTTP
   solidtime-queue:
     image: solidtime/solidtime:0.11.5
-    container_name: solidtime-queue
     environment:
       APP_ENV: production
       CONTAINER_MODE: worker
@@ -104,7 +101,6 @@ services:
       yantr.port.8000: HTTP
   solidtime-db:
     image: postgres:17.3
-    container_name: solidtime-db
     environment:
       POSTGRES_USER: solidtime
       POSTGRES_PASSWORD: solidtime
@@ -125,7 +121,6 @@ services:
       yantr.port.8000: HTTP
   solidtime-gotenberg:
     image: gotenberg/gotenberg:8.14.0
-    container_name: solidtime-gotenberg
     restart: unless-stopped
     healthcheck:
       test:

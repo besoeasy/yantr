@@ -30,7 +30,6 @@ x-yantr:
 services:
   nextcloud:
     image: nextcloud:stable
-    container_name: nextcloud
     labels:
       yantr.app: nextcloud
       yantr.service.80: Web UI
@@ -52,7 +51,6 @@ services:
     restart: unless-stopped
   nextcloud-db:
     image: mariadb:10.11
-    container_name: nextcloud-db
     environment:
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud

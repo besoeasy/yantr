@@ -12,7 +12,6 @@ x-yantr:
 services:
   poznote:
     image: ghcr.io/timothepoznanski/poznote:latest
-    container_name: poznote
     labels:
       yantr.app: "poznote"
       yantr.service.8080: "Web UI"

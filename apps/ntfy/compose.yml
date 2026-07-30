@@ -31,7 +31,6 @@ x-yantr:
 services:
   ntfy:
     image: binwiederhier/ntfy:latest
-    container_name: ntfy
     command: serve
     environment:
     ports:

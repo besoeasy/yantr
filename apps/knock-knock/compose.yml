@@ -11,7 +11,6 @@ x-yantr:
 services:
   knock-knock:
     image: ghcr.io/djkurlander/knock-knock:latest
-    container_name: knock-knock
     labels:
       yantr.app: "knock-knock"
       yantr.service.8080: "Web UI"

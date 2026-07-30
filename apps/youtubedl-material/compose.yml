@@ -26,7 +26,6 @@ x-yantr:
 services:
   youtubedl-material:
     image: tzahi12345/youtubedl-material:latest
-    container_name: youtubedl-material
     labels:
       yantr.app: youtubedl-material
       yantr.service.17442: Web UI

@@ -30,7 +30,6 @@ x-yantr:
 services:
   ghost:
     image: ghost:latest
-    container_name: ghost
     labels:
       yantr.app: ghost
       yantr.service.2368: Blog
@@ -53,7 +52,6 @@ services:
 
   ghost-db:
     image: mysql:8
-    container_name: ghost-db
     labels:
       yantr.app: ghost
     environment:

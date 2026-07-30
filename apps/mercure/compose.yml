@@ -12,7 +12,6 @@ x-yantr:
 services:
   mercure:
     image: dunglas/mercure:latest
-    container_name: mercure
     labels:
       yantr.app: "mercure"
       yantr.service.80: "Web UI"

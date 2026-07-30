@@ -23,7 +23,6 @@ x-yantr:
 services:
   qbitwebui:
     image: ghcr.io/mkbula/qbitwebui:latest
-    container_name: qbitwebui
     labels:
       yantr.app: qbitwebui
       yantr.service.3000: Web UI

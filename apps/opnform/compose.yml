@@ -19,7 +19,6 @@ x-yantr:
 services:
   opnform:
     image: jhumanj/opnform:latest
-    container_name: opnform
     labels:
       yantr.app: opnform
       yantr.service.80: Web UI

@@ -19,7 +19,6 @@ x-yantr:
 services:
   fossflow:
     image: stnsmith/fossflow:master-6cb6496
-    container_name: fossflow
     labels:
       yantr.app: fossflow
       yantr.service.80: Web UI

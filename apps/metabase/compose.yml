@@ -31,7 +31,6 @@ x-yantr:
 services:
   metabase:
     image: metabase/metabase:latest
-    container_name: metabase
     labels:
       yantr.app: metabase
       yantr.service.3000: Analytics
@@ -53,7 +52,6 @@ services:
 
   metabase-db:
     image: postgres:16-alpine
-    container_name: metabase-db
     labels:
       yantr.app: metabase
     environment:

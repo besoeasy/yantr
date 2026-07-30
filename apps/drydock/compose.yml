@@ -23,7 +23,6 @@ x-yantr:
 services:
   drydock:
     image: codeswhat/drydock:latest
-    container_name: drydock
     labels:
       yantr.app: drydock
       yantr.service.3000: Web UI

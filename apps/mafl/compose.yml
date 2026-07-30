@@ -12,7 +12,6 @@ x-yantr:
 services:
   mafl:
     image: ghcr.io/hywax/mafl:latest
-    container_name: mafl
     labels:
       yantr.app: "mafl"
       yantr.service.8080: "Web UI"

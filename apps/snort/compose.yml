@@ -25,7 +25,6 @@ x-yantr:
 services:
   snort:
     image: voidic/snort:v0.3.0
-    container_name: snort
     labels:
       yantr.app: snort
       yantr.service.8080: Web UI

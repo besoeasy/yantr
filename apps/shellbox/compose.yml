@@ -16,7 +16,6 @@ x-yantr:
 services:
   shellbox:
     image: lscr.io/linuxserver/openssh-server:latest
-    container_name: shellbox
     environment:
       USER_NAME: ${USER_NAME}
       USER_PASSWORD: ${USER_PASSWORD}

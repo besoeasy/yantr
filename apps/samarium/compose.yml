@@ -11,7 +11,6 @@ x-yantr:
 services:
   samarium:
     image: ghcr.io/shyamsitaula/samarium:latest
-    container_name: samarium
     labels:
       yantr.app: "samarium"
       yantr.service.8080: "Web UI"

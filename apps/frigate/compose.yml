@@ -24,7 +24,6 @@ x-yantr:
 services:
   web:
     image: ghcr.io/blakeblackshear/frigate:latest
-    container_name: frigate
     labels:
       yantr.app: frigate
       yantr.service.8971: Web UI

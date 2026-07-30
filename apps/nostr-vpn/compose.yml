@@ -27,7 +27,6 @@ x-yantr:
 services:
   daemon:
     image: ghcr.io/mmalmi/nostr-vpn-umbrel:v4.0.47
-    container_name: nostr-vpn-daemon
     restart: on-failure
     stop_grace_period: 1m
     network_mode: host
@@ -53,7 +52,6 @@ services:
       yantr.port.38080: HTTP
   web:
     image: ghcr.io/mmalmi/nostr-vpn-umbrel:v4.0.47
-    container_name: nostr-vpn-web
     restart: on-failure
     stop_grace_period: 1m
     depends_on:

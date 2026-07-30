@@ -11,7 +11,6 @@ x-yantr:
 services:
   skysend:
     image: ghcr.io/skyfay/skysend:latest
-    container_name: skysend
     labels:
       yantr.app: "skysend"
       yantr.service.8080: "Web UI"

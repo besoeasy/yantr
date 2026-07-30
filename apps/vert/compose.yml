@@ -27,7 +27,6 @@ x-yantr:
 services:
   vert:
     image: ghcr.io/vert-sh/vert:latest
-    container_name: vert
     labels:
       yantr.app: vert
       yantr.service.3000: Web UI

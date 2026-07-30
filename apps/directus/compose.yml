@@ -35,7 +35,6 @@ x-yantr:
 services:
   directus:
     image: directus/directus:latest
-    container_name: directus
     labels:
       yantr.app: directus
       yantr.service.8055: CMS
@@ -62,7 +61,6 @@ services:
 
   directus-db:
     image: postgres:16-alpine
-    container_name: directus-db
     labels:
       yantr.app: directus
     environment:

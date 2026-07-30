@@ -19,7 +19,6 @@ x-yantr:
 services:
   scality-s3:
     image: zenko/cloudserver:latest
-    container_name: zenko-s3
     labels:
       yantr.app: scality-s3
       yantr.service.8000: S3 API

@@ -25,7 +25,6 @@ x-yantr:
 services:
   pastefy:
     image: interaapps/pastefy:latest
-    container_name: pastefy
     labels:
       yantr.app: pastefy
       yantr.service.80: Web UI

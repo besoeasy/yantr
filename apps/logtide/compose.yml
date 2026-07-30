@@ -23,7 +23,6 @@ x-yantr:
 services:
   logtide-db:
     image: timescale/timescaledb:latest-pg16
-    container_name: logtide-db
     environment:
       POSTGRES_DB: logtide
       POSTGRES_USER: logtide
@@ -34,7 +33,6 @@ services:
 
   logtide:
     image: logtide/backend:latest
-    container_name: logtide-app
     labels:
       yantr.app: logtide
       yantr.service.3000: Web UI

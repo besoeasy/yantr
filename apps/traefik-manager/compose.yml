@@ -23,7 +23,6 @@ x-yantr:
 services:
   traefik-manager:
     image: ghcr.io/chr0nzz/traefik-manager:latest
-    container_name: traefik-manager
     labels:
       yantr.app: traefik-manager
       yantr.service.5000: Web UI

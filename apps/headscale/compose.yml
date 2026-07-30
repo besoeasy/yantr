@@ -31,7 +31,6 @@ x-yantr:
 services:
   headscale:
     image: headscale/headscale:latest
-    container_name: headscale
     labels:
       yantr.app: headscale
       yantr.service.8080: Admin API

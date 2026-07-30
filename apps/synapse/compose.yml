@@ -13,7 +13,6 @@ x-yantr:
 services:
   synapse:
     image: matrixdotorg/synapse:latest
-    container_name: synapse
     restart: unless-stopped
     labels:
       yantr.app: synapse

@@ -28,7 +28,6 @@ x-yantr:
 services:
   dashy:
     image: lissy93/dashy:latest
-    container_name: dashy
     labels:
       yantr.app: dashy
       yantr.service.8080: Dashboard

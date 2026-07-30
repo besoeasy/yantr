@@ -29,7 +29,6 @@ x-yantr:
 
 services:
   homarr:
-    container_name: homarr
     image: ghcr.io/homarr-labs/homarr:latest
     restart: unless-stopped
     volumes:

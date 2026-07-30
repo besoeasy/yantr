@@ -12,7 +12,6 @@ x-yantr:
 services:
   subarr:
     image: ghcr.io/coaxk/subarr:latest
-    container_name: subarr
     labels:
       yantr.app: "subarr"
       yantr.service.8080: "Web UI"

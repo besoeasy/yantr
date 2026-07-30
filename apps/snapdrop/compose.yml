@@ -18,7 +18,6 @@ x-yantr:
 services:
   server:
     image: linuxserver/snapdrop:latest
-    container_name: snapdrop
     labels:
       yantr.app: snapdrop
       yantr.service.80: Web UI

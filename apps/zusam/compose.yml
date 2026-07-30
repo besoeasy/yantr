@@ -12,7 +12,6 @@ x-yantr:
 services:
   zusam:
     image: zusam/zusam:latest
-    container_name: zusam
     labels:
       yantr.app: "zusam"
       yantr.service.8080: "Web UI"

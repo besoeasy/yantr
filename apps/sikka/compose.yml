@@ -32,7 +32,6 @@ x-yantr:
 services:
   sikka:
     image: ghcr.io/sikkalabs/sikka:latest
-    container_name: sikka
     restart: unless-stopped
     labels:
       yantr.app: sikka

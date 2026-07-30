@@ -23,7 +23,6 @@ x-yantr:
 services:
   perplexica:
     image: itzcrazykns1337/perplexica:v1.11.2
-    container_name: perplexica
     labels:
       yantr.app: perplexica
       yantr.service.3000: Web UI

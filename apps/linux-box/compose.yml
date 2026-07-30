@@ -36,7 +36,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: linux-box
     hostname: linux-box
     restart: unless-stopped
     labels:

@@ -32,7 +32,6 @@ x-yantr:
 services:
   adguard:
     image: adguard/adguardhome:latest
-    container_name: adguard-home
     labels:
       yantr.app: adguard-home
       yantr.service.3000: Initial Setup

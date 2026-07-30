@@ -19,7 +19,6 @@ x-yantr:
 services:
   bitwatch:
     image: ghcr.io/zapomatic/bitwatch:latest
-    container_name: bitwatch
     restart: unless-stopped
     ports:
       - "3117"

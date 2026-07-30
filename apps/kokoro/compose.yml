@@ -20,7 +20,6 @@ x-yantr:
 services:
   kokoro:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:v0.2.4-master
-    container_name: kokoro
     labels:
       yantr.app: kokoro
       yantr.service.8880: Web UI

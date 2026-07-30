@@ -17,7 +17,6 @@ x-yantr:
 services:
   server:
     image: linuxserver/calibre-web:latest
-    container_name: calibre-web-server
     restart: unless-stopped
     labels:
       yantr.app: calibre-web

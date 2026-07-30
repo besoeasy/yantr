@@ -23,7 +23,6 @@ x-yantr:
 services:
   crw:
     image: ghcr.io/us/crw:latest
-    container_name: crw
     labels:
       yantr.app: crw
       yantr.service.3000: Web UI

@@ -25,7 +25,6 @@ services:
   dropgate-server:
     image: willtda/dropgate-server:latest
     pull_policy: always
-    container_name: dropgate-server
     labels:
       yantr.app: dropgate-server
       yantr.service.52443: Dropgate Server Backend

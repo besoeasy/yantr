@@ -11,7 +11,6 @@ x-yantr:
 services:
   cloudmacs:
     image: ghcr.io/karlicoss/cloudmacs:latest
-    container_name: cloudmacs
     labels:
       yantr.app: "cloudmacs"
       yantr.service.8080: "Web UI"

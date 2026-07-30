@@ -12,7 +12,6 @@ x-yantr:
 services:
   pinchflat:
     image: ghcr.io/kieraneglin/pinchflat:latest
-    container_name: pinchflat
     labels:
       yantr.app: "pinchflat"
       yantr.service.8080: "Web UI"

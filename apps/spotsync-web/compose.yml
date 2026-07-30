@@ -23,7 +23,6 @@ x-yantr:
 services:
   spotsync-web:
     image: mahi64675/spotsync-web:latest
-    container_name: spotsync-web
     labels:
       yantr.app: spotsync-web
       yantr.service.9791: Web UI

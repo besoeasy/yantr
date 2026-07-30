@@ -37,7 +37,6 @@ x-yantr:
 services:
   admin:
     image: ghcr.io/crosstalk-solutions/project-nomad:v1.30.2
-    container_name: nomad_admin
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -83,7 +82,6 @@ services:
       retries: 3
   mysql:
     image: mysql:8.0
-    container_name: nomad_mysql
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -114,7 +112,6 @@ services:
       start_period: 30s
   redis:
     image: redis:7-alpine
-    container_name: nomad_redis
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -134,7 +131,6 @@ services:
       retries: 3
   dozzle:
     image: amir20/dozzle:v10.0
-    container_name: nomad_dozzle
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -151,7 +147,6 @@ services:
     restart: unless-stopped
   updater:
     image: ghcr.io/crosstalk-solutions/project-nomad-sidecar-updater:v1.30.2
-    container_name: nomad_updater
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center

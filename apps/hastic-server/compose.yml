@@ -12,7 +12,6 @@ x-yantr:
 services:
   hastic-server:
     image: ghcr.io/hastic-zzz/hastic-server:latest
-    container_name: hastic-server
     labels:
       yantr.app: "hastic-server"
       yantr.service.8080: "Web UI"

@@ -12,7 +12,6 @@ x-yantr:
 services:
   gogdl-ng:
     image: ghcr.io/gogdl-ng/gogdl-ng:latest
-    container_name: gogdl-ng
     labels:
       yantr.app: "gogdl-ng"
       yantr.service.8080: "Web UI"

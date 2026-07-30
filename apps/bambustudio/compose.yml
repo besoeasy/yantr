@@ -25,7 +25,6 @@ x-yantr:
 services:
   bambustudio:
     image: lscr.io/linuxserver/bambustudio:latest
-    container_name: bambustudio
     volumes:
       - bambustudio-data:/config
     ports:

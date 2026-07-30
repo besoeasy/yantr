@@ -19,7 +19,6 @@ x-yantr:
 services:
   rutorrent:
     image: linuxserver/rutorrent:latest
-    container_name: rutorrent
     labels:
       yantr.app: rutorrent
       yantr.service.80: Web UI

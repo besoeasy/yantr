@@ -26,7 +26,6 @@ x-yantr:
 services:
   ghostfolio:
     image: ghostfolio/ghostfolio:latest
-    container_name: ghostfolio
     labels:
       yantr.app: ghostfolio
       yantr.service.3333: Web UI
@@ -45,7 +44,6 @@ services:
     restart: unless-stopped
   redis:
     image: redis:alpine
-    container_name: ghostfolio-redis
     volumes:
       - redis_data:/data
     restart: unless-stopped

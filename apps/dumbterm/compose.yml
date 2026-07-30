@@ -11,7 +11,6 @@ x-yantr:
 services:
   dumbterm:
     image: ghcr.io/dumbwareio/dumbterm:latest
-    container_name: dumbterm
     labels:
       yantr.app: "dumbterm"
       yantr.service.8080: "Web UI"

@@ -37,7 +37,6 @@ x-yantr:
 services:
   netbird:
     image: netbirdio/netbird:latest
-    container_name: netbird
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN

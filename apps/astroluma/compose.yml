@@ -11,7 +11,6 @@ x-yantr:
 services:
   astroluma:
     image: ghcr.io/sanjeet990/astroluma:latest
-    container_name: astroluma
     labels:
       yantr.app: "astroluma"
       yantr.service.3000: "Web UI"

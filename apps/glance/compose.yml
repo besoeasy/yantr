@@ -27,7 +27,6 @@ x-yantr:
 services:
   glance:
     image: glanceapp/glance:latest
-    container_name: glance
     labels:
       yantr.app: glance
       yantr.service.8080: Dashboard

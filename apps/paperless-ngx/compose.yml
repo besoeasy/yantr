@@ -32,7 +32,6 @@ x-yantr:
 services:
   paperless-ngx:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    container_name: paperless-ngx
     labels:
       yantr.app: paperless-ngx
       yantr.service.8000: Web UI
@@ -62,14 +61,12 @@ services:
 
   paperless-broker:
     image: redis:7-alpine
-    container_name: paperless-broker
     volumes:
       - paperless_redis_data:/data
     restart: unless-stopped
 
   paperless-db:
     image: postgres:16-alpine
-    container_name: paperless-db
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless

@@ -34,7 +34,6 @@ x-yantr:
 services:
   paperclip:
     image: ghcr.io/paperclipai/paperclip:latest
-    container_name: paperclip
     labels:
       yantr.app: paperclip
       yantr.service.3100: Web UI

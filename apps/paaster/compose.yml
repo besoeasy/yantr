@@ -11,7 +11,6 @@ x-yantr:
 services:
   paaster:
     image: ghcr.io/wardpearce/paaster:latest
-    container_name: paaster
     labels:
       yantr.app: "paaster"
       yantr.service.8080: "Web UI"

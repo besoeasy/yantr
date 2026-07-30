@@ -34,7 +34,6 @@ x-yantr:
 services:
   stremio:
     image: stremio/server:latest
-    container_name: stremio
     restart: unless-stopped
     ports:
       - "11470"

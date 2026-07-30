@@ -24,7 +24,6 @@ x-yantr:
 services:
   monerod:
     image: ghcr.io/sethforprivacy/simple-monerod:latest
-    container_name: monerod
     restart: unless-stopped
     labels:
       yantr.app: monerod

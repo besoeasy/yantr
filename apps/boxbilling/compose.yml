@@ -11,7 +11,6 @@ x-yantr:
 services:
   boxbilling:
     image: boxbilling/boxbilling:latest
-    container_name: boxbilling
     labels:
       yantr.app: "boxbilling"
       yantr.service.80: "Web UI"

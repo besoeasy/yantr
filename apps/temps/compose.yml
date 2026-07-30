@@ -12,7 +12,6 @@ x-yantr:
 services:
   temps:
     image: ghcr.io/gotempsh/temps:latest
-    container_name: temps
     labels:
       yantr.app: "temps"
       yantr.service.8080: "Web UI"

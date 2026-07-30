@@ -27,7 +27,6 @@ x-yantr:
 services:
   mariadb:
     image: mariadb:latest
-    container_name: mariadb
     labels:
       yantr.app: mariadb
       yantr.service.3306: Database

@@ -30,7 +30,6 @@ x-yantr:
 services:
   jellyfin:
     image: linuxserver/jellyfin:latest
-    container_name: jellyfin
     volumes:
       - jellyfin-config:/config
       - jellyfin-media:/data

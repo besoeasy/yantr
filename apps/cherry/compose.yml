@@ -12,7 +12,6 @@ x-yantr:
 services:
   cherry:
     image: ghcr.io/haishanh/cherry:latest
-    container_name: cherry
     labels:
       yantr.app: "cherry"
       yantr.service.8080: "Web UI"

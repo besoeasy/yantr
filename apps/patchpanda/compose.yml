@@ -23,7 +23,6 @@ x-yantr:
 services:
   patchpanda:
     image: ghcr.io/dkorecko/patchpanda:latest
-    container_name: patchpanda
     labels:
       yantr.app: patchpanda
       yantr.service.5093: Web UI

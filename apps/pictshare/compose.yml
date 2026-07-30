@@ -12,7 +12,6 @@ x-yantr:
 services:
   pictshare:
     image: hascheksolutions/pictshare:latest
-    container_name: pictshare
     labels:
       yantr.app: "pictshare"
       yantr.service.80: "Web UI"

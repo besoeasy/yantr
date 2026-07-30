@@ -31,7 +31,6 @@ x-yantr:
 services:
   vaultwarden:
     image: vaultwarden/server:latest
-    container_name: vaultwarden
     labels:
       yantr.app: vaultwarden
       yantr.service.80: Web UI

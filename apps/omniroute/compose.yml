@@ -32,7 +32,6 @@ x-yantr:
 services:
   omniroute:
     image: diegosouzapw/omniroute:latest
-    container_name: omniroute
     labels:
       yantr.app: omniroute
       yantr.service.20128: Dashboard
@@ -52,7 +51,6 @@ services:
 
   omniroute-redis:
     image: redis:7-alpine
-    container_name: omniroute-redis
     volumes:
       - omniroute_redis_data:/data
     restart: unless-stopped

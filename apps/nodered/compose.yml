@@ -26,7 +26,6 @@ x-yantr:
 services:
   nodered:
     image: nodered/node-red:latest
-    container_name: nodered
     labels:
       yantr.app: nodered
       yantr.service.1880: Web UI

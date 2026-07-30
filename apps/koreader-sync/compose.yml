@@ -11,7 +11,6 @@ x-yantr:
 services:
   koreader-sync:
     image: ghcr.io/b1n4ryj4n/koreader-sync:latest
-    container_name: koreader-sync
     labels:
       yantr.app: "koreader-sync"
       yantr.service.8080: "Web UI"

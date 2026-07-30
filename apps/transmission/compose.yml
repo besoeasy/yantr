@@ -36,7 +36,6 @@ x-yantr:
 services:
   transmission:
     image: linuxserver/transmission:latest
-    container_name: transmission
     environment:
       USER: ${TRANSMISSION_USER}
       PASS: ${TRANSMISSION_PASS}

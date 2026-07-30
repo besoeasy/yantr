@@ -25,7 +25,6 @@ x-yantr:
 services:
   zeroclaw:
     image: ghcr.io/zeroclaw-labs/zeroclaw:latest
-    container_name: zeroclaw
     restart: unless-stopped
     environment:
       API_KEY: ${API_KEY:-}

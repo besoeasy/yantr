@@ -12,7 +12,6 @@ x-yantr:
 services:
   containerflow:
     image: ghcr.io/rgjorge/containerflow:latest
-    container_name: containerflow
     labels:
       yantr.app: "containerflow"
       yantr.service.3000: "Web UI"

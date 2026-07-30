@@ -39,7 +39,6 @@ x-yantr:
 services:
   ocular:
     image: ghcr.io/simonwep/ocular:v2
-    container_name: ocular
     labels:
       yantr.app: ocular
       yantr.service.80: Web UI

@@ -31,7 +31,6 @@ x-yantr:
 services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest
-    container_name: bitmagnet
     restart: unless-stopped
     stop_grace_period: 1m
     ports:
@@ -62,7 +61,6 @@ services:
       yantr.port.3333: HTTP
   postgres:
     image: postgres:16-alpine
-    container_name: bitmagnet_postgres
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: postgresx

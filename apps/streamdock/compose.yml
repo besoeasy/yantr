@@ -12,7 +12,6 @@ x-yantr:
 services:
   streamdock:
     image: ghcr.io/limmer55/streamdock:latest
-    container_name: streamdock
     labels:
       yantr.app: "streamdock"
       yantr.service.8080: "Web UI"

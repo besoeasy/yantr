@@ -25,7 +25,6 @@ x-yantr:
 services:
   phpmyadmin:
     image: phpmyadmin:latest
-    container_name: phpmyadmin
     labels:
       yantr.app: phpmyadmin
       yantr.service.80: Web UI

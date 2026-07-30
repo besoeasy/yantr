@@ -22,7 +22,6 @@ x-yantr:
 services:
   server:
     image: awinterstein/habitica-server:latest
-    container_name: habitica-server
     labels:
       yantr.app: habitica
       yantr.service.3000: Web UI
@@ -43,7 +42,6 @@ services:
     restart: unless-stopped
   mongo:
     image: mongo:latest
-    container_name: habitica-mongo
     volumes:
       - habitica_mongo:/data/db
     restart: unless-stopped

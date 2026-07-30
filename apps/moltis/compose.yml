@@ -19,7 +19,6 @@ x-yantr:
 services:
   moltis:
     image: ghcr.io/moltis-org/moltis:latest
-    container_name: moltis
     labels:
       yantr.app: moltis
       yantr.service.13131: Web UI

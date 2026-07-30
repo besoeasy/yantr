@@ -28,7 +28,6 @@ x-yantr:
 services:
   changedetection:
     image: ghcr.io/dgtlmoon/changedetection.io:latest
-    container_name: changedetection
     ports:
       - "5000"
     volumes:

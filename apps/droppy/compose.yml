@@ -24,7 +24,6 @@ x-yantr:
 services:
   droppy:
     image: silverwind/droppy:latest
-    container_name: droppy
     labels:
       yantr.app: droppy
       yantr.service.8989: Web UI

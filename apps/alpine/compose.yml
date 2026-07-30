@@ -12,7 +12,6 @@ x-yantr:
 services:
   alpine:
     image: alpine:latest
-    container_name: alpine
     labels:
       yantr.app: "alpine"
     environment:

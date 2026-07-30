@@ -11,7 +11,6 @@ x-yantr:
 services:
   metadata-remote:
     image: ghcr.io/wow-signal-dev/metadata-remote:latest
-    container_name: metadata-remote
     labels:
       yantr.app: "metadata-remote"
       yantr.service.8080: "Web UI"

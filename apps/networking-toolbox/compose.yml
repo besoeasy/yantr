@@ -25,7 +25,6 @@ x-yantr:
 services:
   networking-toolbox:
     image: lissy93/networking-toolbox:latest
-    container_name: networking-toolbox
     labels:
       yantr.app: networking-toolbox
       yantr.service.3000: Web UI

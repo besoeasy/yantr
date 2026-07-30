@@ -24,7 +24,6 @@ x-yantr:
 services:
   plex:
     image: lscr.io/linuxserver/plex:latest
-    container_name: plex
     labels:
       yantr.app: plex
       yantr.service.32400: Web UI

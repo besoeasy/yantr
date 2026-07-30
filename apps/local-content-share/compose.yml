@@ -12,7 +12,6 @@ x-yantr:
 services:
   local-content-share:
     image: ghcr.io/tanq16/local-content-share:latest
-    container_name: local-content-share
     labels:
       yantr.app: "local-content-share"
       yantr.service.8080: "Web UI"

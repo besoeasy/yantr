@@ -12,7 +12,6 @@ x-yantr:
 services:
   wanderer:
     image: ghcr.io/koenvh/wanderer:latest
-    container_name: wanderer
     labels:
       yantr.app: "wanderer"
       yantr.service.8080: "Web UI"

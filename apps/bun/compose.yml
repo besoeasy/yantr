@@ -12,7 +12,6 @@ x-yantr:
 services:
   bun:
     image: oven/bun:latest
-    container_name: bun
     labels:
       yantr.app: "bun"
     environment:

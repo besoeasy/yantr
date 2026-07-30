@@ -30,7 +30,6 @@ x-yantr:
 services:
   pihole:
     image: pihole/pihole:latest
-    container_name: pihole
     entrypoint: /app/entrypoint.sh
     labels:
       yantr.app: pihole

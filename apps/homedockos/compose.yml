@@ -12,7 +12,6 @@ x-yantr:
 services:
   homedockos:
     image: ghcr.io/bansheetech/homedockos:latest
-    container_name: homedockos
     labels:
       yantr.app: "homedockos"
       yantr.service.8080: "Web UI"

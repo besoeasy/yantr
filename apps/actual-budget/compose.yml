@@ -32,7 +32,6 @@ x-yantr:
 services:
   actual-budget:
     image: actualbudget/actual-server:latest
-    container_name: actual-budget
     labels:
       yantr.app: "actual-budget"
       yantr.service.5006: "Web UI"

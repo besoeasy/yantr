@@ -22,7 +22,6 @@ x-yantr:
 services:
   miniflux-db:
     image: postgres:15-alpine
-    container_name: miniflux-db
     restart: unless-stopped
     labels:
       yantr.app: miniflux
@@ -36,7 +35,6 @@ services:
       - miniflux_db:/var/lib/postgresql/data
   miniflux:
     image: miniflux/miniflux:latest
-    container_name: miniflux
     restart: unless-stopped
     labels:
       yantr.app: miniflux

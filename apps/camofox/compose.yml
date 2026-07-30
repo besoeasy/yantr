@@ -37,7 +37,6 @@ x-yantr:
 services:
   camofox:
     image: ghcr.io/jo-inc/camofox-browser:latest
-    container_name: camofox
     environment:
       CAMOFOX_API_KEY: ${CAMOFOX_API_KEY}
       ENABLE_VNC: "1"

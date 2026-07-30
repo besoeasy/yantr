@@ -18,7 +18,6 @@ x-yantr:
 services:
   kopia:
     image: kopia/kopia:latest
-    container_name: kopia
     labels:
       yantr.app: "kopia"
       yantr.service.51515: "Web UI"

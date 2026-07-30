@@ -12,7 +12,6 @@ x-yantr:
 services:
   node:
     image: node:lts
-    container_name: node
     labels:
       yantr.app: "node"
     environment:

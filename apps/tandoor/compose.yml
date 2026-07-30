@@ -24,7 +24,6 @@ x-yantr:
 services:
   web:
     image: vabene1111/recipes:latest
-    container_name: tandoor-web
     labels:
       yantr.app: tandoor
       yantr.service.80: Web UI
@@ -50,7 +49,6 @@ services:
     restart: unless-stopped
   db:
     image: postgres:latest
-    container_name: tandoor-db
     environment:
       POSTGRES_DB: tandoor
       POSTGRES_USER: tandoor

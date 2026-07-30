@@ -20,7 +20,6 @@ x-yantr:
 services:
   cryptpad:
     image: cryptpad/cryptpad:latest
-    container_name: cryptpad
     labels:
       yantr.app: cryptpad
       yantr.service.3000: Web UI

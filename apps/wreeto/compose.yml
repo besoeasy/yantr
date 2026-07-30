@@ -12,7 +12,6 @@ x-yantr:
 services:
   wreeto:
     image: ghcr.io/chrisvel/wreeto_official:latest
-    container_name: wreeto
     labels:
       yantr.app: "wreeto"
       yantr.service.3000: "Web UI"

@@ -26,7 +26,6 @@ x-yantr:
 services:
   duplicati:
     image: linuxserver/duplicati:latest
-    container_name: duplicati
     labels:
       yantr.app: duplicati
       yantr.service.8200: Web UI

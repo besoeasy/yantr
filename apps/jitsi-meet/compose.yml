@@ -15,7 +15,6 @@ x-yantr:
 services:
   web:
     image: jitsi/web:latest
-    container_name: jitsi-web
     labels:
       yantr.app: "jitsi-meet"
       yantr.service.443: "HTTPS"
@@ -66,7 +65,6 @@ services:
 
   xmpp:
     image: jitsi/prosody:latest
-    container_name: jitsi-xmpp
     labels:
       yantr.app: "jitsi-meet"
     volumes:
@@ -95,7 +93,6 @@ services:
 
   jicofo:
     image: jitsi/jicofo:latest
-    container_name: jitsi-jicofo
     labels:
       yantr.app: "jitsi-meet"
     volumes:
@@ -116,7 +113,6 @@ services:
 
   jvb:
     image: jitsi/jvb:latest
-    container_name: jitsi-jvb
     labels:
       yantr.app: "jitsi-meet"
       yantr.service.10000: "WebRTC"

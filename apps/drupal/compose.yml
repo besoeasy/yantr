@@ -18,7 +18,6 @@ x-yantr:
 services:
   drupal:
     image: drupal:latest
-    container_name: drupal
     labels:
       yantr.app: drupal
       yantr.service.80: Web UI

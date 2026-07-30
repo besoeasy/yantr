@@ -17,7 +17,6 @@ x-yantr:
 services:
   l-town:
     image: ghcr.io/besoeasy/l-town:latest
-    container_name: l-town
     labels:
       yantr.app: l-town
       yantr.service.30300: Web UI

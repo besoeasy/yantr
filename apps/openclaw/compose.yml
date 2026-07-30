@@ -20,7 +20,6 @@ x-yantr:
 services:
   openclaw:
     image: ghcr.io/openclaw/openclaw:latest
-    container_name: openclaw
     init: true
     restart: unless-stopped
     command:

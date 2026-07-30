@@ -24,7 +24,6 @@ x-yantr:
 services:
   swingmusic:
     image: ghcr.io/swingmx/swingmusic:latest
-    container_name: swingmusic
     volumes:
       - swingmusic-music:/music
       - swingmusic-config:/config

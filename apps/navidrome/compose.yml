@@ -17,7 +17,6 @@ x-yantr:
 services:
   navidrome:
     image: deluan/navidrome:latest
-    container_name: navidrome
     labels:
       yantr.app: navidrome
       yantr.service.4533: Web UI

@@ -12,7 +12,6 @@ x-yantr:
 services:
   docker-compose-maker:
     image: ghcr.io/homarr/docker-compose-maker:latest
-    container_name: docker-compose-maker
     labels:
       yantr.app: "docker-compose-maker"
       yantr.service.8080: "Web UI"

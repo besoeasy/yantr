@@ -30,7 +30,6 @@ x-yantr:
 services:
   monetr:
     image: ghcr.io/monetr/monetr:latest
-    container_name: monetr
     user: 1000:1000
     labels:
       yantr.app: monetr
@@ -64,7 +63,6 @@ services:
       MONETR_STORAGE_PROVIDER: ${MONETR_STORAGE_PROVIDER:-filesystem}
   db:
     image: postgres:latest
-    container_name: monetr-db
     user: 1000:1000
     labels:
       yantr.app: monetr
@@ -86,7 +84,6 @@ services:
     restart: on-failure
   valkey:
     image: valkey/valkey:latest
-    container_name: monetr-valkey
     user: 1000:1000
     labels:
       yantr.app: monetr

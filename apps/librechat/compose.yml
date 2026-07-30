@@ -48,7 +48,6 @@ x-yantr:
 services:
   librechat:
     image: ghcr.io/danny-avila/librechat:latest
-    container_name: librechat
     ports:
       - "3080"
     command: npm run backend
@@ -78,7 +77,6 @@ services:
       yantr.port.3080: HTTP
   librechat-mongodb:
     image: mongo:8
-    container_name: librechat-mongodb
     command: mongod --noauth
     volumes:
       - librechat_db:/data/db
@@ -89,7 +87,6 @@ services:
       yantr.port.3080: HTTP
   librechat-meilisearch:
     image: getmeili/meilisearch:v1.12.3
-    container_name: librechat-meilisearch
     environment:
       MEILI_HOST: http://librechat-meilisearch:7700
       MEILI_NO_ANALYTICS: "true"
@@ -103,7 +100,6 @@ services:
       yantr.port.3080: HTTP
   librechat-vectordb:
     image: ankane/pgvector:v0.5.1
-    container_name: librechat-vectordb
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: myuser
@@ -117,7 +113,6 @@ services:
       yantr.port.3080: HTTP
   librechat-rag-api:
     image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
-    container_name: librechat-rag-api
     environment:
       DB_HOST: librechat-vectordb
       RAG_PORT: 8000

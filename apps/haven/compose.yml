@@ -12,7 +12,6 @@ x-yantr:
 services:
   haven:
     image: ghcr.io/ancsemi/haven:latest
-    container_name: haven
     labels:
       yantr.app: "haven"
       yantr.service.3000: "Web UI"

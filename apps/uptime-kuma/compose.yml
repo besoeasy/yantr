@@ -31,7 +31,6 @@ x-yantr:
 services:
   uptime-kuma:
     image: louislam/uptime-kuma:latest
-    container_name: uptime-kuma
     labels:
       yantr.app: uptime-kuma
       yantr.service.3001: Web UI

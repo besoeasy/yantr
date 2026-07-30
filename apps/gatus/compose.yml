@@ -28,7 +28,6 @@ x-yantr:
 services:
   gatus:
     image: twinproduction/gatus:latest
-    container_name: gatus
     labels:
       yantr.app: gatus
       yantr.service.8080: Dashboard

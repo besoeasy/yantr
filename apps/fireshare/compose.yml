@@ -33,7 +33,6 @@ x-yantr:
 services:
   fireshare:
     image: shaneisrael/fireshare:latest
-    container_name: fireshare
     labels:
       yantr.app: fireshare
       yantr.service.80: Web UI

@@ -28,7 +28,6 @@ x-yantr:
 services:
   photoprism:
     image: photoprism/photoprism:latest
-    container_name: photoprism
     labels:
       yantr.app: photoprism
       yantr.service.2342: Web UI
@@ -52,7 +51,6 @@ services:
       - mariadb
   mariadb:
     image: mariadb:11
-    container_name: photoprism-db
     labels:
       yantr.app: photoprism
       yantr.service.2342: Web UI

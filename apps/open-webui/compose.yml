@@ -26,7 +26,6 @@ x-yantr:
 services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
-    container_name: open-webui
     labels:
       yantr.app: open-webui
       yantr.service.8080: Web UI

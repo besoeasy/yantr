@@ -11,7 +11,6 @@ x-yantr:
 services:
   dpaste:
     image: darrenofficial/dpaste:latest
-    container_name: dpaste
     labels:
       yantr.app: "dpaste"
       yantr.service.8080: "Web UI"

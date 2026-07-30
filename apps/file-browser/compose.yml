@@ -17,7 +17,6 @@ x-yantr:
 services:
   server:
     image: filebrowser/filebrowser:latest
-    container_name: file-browser
     labels:
       yantr.app: file-browser
       yantr.service.80: Web UI

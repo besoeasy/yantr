@@ -37,7 +37,6 @@ x-yantr:
 services:
   tubearchivist:
     image: bbilly1/tubearchivist:latest
-    container_name: tubearchivist
     ports:
       - "8000"
     volumes:
@@ -62,7 +61,6 @@ services:
       yantr.port.8000: HTTP
   tubearchivist-redis:
     image: redis/redis-stack-server:latest
-    container_name: tubearchivist-redis
     volumes:
       - tubearchivist_redis:/data
     restart: unless-stopped
@@ -72,7 +70,6 @@ services:
       yantr.port.8000: HTTP
   tubearchivist-es:
     image: bbilly1/tubearchivist-es:latest
-    container_name: tubearchivist-es
     environment:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       ES_JAVA_OPTS: -Xms1g -Xmx1g

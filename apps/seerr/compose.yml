@@ -27,7 +27,6 @@ services:
   seerr:
     image: ghcr.io/seerr-team/seerr:latest
     init: true
-    container_name: seerr
     labels:
       yantr.app: seerr
       yantr.service.5055: Web UI

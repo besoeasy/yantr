@@ -19,7 +19,6 @@ x-yantr:
 services:
   shugur-relay:
     image: ghcr.io/shugur-network/relay:latest
-    container_name: shugur-relay
     restart: unless-stopped
     ports:
       - "8080"
@@ -54,7 +53,6 @@ services:
       yantr.port.8080: HTTP
   cockroachdb:
     image: cockroachdb/cockroach:latest
-    container_name: shugur-cockroachdb
     command: start-single-node --insecure
     volumes:
       - cockroach-data:/cockroach/cockroach-data

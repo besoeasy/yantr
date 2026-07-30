@@ -23,7 +23,6 @@ x-yantr:
 services:
   openobserve:
     image: greenblut/openobserve:latest
-    container_name: openobserve
     labels:
       yantr.app: openobserve
       yantr.service.5080: Web UI

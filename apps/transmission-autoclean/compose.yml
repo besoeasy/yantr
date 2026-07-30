@@ -26,7 +26,6 @@ x-yantr:
 services:
   transmission:
     image: linuxserver/transmission:latest
-    container_name: transmission-autoclean
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -58,7 +57,6 @@ services:
 
   dufs:
     image: sigoden/dufs:latest
-    container_name: transmission-autoclean-dufs
     command:
       - /downloads
       - --allow-search
@@ -77,7 +75,6 @@ services:
 
   cleanup:
     image: alpine:latest
-    container_name: transmission-autoclean-cleanup
     security_opt:
       - no-new-privileges:true
     labels:

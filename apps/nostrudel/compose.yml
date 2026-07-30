@@ -27,7 +27,6 @@ x-yantr:
 services:
   nostrudel:
     image: ghcr.io/hzrd149/nostrudel:1.1.0
-    container_name: nostrudel
     labels:
       yantr.app: nostrudel
       yantr.service.80: Web UI
@@ -42,7 +41,6 @@ services:
     restart: unless-stopped
   nostrudel-cors:
     image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5
-    container_name: nostrudel-cors
     environment:
       CORSANYWHERE_REQUIRE_HEADERS: host
     restart: unless-stopped

@@ -23,7 +23,6 @@ x-yantr:
 services:
   hoarder:
     image: ghcr.io/hoarder-app/hoarder:latest
-    container_name: hoarder
     labels:
       yantr.app: hoarder
       yantr.service.3000: Web UI
@@ -50,7 +49,6 @@ services:
 
   hoarder-worker:
     image: ghcr.io/hoarder-app/hoarder:latest
-    container_name: hoarder-worker
     labels:
       yantr.app: hoarder
     command: pnpm run worker
@@ -72,7 +70,6 @@ services:
 
   hoarder-db:
     image: postgres:latest
-    container_name: hoarder-db
     labels:
       yantr.app: hoarder
     environment:
@@ -89,7 +86,6 @@ services:
 
   hoarder-redis:
     image: redis:latest
-    container_name: hoarder-redis
     labels:
       yantr.app: hoarder
     volumes:

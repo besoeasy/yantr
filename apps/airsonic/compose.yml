@@ -24,7 +24,6 @@ x-yantr:
 services:
   airsonic:
     image: lscr.io/linuxserver/airsonic:latest
-    container_name: airsonic
     labels:
       yantr.app: airsonic
       yantr.service.4040: Web UI

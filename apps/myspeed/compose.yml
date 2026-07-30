@@ -18,7 +18,6 @@ x-yantr:
 services:
   myspeed:
     image: germannewsmaker/myspeed:latest
-    container_name: myspeed
     hostname: myspeed
     volumes:
       - myspeed_data:/myspeed/data

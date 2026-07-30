@@ -12,7 +12,6 @@ x-yantr:
 services:
   hothost:
     image: devforth/hothost:latest
-    container_name: hothost
     labels:
       yantr.app: "hothost"
       yantr.service.8080: "Web UI"

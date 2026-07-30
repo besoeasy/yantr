@@ -24,7 +24,6 @@ x-yantr:
 services:
   activepieces:
     image: ghcr.io/activepieces/activepieces:latest
-    container_name: activepieces
     labels:
       yantr.app: activepieces
       yantr.service.8080: Web UI
@@ -54,7 +53,6 @@ services:
 
   activepieces-db:
     image: postgres:latest
-    container_name: activepieces-db
     labels:
       yantr.app: activepieces
     environment:
@@ -71,7 +69,6 @@ services:
 
   activepieces-redis:
     image: redis:latest
-    container_name: activepieces-redis
     labels:
       yantr.app: activepieces
     volumes:

@@ -17,7 +17,6 @@ x-yantr:
 services:
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
-    container_name: audiobookshelf
     labels:
       yantr.app: audiobookshelf
       yantr.service.13378: Web UI

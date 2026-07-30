@@ -24,7 +24,6 @@ x-yantr:
 services:
   app:
     image: koenkk/zigbee2mqtt:latest
-    container_name: zigbee2mqtt
     labels:
       yantr.app: zigbee2mqtt
       yantr.service.8080: Web UI

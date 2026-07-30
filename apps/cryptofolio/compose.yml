@@ -19,7 +19,6 @@ x-yantr:
 services:
   cryptofolio:
     image: xtrendence/cryptofolio:latest
-    container_name: cryptofolio
     labels:
       yantr.app: cryptofolio
       yantr.service.80: Web UI

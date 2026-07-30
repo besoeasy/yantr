@@ -23,7 +23,6 @@ x-yantr:
 services:
   telegram-archive:
     image: drumsergio/telegram-archive:latest
-    container_name: telegram-archive
     labels:
       yantr.app: telegram-archive
       yantr.service.8000: Web UI

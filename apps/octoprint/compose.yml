@@ -23,7 +23,6 @@ x-yantr:
 services:
   web:
     image: octoprint/octoprint:latest
-    container_name: octoprint
     labels:
       yantr.app: octoprint
       yantr.service.5000: Web UI

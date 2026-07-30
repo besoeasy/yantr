@@ -27,7 +27,6 @@ x-yantr:
 services:
   db:
     image: mariadb:10.11
-    container_name: firefly-iii-db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -42,7 +41,6 @@ services:
       yantr.port.8080: HTTP
   server:
     image: fireflyiii/core:latest
-    container_name: firefly-iii-server
     restart: unless-stopped
     depends_on:
       - db

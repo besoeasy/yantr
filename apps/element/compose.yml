@@ -28,7 +28,6 @@ x-yantr:
 services:
   element:
     image: vectorim/element-web:latest
-    container_name: element
     labels:
       yantr.app: element
       yantr.service.80: Web UI

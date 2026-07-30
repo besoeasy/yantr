@@ -28,7 +28,6 @@ x-yantr:
 services:
   postgresql:
     image: postgres:latest
-    container_name: postgresql
     labels:
       yantr.app: postgresql
       yantr.service.5432: Database

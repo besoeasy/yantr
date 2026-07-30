@@ -12,7 +12,6 @@ x-yantr:
 services:
   espial:
     image: jonschoning/espial:latest
-    container_name: espial
     labels:
       yantr.app: "espial"
       yantr.service.8080: "Web UI"

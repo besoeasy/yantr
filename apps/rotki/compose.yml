@@ -27,7 +27,6 @@ x-yantr:
 services:
   rotki:
     image: rotki/rotki:latest
-    container_name: rotki
     labels:
       yantr.app: rotki
       yantr.service.80: Web UI

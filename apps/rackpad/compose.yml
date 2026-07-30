@@ -23,7 +23,6 @@ x-yantr:
 services:
   rackpad:
     image: ghcr.io/kobii-git/rackpad:latest
-    container_name: rackpad
     labels:
       yantr.app: rackpad
       yantr.service.3000: Web UI

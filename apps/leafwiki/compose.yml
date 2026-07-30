@@ -12,7 +12,6 @@ x-yantr:
 services:
   leafwiki:
     image: ghcr.io/perber/leafwiki:latest
-    container_name: leafwiki
     labels:
       yantr.app: "leafwiki"
       yantr.service.8080: "Web UI"

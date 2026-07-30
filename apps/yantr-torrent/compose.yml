@@ -14,7 +14,6 @@ x-yantr:
 services:
   downloader:
     build: .
-    container_name: yantr-torrent
     environment:
       SEED_IDLE_MINUTES: ${SEED_IDLE_MINUTES:-60}
       SEED_CLEANUP_DAYS: ${SEED_CLEANUP_DAYS:-30}

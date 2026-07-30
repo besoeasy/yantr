@@ -12,7 +12,6 @@ x-yantr:
 services:
   ubuntu:
     image: ubuntu:lts
-    container_name: ubuntu
     labels:
       yantr.app: "ubuntu"
     environment:

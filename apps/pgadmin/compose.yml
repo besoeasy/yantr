@@ -25,7 +25,6 @@ x-yantr:
 services:
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin
     labels:
       yantr.app: pgadmin
       yantr.service.5050: Web UI

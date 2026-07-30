@@ -20,7 +20,6 @@ x-yantr:
 services:
   maybe:
     image: ghcr.io/maybe-finance/maybe:0.6.0
-    container_name: maybe
     labels:
       yantr.app: maybe
       yantr.service.3063: Web UI
@@ -48,7 +47,6 @@ services:
     restart: unless-stopped
   maybe-worker:
     image: ghcr.io/maybe-finance/maybe:0.6.0
-    container_name: maybe-worker
     command: bundle exec sidekiq
     environment:
       SELF_HOSTING_ENABLED: "true"
@@ -71,7 +69,6 @@ services:
       yantr.port.3063: HTTP
   maybe-db:
     image: postgres:16
-    container_name: maybe-db
     volumes:
       - maybe_db:/var/lib/postgresql/data
     environment:
@@ -93,7 +90,6 @@ services:
       yantr.port.3063: HTTP
   maybe-redis:
     image: redis:7.4.2
-    container_name: maybe-redis
     user: 1000:1000
     volumes:
       - maybe_redis:/data

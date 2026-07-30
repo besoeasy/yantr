@@ -34,7 +34,6 @@ x-yantr:
 services:
   invidious:
     image: ceramicwhite/invidious:latest
-    container_name: invidious
     ports:
       - "3000"
     user: 1000:1000
@@ -63,7 +62,6 @@ services:
       yantr.port.3000: HTTP
   invidious-postgres:
     image: postgres:13-alpine
-    container_name: invidious-postgres
     user: 1000:1000
     environment:
       POSTGRES_DB: invidious
@@ -78,7 +76,6 @@ services:
       yantr.port.3000: HTTP
   invidious-companion:
     image: quay.io/invidious/invidious-companion:latest
-    container_name: invidious-companion
     user: 1000:1000
     cap_drop:
       - ALL

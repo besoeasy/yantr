@@ -26,7 +26,6 @@ x-yantr:
 services:
   jackett:
     image: linuxserver/jackett:latest
-    container_name: jackett
     hostname: jackett
     environment:
       AUTO_UPDATE: "true"

@@ -22,7 +22,6 @@ x-yantr:
 services:
   linkding:
     image: sissbruecker/linkding:latest
-    container_name: linkding
     labels:
       yantr.app: linkding
       yantr.service.9090: Web UI

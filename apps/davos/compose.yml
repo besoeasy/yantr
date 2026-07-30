@@ -23,7 +23,6 @@ x-yantr:
 services:
   davos:
     image: linuxserver/davos:latest
-    container_name: davos
     labels:
       yantr.app: davos
       yantr.service.8080: Web UI

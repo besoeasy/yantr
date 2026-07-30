@@ -25,7 +25,6 @@ x-yantr:
 services:
   dockge:
     image: louislam/dockge:1
-    container_name: dockge
     labels:
       yantr.app: dockge
       yantr.service.5001: Web UI

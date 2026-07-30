@@ -25,7 +25,6 @@ x-yantr:
 services:
   specter-desktop:
     image: ghcr.io/cryptoadvance/specter-desktop:v2.1.1
-    container_name: specter-desktop
     labels:
       yantr.app: specter-desktop
       yantr.service.25441: Web UI

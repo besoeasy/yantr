@@ -12,7 +12,6 @@ x-yantr:
 services:
   pangolin:
     image: ghcr.io/fosrl/pangolin:latest
-    container_name: pangolin
     labels:
       yantr.app: "pangolin"
       yantr.service.8080: "Web UI"

@@ -12,7 +12,6 @@ x-yantr:
 services:
   beaver-habit-tracker:
     image: ghcr.io/daydreamiq/beaver-habit-tracker:latest
-    container_name: beaver-habit-tracker
     labels:
       yantr.app: "beaver-habit-tracker"
       yantr.service.8080: "Web UI"

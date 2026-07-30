@@ -12,7 +12,6 @@ x-yantr:
 services:
   nodyx:
     image: ghcr.io/pokled/nodyx:latest
-    container_name: nodyx
     labels:
       yantr.app: "nodyx"
       yantr.service.3000: "Web UI"

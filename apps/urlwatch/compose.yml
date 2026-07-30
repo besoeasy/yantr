@@ -25,7 +25,6 @@ x-yantr:
 services:
   urlwatch:
     image: mediadepot/urlwatch:master
-    container_name: urlwatch
     labels:
       yantr.app: urlwatch
       yantr.service.8081: Web UI

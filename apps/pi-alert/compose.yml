@@ -26,7 +26,6 @@ x-yantr:
 services:
   pi-alert:
     image: jokobsk/pi.alert:latest
-    container_name: pi-alert
     labels:
       yantr.app: pi-alert
       yantr.service.20211: Monitoring

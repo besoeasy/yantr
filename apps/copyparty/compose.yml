@@ -17,7 +17,6 @@ x-yantr:
 services:
   web:
     image: ghcr.io/9001/copyparty-ac:latest
-    container_name: copyparty
     labels:
       yantr.app: copyparty
       yantr.service.3923: Web UI

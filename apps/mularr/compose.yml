@@ -11,7 +11,6 @@ x-yantr:
 services:
   mularr:
     image: ghcr.io/joecarl/mularr:latest
-    container_name: mularr
     labels:
       yantr.app: "mularr"
       yantr.service.8080: "Web UI"

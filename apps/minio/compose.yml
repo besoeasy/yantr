@@ -25,7 +25,6 @@ x-yantr:
 services:
   minio:
     image: minio/minio:latest
-    container_name: minio
     restart: unless-stopped
     command: server /data --console-address ":9001"
     ports:

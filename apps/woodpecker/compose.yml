@@ -20,7 +20,6 @@ x-yantr:
 services:
   server:
     image: woodpeckerci/woodpecker-server:latest
-    container_name: woodpecker-server
     labels:
       yantr.app: "woodpecker"
       yantr.service.8000: "Web UI"
@@ -43,7 +42,6 @@ services:
 
   agent:
     image: woodpeckerci/woodpecker-agent:latest
-    container_name: woodpecker-agent
     labels:
       yantr.app: "woodpecker"
     volumes:

@@ -12,7 +12,6 @@ x-yantr:
 services:
   linkbreeze:
     image: ghcr.io/manak-hash/linkbreeze:latest
-    container_name: linkbreeze
     labels:
       yantr.app: "linkbreeze"
       yantr.service.3000: "Web UI"

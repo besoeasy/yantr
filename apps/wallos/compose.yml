@@ -16,7 +16,6 @@ x-yantr:
 services:
   server:
     image: bellamy/wallos:latest
-    container_name: wallos-server
     labels:
       yantr.app: wallos
       yantr.service.80: Web UI

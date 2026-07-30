@@ -30,7 +30,6 @@ x-yantr:
 services:
   beszel-hub:
     image: henrygd/beszel:latest
-    container_name: beszel-hub
     labels:
       yantr.app: beszel
       yantr.service.8090: Dashboard
@@ -43,7 +42,6 @@ services:
 
   beszel-agent:
     image: henrygd/beszel-agent:latest
-    container_name: beszel-agent
     labels:
       yantr.app: beszel
     network_mode: host

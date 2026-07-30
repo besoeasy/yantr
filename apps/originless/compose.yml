@@ -29,7 +29,6 @@ services:
   originless:
     image: ghcr.io/besoeasy/originless:latest
     init: true
-    container_name: originless
     hostname: originless
     environment:
       STORAGE_MAX: ${STORAGE_MAX:-200GB}

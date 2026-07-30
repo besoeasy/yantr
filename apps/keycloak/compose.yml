@@ -25,7 +25,6 @@ x-yantr:
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
     labels:
       yantr.app: keycloak
       yantr.service.8080: Web UI
@@ -46,7 +45,6 @@ services:
     restart: unless-stopped
   keycloak-db:
     image: postgres:latest
-    container_name: keycloak-db
     labels:
       yantr.app: keycloak
       yantr.service.5432: PostgreSQL

@@ -20,7 +20,6 @@ x-yantr:
 services:
   trip:
     image: ghcr.io/itskovacs/trip:latest
-    container_name: trip
     labels:
       yantr.app: trip
       yantr.service.8000: Web UI

@@ -28,7 +28,6 @@ x-yantr:
 services:
   wordpress:
     image: wordpress:latest
-    container_name: wordpress
     labels:
       yantr.app: wordpress
       yantr.service.80: Web UI
@@ -47,7 +46,6 @@ services:
       - wordpress-db
   wordpress-db:
     image: mysql:8.0
-    container_name: wordpress-db
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: wordpress

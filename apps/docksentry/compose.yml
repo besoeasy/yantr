@@ -11,7 +11,6 @@ x-yantr:
 services:
   docksentry:
     image: ghcr.io/amayer1983/docksentry:latest
-    container_name: docksentry
     labels:
       yantr.app: "docksentry"
       yantr.service.8080: "Web UI"

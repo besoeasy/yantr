@@ -30,7 +30,6 @@ x-yantr:
 services:
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
     labels:
       yantr.app: grafana
       yantr.service.3000: Dashboard

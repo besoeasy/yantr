@@ -24,7 +24,6 @@ x-yantr:
 services:
   web:
     image: jc21/nginx-proxy-manager:latest
-    container_name: nginx-proxy-manager
     labels:
       yantr.app: nginx-proxy-manager
       yantr.service.81: Admin UI

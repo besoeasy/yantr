@@ -12,7 +12,6 @@ x-yantr:
 services:
   strava-stats:
     image: ghcr.io/henry-woody/strava-stats:latest
-    container_name: strava-stats
     labels:
       yantr.app: "strava-stats"
       yantr.service.8080: "Web UI"

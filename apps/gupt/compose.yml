@@ -26,7 +26,6 @@ x-yantr:
 services:
   gupt:
     image: ghcr.io/besoeasy/gupt:latest
-    container_name: gupt
     labels:
       yantr.app: gupt
       yantr.service.8000: Web UI

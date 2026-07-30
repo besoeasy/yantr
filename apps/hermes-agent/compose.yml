@@ -29,7 +29,6 @@ x-yantr:
 services:
   web:
     image: ghcr.io/getumbrel/hermes-agent-umbrel:v2026.4.13
-    container_name: hermes-agent
     hostname: hermes
     init: true
     user: 1000:1000
@@ -49,7 +48,6 @@ services:
       GATEWAY_HEALTH_URL: http://gateway:8642
   gateway:
     image: nousresearch/hermes-agent:latest
-    container_name: hermes-gateway
     labels:
       yantr.app: hermes-agent
       yantr.service.18789: Web UI

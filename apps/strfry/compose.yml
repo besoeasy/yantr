@@ -25,7 +25,6 @@ x-yantr:
 services:
   strfry:
     image: ghcr.io/hoytech/strfry:latest
-    container_name: strfry-relay
     restart: unless-stopped
     ports:
       - "7777"

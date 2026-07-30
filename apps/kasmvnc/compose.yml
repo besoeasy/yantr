@@ -25,7 +25,6 @@ x-yantr:
 services:
   kasmvnc:
     image: kasmweb/core-ubuntu-jammy:latest
-    container_name: kasmvnc
     labels:
       yantr.app: kasmvnc
       yantr.service.6901: Web UI

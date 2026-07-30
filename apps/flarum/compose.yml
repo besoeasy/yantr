@@ -12,7 +12,6 @@ x-yantr:
 services:
   flarum:
     image: mondediefr/flarum:latest
-    container_name: flarum
     labels:
       yantr.app: "flarum"
       yantr.service.80: "Web UI"
@@ -37,7 +36,6 @@ services:
 
   db:
     image: mariadb:latest
-    container_name: flarum-db
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: flarum

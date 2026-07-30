@@ -12,7 +12,6 @@ x-yantr:
 services:
   opengist:
     image: ghcr.io/thomicdc/opengist:latest
-    container_name: opengist
     labels:
       yantr.app: "opengist"
       yantr.service.8080: "Web UI"

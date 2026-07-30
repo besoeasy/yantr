@@ -25,7 +25,6 @@ x-yantr:
 services:
   glances:
     image: nicolargo/glances:latest
-    container_name: glances
     labels:
       yantr.app: glances
       yantr.service.61208: Web UI

@@ -28,7 +28,6 @@ x-yantr:
 services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr
     volumes:
       - radarr_config:/config
       - radarr_movies:/movies

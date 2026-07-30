@@ -18,7 +18,6 @@ x-yantr:
 services:
   appsmith:
     image: appsmith/appsmith-ce:latest
-    container_name: appsmith
     labels:
       yantr.app: appsmith
       yantr.service.80: Web UI

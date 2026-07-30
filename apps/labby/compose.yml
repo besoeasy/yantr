@@ -12,7 +12,6 @@ x-yantr:
 services:
   labby:
     image: ghcr.io/samuelloranger/labby:latest
-    container_name: labby
     labels:
       yantr.app: "labby"
       yantr.service.8080: "Web UI"

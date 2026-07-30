@@ -21,7 +21,6 @@ x-yantr:
 services:
   db:
     image: postgres:16-alpine
-    container_name: gitea-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: gitea
@@ -37,7 +36,6 @@ services:
       yantr.port.2222: TCP
   server:
     image: gitea/gitea:latest
-    container_name: gitea-server
     restart: unless-stopped
     depends_on:
       - db

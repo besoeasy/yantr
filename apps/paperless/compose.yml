@@ -24,7 +24,6 @@ x-yantr:
 services:
   broker:
     image: redis:7
-    container_name: paperless-broker
     restart: unless-stopped
     volumes:
       - paperless_redis:/data
@@ -34,7 +33,6 @@ services:
       yantr.port.8000: HTTP
   db:
     image: postgres:16
-    container_name: paperless-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: paperless
@@ -48,7 +46,6 @@ services:
       yantr.port.8000: HTTP
   gotenberg:
     image: gotenberg/gotenberg:8
-    container_name: paperless-gotenberg
     restart: unless-stopped
     command:
       - gotenberg
@@ -60,7 +57,6 @@ services:
       yantr.port.8000: HTTP
   tika:
     image: ghcr.io/paperless-ngx/tika:latest
-    container_name: paperless-tika
     restart: unless-stopped
     labels:
       yantr.app: paperless
@@ -68,7 +64,6 @@ services:
       yantr.port.8000: HTTP
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    container_name: paperless-webserver
     restart: unless-stopped
     depends_on:
       - db

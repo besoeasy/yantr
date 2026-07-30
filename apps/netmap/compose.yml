@@ -12,7 +12,6 @@ x-yantr:
 services:
   netmap:
     image: ghcr.io/xoriin/netmap:latest
-    container_name: netmap
     labels:
       yantr.app: "netmap"
       yantr.service.3000: "Web UI"

@@ -39,7 +39,6 @@ x-yantr:
 services:
   gitea-mirror:
     image: ghcr.io/raylabshq/gitea-mirror:latest
-    container_name: gitea-mirror
     restart: unless-stopped
     ports:
       - "4321"

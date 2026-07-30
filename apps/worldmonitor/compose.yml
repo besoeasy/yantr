@@ -34,7 +34,6 @@ x-yantr:
 services:
   worldmonitor:
     image: ghcr.io/koala73/worldmonitor:latest
-    container_name: worldmonitor
     build:
       context: .
     labels:
@@ -55,7 +54,6 @@ services:
 
   worldmonitor-redis:
     image: redis:7-alpine
-    container_name: worldmonitor-redis
     command: >
       sh -c "redis-server --requirepass ${REDIS_PASSWORD}"
     volumes:

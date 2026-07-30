@@ -12,7 +12,6 @@ x-yantr:
 services:
   apprise:
     image: ghcr.io/caronc/apprise:latest
-    container_name: apprise
     labels:
       yantr.app: "apprise"
       yantr.service.8080: "Web UI"

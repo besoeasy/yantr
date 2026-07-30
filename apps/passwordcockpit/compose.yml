@@ -12,7 +12,6 @@ x-yantr:
 services:
   passwordcockpit:
     image: passwordcockpit/passwordcockpit:latest
-    container_name: passwordcockpit
     labels:
       yantr.app: "passwordcockpit"
       yantr.service.80: "Web UI"

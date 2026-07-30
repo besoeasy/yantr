@@ -26,7 +26,6 @@ x-yantr:
 services:
   whoogle:
     image: benbusby/whoogle-search:latest
-    container_name: whoogle
     labels:
       yantr.app: whoogle
       yantr.service.5000: Web UI

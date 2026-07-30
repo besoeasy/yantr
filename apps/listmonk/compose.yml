@@ -24,7 +24,6 @@ x-yantr:
 services:
   listmonk:
     image: listmonk/listmonk:latest
-    container_name: listmonk
     labels:
       yantr.app: listmonk
       yantr.service.9000: Web UI
@@ -49,7 +48,6 @@ services:
 
   listmonk-db:
     image: postgres:latest
-    container_name: listmonk-db
     labels:
       yantr.app: listmonk
     environment:
@@ -66,7 +64,6 @@ services:
 
   listmonk-redis:
     image: redis:latest
-    container_name: listmonk-redis
     labels:
       yantr.app: listmonk
     volumes:

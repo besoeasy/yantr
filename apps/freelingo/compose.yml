@@ -12,7 +12,6 @@ x-yantr:
 services:
   freelingo:
     image: ghcr.io/artcc/freelingo:latest
-    container_name: freelingo
     labels:
       yantr.app: "freelingo"
       yantr.service.8080: "Web UI"

@@ -27,7 +27,6 @@ x-yantr:
 services:
   excalidraw:
     image: ghcr.io/ozencb/excalidraw-persist:latest
-    container_name: excalidraw
     ports:
       - "4000"
     environment:
