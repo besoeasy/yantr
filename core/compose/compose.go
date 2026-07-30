@@ -304,9 +304,7 @@ func applyInstanceTransforms(doc ComposeDoc, services map[string]interface{}, in
 		if !ok {
 			continue
 		}
-		if name, ok := svc["container_name"].(string); ok && strings.TrimSpace(name) != "" {
-			svc["container_name"] = strings.TrimSpace(name) + "-" + suffix
-		}
+		delete(svc, "container_name")
 		if vols, ok := svc["volumes"].([]interface{}); ok {
 			for i, v := range vols {
 				if s, ok := v.(string); ok {
