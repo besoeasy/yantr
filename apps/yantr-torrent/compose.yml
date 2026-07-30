@@ -5,16 +5,19 @@ x-yantr:
   description: >
     A lightweight self-hosted torrent download server featuring Transmission with the modern
     Flood web interface and Dufs WebDAV file manager. Easily stream, download, and manage your torrents
-    via a sleek UI and access files over WebDAV with automatic 30-day cleanup.
+    via a sleek UI and access files over WebDAV with automatic 30-day cleanup and 1-hour seeding limits.
   usecases: ["Download torrents via Flood's modern React web interface.", "Access and stream downloaded files via WebDAV.", "Automatically delete downloads older than 30 days."]
   website: "https://github.com/besoeasy/yantr"
   customapp: true
-  notes: ["Flood UI is accessible on port 3000.", "WebDAV file browser is accessible on port 5000."]
+  notes: ["Flood UI is accessible on port 3000.", "WebDAV file browser is accessible on port 5000.", "Seeding is limited to 60 minutes of idle time by default (configurable via SEED_IDLE_MINUTES)."]
 
 services:
   downloader:
     build: .
     container_name: yantr-torrent
+    environment:
+      SEED_IDLE_MINUTES: ${SEED_IDLE_MINUTES:-60}
+      SEED_CLEANUP_DAYS: ${SEED_CLEANUP_DAYS:-30}
     labels:
       yantr.app: "yantr-torrent"
       yantr.service.3000: "Flood Web UI"

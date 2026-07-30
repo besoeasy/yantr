@@ -2,11 +2,14 @@
 
 set -e
 
+SEED_IDLE_MINUTES="${SEED_IDLE_MINUTES:-60}"
+SEED_CLEANUP_DAYS="${SEED_CLEANUP_DAYS:-30}"
+
 mkdir -p /config /downloads /config/flood
 
-# Configure crontab for daily auto-cleanup of downloads older than 30 days
-cat >/etc/crontabs/root <<'EOF'
-0 3 * * * find /downloads -type f -mtime +30 -delete 2>/dev/null
+# Configure crontab for daily auto-cleanup of downloads older than SEED_CLEANUP_DAYS
+cat >/etc/crontabs/root <<EOF
+0 3 * * * find /downloads -type f -mtime +${SEED_CLEANUP_DAYS} -delete 2>/dev/null
 5 3 * * * find /downloads -type d -empty -delete 2>/dev/null
 EOF
 
@@ -15,7 +18,7 @@ crond -b -l 2
 
 # Pre-seed Transmission settings if missing
 if [ ! -f /config/settings.json ]; then
-  cat >/config/settings.json <<'EOF'
+  cat >/config/settings.json <<EOF
 {
   "download-dir": "/downloads",
   "incomplete-dir": "/downloads/incomplete",
@@ -25,7 +28,9 @@ if [ ! -f /config/settings.json ]; then
   "rpc-enabled": true,
   "rpc-port": 9091,
   "rpc-whitelist-enabled": false,
-  "peer-port": 51413
+  "peer-port": 51413,
+  "idle-seeding-limit": ${SEED_IDLE_MINUTES},
+  "idle-seeding-limit-enabled": true
 }
 EOF
 fi
