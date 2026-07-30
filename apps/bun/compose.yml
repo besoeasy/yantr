@@ -1,6 +1,5 @@
 x-yantr:
   name: "bun"
-  customapp: true
   tags: [javascript, bun, runtime, docker, self-hosted]
   short_description: "Bun JavaScript runtime for fast modern web development."
   description: >

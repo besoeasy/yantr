@@ -1,6 +1,5 @@
 x-yantr:
   name: "node"
-  customapp: true
   tags: [nodejs, javascript, dev, docker, self-hosted]
   short_description: "Node.js LTS environment for JavaScript applications."
   description: >

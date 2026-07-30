@@ -18,7 +18,6 @@ x-yantr:
         without sending data to external APIs."
     ]
   website: https://github.com/koala73/worldmonitor
-  customapp: true
   env_generators:
     RELAY_SHARED_SECRET: { length: 64, charset: hex }
     REDIS_PASSWORD: { length: 32, charset: hex }

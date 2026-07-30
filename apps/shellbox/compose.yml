@@ -1,6 +1,5 @@
 x-yantr:
   name: shellbox
-  customapp: true
   tags: [ssh, terminal, shell, linux, self-hosted]
   short_description: "Self-hosted SSH server with password and sudo access."
   description: >

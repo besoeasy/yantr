@@ -17,7 +17,6 @@ x-yantr:
         automatic TLS certificate management."
     ]
   website: https://github.com/mailcow/mailcow-dockerized
-  customapp: true
   notes:
     [
       "Run ./generate_config.sh from the repo to initialize mailcow.conf with

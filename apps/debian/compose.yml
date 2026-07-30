@@ -1,6 +1,5 @@
 x-yantr:
   name: "debian"
-  customapp: true
   tags: [linux, debian, stable, docker, self-hosted]
   short_description: "Stable Debian Linux container for general-purpose workloads."
   description: >

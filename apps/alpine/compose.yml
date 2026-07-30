@@ -1,6 +1,5 @@
 x-yantr:
   name: "alpine"
-  customapp: true
   tags: [linux, alpine, minimal, docker, self-hosted]
   short_description: "Minimal Alpine Linux container for lightweight workloads."
   description: >

@@ -1,6 +1,5 @@
 x-yantr:
   name: "ubuntu"
-  customapp: true
   tags: [linux, ubuntu, docker, self-hosted, dev]
   short_description: "Ubuntu LTS Linux container for versatile workloads."
   description: >
