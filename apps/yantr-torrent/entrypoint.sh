@@ -2,7 +2,7 @@
 
 set -e
 
-mkdir -p /config /downloads
+mkdir -p /config /downloads /config/flood
 
 # Configure crontab for daily auto-cleanup of downloads older than 30 days
 cat >/etc/crontabs/root <<'EOF'
@@ -13,37 +13,40 @@ EOF
 # Start cron daemon
 crond -b -l 2
 
-# Pre-seed core config if missing so default download location is /downloads
-if [ ! -f /config/core.conf ]; then
-  cat >/config/core.conf <<'EOF'
+# Pre-seed Transmission settings if missing
+if [ ! -f /config/settings.json ]; then
+  cat >/config/settings.json <<'EOF'
 {
-  "file": 1,
-  "format": 1
-}{
-  "allow_remote": true,
-  "download_location": "/downloads",
-  "listen_ports": [
-    58946,
-    58946
-  ],
-  "random_port": false
+  "download-dir": "/downloads",
+  "incomplete-dir": "/downloads/incomplete",
+  "incomplete-dir-enabled": false,
+  "rpc-authentication-required": false,
+  "rpc-bind-address": "0.0.0.0",
+  "rpc-enabled": true,
+  "rpc-port": 9091,
+  "rpc-whitelist-enabled": false,
+  "peer-port": 51413
 }
 EOF
 fi
 
-# Start Deluge daemon in background
-deluged \
-  --config /config \
-  --loglevel=info &
-DELUGED_PID=$!
+# Start Transmission daemon in background
+transmission-daemon -g /config -f &
+TR_PID=$!
 
 # Give daemon time to initialize
-sleep 3
+sleep 2
 
-# Start Deluge Web UI in background
-deluge-web \
-  --config /config &
-WEB_PID=$!
+# Start Flood Web UI in background pointing to Transmission RPC
+flood \
+  --host 0.0.0.0 \
+  --port 3000 \
+  --rundir /config/flood \
+  --auth none \
+  --trurl http://127.0.0.1:9091/transmission/rpc \
+  --truser "" \
+  --trpass "" &
+FLOOD_PID=$!
 
 # Start Dufs WebDAV file browser in background
 dufs \
@@ -57,7 +60,7 @@ dufs \
 DUFS_PID=$!
 
 # Trap signals for graceful shutdown
-trap 'kill -TERM $DELUGED_PID $WEB_PID $DUFS_PID 2>/dev/null' INT TERM
+trap 'kill -TERM $TR_PID $FLOOD_PID $DUFS_PID 2>/dev/null' INT TERM
 
 # Wait for background services
 wait

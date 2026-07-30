@@ -1,15 +1,15 @@
 x-yantr:
   name: yantr-torrent
   tags: [torrent, download, p2p, webdav, storage]
-  short_description: "All-in-one torrent downloader with WebDAV file access and automatic cleanup."
+  short_description: "All-in-one torrent downloader with Flood UI, WebDAV access, and auto-cleanup."
   description: >
-    A lightweight self-hosted torrent download server combining Deluge BitTorrent client
-    and Dufs WebDAV file manager. Easily stream, download, and manage your torrent files
-    over WebDAV, featuring automatic cleanup of old downloads and low system overhead.
-  usecases: ["Download torrents using Deluge Web UI.", "Access and stream downloaded files via WebDAV.", "Automatically delete downloads older than 30 days."]
+    A lightweight self-hosted torrent download server featuring Transmission with the modern
+    Flood web interface and Dufs WebDAV file manager. Easily stream, download, and manage your torrents
+    via a sleek UI and access files over WebDAV with automatic 30-day cleanup.
+  usecases: ["Download torrents via Flood's modern React web interface.", "Access and stream downloaded files via WebDAV.", "Automatically delete downloads older than 30 days."]
   website: "https://github.com/besoeasy/yantr"
   customapp: true
-  notes: ["Deluge Web UI default password is 'deluge' (change on first login).", "WebDAV file browser is accessible on port 5000 with file upload/download permissions."]
+  notes: ["Flood UI is accessible on port 3000.", "WebDAV file browser is accessible on port 5000."]
 
 services:
   downloader:
@@ -17,18 +17,17 @@ services:
     container_name: yantr-torrent
     labels:
       yantr.app: "yantr-torrent"
-      yantr.service.8112: "Deluge Web UI"
-      yantr.port.8112: "HTTP"
+      yantr.service.3000: "Flood Web UI"
+      yantr.port.3000: "HTTP"
       yantr.service.5000: "WebDAV File Browser"
       yantr.port.5000: "HTTP"
-      yantr.service.58946: "BitTorrent Peer Listening Port"
-      yantr.port.58946: "TCP"
+      yantr.service.51413: "Transmission Peer Port"
+      yantr.port.51413: "TCP"
     ports:
-      - "8112"
-      - "58846"
-      - "58946"
-      - "58946/udp"
+      - "3000"
       - "5000"
+      - "51413"
+      - "51413/udp"
     volumes:
       - yantr_torrent_config:/config
       - yantr_torrent_downloads:/downloads

@@ -1,16 +1,22 @@
 FROM alpine:latest
 
 RUN apk add --no-cache \
-    deluge \
+    transmission-daemon \
+    nodejs \
+    npm \
+    coreutils \
     dufs \
     dcron \
-    findutils
+    findutils \
+    curl && \
+    npm install -g flood && \
+    npm cache clean --force
 
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
-EXPOSE 8112 58846 58946 5000
+EXPOSE 3000 5000 51413 51413/udp
 
 VOLUME ["/config", "/downloads"]
 
