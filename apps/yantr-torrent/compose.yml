@@ -1,0 +1,32 @@
+services:
+  transmission:
+    image: linuxserver/transmission:latest
+    container_name: yantr-downloader
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+      USER: ${TRANSMISSION_USER}
+      PASS: ${TRANSMISSION_PASS}
+    volumes:
+      - transmission_config:/config
+      - downloads:/downloads
+    ports:
+      - "9091"
+      - "51413"
+      - "51413/udp"
+    restart: unless-stopped
+
+  files:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - downloads:/downloads
+    ports:
+      - "5000"
+    restart: unless-stopped
+
+volumes:
+  transmission_config:
+  downloads:
