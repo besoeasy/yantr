@@ -122,8 +122,8 @@ const stateLabel = computed(() => {
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-          <Sparkles class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-300 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
+          <Sparkles class="h-5 w-5 text-sky-600 dark:text-sky-400" />
         </div>
         <div>
           <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
