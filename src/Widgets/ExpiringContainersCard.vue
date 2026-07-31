@@ -85,8 +85,8 @@ const urgencyLabel = computed(() => {
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
           <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-transform duration-300 group-hover:scale-105"
-               :class="isCritical ? 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/20' : 'border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900'">
-            <Timer class="h-5 w-5" :class="isCritical ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100'" />
+               :class="isCritical ? 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/20' : 'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20'">
+            <Timer class="h-5 w-5" :class="isCritical ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'" />
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
