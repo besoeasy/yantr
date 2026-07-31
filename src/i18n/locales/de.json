@@ -540,6 +540,20 @@
       "next": "Nächster:",
       "more": "+{count} mehr"
     },
+    "biggestUnused": {
+      "title": "Speicher freigeben",
+      "subtitle": "Größtes ungenutzt",
+      "image": "Image",
+      "volume": "Volume",
+      "remaining": "Übrig",
+      "delete": "Freigeben",
+      "deleting": "Wird freigegeben...",
+      "confirmImage": "Ungenutztes Image {name} löschen? Dies kann nicht rückgängig gemacht werden.",
+      "confirmVolume": "Ungenutztes Volume {name} löschen? Die Daten werden dauerhaft entfernt.",
+      "deleted": "{size} freigegeben",
+      "deleteFailed": "Ressource konnte nicht freigegeben werden: {message}",
+      "viewAll": "Alle anzeigen"
+    },
     "hostMetrics": {
       "scanningHost": "Host wird gescannt...",
       "connectionFailed": "Verbindung fehlgeschlagen",

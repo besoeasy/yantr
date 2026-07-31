@@ -540,6 +540,20 @@
       "next": "次:",
       "more": "あと{count}件"
     },
+    "biggestUnused": {
+      "title": "容量を回収",
+      "subtitle": "最大の未使用",
+      "image": "イメージ",
+      "volume": "ボリューム",
+      "remaining": "残り",
+      "delete": "解放する",
+      "deleting": "解放中...",
+      "confirmImage": "未使用イメージ {name} を削除しますか？この操作は元に戻せません。",
+      "confirmVolume": "未使用ボリューム {name} を削除しますか？データは完全に削除されます。",
+      "deleted": "{size} を解放しました",
+      "deleteFailed": "リソースを解放できませんでした: {message}",
+      "viewAll": "すべて表示"
+    },
     "hostMetrics": {
       "scanningHost": "ホストをスキャン中...",
       "connectionFailed": "接続に失敗しました",

@@ -540,6 +540,20 @@
       "next": "Suivant :",
       "more": "+{count} de plus"
     },
+    "biggestUnused": {
+      "title": "Récupérer de l'espace",
+      "subtitle": "Plus gros inutilisé",
+      "image": "Image",
+      "volume": "Volume",
+      "remaining": "Restants",
+      "delete": "Libérer",
+      "deleting": "Libération...",
+      "confirmImage": "Supprimer l'image inutilisée {name} ? Cette action est irréversible.",
+      "confirmVolume": "Supprimer le volume inutilisé {name} ? Ses données seront définitivement effacées.",
+      "deleted": "{size} libérés",
+      "deleteFailed": "Impossible de libérer la ressource : {message}",
+      "viewAll": "Tout voir"
+    },
     "hostMetrics": {
       "scanningHost": "Analyse de l'hôte...",
       "connectionFailed": "Connexion échouée",

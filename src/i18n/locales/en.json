@@ -540,6 +540,20 @@
       "next": "Next:",
       "more": "+{count} more"
     },
+    "biggestUnused": {
+      "title": "Reclaim Space",
+      "subtitle": "Biggest unused",
+      "image": "Image",
+      "volume": "Volume",
+      "remaining": "Left",
+      "delete": "Free it",
+      "deleting": "Freeing...",
+      "confirmImage": "Delete unused image {name}? This cannot be undone.",
+      "confirmVolume": "Delete unused volume {name}? This permanently removes its data.",
+      "deleted": "Freed {size}",
+      "deleteFailed": "Could not free resource: {message}",
+      "viewAll": "View all"
+    },
     "hostMetrics": {
       "scanningHost": "Scanning Host...",
       "connectionFailed": "Connection Failed",
