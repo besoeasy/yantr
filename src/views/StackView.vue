@@ -5,23 +5,17 @@ import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
-import { formatDuration, formatBytes } from "../utils/metrics";
+import { formatDuration } from "../utils/metrics";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
 import StackServiceList from "../components/StackServiceList.vue";
 import {
   Globe,
   ExternalLink,
-  Activity,
-  Terminal,
-  Server,
   Network,
   Trash2,
   HardDrive,
-  FolderOpen,
-  ChevronRight,
   RotateCcw,
-  Plus,
   ShieldCheck,
 } from "@lucide/vue";
 
@@ -74,36 +68,9 @@ async function updateStack() {
 }
 const showOnlyDescribedPorts = ref(true);
 
-
-
 // Volume browsing state
 const browsingVolume = ref({});
 const showVolumeMenu = ref({});
-
-// Top-level section navigation
-const activeSection = ref("containers"); // 'containers' | 'storage'
-
-const sectionTabs = computed(() => [
-  ...(namedVolumes.value.length > 0 || otherMounts.value.length > 0
-    ? [{ id: "storage", label: t("system.volumes"), icon: HardDrive, tone: "text-emerald-500" }]
-    : []),
-  { id: "containers", label: t("stackView.containers"), icon: Server, tone: "text-amber-500" },
-]);
-
-const sectionTabsGridClass = computed(() => {
-  switch (sectionTabs.value.length) {
-    case 1:
-      return "grid-cols-1";
-    case 2:
-      return "grid-cols-2";
-    case 3:
-      return "grid-cols-2 lg:grid-cols-3";
-    case 4:
-      return "grid-cols-2 lg:grid-cols-4";
-    default:
-      return "grid-cols-2 lg:grid-cols-5";
-  }
-});
 
 // Build a port-number → {label, protocol} lookup from the info.json ports array
 function buildPortLabels(ports) {
@@ -528,94 +495,109 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- ── Section Navigation ───────────────────────────────────────────────────────── -->
-      <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#0A0A0A]">
-        <div class="mx-6 mt-6 flex items-center gap-1 rounded-xl bg-zinc-50 p-1 dark:bg-zinc-900">
-          <button
-            v-for="sec in sectionTabs"
-            :key="sec.id"
-            @click="activeSection = sec.id"
-            :class="activeSection === sec.id ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'"
-            class="flex items-center gap-2 rounded-lg px-4 py-2 text-[11px] font-bold uppercase tracking-wider transition-all"
+      <!-- ── Volumes ─────────────────────────────────────────────────────────────────── -->
+      <div v-if="namedVolumes.length > 0 || otherMounts.length > 0" class="space-y-4">
+        <div class="flex items-center gap-2">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+            {{ t("stackView.storageVolumes") }}
+          </h3>
+          <span
+            v-if="namedVolumes.length > 0"
+            class="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
           >
-            <component :is="sec.icon" :size="14" />
-            {{ sec.label }}
-          </button>
+            {{ namedVolumes.length }}
+          </span>
         </div>
 
-        <div class="p-6">
-          <!-- CONTAINERS SECTION -->
-          <div v-show="activeSection === 'containers'">
-            <StackServiceList 
-              :services="stack.services" 
-            />
-          </div>
-
-          <!-- STORAGE SECTION -->
-          <div v-show="activeSection === 'storage'" class="space-y-4">
-            <div v-if="namedVolumes.length > 0" class="space-y-4">
-              <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                {{ t("stackView.storageVolumes") }}
-              </h3>
-              <div class="grid gap-4">
-                <div v-for="(vol, i) in namedVolumes" :key="vol.name" class="group rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
-                  <div class="mb-5 flex items-start justify-between gap-4">
-                    <div class="flex min-w-0 flex-1 items-start gap-4">
-                      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-900 transition-colors group-hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:group-hover:bg-zinc-800">
-                        <HardDrive :size="18" />
-                      </div>
-                      <div class="min-w-0 flex-1">
-                        <div class="truncate text-sm font-bold tracking-tight text-zinc-900 dark:text-white" :title="vol.name">{{ vol.name }}</div>
-                        <div class="mt-1 truncate font-mono text-[11px] text-zinc-500">{{ vol.destination }}</div>
-                        <div class="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-zinc-500">
-                          <span>{{ t("stackView.serviceLabel") }} <span class="ml-1 rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 font-bold text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">{{ vol.svcName }}</span></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-                    <div v-if="browsingVolume[vol.name]" class="animate-pulse rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white dark:border-white dark:bg-white dark:text-zinc-900">{{ t("stackView.startingWebDAV") }}</div>
-                    <template v-else-if="!showVolumeMenu[vol.name]">
-                      <button @click="showVolumeMenu[vol.name] = true" class="rounded-lg border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800">
-                        {{ t("stackView.browseFiles") }}
-                      </button>
-                    </template>
-                    <template v-else>
-                      <button @click="browseVolume(vol.name, 60)" class="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100" :title="t('stackView.oneHourAccess')">1H</button>
-                      <button @click="browseVolume(vol.name, 0)" class="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-800 transition-all hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700" :title="t('stackView.permanentAccess')">Perm</button>
-                    </template>
-                  </div>
+        <div v-if="namedVolumes.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="vol in namedVolumes"
+            :key="vol.name"
+            class="group flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+          >
+            <div class="mb-4 flex items-start gap-4">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-transform duration-300 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400">
+                <HardDrive :size="18" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="truncate text-sm font-bold tracking-tight text-zinc-900 dark:text-white" :title="vol.name">
+                  {{ vol.name }}
+                </div>
+                <div class="mt-1 truncate font-mono text-[11px] text-zinc-500" :title="vol.destination">
+                  {{ vol.destination }}
+                </div>
+                <div class="mt-2">
+                  <span class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                    {{ vol.svcName }}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div v-if="otherMounts.length > 0" class="mt-6 space-y-4">
-              <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                {{ t("stackView.bindMounts") }}
-              </h3>
-              <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#0A0A0A]">
-                <table class="min-w-80 w-full text-left">
-                  <thead>
-                    <tr class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
-                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t("stackView.type") }}</th>
-                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t("stackView.hostPath") }}</th>
-                      <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t("stackView.containerPath") }}</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    <tr v-for="(m, i) in otherMounts" :key="i" class="transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
-                      <td class="px-5 py-3.5">
-                        <span class="rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">{{ m.type }}</span>
-                      </td>
-                      <td class="max-w-xs break-all px-5 py-3.5 font-mono text-[11px] text-zinc-900 dark:text-white">{{ m.source || "—" }}</td>
-                      <td class="max-w-xs break-all px-5 py-3.5 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">{{ m.destination }}</td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+              <div
+                v-if="browsingVolume[vol.name]"
+                class="animate-pulse rounded-lg border border-amber-600 bg-amber-600 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white"
+              >
+                {{ t("stackView.startingWebDAV") }}
+              </div>
+              <template v-else-if="!showVolumeMenu[vol.name]">
+                <button
+                  @click="showVolumeMenu[vol.name] = true"
+                  class="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-amber-700 transition-all hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30"
+                >
+                  {{ t("stackView.browseFiles") }}
+                </button>
+              </template>
+              <template v-else>
+                <button
+                  @click="browseVolume(vol.name, 60)"
+                  class="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+                  :title="t('stackView.oneHourAccess')"
+                >
+                  1H
+                </button>
+                <button
+                  @click="browseVolume(vol.name, 0)"
+                  class="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-800 transition-all hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                  :title="t('stackView.permanentAccess')"
+                >
+                  Perm
+                </button>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="otherMounts.length > 0" class="space-y-3">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+            {{ t("stackView.bindMounts") }}
+          </h4>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div
+              v-for="(m, i) in otherMounts"
+              :key="i"
+              class="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#0A0A0A]"
+            >
+              <div class="mb-2">
+                <span class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
+                  {{ m.type }}
+                </span>
+              </div>
+              <div class="break-all font-mono text-[11px] font-bold text-zinc-900 dark:text-white">
+                {{ m.source || "—" }}
+              </div>
+              <div class="mt-1 break-all font-mono text-[11px] text-zinc-500">
+                {{ m.destination }}
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ── Containers ──────────────────────────────────────────────────────────────── -->
+      <div class="space-y-4">
+        <StackServiceList :services="stack.services" />
       </div>
     </main>
   </div>
