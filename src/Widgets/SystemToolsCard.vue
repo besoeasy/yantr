@@ -49,14 +49,14 @@ onUnmounted(() => {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-            <Wrench class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-300 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
+            <Wrench class="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
               {{ t("home.toolsNavCard.systemTools") }}
             </h3>
-            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-sky-600 dark:text-sky-500">
               Management
             </p>
           </div>
@@ -83,7 +83,7 @@ onUnmounted(() => {
          <!-- Top row: 1 item -->
          <div class="flex gap-2">
             <!-- Logs -->
-            <button type="button" @click.prevent.stop="router.push('/logs')" :title="t('home.toolsNavCard.logs')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900">
+            <button type="button" @click.prevent.stop="router.push('/logs')" :title="t('home.toolsNavCard.logs')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-all duration-300 hover:-translate-y-1 hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
                <ClipboardList class="h-6 w-6 transition-all duration-300 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
                <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-[10px] font-bold uppercase tracking-widest opacity-0 transition-all duration-300 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">Live</span>
             </button>
@@ -91,12 +91,12 @@ onUnmounted(() => {
          <!-- Bottom row: 2 items -->
          <div class="flex gap-2">
             <!-- Images -->
-            <button type="button" @click.prevent.stop="router.push('/images')" :title="t('home.toolsNavCard.images')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900">
+            <button type="button" @click.prevent.stop="router.push('/images')" :title="t('home.toolsNavCard.images')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-all duration-300 hover:-translate-y-1 hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
                <Layers class="h-6 w-6 transition-all duration-300 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
                <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-all duration-300 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ imageCount !== null ? imageCount : '-' }}</span>
             </button>
             <!-- Volumes -->
-            <button type="button" @click.prevent.stop="router.push('/volumes')" :title="t('home.toolsNavCard.volumes')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-900 hover:bg-zinc-900 hover:text-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400 dark:hover:border-zinc-100 dark:hover:bg-zinc-100 dark:hover:text-zinc-900">
+            <button type="button" @click.prevent.stop="router.push('/volumes')" :title="t('home.toolsNavCard.volumes')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-all duration-300 hover:-translate-y-1 hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
                <HardDrive class="h-6 w-6 transition-all duration-300 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
                <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-all duration-300 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ volumeCount !== null ? volumeCount : '-' }}</span>
             </button>
