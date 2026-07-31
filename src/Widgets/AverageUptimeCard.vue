@@ -60,15 +60,16 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-          <Clock class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 transition-transform duration-300 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+          <Clock class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
           <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t('quickMetrics.averageUptime.title') }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <div class="h-1.5 w-1.5 rounded-full bg-emerald-500"></div>
+            <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">
               {{ t('quickMetrics.averageUptime.systemStability') }}
             </span>
           </div>
@@ -105,7 +106,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
               <div
                 v-for="(h, i) in bars"
                 :key="i"
-                class="w-2.5 rounded-t-md bg-zinc-200 transition-all duration-500 ease-out group-hover:bg-zinc-800 dark:bg-zinc-800 dark:group-hover:bg-zinc-200"
+                class="w-2.5 rounded-t-md bg-emerald-200 transition-all duration-500 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
                 :style="{ 
                   height: `${h * 100}%`, 
                   transitionDelay: `${i * 30}ms` 
