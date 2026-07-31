@@ -97,25 +97,25 @@ const workloadStats = computed(() => [
     key: "apps",
     label: t("home.overviewPulseCard.apps"),
     value: runningApps.value,
-    tone: "text-blue-500",
+    tone: "text-sky-600 dark:text-sky-400",
   },
   {
     key: "volumes",
     label: t("home.overviewPulseCard.volumes"),
     value: totalVolumes.value,
-    tone: "text-violet-500",
+    tone: "text-sky-600 dark:text-sky-400",
   },
   {
     key: "images",
     label: t("home.overviewPulseCard.images"),
     value: imagesCount.value,
-    tone: "text-emerald-500",
+    tone: "text-sky-600 dark:text-sky-400",
   },
   {
     key: "temp",
     label: t("home.overviewPulseCard.temp"),
     value: temporaryCount.value,
-    tone: "text-amber-500",
+    tone: "text-amber-600 dark:text-amber-400",
   },
 ]);
 
@@ -204,8 +204,8 @@ onUnmounted(() => {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-            <Server class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-300 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
+            <Server class="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
@@ -239,7 +239,7 @@ onUnmounted(() => {
               <!-- Workload stats pills -->
               <div v-for="stat in workloadStats" :key="stat.key" class="flex flex-col items-center justify-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900/50">
                  <span class="text-center text-[8px] font-bold uppercase leading-none tracking-widest text-zinc-500">{{ stat.label }}</span>
-                 <span class="text-sm font-black text-zinc-900 dark:text-white">{{ stat.value }}</span>
+                 <span class="text-sm font-black" :class="stat.tone">{{ stat.value }}</span>
               </div>
            </div>
            
