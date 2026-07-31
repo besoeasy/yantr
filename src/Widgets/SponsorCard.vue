@@ -10,7 +10,7 @@ const { t } = useI18n();
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 transition-transform duration-300 group-hover:scale-105 dark:border-rose-900/50 dark:bg-rose-900/20">
           <Heart class="h-5 w-5 text-rose-500" />
         </div>
         <div>
