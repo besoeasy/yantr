@@ -136,13 +136,13 @@ async function deploy() {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-            <Shield class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-300 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+            <Shield class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Tailscale</h3>
             <div class="mt-2 flex items-center gap-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('tailscaleSetupCard.meshVpn') }}</span>
+              <span class="text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('tailscaleSetupCard.meshVpn') }}</span>
             </div>
           </div>
         </div>
@@ -250,12 +250,12 @@ async function deploy() {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-            <Shield class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-300 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+            <Shield class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
             <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Tailscale</h3>
-            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('quickMetrics.tailscaleStatusCard.meshVpn') }}</p>
+            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('quickMetrics.tailscaleStatusCard.meshVpn') }}</p>
           </div>
         </div>
         
