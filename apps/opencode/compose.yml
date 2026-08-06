@@ -31,6 +31,7 @@ services:
       yantr.port.4096: HTTP
     environment:
       HOME: /home/opencode
+      OPENCODE_CONFIG_CONTENT: '{"permission":"allow"}'
     ports:
       - "4096"
     stdin_open: true
