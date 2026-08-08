@@ -1,0 +1,55 @@
+x-yantr:
+  name: circuitbreaker
+  tags: [homelab, networking, monitoring, self-hosted, visualization]
+  short_description: "Self-hosted IPAM and service mapper that visualizes your homelab topology."
+  description: >
+    Circuit Breaker is a self-hosted homelab visualization platform that maps
+    hardware, services, networks, and clusters with interactive topology, live
+    telemetry, and auto-discovery. Import Proxmox, TrueNAS, and UniFi objects,
+    scan the LAN, and model racks in 3D — all in one panel.
+  usecases:
+    [
+      "Map every device and service in your homelab on an interactive topology.",
+      "Auto-discover Proxmox VMs, TrueNAS pools, and UniFi APs with live health.",
+      "Track allocations, rack capacity, and audit changes to your infrastructure."
+    ]
+  website: "https://github.com/BlkLeg/CircuitBreaker"
+  env_generators:
+    CB_DB_PASSWORD: {length: 32, charset: alnum_symbols}
+    CB_VAULT_KEY: {length: 44, charset: base64url}
+    CB_JWT_SECRET: {length: 32, charset: hex}
+    NATS_AUTH_TOKEN: {length: 32, charset: alnum}
+  notes:
+    [
+      "The web UI runs on port 8080 over HTTP by default.",
+      "Required secrets are generated at deploy time; change them if you reuse data volumes.",
+      "For auto-discovery of local Docker containers, mount the Docker socket (see upstream docs).",
+      "Health check hits /api/v1/health on the internal port."
+    ]
+
+services:
+  circuitbreaker:
+    image: ghcr.io/blkleg/circuitbreaker:latest
+    labels:
+      yantr.app: circuitbreaker
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    environment:
+      CB_DB_PASSWORD: ${CB_DB_PASSWORD}
+      CB_VAULT_KEY: ${CB_VAULT_KEY}
+      CB_JWT_SECRET: ${CB_JWT_SECRET}
+      NATS_AUTH_TOKEN: ${NATS_AUTH_TOKEN}
+    volumes:
+      - circuitbreaker_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  circuitbreaker_data:

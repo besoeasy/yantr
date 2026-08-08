@@ -1,0 +1,107 @@
+x-yantr:
+  name: openship
+  tags: [paas, devops, deployment, self-hosted, docker]
+  short_description: "Self-hosted deployment platform with CI/CD, domains, TLS, and backup."
+  description: >
+    Openship is an open-source, self-hostable deployment platform with built-in
+    CI/CD. Point it at a repository and it builds, ships, routes, and
+    TLS-terminates your app from a desktop app, web dashboard, or CLI. Push-to-
+    deploy, preview environments, backups, and monitoring included. Free to self-host.
+  usecases:
+    [
+      "Deploy apps to your own server from a GitHub repo with built-in CI/CD.",
+      "Automatically route domains and provision Let's Encrypt TLS for each app.",
+      "Manage backups, previews, and rollbacks from a web dashboard."
+    ]
+  website: "https://openship.io"
+  env_generators:
+    POSTGRES_PASSWORD: {length: 32, charset: alnum_symbols}
+    BETTER_AUTH_SECRET: {length: 32, charset: base64url}
+    INTERNAL_TOKEN: {length: 32, charset: base64}
+  notes:
+    [
+      "The dashboard UI is the main entry point; login uses the auth secrets below.",
+      "API mounts the Docker socket so it can build and run deployed apps as host containers.",
+      "Domain routing and Let's Encrypt TLS are handled by Yantr's proxy — the bundled edge is not used.",
+      "Set OPENSHIP_PUBLIC_URL to the exact origin if you access it from another machine."
+    ]
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    labels:
+      yantr.app: openship
+    environment:
+      POSTGRES_USER: openship
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: openship
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - openship_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openship -d openship"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    labels:
+      yantr.app: openship
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - openship_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  api:
+    image: ghcr.io/oblien/openship-api:latest
+    labels:
+      yantr.app: openship
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      DATABASE_URL: postgresql://openship:${POSTGRES_PASSWORD}@postgres:5432/openship
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      INTERNAL_TOKEN: ${INTERNAL_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+
+  dashboard:
+    image: ghcr.io/oblien/openship-dashboard:latest
+    labels:
+      yantr.app: openship
+      yantr.service.3001: "Dashboard"
+      yantr.port.3001: "HTTP"
+    ports:
+      - "3001"
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      INTERNAL_API_URL: http://api:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  openship_postgres:
+  openship_redis:

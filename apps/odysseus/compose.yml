@@ -1,0 +1,88 @@
+x-yantr:
+  name: odysseus
+  tags: [ai, assistant, self-hosted, workspace, privacy]
+  short_description: "Self-hosted AI workspace for chat, agents, research, documents, email, and notes."
+  description: >
+    Odysseus is a self-hosted AI workspace that puts a private, local-first chat
+    interface together with autonomous agents, deep research, document editing,
+    email triage, notes, memory, and tasks — all running against your own models
+    and endpoints. Private by default, no telemetry.
+  usecases:
+    [
+      "Chat with local or hosted LLMs in a private, self-hosted interface.",
+      "Run multi-step research and document workflows with autonomous agents.",
+      "Triage email, manage notes and tasks from a single AI workspace."
+    ]
+  website: "https://github.com/odysseus-dev/odysseus"
+  env_generators:
+    ODYSSEUS_ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
+    SEARXNG_SECRET: {length: 32, charset: hex}
+  notes:
+    [
+      "First admin login is 'admin' with the generated ODYSSEUS_ADMIN_PASSWORD.",
+      "Chroma and SearXNG run as bundled sidecars for embeddings and search.",
+      "Point LLM_HOST or OLLAMA_BASE_URL at a local model server to use it.",
+      "Extend ALLOWED_ORIGINS with your public origin if accessed through a proxy."
+    ]
+
+services:
+  odysseus:
+    image: ghcr.io/odysseus-dev/odysseus:latest
+    labels:
+      yantr.app: odysseus
+      yantr.service.7000: "Web UI"
+      yantr.port.7000: "HTTP"
+    ports:
+      - "7000"
+    environment:
+      AUTH_ENABLED: "true"
+      ODYSSEUS_ADMIN_USER: admin
+      ODYSSEUS_ADMIN_PASSWORD: ${ODYSSEUS_ADMIN_PASSWORD}
+      ALLOWED_ORIGINS: ${ODYSSEUS_ALLOWED_ORIGINS:-*}
+      SECURE_COOKIES: "false"
+      CHROMADB_HOST: chromadb
+      CHROMADB_PORT: "8000"
+      SEARXNG_INSTANCE: http://searxng:8080
+      DATABASE_URL: sqlite:///./data/app.db
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - odysseus_data:/app/data
+      - odysseus_logs:/app/logs
+    depends_on:
+      searxng:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    restart: unless-stopped
+
+  chromadb:
+    image: docker.io/chromadb/chroma:latest
+    labels:
+      yantr.app: odysseus
+    environment:
+      ANONYMIZED_TELEMETRY: "FALSE"
+    volumes:
+      - odysseus_chromadb:/chroma/chroma
+    restart: unless-stopped
+
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    labels:
+      yantr.app: odysseus
+    environment:
+      SEARXNG_BASE_URL: http://searxng:8080
+      SEARXNG_SECRET: ${SEARXNG_SECRET}
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=5).read(1)\""]
+      interval: 5s
+      timeout: 6s
+      retries: 20
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  odysseus_data:
+  odysseus_logs:
+  odysseus_chromadb:

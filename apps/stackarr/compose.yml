@@ -1,0 +1,66 @@
+x-yantr:
+  name: stackarr
+  tags: [automation, ai, docker, self-hosted, homelab]
+  short_description: "Chat-first Docker control plane for self-hosted apps and homelabs."
+  description: >
+    Stackarr is a Docker control plane for self-hosted apps. It gives Codex,
+    Claude, Hermes, OpenClaw, and other MCP clients consistent actions for
+    setup, everyday app management, downloads, backups, health checks, and
+    repairs. A web dashboard manages app links and configurations.
+  usecases:
+    [
+      "Manage homelab Docker apps and services from an AI agent over MCP.",
+      "Track media apps (Immich, Plex, Jellyfin, Sonarr) with backups and health checks.",
+      "Coordinate downloads, migrations, and updates across a self-hosted stack."
+    ]
+  website: "https://stackarr.app"
+  notes:
+    [
+      "Requires Docker socket access so the control plane can manage containers.",
+      "Web UI listens on port 7777; MCP over HTTP on port 7780 (enable STACKARR_MCP_HTTP_ENABLED).",
+      "Configuration, state, and logs live in named volumes under /stackarr-*.",
+      "Optional services like database and torrent clients are excluded — see upstream compose for profiles."
+    ]
+
+services:
+  app:
+    image: polyphonic/stackarr:alpha
+    labels:
+      yantr.app: stackarr
+      yantr.service.7777: "Web UI"
+      yantr.port.7777: "HTTP"
+      yantr.service.7780: "MCP (HTTP)"
+      yantr.port.7780: "HTTP"
+    ports:
+      - "7777"
+      - "7780"
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+      HOSTNAME: 0.0.0.0
+      PORT: "7777"
+      TZ: ${TZ:-UTC}
+      STACKARR_WEB_PORT: "7777"
+      STACKARR_REPO_ROOT: /app
+      STACKARR_DATABASE_FILE: /stackarr-config/stackarr.db
+      STACKARR_COMPOSE_PROJECT_NAME: stackarr
+      STACKARR_COMPOSE_PROJECT_DIR: /stackarr-runtime-state/compose
+      STACKARR_COMPOSE_FILE: /stackarr-runtime-state/compose/docker-compose.yml
+      STACKARR_RUNTIME: docker
+      DOCKER_HOST: unix:///var/run/docker.sock
+      STACKARR_SCHEDULER_ENABLED: "true"
+      STACKARR_MCP_HTTP_ENABLED: ${STACKARR_MCP_HTTP_ENABLED:-false}
+      STACKARR_MCP_HTTP_PORT: "7780"
+    volumes:
+      - stackarr_state:/stackarr-state
+      - stackarr_config:/stackarr-config
+      - stackarr_runtime_state:/stackarr-runtime-state
+      - stackarr_logs:/stackarr-logs
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  stackarr_state:
+  stackarr_config:
+  stackarr_runtime_state:
+  stackarr_logs:
