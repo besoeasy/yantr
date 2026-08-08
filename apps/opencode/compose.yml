@@ -38,7 +38,6 @@ services:
     tty: true
     volumes:
       - opencodehome:/home/opencode
-      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
 volumes:
