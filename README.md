@@ -64,7 +64,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 ## 📦 App Catalog
 
-130+ curated apps, one-click deploy.
+350+ curated apps, one-click deploy.
 
 | Category | Apps |
 |---|---|
@@ -79,7 +79,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 | 💰 Finance | Actual Budget, Ghostfolio, Rotki |
 | ⛓️ Bitcoin | Bitcoin Knots, Monerod, Cashu.me |
 
-> Browse all in [`apps/`](apps/) · Add your own via [`apps/apps.md`](apps/apps.md)
+> Browse all in [`apps/`](apps/) · Add your own via the [authoring guide](AGENTS.md)
 
 ---
 
@@ -104,7 +104,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 One container. No database. No external dependencies.
 
 1. **Serves a Vue 3 UI** on port `5252`
-2. **Exposes a Fastify API** that talks to Docker via socket
+2. **Exposes a Go REST API** (chi router) that talks to Docker via socket and runs `docker compose`
 3. **Reads compose templates** from its built-in catalog
 4. **Deploys isolated stacks** — each app is an independent Compose project
 
@@ -112,10 +112,10 @@ One container. No database. No external dependencies.
 
 ## 🤝 Contributing
 
-To add an app, follow the format in [`apps/apps.md`](apps/apps.md), then validate:
+To add an app, follow the format in [`AGENTS.md`](AGENTS.md), then validate:
 
 ```bash
-node check.js
+npm run check
 ```
 
 PRs welcome.
@@ -123,6 +123,6 @@ PRs welcome.
 ---
 
 <div align="center">
-  <sub>Vue 3 · Fastify · Docker · Tailwind CSS</sub><br/><br/>
-  <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="apps/apps.md">App Format Guide</a>
+  <sub>Vue 3 · Go · Docker · Tailwind CSS</sub><br/><br/>
+  <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
 </div>
