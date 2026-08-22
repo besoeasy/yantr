@@ -22,6 +22,5 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
 RUN npm install -g @grinev/opencode-telegram-bot opencode-ai
 
 WORKDIR /app
-ENV HOME=/app
 
 CMD ["opencode-telegram", "start"]

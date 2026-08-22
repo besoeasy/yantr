@@ -19,18 +19,12 @@ services:
     labels:
       yantr.app: "yantrbot"
     environment:
-      HOME: /app
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT:-}
       TELEGRAM_ALLOWED_USER_ID: ${USER_ID:-}
       OPENCODE_MODEL_PROVIDER: opencode
       OPENCODE_MODEL_ID: big-pickle
       OPENCODE_API_URL: http://localhost:4096
       OPENCODE_AUTO_RESTART_ENABLED: "true"
-    volumes:
-      - yantrbot_data:/app
     tty: true
     stdin_open: true
     restart: unless-stopped
-
-volumes:
-  yantrbot_data:
