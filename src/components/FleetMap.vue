@@ -1,5 +1,7 @@
 <script setup>
-import { computed, ref } from "vue";
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 
 const props = defineProps({
   countries: {
@@ -8,91 +10,116 @@ const props = defineProps({
   },
 });
 
-const hover = ref(null);
+const mapEl = ref(null);
+let map = null;
+let markers = null;
+let tiles = null;
+let themeObserver = null;
 
-const maxCount = computed(() =>
-  props.countries.reduce((max, item) => Math.max(max, item.count || 0), 0)
-);
-
-const points = computed(() =>
-  props.countries
-    .filter((item) => item.code && item.code !== "??" && (item.lat || item.lng))
-    .map((item) => {
-      const x = ((Number(item.lng) + 180) / 360) * 1000;
-      const y = ((90 - Number(item.lat)) / 180) * 500;
-      const t = maxCount.value ? item.count / maxCount.value : 0;
-      return {
-        ...item,
-        x,
-        y,
-        r: 7 + t * 18,
-      };
-    })
-);
-
-function projectLabel(point) {
-  return {
-    left: `${(point.x / 1000) * 100}%`,
-    top: `${(point.y / 500) * 100}%`,
-  };
+function isDark() {
+  return document.documentElement.classList.contains("dark");
 }
+
+function tileUrl() {
+  return isDark()
+    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+}
+
+function ensureMap() {
+  if (map || !mapEl.value) return;
+  map = L.map(mapEl.value, {
+    worldCopyJump: true,
+    minZoom: 1,
+    maxZoom: 6,
+    zoomControl: true,
+    attributionControl: true,
+  }).setView([20, 0], 2);
+
+  tiles = L.tileLayer(tileUrl(), {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  }).addTo(map);
+
+  markers = L.layerGroup().addTo(map);
+  requestAnimationFrame(() => map.invalidateSize());
+}
+
+function renderMarkers() {
+  if (!map || !markers) return;
+  markers.clearLayers();
+  const points = (props.countries || []).filter(
+    (item) => item.code && item.code !== "??" && (item.lat || item.lng)
+  );
+  const max = points.reduce((n, item) => Math.max(n, item.count || 0), 1);
+
+  for (const item of points) {
+    const radius = 8 + ((item.count || 0) / max) * 18;
+    L.circleMarker([item.lat, item.lng], {
+      radius,
+      color: "#0284c7",
+      fillColor: "#0ea5e9",
+      fillOpacity: 0.55,
+      weight: 2,
+    })
+      .bindTooltip(
+        `<strong>${item.name}</strong><br>${item.count} ${item.count === 1 ? "node" : "nodes"}`,
+        { sticky: true, direction: "top" }
+      )
+      .addTo(markers);
+  }
+
+  if (points.length === 1) {
+    map.setView([points[0].lat, points[0].lng], 3);
+  } else if (points.length > 1) {
+    map.fitBounds(
+      L.latLngBounds(points.map((item) => [item.lat, item.lng])),
+      { padding: [28, 28], maxZoom: 4 }
+    );
+  }
+}
+
+function swapTiles() {
+  if (!map) return;
+  if (tiles) map.removeLayer(tiles);
+  tiles = L.tileLayer(tileUrl(), {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  }).addTo(map);
+}
+
+onMounted(async () => {
+  await nextTick();
+  ensureMap();
+  renderMarkers();
+  themeObserver = new MutationObserver(() => swapTiles());
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+});
+
+onUnmounted(() => {
+  themeObserver?.disconnect();
+  map?.remove();
+  map = null;
+  markers = null;
+  tiles = null;
+});
+
+watch(() => props.countries, renderMarkers, { deep: true });
 </script>
 
 <template>
-  <div class="relative overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A]">
-    <svg viewBox="0 0 1000 500" class="block h-auto w-full" role="img" aria-label="Nodes by country">
-      <defs>
-        <pattern id="fleet-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-          <path d="M 50 0 L 0 0 0 50" fill="none" class="stroke-zinc-200 dark:stroke-zinc-800" stroke-width="1" />
-        </pattern>
-      </defs>
-      <rect width="1000" height="500" fill="url(#fleet-grid)" />
-      <line
-        v-for="y in [125, 250, 375]"
-        :key="'h'+y"
-        x1="0"
-        :y1="y"
-        x2="1000"
-        :y2="y"
-        class="stroke-zinc-200/80 dark:stroke-zinc-800"
-        stroke-dasharray="4 8"
-      />
-      <line
-        v-for="x in [250, 500, 750]"
-        :key="'v'+x"
-        :x1="x"
-        y1="0"
-        :x2="x"
-        y2="500"
-        class="stroke-zinc-200/80 dark:stroke-zinc-800"
-        stroke-dasharray="4 8"
-      />
-      <g>
-        <circle
-          v-for="point in points"
-          :key="point.code"
-          :cx="point.x"
-          :cy="point.y"
-          :r="point.r"
-          class="fill-sky-500/25 stroke-sky-600 dark:fill-sky-400/20 dark:stroke-sky-400"
-          stroke-width="2"
-          @mouseenter="hover = point"
-          @mouseleave="hover = null"
-        />
-      </g>
-    </svg>
-
-    <div
-      v-if="hover"
-      class="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs shadow-lg dark:border-zinc-700 dark:bg-zinc-900"
-      :style="projectLabel(hover)"
-    >
-      <p class="font-semibold text-zinc-900 dark:text-white">{{ hover.name }}</p>
-      <p class="tabular-nums text-zinc-500 dark:text-zinc-400">{{ hover.count }} {{ hover.count === 1 ? 'node' : 'nodes' }}</p>
-    </div>
-
-    <p class="absolute bottom-3 left-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
-      Equirectangular · country centroids
-    </p>
+  <div class="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
+    <div ref="mapEl" class="h-[420px] w-full bg-zinc-100 dark:bg-zinc-950"></div>
   </div>
 </template>
+
+<style>
+.leaflet-container {
+  font-family: inherit;
+  background: transparent;
+}
+.leaflet-tooltip {
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+</style>
