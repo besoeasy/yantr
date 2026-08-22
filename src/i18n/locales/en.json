@@ -648,9 +648,9 @@
     "loginNote": "Your key is stored in this browser. Use this device to access Yantr."
   },
   "openSourceCard": {
-    "label": "Open Source",
-    "title": "Yantr is Open Source.",
-    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "label": "Source available",
+    "title": "Built in the open.",
+    "description": "The source is public. Free for personal and homelab use — not for commercial use. Star the repo, contribute, or report issues.",
     "cta": "Star on GitHub"
   },
   "cloudflaredCard": {

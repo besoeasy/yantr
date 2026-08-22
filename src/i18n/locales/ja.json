@@ -648,9 +648,9 @@
     "loginNote": "キーはこのブラウザに保存されています。"
   },
   "openSourceCard": {
-    "label": "Open Source",
-    "title": "Yantr is Open Source.",
-    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "label": "ソース公開",
+    "title": "公開して作っています。",
+    "description": "ソースは公開。個人・ホームラボは無料。商用利用は不可。スター、貢献、Issue 歓迎。",
     "cta": "Star on GitHub"
   },
   "cloudflaredCard": {

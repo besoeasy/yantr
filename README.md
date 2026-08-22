@@ -122,6 +122,19 @@ PRs welcome.
 
 ---
 
+## License
+
+Yantr is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE).
+
+- Personal, hobby, and homelab use: yes
+- Study, change, and share the source under the same terms: yes
+- Schools, charities, and other noncommercial orgs: yes
+- Commercial use (sell it, host it as a paid product, run a business on it): no
+
+The source stays public. The short version is at the top of [`LICENSE`](LICENSE).
+
+---
+
 <div align="center">
   <sub>Vue 3 · Go · Docker · Tailwind CSS</sub><br/><br/>
   <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
