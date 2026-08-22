@@ -2,7 +2,7 @@
 
 ## App Structure
 
-Each app lives in `apps/<app-name>/compose.yml` — a single file with no `info.json`.
+Each app lives in `apps/<app-name>/compose.yml` — a single file with no `info.json` and no `Dockerfile`.
 
 All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fields, so the file remains fully deployable.
 
@@ -19,7 +19,7 @@ All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fie
 **Optional fields:**
 - `logo` — omitted; place `logo.svg` in the app folder instead (auto-detected)
 - `notes` — list of strings explaining manual setup steps
-- `customapp` — boolean; `true` for Yantr-built apps with Dockerfile
+- `customapp` — boolean; `true` for Yantr-built apps. Define the image with `dockerfile_inline` in compose.yml (never a separate Dockerfile)
 - `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
 
 **YAML style — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
@@ -108,6 +108,26 @@ ports:
 # ❌ wrong — avoid unless the app cannot work without it
 ports:
   - "8080:8080"
+```
+
+### 5. Custom Apps — Use dockerfile_inline
+Yantr-built apps (`customapp: true`) MUST define the image with Compose `build.dockerfile_inline`. Do not add a `Dockerfile`, `entrypoint.sh`, or other build files in the app folder — keep it to `compose.yml` and optional `logo.svg`. If you need an entrypoint script, write it inside the inline Dockerfile.
+
+```yaml
+# ✅ correct
+services:
+  my-app:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM debian:stable
+        RUN apt-get update && apt-get install -y --no-install-recommends curl
+        CMD ["my-app"]
+
+# ❌ wrong — never add apps/my-app/Dockerfile
+services:
+  my-app:
+    build: .
 ```
 
 ## Minimal App Example

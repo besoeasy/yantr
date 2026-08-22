@@ -1,0 +1,56 @@
+x-yantr:
+  name: yantrbot
+  tags: [ai, telegram, coding, bot, docker]
+  short_description: "Telegram client for OpenCode so you can run AI coding tasks from your phone."
+  description: >
+    Yantr Bot is a self-hosted Telegram client for OpenCode. Send prompts from
+    your phone to run AI coding tasks, manage sessions, switch models, and
+    schedule work while everything stays on your server. Access is limited to
+    your Telegram user ID. OpenCode auto-restarts when health checks fail.
+  usecases: ["Run OpenCode AI coding tasks from Telegram on your phone.", "Manage sessions, models, and scheduled OpenCode work without opening a desktop TUI."]
+  website: "https://github.com/grinev/opencode-telegram-bot"
+  customapp: true
+  notes: ["Create a bot with @BotFather and set TELEGRAM_BOT to the bot token.", "Get your numeric Telegram user ID from @userinfobot and set USER_ID — only that user can talk to the bot.", "OpenCode runs inside this container at http://localhost:4096 and auto-restarts if health checks fail."]
+
+services:
+  yantrbot:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM debian:stable
+
+        ENV DEBIAN_FRONTEND=noninteractive
+
+        RUN apt-get update && \
+            apt-get install -y --no-install-recommends \
+              ca-certificates \
+              curl \
+              git \
+              python3 \
+              bash \
+              build-essential && \
+            rm -rf /var/lib/apt/lists/*
+
+        # Node.js 24 LTS
+        RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && \
+            apt-get install -y nodejs && \
+            node --version && \
+            npm --version && \
+            rm -rf /var/lib/apt/lists/*
+
+        RUN npm install -g @grinev/opencode-telegram-bot opencode-ai
+
+        CMD ["opencode-telegram", "start"]
+    working_dir: /app
+    labels:
+      yantr.app: "yantrbot"
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT:-}
+      TELEGRAM_ALLOWED_USER_ID: ${USER_ID:-}
+      OPENCODE_MODEL_PROVIDER: opencode
+      OPENCODE_MODEL_ID: big-pickle
+      OPENCODE_API_URL: http://localhost:4096
+      OPENCODE_AUTO_RESTART_ENABLED: "true"
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
