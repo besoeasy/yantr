@@ -41,7 +41,6 @@ services:
         RUN npm install -g @grinev/opencode-telegram-bot opencode-ai
 
         CMD ["opencode-telegram", "start"]
-    working_dir: /app
     labels:
       yantr.app: "yantrbot"
     environment:
