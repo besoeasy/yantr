@@ -648,9 +648,9 @@
     "loginNote": "Ihr Schlüssel ist in diesem Browser gespeichert."
   },
   "openSourceCard": {
-    "label": "Open Source",
-    "title": "Yantr is Open Source.",
-    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "label": "Quelloffen",
+    "title": "Öffentlich entwickelt.",
+    "description": "Der Quellcode ist öffentlich. Kostenlos für privat und Homelab — nicht für kommerzielle Nutzung. Repository markieren, beitragen oder Probleme melden.",
     "cta": "Star on GitHub"
   },
   "cloudflaredCard": {

@@ -648,9 +648,9 @@
     "loginNote": "您的密钥已存储在此浏览器中。"
   },
   "openSourceCard": {
-    "label": "Open Source",
-    "title": "Yantr is Open Source.",
-    "description": "Fully open source and community-driven. Star the repository, contribute code, or help us improve by reporting issues.",
+    "label": "源码公开",
+    "title": "在公开中构建。",
+    "description": "源码公开。个人和家庭实验室可免费使用，不可商用。欢迎标星、贡献或反馈问题。",
     "cta": "Star on GitHub"
   },
   "cloudflaredCard": {
