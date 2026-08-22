@@ -1,12 +1,14 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
 import AppCard from "../components/AppCard.vue";
-import { Tag, Search, LayoutGrid, X, Command } from "@lucide/vue";
+import HomelabKits from "../components/HomelabKits.vue";
+import { getHomelabKit } from "../data/homelabKits";
+import { Tag, Search, LayoutGrid, X, Command, Sparkles } from "@lucide/vue";
 
 const { t } = useI18n();
 const toast = useNotification();
@@ -21,6 +23,7 @@ function focusSearch(e) {
 }
 
 const router = useRouter();
+const route = useRoute();
 const { apiUrl } = useApiUrl();
 
 // State
@@ -29,6 +32,9 @@ const containers = ref([]);
 const loading = ref(false);
 const appSearch = ref("");
 const selectedTag = ref(null);
+const selectedKit = ref(null);
+
+const activeKit = computed(() => getHomelabKit(selectedKit.value));
 
 const hourSeed = ref(getDateHourSeed());
 let refreshInterval = null;
@@ -100,10 +106,30 @@ const tags = computed(() => {
 });
 
 const combinedApps = computed(() => {
-  let combined = shuffledApps.value.map((app) => ({
-    ...app,
-    isInstalled: installedAppIds.value.has(app.id),
-  }));
+  const withInstallState = (list) =>
+    list.map((app) => ({
+      ...app,
+      isInstalled: installedAppIds.value.has(app.id),
+    }));
+
+  const matchesSearch = (app) => {
+    if (!appSearch.value) return true;
+    const search = appSearch.value.toLowerCase();
+    return (
+      app.name.toLowerCase().includes(search) ||
+      (Array.isArray(app.tags) && app.tags.join(" ").toLowerCase().includes(search)) ||
+      (app.description && app.description.toLowerCase().includes(search))
+    );
+  };
+
+  if (activeKit.value) {
+    const order = new Map(activeKit.value.apps.map((id, index) => [id, index]));
+    return withInstallState(apps.value)
+      .filter((app) => order.has(app.id) && matchesSearch(app))
+      .sort((a, b) => order.get(a.id) - order.get(b.id));
+  }
+
+  let combined = withInstallState(shuffledApps.value);
 
   if (selectedTag.value) {
     combined = combined.filter((app) =>
@@ -111,19 +137,45 @@ const combinedApps = computed(() => {
     );
   }
 
-  if (appSearch.value) {
-    const search = appSearch.value.toLowerCase();
-    combined = combined.filter((app) => {
-      return (
-        app.name.toLowerCase().includes(search) ||
-        (Array.isArray(app.tags) && app.tags.join(' ').toLowerCase().includes(search)) ||
-        (app.description && app.description.toLowerCase().includes(search))
-      );
-    });
-  }
-
-  return combined;
+  return combined.filter(matchesSearch);
 });
+
+function applyKitFromRoute() {
+  const kitId = typeof route.query.kit === "string" ? route.query.kit : null;
+  selectedKit.value = getHomelabKit(kitId) ? kitId : null;
+  if (selectedKit.value) selectedTag.value = null;
+}
+
+function selectKit(kitId) {
+  const next = selectedKit.value === kitId ? null : kitId;
+  selectedKit.value = next;
+  if (next) selectedTag.value = null;
+  const query = { ...route.query };
+  if (next) query.kit = next;
+  else delete query.kit;
+  router.replace({ path: "/apps", query });
+}
+
+function selectTag(tag) {
+  selectedTag.value = tag;
+  if (selectedKit.value) {
+    selectedKit.value = null;
+    const query = { ...route.query };
+    delete query.kit;
+    router.replace({ path: "/apps", query });
+  }
+}
+
+function clearFilters() {
+  appSearch.value = "";
+  selectedTag.value = null;
+  selectedKit.value = null;
+  const query = { ...route.query };
+  delete query.kit;
+  router.replace({ path: "/apps", query });
+}
+
+watch(() => route.query.kit, applyKitFromRoute);
 
 // Helper Functions
 function getDateHourSeed() {
@@ -189,6 +241,7 @@ function viewAppDetail(appId) {
 // Lifecycle
 onMounted(async () => {
   window.addEventListener('keydown', focusSearch);
+  applyKitFromRoute();
   loading.value = true;
   await Promise.all([fetchApps(), fetchContainers()]);
   loading.value = false;
@@ -229,7 +282,7 @@ onUnmounted(() => {
         <!-- Filter navigation -->
         <nav class="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-3 lg:grid-cols-1" :aria-label="t('apps.categories')">
           <button
-            @click="selectedTag = null"
+            @click="selectTag(null)"
             :class="[
               'group flex items-center justify-between gap-3 border-l-2 py-2 pl-3 pr-1 text-left text-sm transition-colors duration-200 lg:w-full',
               selectedTag === null
@@ -252,7 +305,7 @@ onUnmounted(() => {
           <button
             v-for="cat in tags"
             :key="cat.name"
-            @click="selectedTag = cat.name"
+            @click="selectTag(cat.name)"
             :class="[
               'group flex items-center justify-between gap-3 border-l-2 py-2 pl-3 pr-1 text-left text-sm transition-colors duration-200 lg:w-full',
               selectedTag === cat.name
@@ -313,11 +366,20 @@ onUnmounted(() => {
               {{ combinedApps.length }} {{ combinedApps.length === 1 ? t('apps.app') : t('apps.apps') }}
             </span>
             <span
+              v-if="selectedKit"
+              class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black px-2.5 py-1 rounded-full"
+            >
+              {{ t(`kits.${selectedKit}.name`) }}
+              <button @click="selectKit(selectedKit)" class="ml-1 hover:opacity-70 transition-opacity">
+                <X :size="10" />
+              </button>
+            </span>
+            <span
               v-if="selectedTag"
               class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black px-2.5 py-1 rounded-full"
             >
               {{ selectedTag }}
-              <button @click="selectedTag = null" class="ml-1 hover:opacity-70 transition-opacity">
+              <button @click="selectTag(null)" class="ml-1 hover:opacity-70 transition-opacity">
                 <X :size="10" />
               </button>
             </span>
@@ -337,10 +399,25 @@ onUnmounted(() => {
                 </div>
                 <h3 class="text-base font-semibold text-gray-900 dark:text-white tracking-tight">{{ t('apps.noAppsFound') }}</h3>
                 <p class="text-sm text-gray-500 dark:text-zinc-400 mt-2 max-w-sm mx-auto leading-relaxed">{{ t('apps.noAppsFoundDesc') }}</p>
-                <button @click="appSearch = ''; selectedTag = null" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">{{ t('apps.clearAllFilters') }}</button>
+                <button @click="clearFilters" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">{{ t('apps.clearAllFilters') }}</button>
             </div>
 
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div v-else class="space-y-6">
+              <section v-if="!appSearch && !selectedTag">
+                <div class="mb-4 flex items-end justify-between gap-3">
+                  <div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.24em] text-gray-400 dark:text-zinc-500">{{ t('kits.eyebrow') }}</p>
+                    <h3 class="mt-1 text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ t('kits.startHere') }}</h3>
+                  </div>
+                  <span class="hidden sm:inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 dark:text-zinc-500">
+                    <Sparkles :size="12" />
+                    {{ t('kits.defaultPath') }}
+                  </span>
+                </div>
+                <HomelabKits :apps="apps" :selected-id="selectedKit" @select="selectKit" />
+              </section>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                 <AppCard
                   v-for="app in combinedApps"
                   :key="app.id"
@@ -348,6 +425,7 @@ onUnmounted(() => {
                   :instance-count="appInstanceCounts[app.id] || 0"
                   @select="viewAppDetail(app.id)"
                 />
+            </div>
             </div>
         </div>
 

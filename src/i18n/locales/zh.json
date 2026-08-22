@@ -117,6 +117,38 @@
     "noAppsFoundDesc": "我们找不到符合您搜索条件的任何应用。",
     "clearAllFilters": "清除所有筛选"
   },
+  "kits": {
+    "startHere": "从这里开始",
+    "eyebrow": "默认组合",
+    "defaultPath": "家庭实验室默认路径",
+    "emptyTitle": "开始搭建家庭实验室",
+    "emptyDesc": "选择一套默认组合，从目录部署每个应用——操作系统仍然是你的。",
+    "appsInKit": "{count} 个应用",
+    "essentials": {
+      "name": "家庭实验室必备",
+      "description": "DNS、相册、媒体、文件、密码和可用性——大多数家庭实验室最先安装的六个应用。"
+    },
+    "media": {
+      "name": "媒体服务器",
+      "description": "Jellyfin 加上 *arr 套件，让电影和剧集自动入库。"
+    },
+    "smarthome": {
+      "name": "智能家居",
+      "description": "Home Assistant，搭配 MQTT、Zigbee、ESPHome、摄像头和自动化。"
+    },
+    "privacy": {
+      "name": "隐私与远程访问",
+      "description": "私密访问实验室、拦截广告，并把密钥留在自己的硬件上。"
+    },
+    "files": {
+      "name": "文件与备份",
+      "description": "云文件、同步、相册、文档，以及两套备份工具。"
+    },
+    "monitor": {
+      "name": "可观测性",
+      "description": "出问题时立刻知道——可用性、指标、仪表盘和主页。"
+    }
+  },
   "appDetail": {
     "catalog": "目录",
     "installed": "已安装",

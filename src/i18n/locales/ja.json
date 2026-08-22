@@ -117,6 +117,38 @@
     "noAppsFoundDesc": "検索条件に一致するアプリケーションが見つかりませんでした。",
     "clearAllFilters": "フィルターをすべてクリア"
   },
+  "kits": {
+    "startHere": "ここから始める",
+    "eyebrow": "定番スタック",
+    "defaultPath": "ホームラボの定番",
+    "emptyTitle": "ホームラボを始める",
+    "emptyDesc": "定番スタックを選んでカタログから導入。OSはそのまま使えます。",
+    "appsInKit": "{count} アプリ",
+    "essentials": {
+      "name": "ホームラボ定番",
+      "description": "DNS、写真、メディア、ファイル、パスワード、稼働監視。多くのホームラボが最初に入れる6つ。"
+    },
+    "media": {
+      "name": "メディアサーバー",
+      "description": "Jellyfin と *arr スタックで映画とドラマを自動収集。"
+    },
+    "smarthome": {
+      "name": "スマートホーム",
+      "description": "Home Assistant に MQTT、Zigbee、ESPHome、カメラ、自動化。"
+    },
+    "privacy": {
+      "name": "プライバシーとアクセス",
+      "description": "ラボへ非公開で接続し、広告を止め、秘密は自分の機材に置く。"
+    },
+    "files": {
+      "name": "ファイルとバックアップ",
+      "description": "クラウドファイル、同期、写真、書類、バックアップツール2種。"
+    },
+    "monitor": {
+      "name": "監視",
+      "description": "障害にすぐ気づく。稼働、メトリクス、ダッシュボード、ホームページ。"
+    }
+  },
   "appDetail": {
     "catalog": "カタログ",
     "installed": "インストール済み",

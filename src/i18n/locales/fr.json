@@ -117,6 +117,38 @@
     "noAppsFoundDesc": "Nous n'avons trouvé aucune application correspondant à vos critères de recherche.",
     "clearAllFilters": "Effacer tous les filtres"
   },
+  "kits": {
+    "startHere": "Commencer ici",
+    "eyebrow": "Stacks par défaut",
+    "defaultPath": "Le défaut du homelab",
+    "emptyTitle": "Lancez votre homelab",
+    "emptyDesc": "Choisissez un stack par défaut. Déployez chaque app depuis le catalogue — votre système d'exploitation reste le vôtre.",
+    "appsInKit": "{count} apps",
+    "essentials": {
+      "name": "Essentiels du homelab",
+      "description": "DNS, photos, médias, fichiers, mots de passe et disponibilité — les six premières apps de la plupart des homelabs."
+    },
+    "media": {
+      "name": "Serveur média",
+      "description": "Jellyfin plus la stack *arr pour que films et séries arrivent tout seuls."
+    },
+    "smarthome": {
+      "name": "Maison connectée",
+      "description": "Home Assistant avec MQTT, Zigbee, ESPHome, caméras et automatisations."
+    },
+    "privacy": {
+      "name": "Confidentialité et accès",
+      "description": "Rejoignez votre lab en privé, bloquez les pubs et gardez vos secrets sur votre matériel."
+    },
+    "files": {
+      "name": "Fichiers et sauvegarde",
+      "description": "Fichiers cloud, sync, photos, documents et deux outils de sauvegarde."
+    },
+    "monitor": {
+      "name": "Observabilité",
+      "description": "Sachez quand quelque chose casse — disponibilité, métriques, tableaux de bord et page d'accueil."
+    }
+  },
   "appDetail": {
     "catalog": "Catalogue",
     "installed": "Installée",

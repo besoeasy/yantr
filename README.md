@@ -58,13 +58,24 @@ docker run -d \
 
 Open **http://localhost:5252** and create your operator account on first visit.
 
+The empty dashboard and App Store open on **starter kits** — curated default stacks (essentials, media, smart home, privacy, files, observability) so a new homelab is not a wall of 350 apps.
+
 > **macOS / Windows?** Host networking is Linux-only. See the [platform install guide](https://yantr.org/install.html).
 
 ---
 
 ## 📦 App Catalog
 
-350+ curated apps, one-click deploy.
+350+ curated apps, one-click deploy. New installs start from these default kits:
+
+| Kit | Default apps |
+|---|---|
+| Homelab Essentials | AdGuard Home, Vaultwarden, Immich, Jellyfin, Nextcloud, Uptime Kuma |
+| Media Server | Jellyfin, qBittorrent, Prowlarr, Radarr, Sonarr, Seerr |
+| Smart Home | Home Assistant, Mosquitto, Zigbee2MQTT, ESPHome, Frigate, Node-RED |
+| Privacy & Access | Tailscale, Vaultwarden, AdGuard Home, Cloudflared, SearXNG, WireGuard |
+| Files & Backup | Nextcloud, Syncthing, Immich, Paperless-ngx, Duplicati, Kopia |
+| Observability | Uptime Kuma, Glances, Grafana, Beszel, Gatus, Homepage |
 
 | Category | Apps |
 |---|---|

@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "@lucide/vue";
+import HomelabKits from "../components/HomelabKits.vue";
 
 // Auto-load all widget .vue files from src/Widgets/, shuffle once per day
 const widgetModules = import.meta.glob("../Widgets/*.vue", { eager: true });
@@ -32,6 +33,7 @@ const router = useRouter();
 
 const containers = ref([]);
 const volumeBrowsers = ref([]);
+const catalogApps = ref([]);
 const loading = ref(false);
 const activeFilter = ref("all");
 
@@ -79,6 +81,16 @@ async function fetchContainers() {
   }
 }
 
+async function fetchCatalogApps() {
+  try {
+    const response = await fetch(`${apiUrl.value}/api/apps`);
+    const data = await expectApiSuccess(response, "Failed to load apps");
+    catalogApps.value = Array.isArray(data.apps) ? data.apps : [];
+  } catch {
+    catalogApps.value = [];
+  }
+}
+
 async function fetchVolumeBrowsers() {
   try {
     const response = await fetch(`${apiUrl.value}/api/volumes/browsers`);
@@ -105,13 +117,17 @@ function viewContainerDetail(container) {
   router.push(`/containers/${container.id}`);
 }
 
+function openKit(kitId) {
+  router.push({ path: "/apps", query: { kit: kitId } });
+}
+
 async function refreshAll() {
   await Promise.all([fetchContainers(), fetchVolumeBrowsers()]);
 }
 
 onMounted(async () => {
   loading.value = true;
-  await refreshAll();
+  await Promise.all([refreshAll(), fetchCatalogApps()]);
   loading.value = false;
 
   containersRefreshInterval = setInterval(refreshAll, 10000);
@@ -205,23 +221,28 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <!-- Empty State -->
+          <!-- Empty State — default homelab path -->
           <div
             v-if="containers.length === 0"
-            class="text-center py-32 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl mb-6 flex flex-col items-center"
+            class="mb-6 rounded-xl border border-gray-200 bg-white px-4 py-10 sm:px-8 dark:border-zinc-800 dark:bg-[#0A0A0A]"
           >
-            <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-2xl flex items-center justify-center mb-6">
-              <Store :size="32" class="text-gray-400 dark:text-zinc-500" />
+            <div class="mx-auto max-w-3xl text-center">
+              <p class="text-[10px] font-black uppercase tracking-[0.24em] text-gray-400 dark:text-zinc-500">{{ t("kits.eyebrow") }}</p>
+              <h3 class="mt-3 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ t("kits.emptyTitle") }}</h3>
+              <p class="mx-auto mt-3 max-w-lg text-sm font-medium leading-relaxed text-gray-500 dark:text-zinc-400">{{ t("kits.emptyDesc") }}</p>
             </div>
-            <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-2">{{ t("home.noAppsRunning") }}</h3>
-            <p class="text-sm font-medium text-gray-500 dark:text-zinc-400 max-w-md mx-auto mb-8">{{ t("home.dashboardEmpty") }}</p>
-            <router-link
-              to="/apps"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white dark:bg-white dark:text-gray-900 rounded-lg text-xs font-bold uppercase tracking-wider transition-all hover:-translate-y-0.5 shadow-sm"
-            >
-              <Store :size="16" />
-              <span>{{ t("home.browseAppStore") }}</span>
-            </router-link>
+            <div class="mx-auto mt-8 max-w-5xl">
+              <HomelabKits :apps="catalogApps" @select="openKit" />
+            </div>
+            <div class="mt-8 flex justify-center">
+              <router-link
+                to="/apps"
+                class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-6 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:-translate-y-0.5 dark:bg-white dark:text-gray-900"
+              >
+                <Store :size="16" />
+                <span>{{ t("home.browseAppStore") }}</span>
+              </router-link>
+            </div>
           </div>
 
           <!-- Unified grid: all cards are single-column on mobile, 2 columns on medium, 3 on large -->
