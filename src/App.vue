@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { 
   Box, Home, Moon, Sun, Check, Shield, 
-  HardDrive, Terminal, Network, Lock, Sparkles
+  HardDrive, Terminal, Network, Lock, Sparkles, Globe
 } from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
@@ -23,6 +23,7 @@ const isActive = (name) => route.name === name;
 const navItems = [
   { name: "home", path: "/home", label: "Home", icon: Home },
   { name: "apps", path: "/apps", label: "Apps", icon: Box },
+  { name: "telemetry", path: "/telemetry", label: "Fleet", icon: Globe },
   { name: "logs", path: "/logs", label: "Logs", icon: Terminal },
 ];
 

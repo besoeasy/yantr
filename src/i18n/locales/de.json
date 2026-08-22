@@ -6,7 +6,24 @@
     "language": "Sprache",
     "lightMode": "Hellmodus",
     "darkMode": "Dunkelmodus",
-    "theme": "Design"
+    "theme": "Design",
+    "telemetry": "Flotte"
+  },
+  "telemetry": {
+    "eyebrow": "Telemetrie",
+    "title": "Flotte",
+    "subtitle": "Anonyme Knoten aus dem öffentlichen Presence-Feed. Land, OS, RAM und installierte Apps.",
+    "nodes": "Knoten",
+    "ramLow": "RAM niedrigst",
+    "ramHigh": "RAM höchst",
+    "ramAvg": "RAM durchschnitt",
+    "mapTitle": "Knoten nach Land",
+    "countries": "Länder",
+    "os": "Betriebssysteme",
+    "apps": "Meistinstallierte Apps",
+    "empty": "Noch keine aktuellen Pings im ntfy-Cache.",
+    "loadFailed": "Flottenstatistik konnte nicht geladen werden",
+    "footnote": "Fenster: {window}. {events} Ereignisse gelesen."
   },
   "common": {
     "loading": "Laden...",

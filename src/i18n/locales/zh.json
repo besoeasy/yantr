@@ -6,7 +6,24 @@
     "language": "语言",
     "lightMode": "浅色模式",
     "darkMode": "深色模式",
-    "theme": "主题"
+    "theme": "主题",
+    "telemetry": "集群"
+  },
+  "telemetry": {
+    "eyebrow": "遥测",
+    "title": "集群",
+    "subtitle": "来自公开在线心跳的匿名节点。国家、系统、内存和已安装应用。",
+    "nodes": "节点",
+    "ramLow": "内存最低",
+    "ramHigh": "内存最高",
+    "ramAvg": "内存平均",
+    "mapTitle": "按国家的节点",
+    "countries": "国家",
+    "os": "操作系统",
+    "apps": "安装最多的应用",
+    "empty": "ntfy 缓存里还没有最近的心跳。",
+    "loadFailed": "无法加载集群统计",
+    "footnote": "窗口：{window}。已解析 {events} 条事件。"
   },
   "common": {
     "loading": "加载中...",
