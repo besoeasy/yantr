@@ -52,6 +52,11 @@ const router = createRouter({
       name: "logs",
       component: () => import(/* webpackChunkName: "logs" */ "./views/Logs.vue"),
     },
+    {
+      path: "/telemetry",
+      name: "telemetry",
+      component: () => import(/* webpackChunkName: "telemetry" */ "./views/Telemetry.vue"),
+    },
   ],
 });
 

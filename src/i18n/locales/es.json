@@ -6,7 +6,24 @@
     "language": "Idioma",
     "lightMode": "Modo claro",
     "darkMode": "Modo oscuro",
-    "theme": "Tema"
+    "theme": "Tema",
+    "telemetry": "Flota"
+  },
+  "telemetry": {
+    "eyebrow": "Telemetría",
+    "title": "Flota",
+    "subtitle": "Nodos anónimos del feed público de presencia. País, SO, RAM y apps instaladas.",
+    "nodes": "Nodos",
+    "ramLow": "RAM mínima",
+    "ramHigh": "RAM máxima",
+    "ramAvg": "RAM media",
+    "mapTitle": "Nodos por país",
+    "countries": "Países",
+    "os": "Sistemas operativos",
+    "apps": "Apps más instaladas",
+    "empty": "Aún no hay pings recientes en la caché de ntfy.",
+    "loadFailed": "No se pudieron cargar las estadísticas",
+    "footnote": "Ventana: {window}. {events} eventos leídos."
   },
   "common": {
     "loading": "Cargando...",

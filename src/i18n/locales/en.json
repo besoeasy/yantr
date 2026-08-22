@@ -6,7 +6,24 @@
     "language": "Language",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
-    "theme": "Theme"
+    "theme": "Theme",
+    "telemetry": "Fleet"
+  },
+  "telemetry": {
+    "eyebrow": "Telemetry",
+    "title": "Fleet",
+    "subtitle": "Anonymous nodes from the public presence feed. Country, OS, RAM, and the apps they run.",
+    "nodes": "Nodes",
+    "ramLow": "RAM lowest",
+    "ramHigh": "RAM highest",
+    "ramAvg": "RAM average",
+    "mapTitle": "Nodes by country",
+    "countries": "Countries",
+    "os": "Operating systems",
+    "apps": "Most installed apps",
+    "empty": "No recent pings in the ntfy cache yet.",
+    "loadFailed": "Failed to load fleet stats",
+    "footnote": "Window: {window}. Parsed {events} events."
   },
   "common": {
     "loading": "Loading...",

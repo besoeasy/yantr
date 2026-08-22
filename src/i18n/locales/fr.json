@@ -6,7 +6,24 @@
     "language": "Langue",
     "lightMode": "Mode clair",
     "darkMode": "Mode sombre",
-    "theme": "Thème"
+    "theme": "Thème",
+    "telemetry": "Flotte"
+  },
+  "telemetry": {
+    "eyebrow": "Télémétrie",
+    "title": "Flotte",
+    "subtitle": "Nœuds anonymes du flux de présence public. Pays, OS, RAM et apps installées.",
+    "nodes": "Nœuds",
+    "ramLow": "RAM min",
+    "ramHigh": "RAM max",
+    "ramAvg": "RAM moyenne",
+    "mapTitle": "Nœuds par pays",
+    "countries": "Pays",
+    "os": "Systèmes",
+    "apps": "Apps les plus installées",
+    "empty": "Pas encore de pings récents dans le cache ntfy.",
+    "loadFailed": "Impossible de charger les stats de flotte",
+    "footnote": "Fenêtre : {window}. {events} événements lus."
   },
   "common": {
     "loading": "Chargement...",
