@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0B1220"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="plane" x1="48" y1="48" x2="208" y2="208" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="80" y1="80" x2="176" y2="176" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect x="2" y="2" width="252" height="252" rx="54" stroke="url(#glow)" stroke-width="3" stroke-opacity="0.45"/>
+  <circle cx="128" cy="128" r="78" fill="url(#glow)" opacity="0.16"/>
+
+  <!-- Code brackets -->
+  <path d="M78 92 L54 128 L78 164" stroke="#67E8F9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
+  <path d="M178 92 L202 128 L178 164" stroke="#67E8F9" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9"/>
+
+  <!-- Telegram-style paper plane -->
+  <path d="M92 128 L176 86 L148 170 L132 136 L92 128 Z" fill="url(#plane)"/>
+  <path d="M132 136 L176 86 L116 122 Z" fill="#E0F2FE" opacity="0.35"/>
+  <path d="M132 136 L148 170 L116 122 Z" fill="#0F172A" opacity="0.25"/>
+</svg>
