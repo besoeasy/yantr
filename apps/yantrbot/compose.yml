@@ -10,27 +10,27 @@ x-yantr:
   usecases: ["Run OpenCode AI coding tasks from Telegram on your phone.", "Manage sessions, models, and scheduled OpenCode work without opening a desktop TUI."]
   website: "https://github.com/grinev/opencode-telegram-bot"
   customapp: true
-  notes: ["Create a bot with @BotFather and set TELEGRAM_BOT_TOKEN.", "Get your numeric Telegram user ID from @userinfobot and set TELEGRAM_ALLOWED_USER_ID — only that user can talk to the bot.", "OpenCode runs inside this container at http://localhost:4096 and auto-restarts if health checks fail."]
+  notes: ["Create a bot with @BotFather and set TELEGRAM_BOT to the bot token.", "Get your numeric Telegram user ID from @userinfobot and set USER_ID — only that user can talk to the bot.", "OpenCode runs inside this container at http://localhost:4096 and auto-restarts if health checks fail."]
 
 services:
-  yantr-bot:
+  yantrbot:
     build: .
     working_dir: /app
     labels:
-      yantr.app: "yantr-bot"
+      yantr.app: "yantrbot"
     environment:
       HOME: /app
-      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-      TELEGRAM_ALLOWED_USER_ID: ${TELEGRAM_ALLOWED_USER_ID:-}
-      OPENCODE_MODEL_PROVIDER: ${OPENCODE_MODEL_PROVIDER:-opencode}
-      OPENCODE_MODEL_ID: ${OPENCODE_MODEL_ID:-big-pickle}
-      OPENCODE_API_URL: ${OPENCODE_API_URL:-http://localhost:4096}
-      OPENCODE_AUTO_RESTART_ENABLED: ${OPENCODE_AUTO_RESTART_ENABLED:-true}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT:-}
+      TELEGRAM_ALLOWED_USER_ID: ${USER_ID:-}
+      OPENCODE_MODEL_PROVIDER: opencode
+      OPENCODE_MODEL_ID: big-pickle
+      OPENCODE_API_URL: http://localhost:4096
+      OPENCODE_AUTO_RESTART_ENABLED: "true"
     volumes:
-      - yantr_bot_data:/app
+      - yantrbot_data:/app
     tty: true
     stdin_open: true
     restart: unless-stopped
 
 volumes:
-  yantr_bot_data:
+  yantrbot_data:
