@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -111,633 +111,107 @@
     />
     <meta property="twitter:image" content="https://yantr.org/banner.png" />
 
-    <!-- Local Tailwind CSS bundle -->
-    <link rel="stylesheet" href="./tailwind.css" />
-    <style>
-      .hide-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .hide-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      .glass-effect {
-        background: rgba(255, 255, 255, 1);
-        border: 1px solid rgba(0, 0, 0, 0.04);
-      }
-      /* ── Circular orbit background ───────────────────────────────── */
-      .orbit-arm {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        transform-origin: 0 0;
-      }
-      @keyframes orbitCW {
-        0%   { transform: rotate(0turn)  translateX(var(--orbit-r)) rotate(0turn); }
-        100% { transform: rotate(1turn)  translateX(var(--orbit-r)) rotate(-1turn); }
-      }
-      @keyframes orbitCCW {
-        0%   { transform: rotate(0turn)  translateX(var(--orbit-r)) rotate(0turn); }
-        100% { transform: rotate(-1turn) translateX(var(--orbit-r)) rotate(1turn); }
-      }
-      @keyframes orbitPulse {
-        0%, 100% { opacity: 0.1; }
-        50%       { opacity: 0.32; }
-      }
-      @keyframes orbitChipPulse {
-        0%,
-        100% {
-          transform: translate(-50%, -50%) scale(1);
-          box-shadow: 0 10px 24px -20px rgba(15, 23, 42, 0.18);
-        }
-        50% {
-          transform: translate(-50%, -50%) scale(1.1);
-          box-shadow: 0 18px 38px -24px rgba(15, 23, 42, 0.32);
-        }
-      }
-      .orbit-chip {
-        position: absolute;
-        top: 0;
-        left: 0;
-        transform: translate(-50%, -50%);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 7px 14px 7px 9px;
-        border-radius: 9999px;
-        background: rgba(255, 255, 255, 0.82);
-        border: 1px solid rgba(0, 0, 0, 0.06);
-        white-space: nowrap;
-        pointer-events: auto;
-        cursor: default;
-        filter: grayscale(100%);
-        transform-origin: center;
-        transition: filter 0.25s ease, opacity 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
-        animation:
-          orbitPulse var(--fade-dur, 4s) ease-in-out infinite var(--fade-delay, 0s),
-          orbitChipPulse var(--pulse-dur, 5.4s) ease-in-out infinite var(--pulse-delay, 0s);
-      }
-      .orbit-chip:hover {
-        filter: grayscale(0%);
-        opacity: 1 !important;
-        transform: translate(-50%, -50%) scale(1.08);
-        background: rgba(255, 255, 255, 0.96);
-        border-color: rgba(0, 0, 0, 0.12);
-        animation-play-state: paused;
-        z-index: 20;
-      }
-      .orbit-chip-logo {
-        width: 22px;
-        height: 22px;
-      }
-      .orbit-chip-label {
-        font-size: 0.85rem;
-        line-height: 1;
-        font-weight: 700;
-        color: #4b5563;
-      }
-      #hero-stars {
-        overflow: clip;
-        contain: layout paint;
-      }
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .animate-fade-in-up {
-        animation: fadeInUp 0.8s ease-out forwards;
-        opacity: 0; /* Start hidden */
-      }
-      .delay-100 {
-        animation-delay: 100ms;
-      }
-      .delay-150 {
-        animation-delay: 150ms;
-      }
-      .delay-200 {
-        animation-delay: 200ms;
-      }
-      .delay-250 {
-        animation-delay: 250ms;
-      }
-      .delay-300 {
-        animation-delay: 300ms;
-      }
-      @keyframes slideInSoft {
-        from {
-          opacity: 0;
-          transform: translateY(14px) scale(0.98);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-      @keyframes pulseGlow {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.06);
-        }
-        50% {
-          box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-        }
-      }
-      @keyframes floatY {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-4px);
-        }
-      }
-      .animate-slide-in-soft {
-        animation: slideInSoft 700ms ease-out forwards;
-      }
-      .animate-pulse-glow {
-        animation: pulseGlow 2.6s ease-in-out infinite;
-      }
-      .animate-float-y {
-        animation: floatY 3.2s ease-in-out infinite;
-      }
-      .tag-btn.active {
-        background-color: #000;
-        color: #fff;
-        border-color: #000;
-      }
-      @keyframes requirementFill {
-        from {
-          transform: scaleX(0);
-          opacity: 0.35;
-        }
-        to {
-          transform: scaleX(1);
-          opacity: 1;
-        }
-      }
-      @keyframes requirementBlink {
-        0%,
-        100% {
-          opacity: 0.32;
-        }
-        50% {
-          opacity: 0.85;
-        }
-      }
-      .requirement-fill {
-        transform-origin: left center;
-        animation: requirementFill 900ms ease-out forwards;
-      }
-      .requirement-fill-delay-1 {
-        animation-delay: 120ms;
-      }
-      .requirement-fill-delay-2 {
-        animation-delay: 260ms;
-      }
-      .requirement-fill-delay-3 {
-        animation-delay: 420ms;
-      }
-      .requirement-ping {
-        animation: requirementBlink 2.2s ease-in-out infinite;
-      }
-      @keyframes heroLetterFloat {
-        0%,
-        100% {
-          transform: translateY(0px) scale(1);
-        }
-        50% {
-          transform: translateY(-2px) scale(1.008);
-        }
-      }
-      @keyframes heroLetterTilt {
-        0%,
-        100% {
-          transform: rotate(0deg) translateY(0px);
-        }
-        50% {
-          transform: rotate(-0.7deg) translateY(-1px);
-        }
-      }
-      .hero-letter {
-        display: inline-block;
-        will-change: transform;
-      }
-      .hero-letter-1 {
-        animation: heroLetterFloat 6.2s ease-in-out infinite;
-      }
-      .hero-letter-2 {
-        animation: heroLetterTilt 6.8s ease-in-out infinite;
-      }
-      .hero-letter-3 {
-        animation: heroLetterFloat 6.4s ease-in-out infinite;
-        animation-delay: 0.22s;
-      }
-      .hero-letter-4 {
-        animation: heroLetterTilt 7.1s ease-in-out infinite;
-        animation-delay: 0.34s;
-      }
-      .hero-letter-5 {
-        animation: heroLetterFloat 6.9s ease-in-out infinite;
-        animation-delay: 0.46s;
-      }
-      /* Hero keyword highlight */
-      .hero-keyword {
-        color: #111;
-        font-weight: 600;
-        position: relative;
-        display: inline-block;
-        transition: color 0.2s;
-      }
-      .hero-keyword::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -1px;
-        height: 2px;
-        background: #111;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 2px;
-      }
-      .hero-keyword:hover::after {
-        transform: scaleX(1);
-      }
-      /* Hero pillar top accent line */
-      .hero-pillar {
-        position: relative;
-        overflow: hidden;
-      }
-      .hero-pillar::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 10%;
-        right: 10%;
-        height: 2px;
-        background: #111;
-        transform: scaleX(0);
-        transform-origin: center;
-        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-radius: 2px;
-      }
-      .hero-pillar:hover::before {
-        transform: scaleX(1);
-      }
-      #copy-install.copied .copy-icon {
-        display: none;
-      }
-      #copy-install.copied .check-icon {
-        display: block;
-      }
-      #copy-install .copied-label {
-        display: none;
-      }
-      #copy-install.copied .copy-label {
-        display: none;
-      }
-      #copy-install.copied .copied-label {
-        display: inline;
-      }
-      @keyframes installCardFloat {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-4px);
-        }
-      }
-      @keyframes installTopBarPulse {
-        0%,
-        100% {
-          transform: scaleX(0.58);
-          opacity: 0.45;
-        }
-        50% {
-          transform: scaleX(1);
-          opacity: 1;
-        }
-      }
-      @keyframes installDotPulse {
-        0%,
-        100% {
-          transform: translateY(0px) scale(0.9);
-          opacity: 0.3;
-        }
-        50% {
-          transform: translateY(-2px) scale(1.08);
-          opacity: 1;
-        }
-      }
-      @keyframes installStepReveal {
-        from {
-          opacity: 0;
-          transform: translateY(12px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @keyframes installCommandBreath {
-        0%,
-        100% {
-          box-shadow: 0 0 0 0 rgba(17, 24, 39, 0.04);
-        }
-        50% {
-          box-shadow: 0 18px 30px -24px rgba(17, 24, 39, 0.28);
-        }
-      }
-      .install-shell {
-        animation: installCardFloat 7s ease-in-out infinite;
-      }
-      .install-shell:hover {
-        animation-play-state: paused;
-      }
-      .install-top-bar {
-        transform-origin: left center;
-        animation: installTopBarPulse 3.6s ease-in-out infinite;
-      }
-      .install-orbit-dot {
-        animation: installDotPulse 2.4s ease-in-out infinite;
-      }
-      .install-step {
-        opacity: 0;
-        animation: installStepReveal 700ms ease-out forwards;
-      }
-      .install-command-surface {
-        animation: installCommandBreath 4.8s ease-in-out infinite;
-      }
-      @keyframes marquee-left {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-50%);
-        }
-      }
-      @keyframes marquee-right {
-        0% {
-          transform: translateX(-50%);
-        }
-        100% {
-          transform: translateX(0);
-        }
-      }
-      .app-marquee-track {
-        width: max-content;
-        will-change: transform;
-      }
-      .app-marquee-left {
-        animation: marquee-left 200s linear infinite;
-      }
-      .app-marquee-right {
-        animation: marquee-right 200s linear infinite;
-      }
-      .app-description-clamp {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-      @keyframes archPulse {
-        0%,
-        100% {
-          transform: scale(1);
-          box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
-        }
-        50% {
-          transform: scale(1.01);
-          box-shadow: 0 0 0 8px rgba(0, 0, 0, 0);
-        }
-      }
-      @keyframes archFlow {
-        0% {
-          transform: translateX(-6px);
-          opacity: 0;
-        }
-        15% {
-          opacity: 1;
-        }
-        85% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateX(calc(100% + 6px));
-          opacity: 0;
-        }
-      }
-      @keyframes archFlowVertical {
-        0% {
-          transform: translateY(-6px);
-          opacity: 0;
-        }
-        15% {
-          opacity: 1;
-        }
-        85% {
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(calc(100% + 6px));
-          opacity: 0;
-        }
-      }
-      .arch-node {
-        animation: archPulse 3.8s ease-in-out infinite;
-      }
-      .arch-line {
-        position: relative;
-        height: 2px;
-        background: #9ca3af;
-        overflow: hidden;
-      }
-      .arch-line-dot {
-        position: absolute;
-        top: 50%;
-        width: 8px;
-        height: 8px;
-        border-radius: 9999px;
-        background: #111827;
-        transform: translateY(-50%);
-        animation: archFlow 3.4s linear infinite;
-      }
-      .arch-line-vertical {
-        position: relative;
-        width: 2px;
-        background: #9ca3af;
-        overflow: hidden;
-      }
-      .arch-line-dot-vertical {
-        position: absolute;
-        left: 50%;
-        width: 8px;
-        height: 8px;
-        border-radius: 9999px;
-        background: #111827;
-        transform: translateX(-50%);
-        animation: archFlowVertical 3.4s linear infinite;
-      }
-      .perspective-1000 {
-        perspective: 1000px;
-      }
-      .preserve-3d {
-        transform-style: preserve-3d;
-      }
-      .backface-hidden {
-        backface-visibility: hidden;
-      }
-      .rotate-y-180 {
-        transform: rotateY(180deg);
-      }
-      @keyframes feature-scroll {
-        0% {
-          transform: translateX(0);
-        }
-        100% {
-          transform: translateX(-50%);
-        }
-      }
-      .feature-scroll-track {
-        width: max-content;
-        will-change: transform;
-        animation: feature-scroll 48s linear infinite;
-      }
-      .feature-scroll-track:hover {
-        animation-play-state: paused;
-      }
-      @media (max-width: 639px) {
-        .full-bleed-mobile-safe {
-          left: auto;
-          right: auto;
-          width: auto;
-          margin-left: -1rem;
-          margin-right: -1rem;
-          translate: none;
-          transform: none;
-        }
-        .orbit-chip {
-          gap: 0;
-          padding: 7px;
-        }
-        .orbit-chip-logo {
-          width: 21px;
-          height: 21px;
-        }
-        .orbit-chip span {
-          display: none;
-        }
-      }
-    </style>
+    <!-- Vanilla CSS (no Tailwind) -->
+    <link rel="stylesheet" href="./style.css" />
   </head>
-  <body class="bg-white text-black font-sans antialiased selection:bg-black selection:text-white overflow-x-hidden">
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-24 relative">
+  <body>
+    <main class="page">
       <!-- Hero -->
-      <div class="min-h-screen mb-0 flex flex-col justify-center relative z-10 py-16 sm:py-20 overflow-hidden">
+      <div class="hero">
         <!-- Hero Background Animation Container -->
-        <div id="hero-stars" class="absolute inset-0 -z-10 pointer-events-none overflow-hidden"></div>
+        <div id="hero-stars" class="hero-bg"></div>
         <!-- Radial fade so orbiting chips don't overlap the text -->
-        <div class="absolute inset-0 -z-10 pointer-events-none" style="background:radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.7) 60%, transparent 100%)"></div>
-        <div class="max-w-4xl mx-auto flex flex-col items-center text-center px-4 sm:px-6 py-8">
-          <div class="flex flex-col items-center text-center">
+        <div class="hero-fade" style="background:radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.7) 60%, transparent 100%)"></div>
+        <div class="hero-inner">
+          <div class="hero-inner">
             <a
               href="./install.html"
-              class="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/80 px-3 py-1.5 mb-6 text-xs font-semibold tracking-wide text-gray-600 uppercase animate-fade-in-up hover:border-gray-400 transition-colors"
-            >
-              <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              class="hero-pill animate-fade-in-up"
+           >
+              <span class="dot animate-pulse"></span>
               Homelab App Store · Podman-powered
             </a>
             <h1
               id="hero-title"
-              class="text-4xl min-[400px]:text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-2 font-sans text-black leading-[0.95] animate-fade-in-up delay-100"
-            >
+              class="hero-title animate-fade-in-up delay-100"
+           >
               <span class="sr-only">YANTR</span>
               <span aria-hidden="true">
                 <span class="hero-letter hero-letter-1">Y</span><span class="hero-letter hero-letter-2">A</span><span class="hero-letter hero-letter-3">N</span
-                ><span class="hero-letter hero-letter-4">T</span><span class="hero-letter hero-letter-5">R</span>
+               ><span class="hero-letter hero-letter-4">T</span><span class="hero-letter hero-letter-5">R</span>
               </span>
             </h1>
-            <p class="text-lg sm:text-2xl font-semibold text-gray-400 tracking-tight mb-5 font-sans animate-fade-in-up delay-150">
+            <p class="hero-subtitle animate-fade-in-up delay-150">
               The self-hosted app store for your hardware.
             </p>
-            <p id="hero-desc" class="text-base text-gray-500 leading-relaxed max-w-2xl mb-6 font-sans animate-fade-in-up delay-200">
+            <p id="hero-desc" class="hero-desc animate-fade-in-up delay-200">
               Find popular server apps in one place and install them with a single command. Yantr runs alongside your existing OS — no re-imaging and no vendor lock-in.
             </p>
 
             <!-- Stats strip -->
-            <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mb-7 animate-fade-in-up delay-[300ms]">
-              <span class="flex items-center gap-1.5 text-sm text-gray-500 font-sans">
-                <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <div class="hero-stats animate-fade-in-up delay-300">
+              <span class="stat">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 <span id="hero-app-count">129+</span> apps
               </span>
-              <span class="text-gray-200" aria-hidden="true">|</span>
-              <span class="flex items-center gap-1.5 text-sm text-gray-500 font-sans">
-                <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span class="sep" aria-hidden="true">|</span>
+              <span class="stat">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 Open source
               </span>
-              <span class="text-gray-200" aria-hidden="true">|</span>
-              <span class="flex items-center gap-1.5 text-sm text-gray-500 font-sans">
-                <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span class="sep" aria-hidden="true">|</span>
+              <span class="stat">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 Rootless &amp; Daemonless
               </span>
-              <span class="text-gray-200" aria-hidden="true">|</span>
-              <span class="flex items-center gap-1.5 text-sm text-gray-500 font-sans">
-                <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span class="sep" aria-hidden="true">|</span>
+              <span class="stat">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                 Podman-native
               </span>
             </div>
 
             <!-- CTAs -->
-            <div class="flex flex-wrap items-center justify-center gap-3 animate-fade-in-up delay-[400ms]">
+            <div class="hero-ctas animate-fade-in-up delay-300">
               <a
                 href="https://github.com/besoeasy/yantr"
                 target="_blank"
-                class="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm font-bold hover:bg-gray-800 transition-colors rounded-lg"
-              >
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                class="btn btn-dark"
+             >
+                <svg  fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     fill-rule="evenodd"
                     d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
                     clip-rule="evenodd"
                   />
                 </svg>
-                GitHub <span class="text-white/60 font-normal" id="stars-nav"></span>
+                GitHub <span class="github-stars" id="stars-nav"></span>
               </a>
               <a
                 href="./install.html"
-                class="flex items-center gap-2 border border-gray-300 text-gray-800 px-4 py-2.5 text-sm font-bold hover:bg-gray-50 hover:border-gray-400 transition-colors rounded-lg"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                class="btn btn-light"
+             >
+                <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 Install Yantr
               </a>
             </div>
 
             <!-- Hero Install One-Liner -->
-            <div class="mt-8 w-full max-w-xl animate-fade-in-up delay-[450ms]">
-              <div class="flex items-center justify-between bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 shadow-xl text-left">
-                <div class="flex items-center gap-2 overflow-x-auto text-xs sm:text-sm font-mono text-gray-200">
-                  <span class="text-emerald-400 font-bold">$</span>
-                  <code class="whitespace-nowrap select-all">curl -fsSL https://yantr.org/install.sh | bash</code>
+            <div class="hero-install animate-fade-in-up delay-300">
+              <div class="install-line">
+                <div class="cmd">
+                  <span class="prompt">$</span>
+                  <code>curl -fsSL https://yantr.org/install.sh | bash</code>
                 </div>
                 <button
-                  class="ml-3 shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:text-white transition-colors cursor-pointer"
+                  class="copy-btn-sm"
                   onclick="navigator.clipboard.writeText('curl -fsSL https://yantr.org/install.sh | bash'); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000)"
-                >
+               >
                   Copy
                 </button>
               </div>
-              <p class="mt-2 text-xs text-gray-400 font-sans">
-                Native Linux · Rootless Podman + Quadlet systemd · <a href="./install.html" class="underline hover:text-gray-600">Step-by-step guide →</a>
+              <p class="hero-install-note">
+                Native Linux · Rootless Podman + Quadlet systemd · <a href="./install.html">Step-by-step guide →</a>
               </p>
             </div>
           </div>
@@ -745,18 +219,18 @@
       </div>
 
       <!-- App marquees — seamless continuation of the hero, full-bleed -->
-      <div class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 overflow-hidden pt-4 pb-14" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
-        <div class="overflow-hidden py-2 w-full">
-          <div class="flex items-center gap-3 app-marquee-track app-marquee-left" id="hero-app-marquee-1"></div>
+      <div class="full-bleed marquee-section" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
+        <div class="marquee-row">
+          <div class="app-marquee-track app-marquee-left" id="hero-app-marquee-1"></div>
         </div>
-        <div class="overflow-hidden py-2 w-full">
-          <div class="flex items-center gap-3 app-marquee-track app-marquee-right" id="hero-app-marquee-2"></div>
+        <div class="marquee-row">
+          <div class="app-marquee-track app-marquee-right" id="hero-app-marquee-2"></div>
         </div>
-        <div class="mt-10 flex justify-center">
+        <div class="marquee-center">
           <a
             href="#all-apps"
-            class="inline-flex items-center gap-2 rounded-xl border border-black bg-black text-white px-6 py-3 text-sm font-semibold hover:bg-white hover:text-black transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5"
-          >
+            class="btn btn-browse"
+         >
             Browse all apps
             <span aria-hidden="true">→</span>
           </a>
@@ -764,29 +238,29 @@
       </div>
 
       <!-- Why Yantr Over Umbrel Section -->
-      <section id="why-yantr-over-umbrel" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 border-t border-gray-100 bg-gray-50 py-20 sm:py-28">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-10 lg:gap-14 items-start">
-            <div class="lg:sticky lg:top-8">
-              <p class="text-[11px] uppercase tracking-[0.24em] text-gray-500 font-semibold mb-4">Yantr vs Umbrel</p>
-              <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900 leading-[1.08]">
+      <section id="why-yantr-over-umbrel" class="full-bleed section section-gray">
+        <div class="wrap">
+          <div class="split">
+            <div class="split-sticky">
+              <p class="eyebrow">Yantr vs Umbrel</p>
+              <h2 class="h2">
                 Your machine stays yours.
-                <span class="block text-gray-400">Yantr is just the app layer.</span>
+                <span class="muted">Yantr is just the app layer.</span>
               </h2>
-              <p class="mt-5 text-base text-gray-500 leading-relaxed font-sans">
+              <p class="lead">
                 Umbrel-style platforms are great when you want a dedicated appliance. Yantr is for the machines you already use: a laptop, Raspberry Pi, old PC, new workstation, or home server running its normal OS.
               </p>
 
-              <div class="mt-8 rounded-3xl bg-white p-5 sm:p-6 smooth-shadow-lg">
-                <div class="flex items-start gap-4">
-                  <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-black text-white">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="feature-callout">
+                <div class="feature-callout-row">
+                  <div class="icon">
+                    <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h10M4 17h7" />
                     </svg>
                   </div>
                   <div>
-                    <h3 class="text-sm font-bold text-gray-900">Install it. Use it. Remove it.</h3>
-                    <p class="mt-1.5 text-sm leading-relaxed text-gray-500">
+                    <h3>Install it. Use it. Remove it.</h3>
+                    <p>
                       No re-imaging, no dedicated OS layer, no appliance lock-in. Yantr runs beside your existing apps and files.
                     </p>
                   </div>
@@ -794,98 +268,98 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <div class="card-grid">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-2.64-6.36" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 3v6h-6" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">Latest app versions</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Pull current upstream images and check for updates when you want, instead of waiting on a curated OS release cycle.</p>
+                <h3>Latest app versions</h3>
+                <p>Pull current upstream images and check for updates when you want, instead of waiting on a curated OS release cycle.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3H5a2 2 0 0 0-2 2v14h18V9" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="m10 14 11-11" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">App, not OS</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Keep Ubuntu, Debian, Fedora, Arch, or your existing Linux server setup. Yantr adds an app store, not a replacement operating system.</p>
+                <h3>App, not OS</h3>
+                <p>Keep Ubuntu, Debian, Fedora, Arch, or your existing Linux server setup. Yantr adds an app store, not a replacement operating system.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M7 7v10" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 7v10" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 17h16" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">Custom environments</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Tune environment variables per app deployment so advanced setups do not get boxed into fixed presets.</p>
+                <h3>Custom environments</h3>
+                <p>Tune environment variables per app deployment so advanced setups do not get boxed into fixed presets.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <rect x="4" y="4" width="7" height="7" rx="1.5" />
                     <rect x="13" y="4" width="7" height="7" rx="1.5" />
                     <rect x="4" y="13" width="7" height="7" rx="1.5" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 16h4M17 14v4" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">Multiple installs</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Deploy the same app more than once for testing, family, clients, separate projects, or clean isolated workspaces.</p>
+                <h3>Multiple installs</h3>
+                <p>Deploy the same app more than once for testing, family, clients, separate projects, or clean isolated workspaces.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
                     <circle cx="12" cy="12" r="9" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">Update on demand</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Self-update Yantr, check for the latest app versions, and recreate app containers only when you decide.</p>
+                <h3>Update on demand</h3>
+                <p>Self-update Yantr, check for the latest app versions, and recreate app containers only when you decide.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 7v5c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V7l-8-4Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">System isolation</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">Run your laptop, old PC, or server normally while self-hosted apps live in separate Podman stacks.</p>
+                <h3>System isolation</h3>
+                <p>Run your laptop, old PC, or server normally while self-hosted apps live in separate Podman stacks.</p>
               </div>
 
-              <div class="rounded-3xl bg-white p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-gray-100 text-gray-900">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-gray-900">Super lightweight</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">No full appliance layer. Yantr stays small so your hardware can spend its resources on the apps you run.</p>
+                <h3>Super lightweight</h3>
+                <p>No full appliance layer. Yantr stays small so your hardware can spend its resources on the apps you run.</p>
               </div>
 
-              <div class="rounded-3xl bg-gray-900 p-6 smooth-shadow-lg transition-transform duration-300 hover:-translate-y-1">
-                <div class="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white">
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <div class="card card-dark">
+                <div class="card-icon">
+                  <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h18v10H3z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 21h8" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v6" />
                   </svg>
                 </div>
-                <h3 class="text-lg font-bold tracking-tight text-white">Runs everywhere</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-400">Laptop, Raspberry Pi, old PC, new PC, home server, or VPS. If it runs Linux, Yantr fits there.</p>
+                <h3>Runs everywhere</h3>
+                <p>Laptop, Raspberry Pi, old PC, new PC, home server, or VPS. If it runs Linux, Yantr fits there.</p>
               </div>
             </div>
           </div>
@@ -893,148 +367,148 @@
       </section>
 
       <!-- Why Podman Over Docker Section -->
-      <section id="why-podman-over-docker" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 border-t border-gray-100 bg-white py-20 sm:py-28">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
-            <p class="text-[11px] uppercase tracking-[0.24em] text-emerald-600 font-semibold mb-3">Security &amp; Architecture · Podman vs Docker</p>
-            <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900 leading-[1.08]">
+      <section id="why-podman-over-docker" class="full-bleed section section-white">
+        <div class="wrap">
+          <div class="center">
+            <p class="eyebrow eyebrow-green">Security &amp; Architecture · Podman vs Docker</p>
+            <h2 class="h2">
               Rootless by design.
-              <span class="block text-gray-400">Why Podman beats Docker for homelabs.</span>
+              <span class="muted">Why Podman beats Docker for homelabs.</span>
             </h2>
-            <p class="mt-5 text-base text-gray-500 leading-relaxed font-sans">
+            <p class="lead">
               Most container managers run Docker with a monolithic root daemon. While convenient, giving Docker root means any container breach can compromise your entire host. Yantr is built from the ground up on 100% rootless Podman — eliminating root privileges, daemon crashes, and host firewall tampering.
             </p>
           </div>
 
           <!-- Comparison Table -->
-          <div class="mb-14 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm border-collapse">
+          <div class="compare-wrap">
+            <div class="compare-scroll">
+              <table class="compare-table">
                 <thead>
-                  <tr class="border-b border-gray-200 bg-gray-950 text-white">
-                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-gray-400">Capability / Metric</th>
-                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-red-400/90">Traditional Docker</th>
-                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-emerald-400">Yantr + Rootless Podman</th>
+                  <tr>
+                    <th scope="col" class="th-dim">Capability / Metric</th>
+                    <th scope="col" class="th-bad">Traditional Docker</th>
+                    <th scope="col" class="th-good">Yantr + Rootless Podman</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 font-sans">
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                <tbody>
+                  <tr>
+                    <td class="row-title">
                       Privilege Model
-                      <span class="block text-xs font-normal text-gray-400">Execution context &amp; permissions</span>
+                      <span>Execution context &amp; permissions</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-md px-2 py-0.5 mb-1">Runs as root (dockerd)</span>
-                      <p class="text-xs text-gray-500">The <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">docker</code> group grants passwordless root host access.</p>
+                    <td class="cell-bad">
+                      <span class="badge badge-red">Runs as root (dockerd)</span>
+                      <p>The <code>docker</code> group grants passwordless root host access.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 bg-emerald-100 border border-emerald-200 rounded-md px-2 py-0.5 mb-1 font-semibold">100% Rootless</span>
-                      <p class="text-xs text-gray-600">Containers run inside user namespaces with unprivileged UIDs.</p>
+                    <td class="cell-good">
+                      <span class="badge badge-green">100% Rootless</span>
+                      <p>Containers run inside user namespaces with unprivileged UIDs.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Security Blast Radius
-                      <span class="block text-xs font-normal text-gray-400">Impact of container escape / zero-day</span>
+                      <span>Impact of container escape / zero-day</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-red-600">Host Root Compromise</span>
-                      <p class="text-xs text-gray-500">Container breakout grants full root control of the host OS and files.</p>
+                    <td class="cell-bad">
+                      <span class="strong-red">Host Root Compromise</span>
+                      <p>Container breakout grants full root control of the host OS and files.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Zero Host Root Permissions</span>
-                      <p class="text-xs text-gray-600">Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Zero Host Root Permissions</span>
+                      <p>Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Engine Architecture
-                      <span class="block text-xs font-normal text-gray-400">Process management model</span>
+                      <span>Process management model</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-gray-900">Monolithic Daemon</span>
-                      <p class="text-xs text-gray-500">If <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">dockerd</code> crashes or restarts for updates, all containers can die.</p>
+                    <td class="cell-bad">
+                      <span class="strong-dark">Monolithic Daemon</span>
+                      <p>If <code>dockerd</code> crashes or restarts for updates, all containers can die.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Daemonless (fork / exec)</span>
-                      <p class="text-xs text-gray-600">Direct execution via <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">conmon</code>; no central daemon single point of failure.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Daemonless (fork / exec)</span>
+                      <p>Direct execution via <code>conmon</code>; no central daemon single point of failure.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Service Management
-                      <span class="block text-xs font-normal text-gray-400">Boot, restarts, and supervision</span>
+                      <span>Boot, restarts, and supervision</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-gray-900">Proprietary Supervision</span>
-                      <p class="text-xs text-gray-500">Docker bypasses systemd; handles its own restarts and process monitoring.</p>
+                    <td class="cell-bad">
+                      <span class="strong-dark">Proprietary Supervision</span>
+                      <p>Docker bypasses systemd; handles its own restarts and process monitoring.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Native systemd Quadlet</span>
-                      <p class="text-xs text-gray-600">Containers are first-class systemd user units (<code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">systemctl --user</code>, lingering).</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Native systemd Quadlet</span>
+                      <p>Containers are first-class systemd user units (<code>systemctl --user</code>, lingering).</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Host Firewall &amp; Network
-                      <span class="block text-xs font-normal text-gray-400">iptables / nftables interaction</span>
+                      <span>iptables / nftables interaction</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-red-600">Bypasses UFW Rules</span>
-                      <p class="text-xs text-gray-500">Directly modifies root iptables, often silently exposing internal ports publicly.</p>
+                    <td class="cell-bad">
+                      <span class="strong-red">Bypasses UFW Rules</span>
+                      <p>Directly modifies root iptables, often silently exposing internal ports publicly.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Zero Firewall Tampering</span>
-                      <p class="text-xs text-gray-600">Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Zero Firewall Tampering</span>
+                      <p>Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Host Filesystem Impact
-                      <span class="block text-xs font-normal text-gray-400">Storage location &amp; permissions</span>
+                      <span>Storage location &amp; permissions</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-gray-900">Root-owned <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">/var/lib/docker</code></span>
-                      <p class="text-xs text-gray-500">Pollutes root filesystem; requires <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">sudo</code> to inspect, manage, or clean.</p>
+                    <td class="cell-bad">
+                      <span class="strong-dark">Root-owned <code>/var/lib/docker</code></span>
+                      <p>Pollutes root filesystem; requires <code>sudo</code> to inspect, manage, or clean.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">100% User-Space Storage</span>
-                      <p class="text-xs text-gray-600">Named volumes in <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">~/.local/share/containers/</code> with SELinux (<code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">:z</code>) labeling.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">100% User-Space Storage</span>
+                      <p>Named volumes in <code>~/.local/share/containers/</code> with SELinux (<code>:z</code>) labeling.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Idle Resource Overhead
-                      <span class="block text-xs font-normal text-gray-400">Memory &amp; CPU consumption</span>
+                      <span>Memory &amp; CPU consumption</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-gray-900">Always-On Daemon</span>
-                      <p class="text-xs text-gray-500">Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
+                    <td class="cell-bad">
+                      <span class="strong-dark">Always-On Daemon</span>
+                      <p>Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Zero Daemon Overhead</span>
-                      <p class="text-xs text-gray-600">No background daemon process. Hardware resources go strictly to your apps.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Zero Daemon Overhead</span>
+                      <p>No background daemon process. Hardware resources go strictly to your apps.</p>
                     </td>
                   </tr>
 
-                  <tr class="hover:bg-gray-50/80 transition-colors">
-                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                  <tr>
+                    <td class="row-title">
                       Docker Socket Emulation
-                      <span class="block text-xs font-normal text-gray-400">For Glances, Portainer, Beszel</span>
+                      <span>For Glances, Portainer, Beszel</span>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-600">
-                      <span class="text-xs font-semibold text-red-600">Dangerous Root Socket</span>
-                      <p class="text-xs text-gray-500">Mounting <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">docker.sock</code> hands containers unrestricted root host takeover.</p>
+                    <td class="cell-bad">
+                      <span class="strong-red">Dangerous Root Socket</span>
+                      <p>Mounting <code>docker.sock</code> hands containers unrestricted root host takeover.</p>
                     </td>
-                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
-                      <span class="text-xs font-semibold text-emerald-700">Safe User Socket Translation</span>
-                      <p class="text-xs text-gray-600">Automatically translates to user <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">podman.sock</code> — full compatibility, zero root risk.</p>
+                    <td class="cell-good">
+                      <span class="strong-green">Safe User Socket Translation</span>
+                      <p>Automatically translates to user <code>podman.sock</code> — full compatibility, zero root risk.</p>
                     </td>
                   </tr>
                 </tbody>
@@ -1043,76 +517,76 @@
           </div>
 
           <!-- Feature Cards Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">Zero Host Root Privileges</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>Zero Host Root Privileges</h3>
+              <p>
                 Containers run inside Linux user namespaces. Even if a containerized service runs as UID 0, the kernel maps it to an unprivileged host UID. A breached container cannot access host root or read <code>/etc/shadow</code>.
               </p>
             </div>
 
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">Daemonless Architecture</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>Daemonless Architecture</h3>
+              <p>
                 Docker relies on a central <code>dockerd</code> daemon that acts as a single point of failure. Podman uses direct fork/exec with <code>conmon</code>. If Yantr updates or stops, your running stacks continue without interruption.
               </p>
             </div>
 
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">Native systemd Quadlet</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>Native systemd Quadlet</h3>
+              <p>
                 Containers are native systemd services. Auto-start on boot with user lingering enabled, manage lifecycles with standard <code>systemctl --user</code>, and stream live logs with <code>journalctl --user</code>.
               </p>
             </div>
 
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">Firewall Safe (No UFW Bypass)</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>Firewall Safe (No UFW Bypass)</h3>
+              <p>
                 Docker famously overrides root iptables rules, exposing ports directly to the internet past your UFW firewall. Rootless Podman networks strictly inside user namespaces — never altering host firewall rules.
               </p>
             </div>
 
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">Safe Docker Socket Translation</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>Safe Docker Socket Translation</h3>
+              <p>
                 Homelab tools like Glances, Portainer, and Beszel that ask for <code>docker.sock</code> are automatically routed to your unprivileged user Podman socket. You get full Docker compatibility with zero host root risk.
               </p>
             </div>
 
-            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
-                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <div class="feature-card">
+              <div class="card-icon">
+                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
                 </svg>
               </div>
-              <h3 class="text-lg font-bold tracking-tight text-gray-900">User-Space Named Volumes</h3>
-              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+              <h3>User-Space Named Volumes</h3>
+              <p>
                 No root-owned files in <code>/var/lib/docker</code>. Data lives in user storage (<code>~/.local/share/containers/</code>) with automatic SELinux <code>:z</code> context labeling. Clean ownership, zero sudo to back up or clean.
               </p>
             </div>
@@ -1121,72 +595,72 @@
       </section>
 
       <!-- Features Section -->
-      <section id="features" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-20 border-t border-gray-100 bg-white overflow-hidden">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-12">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-2">Features</p>
-            <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900 mb-4">Everything you need to self-host</h2>
-            <p class="text-gray-500 font-sans max-w-xl mx-auto text-base leading-relaxed">A robust set of built-in capabilities to run apps effortlessly.</p>
+      <section id="features" class="full-bleed section section-white">
+        <div class="wrap">
+          <div class="scroller-head">
+            <p class="eyebrow">Features</p>
+            <h2 class="h2">Everything you need to self-host</h2>
+            <p class="lead">A robust set of built-in capabilities to run apps effortlessly.</p>
           </div>
         </div>
 
-        <div class="w-full">
-          <div id="hero-fc-window" class="relative overflow-hidden py-4 w-full flex flex-col gap-4">
+        <div>
+          <div id="hero-fc-window" class="scroller-window">
             <!-- Edge fade masks -->
             <div
-              class="pointer-events-none absolute inset-y-0 left-0 w-32 sm:w-48 z-10"
+              
               style="background: none;"
-            ></div>
+           ></div>
             <div
-              class="pointer-events-none absolute inset-y-0 right-0 w-32 sm:w-48 z-10"
+              
               style="background: none;"
-            ></div>
+           ></div>
 
-            <div id="hero-fc-track-1" class="feature-scroll-track flex items-stretch gap-4 pr-4"></div>
+            <div id="hero-fc-track-1" class="feature-scroll-track"></div>
             <div
               id="hero-fc-track-2"
-              class="feature-scroll-track flex items-stretch gap-4 pr-4"
+              class="feature-scroll-track"
               style="animation-direction: reverse; animation-duration: 55s"
-            ></div>
-            <div id="hero-fc-track-3" class="feature-scroll-track flex items-stretch gap-4 pr-4" style="animation-duration: 62s"></div>
+           ></div>
+            <div id="hero-fc-track-3" class="feature-scroll-track" style="animation-duration: 62s"></div>
           </div>
         </div>
       </section>
 
       <!-- Contributors Section -->
-      <section id="contributors" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 bg-black py-24 sm:py-32 overflow-hidden">
+      <section id="contributors" class="full-bleed section-dark">
         <!-- Dot-grid decoration -->
-        <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
+        <div class="dot-grid" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
         <!-- Faint large number backdrop -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
-          <span class="text-[22vw] font-black text-white/[0.03] leading-none tracking-tighter font-sans">OSS</span>
+        <div class="oss-backdrop" aria-hidden="true">
+          <span>OSS</span>
         </div>
-        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center">
+        <div class="contrib-inner">
           <!-- Header -->
-          <div class="text-center mb-14">
-            <p class="text-[11px] uppercase tracking-[0.25em] text-emerald-400/80 font-semibold mb-4">Community</p>
-            <h2 class="text-4xl sm:text-5xl font-bold font-sans tracking-tight mb-5 text-white leading-tight">Built in the open<br class="hidden sm:block"/> by the community</h2>
-            <p class="text-white/45 font-sans text-base max-w-md mx-auto leading-relaxed">Every app, fix, and improvement comes from contributors like you.</p>
-            <p class="text-xs text-white/25 font-mono mt-3" id="contributors-count"></p>
+          <div class="contrib-head">
+            <p class="eyebrow eyebrow-green">Community</p>
+            <h2>Built in the open<br class="br-sm" /> by the community</h2>
+            <p class="sub">Every app, fix, and improvement comes from contributors like you.</p>
+            <p class="contrib-count" id="contributors-count"></p>
           </div>
 
           <!-- Contributors Grid -->
-          <div id="contributors-grid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4 w-full"></div>
+          <div id="contributors-grid" class="contrib-grid"></div>
 
           <!-- CTA -->
-          <div class="mt-16 flex flex-col items-center gap-4 text-center">
-            <div class="flex items-center gap-3 text-white/20 text-xs font-mono uppercase tracking-widest">
-              <span class="block h-px w-12 bg-white/15"></span>
+          <div class="contrib-cta">
+            <div class="join">
+              <span></span>
               join us
-              <span class="block h-px w-12 bg-white/15"></span>
+              <span></span>
             </div>
             <a
               href="https://github.com/besoeasy/yantr/graphs/contributors"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 text-sm font-bold text-black bg-white rounded-full px-7 py-3.5 hover:bg-white/85 transition-all duration-200 shadow-lg shadow-black/30"
-            >
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              class="btn"
+           >
+              <svg  viewBox="0 0 24 24" fill="currentColor">
                 <path
                   d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
                 />
@@ -1198,175 +672,175 @@
       </section>
 
       <!-- System Requirements Section -->
-      <section id="requirements" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 border-t border-gray-100 bg-white py-20 sm:py-28">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-16">
-            <p class="text-[11px] uppercase tracking-[0.22em] text-gray-500 font-semibold mb-3">System Requirements</p>
-            <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900 leading-[1.1]">
+      <section id="requirements" class="full-bleed section section-white">
+        <div class="wrap-narrow">
+          <div class="center">
+            <p class="eyebrow">System Requirements</p>
+            <h2 class="h2">
               Runs on the box you already own.<br />
-              <span class="text-gray-400">Scales when you outgrow it.</span>
+              <span class="muted">Scales when you outgrow it.</span>
             </h2>
           </div>
 
           <!-- Minimal Animated RAM Block -->
-          <div class="mb-12 rounded-3xl bg-gray-50 p-6 sm:p-10">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 max-w-4xl mx-auto">
+          <div class="ram-panel">
+            <div class="ram-flex">
               <div>
-                <p class="text-base font-bold font-sans text-gray-900">Yantr uses <span class="bg-gray-200 px-1.5 py-0.5 rounded-md">140 MB</span> RAM at idle</p>
-                <p class="mt-1 text-sm text-gray-500">Leaving the rest of your system resources for your apps.</p>
+                <p class="ram-title">Yantr uses <span class="chip">140 MB</span> RAM at idle</p>
+                <p class="ram-sub">Leaving the rest of your system resources for your apps.</p>
               </div>
               
-              <div class="flex-1 w-full md:max-w-md">
-                <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 shadow-inner">
-                  <div class="flex h-full w-full">
-                    <div class="requirement-fill flex h-full items-center justify-end bg-gray-900" style="width: 48%; animation-delay: 100ms"></div>
-                    <div class="requirement-fill h-full bg-gray-500" style="width: 29%; animation-delay: 200ms"></div>
-                    <div class="requirement-fill h-full bg-gray-300" style="width: 23%; animation-delay: 300ms"></div>
+              <div class="ram-side">
+                <div class="ram-bar">
+                  <div class="ram-track">
+                    <div class="requirement-fill" style="width: 48%; animation-delay: 100ms"></div>
+                    <div class="requirement-fill" style="width: 29%; animation-delay: 200ms"></div>
+                    <div class="requirement-fill" style="width: 23%; animation-delay: 300ms"></div>
                   </div>
                 </div>
-                <div class="mt-2.5 flex items-center gap-4 text-[10px] uppercase tracking-wider font-semibold text-gray-500">
-                  <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-900"></span>Core (~9MB)</div>
-                  <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-500"></span>Overhead (~41MB)</div>
-                  <div class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Margin (~32MB)</div>
+                <div class="ram-legend">
+                  <div class="key"><span class="swatch"></span>Core (~9MB)</div>
+                  <div class="key"><span class="swatch"></span>Overhead (~41MB)</div>
+                  <div class="key"><span class="swatch"></span>Margin (~32MB)</div>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Spec Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div class="spec-grid">
             <!-- Minimum Card -->
-            <div class="rounded-3xl bg-white p-8 sm:p-10 smooth-shadow-lg transition-transform hover:-translate-y-1 duration-300">
-              <div class="flex flex-col mb-8">
-                <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-100 text-gray-900 mb-5">
+            <div class="spec-card">
+              <div>
+                <span class="spec-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                 </span>
-                <h3 class="font-bold text-gray-900 font-sans text-2xl tracking-tight">Minimum specs</h3>
-                <p class="text-sm text-gray-500 font-sans mt-2 leading-relaxed">Just enough to boot the core and a couple basic apps. Perfect for an old laptop or Raspberry Pi 4.</p>
+                <h3>Minimum specs</h3>
+                <p class="spec-sub">Just enough to boot the core and a couple basic apps. Perfect for an old laptop or Raspberry Pi 4.</p>
               </div>
 
-              <div class="space-y-4 font-sans">
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-100">
-                  <span class="text-sm text-gray-500 font-medium">Hardware</span>
-                  <span class="text-sm font-bold text-gray-900">1 Core · RM 140 MB</span>
+              <div class="spec-rows">
+                <div class="spec-row">
+                  <span class="k">Hardware</span>
+                  <span>1 Core · RM 140 MB</span>
                 </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-100">
-                  <span class="text-sm text-gray-500 font-medium">Environment</span>
-                  <span class="text-sm font-bold text-gray-900">Podman 4.4+</span>
+                <div class="spec-row">
+                  <span class="k">Environment</span>
+                  <span>Podman 4.4+</span>
                 </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-100">
-                  <span class="text-sm text-gray-500 font-medium">Host OS</span>
-                  <span class="text-sm font-bold text-gray-900">Linux (Rootless)</span>
+                <div class="spec-row">
+                  <span class="k">Host OS</span>
+                  <span>Linux (Rootless)</span>
                 </div>
               </div>
             </div>
 
             <!-- Recommended Card -->
-            <div class="rounded-3xl bg-gray-900 p-8 sm:p-10 smooth-shadow-lg transition-transform hover:-translate-y-1 duration-300">
-              <div class="flex flex-col mb-8">
-                <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-800 text-white mb-5">
+            <div class="spec-card dark">
+              <div>
+                <span class="spec-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
                 </span>
-                <h3 class="font-bold text-white font-sans text-2xl tracking-tight">Recommended</h3>
-                <p class="text-sm text-gray-400 font-sans mt-2 leading-relaxed">For a comfortable daily-driver homelab running heavy media, sync, and dev workloads side by side.</p>
+                <h3>Recommended</h3>
+                <p class="spec-sub">For a comfortable daily-driver homelab running heavy media, sync, and dev workloads side by side.</p>
               </div>
 
-              <div class="space-y-4 font-sans">
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-800">
-                  <span class="text-sm text-gray-400 font-medium">Hardware</span>
-                  <span class="text-sm font-bold text-white">4+ Cores · 2 GB+ RAM</span>
+              <div class="spec-rows">
+                <div class="spec-row">
+                  <span class="k">Hardware</span>
+                  <span class="v">4+ Cores · 2 GB+ RAM</span>
                 </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-800">
-                  <span class="text-sm text-gray-400 font-medium">Storage</span>
-                  <span class="text-sm font-bold text-white">SSD or NVMe</span>
+                <div class="spec-row">
+                  <span class="k">Storage</span>
+                  <span class="v">SSD or NVMe</span>
                 </div>
-                <div class="flex justify-between items-center py-2.5 border-b border-gray-800">
-                  <span class="text-sm text-gray-400 font-medium">Host OS</span>
-                  <span class="text-sm font-bold text-white">Ubuntu 22.04+ or Debian 12+</span>
+                <div class="spec-row">
+                  <span class="k">Host OS</span>
+                  <span class="v">Ubuntu 22.04+ or Debian 12+</span>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- Tested-on -->
-          <div class="mt-16 text-center">
-            <p class="text-[11px] uppercase tracking-[0.2em] text-gray-400 font-semibold mb-6">Known to run reliably on</p>
-            <div class="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium font-sans text-gray-600">
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Raspberry Pi 4 / 5</span>
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Intel NUCs</span>
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Old laptops</span>
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Cloud VPS</span>
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Synology NAS</span>
-              <span class="flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-gray-300"></span>Proxmox / LXC</span>
+          <div class="tested">
+            <p class="eyebrow">Known to run reliably on</p>
+            <div class="tested-list">
+              <span class="key"><span class="swatch"></span>Raspberry Pi 4 / 5</span>
+              <span class="key"><span class="swatch"></span>Intel NUCs</span>
+              <span class="key"><span class="swatch"></span>Old laptops</span>
+              <span class="key"><span class="swatch"></span>Cloud VPS</span>
+              <span class="key"><span class="swatch"></span>Synology NAS</span>
+              <span class="key"><span class="swatch"></span>Proxmox / LXC</span>
             </div>
           </div>
         </div>
       </section>
 
       <!-- FAQ Section -->
-      <section class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-20 sm:py-28 bg-black overflow-hidden" id="faq">
+      <section class="full-bleed section-dark" id="faq">
         <!-- Dot-grid decoration matching community section -->
-        <div class="absolute inset-0 pointer-events-none" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
-        <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-14">
-            <p class="text-[11px] uppercase tracking-[0.25em] text-emerald-400/80 font-semibold mb-4">FAQ</p>
-            <h2 class="text-4xl sm:text-5xl font-bold font-sans mb-4 tracking-tight text-white">Frequently asked questions</h2>
-            <p class="text-white/45 font-sans max-w-xl mx-auto">Quick answers about safety, compatibility, and day-to-day use.</p>
+        <div class="dot-grid" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
+        <div class="wrap">
+          <div class="contrib-head">
+            <p class="eyebrow eyebrow-green">FAQ</p>
+            <h2>Frequently asked questions</h2>
+            <p class="sub">Quick answers about safety, compatibility, and day-to-day use.</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Why does Yantr use Podman instead of Docker?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
-                Docker runs as a monolithic root daemon (<code class="text-white/70 font-mono">dockerd</code>). Anyone with access to the Docker group effectively has passwordless root control over your host. Podman runs completely rootless in unprivileged user namespaces without any background daemon. It integrates directly with Linux systemd (via Quadlet), doesn't tamper with host firewall rules, and leaves zero footprint on your host OS.
+          <div class="faq-grid">
+            <div class="faq-card">
+              <h3>Why does Yantr use Podman instead of Docker?</h3>
+              <p>
+                Docker runs as a monolithic root daemon (<code>dockerd</code>). Anyone with access to the Docker group effectively has passwordless root control over your host. Podman runs completely rootless in unprivileged user namespaces without any background daemon. It integrates directly with Linux systemd (via Quadlet), doesn't tamper with host firewall rules, and leaves zero footprint on your host OS.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">What is 'rootless' and why is it better for my homelab?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
-                Rootless means Yantr and all deployed containers run under your standard, unprivileged user account without <code class="text-white/70 font-mono">sudo</code>. The Linux kernel maps container UID 0 to an unprivileged host UID. Even in the worst-case scenario of a container escape vulnerability, the attacker is trapped inside an unprivileged sandbox and cannot access host system files, read credentials, or install rootkits.
+            <div class="faq-card">
+              <h3>What is 'rootless' and why is it better for my homelab?</h3>
+              <p>
+                Rootless means Yantr and all deployed containers run under your standard, unprivileged user account without <code>sudo</code>. The Linux kernel maps container UID 0 to an unprivileged host UID. Even in the worst-case scenario of a container escape vulnerability, the attacker is trapped inside an unprivileged sandbox and cannot access host system files, read credentials, or install rootkits.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Does Yantr replace my operating system?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Does Yantr replace my operating system?</h3>
+              <p>
                 No. Yantr runs on top of your existing Linux setup using rootless Podman and systemd Quadlet. Your host OS remains unchanged.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Why use Yantr instead of manual Podman Compose?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Why use Yantr instead of manual Podman Compose?</h3>
+              <p>
                 Yantr applies Compose changes atomically: every step succeeds together, or nothing is changed. That reduces broken deployments and partial updates.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Do I need Podman experience to use Yantr?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Do I need Podman experience to use Yantr?</h3>
+              <p>
                 Not much. Yantr handles app installation, updates, and compose management through a simple interface while still using standard Podman and named volumes under the hood.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Where is my data stored?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Where is my data stored?</h3>
+              <p>
                 Your app data stays in standard named Podman volumes on your own machine or server. This keeps ownership clear and migration straightforward.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Can I access apps remotely?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Can I access apps remotely?</h3>
+              <p>
                 Yes. Yantr is local-first, and you can securely expose apps with tools like Tailscale or Cloudflare Tunnel when you need remote access.
               </p>
             </div>
 
-            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
-              <h3 class="text-base font-bold font-sans mb-3 text-white">Is Yantr free? Can I see the source?</h3>
-              <p class="text-white/50 leading-relaxed text-sm">
+            <div class="faq-card">
+              <h3>Is Yantr free? Can I see the source?</h3>
+              <p>
                 Yes. The source is public on GitHub. Personal and homelab use is free. Commercial use is not allowed — see the PolyForm Noncommercial License.
               </p>
             </div>
@@ -1375,21 +849,21 @@
       </section>
 
       <!-- All Apps Section -->
-      <section class="py-20 sm:py-28" id="all-apps">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-          <div class="mb-10">
-            <p class="text-[11px] uppercase tracking-[0.25em] text-gray-400 font-semibold mb-3">App Catalog</p>
-            <div class="flex flex-col sm:flex-row sm:items-end gap-4">
+      <section class="apps-section" id="all-apps">
+        <div class="wrap">
+          <div class="apps-head">
+            <p class="eyebrow">App Catalog</p>
+            <div class="apps-head-row">
               <div>
-                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900">All apps</h2>
-                <p class="text-gray-500 mt-2 text-sm">Browse self-hosted apps you can run with Yantr.</p>
+                <h2>All apps</h2>
+                <p class="apps-sub">Browse self-hosted apps you can run with Yantr.</p>
               </div>
-              <div class="sm:ml-auto flex items-center gap-2">
+              <div class="search-wrap">
                 <input
                   id="apps-search"
                   type="search"
                   placeholder="Search apps…"
-                  class="w-full sm:w-56 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-gray-400 transition-colors"
+                  class="search-input"
                 />
 
               </div>
@@ -1397,15 +871,15 @@
           </div>
 
           <!-- Tag filters -->
-          <div id="all-apps-tags" class="flex flex-wrap gap-2 mb-6">
+          <div id="all-apps-tags" class="tag-bar">
             <!-- Populated by loadAllApps() -->
           </div>
 
-          <div id="all-apps-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div id="all-apps-grid" class="apps-grid">
             <!-- Populated by loadAllApps() -->
           </div>
 
-          <p id="all-apps-empty" class="hidden text-center text-gray-400 text-sm py-16">No apps match your search.</p>
+          <p id="all-apps-empty" class="apps-empty hidden">No apps match your search.</p>
         </div>
       </section>
     </main>
@@ -1415,7 +889,7 @@
         if (!Array.isArray(items) || items.length === 0 || count <= 0) return [];
 
         const shuffled = [...items];
-        for (let i = shuffled.length - 1; i > 0; i--) {
+        for (let i = shuffled.length - 1; i> 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
@@ -1433,11 +907,11 @@
       function createAppPillMarkup(app) {
         const logoUrl = getLogoUrl(app);
         return `
-          <a href="./apps/${app.id}/" class="group relative inline-flex items-start gap-3 border border-gray-100 bg-white rounded-2xl px-4 py-3 sm:px-5 sm:py-4 hover:border-black transition-all duration-500 hover:shadow-xl hover:-translate-y-1 min-w-[240px] max-w-[280px] sm:min-w-[300px] sm:max-w-[360px] lg:min-w-[380px] lg:max-w-[460px]">
-            <img src="${logoUrl}" alt="${app.name}" class="w-20 h-20 rounded-2xl object-cover shrink-0 border border-gray-100" />
-            <span class="min-w-0 leading-tight">
-              <span class="block text-base font-bold font-sans text-gray-900 truncate">${app.name}</span>
-              <span class="block text-sm leading-5 font-sans text-gray-500 mt-1 app-description-clamp">${app.short_description || app.description || "No description available."}</span>
+          <a href="./apps/${app.id}/" class="app-pill">
+            <img src="${logoUrl}" alt="${app.name}"  />
+            <span class="app-pill-body">
+              <span class="app-pill-name">${app.name}</span>
+              <span class="app-pill-desc app-description-clamp">${app.short_description || app.description || "No description available."}</span>
             </span>
           </a>
         `;
@@ -1458,7 +932,7 @@
           if (!rowOne || !rowTwo) return;
 
           const shuffled = [...apps];
-          for (let i = shuffled.length - 1; i > 0; i--) {
+          for (let i = shuffled.length - 1; i> 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
           }
@@ -1487,8 +961,8 @@
           if (response.ok) {
             const data = await response.json();
             const stars = data.stars || 0;
-            if (stars > 0) {
-              const formatted = stars > 1000 ? (stars / 1000).toFixed(1) + "k" : stars;
+            if (stars> 0) {
+              const formatted = stars> 1000 ? (stars / 1000).toFixed(1) + "k" : stars;
               document.getElementById("stars-nav").textContent = formatted;
             }
           }
@@ -1516,20 +990,20 @@
           const contributorCard = (contributor) => {
             const contributionLabel = contributor.contributions === 1 ? "contribution" : "contributions";
             return `
-              <a href="${contributor.url}" target="_blank" rel="noopener noreferrer" class="group flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/[0.08] transition-all duration-200">
-                <div class="relative">
-                  <img src="${contributor.avatar_url}" alt="${contributor.login}" class="w-16 h-16 rounded-full border-2 border-white/10 object-cover group-hover:border-white/35 group-hover:scale-105 transition-all duration-200" loading="lazy" />
+              <a href="${contributor.url}" target="_blank" rel="noopener noreferrer" class="contrib-card">
+                <div>
+                  <img src="${contributor.avatar_url}" alt="${contributor.login}"  loading="lazy" />
                 </div>
-                <div class="text-center min-w-0 w-full">
-                  <p class="text-xs font-bold truncate text-white/90">@${contributor.login}</p>
-                  <p class="text-[10px] text-white/35 mt-0.5">${contributor.contributions} ${contributionLabel}</p>
+                <div>
+                  <p class="login">@${contributor.login}</p>
+                  <p class="count">${contributor.contributions} ${contributionLabel}</p>
                 </div>
               </a>
             `;
           };
 
           const shuffled = [...humans];
-          for (let i = shuffled.length - 1; i > 0; i--) {
+          for (let i = shuffled.length - 1; i> 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
           }
@@ -1576,7 +1050,7 @@
 
         const showNextGif = () => {
           let nextIndex = Math.floor(Math.random() * gifs.length);
-          if (gifs.length > 1) {
+          if (gifs.length> 1) {
             while (nextIndex === currentIndex) {
               nextIndex = Math.floor(Math.random() * gifs.length);
             }
@@ -1667,7 +1141,7 @@
               chip.style.setProperty("--fade-delay", fadeDelay + "s");
               chip.style.setProperty("--pulse-dur", pulseDur + "s");
               chip.style.setProperty("--pulse-delay", pulseDelay + "s");
-              chip.innerHTML = `<img src="${logoUrl}" class="orbit-chip-logo object-contain shrink-0" alt="${app.name}"><span class="orbit-chip-label whitespace-nowrap">${app.name}</span>`;
+              chip.innerHTML = `<img src="${logoUrl}" class="orbit-chip-logo" alt="${app.name}"><span class="orbit-chip-label">${app.name}</span>`;
 
               arm.appendChild(chip);
               container.appendChild(arm);
@@ -1700,14 +1174,14 @@
 
         let activeTag = "all";
 
-        // Build tag pill buttons — only for tags with > 2 apps
+        // Build tag pill buttons — only for tags with> 2 apps
         const tagCounts = {};
         for (const app of allApps) {
           for (const tag of (app.tags || [])) {
             tagCounts[tag] = (tagCounts[tag] || 0) + 1;
           }
         }
-        const popularTags = allTags.filter(t => tagCounts[t] > 2);
+        const popularTags = allTags.filter(t => tagCounts[t]> 2);
 
         if (tagsBar) {
           const makeBtn = (tag, label) => {
@@ -1735,13 +1209,13 @@
           const logoUrl = getLogoUrl(app);
           const desc = app.short_description || app.description || "";
           return `
-            <a href="./apps/${app.id}/" class="group flex items-start gap-3.5 rounded-2xl p-3.5 hover:bg-gray-50 transition-colors duration-150">
+            <a href="./apps/${app.id}/" class="app-card">
               <img src="${logoUrl}" alt="${app.name}" width="48" height="48"
-                class="w-12 h-12 rounded-xl object-cover shrink-0 border border-gray-100"
+                
                 loading="lazy" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random&color=fff&bold=true'" />
-              <span class="min-w-0">
-                <span class="block text-sm font-semibold text-gray-900 truncate group-hover:text-black">${app.name}</span>
-                <span class="block text-xs text-gray-500 mt-0.5 leading-relaxed line-clamp-2">${desc}</span>
+              <span class="app-card-body">
+                <span class="app-card-name">${app.name}</span>
+                <span class="app-card-desc clamp-2">${desc}</span>
               </span>
             </a>
           `;
@@ -2050,7 +1524,7 @@
             const line = edgeEls[key];
             if (!dot || !line) return;
             let t = dotAnimStates[key] + SPEED * ts;
-            if (t > 1) t -= 1;
+            if (t> 1) t -= 1;
             dotAnimStates[key] = t;
             const x1 = parseFloat(line.getAttribute("x1")),
               y1 = parseFloat(line.getAttribute("y1"));
@@ -2077,7 +1551,7 @@
           ul.innerHTML = n.bullets
             .map(
               (b) =>
-                `<li class="flex items-start gap-2 text-xs text-gray-600">
+                `<li>
             <span style="color:${n.color}; margin-top:2px; flex-shrink:0;">▸</span>
             <span>${b}</span>
           </li>`,
@@ -2246,11 +1720,11 @@
         if (!track1 || !track2) return;
 
         function buildCard(f) {
-          return `<article class="hero-pillar group flex w-[280px] sm:w-[320px] lg:w-[360px] shrink-0 flex-col items-center text-center rounded-2xl border border-gray-200 bg-white px-5 py-5 cursor-default hover:border-gray-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-          <span class="text-2xl shrink-0 mb-3">${f.emoji}</span>
+          return `<article class="hero-pillar">
+          <span class="emoji">${f.emoji}</span>
           <div>
-            <span class="text-xs font-bold uppercase tracking-[0.18em] text-gray-900 group-hover:text-black transition-colors">${f.title}</span>
-            <p class="text-sm text-gray-500 mt-2 leading-relaxed group-hover:text-gray-600 transition-colors">${f.desc}</p>
+            <span class="pillar-title">${f.title}</span>
+            <p>${f.desc}</p>
           </div>
         </article>`;
         }

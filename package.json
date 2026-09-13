@@ -7,7 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "podman": "podman stop yantr || true && podman rm yantr || true && sleep 2 && podman build -t yantr:dev . && podman run -d --name yantr --network host --security-opt label=disable -v ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock:/run/podman/podman.sock -v yantr_data:/data:z yantr:dev",
-    "website": "npx @tailwindcss/cli -i ./website/tailwind.input.css -o ./website/tailwind.css --minify && node scripts/website-build.js",
+    "website": "node scripts/website-build.js",
     "check": "node scripts/check.js"
   },
   "dependencies": {
@@ -23,7 +23,6 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.1.18",
     "@vitejs/plugin-vue": "^5.2.3",
     "nunjucks": "^3.2.4",
     "vite": "^6.2.4",

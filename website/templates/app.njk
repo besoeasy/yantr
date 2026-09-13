@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -91,31 +91,32 @@
     <meta name="twitter:description" content="{{ pageDescription }}" />
     <meta name="twitter:image" content="{{ imageUrl }}" />
 
-    <link rel="stylesheet" href="../../tailwind.css" />
+    <!-- Vanilla CSS (no Tailwind) -->
+    <link rel="stylesheet" href="../../style.css" />
   </head>
 
-  <body class="bg-white text-black font-sans antialiased selection:bg-black selection:text-white">
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+  <body>
+    <main class="page-narrow">
 
       <!-- Breadcrumb -->
-      <a href="../../#all-apps" class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-black transition-colors mb-10">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      <a href="../../#all-apps" class="crumb">
+        <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         All apps
       </a>
 
       <!-- Hero -->
-      <div class="flex flex-col sm:flex-row sm:items-start gap-6 mb-8">
-        <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo" class="w-16 h-16 rounded-2xl border border-gray-100 object-cover shrink-0" loading="eager" />
-        <div class="min-w-0 flex-1">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-1">Self-host with Podman · Yantr</p>
-          <h1 class="text-4xl sm:text-5xl font-bold font-sans tracking-tight text-black leading-tight">{{ app.name }}</h1>
+      <div class="app-hero">
+        <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo"  loading="eager" />
+        <div>
+          <p class="kicker">Self-host with Podman · Yantr</p>
+          <h1>{{ app.name }}</h1>
           {% if app.short_description %}
-            <p class="mt-3 text-base text-gray-500 leading-relaxed font-sans max-w-2xl">{{ app.short_description }}</p>
+            <p class="short">{{ app.short_description }}</p>
           {% endif %}
           {% if app.tags.length %}
-            <div class="mt-4 flex flex-wrap gap-1.5">
+            <div class="app-tags">
               {% for tag in app.tags %}
-                <span class="text-[10px] uppercase tracking-wider px-2.5 py-1 border border-gray-200 text-gray-400 rounded-full font-sans">{{ tag }}</span>
+                <span>{{ tag }}</span>
               {% endfor %}
             </div>
           {% endif %}
@@ -123,67 +124,67 @@
       </div>
 
       <!-- Stats row -->
-      <div class="flex items-center gap-6 mb-8 pb-8 border-b border-gray-100">
+      <div class="app-stats">
         <div>
-          <p class="text-2xl font-bold font-sans text-black">{{ app.ports.length }}</p>
-          <p class="text-[10px] uppercase tracking-[0.15em] text-gray-400 mt-0.5">Ports</p>
+          <p class="num">{{ app.ports.length }}</p>
+          <p class="lbl">Ports</p>
         </div>
-        <div class="h-8 w-px bg-gray-100"></div>
+        <div class="vsep"></div>
         <div>
-          <p class="text-2xl font-bold font-sans text-black">{{ app.notes.length }}</p>
-          <p class="text-[10px] uppercase tracking-[0.15em] text-gray-400 mt-0.5">Notes</p>
+          <p class="num">{{ app.notes.length }}</p>
+          <p class="lbl">Notes</p>
         </div>
-        <div class="h-8 w-px bg-gray-100"></div>
+        <div class="vsep"></div>
         <div>
-          <p class="text-2xl font-bold font-sans text-black">{{ app.usecases.length }}</p>
-          <p class="text-[10px] uppercase tracking-[0.15em] text-gray-400 mt-0.5">Use Cases</p>
+          <p class="num">{{ app.usecases.length }}</p>
+          <p class="lbl">Use Cases</p>
         </div>
       </div>
 
       <!-- CTAs -->
-      <div class="flex flex-wrap gap-3 mb-12">
+      <div class="app-ctas">
         {% if app.website %}
           <a href="{{ app.website }}" target="_blank" rel="noopener noreferrer"
-            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold font-sans bg-black text-white rounded-xl hover:bg-gray-800 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            class="btn btn-dark">
+            <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             Official Website
           </a>
         {% endif %}
         <a href="{{ app.sourceAppFolderUrl }}" target="_blank" rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold font-sans border border-gray-200 text-gray-700 rounded-xl hover:border-gray-400 hover:text-black transition-colors">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          class="btn btn-light">
+          <svg  fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           View on GitHub
         </a>
       </div>
 
       <!-- About -->
       {% if app.description %}
-        <section class="py-8 border-t border-gray-100">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">About</p>
-          <h2 class="text-xl font-bold font-sans text-black mb-4">What {{ app.name }} does</h2>
-          <p class="text-sm sm:text-base text-gray-600 leading-relaxed font-sans">{{ app.description }}</p>
+        <section class="doc-section">
+          <p class="kicker">About</p>
+          <h2>What {{ app.name }} does</h2>
+          <p>{{ app.description }}</p>
         </section>
       {% endif %}
 
       <!-- Install Flow -->
-      <section class="py-8 border-t border-gray-100">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Install Flow</p>
-        <h2 class="text-xl font-bold font-sans text-black mb-4">How to self-host {{ app.name }}</h2>
-        <div class="space-y-3 text-sm text-gray-600 leading-relaxed font-sans">
+      <section class="doc-section">
+        <p class="kicker">Install Flow</p>
+        <h2>How to self-host {{ app.name }}</h2>
+        <div>
           <p>{{ app.name }} can be deployed with standard compose files using the Yantr app catalog. This page collects the basic information searchers usually need first: what {{ app.name }} does, which container image Yantr uses, default ports, deployment notes, and where to find the original compose template.</p>
-          <p>After deployment, Yantr lets you publish additional ports from the stack page using standard port syntax. Use <span class="font-mono text-black">8080:8080</span> for a fixed host port or just <span class="font-mono text-black">8080</span> to let Podman assign an automatic port.</p>
+          <p>After deployment, Yantr lets you publish additional ports from the stack page using standard port syntax. Use <span class="mono">8080:8080</span> for a fixed host port or just <span class="mono">8080</span> to let Podman assign an automatic port.</p>
         </div>
       </section>
 
       <!-- Use Cases -->
       {% if app.usecases.length %}
-        <section class="py-8 border-t border-gray-100">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Use Cases</p>
-          <h2 class="text-xl font-bold font-sans text-black mb-4">What people run it for</h2>
-          <ul class="space-y-2.5">
+        <section class="doc-section">
+          <p class="kicker">Use Cases</p>
+          <h2>What people run it for</h2>
+          <ul class="usecase-list">
             {% for uc in app.usecases %}
-              <li class="flex items-start gap-3 text-sm text-gray-600 font-sans">
-                <svg class="w-4 h-4 text-black mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              <li>
+                <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                 {{ uc }}
               </li>
             {% endfor %}
@@ -192,30 +193,30 @@
       {% endif %}
 
       <!-- Technical Details -->
-      <section class="py-8 border-t border-gray-100">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Technical Details</p>
-        <h2 class="text-xl font-bold font-sans text-black mb-6">Ports, image, and service metadata</h2>
+      <section class="doc-section">
+        <p class="kicker">Technical Details</p>
+        <h2>Ports, image, and service metadata</h2>
 
         {% if app.ports.length %}
-          <div class="mb-6">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Ports</p>
-            <div class="overflow-x-auto rounded-xl border border-gray-100">
-              <table class="w-full text-sm border-collapse">
+          <div>
+            <p class="ports-label">Ports</p>
+            <div class="ports-wrap">
+              <table class="ports-table">
                 <thead>
-                  <tr class="border-b border-gray-100 bg-gray-50">
-                    <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-2.5 font-medium">Port</th>
-                    <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-2.5 font-medium">Protocol</th>
-                    <th class="text-left text-[10px] uppercase tracking-wider text-gray-400 px-4 py-2.5 font-medium">Label</th>
+                  <tr>
+                    <th>Port</th>
+                    <th>Protocol</th>
+                    <th>Label</th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for p in app.ports %}
-                    <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
-                      <td class="px-4 py-2.5 font-mono font-bold text-black">{{ p.port }}</td>
-                      <td class="px-4 py-2.5">
-                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-gray-100 text-gray-500 rounded">{{ p.protocol }}</span>
+                    <tr>
+                      <td class="port">{{ p.port }}</td>
+                      <td>
+                        <span class="proto">{{ p.protocol }}</span>
                       </td>
-                      <td class="px-4 py-2.5 text-gray-600 font-sans">{{ p.label }}</td>
+                      <td>{{ p.label }}</td>
                     </tr>
                   {% endfor %}
                 </tbody>
@@ -224,17 +225,17 @@
           </div>
         {% endif %}
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="meta-grid">
           {% if app.image %}
             <div>
-              <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-1.5">Container Image</p>
-              <p class="font-mono text-xs text-black break-all">{{ app.image }}</p>
+              <p class="meta-label">Container Image</p>
+              <p class="meta-val">{{ app.image }}</p>
             </div>
           {% endif %}
           {% if app.serviceName %}
             <div>
-              <p class="text-[10px] uppercase tracking-[0.18em] text-gray-400 mb-1.5">Service Name</p>
-              <p class="font-mono text-xs text-black">{{ app.serviceName }}</p>
+              <p class="meta-label">Service Name</p>
+              <p class="meta-val">{{ app.serviceName }}</p>
             </div>
           {% endif %}
         </div>
@@ -242,12 +243,12 @@
 
       <!-- Notes -->
       {% if app.notes and app.notes.length %}
-        <section class="py-8 border-t border-gray-100">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Notes</p>
-          <h2 class="text-xl font-bold font-sans text-black mb-4">Things to know before you deploy</h2>
-          <ul class="space-y-2.5">
+        <section class="doc-section">
+          <p class="kicker">Notes</p>
+          <h2>Things to know before you deploy</h2>
+          <ul class="note-list">
             {% for note in app.notes %}
-              <li class="flex items-start gap-3 text-sm text-gray-600 font-sans border-l-2 border-gray-200 pl-4 py-0.5">
+              <li>
                 {{ note }}
               </li>
             {% endfor %}
@@ -257,23 +258,23 @@
 
       <!-- Related Apps -->
       {% if relatedApps.length %}
-        <section class="py-8 border-t border-gray-100">
-          <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-2">Related Apps</p>
-          <h2 class="text-xl font-bold font-sans text-black mb-6">More tools you might pair with {{ app.name }}</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <section class="doc-section">
+          <p class="kicker">Related Apps</p>
+          <h2>More tools you might pair with {{ app.name }}</h2>
+          <div class="related-grid">
             {% for related in relatedApps %}
-              <a href="../{{ related.id }}/" class="group flex items-start gap-3 p-4 border border-gray-100 rounded-xl hover:border-gray-300 hover:shadow-md transition-all duration-200">
-                <img src="{{ related.logoUrl }}" alt="{{ related.name }}" class="w-10 h-10 rounded-xl border border-gray-100 object-cover shrink-0" loading="lazy" />
-                <div class="min-w-0">
-                  <p class="text-sm font-bold font-sans text-black truncate group-hover:underline">{{ related.name }}</p>
-                  <p class="text-xs text-gray-400 mt-0.5 font-sans line-clamp-2 leading-snug">{{ related.short_description or related.description }}</p>
+              <a href="../{{ related.id }}/" class="related-card">
+                <img src="{{ related.logoUrl }}" alt="{{ related.name }}"  loading="lazy" />
+                <div>
+                  <p class="rel-name">{{ related.name }}</p>
+                  <p class="rel-desc">{{ related.short_description or related.description }}</p>
                 </div>
               </a>
             {% endfor %}
           </div>
         </section>
       {% endif %}
-      <p class="text-xs text-gray-300 mt-4 font-sans">Page generated {{ nowIso }}</p>
+      <p class="generated">Page generated {{ nowIso }}</p>
     </main>
   </body>
 </html>

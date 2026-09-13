@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,299 +21,163 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./tailwind.css" />
+    <!-- Vanilla CSS (no Tailwind) -->
+    <link rel="stylesheet" href="./style.css" />
 
-    <style>
-      body { font-family: 'Inter', sans-serif; }
-
-      .distro-btn { transition: all 0.2s ease; }
-      .distro-btn.active {
-        background-color: #111827 !important;
-        color: #fff !important;
-        border-color: #111827 !important;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.12);
-      }
-      .distro-panel { display: none; }
-      .distro-panel.active { display: block; }
-
-      /* copy button states */
-      .copy-btn svg.check { display: none; }
-      .copy-btn.copied svg.copy { display: none; }
-      .copy-btn.copied svg.check { display: block; }
-
-      .copy-side svg.check { display: none; }
-      .copy-side.copied svg.copy { display: none; }
-      .copy-side.copied svg.check { display: block; }
-
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(14px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      .animate-fade-in-up { animation: fadeInUp 0.45s ease-out both; }
-      .delay-100 { animation-delay: 80ms; }
-      .delay-200 { animation-delay: 160ms; }
-      .delay-300 { animation-delay: 240ms; }
-      .delay-400 { animation-delay: 320ms; }
-
-      .smooth-shadow    { box-shadow: 0 4px 14px 0 rgba(0,0,0,0.04), 0 1px 4px 0 rgba(0,0,0,0.03); }
-      .smooth-shadow-lg { box-shadow: 0 8px 28px 0 rgba(0,0,0,0.08), 0 2px 6px 0 rgba(0,0,0,0.04); }
-
-      .badge-green  { background:#dcfce7; color:#166534; }
-      .badge-purple { background:#f3e8ff; color:#6b21a8; }
-      .badge-blue   { background:#dbeafe; color:#1e40af; }
-
-      /* dark code block */
-      .code-block {
-        background: #0f172a;
-        color: #e2e8f0;
-        border-radius: 0 0 0.75rem 0.75rem;
-        padding: 1rem 1.25rem;
-        font-family: 'Menlo','Monaco','Consolas',monospace;
-        font-size: 0.8125rem;
-        line-height: 1.7;
-        overflow-x: auto;
-      }
-      .code-block-solo {
-        background: #0f172a;
-        color: #e2e8f0;
-        border-radius: 0.75rem;
-        padding: 1rem 1.25rem;
-        font-family: 'Menlo','Monaco','Consolas',monospace;
-        font-size: 0.8125rem;
-        line-height: 1.7;
-        overflow-x: auto;
-      }
-      .code-block .kw,  .code-block-solo .kw  { color: #f472b6; }
-      .code-block .flag,.code-block-solo .flag { color: #86efac; }
-      .code-block .val, .code-block-solo .val  { color: #fcd34d; }
-      .code-block .cmt, .code-block-solo .cmt  { color: #64748b; font-style: italic; }
-      .code-block .hi,  .code-block-solo .hi   { color: #7dd3fc; }
-
-      .copy-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: #1e293b;
-        border-radius: 0.75rem 0.75rem 0 0;
-        padding: 0.6rem 1.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #94a3b8;
-        letter-spacing: 0.05em;
-      }
-
-      .cmd-row {
-        display: flex;
-        overflow: hidden;
-        border-radius: 0.75rem;
-        border: 1px solid #374151;
-        background: #111827;
-      }
-      .cmd-row code {
-        flex: 1;
-        display: block;
-        overflow-x: auto;
-        font-size: 0.8125rem;
-        color: #f1f5f9;
-        padding: 0.875rem 1.25rem;
-        font-family: 'Menlo','Monaco','Consolas',monospace;
-        line-height: 1.6;
-        white-space: nowrap;
-      }
-      .cmd-row .copy-side {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 3.25rem;
-        flex-shrink: 0;
-        background: #1f2937;
-        border-left: 1px solid #374151;
-        cursor: pointer;
-        transition: background 0.15s;
-        color: #9ca3af;
-      }
-      .cmd-row .copy-side:hover { background: #374151; color: #fff; }
-
-      .step-num {
-        display: flex; align-items: center; justify-content: center;
-        width: 2rem; height: 2rem;
-        border-radius: 50%;
-        background: #111827; color: #fff;
-        font-size: 0.8rem; font-weight: 700;
-        flex-shrink: 0; margin-top: 0.1rem;
-      }
-
-      .compat-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid #f1f5f9; }
-      .compat-row:last-child { border-bottom: none; }
-
-      .section-divider {
-        border-top: 1px solid #f1f5f9;
-        margin: 2.5rem 0;
-        padding-top: 2rem;
-      }
-      .section-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        color: #6b7280;
-        margin-bottom: 1.25rem;
-      }
-    </style>
   </head>
 
-  <body class="bg-white text-gray-900 antialiased selection:bg-gray-900 selection:text-white overflow-x-hidden">
-    <div class="fixed inset-0 pointer-events-none z-[-1] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white"></div>
+  <body>
+    <div class="install-bg"></div>
 
-    <main class="w-full px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
-      <div class="w-full max-w-4xl mx-auto">
+    <main class="page-narrow">
+      <div>
 
         <!-- Back -->
-        <a href="./index.html" class="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors mb-10 animate-fade-in-up">
-          <span class="transition-transform group-hover:-translate-x-1">←</span>
+        <a href="./index.html" class="back-link animate-fade-in-up">
+          <span class="arrow">←</span>
           <span>Back to Yantr</span>
         </a>
 
         <!-- Header -->
-        <header class="mb-12 animate-fade-in-up delay-100">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+        <header class="install-header animate-fade-in-up delay-100">
+          <div class="install-badges">
+            <span class="badge-soft badge-purple">
+              <svg  viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
               Linux Native
             </span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+            <span class="badge-soft badge-emerald-soft">
               Rootless Podman + Quadlet
             </span>
           </div>
-          <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">Install Yantr</h1>
-          <p class="text-lg text-gray-500 leading-relaxed max-w-2xl">
+          <h1>Install Yantr</h1>
+          <p class="install-lead">
             Yantr is designed for <strong>Linux</strong>. It runs 100% rootless inside Podman and is managed as a native <strong>systemd Quadlet</strong> service with auto-start on boot and named volume storage.
           </p>
         </header>
 
         <!-- 3 Pillars of Yantr Podman Architecture -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 animate-fade-in-up delay-200">
-          <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-100 mb-3 text-purple-700 font-bold text-sm">
+        <div class="pillars animate-fade-in-up delay-200">
+          <div class="pillar">
+            <div class="pillar-icon">
               0
             </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">100% Rootless</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Runs in user namespaces without root privileges. Zero daemon attack surface and no root access required.</p>
+            <h3>100% Rootless</h3>
+            <p>Runs in user namespaces without root privileges. Zero daemon attack surface and no root access required.</p>
           </div>
-          <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 mb-3 text-blue-700 font-bold text-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <div class="pillar">
+            <div class="pillar-icon">
+              <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">Systemd Quadlet</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Containers are first-class systemd services. Managed with standard <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">systemctl</code> and <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">journalctl</code>.</p>
+            <h3>Systemd Quadlet</h3>
+            <p>Containers are first-class systemd services. Managed with standard <code>systemctl</code> and <code>journalctl</code>.</p>
           </div>
-          <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-100 mb-3 text-emerald-700 font-bold text-sm">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+          <div class="pillar">
+            <div class="pillar-icon">
+              <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
             </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">Named Volumes Only</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Strictly isolates persistent app state inside named Podman storage with automatic SELinux <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">:z</code> labeling.</p>
+            <h3>Named Volumes Only</h3>
+            <p>Strictly isolates persistent app state inside named Podman storage with automatic SELinux <code>:z</code> labeling.</p>
           </div>
         </div>
 
         <!-- ══════════════════════════════════════════ QUICK INSTALL (ONE-LINER) ══════════ -->
-        <div class="mb-12 animate-fade-in-up delay-300">
-          <div class="rounded-2xl border-2 border-gray-900 bg-gray-950 text-white p-6 sm:p-8 smooth-shadow-lg relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="animate-fade-in-up delay-300">
+          <div class="install-hero-card">
+            <div class="glow"></div>
 
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div class="flex items-center gap-2">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-500 text-gray-950 uppercase tracking-wider">
+            <div class="install-hero-top">
+              <div class="left">
+                <span class="flag">
                   Recommended
                 </span>
-                <span class="text-xs text-gray-400 font-medium">Automatic Linux Installer</span>
+                <span class="hint">Automatic Linux Installer</span>
               </div>
-              <span class="text-xs text-gray-400">Installs Podman + Quadlet service</span>
+              <span class="micro">Installs Podman + Quadlet service</span>
             </div>
 
-            <h2 class="text-xl sm:text-2xl font-bold mb-2 text-white">One-line Quick Install</h2>
-            <p class="text-sm text-gray-400 mb-5 leading-relaxed max-w-2xl">
+            <h2>One-line Quick Install</h2>
+            <p class="hero-card-desc">
               Installs <strong>Podman</strong> (if not already present), configures rootless systemd lingering so containers start on boot, generates the <strong>Quadlet</strong> container specification, and starts Yantr.
             </p>
 
-            <div class="cmd-row border-gray-800 bg-gray-900">
+            <div class="cmd-row">
               <code id="quick-install-code">curl -fsSL https://yantr.org/install.sh | bash</code>
-              <button class="copy-side hover:bg-gray-800 text-gray-300" onclick="copySide(this,'curl -fsSL https://yantr.org/install.sh | bash')" title="Copy Command">
-                <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              <button class="copy-side" onclick="copySide(this,'curl -fsSL https://yantr.org/install.sh | bash')" title="Copy Command">
+                <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
               </button>
             </div>
 
-            <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-400 border-t border-gray-800/80 pt-4">
-              <div class="flex items-center gap-1.5">
-                <span class="text-emerald-400">✓</span> Ubuntu / Debian
+            <div class="install-platforms">
+              <div>
+                <span class="tick">✓</span> Ubuntu / Debian
               </div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-emerald-400">✓</span> Fedora / RHEL / CentOS
+              <div>
+                <span class="tick">✓</span> Fedora / RHEL / CentOS
               </div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-emerald-400">✓</span> Arch / Manjaro
+              <div>
+                <span class="tick">✓</span> Arch / Manjaro
               </div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-emerald-400">✓</span> openSUSE
+              <div>
+                <span class="tick">✓</span> openSUSE
               </div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-emerald-400">✓</span> Raspberry Pi OS (64-bit)
+              <div>
+                <span class="tick">✓</span> Raspberry Pi OS (64-bit)
               </div>
             </div>
           </div>
         </div>
 
         <!-- ══════════════════════════════════════════ WHY PODMAN OVER DOCKER ══════════ -->
-        <div class="mb-12 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 smooth-shadow animate-fade-in-up delay-300">
-          <div class="flex items-center gap-2 mb-2">
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+        <div class="arch-card animate-fade-in-up delay-300">
+          <div class="arch-item-head">
+            <span class="arch-tag">
               Architecture Choice
             </span>
-            <span class="text-xs text-gray-500 font-medium">Why Yantr rejects root-daemon Docker</span>
+            <span class="arch-sub">Why Yantr rejects root-daemon Docker</span>
           </div>
-          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Why Rootless Podman Over Docker?</h2>
-          <p class="text-sm text-gray-600 leading-relaxed mb-6">
+          <h2>Why Rootless Podman Over Docker?</h2>
+          <p class="arch-lead">
             Unlike platforms that install a monolithic root Docker daemon and tamper with your host OS, Yantr uses 100% rootless Podman. Here is what that means in practice:
           </p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-base">🛡️</span>
-                <h4 class="font-bold text-sm text-gray-900">Zero Host Root Privileges</h4>
+          <div class="arch-grid">
+            <div class="arch-item">
+              <div class="arch-item-head">
+                <span>🛡️</span>
+                <h4>Zero Host Root Privileges</h4>
               </div>
-              <p class="text-xs text-gray-600 leading-relaxed">
-                Containers run inside unprivileged Linux user namespaces. Even if an attacker escapes a container, they have zero root powers on your physical machine and cannot read <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">/etc/shadow</code> or modify system binaries.
+              <p>
+                Containers run inside unprivileged Linux user namespaces. Even if an attacker escapes a container, they have zero root powers on your physical machine and cannot read <code>/etc/shadow</code> or modify system binaries.
               </p>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-base">⚡</span>
-                <h4 class="font-bold text-sm text-gray-900">Daemonless (No Single Point of Failure)</h4>
+            <div class="arch-item">
+              <div class="arch-item-head">
+                <span>⚡</span>
+                <h4>Daemonless (No Single Point of Failure)</h4>
               </div>
-              <p class="text-xs text-gray-600 leading-relaxed">
-                Docker relies on <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">dockerd</code>. If it hangs or updates, all containers can die. Podman uses direct fork/exec via <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">conmon</code>. If Yantr restarts, your apps keep running without a hitch.
+              <p>
+                Docker relies on <code>dockerd</code>. If it hangs or updates, all containers can die. Podman uses direct fork/exec via <code>conmon</code>. If Yantr restarts, your apps keep running without a hitch.
               </p>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-base">⚙️</span>
-                <h4 class="font-bold text-sm text-gray-900">Native systemd Quadlet</h4>
+            <div class="arch-item">
+              <div class="arch-item-head">
+                <span>⚙️</span>
+                <h4>Native systemd Quadlet</h4>
               </div>
-              <p class="text-xs text-gray-600 leading-relaxed">
-                Containers are first-class systemd user services. Auto-starts on boot with user lingering (<code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">loginctl enable-linger</code>), managed with <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">systemctl --user</code>, and logged to <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">journalctl --user</code>.
+              <p>
+                Containers are first-class systemd user services. Auto-starts on boot with user lingering (<code>loginctl enable-linger</code>), managed with <code>systemctl --user</code>, and logged to <code>journalctl --user</code>.
               </p>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <div class="flex items-center gap-2 mb-2">
-                <span class="text-base">🧱</span>
-                <h4 class="font-bold text-sm text-gray-900">Untouched Host Firewall</h4>
+            <div class="arch-item">
+              <div class="arch-item-head">
+                <span>🧱</span>
+                <h4>Untouched Host Firewall</h4>
               </div>
-              <p class="text-xs text-gray-600 leading-relaxed">
+              <p>
                 Docker famously overrides host iptables rules, bypassing local firewalls like UFW without notice. Rootless Podman networks strictly inside user namespaces — never modifying host firewall rules.
               </p>
             </div>
@@ -321,28 +185,28 @@
         </div>
 
         <!-- ══════════════════════════════════════════ STEP-BY-STEP MANUAL INSTALL ══════════ -->
-        <div class="section-divider">
+        <div class="divider">
           <div class="section-label">Manual / Step-by-Step Installation</div>
-          <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+          <p class="manual-lead">
             Prefer to inspect every command? Here is the complete breakdown of what the installer does under the hood.
           </p>
 
           <!-- Step 1: Install Podman -->
-          <div class="mb-10">
-            <div class="flex items-start gap-4 mb-4">
+          <div class="step">
+            <div class="step-head">
               <div class="step-num">1</div>
               <div>
-                <h3 class="font-bold text-gray-900 text-base">Install Podman</h3>
-                <p class="text-sm text-gray-500">Select your Linux distribution to install Podman using your native package manager:</p>
+                <h3>Install Podman</h3>
+                <p>Select your Linux distribution to install Podman using your native package manager:</p>
               </div>
             </div>
 
             <!-- Distro tabs -->
-            <div class="flex flex-wrap gap-2 mb-4" id="distro-tabs" role="tablist">
-              <button class="distro-btn active px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="ubuntu" role="tab">Ubuntu / Debian</button>
-              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="fedora" role="tab">Fedora / RHEL</button>
-              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="arch" role="tab">Arch Linux</button>
-              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="opensuse" role="tab">openSUSE</button>
+            <div class="distro-tabs" id="distro-tabs" role="tablist">
+              <button class="distro-btn active" data-target="ubuntu" role="tab">Ubuntu / Debian</button>
+              <button class="distro-btn" data-target="fedora" role="tab">Fedora / RHEL</button>
+              <button class="distro-btn" data-target="arch" role="tab">Arch Linux</button>
+              <button class="distro-btn" data-target="opensuse" role="tab">openSUSE</button>
             </div>
 
             <!-- Ubuntu panel -->
@@ -350,8 +214,8 @@
               <div class="cmd-row">
                 <code>sudo apt update && sudo apt install -y podman</code>
                 <button class="copy-side" onclick="copySide(this,'sudo apt update && sudo apt install -y podman')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
@@ -361,8 +225,8 @@
               <div class="cmd-row">
                 <code>sudo dnf install -y podman</code>
                 <button class="copy-side" onclick="copySide(this,'sudo dnf install -y podman')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
@@ -372,8 +236,8 @@
               <div class="cmd-row">
                 <code>sudo pacman -S --noconfirm podman</code>
                 <button class="copy-side" onclick="copySide(this,'sudo pacman -S --noconfirm podman')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
@@ -383,27 +247,27 @@
               <div class="cmd-row">
                 <code>sudo zypper in -y podman</code>
                 <button class="copy-side" onclick="copySide(this,'sudo zypper in -y podman')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Step 2: Enable user linger & socket -->
-          <div class="mb-10">
-            <div class="flex items-start gap-4 mb-3">
+          <div class="step">
+            <div class="step-head">
               <div class="step-num">2</div>
               <div>
-                <h3 class="font-bold text-gray-900 text-base">Enable User Lingering & Podman Socket</h3>
-                <p class="text-sm text-gray-500 leading-relaxed mb-3">
+                <h3>Enable User Lingering & Podman Socket</h3>
+                <p>
                   Enabling linger allows rootless systemd services to continue running across user logouts and start automatically on system boot.
                 </p>
-                <div class="cmd-row mb-2">
+                <div class="cmd-row">
                   <code>loginctl enable-linger $USER && systemctl --user enable --now podman.socket</code>
                   <button class="copy-side" onclick="copySide(this,'loginctl enable-linger $USER && systemctl --user enable --now podman.socket')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                   </button>
                 </div>
               </div>
@@ -411,20 +275,20 @@
           </div>
 
           <!-- Step 3: Write Quadlet definition -->
-          <div class="mb-10">
-            <div class="flex items-start gap-4 mb-3">
+          <div class="step">
+            <div class="step-head">
               <div class="step-num">3</div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-gray-900 text-base mb-1">Create Quadlet Service Definition</h3>
-                <p class="text-sm text-gray-500 mb-3 leading-relaxed">
-                  Podman Quadlet reads declarative <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">.container</code> files inside <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">~/.config/containers/systemd/</code>.
+              <div class="step-body">
+                <h3>Create Quadlet Service Definition</h3>
+                <p>
+                  Podman Quadlet reads declarative <code>.container</code> files inside <code>~/.config/containers/systemd/</code>.
                 </p>
 
                 <div class="copy-bar">
                   <span>~/.config/containers/systemd/yantr.container</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,`mkdir -p ~/.config/containers/systemd && cat << 'EOF' > ~/.config/containers/systemd/yantr.container\n[Unit]\nDescription=Yantr\nAfter=network-online.target\nWants=network-online.target\n\n[Container]\nImage=ghcr.io/besoeasy/yantr:latest\nContainerName=yantr\nNetwork=host\nSecurityLabelDisable=true\nVolume=yantr_data:/data:z\nVolume=%t/podman/podman.sock:/run/podman/podman.sock\nAutoUpdate=registry\n\n[Service]\nRestart=always\n\n[Install]\nWantedBy=default.target\nEOF`)">
-                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <button class="copy-btn" onclick="copyCode(this,`mkdir -p ~/.config/containers/systemd && cat << 'EOF'> ~/.config/containers/systemd/yantr.container\n[Unit]\nDescription=Yantr\nAfter=network-online.target\nWants=network-online.target\n\n[Container]\nImage=ghcr.io/besoeasy/yantr:latest\nContainerName=yantr\nNetwork=host\nSecurityLabelDisable=true\nVolume=yantr_data:/data:z\nVolume=%t/podman/podman.sock:/run/podman/podman.sock\nAutoUpdate=registry\n\n[Service]\nRestart=always\n\n[Install]\nWantedBy=default.target\nEOF`)">
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                     Copy Block
                   </button>
                 </div>
@@ -434,19 +298,19 @@
           </div>
 
           <!-- Step 4: Reload & Start -->
-          <div class="mb-10">
-            <div class="flex items-start gap-4 mb-3">
+          <div class="step">
+            <div class="step-head">
               <div class="step-num">4</div>
-              <div class="flex-1 min-w-0">
-                <h3 class="font-bold text-gray-900 text-base mb-1">Activate Yantr Service</h3>
-                <p class="text-sm text-gray-500 mb-3 leading-relaxed">
+              <div class="step-body">
+                <h3>Activate Yantr Service</h3>
+                <p>
                   Reload the user systemd daemon to generate the unit from the Quadlet file, start the service, and enable the daily auto-update timer:
                 </p>
                 <div class="cmd-row">
                   <code>systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer</code>
                   <button class="copy-side" onclick="copySide(this,'systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                   </button>
                 </div>
               </div>
@@ -454,89 +318,89 @@
           </div>
 
           <!-- Step 5: Open Web UI -->
-          <div class="mb-10">
-            <div class="flex items-start gap-4">
+          <div class="step">
+            <div class="step-head">
               <div class="step-num">5</div>
               <div>
-                <h3 class="font-bold text-gray-900 text-base mb-1">Open Yantr in Browser</h3>
-                <p class="text-sm text-gray-500 mb-2">
-                  Visit <a href="http://localhost:5252" target="_blank" class="font-bold text-gray-900 underline">http://localhost:5252</a> (or from another machine on your LAN at <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">http://&lt;server-ip&gt;:5252</code>).
+                <h3>Open Yantr in Browser</h3>
+                <p>
+                  Visit <a href="http://localhost:5252" target="_blank">http://localhost:5252</a> (or from another machine on your LAN at <code>http://&lt;server-ip&gt;:5252</code>).
                 </p>
-                <p class="text-xs text-gray-400">On your first visit, you will establish your operator credentials.</p>
+                <p class="micro">On your first visit, you will establish your operator credentials.</p>
               </div>
             </div>
           </div>
         </div>
 
         <!-- ══════════════ SYSTEMD / QUADLET MANAGEMENT COMMANDS ══════════════════════ -->
-        <div class="section-divider">
+        <div class="divider">
           <p class="section-label">Managing Yantr via systemd</p>
-          <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+          <p class="manual-lead">
             Because Yantr is registered with Quadlet, you have native systemd controls:
           </p>
 
-          <div class="grid sm:grid-cols-2 gap-4 mb-8">
-            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">Check Status</p>
-              <p class="text-xs text-gray-500 mb-3">Inspect running state, PID, memory, and uptime</p>
+          <div class="manage-grid">
+            <div class="manage-card">
+              <p class="manage-title">Check Status</p>
+              <p class="manage-sub">Inspect running state, PID, memory, and uptime</p>
               <div class="cmd-row">
                 <code>systemctl --user status yantr</code>
                 <button class="copy-side" onclick="copySide(this,'systemctl --user status yantr')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">View Live Logs</p>
-              <p class="text-xs text-gray-500 mb-3">Stream application output using journalctl</p>
+            <div class="manage-card">
+              <p class="manage-title">View Live Logs</p>
+              <p class="manage-sub">Stream application output using journalctl</p>
               <div class="cmd-row">
                 <code>journalctl --user -u yantr -f</code>
                 <button class="copy-side" onclick="copySide(this,'journalctl --user -u yantr -f')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">Restart Service</p>
-              <p class="text-xs text-gray-500 mb-3">Restart Yantr without disturbing other containers</p>
+            <div class="manage-card">
+              <p class="manage-title">Restart Service</p>
+              <p class="manage-sub">Restart Yantr without disturbing other containers</p>
               <div class="cmd-row">
                 <code>systemctl --user restart yantr</code>
                 <button class="copy-side" onclick="copySide(this,'systemctl --user restart yantr')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
 
-            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">Trigger Auto-Update</p>
-              <p class="text-xs text-gray-500 mb-3">Pull latest image and smoothly recreate container</p>
+            <div class="manage-card">
+              <p class="manage-title">Trigger Auto-Update</p>
+              <p class="manage-sub">Pull latest image and smoothly recreate container</p>
               <div class="cmd-row">
                 <code>podman auto-update</code>
                 <button class="copy-side" onclick="copySide(this,'podman auto-update')" title="Copy">
-                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Uninstall box -->
-          <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
-            <p class="font-semibold text-gray-900 mb-1 text-sm">Uninstalling Yantr</p>
-            <p class="text-xs text-gray-500 mb-3">Remove the Quadlet file and reload systemd to cleanly unregister the service:</p>
-            <div class="code-block-solo text-[0.75rem]">rm -f ~/.config/containers/systemd/yantr.container<br>systemctl --user daemon-reload<br>podman stop yantr &amp;&amp; podman rm yantr<br><span class="cmt"># App data remains safe in named Podman volume: yantr_data</span></div>
+          <div class="uninstall-box">
+            <p class="uninstall-title">Uninstalling Yantr</p>
+            <p class="manage-sub">Remove the Quadlet file and reload systemd to cleanly unregister the service:</p>
+            <div class="code-block-solo">rm -f ~/.config/containers/systemd/yantr.container<br>systemctl --user daemon-reload<br>podman stop yantr &amp;&amp; podman rm yantr<br><span class="cmt"># App data remains safe in named Podman volume: yantr_data</span></div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div class="mt-14 flex flex-wrap items-center justify-between gap-4 text-sm text-gray-400 border-t border-gray-100 pt-8">
-          <a href="./index.html" class="hover:text-gray-700 transition-colors">← Back to Yantr</a>
-          <a href="https://github.com/besoeasy/yantr/issues" target="_blank" class="hover:text-gray-700 transition-colors">Report an issue</a>
+        <div class="page-foot">
+          <a href="./index.html">← Back to Yantr</a>
+          <a href="https://github.com/besoeasy/yantr/issues" target="_blank">Report an issue</a>
         </div>
 
       </div>
