@@ -6,6 +6,7 @@ import (
 	"core/compose"
 	"core/podman"
 	"core/shared"
+	"core/supervisor"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -269,6 +270,12 @@ func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINER_START_FAILED", err.Error())
 		return
 	}
+	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
+		if proj := info.Config.Labels["com.docker.compose.project"]; proj != "" {
+			baseID := getBaseAppID(proj)
+			supervisor.RecordStackDeployed(proj, baseID)
+		}
+	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container started successfully"})
 }
 
@@ -277,6 +284,11 @@ func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 	if err := podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_STOP_FAILED", err.Error())
 		return
+	}
+	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
+		if proj := info.Config.Labels["com.docker.compose.project"]; proj != "" {
+			supervisor.RecordStackStopped(proj)
+		}
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container stopped successfully"})
 }

@@ -27,6 +27,7 @@ import (
 	"core/podman"
 	"core/selfinstall"
 	"core/shared"
+	"core/supervisor"
 	"core/telemetry"
 )
 
@@ -354,6 +355,10 @@ func browseProxyHandler(w http.ResponseWriter, r *http.Request) {
 	proxy.ServeHTTP(w, r)
 }
 
+func handleBootStatus(w http.ResponseWriter, r *http.Request) {
+	jsonResp(w, 200, supervisor.GetBootStatus())
+}
+
 // ─── Handlers: health / version / auth ───────────────────────────────────────
 
 // ─── Handlers: apps ───────────────────────────────────────────────────────────
@@ -414,6 +419,11 @@ func main() {
 
 	telemetry.StartPresenceScheduler(version)
 
+	// Supervisor state engine & resuscitation
+	supervisor.Init(appsPath)
+	go supervisor.Resuscitate(appsPath, getComposeCommand)
+	go supervisor.StartWatchdog(context.Background())
+
 	// Router
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
@@ -428,6 +438,7 @@ func main() {
 	r.Get("/api/health", handleHealth)
 	r.Get("/api/version", handleVersion)
 	r.Get("/api/setup/status", handleSetupStatus)
+	r.Get("/api/system/boot-status", handleBootStatus)
 	r.Post("/api/setup/admin", handleSetupAdmin)
 	r.Post("/api/auth/login", handleLogin)
 

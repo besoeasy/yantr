@@ -6,6 +6,7 @@ import (
 	"core/compose"
 	"core/podman"
 	"core/shared"
+	"core/supervisor"
 	"fmt"
 	"net/http"
 	"os"
@@ -168,6 +169,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 			if exitCode == 0 {
 				shared.Log("info", fmt.Sprintf("[stack] removed: project=%s", projectID))
 				compose.DeleteProjectCompose(appPath, projectID)
+				supervisor.RecordStackRemoved(projectID)
 				jsonResp(w, 200, map[string]interface{}{
 					"success": true,
 					"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
@@ -190,6 +192,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	compose.DeleteProjectCompose(appPath, projectID)
+	supervisor.RecordStackRemoved(projectID)
 
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
@@ -239,6 +242,7 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 
 	if exitCode == 0 {
 		shared.Log("info", fmt.Sprintf("[stack] restarted: project=%s", projectID))
+		supervisor.RecordStackDeployed(projectID, baseID)
 		jsonResp(w, 200, map[string]interface{}{
 			"success": true,
 			"message": fmt.Sprintf("Stack '%s' restarted successfully", projectID),

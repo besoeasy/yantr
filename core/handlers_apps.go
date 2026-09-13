@@ -6,6 +6,7 @@ import (
 	"core/compose"
 	"core/podman"
 	"core/shared"
+	"core/supervisor"
 	"core/system"
 	"core/telemetry"
 	"fmt"
@@ -192,7 +193,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	shared.Log("info", fmt.Sprintf("[deploy] SUCCESS: app=%s project=%s", body.AppID, projectName))
-
+	supervisor.RecordStackDeployed(projectName, body.AppID)
 
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
