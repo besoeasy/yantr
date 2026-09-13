@@ -191,8 +191,8 @@ function toAppViewModel(app) {
     appPagePath: `/apps/${id}/`,
     sourceComposeUrl: `https://github.com/besoeasy/yantr/blob/main/apps/${id}/compose.yml`,
     sourceAppFolderUrl: `https://github.com/besoeasy/yantr/tree/main/apps/${id}`,
-    appSearchIntentTitle: `${name} Docker Compose Setup`,
-    appSearchIntentDescription: `Learn how to self-host ${name} with Docker Compose using Yantr. ${summary}`,
+    appSearchIntentTitle: `${name} Podman Compose Setup`,
+    appSearchIntentDescription: `Learn how to self-host ${name} with Podman using Yantr. ${summary}`,
   };
 }
 
@@ -236,14 +236,14 @@ function buildPages() {
     const relatedApps = getRelatedApps(app, apps);
 
     const pageDescription = app.short_description
-      ? `Self-host ${app.name} with Docker. ${app.short_description} Deploy it in seconds with Yantr.`
-      : `Learn how to self-host ${app.name} on your homelab using Docker. ${app.description}${app.description.endsWith('.') ? '' : '.'} Easy one-click setup with Yantr.`;
+      ? `Self-host ${app.name} with Podman. ${app.short_description} Deploy it in seconds with Yantr.`
+      : `Learn how to self-host ${app.name} on your homelab using Podman. ${app.description}${app.description.endsWith('.') ? '' : '.'} Easy one-click setup with Yantr.`;
 
     const html = env.render('app.njk', {
       app,
       relatedApps,
       nowIso: generatedAt,
-      pageTitle: `Self-Host ${app.name} with Docker | Yantr`,
+      pageTitle: `Self-Host ${app.name} with Podman | Yantr`,
       pageDescription,
       pageUrl: app.appUrl,
       imageUrl: app.hasLogo ? `${siteUrl}${app.logoUrl}` : app.logoUrl,

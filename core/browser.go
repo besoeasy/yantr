@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"core/docker"
+	"core/podman"
 )
 
 // browserRegistry is the global instance of the volume browser manager.
@@ -76,7 +76,7 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 
 	// Resolve the real mountpoint via the Docker API instead of hardcoding
 	// /var/lib/docker/volumes/<name>/_data, which breaks on non-default data-root.
-	vol, err := docker.VolumeInspect(context.Background(), volumeName)
+	vol, err := podman.VolumeInspect(context.Background(), volumeName)
 	if err != nil {
 		return 0, fmt.Errorf("failed to inspect volume %q: %w", volumeName, err)
 	}

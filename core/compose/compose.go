@@ -188,8 +188,10 @@ func GetComposeProcessEnv(appPath, projectID, dockerSocket string) (map[string]s
 	for k, v := range projectEnv {
 		env[k] = v
 	}
-	// Set Docker host
+	// Set Podman / Docker socket environment for compose providers
 	env["DOCKER_HOST"] = "unix://" + dockerSocket
+	env["PODMAN_HOST"] = "unix://" + dockerSocket
+	env["PODMAN_SOCKET"] = dockerSocket
 
 	return env, nil
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"core/apps"
 	"core/compose"
-	"core/docker"
+	"core/podman"
 	"core/shared"
 	"fmt"
 	"net/http"
@@ -19,9 +19,9 @@ import (
 
 func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
-	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
-		jsonErr(w, 500, "DOCKER_ERROR", err.Error())
+		jsonErr(w, 500, "PODMAN_ERROR", err.Error())
 		return
 	}
 	var pcs []dockerctr.Summary
@@ -63,7 +63,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	var services []map[string]interface{}
 	for _, c := range pcs {
 		lbl := parseAppLabels(c.Labels)
-		info, err := docker.ContainerInspect(context.Background(), c.ID)
+		info, err := podman.ContainerInspect(context.Background(), c.ID)
 		if err != nil {
 			continue
 		}
@@ -143,9 +143,9 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
 
-	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
-		jsonErr(w, 500, "DOCKER_ERROR", err.Error())
+		jsonErr(w, 500, "PODMAN_ERROR", err.Error())
 		return
 	}
 
@@ -167,7 +167,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 
 	if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 		if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
-			env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+			env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
 			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 			shared.Log("info", fmt.Sprintf("[stack] removing: project=%s", projectID))
 			downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
@@ -198,7 +198,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			shared.Log("error", fmt.Sprintf("[stack] compose down failed: project=%s exit=%d err=%v", projectID, exitCode, err))
-			jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("docker compose down failed (exit %d)", exitCode))
+			jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("podman compose down failed (exit %d)", exitCode))
 			return
 		}
 	}
@@ -206,9 +206,9 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	for _, c := range projectContainers {
 		id := c.ID
 		if c.State == "running" {
-			_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+			_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
 		}
-		_ = docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+		_ = podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
 	}
 
 	compose.DeleteProjectCompose(appPath, projectID)
@@ -233,11 +233,11 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 
 	cmdName, cmdArgs, err := getComposeCommand()
 	if err != nil {
-		jsonErr(w, 500, "COMPOSE_NOT_FOUND", "docker compose command not found")
+		jsonErr(w, 500, "COMPOSE_NOT_FOUND", "podman compose command not found")
 		return
 	}
 
-	env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
 	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "restart")
 	shared.Log("info", fmt.Sprintf("[stack] restarting: project=%s", projectID))
 	restartCtx, restartCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
@@ -269,5 +269,5 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	shared.Log("error", fmt.Sprintf("[stack] compose restart failed: project=%s exit=%d err=%v", projectID, exitCode, err))
-	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("docker compose restart failed (exit %d)", exitCode))
+	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("podman compose restart failed (exit %d)", exitCode))
 }

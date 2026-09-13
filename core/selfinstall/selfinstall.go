@@ -19,13 +19,13 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/network"
-	"core/docker"
+	"core/podman"
 )
 
 var (
 	containerName = envOr("YANTR_CONTAINER_NAME", "yantr")
 	imageName     = envOr("YANTR_IMAGE", "ghcr.io/besoeasy/yantr")
-	socketPath    = envOr("DOCKER_SOCKET", "/var/run/docker.sock")
+	socketPath    = envOr("PODMAN_SOCKET", envOr("DOCKER_SOCKET", "/run/podman/podman.sock"))
 )
 
 func envOr(key, def string) string {
@@ -69,7 +69,7 @@ func isFullyConfigured() (bool, error) {
 		return true, nil
 	}
 
-	info, err := docker.ContainerInspect(context.Background(), hostname)
+	info, err := podman.ContainerInspect(context.Background(), hostname)
 	if err != nil {
 		// Not inside a container (dev mode) — treat as fully configured
 		return true, nil
@@ -81,7 +81,7 @@ func isFullyConfigured() (bool, error) {
 	hasHostNetwork := hc.NetworkMode == "host"
 	hasVolMount := false
 	for _, bind := range hc.Binds {
-		if strings.Contains(bind, "/var/lib/docker/volumes") {
+		if strings.Contains(bind, "yantr_data") || strings.Contains(bind, "/data") {
 			hasVolMount = true
 			break
 		}
@@ -92,16 +92,16 @@ func isFullyConfigured() (bool, error) {
 }
 
 func removeExisting(name string) error {
-	info, err := docker.ContainerInspect(context.Background(), name)
+	info, err := podman.ContainerInspect(context.Background(), name)
 	if err != nil {
 		return nil // doesn't exist
 	}
 	if info.State.Running {
 		fmt.Printf("[selfinstall] Stopping existing %q container...\n", name)
-		_ = docker.ContainerStop(context.Background(), name, dockertypes.StopOptions{Timeout: intPtr(5)})
+		_ = podman.ContainerStop(context.Background(), name, dockertypes.StopOptions{Timeout: intPtr(5)})
 	}
 	fmt.Printf("[selfinstall] Removing existing %q container...\n", name)
-	return docker.ContainerRemove(context.Background(), name, dockertypes.RemoveOptions{Force: true})
+	return podman.ContainerRemove(context.Background(), name, dockertypes.RemoveOptions{Force: true})
 }
 
 func launchFullContainer() error {
@@ -113,13 +113,13 @@ func launchFullContainer() error {
 		NetworkMode:   "host",
 		RestartPolicy: dockertypes.RestartPolicy{Name: "unless-stopped"},
 		Binds: []string{
-			socketPath + ":/var/run/docker.sock",
-			"/var/lib/docker/volumes:/var/lib/docker/volumes",
+			socketPath + ":/run/podman/podman.sock:z",
+			"yantr_data:/data:z",
 		},
 	}
 	networkConfig := &network.NetworkingConfig{}
 
-	resp, err := docker.ContainerCreate(
+	resp, err := podman.ContainerCreate(
 		context.Background(),
 		config,
 		hostConfig,
@@ -130,14 +130,14 @@ func launchFullContainer() error {
 	if err != nil {
 		return err
 	}
-	return docker.ContainerStart(context.Background(), resp.ID, dockertypes.StartOptions{})
+	return podman.ContainerStart(context.Background(), resp.ID, dockertypes.StartOptions{})
 }
 
 var passThroughEnvKeys = []string{
 	"TZ", "YANTR_CONTAINER_NAME", "YANTR_IMAGE",
 	"YANTR_AUTH_SECRET", "YANTR_AUTH_USERNAME",
 	"YANTR_SELFUPDATE", "YANTR_SELFUPDATE_INTERVAL",
-	"DOCKER_SOCKET", "UI_BASE_PATH", "VITE_BASE_PATH",
+	"PODMAN_SOCKET", "DOCKER_SOCKET", "UI_BASE_PATH", "VITE_BASE_PATH",
 }
 
 func buildEnv() []string {

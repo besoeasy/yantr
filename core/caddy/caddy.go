@@ -33,7 +33,7 @@ import (
 	"sync"
 	"time"
 
-	"core/docker"
+	"core/podman"
 	"core/shared"
 
 	dockertypes "github.com/docker/docker/api/types/container"
@@ -146,7 +146,7 @@ func ReloadCaddyConfig() error {
 // GetCaddyProxies scans running containers for yantr.caddy.* labels.
 func GetCaddyProxies() ([]ProxyRoute, error) {
 	filters := dockerfilters.NewArgs()
-	containers, err := docker.ContainerList(context.Background(), dockertypes.ListOptions{
+	containers, err := podman.ContainerList(context.Background(), dockertypes.ListOptions{
 		Filters: filters,
 	})
 	if err != nil {

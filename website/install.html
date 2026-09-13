@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Install Yantr — Linux, macOS, Windows & Raspberry Pi</title>
-    <meta name="description" content="Step-by-step guide to install Docker and Yantr on Linux, macOS, Windows, and Raspberry Pi. Learn what works on each platform and run your self-hosted app store in minutes." />
-    <meta name="keywords" content="install yantr, install docker, yantr linux, yantr macos, yantr windows, yantr raspberry pi, self-hosted docker, homelab app store" />
+    <title>Install Yantr on Linux — Rootless Podman & Quadlet</title>
+    <meta name="description" content="Install Yantr on Linux using rootless Podman and systemd Quadlet. One-line automatic installer and step-by-step manual instructions for Ubuntu, Debian, Fedora, Arch, and more." />
+    <meta name="keywords" content="install yantr, install podman, quadlet, systemd quadlet, rootless podman, yantr linux, homelab app store, self-hosted podman" />
     <meta name="theme-color" content="#ffffff" />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1" />
     <link rel="canonical" href="https://yantr.org/install.html" />
@@ -13,8 +13,8 @@
 
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://yantr.org/install.html" />
-    <meta property="og:title" content="Install Yantr — Linux, macOS, Windows & Raspberry Pi" />
-    <meta property="og:description" content="Step-by-step guide to install Docker and Yantr on Linux, macOS, Windows, and Raspberry Pi." />
+    <meta property="og:title" content="Install Yantr on Linux — Rootless Podman & Quadlet" />
+    <meta property="og:description" content="Install Yantr on Linux with rootless Podman and systemd Quadlet. Native daemonless homelab app store." />
     <meta property="og:image" content="https://yantr.org/banner.png" />
     <meta property="og:site_name" content="Yantr" />
 
@@ -26,21 +26,21 @@
     <style>
       body { font-family: 'Inter', sans-serif; }
 
-      .tab-btn { transition: all 0.2s ease; }
-      .tab-btn.active {
+      .distro-btn { transition: all 0.2s ease; }
+      .distro-btn.active {
         background-color: #111827 !important;
         color: #fff !important;
         border-color: #111827 !important;
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.12);
       }
-      .platform-panel { display: none; }
-      .platform-panel.active { display: block; }
+      .distro-panel { display: none; }
+      .distro-panel.active { display: block; }
 
       /* copy button states */
       .copy-btn svg.check { display: none; }
       .copy-btn.copied svg.copy { display: none; }
       .copy-btn.copied svg.check { display: block; }
-      /* inline copy-btn variant (icon-only side button) */
+
       .copy-side svg.check { display: none; }
       .copy-side.copied svg.copy { display: none; }
       .copy-side.copied svg.check { display: block; }
@@ -59,11 +59,10 @@
       .smooth-shadow-lg { box-shadow: 0 8px 28px 0 rgba(0,0,0,0.08), 0 2px 6px 0 rgba(0,0,0,0.04); }
 
       .badge-green  { background:#dcfce7; color:#166534; }
-      .badge-yellow { background:#fef9c3; color:#854d0e; }
-      .badge-red    { background:#fee2e2; color:#991b1b; }
+      .badge-purple { background:#f3e8ff; color:#6b21a8; }
       .badge-blue   { background:#dbeafe; color:#1e40af; }
 
-      /* dark code block with syntax colours */
+      /* dark code block */
       .code-block {
         background: #0f172a;
         color: #e2e8f0;
@@ -95,23 +94,20 @@
         align-items: center;
         justify-content: space-between;
         background: #1e293b;
-        border-radius: 0.5rem 0.5rem 0 0;
-        padding: 0.45rem 1rem;
-        font-size: 0.7rem;
+        border-radius: 0.75rem 0.75rem 0 0;
+        padding: 0.6rem 1.25rem;
+        font-size: 0.75rem;
         font-weight: 600;
         color: #94a3b8;
         letter-spacing: 0.05em;
-        text-transform: uppercase;
       }
 
-      /* inline code blocks (with side copy button, like install-docker style) */
       .cmd-row {
         display: flex;
         overflow: hidden;
         border-radius: 0.75rem;
         border: 1px solid #374151;
         background: #111827;
-        max-width: 42rem;
       }
       .cmd-row code {
         flex: 1;
@@ -128,7 +124,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 3rem;
+        width: 3.25rem;
         flex-shrink: 0;
         background: #1f2937;
         border-left: 1px solid #374151;
@@ -150,18 +146,17 @@
       .compat-row { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.625rem 0; border-bottom: 1px solid #f1f5f9; }
       .compat-row:last-child { border-bottom: none; }
 
-      /* section divider inside each tab */
       .section-divider {
         border-top: 1px solid #f1f5f9;
         margin: 2.5rem 0;
         padding-top: 2rem;
       }
       .section-label {
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.18em;
-        color: #9ca3af;
+        color: #6b7280;
         margin-bottom: 1.25rem;
       }
     </style>
@@ -181,337 +176,176 @@
 
         <!-- Header -->
         <header class="mb-12 animate-fade-in-up delay-100">
-          <p class="text-[11px] uppercase tracking-[0.22em] text-gray-400 font-bold mb-3">Get Started</p>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-100">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+              Linux Native
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+              Rootless Podman + Quadlet
+            </span>
+          </div>
           <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">Install Yantr</h1>
           <p class="text-lg text-gray-500 leading-relaxed max-w-2xl">
-            Pick your platform. Each tab walks you through installing Docker <em>and</em> Yantr in one place, with compatibility notes so you know exactly what to expect.
+            Yantr is designed for <strong>Linux</strong>. It runs 100% rootless inside Podman and is managed as a native <strong>systemd Quadlet</strong> service with auto-start on boot and named volume storage.
           </p>
         </header>
 
-        <!-- Why Docker cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12 animate-fade-in-up delay-200">
+        <!-- 3 Pillars of Yantr Podman Architecture -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10 animate-fade-in-up delay-200">
           <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 border border-gray-100 mb-3">
-              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 border border-purple-100 mb-3 text-purple-700 font-bold text-sm">
+              0
             </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">Perfect isolation</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Every app runs in a walled container — they can't break each other or your host OS.</p>
-          </div>
-          <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 border border-gray-100 mb-3">
-              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">No dependency hell</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Every app bundles its own runtime — Python, Node, CUDA — no version conflicts.</p>
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">100% Rootless</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Runs in user namespaces without root privileges. Zero daemon attack surface and no root access required.</p>
           </div>
           <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
-            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 border border-gray-100 mb-3">
-              <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 border border-blue-100 mb-3 text-blue-700 font-bold text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             </div>
-            <h3 class="font-semibold text-gray-900 text-sm mb-1">Clean removal</h3>
-            <p class="text-xs text-gray-500 leading-relaxed">Stop and delete a container. Zero leftover files, libraries, or background services.</p>
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">Systemd Quadlet</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Containers are first-class systemd services. Managed with standard <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">systemctl</code> and <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">journalctl</code>.</p>
+          </div>
+          <div class="rounded-2xl border border-gray-100 bg-white p-5 smooth-shadow">
+            <div class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-100 mb-3 text-emerald-700 font-bold text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-sm mb-1">Named Volumes Only</h3>
+            <p class="text-xs text-gray-500 leading-relaxed">Strictly isolates persistent app state inside named Podman storage with automatic SELinux <code class="text-[11px] bg-gray-100 px-1 py-0.5 rounded">:z</code> labeling.</p>
           </div>
         </div>
 
-        <!-- Platform tabs -->
-        <div class="flex flex-wrap gap-2 mb-8 animate-fade-in-up delay-300" id="platform-tabs" role="tablist">
-          <button class="tab-btn active px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="linux" role="tab" aria-selected="true" id="tab-linux">🐧 Linux</button>
-          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="macos" role="tab" aria-selected="false" id="tab-macos">🍎 macOS</button>
-          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="windows" role="tab" aria-selected="false" id="tab-windows">🪟 Windows</button>
-          <button class="tab-btn px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="raspi" role="tab" aria-selected="false" id="tab-raspi">🍓 Raspberry Pi</button>
-        </div>
+        <!-- ══════════════════════════════════════════ QUICK INSTALL (ONE-LINER) ══════════ -->
+        <div class="mb-12 animate-fade-in-up delay-300">
+          <div class="rounded-2xl border-2 border-gray-900 bg-gray-950 text-white p-6 sm:p-8 smooth-shadow-lg relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <!-- ══════════════════════════════════════════ LINUX ══════════ -->
-        <div class="platform-panel active animate-fade-in-up delay-400" id="panel-linux" role="tabpanel" aria-labelledby="tab-linux">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-500 text-gray-950 uppercase tracking-wider">
+                  Recommended
+                </span>
+                <span class="text-xs text-gray-400 font-medium">Automatic Linux Installer</span>
+              </div>
+              <span class="text-xs text-gray-400">Installs Podman + Quadlet service</span>
+            </div>
 
-          <!-- compat -->
-          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Compatibility</p>
-            <div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Full support</span><span class="text-sm text-gray-700">All features work — recommended platform. Ubuntu, Debian, Fedora, Arch, any 64-bit distro.</span></div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Native socket</span><span class="text-sm text-gray-700"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> is available directly — no VM layer.</span></div>
-            </div>
-          </div>
+            <h2 class="text-xl sm:text-2xl font-bold mb-2 text-white">One-line Quick Install</h2>
+            <p class="text-sm text-gray-400 mb-5 leading-relaxed max-w-2xl">
+              Installs <strong>Podman</strong> (if not already present), configures rootless systemd lingering so containers start on boot, generates the <strong>Quadlet</strong> container specification, and starts Yantr.
+            </p>
 
-          <!-- step 1: install docker -->
-          <div class="section-label">Step 1 — Install Docker</div>
-          <div class="space-y-6 mb-6">
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Run the official install script</p>
-                <p class="text-sm text-gray-500 mb-3">Works on Ubuntu, Debian, Fedora, Arch, and most other distros.</p>
-                <div class="cmd-row">
-                  <code>curl -fsSL https://get.docker.com | sudo sh</code>
-                  <button class="copy-side" onclick="copySide(this,'curl -fsSL https://get.docker.com | sudo sh')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
+            <div class="cmd-row border-gray-800 bg-gray-900">
+              <code id="quick-install-code">curl -fsSL https://yantr.org/install.sh | bash</code>
+              <button class="copy-side hover:bg-gray-800 text-gray-300" onclick="copySide(this,'curl -fsSL https://yantr.org/install.sh | bash')" title="Copy Command">
+                <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </button>
             </div>
-            <div class="flex gap-4">
-              <div class="step-num">2</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Run Docker without sudo</p>
-                <p class="text-sm text-gray-500 mb-3">Add your user to the docker group.</p>
-                <div class="cmd-row">
-                  <code>sudo usermod -aG docker $USER &amp;&amp; newgrp docker</code>
-                  <button class="copy-side" onclick="copySide(this,'sudo usermod -aG docker $USER && newgrp docker')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="step-num">3</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Verify Docker is working</p>
-                <div class="cmd-row">
-                  <code>docker run hello-world</code>
-                  <button class="copy-side" onclick="copySide(this,'docker run hello-world')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <!-- step 2: install yantr -->
-          <div class="section-divider">
-            <div class="section-label">Step 2 — Install Yantr</div>
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
-                <div class="copy-bar">
-                  <span>bash / zsh</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr')">
-                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    Copy
-                  </button>
-                </div>
-                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">--network</span> <span class="val">host</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/lib/docker/volumes:/var/lib/docker/volumes</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
+            <div class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-400 border-t border-gray-800/80 pt-4">
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400">✓</span> Ubuntu / Debian
               </div>
-            </div>
-            <div class="flex gap-4 mt-6">
-              <div class="step-num">2</div>
-              <div class="flex-1">
-                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
-                <p class="text-sm text-gray-500">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline">http://localhost:5252</a> and create your operator account on first visit.</p>
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400">✓</span> Fedora / RHEL / CentOS
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400">✓</span> Arch / Manjaro
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400">✓</span> openSUSE
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-emerald-400">✓</span> Raspberry Pi OS (64-bit)
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ══════════════════════════════════════════ macOS ══════════ -->
-        <div class="platform-panel" id="panel-macos" role="tabpanel" aria-labelledby="tab-macos">
+        <!-- ══════════════════════════════════════════ STEP-BY-STEP MANUAL INSTALL ══════════ -->
+        <div class="section-divider">
+          <div class="section-label">Manual / Step-by-Step Installation</div>
+          <p class="text-sm text-gray-600 mb-8 leading-relaxed">
+            Prefer to inspect every command? Here is the complete breakdown of what the installer does under the hood.
+          </p>
 
-          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Compatibility</p>
-            <div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Works</span><span class="text-sm text-gray-700">Docker Desktop symlinks the socket to <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> automatically.</span></div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Works</span><span class="text-sm text-gray-700">Port binding <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p 5252:5252</code> works correctly on Intel and Apple Silicon.</span></div>
-              <div class="compat-row"><span class="badge-red inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✗ Unavailable</span><span class="text-sm text-gray-700"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">--network host</code> — Docker runs inside a Linux VM on macOS, so host networking is not available. Use <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p</code> instead (already the default here).</span></div>
-              <div class="compat-row"><span class="badge-yellow inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">⚠ Colima / OrbStack</span><span class="text-sm text-gray-700">Socket path may differ. Pass <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-e DOCKER_SOCKET=/path/to/docker.sock</code> and mount that path instead.</span></div>
-            </div>
-          </div>
-
-          <div class="section-label">Step 1 — Install Docker</div>
-          <div class="space-y-6 mb-6">
-            <div class="flex gap-4">
+          <!-- Step 1: Install Podman -->
+          <div class="mb-10">
+            <div class="flex items-start gap-4 mb-4">
               <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Install via Homebrew <span class="text-xs font-normal text-gray-400 ml-1">recommended</span></p>
-                <p class="text-sm text-gray-500 mb-3">Works on Intel and Apple Silicon (M1/M2/M3).</p>
-                <div class="cmd-row">
-                  <code>brew install --cask docker</code>
-                  <button class="copy-side" onclick="copySide(this,'brew install --cask docker')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-                <p class="text-xs text-gray-400 mt-2">— or — <a href="https://docs.docker.com/desktop/install/mac-install/" target="_blank" class="font-semibold text-gray-600 hover:text-gray-900 underline">download the Docker Desktop .dmg installer →</a></p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="step-num">2</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Launch Docker Desktop from Applications, then verify</p>
-                <div class="cmd-row">
-                  <code>docker run hello-world</code>
-                  <button class="copy-side" onclick="copySide(this,'docker run hello-world')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider">
-            <div class="section-label">Step 2 — Install Yantr</div>
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-3">Run Yantr (Docker Desktop must be open)</p>
-                <div class="copy-bar">
-                  <span>Terminal</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
-                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    Copy
-                  </button>
-                </div>
-                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
-              </div>
-            </div>
-            <div class="flex gap-4 mt-6">
-              <div class="step-num">2</div>
-              <div class="flex-1">
-                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
-                <p class="text-sm text-gray-500">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline">http://localhost:5252</a> in your browser.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="mt-6 rounded-xl border border-amber-100 bg-amber-50 px-5 py-4">
-            <p class="text-sm font-semibold text-amber-800 mb-1">Using Colima or OrbStack?</p>
-            <p class="text-sm text-amber-700 leading-relaxed">Find your socket path (e.g. <code class="text-xs bg-amber-100 px-1 rounded">~/.colima/default/docker.sock</code>) and add <code class="text-xs bg-amber-100 px-1 rounded">-e DOCKER_SOCKET=&lt;path&gt;</code> to the command above, replacing the <code class="text-xs bg-amber-100 px-1 rounded">-v</code> mount accordingly.</p>
-          </div>
-        </div>
-
-        <!-- ══════════════════════════════════════════ WINDOWS ════════ -->
-        <div class="platform-panel" id="panel-windows" role="tabpanel" aria-labelledby="tab-windows">
-
-          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Compatibility</p>
-            <div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Works</span><span class="text-sm text-gray-700">Docker Desktop for Windows (WSL2 backend) — socket accessible at <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">/var/run/docker.sock</code> inside WSL2.</span></div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Works</span><span class="text-sm text-gray-700">Port binding <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p 5252:5252</code> works in PowerShell and WSL2 terminal.</span></div>
-              <div class="compat-row"><span class="badge-red inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✗ Unavailable</span><span class="text-sm text-gray-700"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">--network host</code> — not available on Windows. Use <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">-p</code> instead (already the default here).</span></div>
-              <div class="compat-row"><span class="badge-blue inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">ℹ Recommended</span><span class="text-sm text-gray-700">Run commands from <strong>PowerShell</strong> or the <strong>WSL2 terminal</strong>, not Command Prompt.</span></div>
-            </div>
-          </div>
-
-          <div class="section-label">Step 1 — Install Docker</div>
-          <div class="space-y-6 mb-6">
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Enable WSL 2</p>
-                <p class="text-sm text-gray-500 mb-3">Open PowerShell as Administrator and run:</p>
-                <div class="cmd-row">
-                  <code>wsl --install</code>
-                  <button class="copy-side" onclick="copySide(this,'wsl --install')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-                <p class="text-xs text-amber-600 font-medium bg-amber-50 rounded-md py-1.5 px-3 inline-block mt-2">Restart your computer when this finishes.</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="step-num">2</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Install Docker Desktop</p>
-                <p class="text-sm text-gray-500 mb-3">Download and run the official installer. Make sure "Use WSL 2" is checked.</p>
-                <a href="https://docs.docker.com/desktop/install/windows-install/" target="_blank" class="inline-flex items-center gap-2 rounded-xl bg-gray-50 border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
-                  Download Docker for Windows
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                </a>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <div class="step-num">3</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Verify Docker is working</p>
-                <div class="cmd-row">
-                  <code>docker run hello-world</code>
-                  <button class="copy-side" onclick="copySide(this,'docker run hello-world')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider">
-            <div class="section-label">Step 2 — Install Yantr</div>
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-3">Run Yantr from PowerShell</p>
-                <div class="copy-bar">
-                  <span>PowerShell</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr -p 5252:5252 -v /var/run/docker.sock:/var/run/docker.sock --restart unless-stopped ghcr.io/besoeasy/yantr')">
-                    <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    Copy
-                  </button>
-                </div>
-                <div class="code-block"><span class="kw">docker run</span> -d `<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr `<br>&nbsp;&nbsp;<span class="flag">-p</span> <span class="val">5252:5252</span> `<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> `<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped `<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
-                <p class="text-xs text-gray-400 mt-2">PowerShell uses backtick <code class="bg-gray-100 px-1 rounded">`</code> for line continuation instead of <code class="bg-gray-100 px-1 rounded">\</code></p>
-              </div>
-            </div>
-            <div class="flex gap-4 mt-6">
-              <div class="step-num">2</div>
-              <div class="flex-1">
-                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
-                <p class="text-sm text-gray-500">Visit <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline">http://localhost:5252</a> in your browser.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ══════════════════════════════════════════ RASPBERRY PI ═══ -->
-        <div class="platform-panel" id="panel-raspi" role="tabpanel" aria-labelledby="tab-raspi">
-
-          <div class="mb-8 rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Compatibility</p>
-            <div>
-              <div class="compat-row"><span class="badge-green inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">✓ Full support</span><span class="text-sm text-gray-700">Raspberry Pi 4 &amp; 5 (arm64) — all features work.</span></div>
-              <div class="compat-row"><span class="badge-yellow inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">⚠ Partial</span><span class="text-sm text-gray-700">Raspberry Pi 3 (armv7) — Yantr runs, but some app images may not have arm/v7 builds.</span></div>
-              <div class="compat-row"><span class="badge-blue inline-flex text-xs font-semibold px-2.5 py-1 rounded-full shrink-0">ℹ Tip</span><span class="text-sm text-gray-700">Use Raspberry Pi OS 64-bit (Bookworm) for best compatibility.</span></div>
-            </div>
-          </div>
-
-          <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 mb-8 max-w-2xl">
-            <div class="flex items-start gap-3">
-              <svg class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
               <div>
-                <p class="text-sm font-bold text-amber-900 mb-1">ARM Architecture Notice</p>
-                <p class="text-sm text-amber-800 leading-relaxed">Commands are identical to Linux, but check that the apps you want to run offer an ARM64 image build. Nearly all popular Yantr catalog apps do.</p>
+                <h3 class="font-bold text-gray-900 text-base">Install Podman</h3>
+                <p class="text-sm text-gray-500">Select your Linux distribution to install Podman using your native package manager:</p>
+              </div>
+            </div>
+
+            <!-- Distro tabs -->
+            <div class="flex flex-wrap gap-2 mb-4" id="distro-tabs" role="tablist">
+              <button class="distro-btn active px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="ubuntu" role="tab">Ubuntu / Debian</button>
+              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="fedora" role="tab">Fedora / RHEL</button>
+              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="arch" role="tab">Arch Linux</button>
+              <button class="distro-btn px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white text-gray-700 hover:border-gray-400 transition-all" data-target="opensuse" role="tab">openSUSE</button>
+            </div>
+
+            <!-- Ubuntu panel -->
+            <div class="distro-panel active" id="distro-ubuntu">
+              <div class="cmd-row">
+                <code>sudo apt update && sudo apt install -y podman</code>
+                <button class="copy-side" onclick="copySide(this,'sudo apt update && sudo apt install -y podman')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Fedora panel -->
+            <div class="distro-panel" id="distro-fedora">
+              <div class="cmd-row">
+                <code>sudo dnf install -y podman</code>
+                <button class="copy-side" onclick="copySide(this,'sudo dnf install -y podman')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Arch panel -->
+            <div class="distro-panel" id="distro-arch">
+              <div class="cmd-row">
+                <code>sudo pacman -S --noconfirm podman</code>
+                <button class="copy-side" onclick="copySide(this,'sudo pacman -S --noconfirm podman')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- openSUSE panel -->
+            <div class="distro-panel" id="distro-opensuse">
+              <div class="cmd-row">
+                <code>sudo zypper in -y podman</code>
+                <button class="copy-side" onclick="copySide(this,'sudo zypper in -y podman')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
               </div>
             </div>
           </div>
 
-          <div class="section-label">Step 1 — Install Docker</div>
-          <div class="space-y-6 mb-6">
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Run the official install script</p>
-                <div class="cmd-row">
-                  <code>curl -fsSL https://get.docker.com | sudo sh</code>
-                  <button class="copy-side" onclick="copySide(this,'curl -fsSL https://get.docker.com | sudo sh')" title="Copy">
-                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div class="flex gap-4">
+          <!-- Step 2: Enable user linger & socket -->
+          <div class="mb-10">
+            <div class="flex items-start gap-4 mb-3">
               <div class="step-num">2</div>
-              <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-1">Add Pi user to docker group</p>
-                <div class="cmd-row">
-                  <code>sudo usermod -aG docker $USER &amp;&amp; newgrp docker</code>
-                  <button class="copy-side" onclick="copySide(this,'sudo usermod -aG docker $USER && newgrp docker')" title="Copy">
+              <div>
+                <h3 class="font-bold text-gray-900 text-base">Enable User Lingering & Podman Socket</h3>
+                <p class="text-sm text-gray-500 leading-relaxed mb-3">
+                  Enabling linger allows rootless systemd services to continue running across user logouts and start automatically on system boot.
+                </p>
+                <div class="cmd-row mb-2">
+                  <code>loginctl enable-linger $USER && systemctl --user enable --now podman.socket</code>
+                  <button class="copy-side" onclick="copySide(this,'loginctl enable-linger $USER && systemctl --user enable --now podman.socket')" title="Copy">
                     <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                   </button>
@@ -520,47 +354,126 @@
             </div>
           </div>
 
-          <div class="section-divider">
-            <div class="section-label">Step 2 — Install Yantr</div>
-            <div class="flex gap-4">
-              <div class="step-num">1</div>
+          <!-- Step 3: Write Quadlet definition -->
+          <div class="mb-10">
+            <div class="flex items-start gap-4 mb-3">
+              <div class="step-num">3</div>
               <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-900 mb-3">Run Yantr</p>
+                <h3 class="font-bold text-gray-900 text-base mb-1">Create Quadlet Service Definition</h3>
+                <p class="text-sm text-gray-500 mb-3 leading-relaxed">
+                  Podman Quadlet reads declarative <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">.container</code> files inside <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">~/.config/containers/systemd/</code>.
+                </p>
+
                 <div class="copy-bar">
-                  <span>bash</span>
-                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,'docker run -d --name yantr --network host -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/docker/volumes:/var/lib/docker/volumes --restart unless-stopped ghcr.io/besoeasy/yantr')">
+                  <span>~/.config/containers/systemd/yantr.container</span>
+                  <button class="copy-btn flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors" onclick="copyCode(this,`mkdir -p ~/.config/containers/systemd && cat << 'EOF' > ~/.config/containers/systemd/yantr.container\n[Unit]\nDescription=Yantr Homelab App Store\nAfter=network-online.target\nWants=network-online.target\n\n[Container]\nImage=ghcr.io/besoeasy/yantr:latest\nContainerName=yantr\nNetwork=host\nVolume=yantr_data:/data:z\nVolume=%t/podman/podman.sock:/run/podman/podman.sock:z\nAutoUpdate=registry\n\n[Service]\nRestart=always\n\n[Install]\nWantedBy=default.target\nEOF`)">
                     <svg class="copy w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     <svg class="check w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    Copy
+                    Copy Block
                   </button>
                 </div>
-                <div class="code-block"><span class="kw">docker run</span> -d \<br>&nbsp;&nbsp;<span class="flag">--name</span> yantr \<br>&nbsp;&nbsp;<span class="flag">--network</span> <span class="val">host</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/run/docker.sock:/var/run/docker.sock</span> \<br>&nbsp;&nbsp;<span class="flag">-v</span> <span class="val">/var/lib/docker/volumes:/var/lib/docker/volumes</span> \<br>&nbsp;&nbsp;<span class="flag">--restart</span> unless-stopped \<br>&nbsp;&nbsp;ghcr.io/besoeasy/yantr</div>
+                <div class="code-block"><span class="kw">[Unit]</span><br>Description=Yantr Homelab App Store<br>After=network-online.target<br>Wants=network-online.target<br><br><span class="kw">[Container]</span><br><span class="flag">Image</span>=<span class="val">ghcr.io/besoeasy/yantr:latest</span><br><span class="flag">ContainerName</span>=<span class="val">yantr</span><br><span class="flag">Network</span>=<span class="val">host</span><br><span class="flag">Volume</span>=<span class="val">yantr_data:/data:z</span><br><span class="flag">Volume</span>=<span class="val">%t/podman/podman.sock:/run/podman/podman.sock:z</span><br><span class="flag">AutoUpdate</span>=<span class="val">registry</span><br><br><span class="kw">[Service]</span><br><span class="flag">Restart</span>=<span class="val">always</span><br><br><span class="kw">[Install]</span><br><span class="flag">WantedBy</span>=<span class="val">default.target</span></div>
               </div>
             </div>
-            <div class="flex gap-4 mt-6">
-              <div class="step-num">2</div>
-              <div class="flex-1">
-                <p class="font-semibold text-gray-900 mb-1">Open Yantr</p>
-                <p class="text-sm text-gray-500">Access from any device on your network: <code class="text-sm bg-gray-100 px-1.5 py-0.5 rounded">http://&lt;pi-ip&gt;:5252</code>, or on the Pi itself: <a href="http://localhost:5252" target="_blank" class="font-semibold text-gray-900 underline">http://localhost:5252</a></p>
+          </div>
+
+          <!-- Step 4: Reload & Start -->
+          <div class="mb-10">
+            <div class="flex items-start gap-4 mb-3">
+              <div class="step-num">4</div>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-bold text-gray-900 text-base mb-1">Activate Yantr Service</h3>
+                <p class="text-sm text-gray-500 mb-3 leading-relaxed">
+                  Reload the user systemd daemon to generate the unit from the Quadlet file, then start the service:
+                </p>
+                <div class="cmd-row">
+                  <code>systemctl --user daemon-reload && systemctl --user start yantr.service</code>
+                  <button class="copy-side" onclick="copySide(this,'systemctl --user daemon-reload && systemctl --user start yantr.service')" title="Copy">
+                    <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5: Open Web UI -->
+          <div class="mb-10">
+            <div class="flex items-start gap-4">
+              <div class="step-num">5</div>
+              <div>
+                <h3 class="font-bold text-gray-900 text-base mb-1">Open Yantr in Browser</h3>
+                <p class="text-sm text-gray-500 mb-2">
+                  Visit <a href="http://localhost:5252" target="_blank" class="font-bold text-gray-900 underline">http://localhost:5252</a> (or from another machine on your LAN at <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded">http://&lt;server-ip&gt;:5252</code>).
+                </p>
+                <p class="text-xs text-gray-400">On your first visit, you will establish your operator credentials.</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ══════════════ Shared: common commands ══════════════════════ -->
-        <div class="mt-14 pt-10 border-t border-gray-100">
-          <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">Common Commands</p>
-          <div class="grid sm:grid-cols-2 gap-4">
+        <!-- ══════════════ SYSTEMD / QUADLET MANAGEMENT COMMANDS ══════════════════════ -->
+        <div class="section-divider">
+          <p class="section-label">Managing Yantr via systemd</p>
+          <p class="text-sm text-gray-600 mb-6 leading-relaxed">
+            Because Yantr is registered with Quadlet, you have native systemd controls:
+          </p>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-8">
             <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">Update Yantr</p>
-              <p class="text-xs text-gray-500 mb-3">Pull the latest image and restart</p>
-              <div class="code-block-solo text-[0.75rem]">docker pull ghcr.io/besoeasy/yantr<br>docker stop yantr &amp;&amp; docker rm yantr<br><span class="cmt"># then re-run the install command above</span></div>
+              <p class="font-semibold text-gray-900 mb-1">Check Status</p>
+              <p class="text-xs text-gray-500 mb-3">Inspect running state, PID, memory, and uptime</p>
+              <div class="cmd-row">
+                <code>systemctl --user status yantr</code>
+                <button class="copy-side" onclick="copySide(this,'systemctl --user status yantr')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
             </div>
+
             <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
-              <p class="font-semibold text-gray-900 mb-1">Remove Yantr</p>
-              <p class="text-xs text-gray-500 mb-3">Stop and delete the container</p>
-              <div class="code-block-solo text-[0.75rem]">docker stop yantr<br>docker rm yantr<br><span class="cmt"># App data stays in Docker volumes</span></div>
+              <p class="font-semibold text-gray-900 mb-1">View Live Logs</p>
+              <p class="text-xs text-gray-500 mb-3">Stream application output using journalctl</p>
+              <div class="cmd-row">
+                <code>journalctl --user -u yantr -f</code>
+                <button class="copy-side" onclick="copySide(this,'journalctl --user -u yantr -f')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
             </div>
+
+            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+              <p class="font-semibold text-gray-900 mb-1">Restart Service</p>
+              <p class="text-xs text-gray-500 mb-3">Restart Yantr without disturbing other containers</p>
+              <div class="cmd-row">
+                <code>systemctl --user restart yantr</code>
+                <button class="copy-side" onclick="copySide(this,'systemctl --user restart yantr')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-white smooth-shadow p-5">
+              <p class="font-semibold text-gray-900 mb-1">Trigger Auto-Update</p>
+              <p class="text-xs text-gray-500 mb-3">Pull latest image and smoothly recreate container</p>
+              <div class="cmd-row">
+                <code>podman auto-update</code>
+                <button class="copy-side" onclick="copySide(this,'podman auto-update')" title="Copy">
+                  <svg class="copy w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Uninstall box -->
+          <div class="rounded-xl border border-gray-200 bg-gray-50 p-5">
+            <p class="font-semibold text-gray-900 mb-1 text-sm">Uninstalling Yantr</p>
+            <p class="text-xs text-gray-500 mb-3">Remove the Quadlet file and reload systemd to cleanly unregister the service:</p>
+            <div class="code-block-solo text-[0.75rem]">rm -f ~/.config/containers/systemd/yantr.container<br>systemctl --user daemon-reload<br>podman stop yantr &amp;&amp; podman rm yantr<br><span class="cmt"># App data remains safe in named Podman volume: yantr_data</span></div>
           </div>
         </div>
 
@@ -574,14 +487,14 @@
     </main>
 
     <script>
-      // Tab switching
-      document.querySelectorAll('.tab-btn').forEach(btn => {
+      // Distro switching
+      document.querySelectorAll('.distro-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          document.querySelectorAll('.tab-btn').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
-          document.querySelectorAll('.platform-panel').forEach(p => p.classList.remove('active'));
+          document.querySelectorAll('.distro-btn').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+          document.querySelectorAll('.distro-panel').forEach(p => p.classList.remove('active'));
           btn.classList.add('active');
           btn.setAttribute('aria-selected','true');
-          document.getElementById('panel-' + btn.dataset.target).classList.add('active');
+          document.getElementById('distro-' + btn.dataset.target).classList.add('active');
         });
       });
 

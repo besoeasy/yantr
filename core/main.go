@@ -25,7 +25,7 @@ import (
 	"core/apps"
 	"core/auth"
 	"core/caddy"
-	"core/docker"
+	"core/podman"
 	"core/selfinstall"
 	"core/shared"
 	"core/telemetry"
@@ -164,21 +164,25 @@ var (
 
 func getComposeCommand() (string, []string, error) {
 	cachedComposeOnce.Do(func() {
-		env := map[string]string{"DOCKER_HOST": "unix://" + docker.SocketPath}
+		env := map[string]string{
+			"PODMAN_HOST":   "unix://" + podman.SocketPath,
+			"DOCKER_HOST":   "unix://" + podman.SocketPath,
+			"PODMAN_SOCKET": podman.SocketPath,
+		}
 		ctx, cancel := context.WithTimeout(context.Background(), spawnTimeoutShort)
 		defer cancel()
-		if _, _, code, err := spawnExec(ctx, "docker", []string{"compose", "version"}, env, ""); err == nil && code == 0 {
-			cachedComposeCmd = "docker"
+		if _, _, code, err := spawnExec(ctx, "podman", []string{"compose", "version"}, env, ""); err == nil && code == 0 {
+			cachedComposeCmd = "podman"
 			cachedComposeArgs = []string{"compose"}
 			return
 		}
 		ctx2, cancel2 := context.WithTimeout(context.Background(), spawnTimeoutShort)
 		defer cancel2()
-		if _, _, code, err := spawnExec(ctx2, "docker-compose", []string{"version"}, env, ""); err == nil && code == 0 {
-			cachedComposeCmd = "docker-compose"
+		if _, _, code, err := spawnExec(ctx2, "podman-compose", []string{"version"}, env, ""); err == nil && code == 0 {
+			cachedComposeCmd = "podman-compose"
 			return
 		}
-		cachedComposeErr = fmt.Errorf("docker compose is not available")
+		cachedComposeErr = fmt.Errorf("podman compose is not available")
 	})
 	return cachedComposeCmd, cachedComposeArgs, cachedComposeErr
 }
@@ -509,7 +513,7 @@ func main() {
 	shared.Log("info", "🚀 Yantr Core Server Started (Go)")
 	shared.Log("info", strings.Repeat("=", 50))
 	shared.Log("info", fmt.Sprintf("📡 Port: %d", serverPort))
-	shared.Log("info", fmt.Sprintf("🔌 Socket: %s", docker.SocketPath))
+	shared.Log("info", fmt.Sprintf("🔌 Podman Socket: %s", podman.SocketPath))
 	shared.Log("info", fmt.Sprintf("🌐 Access: http://localhost:%d", serverPort))
 	shared.Log("info", strings.Repeat("=", 50))
 

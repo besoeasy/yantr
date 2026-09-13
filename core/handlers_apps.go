@@ -5,7 +5,7 @@ import (
 	"core/apps"
 	"core/caddy"
 	"core/compose"
-	"core/docker"
+	"core/podman"
 	"core/shared"
 	"core/system"
 	"core/telemetry"
@@ -106,7 +106,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 							}
 							return ""
 						}(), netName)
-						nets, err := docker.NetworkList(context.Background(), dockernet.ListOptions{
+						nets, err := podman.NetworkList(context.Background(), dockernet.ListOptions{
 							Filters: dockerfilters.NewArgs(dockerfilters.Arg("name", name)),
 						})
 						if err != nil || !func() bool {
@@ -194,7 +194,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "COMPOSE_NOT_FOUND", err.Error())
 		return
 	}
-	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, docker.SocketPath)
+	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, podman.SocketPath)
 	args := append(cmdArgs, "-p", projectName, "-f", ref.ComposeFile, "up", "-d")
 	shared.Log("info", fmt.Sprintf("[deploy] starting: app=%s project=%s cmd=%s %s", body.AppID, projectName, cmdName, strings.Join(args, " ")))
 	deployCtx, deployCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)

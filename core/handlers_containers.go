@@ -4,7 +4,7 @@ import (
 	"context"
 	"core/apps"
 	"core/compose"
-	"core/docker"
+	"core/podman"
 	"core/shared"
 	"encoding/json"
 	"fmt"
@@ -18,7 +18,7 @@ import (
 )
 
 func handleContainers(w http.ResponseWriter, r *http.Request) {
-	containers, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	containers, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	if err != nil {
 		jsonErr(w, 500, "CONTAINERS_FETCH_FAILED", err.Error())
 		return
@@ -79,11 +79,12 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, err := docker.ContainerInspect(context.Background(), id)
+	info, err := podman.ContainerInspect(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "CONTAINER_NOT_FOUND", "Container not found")
 		return
 	}
+
 	lbl := parseAppLabels(info.Config.Labels)
 	project := info.Config.Labels["com.docker.compose.project"]
 	appID := coalesce(lbl.App, getBaseAppID(project), strings.TrimPrefix(info.Name, "/"))
@@ -112,7 +113,7 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	statsResp, err := docker.ContainerStats(context.Background(), id, false)
+	statsResp, err := podman.ContainerStats(context.Background(), id, false)
 	if err != nil {
 		jsonErr(w, 500, "STATS_FETCH_FAILED", err.Error())
 		return
@@ -171,7 +172,7 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	tail := coalesce(r.URL.Query().Get("tail"), "100")
-	logsBody, err := docker.ContainerLogs(context.Background(), id, dockerctr.LogsOptions{
+	logsBody, err := podman.ContainerLogs(context.Background(), id, dockerctr.LogsOptions{
 		ShowStdout: true, ShowStderr: true, Tail: tail, Timestamps: true,
 	})
 	if err != nil {
@@ -204,7 +205,7 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, err := docker.ContainerInspect(context.Background(), id)
+	info, err := podman.ContainerInspect(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "CONTAINER_NOT_FOUND", "Container not found")
 		return
@@ -218,7 +219,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		ref := compose.GetProjectComposeRef(appPath, project)
 		if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 			if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
-				env, _ := compose.GetComposeProcessEnv(appPath, project, docker.SocketPath)
+				env, _ := compose.GetComposeProcessEnv(appPath, project, podman.SocketPath)
 				args := append(cmdArgs, "-p", project, "-f", ref.ComposeFile, "down")
 				shared.Log("info", fmt.Sprintf("[container] removing stack: project=%s container=%s", project, name))
 				downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
@@ -253,9 +254,9 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if info.State.Running {
-		_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
 	}
-	if err := docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{}); err != nil {
+	if err := podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_REMOVE_FAILED", err.Error())
 		return
 	}
@@ -264,7 +265,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.ContainerStart(context.Background(), id, dockerctr.StartOptions{}); err != nil {
+	if err := podman.ContainerStart(context.Background(), id, dockerctr.StartOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_START_FAILED", err.Error())
 		return
 	}
@@ -273,7 +274,7 @@ func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+	if err := podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_STOP_FAILED", err.Error())
 		return
 	}
@@ -282,7 +283,7 @@ func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 
 func handleContainerRestart(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	if err := docker.ContainerRestart(context.Background(), id, dockerctr.StopOptions{}); err != nil {
+	if err := podman.ContainerRestart(context.Background(), id, dockerctr.StopOptions{}); err != nil {
 		jsonErr(w, 500, "CONTAINER_RESTART_FAILED", err.Error())
 		return
 	}

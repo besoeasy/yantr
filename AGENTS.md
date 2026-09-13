@@ -4,7 +4,7 @@
 
 Each app lives in `apps/<app-name>/compose.yml` — a single file with no `info.json` and no `Dockerfile`.
 
-All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fields, so the file remains fully deployable.
+All metadata is in the top-level `x-yantr` key. Podman Compose ignores `x-*` fields, so the file remains fully deployable.
 
 ### x-yantr Metadata Block
 
@@ -25,7 +25,7 @@ All metadata is in the top-level `x-yantr` key. Docker Compose ignores `x-*` fie
 **YAML style — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
 ```yaml
 # ✅ correct
-tags: [tools, utility, self-hosted, homelab, docker]
+tags: [tools, utility, self-hosted, homelab, podman]
 usecases: ["Use case one.", "Use case two."]
 notes: ["Note one.", "Note two."]
 
@@ -59,8 +59,8 @@ x-auth:
 
 ## Critical Rules
 
-### 1. Always Use Docker Volumes
-All persistent data MUST use named Docker volumes — never bind mounts. Declare every volume at the top-level `volumes:` key.
+### 1. Always Use Named Podman Volumes
+All persistent data MUST use named Podman volumes — never bind mounts. Declare every volume at the top-level `volumes:` key. In rootless Podman, named volumes are managed under user storage (`~/.local/share/containers/storage/volumes/`) and automatically labeled with the proper SELinux context (`container_file_t`).
 
 ```yaml
 # ✅ correct
@@ -70,7 +70,7 @@ volumes:
 volumes:
   my_app_data:
 
-# ❌ wrong
+# ❌ wrong — bind mounts fail under rootless permissions/SELinux
 volumes:
   - ./data:/data
 ```
@@ -98,10 +98,10 @@ logo: "https://example.com/logo.png"
 ```
 
 ### 4. Prefer Auto Port Assignment — Avoid Mapped Ports
-Use Docker's automatic port assignment `"8080"` instead of explicit host mappings `"8080:8080"`. Only use mapped ports when the app absolutely cannot function without a fixed host port (e.g. a VPN or peer protocol that must bind to a specific port).
+Use Podman's automatic port assignment `"8080"` instead of explicit host mappings `"8080:8080"`. Only use mapped ports when the app absolutely cannot function without a fixed host port (e.g. a VPN or peer protocol that must bind to a specific port).
 
 ```yaml
-# ✅ correct — let Docker assign the host port
+# ✅ correct — let Podman assign the host port
 ports:
   - "8080"
 
@@ -111,7 +111,7 @@ ports:
 ```
 
 ### 5. Custom Apps — Use dockerfile_inline
-Yantr-built apps (`customapp: true`) MUST define the image with Compose `build.dockerfile_inline`. Do not add a `Dockerfile`, `entrypoint.sh`, or other build files in the app folder — keep it to `compose.yml` and optional `logo.svg`. If you need an entrypoint script, write it inside the inline Dockerfile.
+Yantr-built apps (`customapp: true`) MUST define the image with Compose `build.dockerfile_inline`. Podman Compose supports this natively via Buildah. Do not add a `Dockerfile`, `entrypoint.sh`, or other build files in the app folder — keep it to `compose.yml` and optional `logo.svg`. If you need an entrypoint script, write it inside the inline Dockerfile.
 
 ```yaml
 # ✅ correct
@@ -136,7 +136,7 @@ services:
 # apps/my-app/compose.yml
 x-yantr:
   name: "myapp"
-  tags: [productivity, self-hosted, webapp, tools, docker]
+  tags: [productivity, self-hosted, webapp, tools, podman]
   short_description: "Self-hosted note-taking app."
   description: >
     A self-hosted note-taking service that lets you capture, organize,

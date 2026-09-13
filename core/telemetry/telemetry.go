@@ -15,7 +15,7 @@ import (
 	"sync"
 	"time"
 
-	"core/docker"
+	"core/podman"
 	"core/shared"
 	"core/system"
 
@@ -174,7 +174,7 @@ func TrackUpdatesForContainers(containerNames []string) {
 			wanted[strings.TrimPrefix(name, "/")] = true
 		}
 
-		ctrs, err := docker.ContainerList(context.Background(), container.ListOptions{All: true})
+		ctrs, err := podman.ContainerList(context.Background(), container.ListOptions{All: true})
 		if err != nil {
 			shared.Log("warn", "[telemetry] TrackUpdatesForContainers: failed to list containers: "+err.Error())
 			return
@@ -206,9 +206,9 @@ func SendPresence(version string) {
 	}
 	go func() {
 		shared.Log("info", "[telemetry] sending presence ping")
-		info, err := docker.Info(context.Background())
+		info, err := podman.Info(context.Background())
 		if err != nil {
-			shared.Log("warn", "[telemetry] presence: failed to get docker info: "+err.Error())
+			shared.Log("warn", "[telemetry] presence: failed to get podman info: "+err.Error())
 			return
 		}
 
@@ -250,7 +250,7 @@ func SendPresence(version string) {
 }
 
 func listYantrApps() []string {
-	ctrs, err := docker.ContainerList(context.Background(), container.ListOptions{All: true})
+	ctrs, err := podman.ContainerList(context.Background(), container.ListOptions{All: true})
 	if err != nil {
 		return []string{}
 	}

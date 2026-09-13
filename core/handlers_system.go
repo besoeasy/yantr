@@ -6,7 +6,7 @@ import (
 	"core/auth"
 	"core/caddy"
 	"core/compose"
-	"core/docker"
+	"core/podman"
 	"core/shared"
 	"core/system"
 	"core/telemetry"
@@ -23,26 +23,19 @@ import (
 	dockerfilters "github.com/docker/docker/api/types/filters"
 )
 
-func runWatchtower(containerNames []string) (string, string, int, error) {
-	args := []string{
-		"run", "--rm",
-		"-v", docker.SocketPath + ":/var/run/docker.sock",
-		"-e", "DOCKER_API_VERSION=1.44",
-		"containrrr/watchtower",
-		"--run-once", "--cleanup",
-	}
-	args = append(args, containerNames...)
+func runPodmanAutoUpdate(containerNames []string) (string, string, int, error) {
 	env := map[string]string{
-		"DOCKER_HOST":        "unix://" + docker.SocketPath,
-		"DOCKER_API_VERSION": "1.44",
+		"PODMAN_HOST":   "unix://" + podman.SocketPath,
+		"DOCKER_HOST":   "unix://" + podman.SocketPath,
+		"PODMAN_SOCKET": podman.SocketPath,
 	}
 	wctx, wcancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
 	defer wcancel()
-	return spawnExec(wctx, "docker", args, env, "")
+	return spawnExec(wctx, "podman", []string{"auto-update"}, env, "")
 }
 
 func sweepExpiredContainers() {
-	all, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
+	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
 	if err != nil {
 		shared.Log("warn", "[reaper] failed to list containers: "+err.Error())
 		return
@@ -85,7 +78,7 @@ func sweepExpiredContainers() {
 		removed := false
 		if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 			if cmdName, cmdArgs, cmdErr := getComposeCommand(); cmdErr == nil {
-				env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+				env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
 				args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 				reaperCtx, reaperCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
 				_, _, exitCode, _ := spawnExec(reaperCtx, cmdName, args, env, appPath)
@@ -100,11 +93,11 @@ func sweepExpiredContainers() {
 		if !removed {
 			// Fallback: force-remove every container in the project.
 			shared.Log("warn", fmt.Sprintf("[reaper] compose down failed for %s — force-removing containers", projectID))
-			if stale, listErr := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
+			if stale, listErr := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
 				for _, c := range stale {
 					if c.Labels["com.docker.compose.project"] == projectID {
-						_ = docker.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
-						_ = docker.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
+						_ = podman.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
+						_ = podman.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
 					}
 				}
 			}
@@ -115,8 +108,8 @@ func sweepExpiredContainers() {
 	// Tear down standalone expired containers.
 	for _, id := range standaloneIDs {
 		shared.Log("info", fmt.Sprintf("[reaper] removing expired standalone container: %s", id))
-		_ = docker.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
-		_ = docker.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+		_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
+		_ = podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
 	}
 }
 
@@ -186,10 +179,18 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
-	info, err := docker.Info(context.Background())
+	info, err := podman.Info(context.Background())
 	if err != nil {
 		jsonErr(w, 500, "SYSTEM_INFO_FETCH_FAILED", err.Error())
 		return
+	}
+	podmanMap := map[string]interface{}{
+		"version": info.ServerVersion,
+		"containers": map[string]interface{}{
+			"total": info.Containers, "running": info.ContainersRunning,
+			"paused": info.ContainersPaused, "stopped": info.ContainersStopped,
+		},
+		"images": info.Images,
 	}
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
@@ -197,14 +198,8 @@ func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
 			"cpu":     map[string]interface{}{"cores": info.NCPU},
 			"memory":  map[string]interface{}{"total": info.MemTotal},
 			"storage": map[string]interface{}{"driver": info.Driver},
-			"docker": map[string]interface{}{
-				"version": info.ServerVersion,
-				"containers": map[string]interface{}{
-					"total": info.Containers, "running": info.ContainersRunning,
-					"paused": info.ContainersPaused, "stopped": info.ContainersStopped,
-				},
-				"images": info.Images,
-			},
+			"podman":  podmanMap,
+			"docker":  podmanMap, // preserved for UI backward-compatibility
 			"os": map[string]interface{}{
 				"type": info.OSType, "name": info.OperatingSystem,
 				"arch": info.Architecture, "kernel": info.KernelVersion,
@@ -235,7 +230,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		// This is the safe default — avoids deleting images for stopped containers.
 		filters := dockerfilters.NewArgs()
 		filters.Add("dangling", "true")
-		if pruned, err := docker.ImagesPrune(context.Background(), filters); err == nil {
+		if pruned, err := podman.ImagesPrune(context.Background(), filters); err == nil {
 			shared.Log("info", fmt.Sprintf("[prune] images: removed=%d reclaimed=%d bytes", len(pruned.ImagesDeleted), pruned.SpaceReclaimed))
 			results["images"] = map[string]interface{}{
 				"count": len(pruned.ImagesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
@@ -245,7 +240,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if body.Volumes {
-		if pruned, err := docker.VolumesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
+		if pruned, err := podman.VolumesPrune(context.Background(), dockerfilters.NewArgs()); err == nil {
 			shared.Log("info", fmt.Sprintf("[prune] volumes: removed=%d reclaimed=%d bytes", len(pruned.VolumesDeleted), pruned.SpaceReclaimed))
 			results["volumes"] = map[string]interface{}{
 				"count": len(pruned.VolumesDeleted), "spaceReclaimed": pruned.SpaceReclaimed,
@@ -258,7 +253,7 @@ func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePortsUsed(w http.ResponseWriter, r *http.Request) {
-	ctrs, err := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{})
 	if err != nil {
 		jsonErr(w, 500, "USED_PORTS_FETCH_FAILED", err.Error())
 		return
@@ -288,7 +283,7 @@ func handlePortsSuggest(w http.ResponseWriter, r *http.Request) {
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, _ := podman.ContainerList(context.Background(), dockerctr.ListOptions{})
 	used := map[int]bool{}
 	for _, c := range ctrs {
 		for _, p := range c.Ports {
@@ -355,13 +350,13 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	if !parseJSON(w, r, &body) {
 		return
 	}
-	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{})
+	ctrs, _ := podman.ContainerList(context.Background(), dockerctr.ListOptions{})
 	idSet := map[string]bool{}
 	for _, id := range body.ContainerIDs {
 		idSet[id] = true
 	}
 
-	var watchtowerNames []string
+	var standaloneNames []string
 	projectSet := map[string]bool{}
 
 	for _, c := range ctrs {
@@ -379,12 +374,12 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			if project != "" {
 				projectSet[project] = true
 			} else if len(c.Names) > 0 {
-				watchtowerNames = append(watchtowerNames, strings.TrimPrefix(c.Names[0], "/"))
+				standaloneNames = append(standaloneNames, strings.TrimPrefix(c.Names[0], "/"))
 			}
 		}
 	}
 
-	if len(projectSet) == 0 && len(watchtowerNames) == 0 {
+	if len(projectSet) == 0 && len(standaloneNames) == 0 {
 		jsonErr(w, 404, "CONTAINERS_NOT_RUNNING", "None of the provided container IDs are currently running")
 		return
 	}
@@ -410,7 +405,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	cmdName, cmdArgs, cmdErr := getComposeCommand()
 	for projectID := range projectSet {
 		if cmdErr != nil {
-			allStderr.WriteString(fmt.Sprintf("[update] docker compose not available for %s: %v\n", projectID, cmdErr))
+			allStderr.WriteString(fmt.Sprintf("[update] podman compose not available for %s: %v\n", projectID, cmdErr))
 			continue
 		}
 		baseID := getBaseAppID(projectID)
@@ -429,7 +424,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		env, _ := compose.GetComposeProcessEnv(appPath, projectID, docker.SocketPath)
+		env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
 		shared.Log("info", fmt.Sprintf("[update] pulling latest images for stack: %s", projectID))
 		pullCtx, pullCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		pullArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "pull")
@@ -445,8 +440,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Detect whether any image was actually newer before recreating.
-		// We only check pull output — this avoids relying on locale-sensitive
-		// strings from 'up' which vary across Docker/Compose versions.
 		pullCombined := strings.ToLower(outPull + "\n" + errPull)
 		newerImage := strings.Contains(pullCombined, "downloaded newer image") ||
 			strings.Contains(pullCombined, "pull complete") ||
@@ -476,21 +469,19 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// 2. Process standalone containers using Watchtower
-	if len(watchtowerNames) > 0 {
-		shared.Log("info", fmt.Sprintf("[update] running watchtower for standalone containers: %s", strings.Join(watchtowerNames, ", ")))
-		wOut, wErr, wExit, err := runWatchtower(watchtowerNames)
+	// 2. Process standalone containers using podman auto-update
+	if len(standaloneNames) > 0 {
+		shared.Log("info", fmt.Sprintf("[update] running podman auto-update for standalone containers: %s", strings.Join(standaloneNames, ", ")))
+		wOut, wErr, wExit, err := runPodmanAutoUpdate(standaloneNames)
 		if err != nil {
-			allStderr.WriteString(fmt.Sprintf("[update] watchtower error: %v\n", err))
+			allStderr.WriteString(fmt.Sprintf("[update] podman auto-update error: %v\n", err))
 		} else {
 			allStdout.WriteString(wOut + "\n")
 			allStderr.WriteString(wErr + "\n")
 
-			// Count only the containers that Watchtower actually mentions by name as updated.
-			// This avoids overcounting when only a subset of the requested containers had updates.
 			wCombined := strings.ToLower(wOut + "\n" + wErr)
 			var updatedNames []string
-			for _, name := range watchtowerNames {
+			for _, name := range standaloneNames {
 				if strings.Contains(wCombined, strings.ToLower(name)) &&
 					(strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")) {
 					updatedNames = append(updatedNames, name)
@@ -501,7 +492,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(updatedNames, ", ")))
 				telemetry.TrackUpdatesForContainers(updatedNames)
 			} else {
-				shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(watchtowerNames, ", "), wExit))
+				shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(standaloneNames, ", "), wExit))
 			}
 		}
 	}

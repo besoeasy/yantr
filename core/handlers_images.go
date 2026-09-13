@@ -4,7 +4,7 @@ import (
 	"context"
 	"core/apps"
 	"core/compose"
-	"core/docker"
+	"core/podman"
 	"fmt"
 	"net/http"
 	"os"
@@ -18,12 +18,12 @@ import (
 )
 
 func handleImages(w http.ResponseWriter, r *http.Request) {
-	images, err := docker.ImageList(context.Background(), dockerimage.ListOptions{})
+	images, err := podman.ImageList(context.Background(), dockerimage.ListOptions{})
 	if err != nil {
 		jsonErr(w, 500, "IMAGES_FETCH_FAILED", err.Error())
 		return
 	}
-	ctrs, _ := docker.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	ctrs, _ := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
 	usedIDs := map[string]bool{}
 	for _, c := range ctrs {
 		usedIDs[c.ImageID] = true
@@ -78,12 +78,12 @@ func handleImages(w http.ResponseWriter, r *http.Request) {
 
 func handleImageDelete(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	info, _, err := docker.ImageInspectWithRaw(context.Background(), id)
+	info, _, err := podman.ImageInspectWithRaw(context.Background(), id)
 	if err != nil {
 		jsonErr(w, 404, "IMAGE_NOT_FOUND", "Image not found")
 		return
 	}
-	if _, err := docker.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{}); err != nil {
+	if _, err := podman.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{}); err != nil {
 		jsonErr(w, 500, "IMAGE_REMOVE_FAILED", err.Error())
 		return
 	}
@@ -159,7 +159,7 @@ func handleImageDetails(w http.ResponseWriter, r *http.Request) {
 
 	var result []imgDetail
 	for _, imgName := range imageNames {
-		info, _, err := docker.ImageInspectWithRaw(context.Background(), imgName)
+		info, _, err := podman.ImageInspectWithRaw(context.Background(), imgName)
 		if err != nil {
 			// Image not found locally, skip
 			continue
