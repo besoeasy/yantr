@@ -58,7 +58,6 @@ podman run -d \
   --network host \
   -v $XDG_RUNTIME_DIR/podman/podman.sock:/run/podman/podman.sock:z \
   -v yantr_data:/data:z \
-  --restart unless-stopped \
   ghcr.io/besoeasy/yantr:latest
 ```
 
