@@ -567,12 +567,6 @@ code, pre { font-family: var(--font-mono); }
 .hero-letter-3 { animation: heroLetterFloat 6.4s ease-in-out infinite; animation-delay: 0.22s; }
 .hero-letter-4 { animation: heroLetterTilt 7.1s ease-in-out infinite; animation-delay: 0.34s; }
 .hero-letter-5 { animation: heroLetterFloat 6.9s ease-in-out infinite; animation-delay: 0.46s; }
-@keyframes archPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08); }
-  50% { transform: scale(1.01); box-shadow: 0 0 0 8px rgba(0, 0, 0, 0); }
-}
-.arch-node { animation: archPulse 3.8s ease-in-out infinite; }
-.arch-node-inner { transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
