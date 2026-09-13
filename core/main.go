@@ -25,7 +25,6 @@ import (
 	"core/apps"
 	"core/auth"
 	"core/podman"
-	"core/selfinstall"
 	"core/shared"
 	"core/supervisor"
 	"core/telemetry"
@@ -403,14 +402,6 @@ func handleAppLogo(w http.ResponseWriter, r *http.Request) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 func main() {
-	// Bootstrap self-install if needed
-	if bootstrapped, err := selfinstall.RunIfNeeded(); err != nil {
-		fmt.Fprintln(os.Stderr, "selfinstall error:", err)
-		os.Exit(1)
-	} else if bootstrapped {
-		os.Exit(0)
-	}
-
 	// Configure apps directory
 	appsPath := getAppsDir()
 	apps.SetAppsDir(appsPath)
