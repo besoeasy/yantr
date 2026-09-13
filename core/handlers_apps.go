@@ -149,6 +149,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		ProjectID: projectName, AppID: body.AppID,
 		ExpiresIn: body.ExpiresIn, CustomPortMappings: body.CustomPortMappings,
 		ExtraEnv: extraEnv, MasterApp: body.MasterApp,
+		HostDockerSocket: podman.HostSocket(),
 	})
 	if err != nil {
 		jsonErr(w, 500, "COMPOSE_BUILD_FAILED", err.Error())

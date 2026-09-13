@@ -223,6 +223,7 @@ type TransformOptions struct {
 	CustomPortMappings map[string]interface{}
 	ExtraEnv           map[string]interface{}
 	MasterApp          string
+	HostDockerSocket   string
 }
 
 // ApplyTransforms applies all project-level transforms to the compose document in place.
@@ -243,6 +244,11 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 	// Extra env
 	if len(opts.ExtraEnv) > 0 {
 		applyExtraEnv(services, opts.ExtraEnv)
+	}
+
+	// Docker socket transforms — rewrite /var/run/docker.sock to host Podman socket
+	if opts.HostDockerSocket != "" {
+		applyDockerSocketTransform(services, opts.HostDockerSocket)
 	}
 
 	// Expiration labels — deploy-time expiresIn (hours) takes precedence;
@@ -269,6 +275,33 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 	}
 
 	return nil
+}
+
+func applyDockerSocketTransform(services map[string]interface{}, hostSocket string) {
+	for _, svcRaw := range services {
+		svc, ok := svcRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		vols, ok := svc["volumes"].([]interface{})
+		if !ok {
+			continue
+		}
+		for i, v := range vols {
+			switch entry := v.(type) {
+			case string:
+				parts := strings.Split(entry, ":")
+				if len(parts) >= 2 && (parts[0] == "/var/run/docker.sock" || parts[0] == "/run/docker.sock") {
+					parts[0] = hostSocket
+					vols[i] = strings.Join(parts, ":")
+				}
+			case map[string]interface{}:
+				if src, ok := entry["source"].(string); ok && (src == "/var/run/docker.sock" || src == "/run/docker.sock") {
+					entry["source"] = hostSocket
+				}
+			}
+		}
+	}
 }
 
 func getServices(doc ComposeDoc) map[string]interface{} {

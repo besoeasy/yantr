@@ -7,7 +7,9 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	dockerclient "github.com/docker/docker/client"
@@ -98,4 +100,36 @@ func Background() context.Context {
 // Ctx returns a plain background context for operations that might take a while.
 func Ctx() context.Context {
 	return context.Background()
+}
+
+var (
+	hostSocketOnce   sync.Once
+	cachedHostSocket string
+)
+
+// HostSocket returns the Podman socket path on the host system.
+func HostSocket() string {
+	hostSocketOnce.Do(func() {
+		if s := os.Getenv("HOST_PODMAN_SOCKET"); s != "" {
+			cachedHostSocket = strings.TrimPrefix(s, "unix://")
+			return
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "podman", "info", "--format", "{{.Host.RemoteSocket.Path}}")
+		if out, err := cmd.Output(); err == nil {
+			val := strings.TrimSpace(string(out))
+			val = strings.TrimPrefix(val, "unix://")
+			if val != "" && val != "<no value>" {
+				cachedHostSocket = val
+				return
+			}
+		}
+		if strings.HasPrefix(SocketPath, "/run/user/") {
+			cachedHostSocket = SocketPath
+			return
+		}
+		cachedHostSocket = SocketPath
+	})
+	return cachedHostSocket
 }
