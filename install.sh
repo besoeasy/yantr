@@ -107,7 +107,7 @@ log_step "Writing Quadlet specification..."
 log_info "Target: ${QUADLET_FILE}"
 
 QUADLET_CONTENT="[Unit]
-Description=Yantr Homelab App Store
+Description=Yantr
 After=network-online.target
 Wants=network-online.target
 

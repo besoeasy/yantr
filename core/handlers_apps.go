@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"core/apps"
-	"core/caddy"
 	"core/compose"
 	"core/podman"
 	"core/shared"
@@ -66,13 +65,6 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		InstanceID         int                    `json:"instanceId"`
 		MasterApp          string                 `json:"masterApp"`
 		CustomPortMappings map[string]interface{} `json:"customPortMappings"`
-		Auth               *struct {
-			Enabled    bool   `json:"enabled"`
-			Port       int    `json:"port"`
-			TargetPort int    `json:"targetPort"`
-			Username   string `json:"username"`
-			Password   string `json:"password"`
-		} `json:"auth"`
 	}
 	if !parseJSON(w, r, &body) {
 		return
@@ -162,26 +154,6 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// ── x-auth: parse and inject Caddy auth labels ─────────────────────────
-	if doc, parseErr := compose.Parse(modifiedContent); parseErr == nil {
-		auth := caddy.ParseXAuth(doc)
-		if body.Auth != nil && body.Auth.Enabled {
-			auth = &caddy.XAuth{
-				Port:       body.Auth.Port,
-				TargetPort: body.Auth.TargetPort,
-				Username:   body.Auth.Username,
-				Password:   body.Auth.Password,
-			}
-		}
-		if auth != nil {
-			if injectErr := caddy.InjectCaddyAuthLabels(doc, auth); injectErr != nil {
-				shared.Log("warn", "[deploy] x-auth inject failed: "+injectErr.Error())
-			} else if rebuilt, rebuildErr := compose.Stringify(doc); rebuildErr == nil {
-				modifiedContent = rebuilt
-			}
-		}
-	}
-
 	ref, err := compose.WriteProjectCompose(appPath, projectName, modifiedContent)
 	if err != nil {
 		jsonErr(w, 500, "COMPOSE_WRITE_FAILED", err.Error())
@@ -221,14 +193,6 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	}
 	shared.Log("info", fmt.Sprintf("[deploy] SUCCESS: app=%s project=%s", body.AppID, projectName))
 
-	// Reload Caddy so new yantr.caddy.* labels are picked up
-	if caddy.IsRunning() {
-		if reloadErr := caddy.ReloadCaddyConfig(); reloadErr != nil {
-			shared.Log("warn", "[deploy] caddy reload after deploy failed: "+reloadErr.Error())
-		} else {
-			shared.Log("info", "[deploy] caddy reloaded")
-		}
-	}
 
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,

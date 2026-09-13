@@ -29,7 +29,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 FROM docker.io/library/alpine:latest
 
 # Install runtime dependencies (no Node.js runtime needed!)
-RUN apk add --no-cache podman podman-compose wget dufs caddy
+RUN apk add --no-cache podman podman-compose wget dufs
 
 WORKDIR /app
 

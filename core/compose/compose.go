@@ -267,11 +267,6 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 		}
 	}
 
-	// Caddy master label
-	if strings.TrimSpace(opts.MasterApp) != "" {
-		applyCaddyMasterLabel(services, strings.TrimSpace(opts.MasterApp))
-	}
-
 	return nil
 }
 
@@ -439,17 +434,6 @@ func applyAbsoluteExpirationLabels(services map[string]interface{}, expireAt int
 		labels := ensureLabelsMap(svc)
 		labels["yantr.expireAt"] = expireStr
 		labels["yantr.temporary"] = "true"
-	}
-}
-
-func applyCaddyMasterLabel(services map[string]interface{}, masterApp string) {
-	for _, svcRaw := range services {
-		svc, ok := svcRaw.(map[string]interface{})
-		if !ok {
-			continue
-		}
-		labels := ensureLabelsMap(svc)
-		labels["yantr.caddy.master"] = masterApp
 	}
 }
 

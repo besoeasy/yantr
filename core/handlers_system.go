@@ -4,7 +4,6 @@ import (
 	"context"
 	"core/apps"
 	"core/auth"
-	"core/caddy"
 	"core/compose"
 	"core/podman"
 	"core/shared"
@@ -325,22 +324,6 @@ func handleNetworkIdentity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "identity": identity})
-}
-
-func handleProxyList(w http.ResponseWriter, r *http.Request) {
-	proxies, _ := caddy.GetCaddyProxies()
-	if proxies == nil {
-		proxies = []caddy.ProxyRoute{}
-	}
-	jsonResp(w, 200, map[string]interface{}{"success": true, "proxies": proxies, "caddyRunning": caddy.IsRunning()})
-}
-
-func handleProxyReload(w http.ResponseWriter, r *http.Request) {
-	if !caddy.IsRunning() {
-		_ = caddy.StartCaddy()
-	}
-	_ = caddy.ReloadCaddyConfig()
-	jsonResp(w, 200, map[string]interface{}{"success": true, "caddyRunning": caddy.IsRunning()})
 }
 
 func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {

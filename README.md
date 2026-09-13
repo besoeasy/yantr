@@ -7,7 +7,7 @@
 
 **A self-hosted app store that runs alongside your OS — not instead of it.**
 
-[![Docker](https://img.shields.io/badge/Docker-ghcr.io-0db7ed?style=flat-square&logo=docker&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
+[![Podman](https://img.shields.io/badge/Podman-ghcr.io-892ca0?style=flat-square&logo=podman&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
 [![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-blue?style=flat-square)](LICENSE)
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
@@ -22,7 +22,7 @@
 
 Platforms like Umbrel want to **be your OS**. Dedicate a machine, surrender the environment, live by their rules.
 
-**Yantr is an app, not an OS.** It runs as a single container on the machine you already have — laptop, Raspberry Pi, old PC, home server. Your host stays untouched. Your files stay put. Yantr manages Docker stacks alongside everything else.
+**Yantr is an app, not an OS.** It runs as a single rootless container on the machine you already have — laptop, Raspberry Pi, old PC, home server. Your host stays untouched. Your files stay put. Yantr manages rootless Podman stacks alongside everything else.
 
 ```
 ┌──────────────────────────────────────────┐
@@ -32,10 +32,10 @@ Platforms like Umbrel want to **be your OS**. Dedicate a machine, surrender the 
 │  │    Yantr     │   │   Your existing │  │
 │  │  (container) │   │   apps & files  │  │
 │  └──────┬───────┘   └─────────────────┘  │
-│         │ Docker socket                  │
+│         │ Podman user socket             │
 │  ┌──────▼────────────────────────────┐   │
 │  │  Jellyfin · n8n · Nextcloud · …   │   │
-│  │      (isolated Docker stacks)     │   │
+│  │      (isolated Podman stacks)     │   │
 │  └───────────────────────────────────┘   │
 └──────────────────────────────────────────┘
 ```
@@ -44,21 +44,25 @@ Platforms like Umbrel want to **be your OS**. Dedicate a machine, surrender the 
 
 ## 🚀 Quick Start
 
-> **Requires Docker** — [install guide](https://yantr.org/install.html)
+One-line installation on Linux (automatically configures rootless Podman and systemd Quadlet):
 
 ```bash
-docker run -d \
+curl -fsSL https://yantr.org/install.sh | bash
+```
+
+Or run manually with rootless Podman:
+
+```bash
+podman run -d \
   --name yantr \
   --network host \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v /var/lib/docker/volumes:/var/lib/docker/volumes \
+  -v $XDG_RUNTIME_DIR/podman/podman.sock:/run/podman/podman.sock:z \
+  -v yantr_data:/data:z \
   --restart unless-stopped \
-  ghcr.io/besoeasy/yantr
+  ghcr.io/besoeasy/yantr:latest
 ```
 
 Open **http://localhost:5252** and create your operator account on first visit.
-
-> **macOS / Windows?** Host networking is Linux-only. See the [platform install guide](https://yantr.org/install.html).
 
 ---
 
@@ -85,13 +89,13 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 ## ✨ What Makes It Different
 
-**Zero OS footprint** — Yantr never writes to your host. Every app is a Docker Compose stack with named volumes. Uninstall and nothing is left behind.
+**Zero OS footprint** — Yantr never writes to your host. Every app is a Podman Compose stack with named volumes. Uninstall and nothing is left behind.
 
 **Full environment control** — Edit env vars per deployment. No fixed presets, no platform lock-in. Deploy the same app twice for testing, family, or clients.
 
 **No dependency hell** — Python, Node, CUDA, whatever — each app brings its own runtime inside its container. Nothing conflicts.
 
-**Built-in networking** — Port conflict detection, Tailscale for private access, Cloudflare Tunnel for public exposure, Caddy reverse proxy with HTTPS.
+**Built-in networking** — Port conflict detection, Tailscale for private access, and Cloudflare Tunnel for public exposure.
 
 **Volume browser** — Inspect and manage your app data directly from the browser.
 
@@ -104,7 +108,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 One container. No database. No external dependencies.
 
 1. **Serves a Vue 3 UI** on port `5252`
-2. **Exposes a Go REST API** (chi router) that talks to Docker via socket and runs `docker compose`
+2. **Exposes a Go REST API** (chi router) that talks to Podman via user socket and runs `podman compose`
 3. **Reads compose templates** from its built-in catalog
 4. **Deploys isolated stacks** — each app is an independent Compose project
 
@@ -136,6 +140,6 @@ The source stays public. The short version is at the top of [`LICENSE`](LICENSE)
 ---
 
 <div align="center">
-  <sub>Vue 3 · Go · Docker · Tailwind CSS</sub><br/><br/>
+  <sub>Vue 3 · Go · Podman · Tailwind CSS</sub><br/><br/>
   <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
 </div>

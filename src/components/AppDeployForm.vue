@@ -33,13 +33,6 @@ const customizePorts = ref(false);
 const customPortMappings = ref({});
 const extraEnvRows = ref([]);
 
-// Auth state
-const enableAuth = ref(false);
-const authPort = ref(3002);
-const authUsername = ref("admin");
-const authPassword = ref("");
-const authTargetPort = ref(0);
-
 // Computed
 const canDeploy = computed(() => !deploying.value);
 
@@ -82,11 +75,6 @@ function randomStringFromCharacters(characters, length) {
     result += characters[randomInt(characters.length)];
   }
   return result;
-}
-
-function generateAuthPassword() {
-  authPassword.value = randomStringFromCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}:,.?", 16);
-  toast.success(t('appDetail.generatedValue', { envVar: 'Password' }));
 }
 
 function addExtraEnvRow() {
@@ -210,21 +198,6 @@ async function deployApp() {
       extraEnv,
       instanceId: instanceNum,
     };
-
-    if (enableAuth.value) {
-      if (!authPort.value || !authUsername.value || !authPassword.value) {
-        toast.error(t('appDeployForm.fillAuthFields'));
-        deploying.value = false;
-        return;
-      }
-      requestBody.auth = {
-        enabled: true,
-        port: authPort.value,
-        targetPort: authTargetPort.value || 0,
-        username: authUsername.value,
-        password: authPassword.value,
-      };
-    }
 
     if (temporaryInstall.value) {
       requestBody.expiresIn = expirationHours.value;
@@ -376,49 +349,6 @@ async function deployApp() {
                       <option :value="336">{{ t('appDetail.2weeks') }}</option>
                       <option :value="720">{{ t('appDetail.1month') }}</option>
                   </select>
-              </div>
-          </div>
-
-          <!-- Basic Authentication -->
-          <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors dark:border-zinc-800 dark:bg-zinc-900/50">
-             <div class="flex items-start gap-3">
-                  <input type="checkbox" id="enable-auth" v-model="enableAuth" class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-zinc-300 bg-transparent text-black focus:ring-black focus:ring-offset-0 dark:border-zinc-700 dark:text-white dark:focus:ring-white" />
-                  <div class="flex-1">
-                      <label for="enable-auth" class="block cursor-pointer text-[11px] font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100">{{ t('appDeployForm.enableBasicAuth') }}</label>
-                      <p class="mt-0.5 text-[10px] text-zinc-500">{{ t('appDeployForm.enableBasicAuthDesc') }}</p>
-                  </div>
-             </div>
-
-              <div v-if="enableAuth" class="mt-5 space-y-4 pl-1">
-                  <div class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.proxyPort') }}
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">{{ t('appDeployForm.proxyPortHint') }}</span>
-                      </label>
-                      <input v-model.number="authPort" type="number" placeholder="e.g. 3002" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
-                  </div>
-                  <!-- Target Port: shown when app exposes multiple ports -->
-                  <div v-if="infoPorts.length > 0" class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.targetPort') }}
-                        <span class="text-[9px] font-normal normal-case tracking-normal text-zinc-400 dark:text-zinc-500">{{ t('appDeployForm.targetPortHint') }}</span>
-                      </label>
-                      <select v-model.number="authTargetPort" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white">
-                        <option :value="0">{{ t('appDeployForm.autoDetect') }}</option>
-                        <option v-for="p in infoPorts" :key="p.port" :value="p.port">
-                          :{{ p.port }} — {{ p.label }} ({{ p.protocol }})
-                        </option>
-                      </select>
-                  </div>
-                  <div class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">{{ t('appDeployForm.username') }}</label>
-                      <input v-model="authUsername" type="text" placeholder="admin" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
-                  </div>
-                  <div class="space-y-1.5">
-                      <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
-                        {{ t('appDeployForm.password') }}
-                        <button @click="generateAuthPassword" type="button" class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 transition-colors hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">{{ t('appDeployForm.generate') }}</button>
-                      </label>
-                      <input v-model="authPassword" type="text" placeholder="Secret password" class="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2.5 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white dark:focus:ring-white" />
-                  </div>
               </div>
           </div>
 

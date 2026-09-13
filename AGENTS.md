@@ -48,15 +48,6 @@ labels:
 
 Supported protocols: `HTTP`, `HTTPS`, `TCP`, `UDP`
 
-### x-auth Block (Optional)
-
-```yaml
-x-auth:
-  port: 3002       # Caddy listens here (auth-protected public port)
-  username: admin
-  password: secret # bcrypted by Yantr at deploy time, then discarded
-```
-
 ## Critical Rules
 
 ### 1. Always Use Named Podman Volumes

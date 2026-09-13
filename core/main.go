@@ -24,7 +24,6 @@ import (
 
 	"core/apps"
 	"core/auth"
-	"core/caddy"
 	"core/podman"
 	"core/selfinstall"
 	"core/shared"
@@ -462,8 +461,6 @@ func main() {
 	r.Get("/api/ports/used", handlePortsUsed)
 	r.Post("/api/ports/suggest", handlePortsSuggest)
 	r.Get("/api/network/identity", handleNetworkIdentity)
-	r.Get("/api/proxy", handleProxyList)
-	r.Post("/api/proxy/reload", handleProxyReload)
 	r.Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/telemetry/stats", handleTelemetryStats)
 
@@ -489,14 +486,6 @@ func main() {
 			http.ServeFile(w, req, filepath.Join(distDir, "index.html"))
 		})
 	}
-
-	// Start Caddy in background
-	go func() {
-		shared.Log("info", "🔒 Starting embedded Caddy proxy")
-		if err := caddy.StartCaddy(); err != nil {
-			shared.Log("warn", "⚠️  [CADDY] "+err.Error())
-		}
-	}()
 
 	// Start temporary-install reaper (checks every minute)
 	go func() {
@@ -533,7 +522,6 @@ func main() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 		_ = srv.Shutdown(ctx)
-		caddy.StopCaddy()
 		browserRegistry.StopAll()
 		os.Exit(0)
 	}()

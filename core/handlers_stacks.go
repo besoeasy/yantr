@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	dockerctr "github.com/docker/docker/api/types/container"
@@ -101,27 +100,6 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
-	var caddyProxies []map[string]interface{}
-	for _, c := range pcs {
-		if c.Labels["yantr.caddy.enabled"] != "true" {
-			continue
-		}
-		sp, _ := strconv.Atoi(c.Labels["yantr.caddy.serve.port"])
-		tp, _ := strconv.Atoi(c.Labels["yantr.caddy.target.port"])
-		if sp == 0 {
-			continue
-		}
-		caddyProxies = append(caddyProxies, map[string]interface{}{
-			"servePort": sp, "targetPort": tp,
-			"authEnabled": c.Labels["yantr.caddy.auth.user"] != "",
-			"authUser":    c.Labels["yantr.caddy.auth.user"],
-			"service":     c.Labels["com.docker.compose.service"],
-		})
-	}
-	if caddyProxies == nil {
-		caddyProxies = []map[string]interface{}{}
-	}
-
 	var appInfo interface{}
 	if entry != nil {
 		appInfo = map[string]interface{}{
@@ -135,7 +113,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"stack": map[string]interface{}{
 			"projectId": projectID, "appId": baseID, "app": appInfo,
-			"publishedPorts": pPorts, "services": services, "caddyProxies": caddyProxies,
+			"publishedPorts": pPorts, "services": services,
 		},
 	})
 }
