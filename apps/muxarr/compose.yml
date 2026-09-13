@@ -1,0 +1,26 @@
+x-yantr:
+  name: "muxarr"
+  tags: [muxing, ffmpeg, media, self-hosted, podman]
+  short_description: "Audio and subtitle track stripper for media files."
+  description: >
+    Muxarr is a web-based media processing utility that strips, extracts,
+    and reorders audio and subtitle streams from video files, optimizing
+    movie and TV show files for your home media streaming servers.
+  usecases: ["Remove unwanted audio tracks from video files.", "Extract subtitle tracks for editing."]
+  website: "https://github.com/KirovAir/muxarr"
+
+services:
+  muxarr:
+    image: ghcr.io/kirovair/muxarr:latest
+    labels:
+      yantr.app: "muxarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - muxarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  muxarr_data:

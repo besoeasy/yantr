@@ -1,0 +1,38 @@
+x-yantr:
+  name: Bifrost
+  tags: [ai, llm, gateway, self-hosted, podman]
+  short_description: High-performance AI gateway with a web UI and OpenAI-compatible API.
+  description: Bifrost is a self-hosted AI gateway that routes requests across
+    many model providers through a single OpenAI-compatible API. It includes a
+    built-in web UI for configuration, monitoring, failover, load balancing, and
+    caching so teams can manage LLM traffic from one place.
+  usecases:
+    [
+      Route OpenAI-compatible traffic across multiple LLM providers from one
+        endpoint.,
+      "Configure providers, budgets, and fallbacks through the built-in web
+        UI.",
+      "Add observability, caching, and failover to self-hosted AI workloads."
+    ]
+  website: https://docs.getbifrost.ai/
+  notes:
+    [
+      Provider API keys still need to be configured after deployment.,
+      App data is stored in a Docker volume mounted at /app/data.,
+    ]
+
+services:
+  bifrost:
+    image: maximhq/bifrost:latest
+    labels:
+      yantr.app: bifrost
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    volumes:
+      - bifrost_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  bifrost_data: null

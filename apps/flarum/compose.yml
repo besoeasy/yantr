@@ -1,0 +1,56 @@
+x-yantr:
+  name: "flarum"
+  tags: [forum, community, self-hosted, podman, php]
+  short_description: "Modern, fast, and extensible community forum platform."
+  description: >
+    A modern, open-source forum platform designed for fast discussion and
+    delightful community interactions. Features a clean two-pane interface,
+    real-time discussions, and an active ecosystem of extensions.
+  usecases: ["Host a community forum.", "Discuss topics with your team.", "Build an Q&A site."]
+  website: "https://github.com/mondediefr/docker-flarum"
+  env_generators:
+    MYSQL_ROOT_PASSWORD: { length: 24, charset: alnum_symbols }
+    DB_PASSWORD: { length: 24, charset: alnum_symbols }
+    ADMIN_PASSWORD: { length: 20, charset: alnum_symbols }
+
+services:
+  flarum:
+    image: mondediefr/flarum:latest
+    labels:
+      yantr.app: "flarum"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    environment:
+      DB_HOST: db
+      DB_NAME: flarum
+      DB_USER: ${DB_USER:-flarum}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DRIVER: mysql
+      FLARUM_ADMIN_USER: ${ADMIN_USER:-admin}
+      FLARUM_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      FLARUM_ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@example.com}
+      FLARUM_APP_URL: ${APP_URL:-http://localhost}
+    ports:
+      - "80"
+    volumes:
+      - flarum_data:/data
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: mariadb:latest
+    labels:
+      yantr.app: "flarum"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: flarum
+      MYSQL_USER: ${DB_USER:-flarum}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - flarum_db:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  flarum_data:
+  flarum_db:

@@ -1,0 +1,61 @@
+x-yantr:
+  name: OmniRoute
+  tags: [ ai, llm, gateway, proxy, self-hosted ]
+  short_description: Free AI gateway routing 290+ providers through one OpenAI-compatible endpoint.
+  description: >
+    OmniRoute is a free, self-hosted AI gateway that consolidates 290+ LLM
+    providers behind a single OpenAI-compatible endpoint. It provides
+    automatic fallback, intelligent token compression, and smart routing,
+    integrating smoothly with AI developer tools and coding assistants.
+  usecases:
+    [
+      "Route all your AI coding tools through one endpoint with automatic
+        failover when a provider hits rate limits.",
+      "Save up to 95% on token costs using built-in RTK and Caveman compression
+        across free and paid LLM tiers.",
+      "Run a local AI proxy that supports every major provider — OpenAI,
+        Anthropic, Google, DeepSeek, Mistral, and 280+ more."
+    ]
+  website: https://github.com/diegosouzapw/OmniRoute
+  env_generators:
+    REDIS_PASSWORD: { length: 32, charset: hex }
+  notes:
+    [
+      "OmniRoute works out of the box with keyless free providers — no API keys
+        needed to start.",
+      "Add API keys for paid providers via the web dashboard after deployment.",
+      "Use the 'auto' model name for smart routing across all connected
+        providers."
+    ]
+
+services:
+  omniroute:
+    image: diegosouzapw/omniroute:latest
+    labels:
+      yantr.app: omniroute
+      yantr.service.20128: Dashboard
+      yantr.port.20128: HTTP
+    ports:
+      - "20128"
+    environment:
+      DATA_DIR: /app/data
+      PORT: 20128
+      REDIS_URL: redis://omniroute-redis:6379
+    volumes:
+      - omniroute_data:/app/data
+    depends_on:
+      - omniroute-redis
+    restart: unless-stopped
+    stop_grace_period: 40s
+
+  omniroute-redis:
+    image: redis:7-alpine
+    labels:
+      yantr.app: omniroute
+    volumes:
+      - omniroute_redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  omniroute_data: null
+  omniroute_redis_data: null

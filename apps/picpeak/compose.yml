@@ -1,0 +1,27 @@
+x-yantr:
+  name: "picpeak"
+  tags: [photos, sharing, photography, self-hosted, podman]
+  short_description: "Modern photo sharing platform designed for photographers."
+  description: >
+    PicPeak is an elegant self-hosted photo sharing platform for
+    photographers. Upload, organize, and showcase high-resolution portfolios
+    with rich EXIF metadata display, client proofing galleries, and privacy
+    controls.
+  usecases: ["Share photo portfolios with clients.", "Organize and showcase photography work."]
+  website: "https://github.com/PicPeak/picpeak"
+
+services:
+  picpeak:
+    image: ghcr.io/picpeak/picpeak:latest
+    labels:
+      yantr.app: "picpeak"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - picpeak_data:/data
+    restart: unless-stopped
+
+volumes:
+  picpeak_data:

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "samarium"
+  tags: [erp, pos, business, management, self-hosted]
+  short_description: "Business management platform with ERP and POS features."
+  description: >
+    Samarium is an open-source business management system combining ERP,
+    POS, and inventory controls. Manage products, handle point-of-sale
+    transactions, track stock, and generate sales reports from a unified web
+    interface.
+  usecases: ["Manage business operations with ERP.", "Process sales with POS system."]
+  website: "https://github.com/shyamsitaula/samarium"
+
+services:
+  samarium:
+    image: ghcr.io/shyamsitaula/samarium:latest
+    labels:
+      yantr.app: "samarium"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - samarium_data:/data
+    restart: unless-stopped
+
+volumes:
+  samarium_data:

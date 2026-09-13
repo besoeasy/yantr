@@ -1,0 +1,27 @@
+x-yantr:
+  name: "adventure-log"
+  tags: [travel, logging, trips, self-hosted, podman]
+  short_description: "Log, map, and visualize your personal adventures and trips."
+  description: >
+    A self-hosted travel tracker and adventure logging platform. Record your
+    trips, visualize journeys on interactive maps, store photos, and
+    maintain a complete personal travel history securely on your own
+    hardware.
+  usecases: ["Log travel adventures.", "Map trip routes and locations.", "Store travel photos and memories."]
+  website: "https://github.com/seanmorley15/adventureLog"
+
+services:
+  adventure-log:
+    image: ghcr.io/seanmorley15/adventurelog:latest
+    labels:
+      yantr.app: "adventure-log"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - adventure_log_data:/data
+    restart: unless-stopped
+
+volumes:
+  adventure_log_data:

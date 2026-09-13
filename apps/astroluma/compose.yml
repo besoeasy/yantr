@@ -1,0 +1,26 @@
+x-yantr:
+  name: "astroluma"
+  tags: [dashboard, homelab, monitoring, self-hosted, podman]
+  short_description: "Feature-rich dashboard for monitoring your homelab."
+  description: >
+    Astroluma is a modern, customizable dashboard designed to monitor and
+    manage your homelab services, containers, and network servers from a
+    single unified, responsive web interface with custom widgets and themes.
+  usecases: ["Monitor homelab services.", "Track server status and metrics."]
+  website: "https://github.com/Sanjeet990/Astroluma"
+
+services:
+  astroluma:
+    image: ghcr.io/sanjeet990/astroluma:latest
+    labels:
+      yantr.app: "astroluma"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    ports:
+      - "3000"
+    volumes:
+      - astroluma_data:/data
+    restart: unless-stopped
+
+volumes:
+  astroluma_data:

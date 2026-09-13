@@ -1,0 +1,26 @@
+x-yantr:
+  name: "plugnpin"
+  tags: [dns, cname, podman, networking, self-hosted]
+  short_description: "Auto DNS and CNAME management for Docker containers."
+  description: >
+    PlugNPiN monitors running containers and automatically creates, updates,
+    and removes DNS and CNAME records on your local DNS server, providing
+    seamless service discovery and hostname resolution across your homelab.
+  usecases: ["Auto-create DNS for containers.", "Manage CNAME records automatically."]
+  website: "https://github.com/DeepSpace2/PlugNPiN"
+
+services:
+  plugnpin:
+    image: ghcr.io/deepspace2/plugnpin:latest
+    labels:
+      yantr.app: "plugnpin"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - plugnpin_data:/data
+    restart: unless-stopped
+
+volumes:
+  plugnpin_data:

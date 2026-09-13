@@ -1,0 +1,26 @@
+x-yantr:
+  name: "boxbilling"
+  tags: [billing, business, saas, self-hosted, podman]
+  short_description: "Complete billing, invoicing, and client management platform."
+  description: >
+    BoxBilling is a full-featured open-source billing and client management
+    platform. Manage clients, automate recurring invoices, process payments,
+    and provide ticketing support from a self-hosted interface.
+  usecases: ["Manage client invoices.", "Process payments and subscriptions."]
+  website: "https://github.com/boxbilling/boxbilling"
+
+services:
+  boxbilling:
+    image: boxbilling/boxbilling:latest
+    labels:
+      yantr.app: "boxbilling"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    volumes:
+      - boxbilling_data:/data
+    restart: unless-stopped
+
+volumes:
+  boxbilling_data:

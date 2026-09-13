@@ -1,0 +1,26 @@
+x-yantr:
+  name: "invio"
+  tags: [invoicing, finance, business, self-hosted, podman]
+  short_description: "Self-hosted invoicing application for freelancers and small business."
+  description: >
+    A self-hosted invoicing tool designed for freelancers and small businesses.
+    Create professional invoices, track payment status, and manage your billing
+    without third-party fees or monthly subscription costs forever.
+  usecases: ["Create and send professional invoices.", "Track payment status and history."]
+  website: "https://github.com/kittendevv/Invio"
+
+services:
+  invio:
+    image: ghcr.io/kittendevv/invio:latest
+    labels:
+      yantr.app: "invio"
+      yantr.service.4000: "Web UI"
+      yantr.port.4000: "HTTP"
+    ports:
+      - "4000"
+    volumes:
+      - invio_data:/data
+    restart: unless-stopped
+
+volumes:
+  invio_data:

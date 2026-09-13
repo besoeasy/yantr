@@ -1,6 +1,6 @@
 x-yantr:
   name: "alpine"
-  tags: [linux, alpine, minimal, docker, self-hosted]
+  tags: [linux, alpine, minimal, podman, self-hosted]
   short_description: "Minimal Alpine Linux container for lightweight workloads."
   description: >
     A lightweight Alpine Linux container ideal for running minimal workloads,

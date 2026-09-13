@@ -1,0 +1,34 @@
+x-yantr:
+  name: Whoami
+  tags: [tools, utility, self-hosted, homelab, podman]
+  short_description: Simple HTTP service that displays request details - ideal for
+    testing proxies and ingress.
+  description: Whoami is an extremely simple HTTP service that prints all incoming
+    request details back to the client. When you access it, it displays the
+    hostname, IP address, headers, and other request information. It's primarily
+    used for testing reverse proxies, load balancers, Kubernetes ingress, Doc...
+  usecases:
+    [
+      Test reverse proxy configurations.,
+      Verify what headers are being forwarded.,
+      Check your public IP as seen by the server.,
+      Debug Docker networking and port forwarding.
+    ]
+  website: https://github.com/traefik/whoami
+  notes:
+    [
+      Tiny image - only displays request info,
+      Useful for testing but not much else,
+      No configuration needed - just works
+    ]
+
+services:
+  whoami:
+    image: traefik/whoami
+    ports:
+      - "80"
+    restart: unless-stopped
+    labels:
+      yantr.port.80: HTTP
+      yantr.app: whoami
+      yantr.service.80: Web UI

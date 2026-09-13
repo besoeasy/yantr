@@ -1,0 +1,26 @@
+x-yantr:
+  name: "clearcam"
+  tags: [security, camera, detection, ai, self-hosted]
+  short_description: "Smart security camera system with AI-powered object detection."
+  description: >
+    ClearCam is a self-hosted security camera management platform that uses
+    AI models to detect people, vehicles, and objects in real time,
+    delivering instant alerts and recording storage for your homelab.
+  usecases: ["Monitor security cameras with AI detection.", "Get alerts for suspicious activity."]
+  website: "https://github.com/roryclear/clearcam"
+
+services:
+  clearcam:
+    image: ghcr.io/roryclear/clearcam:latest
+    labels:
+      yantr.app: "clearcam"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - clearcam_data:/data
+    restart: unless-stopped
+
+volumes:
+  clearcam_data:

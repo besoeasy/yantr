@@ -1,0 +1,27 @@
+x-yantr:
+  name: "arcane"
+  tags: [podman, management, dashboard, self-hosted, devops]
+  short_description: "Modern container management platform with a clean web UI."
+  description: >
+    A self-hosted container management interface for deploying, monitoring,
+    and controlling containers, volumes, and networks. Simplifies homelab
+    administration with an intuitive, responsive web dashboard.
+  usecases: ["Manage Docker containers.", "Monitor resource usage.", "Deploy stacks from UI."]
+  website: "https://github.com/arcane-ops/arcane"
+
+services:
+  arcane:
+    image: ghcr.io/arcane-ops/arcane:latest
+    labels:
+      yantr.app: "arcane"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - arcane_data:/data
+    restart: unless-stopped
+
+volumes:
+  arcane_data:

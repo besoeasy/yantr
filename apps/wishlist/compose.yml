@@ -1,0 +1,26 @@
+x-yantr:
+  name: "wishlist"
+  tags: [shopping, productivity, self-hosted, podman]
+  short_description: "Self-hosted wishlist for tracking and sharing items you want."
+  description: >
+    Wishlist is a personal gift and product tracker. Save items with links,
+    images, and prices, organize ideas by occasion or category, and share
+    wishlists with friends and family while maintaining full data ownership.
+  usecases: ["Track items you want to purchase.", "Share a wishlist with family for gift ideas."]
+  website: "https://github.com/cmintey/wishlist"
+
+services:
+  wishlist:
+    image: ghcr.io/cmintey/wishlist:latest
+    labels:
+      yantr.app: "wishlist"
+      yantr.service.5000: "Web UI"
+      yantr.port.5000: "HTTP"
+    ports:
+      - "5000"
+    volumes:
+      - wishlist_data:/data
+    restart: unless-stopped
+
+volumes:
+  wishlist_data:

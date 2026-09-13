@@ -1,0 +1,26 @@
+x-yantr:
+  name: "dpaste"
+  tags: [pastebin, productivity, tools, self-hosted, podman]
+  short_description: "Self-hosted pastebin for sharing code snippets and text."
+  description: >
+    A clean, modern self-hosted pastebin application. Share text snippets,
+    configuration files, and code with customizable syntax highlighting,
+    expiration timers, and one-click raw viewing for your network.
+  usecases: ["Share code snippets with your team.", "Store temporary text with auto-expiry."]
+  website: "https://github.com/DarrenOfficial/dpaste"
+
+services:
+  dpaste:
+    image: darrenofficial/dpaste:latest
+    labels:
+      yantr.app: "dpaste"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - dpaste_data:/data
+    restart: unless-stopped
+
+volumes:
+  dpaste_data:

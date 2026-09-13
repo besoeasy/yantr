@@ -1,0 +1,26 @@
+x-yantr:
+  name: "muckscraper"
+  tags: [news, aggregator, llm, self-hosted, podman]
+  short_description: "News aggregator with AI-powered bias scoring and analysis."
+  description: >
+    MuckScraper aggregates news articles from diverse global sources and
+    applies AI models to analyze political bias, sentiment, and factual
+    reporting, providing balanced perspectives on current world events.
+  usecases: ["Aggregate news from multiple sources.", "Analyze article bias with AI."]
+  website: "https://github.com/grregis/MuckScraper"
+
+services:
+  muckscraper:
+    image: ghcr.io/grregis/muckscraper:latest
+    labels:
+      yantr.app: "muckscraper"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - muckscraper_data:/data
+    restart: unless-stopped
+
+volumes:
+  muckscraper_data:

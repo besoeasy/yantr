@@ -1,0 +1,27 @@
+x-yantr:
+  name: "docksentry"
+  tags: [podman, updates, notifications, monitoring, self-hosted]
+  short_description: "Container update monitor with notifications and alert triggers."
+  description: >
+    DockSentry monitors your container images for newly published upstream
+    versions, sending instant notifications via webhooks and chat
+    integrations so you can keep your homelab applications safely up to
+    date.
+  usecases: ["Monitor Docker image updates.", "Get notified of available updates."]
+  website: "https://github.com/amayer1983/docksentry"
+
+services:
+  docksentry:
+    image: ghcr.io/amayer1983/docksentry:latest
+    labels:
+      yantr.app: "docksentry"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - docksentry_data:/data
+    restart: unless-stopped
+
+volumes:
+  docksentry_data:

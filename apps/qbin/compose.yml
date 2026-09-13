@@ -1,0 +1,27 @@
+x-yantr:
+  name: "qbin"
+  tags: [pastebin, tools, lightweight, self-hosted, podman]
+  short_description: "Lightweight self-hosted pastebin with simple sharing."
+  description: >
+    Qbin is an ultra-lightweight, self-hosted pastebin service built for
+    speed and simplicity. Create, view, and share text snippets or command
+    logs instantly with minimal resource usage and zero configuration
+    overhead.
+  usecases: ["Quickly share text with anyone.", "Store notes with a shareable link."]
+  website: "https://github.com/Quick-Bin/qbin"
+
+services:
+  qbin:
+    image: ghcr.io/quick-bin/qbin:latest
+    labels:
+      yantr.app: "qbin"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - qbin_data:/data
+    restart: unless-stopped
+
+volumes:
+  qbin_data:

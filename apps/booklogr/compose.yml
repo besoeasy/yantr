@@ -1,0 +1,26 @@
+x-yantr:
+  name: "booklogr"
+  tags: [books, library, tracking, self-hosted, podman]
+  short_description: "Personal library and reading progress tracker for books."
+  description: >
+    A self-hosted reading log and library tracker. Keep track of books you
+    have read, monitor reading goals, rate titles, write reviews, and build
+    a complete personal book collection without cloud tracking.
+  usecases: ["Track your reading history.", "Rate and review books you have finished."]
+  website: "https://github.com/Mozzo1000/booklogr"
+
+services:
+  booklogr:
+    image: ghcr.io/mozzo1000/booklogr:latest
+    labels:
+      yantr.app: "booklogr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - booklogr_data:/data
+    restart: unless-stopped
+
+volumes:
+  booklogr_data:

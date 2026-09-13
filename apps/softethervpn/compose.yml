@@ -1,0 +1,30 @@
+x-yantr:
+  name: "softethervpn"
+  tags: [vpn, network, security, self-hosted, podman]
+  short_description: "Multi-protocol VPN server supporting SSL-VPN, L2TP, and OpenVPN."
+  description: >
+    SoftEther VPN is a multi-protocol VPN server providing cross-platform
+    connectivity. Supports OpenVPN, IPsec, L2TP, MS-SSTP, and SoftEther SSL-
+    VPN on a single instance, with high throughput and built-in firewall
+    traversal.
+  usecases: ["Create a self-hosted VPN gateway.", "Access home network remotely."]
+  website: "https://github.com/siomiz/SoftEtherVPN"
+  notes: ["VPN protocols use ports 443, 500, 4500, and 1194"]
+
+services:
+  softethervpn:
+    image: siomiz/softethervpn:latest
+    labels:
+      yantr.app: "softethervpn"
+      yantr.service.443: "VPN"
+      yantr.port.443: "HTTPS"
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "443"
+    volumes:
+      - softethervpn_data:/usr/local/vpnserver/server_data
+    restart: unless-stopped
+
+volumes:
+  softethervpn_data:

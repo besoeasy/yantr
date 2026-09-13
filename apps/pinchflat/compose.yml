@@ -1,0 +1,26 @@
+x-yantr:
+  name: "pinchflat"
+  tags: [youtube, media, downloader, self-hosted, podman]
+  short_description: "Download, track, and archive YouTube content automatically."
+  description: >
+    A self-hosted YouTube content downloader that tracks channels and
+    playlists, automatically fetching new videos as they release. Integrates
+    with media servers and offers customizable formats and download rules.
+  usecases: ["Archive YouTube videos.", "Monitor channels for new uploads.", "Build a personal media library."]
+  website: "https://github.com/kieraneglin/pinchflat"
+
+services:
+  pinchflat:
+    image: ghcr.io/kieraneglin/pinchflat:latest
+    labels:
+      yantr.app: "pinchflat"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - pinchflat_data:/data
+    restart: unless-stopped
+
+volumes:
+  pinchflat_data:

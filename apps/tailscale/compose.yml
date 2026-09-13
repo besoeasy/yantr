@@ -31,6 +31,7 @@ services:
     network_mode: host
     volumes:
       - tailscale_state:/var/lib/tailscale
+    devices:
       - /dev/net/tun:/dev/net/tun
     restart: unless-stopped
     cap_add:

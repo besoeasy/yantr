@@ -1,0 +1,49 @@
+x-yantr:
+  name: Open WebUI
+  tags: [ai, self-hosted, homelab, podman, open-source]
+  short_description: User-friendly ChatGPT-style interface for running local LLMs with Ollama.
+  description: Open WebUI is a ChatGPT-style interface for running local LLMs via
+    Ollama. It offers conversation history, prompt templates, code highlighting,
+    RAG with document upload, admin controls, and integrations for image
+    generation and web search—suitable for private, self-hosted AI assistants.
+  usecases:
+    [
+      "Chat with local LLMs (Llama, Mistral, Codellama) completely offline for
+        privacy.",
+      Build a private AI assistant for work or personal use without sending
+        data to OpenAI.,
+      Upload documents and ask questions about them using RAG functionality.,
+      Integrate with image generation models for a complete AI experience.
+    ]
+  website: https://github.com/open-webui/open-webui
+  notes:
+    [
+      Requires Ollama to be running with models downloaded,
+      Connects to Ollama on internal Docker network,
+      Supports multiple users with admin controls
+    ]
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    labels:
+      yantr.app: open-webui
+      yantr.service.8080: Web UI
+      yantr.port.8080: HTTP
+    ports:
+      - "8080"
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+    volumes:
+      - open_webui_data:/app/backend/data
+    restart: unless-stopped
+    networks:
+      - ollama_network
+
+networks:
+  ollama_network:
+    name: ollama_network
+    external: true
+
+volumes:
+  open_webui_data: null

@@ -1,0 +1,27 @@
+x-yantr:
+  name: "homedockos"
+  tags: [server, dashboard, self-hosted, podman, homelab]
+  short_description: "Home server operating system with a web-based interface."
+  description: >
+    A complete home server operating system interface for managing
+    containers, storage, networking, and media libraries. Simplifies server
+    management with an intuitive graphical dashboard for every device.
+  usecases: ["Manage home server files.", "Organize media libraries.", "Configure network services."]
+  website: "https://github.com/BansheeTech/HomeDockOS"
+
+services:
+  homedockos:
+    image: ghcr.io/bansheetech/homedockos:latest
+    labels:
+      yantr.app: "homedockos"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    privileged: true
+    ports:
+      - "8080"
+    volumes:
+      - homedockos_data:/data
+    restart: unless-stopped
+
+volumes:
+  homedockos_data:

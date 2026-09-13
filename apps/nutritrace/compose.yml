@@ -1,0 +1,27 @@
+x-yantr:
+  name: "nutritrace"
+  tags: [health, nutrition, fitness, self-hosted, podman]
+  short_description: "Personal nutrition, macro, and calorie tracking app."
+  description: >
+    A self-hosted nutrition tracker for logging daily meals, monitoring
+    caloric and macronutrient intake, and visualizing dietary trends.
+    Maintain complete privacy over your health and wellness data on your
+    homelab.
+  usecases: ["Log daily meals and calories.", "Track macro and micronutrient intake."]
+  website: "https://github.com/TraceApps/nutritrace"
+
+services:
+  nutritrace:
+    image: ghcr.io/traceapps/nutritrace:latest
+    labels:
+      yantr.app: "nutritrace"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - nutritrace_data:/data
+    restart: unless-stopped
+
+volumes:
+  nutritrace_data:

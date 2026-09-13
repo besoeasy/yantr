@@ -1,0 +1,26 @@
+x-yantr:
+  name: "foldergram"
+  tags: [gallery, photos, media, self-hosted, podman]
+  short_description: "Instagram-style photo and video gallery from folders."
+  description: >
+    A self-hosted photo and video gallery inspired by modern social apps.
+    Point Foldergram at any directory on your server to browse, stream, and
+    share media in a clean, responsive layout across all devices.
+  usecases: ["Browse family photos in a gallery view.", "Organize and view photo collections."]
+  website: "https://github.com/foldergram/foldergram"
+
+services:
+  foldergram:
+    image: ghcr.io/foldergram/foldergram:latest
+    labels:
+      yantr.app: "foldergram"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - foldergram_data:/data
+    restart: unless-stopped
+
+volumes:
+  foldergram_data:

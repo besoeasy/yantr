@@ -1,0 +1,27 @@
+x-yantr:
+  name: "ytzero"
+  tags: [youtube, media, frontend, self-hosted, podman]
+  short_description: "YouTube client without algorithmic recommendations."
+  description: >
+    YTZero is a lightweight, privacy-first alternative frontend for YouTube.
+    Enjoy video streaming and channel subscriptions without tracking
+    cookies, advertisements, telemetry, or manipulative algorithmic
+    recommendations.
+  usecases: ["Watch YouTube without ads or tracking.", "Browse channels without algorithm bias."]
+  website: "https://github.com/Pelski/ytzero"
+
+services:
+  ytzero:
+    image: ghcr.io/pelski/ytzero:latest
+    labels:
+      yantr.app: "ytzero"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - ytzero_data:/data
+    restart: unless-stopped
+
+volumes:
+  ytzero_data:

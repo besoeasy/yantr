@@ -1,0 +1,32 @@
+x-yantr:
+  name: "mercure"
+  tags: [real-time, push, protocol, self-hosted, podman]
+  short_description: "Real-time SSE push protocol server using Mercure hub."
+  description: >
+    A self-hosted server implementing the Mercure protocol for real-time
+    push notifications via Server-Sent Events. Compatible with any
+    client supporting the standard Mercure specification for live web apps.
+  usecases: ["Push real-time updates to clients.", "Implement live notifications.", "Build reactive web applications."]
+  website: "https://github.com/dunglas/mercure"
+  env_generators:
+    MERCURE_JWT_KEY: { length: 32, charset: base64url }
+
+services:
+  mercure:
+    image: dunglas/mercure:latest
+    labels:
+      yantr.app: "mercure"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_KEY}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_KEY}
+    ports:
+      - "80"
+    volumes:
+      - mercure_data:/data
+    restart: unless-stopped
+
+volumes:
+  mercure_data:

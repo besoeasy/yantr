@@ -1,0 +1,26 @@
+x-yantr:
+  name: "gogdl-ng"
+  tags: [google-drive, downloader, files, self-hosted, podman]
+  short_description: "Web-based downloader and file manager for Google Drive."
+  description: >
+    A self-hosted Google Drive downloader and file management utility with a
+    clean web interface. Perform multi-threaded downloads, sync shared
+    folders recursively, and manage remote storage from your server.
+  usecases: ["Download Google Drive files.", "Sync Drive folders locally.", "Generate shareable links."]
+  website: "https://github.com/gogdl-ng/gogdl-ng"
+
+services:
+  gogdl-ng:
+    image: ghcr.io/gogdl-ng/gogdl-ng:latest
+    labels:
+      yantr.app: "gogdl-ng"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - gogdl_ng_data:/data
+    restart: unless-stopped
+
+volumes:
+  gogdl_ng_data:

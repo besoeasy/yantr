@@ -1,0 +1,26 @@
+x-yantr:
+  name: "subarr"
+  tags: [subtitles, media, plex, self-hosted, podman]
+  short_description: "Subtitle coordination and automation layer for media servers."
+  description: >
+    Subarr coordinates subtitle downloads and synchronization across your
+    homelab media servers. Automatically search, verify, and fetch missing
+    subtitle tracks in your preferred languages for movies and TV shows.
+  usecases: ["Automatically fetch subtitles for media.", "Manage subtitle preferences across libraries."]
+  website: "https://github.com/coaxk/subarr"
+
+services:
+  subarr:
+    image: ghcr.io/coaxk/subarr:latest
+    labels:
+      yantr.app: "subarr"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - subarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  subarr_data:

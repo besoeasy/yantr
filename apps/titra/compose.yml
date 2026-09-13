@@ -1,0 +1,26 @@
+x-yantr:
+  name: "titra"
+  tags: [time-tracking, productivity, freelancing, self-hosted, podman]
+  short_description: "Time tracking solution designed for freelancers and teams."
+  description: >
+    Titra is an open-source time tracking solution designed for freelancers
+    and small teams. Track billable project hours, organize tasks by client,
+    generate timesheets, and export detailed productivity reports.
+  usecases: ["Track time spent on projects.", "Generate client invoices from time logs."]
+  website: "https://github.com/titraio/titra"
+
+services:
+  titra:
+    image: ghcr.io/titraio/titra:latest
+    labels:
+      yantr.app: "titra"
+      yantr.service.8080: "Web UI"
+      yantr.port.8080: "HTTP"
+    ports:
+      - "8080"
+    volumes:
+      - titra_data:/data
+    restart: unless-stopped
+
+volumes:
+  titra_data:
