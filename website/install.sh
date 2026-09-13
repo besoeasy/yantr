@@ -196,13 +196,39 @@ else
 
   # Enable user lingering so services persist after logout and auto-start on boot
   if command -v loginctl >/dev/null 2>&1; then
-    log_info "Enabling user lingering with loginctl..."
-    loginctl enable-linger "$USER" 2>/dev/null || $SUDO loginctl enable-linger "$USER" 2>/dev/null || true
+    IS_LINGERING="no"
+    if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
+      IS_LINGERING="yes"
+    fi
+
+    if [ "$IS_LINGERING" = "yes" ]; then
+      log_info "User lingering is already enabled."
+    else
+      log_info "Enabling user lingering with loginctl..."
+      # 1. Try non-interactive unprivileged loginctl without polkit tty agent
+      if loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1; then
+        :
+      # 2. Try passwordless sudo if available
+      elif [ -n "$SUDO" ] && sudo -n true 2>/dev/null; then
+        $SUDO loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1 || true
+      # 3. If running interactively with sudo available, prompt cleanly with context
+      elif [ -n "$SUDO" ] && [ -c /dev/tty ]; then
+        log_info "Enabling user lingering requires sudo privileges (keeps Yantr running after logout):"
+        $SUDO loginctl --no-ask-password enable-linger "$USER" </dev/tty >/dev/null 2>&1 || true
+      fi
+
+      if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
+        log_info "User lingering enabled."
+      else
+        log_warn "Could not enable user lingering automatically."
+        log_warn "Containers might stop when you log out. To keep Yantr running 24/7, run: sudo loginctl enable-linger $USER"
+      fi
+    fi
   fi
 
   # Enable and start rootless podman.socket
   log_info "Enabling user Podman socket..."
-  systemctl --user enable --now podman.socket
+  systemctl --user --no-ask-password enable --now podman.socket
 
   QUADLET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd"
   mkdir -p "$QUADLET_DIR"
