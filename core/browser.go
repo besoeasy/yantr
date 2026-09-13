@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"regexp"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	dockerctr "github.com/docker/docker/api/types/container"
-	dockerfilters "github.com/docker/docker/api/types/filters"
 	dockerimage "github.com/docker/docker/api/types/image"
 	dockernet "github.com/docker/docker/api/types/network"
 	dockernat "github.com/docker/go-connections/nat"
@@ -45,6 +45,9 @@ func newVolumeBrowserRegistry() *volumeBrowserRegistry {
 		browsers: map[string]*browser{},
 		reserved: map[int]bool{},
 	}
+	// Clean up any stale or orphan browser containers from previous runs or crashes on startup
+	go r.cleanupOrphans()
+
 	// Cleanup expired browsers every minute
 	go func() {
 		ticker := time.NewTicker(time.Minute)
@@ -57,26 +60,61 @@ func newVolumeBrowserRegistry() *volumeBrowserRegistry {
 
 func browserContainerName(volumeName string) string {
 	clean := invalidNameChars.ReplaceAllString(volumeName, "-")
-	return fmt.Sprintf("yantr-browse-%s", clean)
+	return fmt.Sprintf("y-fs-%s", clean)
 }
 
-func resolveBrowserImage(ctx context.Context) string {
-	if img := os.Getenv("YANTR_IMAGE"); img != "" {
-		return img
+func isBrowserContainer(names []string, labels map[string]string) bool {
+	if labels != nil && labels["yantr.system"] == "browser" {
+		return true
 	}
-
-	images, err := podman.ImageList(ctx, dockerimage.ListOptions{})
-	if err == nil {
-		for _, img := range images {
-			for _, tag := range img.RepoTags {
-				if strings.Contains(tag, "yantr") {
-					return tag
-				}
-			}
+	for _, n := range names {
+		clean := strings.TrimPrefix(n, "/")
+		if strings.HasPrefix(clean, "y-fs-") || strings.HasPrefix(clean, "yantr-browse-") {
+			return true
 		}
 	}
+	return false
+}
 
-	return "ghcr.io/besoeasy/yantr:latest"
+func (r *volumeBrowserRegistry) cleanupOrphans() {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	stopTimeout := 1
+	ctrs, err := podman.ContainerList(ctx, dockerctr.ListOptions{All: true})
+	if err != nil {
+		return
+	}
+	for _, c := range ctrs {
+		if isBrowserContainer(c.Names, c.Labels) {
+			_ = podman.ContainerStop(ctx, c.ID, dockerctr.StopOptions{Timeout: &stopTimeout})
+			_ = podman.ContainerRemove(ctx, c.ID, dockerctr.RemoveOptions{Force: true})
+		}
+	}
+}
+
+const defaultBrowserImage = "docker.io/sigoden/dufs:latest"
+
+func resolveBrowserImage() string {
+	if img := os.Getenv("YANTR_BROWSER_IMAGE"); img != "" {
+		return img
+	}
+	return defaultBrowserImage
+}
+
+func ensureBrowserImage(ctx context.Context, imageName string) error {
+	// If image already exists locally, nothing to do
+	if _, _, err := podman.ImageInspectWithRaw(ctx, imageName); err == nil {
+		return nil
+	}
+	// Pull the minimal browser image on demand
+	reader, err := podman.ImagePull(ctx, imageName, dockerimage.PullOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to pull %q: %w", imageName, err)
+	}
+	defer reader.Close()
+	_, _ = io.Copy(io.Discard, reader)
+	return nil
 }
 
 func (r *volumeBrowserRegistry) findFreePort() (int, error) {
@@ -103,15 +141,31 @@ func (r *volumeBrowserRegistry) findFreePort() (int, error) {
 
 // Start spawns an ephemeral dufs browser container for a volume.
 func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int, error) {
+	if expiryMinutes <= 0 {
+		expiryMinutes = 30 // default to 30 min auto-expiry to avoid permanent container sprawl
+	}
+
 	r.mu.Lock()
+	// If this volume is already active, refresh expiry and reuse port
 	if b, ok := r.browsers[volumeName]; ok {
+		b.expireAt = time.Now().Unix() + int64(expiryMinutes*60)
 		p := b.port
 		r.mu.Unlock()
 		return p, nil
 	}
+
+	// Single-active-browser policy: stop any other active browser container to eliminate spam
+	var toStop []string
+	for name := range r.browsers {
+		toStop = append(toStop, name)
+	}
 	r.mu.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	for _, name := range toStop {
+		r.Stop(name)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// Verify volume exists
@@ -124,7 +178,14 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 		return 0, err
 	}
 
-	imageName := resolveBrowserImage(ctx)
+	imageName := resolveBrowserImage()
+	if err := ensureBrowserImage(ctx, imageName); err != nil {
+		r.mu.Lock()
+		delete(r.reserved, p)
+		r.mu.Unlock()
+		return 0, fmt.Errorf("failed to ensure browser image %q: %w", imageName, err)
+	}
+
 	containerName := browserContainerName(volumeName)
 
 	// Clean up any stale container with the same name before creating
@@ -132,8 +193,7 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 
 	stopTimeout := 1
 	config := &dockerctr.Config{
-		Image:      imageName,
-		Entrypoint: []string{"dufs"},
+		Image: imageName,
 		Cmd: []string{
 			"/data",
 			"--port", "5000",
@@ -183,10 +243,7 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 		return 0, fmt.Errorf("failed to start browser container for %q: %w", volumeName, err)
 	}
 
-	expireAt := int64(0)
-	if expiryMinutes > 0 {
-		expireAt = time.Now().Unix() + int64(expiryMinutes*60)
-	}
+	expireAt := time.Now().Unix() + int64(expiryMinutes*60)
 
 	b := &browser{containerID: created.ID, port: p, expireAt: expireAt}
 
@@ -277,17 +334,8 @@ func (r *volumeBrowserRegistry) StopAll() {
 		_ = podman.ContainerRemove(ctx, b.containerID, dockerctr.RemoveOptions{Force: true})
 	}
 
-	// Clean up any remaining orphan containers with label yantr.system=browser
-	ctrs, err := podman.ContainerList(ctx, dockerctr.ListOptions{
-		All:     true,
-		Filters: dockerfilters.NewArgs(dockerfilters.Arg("label", "yantr.system=browser")),
-	})
-	if err == nil {
-		for _, c := range ctrs {
-			_ = podman.ContainerStop(ctx, c.ID, dockerctr.StopOptions{Timeout: &stopTimeout})
-			_ = podman.ContainerRemove(ctx, c.ID, dockerctr.RemoveOptions{Force: true})
-		}
-	}
+	// Clean up any remaining orphan containers
+	r.cleanupOrphans()
 }
 
 func (r *volumeBrowserRegistry) cleanupExpired() {

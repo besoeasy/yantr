@@ -892,6 +892,234 @@
         </div>
       </section>
 
+      <!-- Why Podman Over Docker Section -->
+      <section id="why-podman-over-docker" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 border-t border-gray-100 bg-white py-20 sm:py-28">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+          <div class="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
+            <p class="text-[11px] uppercase tracking-[0.24em] text-emerald-600 font-semibold mb-3">Security &amp; Architecture · Podman vs Docker</p>
+            <h2 class="text-3xl sm:text-5xl font-bold font-sans tracking-tight text-gray-900 leading-[1.08]">
+              Rootless by design.
+              <span class="block text-gray-400">Why Podman beats Docker for homelabs.</span>
+            </h2>
+            <p class="mt-5 text-base text-gray-500 leading-relaxed font-sans">
+              Most container managers run Docker with a monolithic root daemon. While convenient, giving Docker root means any container breach can compromise your entire host. Yantr is built from the ground up on 100% rootless Podman — eliminating root privileges, daemon crashes, and host firewall tampering.
+            </p>
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="mb-14 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm border-collapse">
+                <thead>
+                  <tr class="border-b border-gray-200 bg-gray-950 text-white">
+                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-gray-400">Capability / Metric</th>
+                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-red-400/90">Traditional Docker</th>
+                    <th scope="col" class="py-4 px-5 sm:px-6 text-xs font-bold uppercase tracking-wider text-emerald-400">Yantr + Rootless Podman</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 font-sans">
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Privilege Model
+                      <span class="block text-xs font-normal text-gray-400">Execution context &amp; permissions</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 rounded-md px-2 py-0.5 mb-1">Runs as root (dockerd)</span>
+                      <p class="text-xs text-gray-500">The <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">docker</code> group grants passwordless root host access.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 bg-emerald-100 border border-emerald-200 rounded-md px-2 py-0.5 mb-1 font-semibold">100% Rootless</span>
+                      <p class="text-xs text-gray-600">Containers run inside user namespaces with unprivileged UIDs.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Security Blast Radius
+                      <span class="block text-xs font-normal text-gray-400">Impact of container escape / zero-day</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-red-600">Host Root Compromise</span>
+                      <p class="text-xs text-gray-500">Container breakout grants full root control of the host OS and files.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Zero Host Root Permissions</span>
+                      <p class="text-xs text-gray-600">Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Engine Architecture
+                      <span class="block text-xs font-normal text-gray-400">Process management model</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-gray-900">Monolithic Daemon</span>
+                      <p class="text-xs text-gray-500">If <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">dockerd</code> crashes or restarts for updates, all containers can die.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Daemonless (fork / exec)</span>
+                      <p class="text-xs text-gray-600">Direct execution via <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">conmon</code>; no central daemon single point of failure.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Service Management
+                      <span class="block text-xs font-normal text-gray-400">Boot, restarts, and supervision</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-gray-900">Proprietary Supervision</span>
+                      <p class="text-xs text-gray-500">Docker bypasses systemd; handles its own restarts and process monitoring.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Native systemd Quadlet</span>
+                      <p class="text-xs text-gray-600">Containers are first-class systemd user units (<code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">systemctl --user</code>, lingering).</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Host Firewall &amp; Network
+                      <span class="block text-xs font-normal text-gray-400">iptables / nftables interaction</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-red-600">Bypasses UFW Rules</span>
+                      <p class="text-xs text-gray-500">Directly modifies root iptables, often silently exposing internal ports publicly.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Zero Firewall Tampering</span>
+                      <p class="text-xs text-gray-600">Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Host Filesystem Impact
+                      <span class="block text-xs font-normal text-gray-400">Storage location &amp; permissions</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-gray-900">Root-owned <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">/var/lib/docker</code></span>
+                      <p class="text-xs text-gray-500">Pollutes root filesystem; requires <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">sudo</code> to inspect, manage, or clean.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">100% User-Space Storage</span>
+                      <p class="text-xs text-gray-600">Named volumes in <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">~/.local/share/containers/</code> with SELinux (<code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">:z</code>) labeling.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Idle Resource Overhead
+                      <span class="block text-xs font-normal text-gray-400">Memory &amp; CPU consumption</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-gray-900">Always-On Daemon</span>
+                      <p class="text-xs text-gray-500">Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Zero Daemon Overhead</span>
+                      <p class="text-xs text-gray-600">No background daemon process. Hardware resources go strictly to your apps.</p>
+                    </td>
+                  </tr>
+
+                  <tr class="hover:bg-gray-50/80 transition-colors">
+                    <td class="py-4 px-5 sm:px-6 font-semibold text-gray-900">
+                      Docker Socket Emulation
+                      <span class="block text-xs font-normal text-gray-400">For Glances, Portainer, Beszel</span>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-600">
+                      <span class="text-xs font-semibold text-red-600">Dangerous Root Socket</span>
+                      <p class="text-xs text-gray-500">Mounting <code class="bg-gray-100 px-1 py-0.5 rounded text-gray-700">docker.sock</code> hands containers unrestricted root host takeover.</p>
+                    </td>
+                    <td class="py-4 px-5 sm:px-6 text-gray-900 bg-emerald-50/30">
+                      <span class="text-xs font-semibold text-emerald-700">Safe User Socket Translation</span>
+                      <p class="text-xs text-gray-600">Automatically translates to user <code class="bg-emerald-100/60 px-1 py-0.5 rounded text-emerald-900">podman.sock</code> — full compatibility, zero root risk.</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Feature Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">Zero Host Root Privileges</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                Containers run inside Linux user namespaces. Even if a containerized service runs as UID 0, the kernel maps it to an unprivileged host UID. A breached container cannot access host root or read <code>/etc/shadow</code>.
+              </p>
+            </div>
+
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">Daemonless Architecture</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                Docker relies on a central <code>dockerd</code> daemon that acts as a single point of failure. Podman uses direct fork/exec with <code>conmon</code>. If Yantr updates or stops, your running stacks continue without interruption.
+              </p>
+            </div>
+
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">Native systemd Quadlet</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                Containers are native systemd services. Auto-start on boot with user lingering enabled, manage lifecycles with standard <code>systemctl --user</code>, and stream live logs with <code>journalctl --user</code>.
+              </p>
+            </div>
+
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">Firewall Safe (No UFW Bypass)</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                Docker famously overrides root iptables rules, exposing ports directly to the internet past your UFW firewall. Rootless Podman networks strictly inside user namespaces — never altering host firewall rules.
+              </p>
+            </div>
+
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">Safe Docker Socket Translation</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                Homelab tools like Glances, Portainer, and Beszel that ask for <code>docker.sock</code> are automatically routed to your unprivileged user Podman socket. You get full Docker compatibility with zero host root risk.
+              </p>
+            </div>
+
+            <div class="rounded-3xl bg-gray-50 border border-gray-100 p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <div class="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold tracking-tight text-gray-900">User-Space Named Volumes</h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-gray-500">
+                No root-owned files in <code>/var/lib/docker</code>. Data lives in user storage (<code>~/.local/share/containers/</code>) with automatic SELinux <code>:z</code> context labeling. Clean ownership, zero sudo to back up or clean.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Features Section -->
       <section id="features" class="full-bleed-mobile-safe relative left-1/2 right-1/2 w-screen -translate-x-1/2 py-20 border-t border-gray-100 bg-white overflow-hidden">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -1087,6 +1315,20 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
+              <h3 class="text-base font-bold font-sans mb-3 text-white">Why does Yantr use Podman instead of Docker?</h3>
+              <p class="text-white/50 leading-relaxed text-sm">
+                Docker runs as a monolithic root daemon (<code class="text-white/70 font-mono">dockerd</code>). Anyone with access to the Docker group effectively has passwordless root control over your host. Podman runs completely rootless in unprivileged user namespaces without any background daemon. It integrates directly with Linux systemd (via Quadlet), doesn't tamper with host firewall rules, and leaves zero footprint on your host OS.
+              </p>
+            </div>
+
+            <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
+              <h3 class="text-base font-bold font-sans mb-3 text-white">What is 'rootless' and why is it better for my homelab?</h3>
+              <p class="text-white/50 leading-relaxed text-sm">
+                Rootless means Yantr and all deployed containers run under your standard, unprivileged user account without <code class="text-white/70 font-mono">sudo</code>. The Linux kernel maps container UID 0 to an unprivileged host UID. Even in the worst-case scenario of a container escape vulnerability, the attacker is trapped inside an unprivileged sandbox and cannot access host system files, read credentials, or install rootkits.
+              </p>
+            </div>
+
             <div class="border border-white/10 rounded-2xl p-6 sm:p-8 hover:border-white/25 hover:bg-white/[0.04] transition-all duration-300">
               <h3 class="text-base font-bold font-sans mb-3 text-white">Does Yantr replace my operating system?</h3>
               <p class="text-white/50 leading-relaxed text-sm">
@@ -1953,8 +2195,23 @@
           },
           {
             emoji: "🛡️",
-            title: "Rootless Isolation",
-            desc: "Every container runs under your unprivileged user namespace with SELinux enforcement — zero root privileges required.",
+            title: "Rootless by Default",
+            desc: "Every container runs in an unprivileged user namespace with SELinux enforcement — zero root privileges required.",
+          },
+          {
+            emoji: "⚡",
+            title: "Daemonless Engine",
+            desc: "No monolithic background daemon to crash or hog memory. Each container is an independent native Linux process.",
+          },
+          {
+            emoji: "🧱",
+            title: "Firewall Safe",
+            desc: "Zero tampering with host iptables or UFW. Networking stays completely isolated inside the user namespace.",
+          },
+          {
+            emoji: "🔌",
+            title: "Safe Docker Socket",
+            desc: "Routes /var/run/docker.sock to an unprivileged user socket so tools like Portainer and Glances run safely.",
           },
           {
             emoji: "🔒",

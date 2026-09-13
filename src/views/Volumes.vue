@@ -98,7 +98,7 @@ async function startBrowsing(volumeName) {
     const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ expiryMinutes: 0 }),
+      body: JSON.stringify({ expiryMinutes: 30 }),
     })
     await expectApiSuccess(response, t('volumes.failedToStartBrowser'))
     toast.success(t('volumes.browserStarted'))

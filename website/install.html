@@ -264,6 +264,62 @@
           </div>
         </div>
 
+        <!-- ══════════════════════════════════════════ WHY PODMAN OVER DOCKER ══════════ -->
+        <div class="mb-12 rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 smooth-shadow animate-fade-in-up delay-300">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+              Architecture Choice
+            </span>
+            <span class="text-xs text-gray-500 font-medium">Why Yantr rejects root-daemon Docker</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3">Why Rootless Podman Over Docker?</h2>
+          <p class="text-sm text-gray-600 leading-relaxed mb-6">
+            Unlike platforms that install a monolithic root Docker daemon and tamper with your host OS, Yantr uses 100% rootless Podman. Here is what that means in practice:
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-base">🛡️</span>
+                <h4 class="font-bold text-sm text-gray-900">Zero Host Root Privileges</h4>
+              </div>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                Containers run inside unprivileged Linux user namespaces. Even if an attacker escapes a container, they have zero root powers on your physical machine and cannot read <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">/etc/shadow</code> or modify system binaries.
+              </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-base">⚡</span>
+                <h4 class="font-bold text-sm text-gray-900">Daemonless (No Single Point of Failure)</h4>
+              </div>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                Docker relies on <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">dockerd</code>. If it hangs or updates, all containers can die. Podman uses direct fork/exec via <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">conmon</code>. If Yantr restarts, your apps keep running without a hitch.
+              </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-base">⚙️</span>
+                <h4 class="font-bold text-sm text-gray-900">Native systemd Quadlet</h4>
+              </div>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                Containers are first-class systemd user services. Auto-starts on boot with user lingering (<code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">loginctl enable-linger</code>), managed with <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">systemctl --user</code>, and logged to <code class="bg-gray-200/60 px-1 py-0.5 rounded text-gray-800">journalctl --user</code>.
+              </p>
+            </div>
+
+            <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-base">🧱</span>
+                <h4 class="font-bold text-sm text-gray-900">Untouched Host Firewall</h4>
+              </div>
+              <p class="text-xs text-gray-600 leading-relaxed">
+                Docker famously overrides host iptables rules, bypassing local firewalls like UFW without notice. Rootless Podman networks strictly inside user namespaces — never modifying host firewall rules.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- ══════════════════════════════════════════ STEP-BY-STEP MANUAL INSTALL ══════════ -->
         <div class="section-divider">
           <div class="section-label">Manual / Step-by-Step Installation</div>

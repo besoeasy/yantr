@@ -74,6 +74,11 @@ func ImageInspectWithRaw(ctx context.Context, imageID string) (dockertypes.Image
 	return Client.ImageInspectWithRaw(ctx, imageID)
 }
 
+// ImagePull wraps the Podman API to pull an image.
+func ImagePull(ctx context.Context, refStr string, options dockerimage.PullOptions) (io.ReadCloser, error) {
+	return Client.ImagePull(ctx, refStr, options)
+}
+
 // ImageRemove wraps the Podman API to remove an image.
 func ImageRemove(ctx context.Context, imageID string, options dockerimage.RemoveOptions) ([]dockerimage.DeleteResponse, error) {
 	return Client.ImageRemove(ctx, imageID, options)

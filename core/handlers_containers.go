@@ -37,6 +37,21 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 
 	var result []map[string]interface{}
 	for _, c := range containers {
+		if c.Labels["yantr.system"] == "browser" {
+			continue
+		}
+		isBrowser := false
+		for _, n := range c.Names {
+			clean := strings.TrimPrefix(n, "/")
+			if strings.HasPrefix(clean, "y-fs-") || strings.HasPrefix(clean, "yantr-browse-") {
+				isBrowser = true
+				break
+			}
+		}
+		if isBrowser {
+			continue
+		}
+
 		lbl := parseAppLabels(c.Labels)
 		project := compose.ComposeProjectLabel(c.Labels)
 		if lbl.App == "" && project != "" && yantrProjects[project] {

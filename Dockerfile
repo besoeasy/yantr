@@ -29,7 +29,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 FROM docker.io/library/alpine:latest
 
 # Install runtime dependencies (no Node.js runtime needed!)
-RUN apk add --no-cache podman podman-compose wget dufs
+RUN apk add --no-cache podman podman-compose wget
 
 # Configure Podman inside the container as a pure remote client using the mounted host socket
 RUN mkdir -p /etc/containers && printf '[engine]\nremote = true\nactive_service = "host"\n\n[engine.service_destinations.host]\nuri = "unix:///run/podman/podman.sock"\n' > /etc/containers/containers.conf
