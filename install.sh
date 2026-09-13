@@ -47,13 +47,17 @@ log_step "Checking Podman..."
 if command -v podman >/dev/null 2>&1; then
   PODMAN_VER=$(podman --version | awk '{print $3}')
   log_info "Podman is already installed (version: ${PODMAN_VER})"
+  if command -v apt-get >/dev/null 2>&1 && ! command -v newuidmap >/dev/null 2>&1; then
+    log_info "Installing missing uidmap package for rootless container support..."
+    $SUDO apt-get update -y && $SUDO apt-get install -y uidmap 2>/dev/null || true
+  fi
 else
   log_info "Podman not detected. Installing Podman..."
   if command -v dnf >/dev/null 2>&1; then
     $SUDO dnf install -y podman
   elif command -v apt-get >/dev/null 2>&1; then
     $SUDO apt-get update -y
-    $SUDO apt-get install -y podman
+    $SUDO apt-get install -y podman uidmap
   elif command -v pacman >/dev/null 2>&1; then
     $SUDO pacman -Sy --noconfirm podman
   elif command -v zypper >/dev/null 2>&1; then
@@ -84,6 +88,25 @@ if [ "$IS_ROOT" -eq 1 ]; then
   SOCKET_BIND="/run/podman/podman.sock:/run/podman/podman.sock"
 else
   log_step "Configuring Rootless Podman & systemd user service..."
+
+  # Ensure user runtime dir is set for systemd user bus (especially over SSH)
+  export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
+
+  # Check /etc/subuid and /etc/subgid allocations
+  if [ -f /etc/subuid ] && ! grep -q "^${USER}:" /etc/subuid 2>/dev/null; then
+    USERMOD="usermod"
+    if ! command -v usermod >/dev/null 2>&1 && [ -x /usr/sbin/usermod ]; then
+      USERMOD="/usr/sbin/usermod"
+    fi
+    if [ -n "$SUDO" ]; then
+      log_info "Configuring subuid and subgid ranges for ${USER}..."
+      $SUDO "$USERMOD" --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER" 2>/dev/null || true
+    else
+      log_warn "User '${USER}' is missing subuid/subgid allocations in /etc/subuid."
+      log_warn "If rootless Podman fails, run: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${USER}"
+    fi
+  fi
 
   # Enable user lingering so services persist after logout and auto-start on boot
   if command -v loginctl >/dev/null 2>&1; then
