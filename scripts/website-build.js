@@ -325,7 +325,17 @@ async function fetchGitHubData() {
   }
 }
 
+function copyInstaller() {
+  const rootInstaller = path.join(__dirname, '..', 'install.sh');
+  const websiteInstaller = path.join(websiteDir, 'install.sh');
+  if (fs.existsSync(rootInstaller)) {
+    fs.copyFileSync(rootInstaller, websiteInstaller);
+    console.log('📋 Synced install.sh -> website/install.sh');
+  }
+}
+
 try {
+  copyInstaller();
   await fetchGitHubData();
   buildPages();
 } catch (error) {
