@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check } from '@lucide/vue'
+import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check, Download } from '@lucide/vue'
 import StatCard from '../components/StatCard.vue'
 import SizeDistributionChart from '../components/SizeDistributionChart.vue'
 import SearchInput from '../components/SearchInput.vue'
@@ -19,6 +19,7 @@ const { apiUrl } = useApiUrl()
 const volumesData = ref({})
 const loading = ref(false)
 const actionLoading = ref({})
+const exportingVolume = ref({})
 const deletingVolume = ref(null)
 const deletingAllVolumes = ref(false)
 const searchQuery = ref('')
@@ -121,6 +122,32 @@ async function stopBrowsing(volumeName) {
     toast.error(t('volumes.failedToStopBrowser'))
   } finally {
     delete actionLoading.value[volumeName]
+  }
+}
+
+async function exportVolume(volumeName) {
+  exportingVolume.value[volumeName] = true
+  toast.info(t('volumes.exporting'))
+  try {
+    const res = await fetch(`${apiUrl.value}/api/volumes/${encodeURIComponent(volumeName)}/export`)
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`)
+    }
+    const blob = await res.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    const dateStr = new Date().toISOString().slice(0, 10)
+    a.download = `${volumeName}-backup-${dateStr}.tar.gz`
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
+    toast.success(t('volumes.exportSuccess', { name: volumeName }))
+  } catch (error) {
+    toast.error(t('volumes.exportFailed', { message: error.message }))
+  } finally {
+    delete exportingVolume.value[volumeName]
   }
 }
 
@@ -308,27 +335,37 @@ onUnmounted(() => {
                       <td class="tabular-nums px-6 py-4 text-zinc-600 dark:text-zinc-300">{{ volume.size }} {{ t('volumes.mb') }}</td>
                       <td class="px-6 py-4 text-xs text-zinc-500">{{ formatDate(volume.createdAt) }}</td>
                       <td class="px-4 py-4 text-right">
-                         <div v-if="volume.isBrowsing" class="inline-flex items-center gap-1.5">
-                            <a href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
-                               class="inline-flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-blue-700">
-                               <ExternalLink class="h-3 w-3" />
-                               {{ t('volumes.open') }}
-                            </a>
-                            <button @click="stopBrowsing(volume.name)"
+                         <div class="inline-flex items-center gap-1.5">
+                            <button @click="exportVolume(volume.name)"
+                               :disabled="exportingVolume[volume.name]"
+                               class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
+                               :title="t('volumes.export')">
+                               <Loader2 v-if="exportingVolume[volume.name]" class="h-3 w-3 animate-spin text-amber-500" />
+                               <Download v-else class="h-3 w-3" />
+                               {{ t('volumes.export') }}
+                            </button>
+                            <div v-if="volume.isBrowsing" class="inline-flex items-center gap-1.5">
+                               <a href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
+                                  class="inline-flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-blue-700">
+                                  <ExternalLink class="h-3 w-3" />
+                                  {{ t('volumes.open') }}
+                               </a>
+                               <button @click="stopBrowsing(volume.name)"
+                                  :disabled="actionLoading[volume.name]"
+                                  class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors hover:border-red-400 hover:text-red-600 dark:border-red-900/40 dark:bg-zinc-900">
+                                  <Loader2 v-if="actionLoading[volume.name]" class="h-3 w-3 animate-spin" />
+                                  <EyeOff v-else class="h-3 w-3" />
+                                  {{ t('volumes.stop') }}
+                               </button>
+                            </div>
+                            <button v-else @click="startBrowsing(volume.name)" 
                                :disabled="actionLoading[volume.name]"
-                               class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors hover:border-red-400 hover:text-red-600 dark:border-red-900/40 dark:bg-zinc-900">
-                               <Loader2 v-if="actionLoading[volume.name]" class="h-3 w-3 animate-spin" />
-                               <EyeOff v-else class="h-3 w-3" />
-                               {{ t('volumes.stop') }}
+                               class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white">
+                               <Loader2 v-if="actionLoading[volume.name]" class="h-3 w-3 animate-spin text-blue-500" />
+                               <Eye v-else class="h-3 w-3" />
+                               {{ t('volumes.browse') }}
                             </button>
                          </div>
-                         <button v-else @click="startBrowsing(volume.name)" 
-                            :disabled="actionLoading[volume.name]"
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white">
-                            <Loader2 v-if="actionLoading[volume.name]" class="h-3 w-3 animate-spin text-blue-500" />
-                            <Eye v-else class="h-3 w-3" />
-                            {{ t('volumes.browse') }}
-                         </button>
                       </td>
                    </tr>
                  </tbody>
@@ -361,6 +398,13 @@ onUnmounted(() => {
                       <td class="tabular-nums px-6 py-4 text-zinc-600 dark:text-zinc-300">{{ volume.size }} {{ t('volumes.mb') }}</td>
                       <td class="px-6 py-4 text-xs text-zinc-500">{{ formatDate(volume.createdAt) }}</td>
                       <td class="flex items-center justify-end gap-2 px-4 py-4 text-right">
+                         <button @click="exportVolume(volume.name)"
+                            :disabled="exportingVolume[volume.name]"
+                            class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"
+                            :title="t('volumes.export')">
+                            <Loader2 v-if="exportingVolume[volume.name]" class="h-4 w-4 animate-spin text-amber-500" />
+                            <Download v-else class="h-4 w-4" />
+                         </button>
                          <a v-if="volume.isBrowsing" href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
                             class="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10"
                             title="Open Browser">

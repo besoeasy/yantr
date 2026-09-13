@@ -455,6 +455,7 @@ func main() {
 	r.Post("/api/volumes/{name}/browse", handleVolumeBrowseStart)
 	r.Delete("/api/volumes/{name}/browse", handleVolumeBrowseStop)
 	r.Delete("/api/volumes/{name}", handleVolumeDelete)
+	r.Get("/api/volumes/{name}/export", handleVolumeExport)
 	r.Get("/api/system/info", handleSystemInfo)
 	r.Post("/api/system/prune", handleSystemPrune)
 	r.Get("/api/ports/used", handlePortsUsed)

@@ -17,6 +17,8 @@ import {
   HardDrive,
   RotateCcw,
   ShieldCheck,
+  Download,
+  Loader2,
 } from "@lucide/vue";
 
 const route = useRoute();
@@ -239,6 +241,34 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
     toast.error(t("stackView.failedToStartVolumeBrowser"));
   } finally {
     delete browsingVolume.value[volumeName];
+  }
+}
+
+const exportingVolume = ref({});
+
+async function exportVolume(volumeName) {
+  exportingVolume.value[volumeName] = true;
+  toast.info(t("stackView.backingUp") || "Backing up…");
+  try {
+    const res = await fetch(`${apiUrl.value}/api/volumes/${encodeURIComponent(volumeName)}/export`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.download = `${volumeName}-backup-${dateStr}.tar.gz`;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    toast.success(t("stackView.backupSuccess", { name: volumeName }) || "Backup downloaded");
+  } catch (error) {
+    toast.error(t("stackView.backupFailed", { message: error.message }) || "Backup failed");
+  } finally {
+    delete exportingVolume.value[volumeName];
   }
 }
 
@@ -565,6 +595,16 @@ onUnmounted(() => {
                   Perm
                 </button>
               </template>
+              <button
+                @click="exportVolume(vol.name)"
+                :disabled="exportingVolume[vol.name]"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
+                :title="t('stackView.backupVolume')"
+              >
+                <Loader2 v-if="exportingVolume[vol.name]" class="h-3 w-3 animate-spin text-amber-500" />
+                <Download v-else class="h-3 w-3" />
+                {{ t('stackView.backupVolume') }}
+              </button>
             </div>
           </div>
         </div>

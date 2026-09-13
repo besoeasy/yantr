@@ -1,12 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"core/podman"
+	"core/shared"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os/exec"
 	"strings"
+	"time"
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockerctr "github.com/docker/docker/api/types/container"
@@ -99,6 +103,76 @@ func handleVolumeDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": fmt.Sprintf("Volume '%s' removed", name), "volume": name})
+}
+
+func isValidVolumeName(name string) bool {
+	if len(name) == 0 || len(name) > 255 {
+		return false
+	}
+	for _, r := range name {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') || r == '_' || r == '-' || r == '.') {
+			return false
+		}
+	}
+	return true
+}
+
+func handleVolumeExport(w http.ResponseWriter, r *http.Request) {
+	name := chi.URLParam(r, "name")
+	if !isValidVolumeName(name) {
+		jsonErr(w, 400, "INVALID_VOLUME_NAME", "Invalid volume name")
+		return
+	}
+
+	vols, err := podman.VolumeList(r.Context(), dockervol.ListOptions{})
+	if err != nil {
+		jsonErr(w, 500, "PODMAN_ERROR", err.Error())
+		return
+	}
+	found := false
+	for _, v := range vols.Volumes {
+		if v.Name == name {
+			found = true
+			break
+		}
+	}
+	if !found {
+		jsonErr(w, 404, "VOLUME_NOT_FOUND", "Volume not found")
+		return
+	}
+
+	timestamp := time.Now().Format("20060102-150405")
+	filename := fmt.Sprintf("%s-backup-%s.tar.gz", name, timestamp)
+
+	w.Header().Set("Content-Type", "application/gzip")
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, filename))
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.WriteHeader(http.StatusOK)
+
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
+
+	shared.Log("info", fmt.Sprintf("[volume-export] starting backup export for volume '%s'", name))
+
+	// Run ephemeral container to tar and gzip the volume content
+	// Read-only mount (:ro) ensures the running app data is not modified
+	cmd := exec.CommandContext(r.Context(), "podman", "run", "--rm", "-v", name+":/volume_data:ro", "docker.io/library/alpine:latest", "tar", "czf", "-", "-C", "/volume_data", ".")
+	cmd.Stdout = w
+
+	var stderrBuf bytes.Buffer
+	cmd.Stderr = &stderrBuf
+
+	if err := cmd.Run(); err != nil {
+		if r.Context().Err() != nil {
+			shared.Log("info", fmt.Sprintf("[volume-export] download cancelled by client for volume '%s'", name))
+			return
+		}
+		shared.Log("error", fmt.Sprintf("[volume-export] failed to export volume '%s': %v, stderr: %s", name, err, stderrBuf.String()))
+		return
+	}
+
+	shared.Log("info", fmt.Sprintf("[volume-export] successfully completed backup for volume '%s'", name))
 }
 
 func handleVolumeBrowserList(w http.ResponseWriter, r *http.Request) {
