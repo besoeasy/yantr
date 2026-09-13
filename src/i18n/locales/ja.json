@@ -48,7 +48,7 @@
     "syncing": "環境を同期中...",
     "all": "すべて",
     "yantrApps": "Yantr アプリ",
-    "dockerApps": "Docker アプリ",
+    "dockerApps": "コンテナ",
     "volumeBrowsers": "ボリュームブラウザ",
     "metrics": "メトリクス",
     "noAppsRunning": "実行中のアプリなし",
@@ -84,7 +84,7 @@
       "systemTools": "システムツール",
       "managementLogs": "管理 & ログ",
       "images": "イメージ",
-      "imagesDesc": "ローカルDockerイメージを管理",
+      "imagesDesc": "ローカルコンテナイメージを管理",
       "volumes": "ボリューム",
       "volumesDesc": "名前付きボリュームを表示・管理",
       "logs": "ログ",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "イメージ",
-    "subtitle": "ローカルDockerイメージを管理",
+    "subtitle": "ローカルコンテナイメージを管理",
     "searchPlaceholder": "イメージを検索...",
     "totalImages": "イメージ合計",
     "inUse": "使用中",
@@ -438,12 +438,12 @@
     "updateTimedOut": "更新がタイムアウトしました — イメージの取得に時間がかかりすぎました",
     "openAnotherPort": "別のポートを開く",
     "auth": "認証",
-    "openAnotherPortHint": "Dockerのポート構文を使用してください。例：9000:9000、自動割り当ての場合は9000、または53:53/udp。",
+    "openAnotherPortHint": "デプロイ後にポート構文を使用してください。例：9000:9000、自動割り当ての場合は9000、または53:53/udp。",
     "portMappingLabel": "ポートマッピング",
-    "portMappingHint": "9000と入力した場合、Dockerはコンテナポート9000に対してランダムなホストポートを割り当てます。",
+    "portMappingHint": "9000と入力した場合、Podmanはコンテナポート9000に対してランダムなホストポートを割り当てます。",
     "openPortAction": "ポートを開く",
     "openingPortAction": "開いています…",
-    "portFormInvalid": "有効なDockerポートマッピングを入力してください。",
+    "portFormInvalid": "有効なポートマッピングを入力してください。",
     "openingPort": "{portMapping}を開いています…",
     "portOpened": "{portMapping}が開きました",
     "failedToOpenPort": "ポートを開けませんでした",
@@ -582,7 +582,7 @@
       "cores": "コア",
       "memory": "メモリ",
       "kernel": "カーネル {kernel}",
-      "dockerVol": "Docker Vol:"
+      "dockerVol": "ストレージ:"
     },
     "machineIdentity": {
       "title": "識別情報",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "コンテナ環境",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

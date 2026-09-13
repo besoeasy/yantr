@@ -48,7 +48,7 @@
     "syncing": "Синхронизация среды...",
     "all": "Все",
     "yantrApps": "Приложения Yantr",
-    "dockerApps": "Приложения Docker",
+    "dockerApps": "Контейнеры",
     "volumeBrowsers": "Браузеры томов",
     "metrics": "Метрики",
     "noAppsRunning": "Нет запущенных приложений",
@@ -84,7 +84,7 @@
       "systemTools": "Системные инструменты",
       "managementLogs": "Управление и журналы",
       "images": "Образы",
-      "imagesDesc": "Управление локальными образами Docker",
+      "imagesDesc": "Управление локальными образами контейнеров",
       "volumes": "Тома",
       "volumesDesc": "Просмотр и управление именованными томами",
       "logs": "Журналы",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "Образы",
-    "subtitle": "Управление локальными образами Docker",
+    "subtitle": "Управление локальными образами контейнеров",
     "searchPlaceholder": "Поиск образов...",
     "totalImages": "Всего образов",
     "inUse": "Используется",
@@ -438,12 +438,12 @@
     "updateTimedOut": "Тайм-аут обновления — загрузка образа заняла слишком много времени",
     "openAnotherPort": "Открыть другой порт",
     "auth": "Аутентификация",
-    "openAnotherPortHint": "Используйте синтаксис Docker. Например: 9000:9000, 9000 для авто или 53:53/udp.",
+    "openAnotherPortHint": "Используйте синтаксис портов после развертывания. Например: 9000:9000, 9000 для авто или 53:53/udp.",
     "portMappingLabel": "Проброс портов",
-    "portMappingHint": "Если вы введете 9000, Docker назначит случайный порт хоста для контейнера.",
+    "portMappingHint": "Если вы введете 9000, Podman назначит случайный порт хоста для контейнера.",
     "openPortAction": "Открыть порт",
     "openingPortAction": "Открытие…",
-    "portFormInvalid": "Введите правильный порт Docker.",
+    "portFormInvalid": "Введите правильный порт.",
     "openingPort": "Открытие {portMapping}…",
     "portOpened": "Открыт {portMapping}",
     "failedToOpenPort": "Не удалось открыть порт",
@@ -582,7 +582,7 @@
       "cores": "Ядра",
       "memory": "Память",
       "kernel": "Ядро {kernel}",
-      "dockerVol": "Docker Vol:"
+      "dockerVol": "Хранилище:"
     },
     "machineIdentity": {
       "title": "Идентификатор",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "Среда контейнеров",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

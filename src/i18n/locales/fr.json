@@ -48,7 +48,7 @@
     "syncing": "Synchronisation de l'environnement...",
     "all": "Tous",
     "yantrApps": "Apps Yantr",
-    "dockerApps": "Apps Docker",
+    "dockerApps": "Conteneurs",
     "volumeBrowsers": "Explorateurs de volumes",
     "metrics": "Métriques",
     "noAppsRunning": "Aucune application en cours d'exécution",
@@ -84,7 +84,7 @@
       "systemTools": "Outils système",
       "managementLogs": "Gestion & Journaux",
       "images": "Images",
-      "imagesDesc": "Gérer les images Docker locales",
+      "imagesDesc": "Gérer les images de conteneurs locales",
       "volumes": "Volumes",
       "volumesDesc": "Afficher et gérer les volumes nommés",
       "logs": "Journaux",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "Images",
-    "subtitle": "Gérer les images Docker locales",
+    "subtitle": "Gérer les images de conteneurs locales",
     "searchPlaceholder": "Rechercher des images...",
     "totalImages": "Total des images",
     "inUse": "En utilisation",
@@ -438,12 +438,12 @@
     "updateTimedOut": "Mise à jour expirée — le téléchargement de l'image a pris trop de temps",
     "openAnotherPort": "Ouvrir un autre port",
     "auth": "Authentification",
-    "openAnotherPortHint": "Utilisez la syntaxe Docker. Exemples : 9000:9000, 9000 pour une attribution automatique, ou 53:53/udp.",
+    "openAnotherPortHint": "Utilisez la syntaxe de port après le déploiement. Exemples : 9000:9000, 9000 pour une attribution automatique, ou 53:53/udp.",
     "portMappingLabel": "Mappage de Port",
-    "portMappingHint": "Si vous entrez 9000, Docker attribue un port hôte aléatoire pour le port 9000 du conteneur.",
+    "portMappingHint": "Si vous entrez 9000, Podman attribue un port hôte aléatoire pour le port 9000 du conteneur.",
     "openPortAction": "Ouvrir le port",
     "openingPortAction": "Ouverture…",
-    "portFormInvalid": "Entrez un mappage de port Docker valide.",
+    "portFormInvalid": "Entrez un mappage de port valide.",
     "openingPort": "Ouverture de {portMapping}…",
     "portOpened": "{portMapping} ouvert",
     "failedToOpenPort": "Échec de l'ouverture du port",
@@ -582,7 +582,7 @@
       "cores": "Cœurs",
       "memory": "Mémoire",
       "kernel": "Noyau {kernel}",
-      "dockerVol": "Docker Vol :"
+      "dockerVol": "Stockage :"
     },
     "machineIdentity": {
       "title": "Identité",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "Environnement de conteneurs",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

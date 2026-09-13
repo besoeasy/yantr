@@ -48,7 +48,7 @@
     "syncing": "正在同步环境...",
     "all": "全部",
     "yantrApps": "Yantr 应用",
-    "dockerApps": "Docker 应用",
+    "dockerApps": "容器",
     "volumeBrowsers": "卷浏览器",
     "metrics": "指标",
     "noAppsRunning": "没有运行的应用",
@@ -84,7 +84,7 @@
       "systemTools": "系统工具",
       "managementLogs": "管理与日志",
       "images": "镜像",
-      "imagesDesc": "管理本地 Docker 镜像",
+      "imagesDesc": "管理本地容器镜像",
       "volumes": "卷",
       "volumesDesc": "查看和管理命名卷",
       "logs": "日志",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "镜像",
-    "subtitle": "管理本地 Docker 镜像",
+    "subtitle": "管理本地容器镜像",
     "searchPlaceholder": "搜索镜像...",
     "totalImages": "总镜像数",
     "inUse": "使用中",
@@ -438,12 +438,12 @@
     "updateTimedOut": "更新超时 — 镜像拉取耗时过长",
     "openAnotherPort": "打开其他端口",
     "auth": "认证",
-    "openAnotherPortHint": "使用 Docker 端口语法，例如 9000:9000 或 53:53/udp。",
+    "openAnotherPortHint": "使用端口语法，例如 9000:9000、自动分配 9000，或 53:53/udp。",
     "portMappingLabel": "端口映射",
-    "portMappingHint": "如果您仅输入 9000，Docker 将为容器端口 9000 分配一个随机主机端口。",
+    "portMappingHint": "如果您仅输入 9000，Podman 将为容器端口 9000 分配一个随机主机端口。",
     "openPortAction": "打开端口",
     "openingPortAction": "正在打开…",
-    "portFormInvalid": "请输入有效的 Docker 端口映射。",
+    "portFormInvalid": "请输入有效的端口映射。",
     "openingPort": "正在打开 {portMapping}…",
     "portOpened": "已打开 {portMapping}",
     "failedToOpenPort": "打开端口失败",
@@ -582,7 +582,7 @@
       "cores": "核心",
       "memory": "内存",
       "kernel": "内核 {kernel}",
-      "dockerVol": "Docker 卷："
+      "dockerVol": "存储："
     },
     "machineIdentity": {
       "title": "身份信息",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "容器环境",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

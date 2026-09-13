@@ -1,8 +1,8 @@
 export function buildChatGptExplainUrl(appid) {
   const composeUrl = `https://raw.githubusercontent.com/besoeasy/yantr/refs/heads/main/apps/${appid}/compose.yml`;
 
-  const query = `Understand this Yantr Docker stack: ${composeUrl}
-(Yantr handles deployment, so skip Docker/installation commands)
+  const query = `Understand this Yantr compose stack: ${composeUrl}
+(Yantr handles deployment, so skip container/installation commands)
 
 Instructions:
 - Fetch the compose.yml from the URL (use the raw GitHub URL if needed).

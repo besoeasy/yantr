@@ -39,7 +39,7 @@ const emit = defineEmits(["select"]);
               <Box class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
             </div>
             <div>
-              <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Docker App</h3>
+              <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Container</h3>
               <div class="mt-2 flex items-center gap-1.5"
                    :class="container.state === 'running' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-500'">
                 <div class="h-1.5 w-1.5 rounded-full bg-current" :class="{ 'animate-pulse': container.state === 'running' }"></div>

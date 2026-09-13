@@ -48,7 +48,7 @@
     "syncing": "Syncing environment...",
     "all": "All",
     "yantrApps": "Yantr Apps",
-    "dockerApps": "Docker Apps",
+    "dockerApps": "Containers",
     "volumeBrowsers": "Volume Browsers",
     "metrics": "Metrics",
     "noAppsRunning": "No Apps Running",
@@ -95,7 +95,7 @@
       "systemTools": "System Tools",
       "managementLogs": "Management & Logs",
       "images": "Images",
-      "imagesDesc": "Manage local Docker images",
+      "imagesDesc": "Manage local container images",
       "volumes": "Volumes",
       "volumesDesc": "View and manage named volumes",
       "logs": "Logs",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "Images",
-    "subtitle": "Manage local Docker images",
+    "subtitle": "Manage local container images",
     "searchPlaceholder": "Search images...",
     "totalImages": "Total Images",
     "inUse": "In Use",
@@ -391,9 +391,9 @@
     "described": "Described",
     "openAnotherPort": "Open Another Port",
     "auth": "Auth",
-    "openAnotherPortHint": "Use Docker port syntax after deployment. Examples: 9000:9000, 9000 for auto host assignment, or 53:53/udp.",
+    "openAnotherPortHint": "Use port syntax after deployment. Examples: 9000:9000, 9000 for auto host assignment, or 53:53/udp.",
     "portMappingLabel": "Port Mapping",
-    "portMappingHint": "If you enter just 9000, Docker assigns a random host port for container port 9000. For multi-service stacks, pick which service gets the mapping.",
+    "portMappingHint": "If you enter just 9000, Podman assigns a random host port for container port 9000. For multi-service stacks, pick which service gets the mapping.",
     "openPortAction": "Open Port",
     "openingPortAction": "Opening…",
     "hostPort": "Host Port",
@@ -443,7 +443,7 @@
     "updateAlreadyLatest": "Already up to date — no new images found",
     "updateFailed": "Update failed",
     "updateTimedOut": "Update timed out — the image pull took too long",
-    "portFormInvalid": "Enter a valid Docker port mapping like 9000, 9000:9000, or 53:53/udp.",
+    "portFormInvalid": "Enter a valid port mapping like 9000, 9000:9000, or 53:53/udp.",
     "openingPort": "Opening {portMapping}…",
     "portOpened": "Opened {portMapping}",
     "failedToOpenPort": "Failed to open port",
@@ -582,7 +582,7 @@
       "cores": "Cores",
       "memory": "Memory",
       "kernel": "Kernel {kernel}",
-      "dockerVol": "Docker Vol:"
+      "dockerVol": "Storage:"
     },
     "machineIdentity": {
       "title": "Identity",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "Container Environment",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

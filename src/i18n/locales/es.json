@@ -48,7 +48,7 @@
     "syncing": "Sincronizando entorno...",
     "all": "Todos",
     "yantrApps": "Apps de Yantr",
-    "dockerApps": "Apps de Docker",
+    "dockerApps": "Contenedores",
     "volumeBrowsers": "Exploradores de volumen",
     "metrics": "Métricas",
     "noAppsRunning": "No hay apps en ejecución",
@@ -84,7 +84,7 @@
       "systemTools": "Herramientas del sistema",
       "managementLogs": "Gestión y registros",
       "images": "Imágenes",
-      "imagesDesc": "Gestionar imágenes Docker locales",
+      "imagesDesc": "Gestionar imágenes de contenedores locales",
       "volumes": "Volúmenes",
       "volumesDesc": "Ver y gestionar volúmenes nombrados",
       "logs": "Registros",
@@ -332,7 +332,7 @@
   },
   "images": {
     "title": "Imágenes",
-    "subtitle": "Gestionar imágenes Docker locales",
+    "subtitle": "Gestionar imágenes de contenedores locales",
     "searchPlaceholder": "Buscar imágenes...",
     "totalImages": "Total de imágenes",
     "inUse": "En uso",
@@ -438,12 +438,12 @@
     "updateTimedOut": "Actualización agotada — la descarga de la imagen tardó demasiado",
     "openAnotherPort": "Abrir Otro Puerto",
     "auth": "Autenticación",
-    "openAnotherPortHint": "Use la sintaxis de puertos de Docker. Ejemplos: 9000:9000, 9000 para asignación automática, o 53:53/udp.",
-    "portMappingLabel": "Mapeo de Puertos",
-    "portMappingHint": "Si ingresa solo 9000, Docker asigna un puerto de host aleatorio para el puerto 9000 del contenedor.",
-    "openPortAction": "Abrir Puerto",
+    "openAnotherPortHint": "Use la sintaxis de puertos tras el despliegue. Ejemplos: 9000:9000, 9000 para asignación automática, o 53:53/udp.",
+    "portMappingLabel": "Mapeo de puertos",
+    "portMappingHint": "Si ingresa solo 9000, Podman asigna un puerto de host aleatorio para el puerto 9000 del contenedor.",
+    "openPortAction": "Abrir puerto",
     "openingPortAction": "Abriendo…",
-    "portFormInvalid": "Ingrese un mapeo de puertos de Docker válido.",
+    "portFormInvalid": "Ingrese un mapeo de puertos válido.",
     "openingPort": "Abriendo {portMapping}…",
     "portOpened": "Abierto {portMapping}",
     "failedToOpenPort": "Error al abrir el puerto",
@@ -582,7 +582,7 @@
       "cores": "Núcleos",
       "memory": "Memoria",
       "kernel": "Kernel {kernel}",
-      "dockerVol": "Docker Vol:"
+      "dockerVol": "Almacenamiento:"
     },
     "machineIdentity": {
       "title": "Identidad",
@@ -687,7 +687,7 @@
     "version": "Version"
   },
   "portainerCard": {
-    "dockerEnvironment": "Docker Environment",
+    "dockerEnvironment": "Entorno de contenedores",
     "online": "Online",
     "offline": "Offline",
     "currentUptime": "Current Uptime",

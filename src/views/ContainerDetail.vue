@@ -40,7 +40,7 @@ const loadErrorState = {
 const copiedCommand = ref(false)
 const copyExecCommand = async () => {
   try {
-    await navigator.clipboard.writeText(`docker exec -it ${selectedContainer.value.name} /bin/sh`)
+    await navigator.clipboard.writeText(`podman exec -it ${selectedContainer.value.name} /bin/sh`)
     copiedCommand.value = true
     setTimeout(() => copiedCommand.value = false, 2000)
     toast.success('Command copied to clipboard')
@@ -562,7 +562,7 @@ onUnmounted(() => {
                 </p>
                 <div class="flex items-center gap-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
                   <div class="flex-1 font-mono text-[11px] text-gray-900 dark:text-zinc-300 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
-                    docker exec -it {{ selectedContainer.name }} /bin/sh
+                    podman exec -it {{ selectedContainer.name }} /bin/sh
                   </div>
                   <button
                     @click="copyExecCommand"

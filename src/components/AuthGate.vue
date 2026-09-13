@@ -135,7 +135,7 @@ Generated: ${new Date().toISOString()}
 PUBLIC KEY:
 ${derivedPublicKey.value}
 
-DOCKER ENVIRONMENT VARIABLE:
+ENVIRONMENT VARIABLE:
 YANTR_ADMIN_PUBLIC_KEY=${derivedPublicKey.value}
 
 CRITICAL NOTICE:

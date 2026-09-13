@@ -131,7 +131,7 @@ const allMounts = computed(() => {
   return result;
 });
 
-// Named Docker volumes only
+// Named Podman volumes only
 const namedVolumes = computed(() => allMounts.value.filter((m) => m.type === "volume" && m.name));
 
 // Bind mounts and tmpfs — shown in a simple compact list
