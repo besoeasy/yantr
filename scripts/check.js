@@ -300,7 +300,7 @@ async function checkCompose(appName, composePath) {
         warn(
           appName,
           `compose.yml service "${svcName}" uses fixed host port mapping: "${spec}"`,
-          'Use container-only format (e.g. "8080") so Docker auto-assigns the host port.',
+          'Use container-only format (e.g. "8080") so Podman auto-assigns the host port.',
         );
       }
     }

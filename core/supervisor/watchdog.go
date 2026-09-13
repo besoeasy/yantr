@@ -10,6 +10,7 @@ import (
 	dockerevents "github.com/docker/docker/api/types/events"
 	dockerfilters "github.com/docker/docker/api/types/filters"
 
+	"core/compose"
 	"core/podman"
 	"core/shared"
 )
@@ -95,7 +96,7 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 		return
 	}
 
-	projectID := msg.Actor.Attributes["com.docker.compose.project"]
+	projectID := compose.ComposeProjectLabel(msg.Actor.Attributes)
 	if projectID == "" {
 		return
 	}
@@ -139,7 +140,7 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	}
 
 	shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s, service %s) died unexpectedly (exit %d). Auto-restarting...",
-		containerID[:12], projectID, msg.Actor.Attributes["com.docker.compose.service"], exitCode))
+		containerID[:12], projectID, compose.ComposeServiceLabel(msg.Actor.Attributes), exitCode))
 
 	startCtx, startCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	startErr := podman.ContainerStart(startCtx, containerID, dockerctr.StartOptions{})

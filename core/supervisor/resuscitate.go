@@ -47,7 +47,7 @@ func Resuscitate(appsDir string, getComposeCmd func() (string, []string, error))
 	activeProjects := make(map[string]bool)
 	if err == nil {
 		for _, c := range activeContainers {
-			if proj := c.Labels["com.docker.compose.project"]; proj != "" {
+			if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
 				activeProjects[proj] = true
 			}
 		}

@@ -8,6 +8,7 @@
 **A self-hosted app store that runs alongside your OS — not instead of it.**
 
 [![Podman](https://img.shields.io/badge/Podman-ghcr.io-892ca0?style=flat-square&logo=podman&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
+[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-blue?style=flat-square)](LICENSE)
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
@@ -57,7 +58,7 @@ podman run -d \
   --name yantr \
   --network host \
   --security-opt label=disable \
-  -v $XDG_RUNTIME_DIR/podman/podman.sock:/run/podman/podman.sock \
+  -v ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock:/run/podman/podman.sock \
   -v yantr_data:/data:z \
   ghcr.io/besoeasy/yantr:latest
 ```
@@ -90,6 +91,8 @@ Open **http://localhost:5252** and create your operator account on first visit.
 ## ✨ What Makes It Different
 
 **Zero OS footprint** — Yantr never writes to your host. Every app is a Podman Compose stack with named volumes. Uninstall and nothing is left behind.
+
+**Automatic Docker socket translation** — Apps requesting `/var/run/docker.sock` (such as Glances, Beszel, Arcane, or Portainer) are automatically routed to your rootless Podman socket with zero configuration.
 
 **Full environment control** — Edit env vars per deployment. No fixed presets, no platform lock-in. Deploy the same app twice for testing, family, or clients.
 

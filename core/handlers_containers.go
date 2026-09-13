@@ -30,7 +30,7 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 	yantrProjects := map[string]bool{}
 	for _, c := range containers {
 		lbl := parseAppLabels(c.Labels)
-		if project := c.Labels["com.docker.compose.project"]; lbl.App != "" && project != "" {
+		if project := compose.ComposeProjectLabel(c.Labels); lbl.App != "" && project != "" {
 			yantrProjects[project] = true
 		}
 	}
@@ -38,7 +38,7 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 	var result []map[string]interface{}
 	for _, c := range containers {
 		lbl := parseAppLabels(c.Labels)
-		project := c.Labels["com.docker.compose.project"]
+		project := compose.ComposeProjectLabel(c.Labels)
 		if lbl.App == "" && project != "" && yantrProjects[project] {
 			continue
 		}
@@ -87,7 +87,7 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	lbl := parseAppLabels(info.Config.Labels)
-	project := info.Config.Labels["com.docker.compose.project"]
+	project := compose.ComposeProjectLabel(info.Config.Labels)
 	appID := coalesce(lbl.App, getBaseAppID(project), strings.TrimPrefix(info.Name, "/"))
 	entry := getCatalogMap()[appID]
 	name := strings.TrimPrefix(info.Name, "/")
@@ -212,7 +212,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	name := strings.TrimPrefix(info.Name, "/")
-	project := info.Config.Labels["com.docker.compose.project"]
+	project := compose.ComposeProjectLabel(info.Config.Labels)
 
 	if project != "" {
 		baseID := getBaseAppID(project)
@@ -271,7 +271,7 @@ func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
-		if proj := info.Config.Labels["com.docker.compose.project"]; proj != "" {
+		if proj := compose.ComposeProjectLabel(info.Config.Labels); proj != "" {
 			baseID := getBaseAppID(proj)
 			supervisor.RecordStackDeployed(proj, baseID)
 		}
@@ -286,7 +286,7 @@ func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
-		if proj := info.Config.Labels["com.docker.compose.project"]; proj != "" {
+		if proj := compose.ComposeProjectLabel(info.Config.Labels); proj != "" {
 			supervisor.RecordStackStopped(proj)
 		}
 	}

@@ -64,7 +64,7 @@ const otherContainers = computed(() => {
 
 // Filter visibility computed properties
 const showYantrApps = computed(() => activeFilter.value === "all" || activeFilter.value === "yantr");
-const showDockerApps = computed(() => activeFilter.value === "all" || activeFilter.value === "docker");
+const showOtherContainers = computed(() => activeFilter.value === "all" || activeFilter.value === "containers");
 const showVolumeBrowsers = computed(() => activeFilter.value === "all" || activeFilter.value === "volumes");
 const showMetrics = computed(() => activeFilter.value === "all" || activeFilter.value === "metrics");
 
@@ -167,10 +167,10 @@ onUnmounted(() => {
             </button>
             <button
               v-if="otherContainers.length > 0"
-              @click="activeFilter = 'docker'"
+              @click="activeFilter = 'containers'"
               :class="[
                 'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'docker'
+                activeFilter === 'containers'
                   ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
                   : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
               ]"
@@ -228,7 +228,7 @@ onUnmounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 grid-flow-dense">
             <YantraContainersGrid v-if="showYantrApps && yantrContainers.length > 0" :containers="yantrContainers" :show-header="activeFilter !== 'all'" />
             <VolumeContainersGrid v-if="showVolumeBrowsers && volumeContainers.length > 0" :containers="volumeContainers" :show-header="activeFilter !== 'all'" @stop-browser="stopBrowser" />
-            <OtherContainersGrid v-if="showDockerApps && otherContainers.length > 0" :containers="otherContainers" :show-header="activeFilter !== 'all'" @select="viewContainerDetail" />
+            <OtherContainersGrid v-if="showOtherContainers && otherContainers.length > 0" :containers="otherContainers" :show-header="activeFilter !== 'all'" @select="viewContainerDetail" />
 
             <template v-if="showMetrics">
               <!-- Section header only when metrics filter is active (not "all") -->

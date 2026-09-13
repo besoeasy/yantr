@@ -57,7 +57,7 @@ func sweepExpiredContainers() {
 		if err != nil || expireAt <= 0 || now < expireAt {
 			continue // not expired yet
 		}
-		project := c.Labels["com.docker.compose.project"]
+		project := compose.ComposeProjectLabel(c.Labels)
 		if project != "" {
 			if _, seen := expiredProjects[project]; !seen {
 				expiredProjects[project] = projectMeta{
@@ -95,7 +95,7 @@ func sweepExpiredContainers() {
 			shared.Log("warn", fmt.Sprintf("[reaper] compose down failed for %s — force-removing containers", projectID))
 			if stale, listErr := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
 				for _, c := range stale {
-					if c.Labels["com.docker.compose.project"] == projectID {
+					if compose.ComposeProjectLabel(c.Labels) == projectID {
 						_ = podman.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
 						_ = podman.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
 					}
@@ -354,7 +354,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if match {
-			project := c.Labels["com.docker.compose.project"]
+			project := compose.ComposeProjectLabel(c.Labels)
 			if project != "" {
 				projectSet[project] = true
 			} else if len(c.Names) > 0 {

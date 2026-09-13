@@ -18,7 +18,6 @@ import (
 	"syscall"
 	"time"
 
-	dockernet "github.com/docker/docker/api/types/network"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
@@ -29,9 +28,6 @@ import (
 	"core/supervisor"
 	"core/telemetry"
 )
-
-// suppress unused import warning for dockernet (used in NetworkList)
-var _ = dockernet.NetworkingConfig{}
 
 const serverPort = 5252
 
@@ -396,7 +392,7 @@ func handleAppLogo(w http.ResponseWriter, r *http.Request) {
 // ─── Temporary-install reaper ─────────────────────────────────────────────────
 
 // sweepExpiredContainers finds all running containers whose yantr.expireAt label
-// is in the past and tears them down. Stacks are removed via `docker compose down`
+// is in the past and tears them down. Stacks are removed via `podman compose down`
 // (which also cleans up networks/volumes). Standalone containers are stopped and
 // removed directly. Called every minute from a background goroutine.
 

@@ -17,8 +17,26 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// ComposeDoc is a parsed Docker Compose file.
+// ComposeDoc is a parsed compose file.
 type ComposeDoc map[string]interface{}
+
+// ComposeProjectLabel returns the project name from container labels,
+// checking both com.docker.compose.project and io.podman.compose.project.
+func ComposeProjectLabel(labels map[string]string) string {
+	if p, ok := labels["com.docker.compose.project"]; ok && p != "" {
+		return p
+	}
+	return labels["io.podman.compose.project"]
+}
+
+// ComposeServiceLabel returns the service name from container labels,
+// checking both com.docker.compose.service and io.podman.compose.service.
+func ComposeServiceLabel(labels map[string]string) string {
+	if s, ok := labels["com.docker.compose.service"]; ok && s != "" {
+		return s
+	}
+	return labels["io.podman.compose.service"]
+}
 
 // ProjectComposeFileName returns the hidden compose filename for a project instance.
 func ProjectComposeFileName(projectID string) string {
@@ -601,7 +619,7 @@ func formatPortBinding(b PortBinding) string {
 	return strconv.Itoa(*b.HostPort) + ":" + strconv.Itoa(b.ContainerPort) + proto
 }
 
-// ParseDockerPortInput parses a Docker port string like "8080", "8080:8080", "53:53/udp".
+// ParseComposePortInput parses a compose port string like "8080", "8080:8080", "53:53/udp".
 type ParsedPort struct {
 	HostPort        *int
 	ContainerPort   int
@@ -609,7 +627,8 @@ type ParsedPort struct {
 	HasExplicitHost bool
 }
 
-func ParseDockerPortInput(input string) *ParsedPort {
+// ParseComposePortInput parses a port specification string.
+func ParseComposePortInput(input string) *ParsedPort {
 	input = strings.TrimSpace(input)
 	if input == "" {
 		return nil
@@ -641,6 +660,11 @@ func ParseDockerPortInput(input string) *ParsedPort {
 		return &ParsedPort{HostPort: &hostPort, ContainerPort: containerPort, Protocol: proto, HasExplicitHost: true}
 	}
 	return nil
+}
+
+// ParseDockerPortInput is an alias for ParseComposePortInput for backwards compatibility.
+func ParseDockerPortInput(input string) *ParsedPort {
+	return ParseComposePortInput(input)
 }
 
 // ApplyCurrentPublishedPorts syncs published port bindings from running containers into the compose doc.

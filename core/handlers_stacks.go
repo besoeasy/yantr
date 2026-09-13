@@ -26,7 +26,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	var pcs []dockerctr.Summary
 	for _, c := range all {
-		if c.Labels["com.docker.compose.project"] == projectID {
+		if compose.ComposeProjectLabel(c.Labels) == projectID {
 			pcs = append(pcs, c)
 		}
 	}
@@ -93,7 +93,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 			name = strings.TrimPrefix(c.Names[0], "/")
 		}
 		services = append(services, map[string]interface{}{
-			"id": c.ID, "name": name, "composeService": c.Labels["com.docker.compose.service"],
+			"id": c.ID, "name": name, "composeService": compose.ComposeServiceLabel(c.Labels),
 			"image": c.Image, "state": c.State, "status": c.Status, "created": c.Created,
 			"rawPorts": c.Ports, "mounts": mounts, "networks": networks,
 			"service":       coalesce(lbl.Service, name),
@@ -130,7 +130,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 
 	var projectContainers []dockerctr.Summary
 	for _, c := range all {
-		if c.Labels["com.docker.compose.project"] == projectID {
+		if compose.ComposeProjectLabel(c.Labels) == projectID {
 			projectContainers = append(projectContainers, c)
 		}
 	}
