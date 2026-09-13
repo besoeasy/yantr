@@ -4,24 +4,36 @@ import (
 	"context"
 	"fmt"
 	"net"
-	"os/exec"
+	"os"
+	"regexp"
+	"strings"
 	"sync"
 	"time"
+
+	dockerctr "github.com/docker/docker/api/types/container"
+	dockerfilters "github.com/docker/docker/api/types/filters"
+	dockerimage "github.com/docker/docker/api/types/image"
+	dockernet "github.com/docker/docker/api/types/network"
+	dockernat "github.com/docker/go-connections/nat"
 
 	"core/podman"
 )
 
-// browserRegistry is the global instance of the volume browser manager.
-var browserRegistry = newVolumeBrowserRegistry()
+var (
+	// browserRegistry is the global instance of the volume browser manager.
+	browserRegistry = newVolumeBrowserRegistry()
 
-// browser tracks a running dufs process.
+	invalidNameChars = regexp.MustCompile(`[^a-zA-Z0-9_.-]`)
+)
+
+// browser tracks an ephemeral dufs container.
 type browser struct {
-	process  *exec.Cmd
-	port     int
-	expireAt int64 // unix timestamp, 0 = no expiry
+	containerID string
+	port        int
+	expireAt    int64 // unix timestamp, 0 = no expiry
 }
 
-// volumeBrowserRegistry manages dufs browser processes.
+// volumeBrowserRegistry manages ephemeral dufs browser containers.
 type volumeBrowserRegistry struct {
 	mu       sync.Mutex
 	browsers map[string]*browser
@@ -35,11 +47,36 @@ func newVolumeBrowserRegistry() *volumeBrowserRegistry {
 	}
 	// Cleanup expired browsers every minute
 	go func() {
-		for range time.Tick(time.Minute) {
+		ticker := time.NewTicker(time.Minute)
+		for range ticker.C {
 			r.cleanupExpired()
 		}
 	}()
 	return r
+}
+
+func browserContainerName(volumeName string) string {
+	clean := invalidNameChars.ReplaceAllString(volumeName, "-")
+	return fmt.Sprintf("yantr-browse-%s", clean)
+}
+
+func resolveBrowserImage(ctx context.Context) string {
+	if img := os.Getenv("YANTR_IMAGE"); img != "" {
+		return img
+	}
+
+	images, err := podman.ImageList(ctx, dockerimage.ListOptions{})
+	if err == nil {
+		for _, img := range images {
+			for _, tag := range img.RepoTags {
+				if strings.Contains(tag, "yantr") {
+					return tag
+				}
+			}
+		}
+	}
+
+	return "ghcr.io/besoeasy/yantr:latest"
 }
 
 func (r *volumeBrowserRegistry) findFreePort() (int, error) {
@@ -64,7 +101,7 @@ func (r *volumeBrowserRegistry) findFreePort() (int, error) {
 	return 0, fmt.Errorf("could not find a free port")
 }
 
-// Start spawns a dufs browser for a volume.
+// Start spawns an ephemeral dufs browser container for a volume.
 func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int, error) {
 	r.mu.Lock()
 	if b, ok := r.browsers[volumeName]; ok {
@@ -74,15 +111,12 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 	}
 	r.mu.Unlock()
 
-	// Resolve the real mountpoint via the Docker API instead of hardcoding
-	// /var/lib/docker/volumes/<name>/_data, which breaks on non-default data-root.
-	vol, err := podman.VolumeInspect(context.Background(), volumeName)
-	if err != nil {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+
+	// Verify volume exists
+	if _, err := podman.VolumeInspect(ctx, volumeName); err != nil {
 		return 0, fmt.Errorf("failed to inspect volume %q: %w", volumeName, err)
-	}
-	dataPath := vol.Mountpoint
-	if dataPath == "" {
-		return 0, fmt.Errorf("volume %q has no mountpoint", volumeName)
 	}
 
 	p, err := r.findFreePort()
@@ -90,16 +124,63 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 		return 0, err
 	}
 
-	cmd := exec.Command("dufs", dataPath,
-		"--port", fmt.Sprintf("%d", p),
-		"--allow-all",
-		"--path-prefix", "/browse/"+volumeName,
-	)
-	if err := cmd.Start(); err != nil {
+	imageName := resolveBrowserImage(ctx)
+	containerName := browserContainerName(volumeName)
+
+	// Clean up any stale container with the same name before creating
+	_ = podman.ContainerRemove(ctx, containerName, dockerctr.RemoveOptions{Force: true})
+
+	stopTimeout := 1
+	config := &dockerctr.Config{
+		Image:      imageName,
+		Entrypoint: []string{"dufs"},
+		Cmd: []string{
+			"/data",
+			"--port", "5000",
+			"--allow-all",
+			"--path-prefix", "/browse/" + volumeName,
+		},
+		ExposedPorts: dockernat.PortSet{
+			"5000/tcp": struct{}{},
+		},
+		Labels: map[string]string{
+			"yantr.system": "browser",
+			"yantr.volume": volumeName,
+		},
+		StopTimeout: &stopTimeout,
+	}
+
+	hostConfig := &dockerctr.HostConfig{
+		Binds: []string{
+			volumeName + ":/data:z",
+		},
+		PortBindings: dockernat.PortMap{
+			"5000/tcp": []dockernat.PortBinding{
+				{
+					HostIP:   "127.0.0.1",
+					HostPort: fmt.Sprintf("%d", p),
+				},
+			},
+		},
+		RestartPolicy: dockerctr.RestartPolicy{
+			Name: "no",
+		},
+	}
+
+	created, err := podman.ContainerCreate(ctx, config, hostConfig, &dockernet.NetworkingConfig{}, nil, containerName)
+	if err != nil {
 		r.mu.Lock()
 		delete(r.reserved, p)
 		r.mu.Unlock()
-		return 0, fmt.Errorf("failed to start dufs: %w", err)
+		return 0, fmt.Errorf("failed to create browser container for %q: %w", volumeName, err)
+	}
+
+	if err := podman.ContainerStart(ctx, created.ID, dockerctr.StartOptions{}); err != nil {
+		r.mu.Lock()
+		delete(r.reserved, p)
+		r.mu.Unlock()
+		_ = podman.ContainerRemove(ctx, created.ID, dockerctr.RemoveOptions{Force: true})
+		return 0, fmt.Errorf("failed to start browser container for %q: %w", volumeName, err)
 	}
 
 	expireAt := int64(0)
@@ -107,43 +188,44 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 		expireAt = time.Now().Unix() + int64(expiryMinutes*60)
 	}
 
-	b := &browser{process: cmd, port: p, expireAt: expireAt}
+	b := &browser{containerID: created.ID, port: p, expireAt: expireAt}
 
 	r.mu.Lock()
 	r.browsers[volumeName] = b
 	r.mu.Unlock()
 
-	// Watch for process exit
-	go func() {
-		_ = cmd.Wait()
-		r.mu.Lock()
-		delete(r.reserved, p)
-		delete(r.browsers, volumeName)
-		r.mu.Unlock()
-	}()
-
 	return p, nil
 }
 
-// Stop kills a browser for a volume.
+// Stop stops and removes the ephemeral browser container for a volume.
 func (r *volumeBrowserRegistry) Stop(volumeName string) bool {
 	r.mu.Lock()
 	b, ok := r.browsers[volumeName]
 	if !ok {
 		r.mu.Unlock()
+		// Also clean up any lingering container with this name
+		go func() {
+			containerName := browserContainerName(volumeName)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			_ = podman.ContainerRemove(ctx, containerName, dockerctr.RemoveOptions{Force: true})
+		}()
 		return false
 	}
 	delete(r.browsers, volumeName)
 	delete(r.reserved, b.port)
 	r.mu.Unlock()
 
-	if b.process != nil {
-		_ = b.process.Process.Kill()
-	}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stopTimeout := 1
+	_ = podman.ContainerStop(ctx, b.containerID, dockerctr.StopOptions{Timeout: &stopTimeout})
+	_ = podman.ContainerRemove(ctx, b.containerID, dockerctr.RemoveOptions{Force: true})
 	return true
 }
 
-// IsBrowsing reports whether a browser is active for the volume.
+// IsBrowsing reports whether a browser container is active for the volume.
 func (r *volumeBrowserRegistry) IsBrowsing(volumeName string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -178,30 +260,49 @@ func (r *volumeBrowserRegistry) List() []browserInfo {
 	return result
 }
 
-// StopAll kills all browser processes.
+// StopAll stops and removes all active browser containers.
 func (r *volumeBrowserRegistry) StopAll() {
 	r.mu.Lock()
-	defer r.mu.Unlock()
-	for name, b := range r.browsers {
-		if b.process != nil {
-			_ = b.process.Process.Kill()
-		}
-		delete(r.browsers, name)
-	}
+	browsers := r.browsers
+	r.browsers = map[string]*browser{}
 	r.reserved = map[int]bool{}
+	r.mu.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	stopTimeout := 1
+	for _, b := range browsers {
+		_ = podman.ContainerStop(ctx, b.containerID, dockerctr.StopOptions{Timeout: &stopTimeout})
+		_ = podman.ContainerRemove(ctx, b.containerID, dockerctr.RemoveOptions{Force: true})
+	}
+
+	// Clean up any remaining orphan containers with label yantr.system=browser
+	ctrs, err := podman.ContainerList(ctx, dockerctr.ListOptions{
+		All:     true,
+		Filters: dockerfilters.NewArgs(dockerfilters.Arg("label", "yantr.system=browser")),
+	})
+	if err == nil {
+		for _, c := range ctrs {
+			_ = podman.ContainerStop(ctx, c.ID, dockerctr.StopOptions{Timeout: &stopTimeout})
+			_ = podman.ContainerRemove(ctx, c.ID, dockerctr.RemoveOptions{Force: true})
+		}
+	}
 }
 
 func (r *volumeBrowserRegistry) cleanupExpired() {
 	now := time.Now().Unix()
+	var toStop []string
+
 	r.mu.Lock()
-	defer r.mu.Unlock()
 	for name, b := range r.browsers {
 		if b.expireAt > 0 && now >= b.expireAt {
-			if b.process != nil {
-				_ = b.process.Process.Kill()
-			}
-			delete(r.reserved, b.port)
-			delete(r.browsers, name)
+			toStop = append(toStop, name)
 		}
+	}
+	r.mu.Unlock()
+
+	for _, name := range toStop {
+		r.Stop(name)
 	}
 }

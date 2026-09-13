@@ -349,7 +349,7 @@ func browseProxyHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Volume browser for %q is not running. Start it from the Volumes page.", volumeName), http.StatusServiceUnavailable)
 		return
 	}
-	target, _ := url.Parse(fmt.Sprintf("http://localhost:%d", p))
+	target, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", p))
 	proxy := httputil.NewSingleHostReverseProxy(target)
 	proxy.ServeHTTP(w, r)
 }
@@ -496,6 +496,9 @@ func main() {
 			sweepExpiredContainers()
 		}
 	}()
+
+	// Clean up any dangling volume browser containers from previous runs
+	go browserRegistry.StopAll()
 
 	// Server startup log
 	shared.Log("info", strings.Repeat("=", 50))

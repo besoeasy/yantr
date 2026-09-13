@@ -81,7 +81,7 @@ if [ "$IS_ROOT" -eq 1 ]; then
   $SUDO mkdir -p "$QUADLET_DIR"
   QUADLET_FILE="$QUADLET_DIR/yantr.container"
   SYSTEMCTL="systemctl"
-  SOCKET_BIND="/run/podman/podman.sock:/run/podman/podman.sock:z"
+  SOCKET_BIND="/run/podman/podman.sock:/run/podman/podman.sock"
 else
   log_step "Configuring Rootless Podman & systemd user service..."
 
@@ -99,7 +99,7 @@ else
   mkdir -p "$QUADLET_DIR"
   QUADLET_FILE="$QUADLET_DIR/yantr.container"
   SYSTEMCTL="systemctl --user"
-  SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock:z"
+  SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock"
 fi
 
 # 4. Write Quadlet container specification
@@ -115,6 +115,7 @@ Wants=network-online.target
 Image=ghcr.io/besoeasy/yantr:latest
 ContainerName=yantr
 Network=host
+SecurityLabelDisable=true
 Volume=yantr_data:/data:z
 Volume=${SOCKET_BIND}
 AutoUpdate=registry

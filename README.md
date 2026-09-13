@@ -56,7 +56,8 @@ Or run manually with rootless Podman:
 podman run -d \
   --name yantr \
   --network host \
-  -v $XDG_RUNTIME_DIR/podman/podman.sock:/run/podman/podman.sock:z \
+  --security-opt label=disable \
+  -v $XDG_RUNTIME_DIR/podman/podman.sock:/run/podman/podman.sock \
   -v yantr_data:/data:z \
   ghcr.io/besoeasy/yantr:latest
 ```
