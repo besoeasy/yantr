@@ -28,7 +28,7 @@ x-yantr:
 
 services:
   syncthing:
-    image: syncthing/syncthing:latest
+    image: docker.io/syncthing/syncthing:latest
     hostname: syncthing
     volumes:
       - syncthing_data:/var/syncthing

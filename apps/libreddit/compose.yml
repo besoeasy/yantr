@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   libreddit:
-    image: ceramicwhite/libreddit:0.22.9
+    image: docker.io/ceramicwhite/libreddit:0.22.9
     labels:
       yantr.app: libreddit
       yantr.service.7420: Web UI

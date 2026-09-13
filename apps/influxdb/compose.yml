@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   influxdb:
-    image: influxdb:latest
+    image: docker.io/influxdb:latest
     labels:
       yantr.app: influxdb
       yantr.service.8086: Web UI

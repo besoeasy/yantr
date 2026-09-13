@@ -26,7 +26,7 @@ x-yantr:
 
 services:
   mariadb:
-    image: mariadb:latest
+    image: docker.io/mariadb:latest
     labels:
       yantr.app: mariadb
       yantr.service.3306: Database

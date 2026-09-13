@@ -31,7 +31,7 @@ x-yantr:
 
 services:
   zabbix-frontend:
-    image: zabbix/zabbix-web-nginx-pgsql:latest
+    image: docker.io/zabbix/zabbix-web-nginx-pgsql:latest
     ports:
       - "8080"
     environment:
@@ -50,7 +50,7 @@ services:
       yantr.service.10051: Server Trapper
       yantr.port.10051: TCP
   zabbix-server:
-    image: zabbix/zabbix-server-pgsql:latest
+    image: docker.io/zabbix/zabbix-server-pgsql:latest
     ports:
       - "10051"
     environment:
@@ -67,7 +67,7 @@ services:
       yantr.service.10051: Server Trapper
       yantr.port.10051: TCP
   zabbix-agent:
-    image: zabbix/zabbix-agent2:latest
+    image: docker.io/zabbix/zabbix-agent2:latest
     environment:
       ZBX_HOSTNAME: zabbix-agent
       ZBX_SERVER_HOST: zabbix-server
@@ -79,7 +79,7 @@ services:
       yantr.service.10051: Server Trapper
       yantr.port.10051: TCP
   zabbix-database:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: zabbix

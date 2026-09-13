@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   node:
-    image: node:lts
+    image: docker.io/node:lts
     labels:
       yantr.app: "node"
     environment:

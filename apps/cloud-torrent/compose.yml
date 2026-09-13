@@ -18,7 +18,7 @@ x-yantr:
 
 services:
   cloud-torrent:
-    image: jpillora/cloud-torrent:latest
+    image: docker.io/jpillora/cloud-torrent:latest
     volumes:
       - cloud-torrent-downloads:/downloads
     ports:

@@ -19,7 +19,7 @@ x-yantr:
 
 services:
   cryptpad:
-    image: cryptpad/cryptpad:latest
+    image: docker.io/cryptpad/cryptpad:latest
     labels:
       yantr.app: cryptpad
       yantr.service.3000: Web UI

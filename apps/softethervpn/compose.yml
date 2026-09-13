@@ -13,7 +13,7 @@ x-yantr:
 
 services:
   softethervpn:
-    image: siomiz/softethervpn:latest
+    image: docker.io/siomiz/softethervpn:latest
     labels:
       yantr.app: "softethervpn"
       yantr.service.443: "VPN"

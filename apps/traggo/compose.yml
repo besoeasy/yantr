@@ -31,7 +31,7 @@ x-yantr:
 
 services:
   traggo:
-    image: traggo/server:latest
+    image: docker.io/traggo/server:latest
     labels:
       yantr.app: traggo
       yantr.service.3030: Web UI

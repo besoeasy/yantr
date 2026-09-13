@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
 
   worldmonitor-redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: worldmonitor
     command: >

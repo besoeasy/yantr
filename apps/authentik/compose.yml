@@ -73,7 +73,7 @@ services:
     restart: unless-stopped
 
   authentik-db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     labels:
       yantr.app: authentik
     environment:
@@ -89,7 +89,7 @@ services:
     restart: unless-stopped
 
   authentik-redis:
-    image: redis:latest
+    image: docker.io/redis:latest
     labels:
       yantr.app: authentik
     volumes:

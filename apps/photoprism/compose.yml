@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   photoprism:
-    image: photoprism/photoprism:latest
+    image: docker.io/photoprism/photoprism:latest
     labels:
       yantr.app: photoprism
       yantr.service.2342: Web UI
@@ -50,7 +50,7 @@ services:
     depends_on:
       - mariadb
   mariadb:
-    image: mariadb:11
+    image: docker.io/mariadb:11
     labels:
       yantr.app: photoprism
       yantr.service.2342: Web UI

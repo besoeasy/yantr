@@ -33,7 +33,7 @@ x-yantr:
 
 services:
   stalwart:
-    image: stalwartlabs/stalwart:latest
+    image: docker.io/stalwartlabs/stalwart:latest
     ports:
       - "8080"
       - "25"

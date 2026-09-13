@@ -15,7 +15,7 @@ x-yantr:
 
 services:
   flarum:
-    image: mondediefr/flarum:latest
+    image: docker.io/mondediefr/flarum:latest
     labels:
       yantr.app: "flarum"
       yantr.service.80: "Web UI"
@@ -39,7 +39,7 @@ services:
     restart: unless-stopped
 
   db:
-    image: mariadb:latest
+    image: docker.io/mariadb:latest
     labels:
       yantr.app: "flarum"
     environment:

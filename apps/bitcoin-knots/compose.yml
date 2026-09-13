@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   bitcoin-knots:
-    image: bitcoinknots/bitcoin:latest
+    image: docker.io/bitcoinknots/bitcoin:latest
     environment:
       BITCOIN_RPC_USER: ${BITCOIN_RPC_USER}
       BITCOIN_RPC_PASSWORD: ${BITCOIN_RPC_PASSWORD}

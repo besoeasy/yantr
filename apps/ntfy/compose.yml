@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   ntfy:
-    image: binwiederhier/ntfy:latest
+    image: docker.io/binwiederhier/ntfy:latest
     command: serve
     environment:
     ports:

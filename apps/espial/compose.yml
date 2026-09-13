@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   espial:
-    image: jonschoning/espial:latest
+    image: docker.io/jonschoning/espial:latest
     labels:
       yantr.app: "espial"
       yantr.service.8080: "Web UI"

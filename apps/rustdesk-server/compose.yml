@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   rustdesk-hbbs:
-    image: rustdesk/rustdesk-server:latest
+    image: docker.io/rustdesk/rustdesk-server:latest
     command: hbbs
     labels:
       yantr.app: rustdesk-server
@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
   rustdesk-hbbr:
-    image: rustdesk/rustdesk-server:latest
+    image: docker.io/rustdesk/rustdesk-server:latest
     command: hbbr
     labels:
       yantr.app: rustdesk-server

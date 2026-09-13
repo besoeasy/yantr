@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   wordpress:
-    image: wordpress:latest
+    image: docker.io/wordpress:latest
     labels:
       yantr.app: wordpress
       yantr.service.80: Web UI
@@ -45,7 +45,7 @@ services:
     depends_on:
       - wordpress-db
   wordpress-db:
-    image: mysql:8.0
+    image: docker.io/mysql:8.0
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: wordpress

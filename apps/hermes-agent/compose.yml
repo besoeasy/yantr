@@ -47,7 +47,7 @@ services:
       HERMES_API_KEY: ${HERMES_API_KEY:-yantr12hermes}
       GATEWAY_HEALTH_URL: http://gateway:8642
   gateway:
-    image: nousresearch/hermes-agent:latest
+    image: docker.io/nousresearch/hermes-agent:latest
     labels:
       yantr.app: hermes-agent
       yantr.service.18789: Web UI

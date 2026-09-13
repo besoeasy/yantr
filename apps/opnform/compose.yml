@@ -18,7 +18,7 @@ x-yantr:
 
 services:
   opnform:
-    image: jhumanj/opnform:latest
+    image: docker.io/jhumanj/opnform:latest
     labels:
       yantr.app: opnform
       yantr.service.80: Web UI

@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   sencho:
-    image: saelix/sencho:latest
+    image: docker.io/saelix/sencho:latest
     labels:
       yantr.app: sencho
       yantr.service.1852: Web UI

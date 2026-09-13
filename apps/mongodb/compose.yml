@@ -26,7 +26,7 @@ x-yantr:
 
 services:
   mongodb:
-    image: mongo:latest
+    image: docker.io/mongo:latest
     labels:
       yantr.app: mongodb
       yantr.service.27017: Database

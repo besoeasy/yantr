@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   broker:
-    image: eclipse-mosquitto:latest
+    image: docker.io/eclipse-mosquitto:latest
     labels:
       yantr.app: mosquitto
       yantr.service.1883: MQTT Broker

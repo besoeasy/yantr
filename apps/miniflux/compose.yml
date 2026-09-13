@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   miniflux-db:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     restart: unless-stopped
     labels:
       yantr.app: miniflux
@@ -34,7 +34,7 @@ services:
     volumes:
       - miniflux_db:/var/lib/postgresql/data
   miniflux:
-    image: miniflux/miniflux:latest
+    image: docker.io/miniflux/miniflux:latest
     restart: unless-stopped
     labels:
       yantr.app: miniflux

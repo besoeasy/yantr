@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   web:
-    image: stonith404/pingvin-share:latest
+    image: docker.io/stonith404/pingvin-share:latest
     labels:
       yantr.app: pingvin-share
       yantr.service.3000: Web UI

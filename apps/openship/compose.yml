@@ -28,7 +28,7 @@ x-yantr:
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     labels:
       yantr.app: openship
     environment:
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: openship
     command: ["redis-server", "--appendonly", "yes"]

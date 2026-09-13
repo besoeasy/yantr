@@ -33,7 +33,7 @@ x-yantr:
 
 services:
   stremio:
-    image: stremio/server:latest
+    image: docker.io/stremio/server:latest
     restart: unless-stopped
     ports:
       - "11470"

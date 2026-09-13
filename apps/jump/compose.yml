@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   jump:
-    image: daledavies/jump:latest
+    image: docker.io/daledavies/jump:latest
     labels:
       yantr.app: "jump"
       yantr.service.8080: "Web UI"

@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   pihole:
-    image: pihole/pihole:latest
+    image: docker.io/pihole/pihole:latest
     labels:
       yantr.app: pihole
       yantr.service.80: Web UI

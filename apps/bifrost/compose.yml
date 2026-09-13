@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   bifrost:
-    image: maximhq/bifrost:latest
+    image: docker.io/maximhq/bifrost:latest
     labels:
       yantr.app: bifrost
       yantr.service.8080: Web UI

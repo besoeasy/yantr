@@ -20,7 +20,7 @@ x-yantr:
 
 services:
   db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: mattermost
@@ -33,7 +33,7 @@ services:
       yantr.service.8065: Web UI
       yantr.port.8065: HTTP
   app:
-    image: mattermost/mattermost-team-edition:latest
+    image: docker.io/mattermost/mattermost-team-edition:latest
     restart: unless-stopped
     depends_on:
       - db

@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   listmonk:
-    image: listmonk/listmonk:latest
+    image: docker.io/listmonk/listmonk:latest
     labels:
       yantr.app: listmonk
       yantr.service.9000: Web UI
@@ -45,7 +45,7 @@ services:
     restart: unless-stopped
 
   listmonk-db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     labels:
       yantr.app: listmonk
     environment:
@@ -61,7 +61,7 @@ services:
     restart: unless-stopped
 
   listmonk-redis:
-    image: redis:latest
+    image: docker.io/redis:latest
     labels:
       yantr.app: listmonk
     volumes:

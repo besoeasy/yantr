@@ -34,7 +34,7 @@ x-yantr:
 
 services:
   directus:
-    image: directus/directus:latest
+    image: docker.io/directus/directus:latest
     labels:
       yantr.app: directus
       yantr.service.8055: CMS
@@ -60,7 +60,7 @@ services:
     restart: unless-stopped
 
   directus-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     labels:
       yantr.app: directus
     environment:

@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   deluge:
-    image: linuxserver/deluge:latest
+    image: docker.io/linuxserver/deluge:latest
     volumes:
       - deluge-config:/config
       - deluge-downloads:/downloads

@@ -13,7 +13,7 @@ x-yantr:
 
 services:
   kimai-db:
-    image: mysql:8.0
+    image: docker.io/mysql:8.0
     restart: unless-stopped
     labels:
       yantr.app: kimai
@@ -27,7 +27,7 @@ services:
     volumes:
       - kimai_db:/var/lib/mysql
   kimai:
-    image: kimai/kimai2:latest
+    image: docker.io/kimai/kimai2:latest
     restart: unless-stopped
     labels:
       yantr.app: kimai

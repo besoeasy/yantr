@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   gatus:
-    image: twinproduction/gatus:latest
+    image: docker.io/twinproduction/gatus:latest
     labels:
       yantr.app: gatus
       yantr.service.8080: Dashboard

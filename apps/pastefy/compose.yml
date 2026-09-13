@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   pastefy:
-    image: interaapps/pastefy:latest
+    image: docker.io/interaapps/pastefy:latest
     labels:
       yantr.app: pastefy
       yantr.service.80: Web UI

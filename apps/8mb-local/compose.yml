@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   8mb-local:
-    image: jms1717/8mblocal:latest
+    image: docker.io/jms1717/8mblocal:latest
     labels:
       yantr.app: 8mb-local
       yantr.service.8001: Web UI

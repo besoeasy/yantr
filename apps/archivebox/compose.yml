@@ -34,7 +34,7 @@ x-yantr:
 
 services:
   archivebox:
-    image: archivebox/archivebox
+    image: docker.io/archivebox/archivebox
     labels:
       yantr.app: archivebox
       yantr.service.8000: Web UI

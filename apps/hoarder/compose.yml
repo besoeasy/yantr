@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
 
   hoarder-db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     labels:
       yantr.app: hoarder
     environment:
@@ -85,7 +85,7 @@ services:
     restart: unless-stopped
 
   hoarder-redis:
-    image: redis:latest
+    image: docker.io/redis:latest
     labels:
       yantr.app: hoarder
     volumes:

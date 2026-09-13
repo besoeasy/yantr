@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   miniboard:
-    image: aceberg/miniboard:latest
+    image: docker.io/aceberg/miniboard:latest
     labels:
       yantr.app: "miniboard"
       yantr.service.8080: "Web UI"

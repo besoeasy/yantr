@@ -12,7 +12,7 @@ x-yantr:
 
 services:
   cloudflared-web:
-    image: wisdomsky/cloudflared-web:latest
+    image: docker.io/wisdomsky/cloudflared-web:latest
     restart: unless-stopped
     network_mode: host
     labels:

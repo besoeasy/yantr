@@ -21,4 +21,4 @@ services:
     labels:
       yantr.app: "holesail"
     restart: unless-stopped
-    image: holesail/holesail:latest
+    image: docker.io/holesail/holesail:latest

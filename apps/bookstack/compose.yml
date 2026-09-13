@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   db:
-    image: mariadb:10.11
+    image: docker.io/mariadb:10.11
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}

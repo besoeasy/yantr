@@ -81,7 +81,7 @@ services:
       timeout: 10s
       retries: 3
   mysql:
-    image: mysql:8.0
+    image: docker.io/mysql:8.0
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -111,7 +111,7 @@ services:
       retries: 5
       start_period: 30s
   redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center
@@ -130,7 +130,7 @@ services:
       timeout: 10s
       retries: 3
   dozzle:
-    image: amir20/dozzle:v10.0
+    image: docker.io/amir20/dozzle:v10.0
     labels:
       yantr.app: project-nomad
       yantr.service.8080: Command Center

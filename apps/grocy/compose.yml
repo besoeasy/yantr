@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   server:
-    image: linuxserver/grocy:latest
+    image: docker.io/linuxserver/grocy:latest
     labels:
       yantr.app: grocy
       yantr.service.80: Web UI

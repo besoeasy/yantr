@@ -43,7 +43,7 @@ services:
   moviepilot:
     stdin_open: true
     tty: true
-    image: jxxghp/moviepilot-v2:latest
+    image: docker.io/jxxghp/moviepilot-v2:latest
     hostname: moviepilot
     ports:
       - "3000"

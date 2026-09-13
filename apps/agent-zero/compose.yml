@@ -28,7 +28,7 @@ x-yantr:
 
 services:
   agent-zero:
-    image: agent0ai/agent-zero:latest
+    image: docker.io/agent0ai/agent-zero:latest
     labels:
       yantr.app: agent-zero
       yantr.service.80: Web UI

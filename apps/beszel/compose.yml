@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   beszel-hub:
-    image: henrygd/beszel:latest
+    image: docker.io/henrygd/beszel:latest
     labels:
       yantr.app: beszel
       yantr.service.8090: Dashboard
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
   beszel-agent:
-    image: henrygd/beszel-agent:latest
+    image: docker.io/henrygd/beszel-agent:latest
     labels:
       yantr.app: beszel
     network_mode: host

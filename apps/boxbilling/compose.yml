@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   boxbilling:
-    image: boxbilling/boxbilling:latest
+    image: docker.io/boxbilling/boxbilling:latest
     labels:
       yantr.app: "boxbilling"
       yantr.service.80: "Web UI"

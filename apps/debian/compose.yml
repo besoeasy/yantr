@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   debian:
-    image: debian:latest
+    image: docker.io/debian:latest
     labels:
       yantr.app: "debian"
     environment:

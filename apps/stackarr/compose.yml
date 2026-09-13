@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   app:
-    image: polyphonic/stackarr:alpha
+    image: docker.io/polyphonic/stackarr:alpha
     labels:
       yantr.app: stackarr
       yantr.service.7777: "Web UI"

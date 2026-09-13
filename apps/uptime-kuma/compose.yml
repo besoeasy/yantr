@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:latest
+    image: docker.io/louislam/uptime-kuma:latest
     labels:
       yantr.app: uptime-kuma
       yantr.service.3001: Web UI

@@ -16,7 +16,7 @@ x-yantr:
 
 services:
   server:
-    image: triliumnext/trilium:latest
+    image: docker.io/triliumnext/trilium:latest
     restart: unless-stopped
     labels:
       yantr.app: trilium-notes

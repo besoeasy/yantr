@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   linkding:
-    image: sissbruecker/linkding:latest
+    image: docker.io/sissbruecker/linkding:latest
     labels:
       yantr.app: linkding
       yantr.service.9090: Web UI

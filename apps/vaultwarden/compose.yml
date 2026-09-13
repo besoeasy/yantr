@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: docker.io/vaultwarden/server:latest
     labels:
       yantr.app: vaultwarden
       yantr.service.80: Web UI

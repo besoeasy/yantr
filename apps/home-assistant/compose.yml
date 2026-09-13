@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   server:
-    image: homeassistant/home-assistant:latest
+    image: docker.io/homeassistant/home-assistant:latest
     labels:
       yantr.app: home-assistant
       yantr.service.8123: Web UI

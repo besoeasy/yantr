@@ -16,7 +16,7 @@ x-yantr:
 
 services:
   plausible-db:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     restart: unless-stopped
     labels:
       yantr.app: plausible
@@ -29,7 +29,7 @@ services:
     volumes:
       - plausible_db:/var/lib/postgresql/data
   plausible:
-    image: plausible/analytics:latest
+    image: docker.io/plausible/analytics:latest
     restart: unless-stopped
     labels:
       yantr.app: plausible

@@ -33,7 +33,7 @@ x-yantr:
 
 services:
   invidious:
-    image: ceramicwhite/invidious:latest
+    image: docker.io/ceramicwhite/invidious:latest
     ports:
       - "3000"
     user: 1000:1000
@@ -61,7 +61,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   invidious-postgres:
-    image: postgres:13-alpine
+    image: docker.io/postgres:13-alpine
     user: 1000:1000
     environment:
       POSTGRES_DB: invidious

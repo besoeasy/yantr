@@ -41,7 +41,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
   linkwarden-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     environment:
       POSTGRES_PASSWORD: linkwarden
     volumes:

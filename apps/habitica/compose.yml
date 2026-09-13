@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   server:
-    image: awinterstein/habitica-server:latest
+    image: docker.io/awinterstein/habitica-server:latest
     labels:
       yantr.app: habitica
       yantr.service.3000: Web UI
@@ -41,7 +41,7 @@ services:
       - mongo
     restart: unless-stopped
   mongo:
-    image: mongo:latest
+    image: docker.io/mongo:latest
     volumes:
       - habitica_mongo:/data/db
     restart: unless-stopped

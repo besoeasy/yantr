@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   whoami:
-    image: traefik/whoami
+    image: docker.io/traefik/whoami
     ports:
       - "80"
     restart: unless-stopped

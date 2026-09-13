@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   postgresql:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     labels:
       yantr.app: postgresql
       yantr.service.5432: Database

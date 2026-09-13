@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   snort:
-    image: voidic/snort:v0.3.0
+    image: docker.io/voidic/snort:v0.3.0
     labels:
       yantr.app: snort
       yantr.service.8080: Web UI

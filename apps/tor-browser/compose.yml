@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   tor-browser:
-    image: domistyle/tor-browser
+    image: docker.io/domistyle/tor-browser
     ports:
       - "5800"
     labels:

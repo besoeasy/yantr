@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   nodered:
-    image: nodered/node-red:latest
+    image: docker.io/nodered/node-red:latest
     labels:
       yantr.app: nodered
       yantr.service.1880: Web UI

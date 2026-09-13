@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   openobserve:
-    image: greenblut/openobserve:latest
+    image: docker.io/greenblut/openobserve:latest
     labels:
       yantr.app: openobserve
       yantr.service.5080: Web UI

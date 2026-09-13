@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   stirling-pdf:
-    image: frooodle/s-pdf:latest
+    image: docker.io/frooodle/s-pdf:latest
     labels:
       yantr.app: stirling-pdf
       yantr.service.8080: Web UI

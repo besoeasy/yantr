@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   web-check:
-    image: lissy93/web-check:latest
+    image: docker.io/lissy93/web-check:latest
     ports:
       - "3000"
     restart: unless-stopped

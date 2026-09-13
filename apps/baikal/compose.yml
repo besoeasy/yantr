@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   baikal:
-    image: ckulka/baikal:nginx
+    image: docker.io/ckulka/baikal:nginx
     labels:
       yantr.app: baikal
       yantr.service.80: Web UI

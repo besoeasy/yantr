@@ -26,7 +26,7 @@ x-yantr:
 
 services:
   tailscale:
-    image: tailscale/tailscale:latest
+    image: docker.io/tailscale/tailscale:latest
     hostname: tailscale
     network_mode: host
     volumes:

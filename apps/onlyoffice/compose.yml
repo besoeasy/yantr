@@ -26,7 +26,7 @@ x-yantr:
 
 services:
   onlyoffice:
-    image: onlyoffice/documentserver:latest
+    image: docker.io/onlyoffice/documentserver:latest
     labels:
       yantr.app: onlyoffice
       yantr.service.8080: Web UI

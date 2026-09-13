@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   droppy:
-    image: silverwind/droppy:latest
+    image: docker.io/silverwind/droppy:latest
     labels:
       yantr.app: droppy
       yantr.service.8989: Web UI

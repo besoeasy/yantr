@@ -60,7 +60,7 @@ services:
     restart: unless-stopped
 
   paperless-broker:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: paperless-ngx
     volumes:
@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
 
   paperless-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     labels:
       yantr.app: paperless-ngx
     environment:

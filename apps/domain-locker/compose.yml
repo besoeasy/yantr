@@ -18,7 +18,7 @@ x-yantr:
 
 services:
   domain-locker:
-    image: lissy93/domain-locker:latest
+    image: docker.io/lissy93/domain-locker:latest
     hostname: domain-locker
     volumes:
       - domain_locker_data:/app/data

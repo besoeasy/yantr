@@ -68,7 +68,7 @@ services:
       yantr.service.3063: Web UI
       yantr.port.3063: HTTP
   maybe-db:
-    image: postgres:16
+    image: docker.io/postgres:16
     volumes:
       - maybe_db:/var/lib/postgresql/data
     environment:
@@ -89,7 +89,7 @@ services:
       yantr.service.3063: Web UI
       yantr.port.3063: HTTP
   maybe-redis:
-    image: redis:7.4.2
+    image: docker.io/redis:7.4.2
     user: 1000:1000
     volumes:
       - maybe_redis:/data

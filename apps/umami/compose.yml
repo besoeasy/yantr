@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
 
   umami-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     labels:
       yantr.app: umami
     environment:

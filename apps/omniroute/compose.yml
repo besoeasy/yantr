@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   omniroute:
-    image: diegosouzapw/omniroute:latest
+    image: docker.io/diegosouzapw/omniroute:latest
     labels:
       yantr.app: omniroute
       yantr.service.20128: Dashboard
@@ -49,7 +49,7 @@ services:
     stop_grace_period: 40s
 
   omniroute-redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: omniroute
     volumes:

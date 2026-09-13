@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   bun:
-    image: oven/bun:latest
+    image: docker.io/oven/bun:latest
     labels:
       yantr.app: "bun"
     environment:

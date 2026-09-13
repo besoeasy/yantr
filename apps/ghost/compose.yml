@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   ghost:
-    image: ghost:latest
+    image: docker.io/ghost:latest
     labels:
       yantr.app: ghost
       yantr.service.2368: Blog
@@ -51,7 +51,7 @@ services:
     restart: unless-stopped
 
   ghost-db:
-    image: mysql:8
+    image: docker.io/mysql:8
     labels:
       yantr.app: ghost
     environment:

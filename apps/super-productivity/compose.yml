@@ -16,7 +16,7 @@ x-yantr:
 
 services:
   web:
-    image: johannesjo/super-productivity:latest
+    image: docker.io/johannesjo/super-productivity:latest
     restart: unless-stopped
     labels:
       yantr.app: super-productivity

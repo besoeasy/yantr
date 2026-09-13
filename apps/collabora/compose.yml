@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   collabora:
-    image: collabora/code:latest
+    image: docker.io/collabora/code:latest
     labels:
       yantr.app: collabora
       yantr.service.9980: Web UI

@@ -51,7 +51,7 @@ services:
       yantr.service.8080: Relay
       yantr.port.8080: HTTP
   cockroachdb:
-    image: cockroachdb/cockroach:latest
+    image: docker.io/cockroachdb/cockroach:latest
     command: start-single-node --insecure
     volumes:
       - cockroach-data:/cockroach/cockroach-data

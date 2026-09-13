@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   guacamole:
-    image: guacamole/guacamole:latest
+    image: docker.io/guacamole/guacamole:latest
     labels:
       yantr.app: guacamole
       yantr.service.8080: Web UI
@@ -41,7 +41,7 @@ services:
       - guacd
     restart: unless-stopped
   guacd:
-    image: guacamole/guacd:latest
+    image: docker.io/guacamole/guacd:latest
     labels:
       yantr.app: guacamole
       yantr.service.4822: Guacamole Daemon

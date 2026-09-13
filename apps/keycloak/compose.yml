@@ -47,7 +47,7 @@ services:
       - keycloak-db
     restart: unless-stopped
   keycloak-db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     labels:
       yantr.app: keycloak
       yantr.service.5432: PostgreSQL

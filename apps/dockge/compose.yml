@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   dockge:
-    image: louislam/dockge:1
+    image: docker.io/louislam/dockge:1
     labels:
       yantr.app: dockge
       yantr.service.5001: Web UI

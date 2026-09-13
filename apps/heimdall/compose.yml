@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   heimdall:
-    image: linuxserver/heimdall:latest
+    image: docker.io/linuxserver/heimdall:latest
     volumes:
       - heimdall-config:/config
     ports:

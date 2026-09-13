@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   drupal:
-    image: drupal:latest
+    image: docker.io/drupal:latest
     labels:
       yantr.app: drupal
       yantr.service.80: Web UI

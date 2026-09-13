@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   wiki-js:
-    image: linuxserver/wikijs:latest
+    image: docker.io/linuxserver/wikijs:latest
     labels:
       yantr.app: wiki-js
       yantr.service.3000: Web UI

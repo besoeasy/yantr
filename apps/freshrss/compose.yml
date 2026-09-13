@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   freshrss:
-    image: linuxserver/freshrss:latest
+    image: docker.io/linuxserver/freshrss:latest
     labels:
       yantr.app: freshrss
       yantr.service.80: Web UI

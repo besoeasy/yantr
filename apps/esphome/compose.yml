@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   server:
-    image: esphome/esphome:latest
+    image: docker.io/esphome/esphome:latest
     labels:
       yantr.app: esphome
       yantr.service.6052: Web UI

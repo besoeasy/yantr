@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   twenty-server:
-    image: twentycrm/twenty:latest
+    image: docker.io/twentycrm/twenty:latest
     ports:
       - "3000"
     environment:
@@ -52,7 +52,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   twenty-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     environment:
       POSTGRES_USER: twenty
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -65,7 +65,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   twenty-redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     volumes:
       - twenty_redis_data:/data
     restart: unless-stopped

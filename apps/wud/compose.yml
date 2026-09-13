@@ -31,7 +31,7 @@ x-yantr:
 
 services:
   wud:
-    image: getwud/wud
+    image: docker.io/getwud/wud
     labels:
       yantr.app: wud
       yantr.service.3000: Web UI

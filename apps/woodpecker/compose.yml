@@ -19,7 +19,7 @@ x-yantr:
 
 services:
   server:
-    image: woodpeckerci/woodpecker-server:latest
+    image: docker.io/woodpeckerci/woodpecker-server:latest
     labels:
       yantr.app: "woodpecker"
       yantr.service.8000: "Web UI"
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
   agent:
-    image: woodpeckerci/woodpecker-agent:latest
+    image: docker.io/woodpeckerci/woodpecker-agent:latest
     labels:
       yantr.app: "woodpecker"
     volumes:

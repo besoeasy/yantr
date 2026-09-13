@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   nextcloud:
-    image: nextcloud:stable
+    image: docker.io/nextcloud:stable
     labels:
       yantr.app: nextcloud
       yantr.service.80: Web UI
@@ -50,7 +50,7 @@ services:
       - nextcloud-db
     restart: unless-stopped
   nextcloud-db:
-    image: mariadb:10.11
+    image: docker.io/mariadb:10.11
     environment:
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud

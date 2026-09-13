@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   actual-budget:
-    image: actualbudget/actual-server:latest
+    image: docker.io/actualbudget/actual-server:latest
     labels:
       yantr.app: "actual-budget"
       yantr.service.5006: "Web UI"

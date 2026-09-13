@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   emby:
-    image: linuxserver/emby:latest
+    image: docker.io/linuxserver/emby:latest
     volumes:
       - emby-config:/config
       - emby-media:/data

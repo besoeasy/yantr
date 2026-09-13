@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   server:
-    image: voidic/route96:latest
+    image: docker.io/voidic/route96:latest
     restart: unless-stopped
     ports:
       - "8000"
@@ -42,7 +42,7 @@ services:
       yantr.service.8000: Media Server
       yantr.port.8000: HTTP
   db:
-    image: mariadb:latest
+    image: docker.io/mariadb:latest
     restart: unless-stopped
     volumes:
       - route96-db:/var/lib/mysql

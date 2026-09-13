@@ -12,7 +12,7 @@ x-yantr:
 
 services:
   opentrashmail:
-    image: hascheksolutions/opentrashmail:latest
+    image: docker.io/hascheksolutions/opentrashmail:latest
     labels:
       yantr.app: "opentrashmail"
       yantr.service.8080: "Web UI"

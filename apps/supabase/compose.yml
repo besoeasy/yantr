@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   supabase-db:
-    image: postgres:15-alpine
+    image: docker.io/postgres:15-alpine
     restart: unless-stopped
     labels:
       yantr.app: supabase
@@ -36,7 +36,7 @@ services:
     volumes:
       - supabase_db:/var/lib/postgresql/data
   supabase:
-    image: supabase/supabase:latest
+    image: docker.io/supabase/supabase:latest
     restart: unless-stopped
     labels:
       yantr.app: supabase

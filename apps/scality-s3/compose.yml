@@ -18,7 +18,7 @@ x-yantr:
 
 services:
   scality-s3:
-    image: zenko/cloudserver:latest
+    image: docker.io/zenko/cloudserver:latest
     labels:
       yantr.app: scality-s3
       yantr.service.8000: S3 API

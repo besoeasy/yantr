@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile_inline: |
-        FROM debian:stable
+        FROM docker.io/debian:stable
 
         ENV DEBIAN_FRONTEND=noninteractive
 

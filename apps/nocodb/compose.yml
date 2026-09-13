@@ -20,7 +20,7 @@ x-yantr:
 
 services:
   postgres:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: nocodb
@@ -40,7 +40,7 @@ services:
       yantr.service.8080: Web UI
       yantr.port.8080: HTTP
   app:
-    image: nocodb/nocodb:latest
+    image: docker.io/nocodb/nocodb:latest
     restart: unless-stopped
     depends_on:
       postgres:

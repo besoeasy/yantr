@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   imgpush:
-    image: hauxir/imgpush:latest
+    image: docker.io/hauxir/imgpush:latest
     labels:
       yantr.app: "imgpush"
       yantr.service.5000: "Web UI"

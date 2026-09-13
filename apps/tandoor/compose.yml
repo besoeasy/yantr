@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   web:
-    image: vabene1111/recipes:latest
+    image: docker.io/vabene1111/recipes:latest
     labels:
       yantr.app: tandoor
       yantr.service.80: Web UI
@@ -48,7 +48,7 @@ services:
       - db
     restart: unless-stopped
   db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     environment:
       POSTGRES_DB: tandoor
       POSTGRES_USER: tandoor

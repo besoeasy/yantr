@@ -30,7 +30,7 @@ x-yantr:
 
 services:
   headscale:
-    image: headscale/headscale:latest
+    image: docker.io/headscale/headscale:latest
     labels:
       yantr.app: headscale
       yantr.service.8080: Admin API

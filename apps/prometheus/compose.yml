@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: docker.io/prom/prometheus:latest
     labels:
       yantr.app: prometheus
       yantr.service.9090: Web UI

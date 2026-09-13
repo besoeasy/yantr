@@ -22,7 +22,7 @@ x-yantr:
 
 services:
   web:
-    image: tombursch/kitchenowl:latest
+    image: docker.io/tombursch/kitchenowl:latest
     labels:
       yantr.app: kitchenowl
       yantr.service.8080: Web UI
@@ -42,7 +42,7 @@ services:
       - db
     restart: unless-stopped
   db:
-    image: postgres:latest
+    image: docker.io/postgres:latest
     environment:
       POSTGRES_DB: kitchenowl
       POSTGRES_USER: kitchenowl

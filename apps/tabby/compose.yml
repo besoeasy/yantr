@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   tabby:
-    image: parksauce/tabby:latest
+    image: docker.io/parksauce/tabby:latest
     labels:
       yantr.app: tabby
       yantr.service.80: Web UI
@@ -34,7 +34,7 @@ services:
       - tabby-db
     restart: unless-stopped
   tabby-db:
-    image: linuxserver/mariadb:latest
+    image: docker.io/linuxserver/mariadb:latest
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: tabby

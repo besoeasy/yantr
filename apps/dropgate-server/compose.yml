@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   dropgate-server:
-    image: willtda/dropgate-server:latest
+    image: docker.io/willtda/dropgate-server:latest
     pull_policy: always
     labels:
       yantr.app: dropgate-server

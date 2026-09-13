@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   radicale:
-    image: tomsquest/docker-radicale:latest
+    image: docker.io/tomsquest/docker-radicale:latest
     labels:
       yantr.app: radicale
       yantr.service.5232: Web UI

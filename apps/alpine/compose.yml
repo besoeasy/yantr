@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   alpine:
-    image: alpine:latest
+    image: docker.io/alpine:latest
     labels:
       yantr.app: "alpine"
     environment:

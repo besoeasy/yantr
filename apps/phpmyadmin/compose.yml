@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   phpmyadmin:
-    image: phpmyadmin:latest
+    image: docker.io/phpmyadmin:latest
     labels:
       yantr.app: phpmyadmin
       yantr.service.80: Web UI

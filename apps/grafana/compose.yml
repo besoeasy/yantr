@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   grafana:
-    image: grafana/grafana:latest
+    image: docker.io/grafana/grafana:latest
     labels:
       yantr.app: grafana
       yantr.service.3000: Dashboard

@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   mosparo:
-    image: mosparo/mosparo:latest
+    image: docker.io/mosparo/mosparo:latest
     labels:
       yantr.app: "mosparo"
       yantr.service.8080: "Web UI"

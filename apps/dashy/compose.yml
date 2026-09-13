@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   dashy:
-    image: lissy93/dashy:latest
+    image: docker.io/lissy93/dashy:latest
     labels:
       yantr.app: dashy
       yantr.service.8080: Dashboard

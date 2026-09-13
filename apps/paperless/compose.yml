@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   broker:
-    image: redis:7
+    image: docker.io/redis:7
     restart: unless-stopped
     volumes:
       - paperless_redis:/data
@@ -32,7 +32,7 @@ services:
       yantr.service.8000: Web UI
       yantr.port.8000: HTTP
   db:
-    image: postgres:16
+    image: docker.io/postgres:16
     restart: unless-stopped
     environment:
       POSTGRES_DB: paperless
@@ -45,7 +45,7 @@ services:
       yantr.service.8000: Web UI
       yantr.port.8000: HTTP
   gotenberg:
-    image: gotenberg/gotenberg:8
+    image: docker.io/gotenberg/gotenberg:8
     restart: unless-stopped
     command:
       - gotenberg

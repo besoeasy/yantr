@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   dawarich-app:
-    image: freika/dawarich:latest
+    image: docker.io/freika/dawarich:latest
     labels:
       yantr.app: dawarich
       yantr.service.3000: Web UI
@@ -62,7 +62,7 @@ services:
     restart: unless-stopped
 
   dawarich-sidekiq:
-    image: freika/dawarich:latest
+    image: docker.io/freika/dawarich:latest
     command: bundle exec sidekiq
     labels:
       yantr.app: dawarich
@@ -87,7 +87,7 @@ services:
     restart: unless-stopped
 
   dawarich-db:
-    image: postgis/postgis:16-3.4
+    image: docker.io/postgis/postgis:16-3.4
     labels:
       yantr.app: dawarich
     environment:
@@ -99,7 +99,7 @@ services:
     restart: unless-stopped
 
   dawarich-redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     labels:
       yantr.app: dawarich
     restart: unless-stopped

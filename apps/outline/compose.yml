@@ -31,7 +31,7 @@ x-yantr:
 
 services:
   db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: outline
@@ -44,7 +44,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     restart: unless-stopped
     volumes:
       - outline_redis:/data
@@ -53,7 +53,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   web:
-    image: outlinewiki/outline:latest
+    image: docker.io/outlinewiki/outline:latest
     restart: unless-stopped
     depends_on:
       - db

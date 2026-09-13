@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   smokeping:
-    image: linuxserver/smokeping:latest
+    image: docker.io/linuxserver/smokeping:latest
     labels:
       yantr.app: smokeping
       yantr.service.80: Web UI

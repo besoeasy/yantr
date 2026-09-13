@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     restart: unless-stopped
     environment:
       POSTGRES_DB: docmost
@@ -36,7 +36,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     restart: unless-stopped
     volumes:
       - docmost_redis:/data
@@ -45,7 +45,7 @@ services:
       yantr.service.3000: Web UI
       yantr.port.3000: HTTP
   web:
-    image: docmost/docmost:latest
+    image: docker.io/docmost/docmost:latest
     restart: unless-stopped
     depends_on:
       - db

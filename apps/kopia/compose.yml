@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   kopia:
-    image: kopia/kopia:latest
+    image: docker.io/kopia/kopia:latest
     labels:
       yantr.app: "kopia"
       yantr.service.51515: "Web UI"

@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   dpaste:
-    image: darrenofficial/dpaste:latest
+    image: docker.io/darrenofficial/dpaste:latest
     labels:
       yantr.app: "dpaste"
       yantr.service.8080: "Web UI"

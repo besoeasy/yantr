@@ -13,7 +13,7 @@ x-yantr:
 
 services:
   mercure:
-    image: dunglas/mercure:latest
+    image: docker.io/dunglas/mercure:latest
     labels:
       yantr.app: "mercure"
       yantr.service.80: "Web UI"

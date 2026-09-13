@@ -25,7 +25,7 @@ x-yantr:
 
 services:
   whoogle:
-    image: benbusby/whoogle-search:latest
+    image: docker.io/benbusby/whoogle-search:latest
     labels:
       yantr.app: whoogle
       yantr.service.5000: Web UI

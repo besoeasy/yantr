@@ -17,7 +17,7 @@ x-yantr:
 
 services:
   dashmachine:
-    image: rmountjoy/dashmachine:latest
+    image: docker.io/rmountjoy/dashmachine:latest
     labels:
       yantr.app: dashmachine
       yantr.service.5000: Web UI

@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   searxng:
-    image: searxng/searxng:latest
+    image: docker.io/searxng/searxng:latest
     labels:
       yantr.app: searxng
       yantr.service.8080: Web UI

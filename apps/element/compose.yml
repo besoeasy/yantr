@@ -27,7 +27,7 @@ x-yantr:
 
 services:
   element:
-    image: vectorim/element-web:latest
+    image: docker.io/vectorim/element-web:latest
     labels:
       yantr.app: element
       yantr.service.80: Web UI

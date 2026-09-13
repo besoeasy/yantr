@@ -71,7 +71,7 @@ x-yantr:
 
 services:
   plane-nginx:
-    image: makeplane/plane-proxy:latest
+    image: docker.io/makeplane/plane-proxy:latest
     ports:
       - "8080"
     environment:
@@ -85,7 +85,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-db:
-    image: postgres:16-alpine
+    image: docker.io/postgres:16-alpine
     user: 1000:1000
     environment:
       <<: *a1
@@ -97,7 +97,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-redis:
-    image: redis:7-alpine
+    image: docker.io/redis:7-alpine
     volumes:
       - plane_redis:/data
     restart: unless-stopped
@@ -106,7 +106,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: docker.io/rabbitmq:3-management-alpine
     user: 1000:1000
     environment:
       <<: *a1
@@ -118,7 +118,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-minio:
-    image: minio/minio:latest
+    image: docker.io/minio/minio:latest
     user: 1000:1000
     command: server /export --console-address ":8763"
     environment:
@@ -131,7 +131,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-api:
-    image: makeplane/plane-backend:v1.3.1
+    image: docker.io/makeplane/plane-backend:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -145,7 +145,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-worker:
-    image: makeplane/plane-backend:v1.3.1
+    image: docker.io/makeplane/plane-backend:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -163,7 +163,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-beat-worker:
-    image: makeplane/plane-backend:v1.3.1
+    image: docker.io/makeplane/plane-backend:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -181,7 +181,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-migrator:
-    image: makeplane/plane-backend:v1.3.1
+    image: docker.io/makeplane/plane-backend:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -197,7 +197,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-web:
-    image: makeplane/plane-frontend:v1.3.1
+    image: docker.io/makeplane/plane-frontend:v1.3.1
     environment:
       <<: *a1
     depends_on:
@@ -208,7 +208,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-live:
-    image: makeplane/plane-live:v1.3.1
+    image: docker.io/makeplane/plane-live:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -220,7 +220,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-space:
-    image: makeplane/plane-space:v1.3.1
+    image: docker.io/makeplane/plane-space:v1.3.1
     user: 1000:1000
     environment:
       <<: *a1
@@ -232,7 +232,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-admin:
-    image: makeplane/plane-admin:v1.3.1
+    image: docker.io/makeplane/plane-admin:v1.3.1
     environment:
       <<: *a1
     depends_on:

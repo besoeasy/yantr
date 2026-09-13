@@ -16,7 +16,7 @@ x-yantr:
 
 services:
   transmission:
-    image: linuxserver/transmission:latest
+    image: docker.io/linuxserver/transmission:latest
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
 
   dufs:
-    image: sigoden/dufs:latest
+    image: docker.io/sigoden/dufs:latest
     command:
       - /downloads
       - --allow-search
@@ -65,7 +65,7 @@ services:
     restart: unless-stopped
 
   cleanup:
-    image: alpine:latest
+    image: docker.io/alpine:latest
     security_opt:
       - no-new-privileges:true
     labels:

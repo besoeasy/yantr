@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   fireshare:
-    image: shaneisrael/fireshare:latest
+    image: docker.io/shaneisrael/fireshare:latest
     labels:
       yantr.app: fireshare
       yantr.service.80: Web UI

@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   cloudflared:
-    image: cloudflare/cloudflared:latest
+    image: docker.io/cloudflare/cloudflared:latest
     command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN}
