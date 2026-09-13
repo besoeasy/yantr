@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	dockerclient "github.com/docker/docker/client"
@@ -19,6 +20,12 @@ var Client *dockerclient.Client
 var SocketPath string
 
 func resolveSocketPath() string {
+	if s := os.Getenv("CONTAINER_HOST"); s != "" {
+		s = strings.TrimPrefix(s, "unix://")
+		if _, err := os.Stat(s); err == nil {
+			return s
+		}
+	}
 	if s := os.Getenv("PODMAN_SOCKET"); s != "" {
 		return s
 	}

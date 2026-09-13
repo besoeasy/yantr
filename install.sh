@@ -116,6 +116,7 @@ Image=ghcr.io/besoeasy/yantr:latest
 ContainerName=yantr
 Network=host
 SecurityLabelDisable=true
+Environment=CONTAINER_HOST=unix:///run/podman/podman.sock
 Volume=yantr_data:/data:z
 Volume=${SOCKET_BIND}
 AutoUpdate=registry

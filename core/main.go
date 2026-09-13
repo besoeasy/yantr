@@ -164,6 +164,7 @@ var (
 func getComposeCommand() (string, []string, error) {
 	cachedComposeOnce.Do(func() {
 		env := map[string]string{
+			"CONTAINER_HOST": "unix://" + podman.SocketPath,
 			"PODMAN_HOST":   "unix://" + podman.SocketPath,
 			"DOCKER_HOST":   "unix://" + podman.SocketPath,
 			"PODMAN_SOCKET": podman.SocketPath,

@@ -24,6 +24,7 @@ import (
 
 func runPodmanAutoUpdate(containerNames []string) (string, string, int, error) {
 	env := map[string]string{
+		"CONTAINER_HOST": "unix://" + podman.SocketPath,
 		"PODMAN_HOST":   "unix://" + podman.SocketPath,
 		"DOCKER_HOST":   "unix://" + podman.SocketPath,
 		"PODMAN_SOCKET": podman.SocketPath,

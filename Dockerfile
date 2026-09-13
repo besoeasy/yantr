@@ -31,6 +31,9 @@ FROM docker.io/library/alpine:latest
 # Install runtime dependencies (no Node.js runtime needed!)
 RUN apk add --no-cache podman podman-compose wget dufs
 
+# Configure Podman inside the container as a pure remote client using the mounted host socket
+RUN mkdir -p /etc/containers && printf '[engine]\nremote = true\nactive_service = "host"\n\n[engine.service_destinations.host]\nuri = "unix:///run/podman/podman.sock"\n' > /etc/containers/containers.conf
+
 WORKDIR /app
 
 RUN mkdir -p /data
@@ -47,5 +50,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 
 ENV YANTR_SERVE_UI=true
 ENV NODE_ENV=production
+ENV CONTAINER_HOST=unix:///run/podman/podman.sock
 
 ENTRYPOINT ["/app/yantr"]
