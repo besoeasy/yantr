@@ -140,6 +140,11 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Tell the watchdog to back off while we tear the stack down, so it
+	// doesn't race us by restarting containers mid-removal.
+	supervisor.MarkStackRemoving(projectID)
+	defer supervisor.UnmarkStackRemoving(projectID)
+
 	baseID := getBaseAppID(projectID)
 	appPath := filepath.Join(apps.GetAppsDir(), baseID)
 	ref := compose.GetProjectComposeRef(appPath, projectID)

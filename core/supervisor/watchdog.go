@@ -102,7 +102,8 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	}
 
 	// Don't auto-restart if the stack was intentionally stopped by the user
-	if !IsStackRunning(projectID) {
+	// or is currently being torn down (reaper / stack delete / container delete).
+	if !IsStackRunning(projectID) || IsStackRemoving(projectID) {
 		return
 	}
 
@@ -121,6 +122,13 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	exitCode := 0
 	if info.State != nil {
 		exitCode = info.State.ExitCode
+	}
+
+	// Exit 143 (SIGTERM) means the container was gracefully stopped, not crashed.
+	// This happens during intentional teardowns (compose down, podman stop) and
+	// should not be treated as an unexpected death.
+	if exitCode == 143 {
+		return
 	}
 
 	// Check restart policy

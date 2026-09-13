@@ -62,6 +62,20 @@ func TestSupervisorState(t *testing.T) {
 	}
 }
 
+func TestStackRemovingRegistry(t *testing.T) {
+	if IsStackRemoving("proj-x") {
+		t.Fatalf("expected proj-x to not be removing initially")
+	}
+	MarkStackRemoving("proj-x")
+	if !IsStackRemoving("proj-x") {
+		t.Fatalf("expected proj-x to be removing after MarkStackRemoving")
+	}
+	UnmarkStackRemoving("proj-x")
+	if IsStackRemoving("proj-x") {
+		t.Fatalf("expected proj-x to not be removing after UnmarkStackRemoving")
+	}
+}
+
 func TestSupervisorAutoDiscovery(t *testing.T) {
 	tempDataDir := t.TempDir()
 	t.Setenv("YANTR_DATA_DIR", tempDataDir)

@@ -230,6 +230,11 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 	project := compose.ComposeProjectLabel(info.Config.Labels)
 
 	if project != "" {
+		// Tell the watchdog to back off while we tear the stack down, so it
+		// doesn't race us by restarting containers mid-removal.
+		supervisor.MarkStackRemoving(project)
+		defer supervisor.UnmarkStackRemoving(project)
+
 		baseID := getBaseAppID(project)
 		appPath := filepath.Join(apps.GetAppsDir(), baseID)
 		ref := compose.GetProjectComposeRef(appPath, project)
@@ -258,6 +263,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 				if exitCode == 0 {
 					shared.Log("info", fmt.Sprintf("[container] stack removed: project=%s", project))
 					compose.DeleteProjectCompose(appPath, project)
+					supervisor.RecordStackRemoved(project)
 					jsonResp(w, 200, map[string]interface{}{
 						"success": true, "message": fmt.Sprintf("App stack '%s' removed successfully", project),
 						"container": name, "stackRemoved": true,
@@ -269,10 +275,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if info.State.Running {
-		_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
-	}
-	if err := podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{}); err != nil {
+	if err := podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{Force: true}); err != nil {
 		jsonErr(w, 500, "CONTAINER_REMOVE_FAILED", err.Error())
 		return
 	}

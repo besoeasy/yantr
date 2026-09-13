@@ -37,6 +37,12 @@ var (
 	appState   = State{Version: 1, Stacks: make(map[string]StackState)}
 	bootStatus = BootStatus{Resuscitating: false}
 	bootMu     sync.RWMutex
+
+	// removingMu guards the in-memory set of stacks currently being torn down.
+	// This is separate from persisted state so a failed teardown doesn't
+	// permanently flip a stack to "stopped".
+	removingMu sync.Mutex
+	removing   = make(map[string]bool)
 )
 
 func getDataDir() string {
@@ -154,6 +160,28 @@ func IsStackRunning(projectID string) bool {
 	defer stateMu.RUnlock()
 	s, ok := appState.Stacks[projectID]
 	return ok && s.Status == "running"
+}
+
+// MarkStackRemoving records that a stack teardown is in progress so the
+// watchdog won't auto-restart its containers mid-teardown.
+func MarkStackRemoving(projectID string) {
+	removingMu.Lock()
+	defer removingMu.Unlock()
+	removing[projectID] = true
+}
+
+// UnmarkStackRemoving clears the teardown-in-progress flag for a stack.
+func UnmarkStackRemoving(projectID string) {
+	removingMu.Lock()
+	defer removingMu.Unlock()
+	delete(removing, projectID)
+}
+
+// IsStackRemoving reports whether a stack teardown is currently in progress.
+func IsStackRemoving(projectID string) bool {
+	removingMu.Lock()
+	defer removingMu.Unlock()
+	return removing[projectID]
 }
 
 // GetBootStatus returns the current resuscitation status.

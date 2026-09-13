@@ -7,6 +7,7 @@ import (
 	"core/compose"
 	"core/podman"
 	"core/shared"
+	"core/supervisor"
 	"core/system"
 	"core/telemetry"
 	"errors"
@@ -73,6 +74,9 @@ func sweepExpiredContainers() {
 	// Tear down expired Compose stacks.
 	for projectID, meta := range expiredProjects {
 		shared.Log("info", fmt.Sprintf("[reaper] removing expired stack: %s", projectID))
+		// Tell the watchdog to back off so it doesn't restart containers
+		// mid-teardown and race the compose down.
+		supervisor.MarkStackRemoving(projectID)
 		appPath := filepath.Join(apps.GetAppsDir(), meta.appID)
 		ref := compose.GetProjectComposeRef(appPath, projectID)
 		removed := false
@@ -85,6 +89,7 @@ func sweepExpiredContainers() {
 				reaperCancel()
 				if exitCode == 0 {
 					compose.DeleteProjectCompose(appPath, projectID)
+					supervisor.RecordStackRemoved(projectID)
 					shared.Log("info", fmt.Sprintf("[reaper] stack %s removed", projectID))
 					removed = true
 				}
@@ -96,13 +101,14 @@ func sweepExpiredContainers() {
 			if stale, listErr := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
 				for _, c := range stale {
 					if compose.ComposeProjectLabel(c.Labels) == projectID {
-						_ = podman.ContainerStop(context.Background(), c.ID, dockerctr.StopOptions{})
-						_ = podman.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{})
+						_ = podman.ContainerRemove(context.Background(), c.ID, dockerctr.RemoveOptions{Force: true})
 					}
 				}
 			}
 			compose.DeleteProjectCompose(appPath, projectID)
+			supervisor.RecordStackRemoved(projectID)
 		}
+		supervisor.UnmarkStackRemoving(projectID)
 	}
 
 	// Tear down standalone expired containers.
