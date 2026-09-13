@@ -39,7 +39,6 @@ RUN mkdir -p /data
 COPY --from=frontend-builder /app/dist ./dist
 COPY --from=backend-builder /yantr ./yantr
 COPY apps/ ./apps/
-COPY entrypoint.sh /entrypoint.sh
 
 EXPOSE 5252
 
@@ -49,4 +48,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 ENV YANTR_SERVE_UI=true
 ENV NODE_ENV=production
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/yantr"]
