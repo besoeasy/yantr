@@ -42,6 +42,92 @@ if [ "$(id -u)" -ne 0 ]; then
   fi
 fi
 
+# Parse CLI options (--help, --uninstall)
+ACTION="${1:-install}"
+
+if [ "$ACTION" = "--help" ] || [ "$ACTION" = "-h" ] || [ "$ACTION" = "help" ]; then
+  echo -e "${BOLD}Yantr Installer & Manager${NC}"
+  echo ""
+  echo "Usage:"
+  echo "  curl -fsSL https://yantr.org/install.sh | bash                  # Install / update Yantr"
+  echo "  curl -fsSL https://yantr.org/install.sh | bash -s -- --uninstall # Uninstall Yantr service"
+  echo ""
+  echo "Options:"
+  echo "  --uninstall, -u   Uninstall Yantr systemd Quadlet service"
+  echo "    --purge, -p     (Optional) Also delete persistent volume 'yantr_data'"
+  echo "  --help, -h        Show this help message"
+  echo ""
+  exit 0
+fi
+
+if [ "$ACTION" = "--uninstall" ] || [ "$ACTION" = "-u" ] || [ "$ACTION" = "uninstall" ]; then
+  log_step "Uninstalling Yantr service..."
+
+  IS_ROOT=0
+  if [ "$(id -u)" -eq 0 ]; then
+    IS_ROOT=1
+  fi
+
+  if [ "$IS_ROOT" -eq 1 ]; then
+    QUADLET_FILE="/etc/containers/systemd/yantr.container"
+    SYSTEMCTL="systemctl"
+  else
+    export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
+    QUADLET_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd/yantr.container"
+    SYSTEMCTL="systemctl --user"
+  fi
+
+  # Stop and disable service
+  log_info "Stopping and disabling Yantr systemd service..."
+  $SYSTEMCTL stop yantr.service 2>/dev/null || true
+  $SYSTEMCTL disable yantr.service 2>/dev/null || true
+
+  # Remove Quadlet file
+  if [ -f "$QUADLET_FILE" ]; then
+    log_info "Removing Quadlet specification: ${QUADLET_FILE}"
+    if [ "$IS_ROOT" -eq 1 ]; then
+      $SUDO rm -f "$QUADLET_FILE"
+    else
+      rm -f "$QUADLET_FILE"
+    fi
+  fi
+
+  # Reload systemd
+  log_info "Reloading systemd daemon..."
+  $SYSTEMCTL daemon-reload
+
+  # Remove container if still exists
+  if command -v podman >/dev/null 2>&1; then
+    if podman container exists yantr 2>/dev/null; then
+      log_info "Removing container 'yantr'..."
+      podman rm -f yantr >/dev/null 2>&1 || true
+    fi
+  fi
+
+  PURGE=0
+  for arg in "$@"; do
+    if [ "$arg" = "--purge" ] || [ "$arg" = "-p" ]; then
+      PURGE=1
+    fi
+  done
+
+  if [ "$PURGE" -eq 1 ]; then
+    if command -v podman >/dev/null 2>&1; then
+      log_info "Purging persistent volume 'yantr_data'..."
+      podman volume rm -f yantr_data >/dev/null 2>&1 || true
+    fi
+    echo -e "\n${BOLD}${GREEN}✔ Yantr and all its data have been completely removed.${NC}\n"
+  else
+    echo -e "\n${BOLD}${GREEN}✔ Yantr systemd service successfully uninstalled.${NC}"
+    echo -e "\n${BOLD}Note on Persistent Data:${NC}"
+    echo "  Your app data in Podman volume 'yantr_data' has been preserved."
+    echo "  To completely remove all data, run:"
+    echo -e "    ${BOLD}podman volume rm yantr_data${NC}\n"
+  fi
+  exit 0
+fi
+
 # 2. Check / Install Podman
 log_step "Checking Podman..."
 if command -v podman >/dev/null 2>&1; then
@@ -193,7 +279,8 @@ fi
 echo -e "\n${BOLD}Useful Management Commands:${NC}"
 echo -e "  • Status:   ${SYSTEMCTL} status yantr"
 echo -e "  • Logs:     journalctl $([ "$IS_ROOT" -eq 0 ] && echo "--user ") -u yantr -f"
-echo -e "  • Restart:  ${SYSTEMCTL} restart yantr"
-echo -e "  • Stop:     ${SYSTEMCTL} stop yantr"
-echo -e "  • Update:   podman auto-update"
+echo -e "  • Restart:   ${SYSTEMCTL} restart yantr"
+echo -e "  • Stop:      ${SYSTEMCTL} stop yantr"
+echo -e "  • Update:    podman auto-update"
+echo -e "  • Uninstall: curl -fsSL https://yantr.org/install.sh | bash -s -- --uninstall"
 echo ""
