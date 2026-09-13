@@ -135,6 +135,15 @@ fi
 
 # 5. Reload systemd and start Yantr service
 log_step "Activating Yantr systemd service..."
+
+# Remove pre-existing standalone container to avoid name collision with Quadlet
+if command -v podman >/dev/null 2>&1; then
+  if podman container exists yantr 2>/dev/null; then
+    log_info "Removing existing standalone 'yantr' container to avoid name collision..."
+    podman rm -f yantr >/dev/null 2>&1 || true
+  fi
+fi
+
 $SYSTEMCTL daemon-reload
 $SYSTEMCTL restart yantr.service
 
@@ -152,7 +161,12 @@ else
   echo "Check status with: ${SYSTEMCTL} status yantr"
 fi
 
-echo -e "Access the Web UI:  ${BOLD}${GREEN}http://localhost:5252${NC}"
+HOST_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
+if [ -n "$HOST_IP" ] && [ "$HOST_IP" != "127.0.0.1" ]; then
+  echo -e "Access the Web UI:  ${BOLD}${GREEN}http://${HOST_IP}:5252${NC}  (or http://localhost:5252)"
+else
+  echo -e "Access the Web UI:  ${BOLD}${GREEN}http://localhost:5252${NC}"
+fi
 echo -e "\n${BOLD}Useful Management Commands:${NC}"
 echo -e "  • Status:   ${SYSTEMCTL} status yantr"
 echo -e "  • Logs:     journalctl $([ "$IS_ROOT" -eq 0 ] && echo "--user ") -u yantr -f"
