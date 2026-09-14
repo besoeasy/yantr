@@ -3,6 +3,9 @@ import { ref } from 'vue'
 // Module-level reactive state – works both inside and outside Vue components
 export const notificationState = ref(null)
 
+// Every notification auto-dismisses after this long (ms).
+export const AUTO_DISMISS_MS = 10000
+
 let autoCloseTimer = null
 
 export function useNotification() {
@@ -11,15 +14,13 @@ export function useNotification() {
       clearTimeout(autoCloseTimer)
       autoCloseTimer = null
     }
-    notificationState.value = { type, message }
+    notificationState.value = { type, message, id: Date.now() + Math.random() }
 
-    // Auto-dismiss success/info after 5 s; errors/warnings stay until closed
-    if (type === 'success' || type === 'info') {
-      autoCloseTimer = setTimeout(() => {
-        notificationState.value = null
-        autoCloseTimer = null
-      }, 5000)
-    }
+    // Auto-dismiss every notification after 10 s
+    autoCloseTimer = setTimeout(() => {
+      notificationState.value = null
+      autoCloseTimer = null
+    }, AUTO_DISMISS_MS)
   }
 
   const dismiss = () => {
