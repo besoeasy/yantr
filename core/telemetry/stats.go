@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -61,6 +63,37 @@ var (
 	statsTTL = 45 * time.Second
 )
 
+func cacheFilePath() string {
+	if d := os.Getenv("YANTR_DATA_DIR"); d != "" {
+		return filepath.Join(d, "telemetry-cache.json")
+	}
+	return "/data/telemetry-cache.json"
+}
+
+func loadStatsFromDisk() *FleetStats {
+	raw, err := os.ReadFile(cacheFilePath())
+	if err != nil {
+		return nil
+	}
+	var out FleetStats
+	if json.Unmarshal(raw, &out) != nil {
+		return nil
+	}
+	return &out
+}
+
+func saveStatsToDisk(s *FleetStats) {
+	if s == nil {
+		return
+	}
+	raw, err := json.Marshal(s)
+	if err != nil {
+		return
+	}
+	_ = os.MkdirAll(filepath.Dir(cacheFilePath()), 0o755)
+	_ = os.WriteFile(cacheFilePath(), raw, 0o600)
+}
+
 // GetFleetStatsCached returns aggregated telemetry, cached briefly.
 func GetFleetStatsCached(force bool) (*FleetStats, error) {
 	statsMu.Lock()
@@ -72,10 +105,22 @@ func GetFleetStatsCached(force bool) (*FleetStats, error) {
 
 	out, err := fetchAndAggregate()
 	if err != nil {
+		// Serve the last known stats when the upstream feed is unreachable,
+		// so the dashboard (and map) still render during outages.
+		if stats != nil {
+			shared.Log("warn", "[telemetry] fetch failed, serving cached stats: "+err.Error())
+			return stats, nil
+		}
+		if disk := loadStatsFromDisk(); disk != nil {
+			shared.Log("warn", "[telemetry] fetch failed, serving disk-cached stats: "+err.Error())
+			stats = disk
+			return disk, nil
+		}
 		return nil, err
 	}
 	stats = out
 	statsExp = time.Now().Add(statsTTL)
+	saveStatsToDisk(out)
 	return out, nil
 }
 

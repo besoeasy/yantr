@@ -2,6 +2,8 @@
 import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
+import "@maplibre/maplibre-gl-leaflet";
 
 const props = defineProps({
   countries: {
@@ -13,17 +15,17 @@ const props = defineProps({
 const mapEl = ref(null);
 let map = null;
 let markers = null;
-let tiles = null;
+let glLayer = null;
 let themeObserver = null;
 
 function isDark() {
   return document.documentElement.classList.contains("dark");
 }
 
-function tileUrl() {
+function styleUrl() {
   return isDark()
-    ? "https://tiles.openfreemap.org/styles/dark-matter/{z}/{x}/{y}.png"
-    : "https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png"
+    ? "https://tiles.openfreemap.org/styles/dark"
+    : "https://tiles.openfreemap.org/styles/liberty";
 }
 
 function ensureMap() {
@@ -31,14 +33,18 @@ function ensureMap() {
   map = L.map(mapEl.value, {
     worldCopyJump: true,
     minZoom: 1,
-    maxZoom: 6,
+    maxZoom: 18,
     zoomControl: true,
     attributionControl: true,
   }).setView([20, 0], 2);
 
-  tiles = L.tileLayer(tileUrl(), {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  glLayer = L.maplibreGL({
+    style: styleUrl(),
   }).addTo(map);
+
+  map.attributionControl.addAttribution(
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  );
 
   markers = L.layerGroup().addTo(map);
   requestAnimationFrame(() => map.invalidateSize());
@@ -78,19 +84,16 @@ function renderMarkers() {
   }
 }
 
-function swapTiles() {
-  if (!map) return;
-  if (tiles) map.removeLayer(tiles);
-  tiles = L.tileLayer(tileUrl(), {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+function swapStyle() {
+  if (!glLayer) return;
+  glLayer.getMaplibreMap().setStyle(styleUrl());
 }
 
 onMounted(async () => {
   await nextTick();
   ensureMap();
   renderMarkers();
-  themeObserver = new MutationObserver(() => swapTiles());
+  themeObserver = new MutationObserver(() => swapStyle());
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 });
 
@@ -99,7 +102,7 @@ onUnmounted(() => {
   map?.remove();
   map = null;
   markers = null;
-  tiles = null;
+  glLayer = null;
 });
 
 watch(() => props.countries, renderMarkers, { deep: true });
