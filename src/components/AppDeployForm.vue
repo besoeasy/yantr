@@ -241,7 +241,7 @@ async function deployApp() {
 </script>
 
 <template>
-  <div class="sticky top-24 space-y-6">
+  <div class="space-y-6">
     <!-- Custom App Notice -->
     <div v-if="app.customapp" class="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50 px-5 py-4 dark:border-purple-500/20 dark:bg-purple-500/10">
       <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-purple-500"></div>

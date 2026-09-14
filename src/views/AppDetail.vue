@@ -102,17 +102,13 @@ onMounted(async () => {
       <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t('appDetail.retrievingManifest') }}</div>
     </div>
 
-    <div v-else-if="app" class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-12">
+    <div v-else-if="app" class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
 
-        <!-- Left Column: Information & Specs -->
-        <div class="lg:col-span-8">
-          <AppMetadata :app="app" :imageDetails="imageDetails" />
-        </div>
+        <!-- App Information & Specs -->
+        <AppMetadata :app="app" :imageDetails="imageDetails" />
 
-        <!-- Right Column: Deployment Configuration -->
-        <div class="lg:col-span-4">
-          <AppDeployForm :app="app" :containers="containers" />
-        </div>
+        <!-- Deployment Configuration -->
+        <AppDeployForm :app="app" :containers="containers" />
 
       </div>
     </div>
