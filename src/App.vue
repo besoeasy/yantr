@@ -203,7 +203,7 @@ onUnmounted(() => {
     </aside>
 
     <!-- Mobile Header (md:hidden) -->
-    <header class="flex md:hidden fixed top-0 left-0 right-0 h-14 z-50 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800 px-4 items-center justify-between">
+    <header class="flex md:hidden sticky top-0 h-14 z-50 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800 px-4 items-center justify-between">
       <router-link to="/home" class="text-sm font-black tracking-wider uppercase text-slate-900 dark:text-white">
         YANTR
       </router-link>
@@ -239,7 +239,7 @@ onUnmounted(() => {
     </header>
 
     <!-- Main Content Area with Desktop Sidebar Offset -->
-    <main class="flex-1 min-h-screen md:pl-20 pt-14 md:pt-0">
+    <main class="flex-1 min-h-screen md:pl-20">
       <router-view :key="route.fullPath" />
     </main>
 

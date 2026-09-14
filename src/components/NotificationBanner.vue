@@ -45,7 +45,7 @@ const colorMap = {
   <Transition name="banner">
     <div
       v-if="notificationState"
-      class="fixed top-0 left-0 right-0 z-60"
+      class="z-60 md:sticky md:top-0 md:ml-20"
     >
       <div
         :class="[
