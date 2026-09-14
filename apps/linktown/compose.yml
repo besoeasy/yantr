@@ -1,8 +1,8 @@
 x-yantr:
-  name: LinkTown
+  name: linktown
   tags: [ self-hosted, web, multiplayer, game, p2p ]
-  short_description: Lightweight self-hosted L-Town server exposing a single web port.
-  description: L-Town is a lightweight, self-hosted server for the L-Town project.
+  short_description: Lightweight self-hosted linktown server exposing a single web port.
+  description: linktown is a lightweight, self-hosted server for the linktown project.
     It exposes a single network port for web and websocket connections, is easy
     to deploy via Docker, and is intended for small self-hosted multiplayer/web
     apps. Configure volumes if you need to persist state.
@@ -15,10 +15,10 @@ x-yantr:
     ]
 
 services:
-  l-town:
+  linktown:
     image: ghcr.io/besoeasy/linktown:latest
     labels:
-      yantr.app: l-town
+      yantr.app: linktown
       yantr.service.30300: Web UI
       yantr.port.30300: HTTP
     ports:
