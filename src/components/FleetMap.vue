@@ -22,8 +22,8 @@ function isDark() {
 
 function tileUrl() {
   return isDark()
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+    ? "https://tiles.openfreemap.org/styles/dark-matter/{z}/{x}/{y}.png"
+    : "https://tiles.openfreemap.org/styles/liberty/{z}/{x}/{y}.png"
 }
 
 function ensureMap() {
@@ -37,7 +37,7 @@ function ensureMap() {
   }).setView([20, 0], 2);
 
   tiles = L.tileLayer(tileUrl(), {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 
   markers = L.layerGroup().addTo(map);
@@ -82,7 +82,7 @@ function swapTiles() {
   if (!map) return;
   if (tiles) map.removeLayer(tiles);
   tiles = L.tileLayer(tileUrl(), {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   }).addTo(map);
 }
 
