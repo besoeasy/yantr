@@ -106,8 +106,8 @@
 
       <!-- Hero -->
       <div class="app-hero">
-        <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo"  loading="eager" />
-        <div>
+        <img class="app-hero-logo" src="{{ app.logoUrl }}" alt="{{ app.name }} logo" loading="eager" />
+        <div class="app-hero-body">
           <p class="kicker">Self-host with Podman · Yantr</p>
           <h1>{{ app.name }}</h1>
           {% if app.short_description %}

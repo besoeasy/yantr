@@ -123,11 +123,10 @@
         <!-- Radial fade so orbiting chips don't overlap the text -->
         <div class="hero-fade" style="background:radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.7) 60%, transparent 100%)"></div>
         <div class="hero-inner">
-          <div class="hero-inner">
-            <a
-              href="./install.html"
-              class="hero-pill animate-fade-in-up"
-           >
+          <a
+            href="./install.html"
+            class="hero-pill animate-fade-in-up"
+         >
               <span class="dot animate-pulse"></span>
               Homelab App Store · Podman-powered
             </a>
@@ -216,7 +215,6 @@
             </div>
           </div>
         </div>
-      </div>
 
       <!-- App marquees — seamless continuation of the hero, full-bleed -->
       <div class="full-bleed marquee-section" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
@@ -606,16 +604,6 @@
 
         <div>
           <div id="hero-fc-window" class="scroller-window">
-            <!-- Edge fade masks -->
-            <div
-              
-              style="background: none;"
-           ></div>
-            <div
-              
-              style="background: none;"
-           ></div>
-
             <div id="hero-fc-track-1" class="feature-scroll-track"></div>
             <div
               id="hero-fc-track-2"
@@ -722,15 +710,15 @@
               <div class="spec-rows">
                 <div class="spec-row">
                   <span class="k">Hardware</span>
-                  <span>1 Core · RM 140 MB</span>
+                  <span class="v">1 Core · RAM 140 MB</span>
                 </div>
                 <div class="spec-row">
                   <span class="k">Environment</span>
-                  <span>Podman 4.4+</span>
+                  <span class="v">Podman 4.4+</span>
                 </div>
                 <div class="spec-row">
                   <span class="k">Host OS</span>
-                  <span>Linux (Rootless)</span>
+                  <span class="v">Linux (Rootless)</span>
                 </div>
               </div>
             </div>
@@ -1126,7 +1114,7 @@
           const makeBtn = (tag, label) => {
             const btn = document.createElement("button");
             btn.dataset.tag = tag;
-            btn.className = "tag-btn text-[10px] uppercase tracking-wider px-3 py-1.5 border border-gray-300 hover:border-black transition-colors rounded-md";
+            btn.className = "tag-btn";
             btn.textContent = label;
             if (tag === "all") btn.classList.add("active");
             return btn;

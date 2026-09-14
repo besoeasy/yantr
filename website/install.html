@@ -193,141 +193,131 @@
 
           <!-- Step 1: Install Podman -->
           <div class="step">
-            <div class="step-head">
-              <div class="step-num">1</div>
-              <div>
-                <h3>Install Podman</h3>
-                <p>Select your Linux distribution to install Podman using your native package manager:</p>
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h3>Install Podman</h3>
+              <p>Select your Linux distribution to install Podman using your native package manager:</p>
+
+              <!-- Distro tabs -->
+              <div class="distro-tabs" id="distro-tabs" role="tablist">
+                <button class="distro-btn active" data-target="ubuntu" role="tab">Ubuntu / Debian</button>
+                <button class="distro-btn" data-target="fedora" role="tab">Fedora / RHEL</button>
+                <button class="distro-btn" data-target="arch" role="tab">Arch Linux</button>
+                <button class="distro-btn" data-target="opensuse" role="tab">openSUSE</button>
               </div>
-            </div>
 
-            <!-- Distro tabs -->
-            <div class="distro-tabs" id="distro-tabs" role="tablist">
-              <button class="distro-btn active" data-target="ubuntu" role="tab">Ubuntu / Debian</button>
-              <button class="distro-btn" data-target="fedora" role="tab">Fedora / RHEL</button>
-              <button class="distro-btn" data-target="arch" role="tab">Arch Linux</button>
-              <button class="distro-btn" data-target="opensuse" role="tab">openSUSE</button>
-            </div>
-
-            <!-- Ubuntu panel -->
-            <div class="distro-panel active" id="distro-ubuntu">
-              <div class="cmd-row">
-                <code>sudo apt update && sudo apt install -y podman</code>
-                <button class="copy-side" onclick="copySide(this,'sudo apt update && sudo apt install -y podman')" title="Copy">
-                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                </button>
+              <!-- Ubuntu panel -->
+              <div class="distro-panel active" id="distro-ubuntu">
+                <div class="cmd-row">
+                  <code>sudo apt update && sudo apt install -y podman</code>
+                  <button class="copy-side" onclick="copySide(this,'sudo apt update && sudo apt install -y podman')" title="Copy">
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- Fedora panel -->
-            <div class="distro-panel" id="distro-fedora">
-              <div class="cmd-row">
-                <code>sudo dnf install -y podman</code>
-                <button class="copy-side" onclick="copySide(this,'sudo dnf install -y podman')" title="Copy">
-                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                </button>
+              <!-- Fedora panel -->
+              <div class="distro-panel" id="distro-fedora">
+                <div class="cmd-row">
+                  <code>sudo dnf install -y podman</code>
+                  <button class="copy-side" onclick="copySide(this,'sudo dnf install -y podman')" title="Copy">
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- Arch panel -->
-            <div class="distro-panel" id="distro-arch">
-              <div class="cmd-row">
-                <code>sudo pacman -S --noconfirm podman</code>
-                <button class="copy-side" onclick="copySide(this,'sudo pacman -S --noconfirm podman')" title="Copy">
-                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                </button>
+              <!-- Arch panel -->
+              <div class="distro-panel" id="distro-arch">
+                <div class="cmd-row">
+                  <code>sudo pacman -S --noconfirm podman</code>
+                  <button class="copy-side" onclick="copySide(this,'sudo pacman -S --noconfirm podman')" title="Copy">
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <!-- openSUSE panel -->
-            <div class="distro-panel" id="distro-opensuse">
-              <div class="cmd-row">
-                <code>sudo zypper in -y podman</code>
-                <button class="copy-side" onclick="copySide(this,'sudo zypper in -y podman')" title="Copy">
-                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                </button>
+              <!-- openSUSE panel -->
+              <div class="distro-panel" id="distro-opensuse">
+                <div class="cmd-row">
+                  <code>sudo zypper in -y podman</code>
+                  <button class="copy-side" onclick="copySide(this,'sudo zypper in -y podman')" title="Copy">
+                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Step 2: Enable user linger & socket -->
           <div class="step">
-            <div class="step-head">
-              <div class="step-num">2</div>
-              <div>
-                <h3>Enable User Lingering & Podman Socket</h3>
-                <p>
-                  Enabling linger allows rootless systemd services to continue running across user logouts and start automatically on system boot.
-                </p>
-                <div class="cmd-row">
-                  <code>loginctl enable-linger $USER && systemctl --user enable --now podman.socket</code>
-                  <button class="copy-side" onclick="copySide(this,'loginctl enable-linger $USER && systemctl --user enable --now podman.socket')" title="Copy">
-                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h3>Enable User Lingering & Podman Socket</h3>
+              <p>
+                Enabling linger allows rootless systemd services to continue running across user logouts and start automatically on system boot.
+              </p>
+              <div class="cmd-row">
+                <code>loginctl enable-linger $USER && systemctl --user enable --now podman.socket</code>
+                <button class="copy-side" onclick="copySide(this,'loginctl enable-linger $USER && systemctl --user enable --now podman.socket')" title="Copy">
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
               </div>
             </div>
           </div>
 
           <!-- Step 3: Write Quadlet definition -->
           <div class="step">
-            <div class="step-head">
-              <div class="step-num">3</div>
-              <div class="step-body">
-                <h3>Create Quadlet Service Definition</h3>
-                <p>
-                  Podman Quadlet reads declarative <code>.container</code> files inside <code>~/.config/containers/systemd/</code>.
-                </p>
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h3>Create Quadlet Service Definition</h3>
+              <p>
+                Podman Quadlet reads declarative <code>.container</code> files inside <code>~/.config/containers/systemd/</code>.
+              </p>
 
-                <div class="copy-bar">
-                  <span>~/.config/containers/systemd/yantr.container</span>
-                  <button class="copy-btn" onclick="copyCode(this,`mkdir -p ~/.config/containers/systemd && cat << 'EOF'> ~/.config/containers/systemd/yantr.container\n[Unit]\nDescription=Yantr\nAfter=network-online.target\nWants=network-online.target\n\n[Container]\nImage=ghcr.io/besoeasy/yantr:latest\nContainerName=yantr\nNetwork=host\nSecurityLabelDisable=true\nVolume=yantr_data:/data:z\nVolume=%t/podman/podman.sock:/run/podman/podman.sock\nAutoUpdate=registry\n\n[Service]\nRestart=always\n\n[Install]\nWantedBy=default.target\nEOF`)">
-                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                    Copy Block
-                  </button>
-                </div>
-                <div class="code-block"><span class="kw">[Unit]</span><br>Description=Yantr<br>After=network-online.target<br>Wants=network-online.target<br><br><span class="kw">[Container]</span><br><span class="flag">Image</span>=<span class="val">ghcr.io/besoeasy/yantr:latest</span><br><span class="flag">ContainerName</span>=<span class="val">yantr</span><br><span class="flag">Network</span>=<span class="val">host</span><br><span class="flag">SecurityLabelDisable</span>=<span class="val">true</span><br><span class="flag">Volume</span>=<span class="val">yantr_data:/data:z</span><br><span class="flag">Volume</span>=<span class="val">%t/podman/podman.sock:/run/podman/podman.sock</span><br><span class="flag">AutoUpdate</span>=<span class="val">registry</span><br><br><span class="kw">[Service]</span><br><span class="flag">Restart</span>=<span class="val">always</span><br><br><span class="kw">[Install]</span><br><span class="flag">WantedBy</span>=<span class="val">default.target</span></div>
+              <div class="copy-bar">
+                <span>~/.config/containers/systemd/yantr.container</span>
+                <button class="copy-btn" onclick="copyCode(this,`mkdir -p ~/.config/containers/systemd && cat << 'EOF'> ~/.config/containers/systemd/yantr.container\n[Unit]\nDescription=Yantr\nAfter=network-online.target\nWants=network-online.target\n\n[Container]\nImage=ghcr.io/besoeasy/yantr:latest\nContainerName=yantr\nNetwork=host\nSecurityLabelDisable=true\nVolume=yantr_data:/data:z\nVolume=%t/podman/podman.sock:/run/podman/podman.sock\nAutoUpdate=registry\n\n[Service]\nRestart=always\n\n[Install]\nWantedBy=default.target\nEOF`)">
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                  Copy Block
+                </button>
               </div>
+              <div class="code-block"><span class="kw">[Unit]</span><br>Description=Yantr<br>After=network-online.target<br>Wants=network-online.target<br><br><span class="kw">[Container]</span><br><span class="flag">Image</span>=<span class="val">ghcr.io/besoeasy/yantr:latest</span><br><span class="flag">ContainerName</span>=<span class="val">yantr</span><br><span class="flag">Network</span>=<span class="val">host</span><br><span class="flag">SecurityLabelDisable</span>=<span class="val">true</span><br><span class="flag">Volume</span>=<span class="val">yantr_data:/data:z</span><br><span class="flag">Volume</span>=<span class="val">%t/podman/podman.sock:/run/podman/podman.sock</span><br><span class="flag">AutoUpdate</span>=<span class="val">registry</span><br><br><span class="kw">[Service]</span><br><span class="flag">Restart</span>=<span class="val">always</span><br><br><span class="kw">[Install]</span><br><span class="flag">WantedBy</span>=<span class="val">default.target</span></div>
             </div>
           </div>
 
           <!-- Step 4: Reload & Start -->
           <div class="step">
-            <div class="step-head">
-              <div class="step-num">4</div>
-              <div class="step-body">
-                <h3>Activate Yantr Service</h3>
-                <p>
-                  Reload the user systemd daemon to generate the unit from the Quadlet file, start the service, and enable the daily auto-update timer:
-                </p>
-                <div class="cmd-row">
-                  <code>systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer</code>
-                  <button class="copy-side" onclick="copySide(this,'systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer')" title="Copy">
-                    <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                    <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
-                  </button>
-                </div>
+            <div class="step-num">4</div>
+            <div class="step-body">
+              <h3>Activate Yantr Service</h3>
+              <p>
+                Reload the user systemd daemon to generate the unit from the Quadlet file, start the service, and enable the daily auto-update timer:
+              </p>
+              <div class="cmd-row">
+                <code>systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer</code>
+                <button class="copy-side" onclick="copySide(this,'systemctl --user daemon-reload && systemctl --user start yantr.service && systemctl --user enable --now podman-auto-update.timer')" title="Copy">
+                  <svg class="copy" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                  <svg class="check" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </button>
               </div>
             </div>
           </div>
 
           <!-- Step 5: Open Web UI -->
           <div class="step">
-            <div class="step-head">
-              <div class="step-num">5</div>
-              <div>
-                <h3>Open Yantr in Browser</h3>
-                <p>
-                  Visit <a href="http://localhost:5252" target="_blank">http://localhost:5252</a> (or from another machine on your LAN at <code>http://&lt;server-ip&gt;:5252</code>).
-                </p>
-                <p class="micro">On your first visit, you will establish your operator credentials.</p>
-              </div>
+            <div class="step-num">5</div>
+            <div class="step-body">
+              <h3>Open Yantr in Browser</h3>
+              <p>
+                Visit <a href="http://localhost:5252" target="_blank">http://localhost:5252</a> (or from another machine on your LAN at <code>http://&lt;server-ip&gt;:5252</code>).
+              </p>
+              <p class="micro">On your first visit, you will establish your operator credentials.</p>
             </div>
           </div>
         </div>
