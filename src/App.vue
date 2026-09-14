@@ -102,7 +102,7 @@ onUnmounted(() => {
     <template v-else>
 
     <!-- Desktop Vertical Sidebar -->
-    <aside class="hidden md:flex fixed top-0 bottom-0 left-0 w-20 flex-col items-center justify-between py-6 px-3 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-r border-slate-200/80 dark:border-zinc-800/80 z-50 transition-colors">
+    <aside class="hidden md:flex fixed top-0 bottom-0 left-0 w-20 flex-col items-center justify-between py-6 px-3 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl z-50 transition-colors">
       
       <!-- Center Navigation Items (Top-aligned) -->
       <nav class="flex flex-col items-center gap-3 pt-2">
