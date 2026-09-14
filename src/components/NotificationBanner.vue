@@ -95,9 +95,11 @@ const colorMap = {
 </template>
 
 <style scoped>
-.banner-enter-active,
+.banner-enter-active {
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .banner-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 1, 1);
 }
 .banner-enter-from,
 .banner-leave-to {
@@ -109,7 +111,10 @@ const colorMap = {
   opacity: 1;
   transform: translateY(0);
 }
+</style>
 
+<!-- Keyframes must be global (non-scoped) so the inline animation reference matches -->
+<style>
 @keyframes banner-progress {
   from { transform: scaleX(1); }
   to { transform: scaleX(0); }
