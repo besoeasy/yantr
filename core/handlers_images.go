@@ -83,7 +83,7 @@ func handleImageDelete(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 404, "IMAGE_NOT_FOUND", "Image not found")
 		return
 	}
-	if _, err := podman.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{}); err != nil {
+	if _, err := podman.ImageRemove(context.Background(), id, dockerimage.RemoveOptions{PruneChildren: true}); err != nil {
 		jsonErr(w, 500, "IMAGE_REMOVE_FAILED", err.Error())
 		return
 	}
