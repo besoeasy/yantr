@@ -159,26 +159,15 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 ---
 
-## 🏗️ How It Works
+## Star History
 
-One container. No database. No external dependencies.
-
-1. **Serves a Vue 3 UI** on port `5252`
-2. **Exposes a Go REST API** (chi router) that talks to Podman via user socket and runs `podman compose`
-3. **Reads compose templates** from its built-in catalog
-4. **Deploys isolated stacks** — each app is an independent Compose project
-
----
-
-## 🤝 Contributing
-
-To add an app, follow the format in [`AGENTS.md`](AGENTS.md), then validate:
-
-```bash
-npm run check
-```
-
-PRs welcome.
+<a href="https://www.star-history.com/?repos=besoeasy%2Fyantr&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&legend=top-left" />
+ </picture>
+</a>
 
 ---
 
