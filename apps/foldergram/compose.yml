@@ -14,12 +14,15 @@ services:
     image: ghcr.io/foldergram/foldergram:latest
     labels:
       yantr.app: "foldergram"
-      yantr.service.8080: "Web UI"
-      yantr.port.8080: "HTTP"
+      yantr.service.4141: "Web UI"
+      yantr.port.4141: "HTTP"
     ports:
-      - "8080"
+      - "4141"
+    environment:
+      IMAGE_DETAIL_SOURCE: preview
+      DERIVATIVE_MODE: eager
     volumes:
-      - foldergram_data:/data
+      - foldergram_data:/app/data
     restart: unless-stopped
 
 volumes:
