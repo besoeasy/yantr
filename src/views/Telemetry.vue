@@ -5,7 +5,6 @@ import { Activity, Globe, MemoryStick, Monitor, RefreshCw } from "@lucide/vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
-import FleetMap from "../components/FleetMap.vue";
 import AppLogo from "../components/AppLogo.vue";
 import StatCard from "../components/StatCard.vue";
 
@@ -80,11 +79,6 @@ onMounted(() => fetchStats(false));
           <StatCard :label="t('telemetry.ramHigh')" :value="stats.ram?.max || '—'" :unit="stats.ram?.unit" :icon="MemoryStick" accent="amber" />
           <StatCard :label="t('telemetry.ramAvg')" :value="ramAvg" :unit="stats.ram?.unit" :icon="Activity" accent="purple" />
         </div>
-
-        <section class="space-y-3">
-          <h2 class="text-sm font-semibold tracking-tight">{{ t("telemetry.mapTitle") }}</h2>
-          <FleetMap :countries="stats.countries || []" />
-        </section>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <section class="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
