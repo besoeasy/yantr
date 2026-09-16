@@ -1,28 +1,46 @@
 name: Publish Container Image
 
+# Manual release: Actions tab -> Publish Container Image -> Run workflow.
+# Optionally pass a custom tag (default: YYYY.MM.DD, bare CalVer like airlock).
+# The same tag versions the container image and the GitHub release.
+# Retention: only the newest 60 releases are kept, oldest pruned first.
+
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Custom release tag (default: YYYY.MM.DD)"
+        required: false
+        default: ""
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Serialize releases so two runs never claim the same date tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       id-token: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3.5.0
         with:
-          Irlanda-release: "v2.2.4"
+          cosign-release: "v2.2.4"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.0.0
@@ -34,6 +52,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Resolve release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -e
+          if [ -n "$INPUT_TAG" ]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG="$(date -u +%Y.%m.%d)"
+          fi
+          base="$TAG"
+          n=1
+          while git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; do
+            n=$((n + 1))
+            TAG="${base}.${n}"
+          done
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag: $TAG"
+
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5.0.0
@@ -41,7 +79,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=raw,value={{date 'YYYYMMDDHHMM'}}
+            type=raw,value=${{ steps.tag.outputs.tag }}
 
       - name: Build and push Docker image
         id: build-and-push
@@ -60,3 +98,42 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          set -e
+          git fetch origin main --tags
+          SHA="$(git rev-parse origin/main)"
+          PREV="$(git describe --tags --abbrev=0 "$SHA" 2>/dev/null || true)"
+          if [ -n "$PREV" ]; then
+            NOTES="$(git log --format='- %h %s' "${PREV}..${SHA}")"
+          else
+            NOTES="$(git log --format='- %h %s' -10 "$SHA")"
+          fi
+          NOTES="${NOTES}"$'\n\n'"Container image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}"
+          gh release create "$TAG" --target "$SHA" --title "$TAG" --notes "$NOTES"
+
+      - name: Prune old releases (keep newest $KEEP)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP: 60
+        run: |
+          set -e
+          [[ "$KEEP" =~ ^[0-9]+$ ]] || { echo "Invalid KEEP: $KEEP" >&2; exit 1; }
+          mapfile -t OLD < <(gh release list --limit 1000 --json tagName,createdAt,isDraft \
+            --jq --argjson keep "$KEEP" '
+              map(select(.isDraft | not))
+              | sort_by(.createdAt)
+              | if length > $keep then .[0:(length - $keep)][].tagName else empty end') || true
+          if [ "${#OLD[@]}" -eq 0 ]; then
+            echo "Release count within retention ($KEEP); nothing to prune."
+            exit 0
+          fi
+          echo "Pruning ${#OLD[@]} release(s) older than newest $KEEP:"
+          printf '  %s\n' "${OLD[@]}"
+          for t in "${OLD[@]}"; do
+            gh release delete "$t" --yes --cleanup-tag
+          done
