@@ -1,4 +1,4 @@
-name: Publish Container Image
+name: ghcr
 
 # Manual release: Actions tab -> Publish Container Image -> Run workflow.
 # Optionally pass a custom tag (default: YYYY.MM.DD, bare CalVer like airlock).
