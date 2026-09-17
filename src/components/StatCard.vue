@@ -9,7 +9,7 @@ const props = defineProps({
   icon: { type: Object, default: null }
 })
 
-// Static strings so Tailwind keeps all the needed utility classes
+// Static class strings consumed by the UI
 const accentMap = {
   blue:        { gradient: 'via-blue-500',   icon: 'group-hover:text-blue-500'   },
   'blue-light':{ gradient: 'via-blue-400',   icon: 'group-hover:text-blue-400'   },

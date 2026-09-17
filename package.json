@@ -14,8 +14,6 @@
     "@lucide/vue": "latest",
     "@noble/curves": "^2.2.0",
     "@noble/hashes": "^2.2.0",
-    "@tailwindcss/vite": "^4.1.3",
-    "tailwindcss": "^4.1.3",
     "vue": "^3.5.13",
     "vue-i18n": "^11.2.8",
     "vue-router": "^4.5.0",
