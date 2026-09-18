@@ -185,6 +185,6 @@ The source stays public. The short version is at the top of [`LICENSE`](LICENSE)
 ---
 
 <div align="center">
-  <sub>Vue 3 · Go · Podman · Tailwind CSS</sub><br/><br/>
+  <sub>Vue 3 · Go · Podman · Custom CSS</sub><br/><br/>
   <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
 </div>
