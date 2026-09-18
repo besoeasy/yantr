@@ -15,8 +15,6 @@
     --yantra-dur-enter: 300ms;
 
     --bg-body: #ffffff;
-    --bg-glass: rgba(255, 255, 255, 0.78);
-    --border-glass: rgba(15, 23, 42, 0.08);
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --surface: #ffffff;
@@ -25,8 +23,6 @@
 
 :root.dark {
     --bg-body: #0b1220;
-    --bg-glass: rgba(15, 23, 42, 0.6);
-    --border-glass: rgba(148, 163, 184, 0.2);
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
     --surface: #0f172a;
@@ -49,68 +45,13 @@ body {
     overscroll-behavior: none;
 }
 
-/* Safe area for iPhone notch and home indicator */
-.safe-area-inset-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* Touch-friendly interactions */
-.touch-manipulation {
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-}
-
-/* Better mobile scrolling */
-.mobile-scroll {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-}
-
-.glass {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
-}
-
-.glass-dark {
-    background: var(--bg-glass);
-    border: 1px solid var(--border-glass);
-}
-
-.card-hover {
-    transition: all var(--yantra-dur) var(--yantra-ease);
-}
-
-.card-hover:hover {
-    transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
 .smooth-shadow {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.smooth-shadow-lg {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 button,
 a {
     transition: all var(--yantra-dur-fast) var(--yantra-ease);
-}
-
-.status-dot {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
 }
 
 input:focus,
@@ -178,32 +119,11 @@ svg.lucide {
     vector-effect: non-scaling-stroke;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* NOTE: @keyframes fadeIn lives in Section 2 (last definition wins);
+   .animate-fadeIn below resolves to it. */
 .animate-fadeIn {
     animation: fadeIn var(--yantra-dur-enter) var(--yantra-ease) forwards;
 }
-
-/* Prominent link style using design tokens */
-.prominent-link {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-.prominent-link:hover,
-.prominent-link:focus {
-    text-decoration: underline;
-    color: var(--text-primary);
-}
-
 
 /* ── Section 2 · utility layer (curated from prior Tailwind build) ── */
 /* === (A) Tailwind-compatible theme tokens, preflight-equivalent base, and internals === */
@@ -1071,8 +991,8 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .dark\:focus\:bg-\[\#0A0A0A\]:is(.dark *):focus{background-color:#0a0a0a;}
 .dark\:focus\:ring-white:is(.dark *):focus{--tw-ring-color:var(--color-white);}
 .dark\:focus\:ring-zinc-600\/20:is(.dark *):focus{--tw-ring-color:#52525c33;}
-:root{--yantra-ease:cubic-bezier(.16, 1, .3, 1);--yantra-dur-fast:.2s;--yantra-dur:.28s;--yantra-dur-enter:.3s;--bg-body:#fff;--bg-glass:#ffffffc7;--border-glass:#0f172a14;--text-primary:#0f172a;--text-secondary:#475569;--surface:#fff;--surface-muted:#f1f5f9;}
-:root.dark{--bg-body:#0b1220;--bg-glass:#0f172a99;--border-glass:#94a3b833;--text-primary:#e2e8f0;--text-secondary:#94a3b8;--surface:#0f172a;--surface-muted:#111827;}
+:root{--yantra-ease:cubic-bezier(.16, 1, .3, 1);--yantra-dur-fast:.2s;--yantra-dur:.28s;--yantra-dur-enter:.3s;--bg-body:#fff;--text-primary:#0f172a;--text-secondary:#475569;--surface:#fff;--surface-muted:#f1f5f9;}
+:root.dark{--bg-body:#0b1220;--text-primary:#e2e8f0;--text-secondary:#94a3b8;--surface:#0f172a;--surface-muted:#111827;}
 *{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-webkit-tap-highlight-color:#0000001a;font-family:-apple-system,BlinkMacSystemFont,SF Pro Display,Segoe UI,sans-serif;}
 body{background:var(--bg-body);color:var(--text-primary);transition:background-color var(--yantra-dur) var(--yantra-ease),color var(--yantra-dur) var(--yantra-ease);overscroll-behavior:none;}
 button,
