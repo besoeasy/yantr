@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import { Cpu, Server, Activity } from "@lucide/vue";
+import { Server, Activity } from "@lucide/vue";
 import { formatBytes } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
@@ -10,16 +10,13 @@ const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 
 const systemInfo = ref(null);
-const containers = ref([]);
 const volumes = ref([]);
-const images = ref([]);
 const loading = ref(true);
 const error = ref(null);
 let refreshInterval = null;
 
 const displayCores = ref(0);
 const displayMemBytes = ref(0);
-const displayStoragePercent = ref(0);
 
 function countUpTo(targetRef, targetVal, duration = 900) {
   const startVal = targetRef.value;
@@ -37,18 +34,14 @@ function countUpTo(targetRef, targetVal, duration = 900) {
   requestAnimationFrame(tick);
 }
 
-const runningApps = computed(() => containers.value.filter((container) => container.state === "running").length);
+// Counts come straight from the /api/system/info payload — no extra
+// /api/containers or /api/images round-trips needed for this card.
+const podmanInfo = computed(() => systemInfo.value?.podman ?? systemInfo.value?.docker ?? {});
+const runningCount = computed(() => podmanInfo.value?.containers?.running ?? 0);
+const stoppedCount = computed(() => podmanInfo.value?.containers?.stopped ?? 0);
+const imagesCount = computed(() => podmanInfo.value?.images ?? 0);
 const totalVolumes = computed(() => volumes.value.length);
-const imagesCount = computed(() => images.value.length);
-const temporaryCount = computed(() => containers.value.filter((container) => container?.labels?.["yantr.expireAt"]).length);
-
-const greeting = computed(() => {
-  const hour = new Date().getHours();
-  if (hour < 5) return t("home.overviewPulseCard.lateNightCoding");
-  if (hour < 12) return t("home.overviewPulseCard.goodMorning");
-  if (hour < 18) return t("home.overviewPulseCard.goodAfternoon");
-  return t("home.overviewPulseCard.goodEvening");
-});
+const podmanVersion = computed(() => (podmanInfo.value?.version ? `v${podmanInfo.value.version}` : "--"));
 
 const osInfo = computed(() => {
   if (!systemInfo.value?.os) {
@@ -61,28 +54,11 @@ const osInfo = computed(() => {
   }
 
   return {
-    name: systemInfo.value.os.name.replace("Debian GNU/Linux", "Debian").replace("Ubuntu", "Ubuntu"),
+    name: systemInfo.value.os.name.replace("Debian GNU/Linux", "Debian"),
     type: systemInfo.value.os.type,
     arch: systemInfo.value.os.arch || systemInfo.value.os.architecture,
     kernel: systemInfo.value.os.kernel,
   };
-});
-
-const storageInfo = computed(() => {
-  if (!systemInfo.value?.storage) {
-    return { used: 0, total: 0, percent: 0, usedFormatted: "0 B", totalFormatted: "0 B", hasData: false };
-  }
-
-  const { used, total } = systemInfo.value.storage;
-  if (used && used > 0) {
-    if (total && total > 0) {
-      const percent = Math.round((used / total) * 100);
-      return { used, total, percent, usedFormatted: formatBytes(used), totalFormatted: formatBytes(total), hasData: true };
-    }
-    return { used, total: 0, percent: 0, usedFormatted: formatBytes(used), totalFormatted: null, hasData: true };
-  }
-
-  return { used: 0, total: 0, percent: 0, usedFormatted: "0 B", totalFormatted: "0 B", hasData: false };
 });
 
 const displayMemFormatted = computed(() => formatBytes(displayMemBytes.value));
@@ -96,7 +72,7 @@ const workloadStats = computed(() => [
   {
     key: "apps",
     label: t("home.overviewPulseCard.apps"),
-    value: runningApps.value,
+    value: runningCount.value,
     tone: "text-sky-600 dark:text-sky-400",
   },
   {
@@ -112,10 +88,10 @@ const workloadStats = computed(() => [
     tone: "text-sky-600 dark:text-sky-400",
   },
   {
-    key: "temp",
-    label: t("home.overviewPulseCard.temp"),
-    value: temporaryCount.value,
-    tone: "text-amber-600 dark:text-amber-400",
+    key: "stopped",
+    label: t("home.overviewPulseCard.stopped"),
+    value: stoppedCount.value,
+    tone: "text-zinc-500 dark:text-zinc-400",
   },
 ]);
 
@@ -123,34 +99,22 @@ watch(systemInfo, (info) => {
   if (!info) return;
   countUpTo(displayCores, info.cpu?.cores ?? 0);
   countUpTo(displayMemBytes, info.memory?.total ?? 0, 1000);
-
-  if (info.storage?.used > 0 && info.storage?.total > 0) {
-    countUpTo(displayStoragePercent, Math.round((info.storage.used / info.storage.total) * 100));
-  } else {
-    displayStoragePercent.value = 0;
-  }
 });
 
 async function fetchData() {
   try {
-    const [systemRes, containerRes, volumeRes, imageRes] = await Promise.all([
+    const [systemRes, volumeRes] = await Promise.all([
       fetch(`${apiUrl.value}/api/system/info`),
-      fetch(`${apiUrl.value}/api/containers`),
       fetch(`${apiUrl.value}/api/volumes`),
-      fetch(`${apiUrl.value}/api/images`),
     ]);
 
-    const [systemData, containerData, volumeData, imageData] = await Promise.all([
+    const [systemData, volumeData] = await Promise.all([
       expectApiSuccess(systemRes, "Failed to fetch system info"),
-      expectApiSuccess(containerRes, "Failed to fetch containers"),
       expectApiSuccess(volumeRes, "Failed to fetch volumes"),
-      expectApiSuccess(imageRes, "Failed to fetch images"),
     ]);
 
     systemInfo.value = systemData.info;
-    containers.value = Array.isArray(containerData.containers) ? containerData.containers : [];
     volumes.value = Array.isArray(volumeData.volumes) ? volumeData.volumes : [];
-    images.value = Array.isArray(imageData.images) ? imageData.images : [];
     error.value = null;
   } catch (err) {
     error.value = err.message;
@@ -253,10 +217,9 @@ onUnmounted(() => {
                   <span class="text-sm font-black tracking-tight text-zinc-900 dark:text-white">{{ displayMemParts.value }} <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ displayMemParts.unit }}</span></span>
               </div>
               <div class="flex flex-col gap-1 truncate rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-                  <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t("quickMetrics.hostMetrics.dockerVol") }}</span>
+                  <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t("quickMetrics.hostMetrics.podman") }}</span>
                   <span class="truncate text-sm font-black tracking-tight text-zinc-900 dark:text-white">
-                    {{ storageInfo.usedFormatted }}
-                    <span v-if="storageInfo.total > 0" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">/ {{ displayStoragePercent }}%</span>
+                    {{ podmanVersion }}
                   </span>
               </div>
            </div>

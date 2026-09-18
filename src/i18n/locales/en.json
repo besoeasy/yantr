@@ -77,7 +77,7 @@
       "apps": "Apps",
       "volumes": "Volumes",
       "images": "Images",
-      "temp": "Temp"
+      "stopped": "Stopped"
     },
     "dailyAppCard": {
       "featuredToday": "Featured Today",
@@ -589,7 +589,7 @@
       "cores": "Cores",
       "memory": "Memory",
       "kernel": "Kernel {kernel}",
-      "dockerVol": "Storage:"
+      "podman": "Podman"
     },
     "machineIdentity": {
       "title": "Identity",

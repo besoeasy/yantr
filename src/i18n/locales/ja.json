@@ -77,7 +77,7 @@
       "apps": "アプリ",
       "volumes": "ボリューム",
       "images": "イメージ",
-      "temp": "一時"
+      "stopped": "停止中"
     },
     "toolsNavCard": {
       "systemTools": "システムツール",
@@ -581,7 +581,7 @@
       "cores": "コア",
       "memory": "メモリ",
       "kernel": "カーネル {kernel}",
-      "dockerVol": "ストレージ:"
+      "podman": "Podman"
     },
     "machineIdentity": {
       "title": "識別情報",

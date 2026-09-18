@@ -77,7 +77,7 @@
       "apps": "应用",
       "volumes": "卷",
       "images": "镜像",
-      "temp": "临时"
+      "stopped": "已停止"
     },
     "toolsNavCard": {
       "systemTools": "系统工具",
@@ -581,7 +581,7 @@
       "cores": "核心",
       "memory": "内存",
       "kernel": "内核 {kernel}",
-      "dockerVol": "存储："
+      "podman": "Podman"
     },
     "machineIdentity": {
       "title": "身份信息",

@@ -77,7 +77,7 @@
       "apps": "Apps",
       "volumes": "Volúmenes",
       "images": "Imágenes",
-      "temp": "Temp"
+      "stopped": "Detenidos"
     },
     "toolsNavCard": {
       "systemTools": "Herramientas del sistema",
@@ -581,7 +581,7 @@
       "cores": "Núcleos",
       "memory": "Memoria",
       "kernel": "Kernel {kernel}",
-      "dockerVol": "Almacenamiento:"
+      "podman": "Podman"
     },
     "machineIdentity": {
       "title": "Identidad",
