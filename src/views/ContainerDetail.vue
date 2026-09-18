@@ -618,12 +618,4 @@ onUnmounted(() => {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #4f4f4f;
 }
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
-}
 </style>
