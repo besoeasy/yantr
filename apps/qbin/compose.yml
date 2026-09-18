@@ -12,7 +12,7 @@ x-yantr:
 
 services:
   qbin:
-    image: ghcr.io/quick-bin/qbin:latest
+    image: naiher/qbin:latest
     labels:
       yantr.app: "qbin"
       yantr.service.8080: "Web UI"
