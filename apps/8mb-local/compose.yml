@@ -29,7 +29,7 @@ services:
       yantr.port.8001: HTTP
     environment:
       AUTH_ENABLED: "false"
-      FILE_RETENTION_HOURS: "1"
+      FILE_RETENTION_HOURS: "12"
       WORKER_CONCURRENCY: "4"
     ports:
       - "8001"
