@@ -691,7 +691,8 @@
     "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
-    "version": "Version"
+    "version": "Version",
+    "invalidToken": "That doesn't look like a tunnel token — paste the full token from dash.cloudflare.com."
   },
   "portainerCard": {
     "dockerEnvironment": "Container Environment",

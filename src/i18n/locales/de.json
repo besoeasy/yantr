@@ -683,7 +683,8 @@
     "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
-    "version": "Version"
+    "version": "Version",
+    "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein."
   },
   "portainerCard": {
     "dockerEnvironment": "Container-Umgebung",

@@ -683,7 +683,8 @@
     "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
-    "version": "Version"
+    "version": "Version",
+    "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。"
   },
   "portainerCard": {
     "dockerEnvironment": "容器环境",

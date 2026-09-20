@@ -32,6 +32,29 @@ func handleApps(w http.ResponseWriter, r *http.Request) {
 }
 
 var imageRe = regexp.MustCompile(`image:\s*([^\s\n]+)`)
+var validEnvKey = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+// validateEnvMap ensures user-supplied env vars cannot break out of the
+// KEY=value env file (newline injection) or smuggle control characters.
+func validateEnvMap(env map[string]interface{}) error {
+	for k, v := range env {
+		key := strings.TrimSpace(k)
+		if key == "" || v == nil {
+			continue
+		}
+		if !validEnvKey.MatchString(key) {
+			return fmt.Errorf("invalid variable name %q", key)
+		}
+		val := fmt.Sprintf("%v", v)
+		if strings.TrimSpace(val) == "" {
+			continue
+		}
+		if strings.ContainsAny(val, "\n\r\x00") {
+			return fmt.Errorf("variable %q contains an illegal newline or control character", key)
+		}
+	}
+	return nil
+}
 
 func handleCheckArch(w http.ResponseWriter, r *http.Request) {
 	appID := chi.URLParam(r, "id")
@@ -76,6 +99,14 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	}
 	if !validAppID.MatchString(body.AppID) {
 		jsonErr(w, 400, "INVALID_APP_ID", "Invalid app ID")
+		return
+	}
+	if err := validateEnvMap(body.Environment); err != nil {
+		jsonErr(w, 400, "INVALID_ENV", err.Error())
+		return
+	}
+	if err := validateEnvMap(body.ExtraEnv); err != nil {
+		jsonErr(w, 400, "INVALID_ENV", err.Error())
 		return
 	}
 

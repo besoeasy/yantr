@@ -69,7 +69,26 @@ const deploying = ref(false)
 const deployError = ref('')
 const deploySuccess = ref(false)
 
-const isValidToken = computed(() => tunnelToken.value.trim().length > 20)
+// Cloudflare tunnel tokens are base64url-encoded JSON:
+// {"a":"<account-id>","t":"<tunnel-id>","s":"<secret>"}
+function parseTunnelToken(raw) {
+  const trimmed = (raw || '').trim()
+  if (!trimmed || /\s/.test(trimmed)) return null
+  try {
+    const padded = trimmed + '='.repeat((4 - (trimmed.length % 4)) % 4)
+    const json = atob(padded.replace(/-/g, '+').replace(/_/g, '/'))
+    const payload = JSON.parse(json)
+    if (!payload || typeof payload !== 'object') return null
+    const { a, t, s } = payload
+    if (typeof a !== 'string' || !a || typeof t !== 'string' || !t || typeof s !== 'string' || !s) return null
+    return { accountId: a, tunnelId: t }
+  } catch {
+    return null
+  }
+}
+
+const parsedToken = computed(() => parseTunnelToken(tunnelToken.value))
+const isValidToken = computed(() => parsedToken.value !== null)
 
 async function deploy() {
   if (!isValidToken.value || deploying.value) return
@@ -165,6 +184,13 @@ async function deploy() {
               <AlertCircle v-else-if="tunnelToken.trim()" class="h-4 w-4 text-red-500" />
             </div>
           </div>
+          <div v-if="parsedToken" class="mt-2 space-y-1 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+            <div class="truncate" :title="parsedToken.accountId">Account: {{ parsedToken.accountId }}</div>
+            <div class="truncate" :title="parsedToken.tunnelId">Tunnel: {{ parsedToken.tunnelId }}</div>
+          </div>
+          <p v-else-if="tunnelToken.trim()" class="mt-2 text-[11px] font-medium text-red-500">
+            {{ t('cloudflaredCard.invalidToken') }}
+          </p>
         </div>
 
         <transition

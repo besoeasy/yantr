@@ -683,7 +683,8 @@
     "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
-    "version": "Version"
+    "version": "Version",
+    "invalidToken": "トンネルトークンではありません — dash.cloudflare.com のトークン全体を貼り付けてください。"
   },
   "portainerCard": {
     "dockerEnvironment": "コンテナ環境",
