@@ -278,6 +278,7 @@ if [ "$IS_ROOT" -eq 1 ]; then
   QUADLET_FILE="$QUADLET_DIR/yantr.container"
   SYSTEMCTL="systemctl"
   SOCKET_BIND="/run/podman/podman.sock:/run/podman/podman.sock"
+  WANTED_BY="multi-user.target"
 else
   log_step "Configuring Rootless Podman & systemd user service..."
 
@@ -341,6 +342,7 @@ else
   QUADLET_FILE="$QUADLET_DIR/yantr.container"
   SYSTEMCTL="systemctl --user"
   SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock"
+  WANTED_BY="default.target"
 fi
 log_debug "quadlet file: $QUADLET_FILE"
 log_debug "socket bind: $SOCKET_BIND"
@@ -369,7 +371,7 @@ AutoUpdate=registry
 Restart=always
 
 [Install]
-WantedBy=default.target"
+WantedBy=${WANTED_BY}"
 
 if [ "$IS_ROOT" -eq 1 ]; then
   echo "$QUADLET_CONTENT" | $SUDO tee "$QUADLET_FILE" > /dev/null
