@@ -121,6 +121,20 @@ services:
     build: .
 ```
 
+### 6. Container Socket — Use ${HOST_PODMAN_SOCKET}, Never docker.sock
+Yantr is Podman-only. Apps needing the container engine API (Glances, Homarr, Portainer, …) MUST use the `${HOST_PODMAN_SOCKET}` placeholder on the host side. Yantr resolves it per deploy to the host's rootless Podman socket. Keep `/var/run/docker.sock` on the container side — images hardcode that path. Any other `*.sock` host source aborts the deploy with an error.
+
+```yaml
+# ✅ correct
+volumes:
+  - "${HOST_PODMAN_SOCKET}:/var/run/docker.sock:ro"
+
+# ❌ wrong — deploy WILL fail
+volumes:
+  - /var/run/docker.sock:/var/run/docker.sock:ro
+  - /run/podman/podman.sock:/var/run/docker.sock:ro
+```
+
 ## Minimal App Example
 
 ```yaml
@@ -164,3 +178,6 @@ volumes:
 Run `node check.js` after any app changes. It will fail if:
 - `compose.yml` uses `${VAR}` without a default and `env_generators` is missing the matching entry
 - Flat arrays use block sequences instead of flow sequences
+
+Deploy-time hard rule (enforced in `core/compose/compose.go`, not `check.js`):
+- Any volume with a `*.sock` host source other than `${HOST_PODMAN_SOCKET}` aborts the deploy — see Critical Rule 6.

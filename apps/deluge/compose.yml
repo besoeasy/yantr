@@ -24,7 +24,6 @@ services:
   deluge:
     image: docker.io/linuxserver/deluge:latest
     volumes:
-      - deluge-config:/config
       - deluge-downloads:/downloads
     ports:
       - "8112"
@@ -37,5 +36,4 @@ services:
       yantr.port.8112: HTTP
 
 volumes:
-  deluge-config: null
   deluge-downloads: null

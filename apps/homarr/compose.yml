@@ -32,7 +32,7 @@ services:
     image: ghcr.io/homarr-labs/homarr:latest
     restart: unless-stopped
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "${HOST_PODMAN_SOCKET}:/var/run/docker.sock"
       - homarr_data:/appdata
     environment:
       SECRET_ENCRYPTION_KEY: ${HOMARR_ENCRYPTION_KEY:-2dff4b06831e4608cc93dfee6fbe55b29ff0ee189cafd23ccc128698dae55884}
