@@ -87,7 +87,7 @@ func Resuscitate(appsDir string, getComposeCmd func() (string, []string, error))
 			continue
 		}
 
-		envMap, _ := compose.GetComposeProcessEnv(appPath, s.ProjectID, podman.SocketPath)
+		envMap, _ := compose.GetComposeProcessEnv(appPath, s.ProjectID, podman.SocketPath, podman.HostSocket())
 		var envList []string
 		for k, v := range envMap {
 			envList = append(envList, k+"="+v)

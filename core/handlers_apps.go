@@ -199,7 +199,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "COMPOSE_NOT_FOUND", err.Error())
 		return
 	}
-	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, podman.SocketPath)
+	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, podman.SocketPath, podman.HostSocket())
 	args := append(cmdArgs, "-p", projectName, "-f", ref.ComposeFile, "up", "-d")
 	shared.Log("info", fmt.Sprintf("[deploy] starting: app=%s project=%s cmd=%s %s", body.AppID, projectName, cmdName, strings.Join(args, " ")))
 	deployCtx, deployCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)

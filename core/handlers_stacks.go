@@ -151,7 +151,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 
 	if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 		if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
-			env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
+			env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 			shared.Log("info", fmt.Sprintf("[stack] removing: project=%s", projectID))
 			downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
@@ -223,7 +223,7 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
+	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "restart")
 	shared.Log("info", fmt.Sprintf("[stack] restarting: project=%s", projectID))
 	restartCtx, restartCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)

@@ -82,7 +82,7 @@ func sweepExpiredContainers() {
 		removed := false
 		if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 			if cmdName, cmdArgs, cmdErr := getComposeCommand(); cmdErr == nil {
-				env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
+				env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 				args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 				reaperCtx, reaperCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
 				_, _, exitCode, _ := spawnExec(reaperCtx, cmdName, args, env, appPath)
@@ -414,7 +414,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath)
+		env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 		shared.Log("info", fmt.Sprintf("[update] pulling latest images for stack: %s", projectID))
 		pullCtx, pullCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		pullArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "pull")

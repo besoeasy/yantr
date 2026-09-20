@@ -240,7 +240,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		ref := compose.GetProjectComposeRef(appPath, project)
 		if _, statErr := os.Stat(ref.ComposePath); statErr == nil {
 			if cmdName, cmdArgs, err := getComposeCommand(); err == nil {
-				env, _ := compose.GetComposeProcessEnv(appPath, project, podman.SocketPath)
+				env, _ := compose.GetComposeProcessEnv(appPath, project, podman.SocketPath, podman.HostSocket())
 				args := append(cmdArgs, "-p", project, "-f", ref.ComposeFile, "down")
 				shared.Log("info", fmt.Sprintf("[container] removing stack: project=%s container=%s", project, name))
 				downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)

@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -188,7 +189,7 @@ func ParseEnvFile(content string) map[string]string {
 }
 
 // GetComposeProcessEnv builds the environment for running docker compose.
-func GetComposeProcessEnv(appPath, projectID, dockerSocket string) (map[string]string, error) {
+func GetComposeProcessEnv(appPath, projectID, dockerSocket, hostSocket string) (map[string]string, error) {
 	projectEnv, err := LoadProjectEnv(appPath, projectID)
 	if err != nil {
 		projectEnv = map[string]string{}
@@ -211,6 +212,14 @@ func GetComposeProcessEnv(appPath, projectID, dockerSocket string) (map[string]s
 	env["DOCKER_HOST"] = "unix://" + dockerSocket
 	env["PODMAN_HOST"] = "unix://" + dockerSocket
 	env["PODMAN_SOCKET"] = dockerSocket
+	// Host-absolute socket path for bind-mount interpolation:
+	// apps use "${HOST_PODMAN_SOCKET}:/var/run/docker.sock:ro" so the
+	// repo file never names a Docker path on the host side.
+	if hostSocket != "" {
+		env["HOST_PODMAN_SOCKET"] = hostSocket
+	} else {
+		env["HOST_PODMAN_SOCKET"] = dockerSocket
+	}
 
 	return env, nil
 }
@@ -264,9 +273,11 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 		applyExtraEnv(services, opts.ExtraEnv)
 	}
 
-	// Docker socket transforms — rewrite /var/run/docker.sock to host Podman socket
-	if opts.HostDockerSocket != "" {
-		applyDockerSocketTransform(services, opts.HostDockerSocket)
+	// Docker socket policy — the ONLY allowed socket host source is the
+	// ${HOST_PODMAN_SOCKET} placeholder (resolved to the host Podman socket
+	// per deploy). Any other socket path on the host side aborts the deploy.
+	if err := applyDockerSocketTransform(services, opts.HostDockerSocket); err != nil {
+		return err
 	}
 
 	// Expiration labels — deploy-time expiresIn (hours) takes precedence;
@@ -295,8 +306,8 @@ func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 	return nil
 }
 
-func applyDockerSocketTransform(services map[string]interface{}, hostSocket string) {
-	for _, svcRaw := range services {
+func applyDockerSocketTransform(services map[string]interface{}, hostSocket string) error {
+	for svcName, svcRaw := range services {
 		svc, ok := svcRaw.(map[string]interface{})
 		if !ok {
 			continue
@@ -309,17 +320,54 @@ func applyDockerSocketTransform(services map[string]interface{}, hostSocket stri
 			switch entry := v.(type) {
 			case string:
 				parts := strings.Split(entry, ":")
-				if len(parts) >= 2 && (parts[0] == "/var/run/docker.sock" || parts[0] == "/run/docker.sock") {
-					parts[0] = hostSocket
-					vols[i] = strings.Join(parts, ":")
+				if len(parts) < 2 {
+					continue
 				}
+				src := parts[0]
+				if !isSocketHostSource(src) {
+					continue
+				}
+				if !isSocketPlaceholder(src) {
+					return fmt.Errorf("service %q: socket mount host source %q is forbidden — use \"${HOST_PODMAN_SOCKET}\"", svcName, src)
+				}
+				if hostSocket == "" {
+					return fmt.Errorf("service %q: cannot resolve \"${HOST_PODMAN_SOCKET}\" (host socket unknown)", svcName)
+				}
+				parts[0] = hostSocket
+				vols[i] = strings.Join(parts, ":")
 			case map[string]interface{}:
-				if src, ok := entry["source"].(string); ok && (src == "/var/run/docker.sock" || src == "/run/docker.sock") {
-					entry["source"] = hostSocket
+				src, ok := entry["source"].(string)
+				if !ok || !isSocketHostSource(src) {
+					continue
 				}
+				if !isSocketPlaceholder(src) {
+					return fmt.Errorf("service %q: socket mount host source %q is forbidden — use \"${HOST_PODMAN_SOCKET}\"", svcName, src)
+				}
+				if hostSocket == "" {
+					return fmt.Errorf("service %q: cannot resolve \"${HOST_PODMAN_SOCKET}\" (host socket unknown)", svcName)
+				}
+				entry["source"] = hostSocket
 			}
 		}
 	}
+	return nil
+}
+
+// isSocketPlaceholder reports whether src is the allowed socket placeholder.
+func isSocketPlaceholder(src string) bool {
+	return src == "${HOST_PODMAN_SOCKET}" || src == "$HOST_PODMAN_SOCKET"
+}
+
+// isSocketHostSource reports whether a volume source looks like a container
+// engine socket (docker.sock / podman.sock in any directory, e.g.
+// /var/run/docker.sock, /run/podman/podman.sock,
+// /run/user/1000/podman/podman.sock) or the placeholder itself.
+func isSocketHostSource(src string) bool {
+	if isSocketPlaceholder(src) {
+		return true
+	}
+	base := path.Base(src)
+	return base == "docker.sock" || base == "podman.sock"
 }
 
 func getServices(doc ComposeDoc) map[string]interface{} {
