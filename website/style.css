@@ -1427,17 +1427,15 @@ p code, li code, td code, .spec-sub code {
   align-items: center;
   gap: 1rem;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--gray-200);
-  background: var(--white);
+  border: 1px solid transparent;
+  background: var(--gray-50);
   padding: 1rem 1.25rem;
-  box-shadow: var(--shadow-xs);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .app-card:hover {
   transform: translateY(-2px);
-  border-color: var(--gray-400);
-  box-shadow: var(--shadow-md);
-  background: var(--white);
+  background: var(--gray-100);
+  box-shadow: var(--shadow-sm);
 }
 .app-card img {
   width: 3.25rem;
@@ -1446,6 +1444,7 @@ p code, li code, td code, .spec-sub code {
   object-fit: cover;
   flex-shrink: 0;
   border: 1px solid var(--gray-100);
+  background: var(--white);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 .app-card .app-card-body {
@@ -2372,22 +2371,22 @@ p code, li code, td code, .spec-sub code {
   align-items: center;
   gap: 1rem;
   padding: 1.15rem 1.25rem;
-  border: 1px solid var(--gray-200);
-  background: var(--white);
+  border: 1px solid transparent;
+  background: var(--gray-50);
   border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-xs);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .related-card:hover {
   transform: translateY(-2px);
-  border-color: var(--gray-400);
-  box-shadow: var(--shadow-md);
+  background: var(--gray-100);
+  box-shadow: var(--shadow-sm);
 }
 .related-card img {
   width: 3.25rem;
   height: 3.25rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--gray-100);
+  background: var(--white);
   object-fit: cover;
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
