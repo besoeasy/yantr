@@ -1,5 +1,5 @@
 x-yantr:
-  name: yantr-torrent
+  name: torrentbox
   tags: [torrent, download, p2p, webdav, storage]
   short_description: "All-in-one torrent downloader with Flood UI, WebDAV access, and auto-cleanup."
   description: >
@@ -99,7 +99,7 @@ services:
       SEED_IDLE_MINUTES: ${SEED_IDLE_MINUTES:-60}
       SEED_CLEANUP_DAYS: ${SEED_CLEANUP_DAYS:-30}
     labels:
-      yantr.app: "yantr-torrent"
+      yantr.app: "torrentbox"
       yantr.service.3000: "Flood Web UI"
       yantr.port.3000: "HTTP"
       yantr.service.5000: "WebDAV File Browser"
@@ -112,10 +112,10 @@ services:
       - "51413"
       - "51413/udp"
     volumes:
-      - yantr_torrent_config:/config
-      - yantr_torrent_downloads:/downloads
+      - torrentbox_config:/config
+      - torrentbox_downloads:/downloads
     restart: unless-stopped
 
 volumes:
-  yantr_torrent_config:
-  yantr_torrent_downloads:
+  torrentbox_config:
+  torrentbox_downloads:
