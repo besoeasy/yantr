@@ -514,6 +514,147 @@ code, pre { font-family: var(--font-mono); }
 @keyframes marquee-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 @keyframes marquee-right { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 
+/* ── App of the Day ────────────────────────────── */
+.aotd-head { text-align: center; margin-bottom: 3rem; }
+.aotd-head .lead { max-width: 34rem; margin-left: auto; margin-right: auto; }
+
+.aotd-card {
+  position: relative;
+  overflow: hidden;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem;
+  border-radius: var(--radius-2xl);
+  border: 1px solid #1f2937;
+  background: linear-gradient(180deg, #111827 0%, #030712 100%);
+  color: var(--white);
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+.aotd-glow {
+  position: absolute;
+  right: -3rem;
+  bottom: -3rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: var(--radius-full);
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), rgba(124, 58, 237, 0.1), transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+.aotd-card-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.aotd-logo {
+  width: 5.25rem;
+  height: 5.25rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--white);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+}
+.aotd-kicker {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--emerald-400);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.aotd-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--white);
+}
+.aotd-name a { color: inherit; }
+.aotd-name a:hover { color: var(--emerald-400); }
+.aotd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+.aotd-tag {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.85);
+}
+.aotd-desc {
+  position: relative;
+  margin-top: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--gray-400);
+  max-width: 44rem;
+}
+.aotd-usecases {
+  position: relative;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.aotd-usecase {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+.aotd-usecase::before {
+  content: "✦";
+  color: var(--emerald-400);
+  flex-shrink: 0;
+}
+.aotd-actions {
+  position: relative;
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+.aotd-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 800;
+  background: var(--white);
+  color: var(--black);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s ease;
+}
+.aotd-btn:hover {
+  background: rgba(255, 255, 255, 0.92);
+  transform: translateY(-2px);
+}
+.aotd-btn-ghost {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: none;
+}
+.aotd-btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 /* ── Why Yantr vs Umbrel ────────────────────────────── */
 .split {
   display: grid;
@@ -2346,6 +2487,9 @@ p code, li code, td code, .spec-sub code {
   .install-header h1 { font-size: 3.25rem; }
   .ram-panel { padding: 2.5rem; }
   .spec-card { padding: 2.5rem; }
+  .aotd-card { padding: 2.5rem 2.75rem; }
+  .aotd-logo { width: 6.5rem; height: 6.5rem; }
+  .aotd-name { font-size: 1.9rem; }
 }
 
 @media (min-width: 768px) {

@@ -235,6 +235,23 @@
         </div>
       </div>
 
+      <!-- App of the Day Section -->
+      <section id="app-of-the-day" class="full-bleed section section-white">
+        <div class="wrap">
+          <div class="aotd-head">
+            <p class="eyebrow">Daily Spotlight</p>
+            <h2 class="h2">
+              App of the Day
+              <span class="muted">A new pick, every day.</span>
+            </h2>
+            <p class="lead">
+              One self-hosted app, chosen by the date. Come back tomorrow and discover the next one.
+            </p>
+          </div>
+          <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
+        </div>
+      </section>
+
       <!-- Why Yantr Over Umbrel Section -->
       <section id="why-yantr-over-umbrel" class="full-bleed section section-gray">
         <div class="wrap">
@@ -943,6 +960,87 @@
         }
       }
 
+      // ── App of the Day ─────────────────────────────
+      // Deterministic per-date pick: same app all day, a new one each day.
+
+      function dateSeedString(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      function hashSeed(str) {
+        let h1 = 0xdeadbeef;
+        let h2 = 0x41c6ce57;
+        for (let i = 0; i < str.length; i++) {
+          const ch = str.charCodeAt(i);
+          h1 = Math.imul(h1 ^ ch, 2654435761);
+          h2 = Math.imul(h2 ^ ch, 1597334677);
+        }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+        h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+        h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        return h2 >>> 0;
+      }
+
+      function pickAppOfTheDay(apps, date = new Date()) {
+        if (!Array.isArray(apps) || apps.length === 0) return null;
+        const index = hashSeed(dateSeedString(date)) % apps.length;
+        return apps[index];
+      }
+
+      async function loadAppOfTheDay() {
+        const container = document.getElementById("aotd-render");
+        if (!container) return;
+        try {
+          const response = await fetch("./apps.json");
+          const data = await response.json();
+          const apps = Array.isArray(data.apps) ? data.apps : [];
+          const app = pickAppOfTheDay(apps);
+          if (!app) {
+            const section = document.getElementById("app-of-the-day");
+            if (section) section.style.display = "none";
+            return;
+          }
+
+          const logoUrl = getLogoUrl(app);
+          const desc = app.short_description || app.description || "";
+          const tags = (app.tags || []).slice(0, 5)
+            .map((t) => `<span class="aotd-tag">${t}</span>`)
+            .join("");
+          const usecases = (app.usecases || []).slice(0, 2)
+            .map((u) => `<span class="aotd-usecase">${u}</span>`)
+            .join("");
+          const today = new Date().toLocaleDateString("en-US", {
+            weekday: "long", year: "numeric", month: "long", day: "numeric",
+          });
+
+          container.innerHTML = `
+            <div class="aotd-card">
+              <span class="aotd-glow" aria-hidden="true"></span>
+              <div class="aotd-card-top">
+                <img src="${logoUrl}" alt="${app.name}" class="aotd-logo" />
+                <div>
+                  <p class="aotd-kicker">★ App of the Day · ${today}</p>
+                  <h3 class="aotd-name"><a href="./apps/${app.id}/">${app.name}</a></h3>
+                  <div class="aotd-tags">${tags}</div>
+                </div>
+              </div>
+              <p class="aotd-desc">${desc}</p>
+              <div class="aotd-usecases">${usecases}</div>
+              <div class="aotd-actions">
+                <a href="./apps/${app.id}/" class="aotd-btn">View ${app.name} →</a>
+                <a href="#all-apps" class="aotd-btn aotd-btn-ghost">Browse all apps</a>
+              </div>
+            </div>
+          `;
+        } catch (error) {
+          console.error("Failed to load app of the day:", error);
+        }
+      }
+
       async function loadStars() {
         try {
           const response = await fetch("./github-data.json");
@@ -1174,6 +1272,7 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         loadHeroAppShowcase();
+        loadAppOfTheDay();
         loadStars();
         loadContributors();
         initHeroAnimation();
