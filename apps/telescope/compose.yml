@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   telescope:
-    image: docker.io/iamtelescope/telescope:latest
+    image: ghcr.io/iamtelescope/telescope:latest
     labels:
       yantr.app: "telescope"
       yantr.service.80: "Web UI"

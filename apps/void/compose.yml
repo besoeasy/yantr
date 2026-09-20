@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   void:
-    image: ghcr.io/alphane cron/void:latest
+    image: docker.io/alphanecron/void:v1
     labels:
       yantr.app: "void"
       yantr.service.8080: "Web UI"

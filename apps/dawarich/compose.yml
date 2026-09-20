@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   dawarich-app:
-    image: docker.io/freika/dawarich:latest
+    image: docker.io/freikin/dawarich:latest
     labels:
       yantr.app: dawarich
       yantr.service.3000: Web UI
@@ -62,7 +62,7 @@ services:
     restart: unless-stopped
 
   dawarich-sidekiq:
-    image: docker.io/freika/dawarich:latest
+    image: docker.io/freikin/dawarich:latest
     command: bundle exec sidekiq
     labels:
       yantr.app: dawarich

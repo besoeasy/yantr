@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   ubuntu:
-    image: docker.io/ubuntu:lts
+    image: docker.io/ubuntu:latest
     labels:
       yantr.app: "ubuntu"
     environment:

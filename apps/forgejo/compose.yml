@@ -28,7 +28,7 @@ x-yantr:
 
 services:
   forgejo:
-    image: codeberg.org/forgejo/forgejo:latest-rootless
+    image: codeberg.org/forgejo/forgejo:16-rootless
     ports:
       - "3000"
       - "22"

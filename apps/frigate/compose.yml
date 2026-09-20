@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   web:
-    image: ghcr.io/blakeblackshear/frigate:latest
+    image: ghcr.io/blakeblackshear/frigate:stable
     labels:
       yantr.app: frigate
       yantr.service.8971: Web UI

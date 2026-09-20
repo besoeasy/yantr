@@ -12,7 +12,7 @@ x-yantr:
 
 services:
   qbin:
-    image: naiher/qbin:latest
+    image: docker.io/naiher/qbin:latest
     labels:
       yantr.app: "qbin"
       yantr.service.8080: "Web UI"

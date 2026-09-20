@@ -14,7 +14,7 @@ x-yantr:
 
 services:
   web:
-    image: docker.io/jitsi/web:latest
+    image: docker.io/jitsi/web:stable
     labels:
       yantr.app: "jitsi-meet"
       yantr.service.443: "HTTPS"
@@ -64,7 +64,7 @@ services:
     restart: unless-stopped
 
   xmpp:
-    image: docker.io/jitsi/prosody:latest
+    image: docker.io/jitsi/prosody:stable
     labels:
       yantr.app: "jitsi-meet"
     volumes:
@@ -92,7 +92,7 @@ services:
     restart: unless-stopped
 
   jicofo:
-    image: docker.io/jitsi/jicofo:latest
+    image: docker.io/jitsi/jicofo:stable
     labels:
       yantr.app: "jitsi-meet"
     volumes:
@@ -112,7 +112,7 @@ services:
     restart: unless-stopped
 
   jvb:
-    image: docker.io/jitsi/jvb:latest
+    image: docker.io/jitsi/jvb:stable
     labels:
       yantr.app: "jitsi-meet"
       yantr.service.10000: "WebRTC"

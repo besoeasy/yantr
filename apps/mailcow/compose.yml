@@ -29,7 +29,7 @@ x-yantr:
 
 services:
   mailcow-mailserver:
-    image: ghcr.io/mailcow/postfix:latest
+    image: docker.io/mailcow/postfix:latest
     labels:
       yantr.app: mailcow
       yantr.service.80: Web UI

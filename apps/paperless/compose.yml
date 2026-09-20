@@ -56,7 +56,7 @@ services:
       yantr.service.8000: Web UI
       yantr.port.8000: HTTP
   tika:
-    image: ghcr.io/paperless-ngx/tika:latest
+    image: docker.io/apache/tika:latest
     restart: unless-stopped
     labels:
       yantr.app: paperless

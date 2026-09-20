@@ -15,7 +15,7 @@ x-yantr:
 
 services:
   flarum:
-    image: docker.io/mondediefr/flarum:latest
+    image: docker.io/mondedie/flarum:latest
     labels:
       yantr.app: "flarum"
       yantr.service.80: "Web UI"

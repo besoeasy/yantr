@@ -57,7 +57,7 @@ services:
       yantr.service.3010: Web UI
       yantr.port.3010: HTTP
   migration:
-    image: ghcr.io/toeverything/affine:latest
+    image: ghcr.io/toeverything/affine:stable
     depends_on:
       db:
         condition: service_healthy
@@ -80,7 +80,7 @@ services:
       yantr.service.3010: Web UI
       yantr.port.3010: HTTP
   web:
-    image: ghcr.io/toeverything/affine:latest
+    image: ghcr.io/toeverything/affine:stable
     restart: unless-stopped
     depends_on:
       migration:

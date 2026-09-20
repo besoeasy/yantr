@@ -118,7 +118,7 @@ services:
       yantr.service.8080: Web UI (Router)
       yantr.port.8080: HTTP
   plane-minio:
-    image: docker.io/minio/minio:latest
+    image: quay.io/minio/minio:latest
     user: 1000:1000
     command: server /export --console-address ":8763"
     environment:

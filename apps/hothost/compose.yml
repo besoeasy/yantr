@@ -11,7 +11,7 @@ x-yantr:
 
 services:
   hothost:
-    image: docker.io/devforth/hothost:latest
+    image: docker.io/devforth/hothost-web:latest
     labels:
       yantr.app: "hothost"
       yantr.service.8080: "Web UI"

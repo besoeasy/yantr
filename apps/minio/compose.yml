@@ -24,7 +24,7 @@ x-yantr:
 
 services:
   minio:
-    image: docker.io/minio/minio:latest
+    image: quay.io/minio/minio:latest
     restart: unless-stopped
     command: server /data --console-address ":9001"
     ports:
