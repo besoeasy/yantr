@@ -64,6 +64,7 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 body {
   font-family: var(--font-sans);
@@ -73,6 +74,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+  max-width: 100vw;
   line-height: 1.5;
 }
 img, svg { display: block; max-width: 100%; }
@@ -238,20 +240,24 @@ code, pre { font-family: var(--font-mono); }
   position: relative;
   z-index: 10;
   padding: 4rem 0 3rem;
-  overflow: hidden;
+  overflow: clip;
+  contain: paint;
+  max-width: 100%;
 }
 .hero-bg {
   position: absolute;
   inset: 0;
   z-index: -10;
   pointer-events: none;
-  overflow: hidden;
+  overflow: clip;
+  contain: layout paint;
 }
 .hero-fade {
   position: absolute;
   inset: 0;
   z-index: -10;
   pointer-events: none;
+  max-width: 100%;
   background: radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255, 255, 255, 1) 32%, rgba(255, 255, 255, 0.8) 64%, transparent 100%);
 }
 .hero-inner {
@@ -264,11 +270,13 @@ code, pre { font-family: var(--font-mono); }
   align-items: center;
   text-align: center;
   padding: 1.5rem 1rem;
+  box-sizing: border-box;
 }
 .hero-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
+  max-width: 100%;
   border: 1px solid rgba(0, 0, 0, 0.08);
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
@@ -364,6 +372,7 @@ code, pre { font-family: var(--font-mono); }
   width: 100%;
   min-width: 0;
   max-width: 38rem;
+  box-sizing: border-box;
 }
 .install-line {
   display: flex;
@@ -371,6 +380,9 @@ code, pre { font-family: var(--font-mono); }
   justify-content: space-between;
   gap: 0.75rem;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  contain: paint;
   background: #090d16;
   border: 1px solid #1f2937;
   border-radius: var(--radius-md);
@@ -389,20 +401,27 @@ code, pre { font-family: var(--font-mono); }
   flex: 1;
   min-width: 0;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   font-size: 0.85rem;
   font-family: var(--font-mono);
   color: var(--gray-200);
 }
+.install-line .cmd::-webkit-scrollbar {
+  display: none;
+}
 .install-line .cmd .prompt {
   color: var(--emerald-400);
   font-weight: 700;
+  flex-shrink: 0;
 }
 .install-line .cmd code {
   white-space: nowrap;
   user-select: all;
+  min-width: 0;
 }
 .copy-btn-sm {
-  margin-left: 0.75rem;
+  margin-left: 0;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -444,15 +463,19 @@ code, pre { font-family: var(--font-mono); }
 
 /* ── Marquee ────────────────────────────────────────── */
 .marquee-section {
-  overflow: hidden;
+  overflow: clip;
+  contain: paint;
+  max-width: 100%;
   padding: 1.5rem 0 3.5rem;
   background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 .marquee-row {
-  overflow: hidden;
+  overflow: clip;
+  contain: paint;
   padding: 0.5rem 0;
   width: 100%;
+  max-width: 100%;
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
@@ -2544,14 +2567,30 @@ p code, li code, td code, .spec-sub code {
     transform: none;
   }
   /* Hero: let content define height (orbit animation is disabled on mobile) */
-  .hero { min-height: 0; padding: 2.5rem 0 2rem; }
-  .hero-title { font-size: 2.5rem; }
+  .hero { min-height: 0; padding: 2.5rem 0 2rem; max-width: 100%; overflow: clip; }
+  .hero-inner { padding-left: 0; padding-right: 0; width: 100%; max-width: 100%; }
+  .hero-pill { font-size: 0.7rem; padding: 0.35rem 0.75rem; letter-spacing: 0.04em; max-width: 100%; }
+  .hero-title { font-size: 2.25rem; max-width: 100%; }
   .hero-subtitle { font-size: 1.1rem; }
   .hero-desc { font-size: 0.95rem; }
-  .hero-stats { gap: 0.45rem 0.85rem; padding: 0.5rem 1rem; font-size: 0.8rem; }
-  .hero-ctas .btn { flex: 1 1 auto; }
+  .hero-stats {
+    gap: 0.4rem 0.75rem;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    border-radius: var(--radius-lg);
+    max-width: 100%;
+  }
+  .hero-stats .sep { display: none; }
+  .hero-ctas { width: 100%; max-width: 22rem; gap: 0.6rem; }
+  .hero-ctas .btn { flex: 1 1 calc(50% - 0.4rem); min-width: 130px; }
+  .hero-install { width: 100%; margin-top: 1.5rem; }
+  .install-line { padding: 0.65rem 0.85rem; gap: 0.5rem; max-width: 100%; }
+  .install-line .cmd { font-size: 0.8rem; gap: 0.45rem; }
+  .copy-btn-sm { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
+  .hero-install-note { font-size: 0.74rem; }
   /* Cards: reclaim horizontal space on narrow screens */
-  .install-hero-card, .arch-card { padding: 1.5rem 1.25rem; }
+  .install-hero-card, .arch-card { padding: 1.5rem 1.25rem; overflow: clip; }
+  .install-hero-card .glow { display: none; }
   .spec-card { padding: 1.5rem 1.25rem; }
   .install-header h1 { font-size: 2.25rem; }
   .app-hero h1 { font-size: 2.1rem; }
