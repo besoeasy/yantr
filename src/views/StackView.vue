@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Download,
   Loader2,
+  Bug,
 } from "@lucide/vue";
 
 const route = useRoute();
@@ -143,6 +144,15 @@ function appUrl(hostPort, proto) {
   const scheme = proto === "https" ? "https" : "http";
   return `${scheme}://${window.location.hostname}:${hostPort}`;
 }
+
+// Prefilled GitHub issue URL — title carries the app name, body is left for the user
+const reportIssueUrl = computed(() => {
+  const base = "https://github.com/besoeasy/yantr/issues/new";
+  if (!stack.value) return base;
+  const appName = stack.value.app?.name || stack.value.appId || projectId.value;
+  const title = `[app: ${appName}] `;
+  return `${base}?title=${encodeURIComponent(title)}`;
+});
 
 let refreshInterval = null;
 
@@ -371,6 +381,16 @@ onUnmounted(() => {
               >
                 <Trash2 :size="13" />{{ removing ? t("stackView.removing") : t("stackView.removeStack") }}
               </button>
+
+              <!-- Report Issue -->
+              <a
+                :href="reportIssueUrl"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
+              >
+                <Bug :size="13" />{{ t("home.externalLinks.reportIssue") }}
+              </a>
             </div>
          </div>
       </div>
