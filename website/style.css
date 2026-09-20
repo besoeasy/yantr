@@ -255,6 +255,8 @@ code, pre { font-family: var(--font-mono); }
   background: radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255, 255, 255, 1) 32%, rgba(255, 255, 255, 0.8) 64%, transparent 100%);
 }
 .hero-inner {
+  width: 100%;
+  min-width: 0;
   max-width: 54rem;
   margin: 0 auto;
   display: flex;
@@ -324,6 +326,8 @@ code, pre { font-family: var(--font-mono); }
   justify-content: center;
   gap: 0.6rem 1.25rem;
   margin-bottom: 2rem;
+  min-width: 0;
+  max-width: 100%;
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -358,6 +362,7 @@ code, pre { font-family: var(--font-mono); }
 .hero-install {
   margin-top: 2rem;
   width: 100%;
+  min-width: 0;
   max-width: 38rem;
 }
 .install-line {
@@ -365,6 +370,7 @@ code, pre { font-family: var(--font-mono); }
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  min-width: 0;
   background: #090d16;
   border: 1px solid #1f2937;
   border-radius: var(--radius-md);
@@ -380,6 +386,8 @@ code, pre { font-family: var(--font-mono); }
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
   font-size: 0.85rem;
   font-family: var(--font-mono);
@@ -423,6 +431,7 @@ code, pre { font-family: var(--font-mono); }
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
+  white-space: nowrap;
 }
 .hero-install-note a:hover {
   color: var(--black);
@@ -658,7 +667,7 @@ code, pre { font-family: var(--font-mono); }
 /* ── Why Yantr vs Umbrel ────────────────────────────── */
 .split {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
   align-items: start;
 }
@@ -692,7 +701,7 @@ code, pre { font-family: var(--font-mono); }
 .feature-callout p { margin-top: 0.4rem; font-size: 0.875rem; line-height: 1.6; color: var(--gray-500); }
 .card-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
 }
 .card {
@@ -762,9 +771,10 @@ p code, li code, td code, .spec-sub code {
   background: var(--white);
   box-shadow: var(--shadow-lg);
 }
-.compare-scroll { overflow-x: auto; }
+.compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .compare-table {
   width: 100%;
+  min-width: 620px;
   text-align: left;
   font-size: 0.875rem;
   border-collapse: collapse;
@@ -838,7 +848,7 @@ p code, li code, td code, .spec-sub code {
 /* ── Feature cards (podman) ────────────────────────── */
 .feature-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
 }
 .feature-card {
@@ -1002,7 +1012,7 @@ p code, li code, td code, .spec-sub code {
 }
 .contrib-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   width: 100%;
 }
@@ -1165,7 +1175,7 @@ p code, li code, td code, .spec-sub code {
 
 .spec-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2rem;
   max-width: 56rem;
   margin: 0 auto;
@@ -1274,7 +1284,7 @@ p code, li code, td code, .spec-sub code {
 /* ── FAQ ───────────────────────────────────────────── */
 .faq-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
 }
 .faq-card {
@@ -1386,7 +1396,7 @@ p code, li code, td code, .spec-sub code {
 }
 .apps-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 .app-card {
@@ -1534,7 +1544,7 @@ p code, li code, td code, .spec-sub code {
 
 .pillars {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   margin-bottom: 3rem;
 }
@@ -1727,7 +1737,7 @@ p code, li code, td code, .spec-sub code {
 }
 .arch-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
 }
 .arch-item {
@@ -1870,6 +1880,7 @@ p code, li code, td code, .spec-sub code {
   display: flex;
   align-items: stretch;
   overflow: hidden;
+  min-width: 0;
   border-radius: var(--radius-md);
   border: 1px solid #1f2937;
   background: #090d16;
@@ -1882,6 +1893,7 @@ p code, li code, td code, .spec-sub code {
 .cmd-row code {
   flex: 1;
   display: block;
+  min-width: 0;
   overflow-x: auto;
   font-size: 0.8125rem;
   color: #f1f5f9 !important;
@@ -1920,6 +1932,8 @@ p code, li code, td code, .spec-sub code {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
   background: #111827;
   border-top-left-radius: var(--radius-md);
   border-top-right-radius: var(--radius-md);
@@ -1932,8 +1946,15 @@ p code, li code, td code, .spec-sub code {
   letter-spacing: 0.04em;
   font-family: var(--font-mono);
 }
+.copy-bar > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .copy-btn {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 0.45rem;
   color: var(--gray-400);
@@ -1978,7 +1999,7 @@ p code, li code, td code, .spec-sub code {
 /* Management cards */
 .manage-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
   margin-bottom: 2.5rem;
 }
@@ -2293,7 +2314,7 @@ p code, li code, td code, .spec-sub code {
 
 .meta-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 .meta-grid > div {
@@ -2320,7 +2341,7 @@ p code, li code, td code, .spec-sub code {
 
 .related-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 .related-card {
@@ -2467,22 +2488,22 @@ p code, li code, td code, .spec-sub code {
   .wrap, .wrap-narrow { padding-left: 1.5rem; padding-right: 1.5rem; }
   .hero-title { font-size: 3.5rem; }
   .hero-subtitle { font-size: 1.5rem; }
-  .card-grid { grid-template-columns: repeat(2, 1fr); }
-  .feature-grid { grid-template-columns: repeat(2, 1fr); }
-  .faq-grid { grid-template-columns: repeat(2, 1fr); }
-  .apps-grid { grid-template-columns: repeat(2, 1fr); }
+  .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-head-row { flex-direction: row; align-items: flex-end; justify-content: space-between; }
   .search-input { width: 16rem; }
-  .contrib-grid { grid-template-columns: repeat(4, 1fr); }
+  .contrib-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .h2 { font-size: 3rem; }
   .hero-pillar { width: 320px; }
   .app-pill { min-width: 300px; max-width: 360px; padding: 1rem 1.35rem; }
-  .pillars { grid-template-columns: repeat(3, 1fr); }
-  .arch-grid { grid-template-columns: repeat(2, 1fr); }
-  .manage-grid { grid-template-columns: repeat(2, 1fr); }
+  .pillars { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .arch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .manage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .app-hero { flex-direction: row; align-items: flex-start; }
-  .meta-grid { grid-template-columns: repeat(2, 1fr); }
-  .related-grid { grid-template-columns: repeat(3, 1fr); }
+  .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .install-hero-card { padding: 2.25rem 2.5rem; }
   .install-header h1 { font-size: 3.25rem; }
   .ram-panel { padding: 2.5rem; }
@@ -2495,22 +2516,22 @@ p code, li code, td code, .spec-sub code {
 @media (min-width: 768px) {
   .ram-flex { flex-direction: row; align-items: center; justify-content: space-between; }
   .ram-flex .ram-side { flex: 1; width: 100%; max-width: 28rem; }
-  .spec-grid { grid-template-columns: repeat(2, 1fr); }
+  .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (min-width: 1024px) {
   .hero-title { font-size: 4.75rem; }
-  .split { grid-template-columns: 0.85fr 1.15fr; gap: 3.5rem; }
+  .split { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 3.5rem; }
   .split-sticky { position: sticky; top: 2.5rem; }
-  .feature-grid { grid-template-columns: repeat(3, 1fr); }
-  .apps-grid { grid-template-columns: repeat(3, 1fr); }
-  .contrib-grid { grid-template-columns: repeat(6, 1fr); }
+  .feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .apps-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .contrib-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .hero-pillar { width: 360px; }
   .app-pill { min-width: 380px; max-width: 460px; }
 }
 
 @media (min-width: 1280px) {
-  .contrib-grid { grid-template-columns: repeat(8, 1fr); }
+  .contrib-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
 }
 
 @media (max-width: 639px) {
@@ -2522,9 +2543,32 @@ p code, li code, td code, .spec-sub code {
     margin-right: -1rem;
     transform: none;
   }
+  /* Hero: let content define height (orbit animation is disabled on mobile) */
+  .hero { min-height: 0; padding: 2.5rem 0 2rem; }
+  .hero-title { font-size: 2.5rem; }
+  .hero-subtitle { font-size: 1.1rem; }
+  .hero-desc { font-size: 0.95rem; }
+  .hero-stats { gap: 0.45rem 0.85rem; padding: 0.5rem 1rem; font-size: 0.8rem; }
+  .hero-ctas .btn { flex: 1 1 auto; }
+  /* Cards: reclaim horizontal space on narrow screens */
+  .install-hero-card, .arch-card { padding: 1.5rem 1.25rem; }
+  .spec-card { padding: 1.5rem 1.25rem; }
+  .install-header h1 { font-size: 2.25rem; }
+  .app-hero h1 { font-size: 2.1rem; }
+  /* App of the Day: stack logo above text */
+  .aotd-card-top { flex-direction: column; align-items: flex-start; }
+  .aotd-actions .aotd-btn { flex: 1 1 100%; }
+  /* Stats + spec rows: wrap instead of squeezing */
+  .app-stats { flex-wrap: wrap; gap: 1rem 1.5rem; width: 100%; }
+  .spec-row { flex-wrap: wrap; gap: 0.15rem; }
   .orbit-chip { gap: 0; padding: 7px; }
   .orbit-chip-logo { width: 21px; height: 21px; }
   .orbit-chip span { display: none; }
+}
+
+/* Very small screens: 2-column contributors keeps avatars legible */
+@media (max-width: 479px) {
+  .contrib-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ── Reduced motion accessibility ─────────────────── */
