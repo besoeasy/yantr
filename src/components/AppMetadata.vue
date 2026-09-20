@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Globe, FileCode, Tag, Info } from "@lucide/vue";
+import { Globe, FileCode, Tag, Info, Bug } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
 
@@ -29,6 +29,15 @@ const infoPorts = computed(() => {
 const chatGptUrl = computed(() => {
   if (!props.app) return "";
   return buildChatGptExplainUrl(props.app.id);
+});
+
+// Prefilled GitHub issue URL — title marks it as pre-install, body is left for the user
+const reportIssueUrl = computed(() => {
+  const base = "https://github.com/besoeasy/yantr/issues/new";
+  if (!props.app) return base;
+  const appName = props.app.name || props.app.id;
+  const title = `[pre-install: ${appName}] `;
+  return `${base}?title=${encodeURIComponent(title)}`;
 });
 </script>
 
@@ -95,6 +104,14 @@ const chatGptUrl = computed(() => {
             class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
           >
             <Info :size="14" /> {{ t('appDetail.explain') }}
+          </a>
+          <a
+            :href="reportIssueUrl"
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+          >
+            <Bug :size="14" /> {{ t('home.externalLinks.reportIssue') }}
           </a>
         </div>
       </div>
