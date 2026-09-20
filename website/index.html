@@ -216,13 +216,10 @@
           </div>
         </div>
 
-      <!-- App marquees — seamless continuation of the hero, full-bleed -->
+      <!-- App marquee — seamless continuation of the hero, full-bleed -->
       <div class="full-bleed marquee-section" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
         <div class="marquee-row">
           <div class="app-marquee-track app-marquee-left" id="hero-app-marquee-1"></div>
-        </div>
-        <div class="marquee-row">
-          <div class="app-marquee-track app-marquee-right" id="hero-app-marquee-2"></div>
         </div>
         <div class="marquee-center">
           <a
@@ -933,28 +930,17 @@
           if (appCountEl) appCountEl.textContent = apps.length + "+";
 
           const rowOne = document.getElementById("hero-app-marquee-1");
-          const rowTwo = document.getElementById("hero-app-marquee-2");
-          if (!rowOne || !rowTwo) return;
+          if (!rowOne) return;
 
           const shuffled = [...apps];
-          for (let i = shuffled.length - 1; i> 0; i--) {
+          for (let i = shuffled.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
           }
 
-          const rows = [[], []];
-          shuffled.forEach((app, index) => {
-            rows[index % 2].push(app);
-          });
-
-          const renderMarqueeRow = (element, list) => {
-            if (!element || !list.length) return;
-            const singleSet = list.map((app) => createAppPillMarkup(app)).join("");
-            element.innerHTML = singleSet + singleSet;
-          };
-
-          renderMarqueeRow(rowOne, rows[0]);
-          renderMarqueeRow(rowTwo, rows[1]);
+          const marqueeApps = shuffled.slice(0, 48);
+          const singleSet = marqueeApps.map((app) => createAppPillMarkup(app)).join("");
+          rowOne.innerHTML = singleSet + singleSet;
         } catch (error) {
           console.error("Failed to load hero app showcase:", error);
         }
