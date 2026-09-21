@@ -32,7 +32,6 @@ services:
   ntfy:
     image: docker.io/binwiederhier/ntfy:latest
     command: serve
-    environment:
     ports:
       - "80"
     volumes:

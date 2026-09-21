@@ -20,7 +20,8 @@ x-yantr:
   website: https://docs.portainer.io
   notes:
     [
-      Requires access to Docker socket (/var/run/docker.sock),
+      "Requires container socket access (auto-mounted via ${HOST_PODMAN_SOCKET} — Portainer talks to Podman through its Docker-compatible API)",
+      "Portainer officially supports rootful Podman; rootless works but is not officially supported by Portainer",
       First access requires setting up an admin user,
       Can manage multiple Docker environments from a single Portainer instance
     ]
@@ -35,7 +36,7 @@ services:
     ports:
       - "9443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "${HOST_PODMAN_SOCKET}:/var/run/docker.sock"
       - portainer_data:/data
     restart: unless-stopped
 

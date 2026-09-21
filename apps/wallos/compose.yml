@@ -20,7 +20,6 @@ services:
       yantr.app: wallos
       yantr.service.80: Web UI
       yantr.port.80: HTTP
-    environment:
     ports:
       - "80"
     volumes:
