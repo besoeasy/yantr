@@ -1,9 +1,9 @@
 x-yantr:
-  name: yantrbot
+  name: telecode
   tags: [ai, telegram, coding, bot, podman]
   short_description: "Telegram client for OpenCode so you can run AI coding tasks from your phone."
   description: >
-    Yantr Bot is a self-hosted Telegram client for OpenCode. Send prompts from
+    Telecode is a self-hosted Telegram client for OpenCode. Send prompts from
     your phone to run AI coding tasks, manage sessions, switch models, and
     schedule work while everything stays on your server. Access is limited to
     your Telegram user ID. OpenCode auto-restarts when health checks fail.
@@ -13,7 +13,7 @@ x-yantr:
   notes: ["Create a bot with @BotFather and set TELEGRAM_BOT to the bot token.", "Get your numeric Telegram user ID from @userinfobot and set USER_ID — only that user can talk to the bot.", "OpenCode runs inside this container at http://localhost:4096 and auto-restarts if health checks fail."]
 
 services:
-  yantrbot:
+  telecode:
     build:
       context: .
       dockerfile_inline: |
@@ -42,7 +42,7 @@ services:
 
         CMD ["opencode-telegram", "start"]
     labels:
-      yantr.app: "yantrbot"
+      yantr.app: "telecode"
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT:-}
       TELEGRAM_ALLOWED_USER_ID: ${USER_ID:-}
