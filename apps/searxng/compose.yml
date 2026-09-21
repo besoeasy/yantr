@@ -36,8 +36,6 @@ services:
       - "8080"
     volumes:
       - searxng_data:/etc/searxng
-    environment:
-      SEARXNG_BASE_URL: http://localhost:8080
     restart: unless-stopped
 
 volumes:
