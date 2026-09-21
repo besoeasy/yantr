@@ -19,7 +19,6 @@ All metadata is in the top-level `x-yantr` key. Podman Compose ignores `x-*` fie
 **Optional fields:**
 - `logo` — omitted; place `logo.svg` in the app folder instead (auto-detected)
 - `notes` — list of strings explaining manual setup steps
-- `customapp` — boolean; `true` for Yantr-built apps. Define the image with `dockerfile_inline` in compose.yml (never a separate Dockerfile)
 - `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
 
 **YAML style — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
@@ -101,11 +100,16 @@ ports:
   - "8080:8080"
 ```
 
-### 5. Custom Apps — Use dockerfile_inline
-Yantr-built apps (`customapp: true`) MUST define the image with Compose `build.dockerfile_inline`. Podman Compose supports this natively via Buildah. Do not add a `Dockerfile`, `entrypoint.sh`, or other build files in the app folder — keep it to `compose.yml` and optional `logo.svg`. If you need an entrypoint script, write it inside the inline Dockerfile.
+### 5. App Images — Always Pull, Never Build
+Every app MUST use a prebuilt upstream image (`image: ...:latest`) so deploys pull instead of building on the host. Building at deploy time is fragile (host build backends differ — e.g. missing seccomp profiles break remote builds). Never use Compose `build` (no `dockerfile_inline`, no `Dockerfile`, no `entrypoint.sh` or other build files in the app folder) — keep it to `compose.yml` and optional `logo.svg`.
 
 ```yaml
-# ✅ correct
+# ✅ correct — prebuilt image, deploys pull
+services:
+  my-app:
+    image: ghcr.io/example/my-app:latest
+
+# ❌ wrong — never build at deploy time
 services:
   my-app:
     build:
@@ -114,11 +118,6 @@ services:
         FROM debian:stable
         RUN apt-get update && apt-get install -y --no-install-recommends curl
         CMD ["my-app"]
-
-# ❌ wrong — never add apps/my-app/Dockerfile
-services:
-  my-app:
-    build: .
 ```
 
 ### 6. Container Socket — Use ${HOST_PODMAN_SOCKET}, Never docker.sock

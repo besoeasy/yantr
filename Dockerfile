@@ -31,6 +31,39 @@ FROM docker.io/library/alpine:latest
 # Install runtime dependencies (no Node.js runtime needed!)
 RUN apk add --no-cache podman podman-compose wget
 
+# Builds triggered from inside this container run on the host via the
+# mounted Podman socket, but the server defaults to /etc/containers/seccomp.json
+# which is missing on Debian/Ubuntu hosts (they only ship
+# /usr/share/containers/seccomp.json). Direct host builds fall back correctly,
+# but remote API builds fail with "opening seccomp profile failed". Wrap the
+# podman CLI so every `podman build` from inside this container pins an explicit
+# profile that exists on both client and host.
+RUN mv /usr/bin/podman /usr/bin/podman.real && cat > /usr/bin/podman <<'WRAPPER_EOF'
+#!/usr/bin/env python3
+"""Pin explicit seccomp profile on `podman build` for remote builds."""
+import os
+import sys
+
+REAL = "/usr/bin/podman.real"
+PROFILE = "/usr/share/containers/seccomp.json"
+
+args = sys.argv[1:]
+has_build = "build" in args
+has_seccomp = any("seccomp" in a for a in args)
+if has_build and not has_seccomp and os.path.isfile(PROFILE):
+    out = []
+    inserted = False
+    for a in args:
+        out.append(a)
+        if not inserted and a == "build":
+            out.append("--security-opt")
+            out.append("seccomp=" + PROFILE)
+            inserted = True
+    args = out
+os.execv(REAL, [REAL] + args)
+WRAPPER_EOF
+RUN chmod +x /usr/bin/podman
+
 # Configure Podman inside the container as a pure remote client using the mounted host socket
 RUN mkdir -p /etc/containers && printf '[engine]\nremote = true\nactive_service = "host"\n\n[engine.service_destinations.host]\nuri = "unix:///run/podman/podman.sock"\n' > /etc/containers/containers.conf
 

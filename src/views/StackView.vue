@@ -16,7 +16,6 @@ import {
   Trash2,
   HardDrive,
   RotateCcw,
-  ShieldCheck,
   Download,
   Loader2,
   Bug,
@@ -346,14 +345,6 @@ onUnmounted(() => {
 
             <!-- Actions -->
             <div class="flex flex-wrap items-center gap-2 pt-2">
-              <!-- Custom app badge -->
-              <div
-                v-if="stack.app?.customapp"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400"
-              >
-                <ShieldCheck :size="13" />{{ t("stackView.builtByYantr") }}
-              </div>
-
               <button
                 v-if="stack.app"
                 @click="router.push(`/apps/${stack.appname || stack.appId}`)"
@@ -364,7 +355,6 @@ onUnmounted(() => {
 
               <!-- Update -->
               <button
-                v-if="!stack.app?.customapp"
                 @click="updateStack"
                 :disabled="updating"
                 class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"

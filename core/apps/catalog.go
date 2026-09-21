@@ -55,7 +55,6 @@ type App struct {
 	Description      string                  `json:"description"`
 	Usecases         []string                `json:"usecases"`
 	Website          string                  `json:"website"`
-	CustomApp        bool                    `json:"customapp"`
 	Notes            []string                `json:"notes,omitempty"`
 	Path             string                  `json:"path"`
 	ComposePath      string                  `json:"composePath"`
@@ -123,7 +122,6 @@ type xYantr struct {
 	Description      string                  `yaml:"description"`
 	Usecases         []string                `yaml:"usecases"`
 	Website          string                  `yaml:"website"`
-	CustomApp        bool                    `yaml:"customapp"`
 	Notes            []string                `yaml:"notes"`
 	EnvGenerators    map[string]EnvGenerator `yaml:"env_generators"`
 }
@@ -210,9 +208,8 @@ func loadCatalog() (*Catalog, error) {
 				ShortDescription: meta.ShortDescription,
 				Description:      coalesce(meta.Description, meta.ShortDescription),
 				Usecases:         usecases,
-				Website:          meta.Website,
-				CustomApp:        meta.CustomApp,
-				Notes:            meta.Notes,
+			Website:          meta.Website,
+			Notes:            meta.Notes,
 				Path:             appPath,
 				ComposePath:      composePath,
 				Environment:      envVars,

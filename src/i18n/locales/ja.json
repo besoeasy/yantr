@@ -446,8 +446,6 @@
     "openingPort": "{portMapping}を開いています…",
     "portOpened": "{portMapping}が開きました",
     "failedToOpenPort": "ポートを開けませんでした",
-    "builtByYantr": "Yantrによるビルド",
-    "customAppNoUpdate": "このアプリはYantrチームによってカスタムビルドされており、自動更新をサポートしていません。",
     "caddyAuthTitle": "認証",
     "caddyAuthHeading": "Caddy Auth Proxyで保護",
     "caddyAuthHint": "組み込みのCaddyプロキシを有効にして、このアプリの前に基本認証を追加します。",
@@ -705,9 +703,5 @@
     "online": "Online",
     "offline": "Offline",
     "connectionStatus": "Connection Status"
-  },
-  "appDeployForm": {
-    "customAppTitle": "Custom App Built by Yantr Team",
-    "customAppDesc": "This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled."
   }
 }

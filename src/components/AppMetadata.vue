@@ -59,12 +59,6 @@ const reportIssueUrl = computed(() => {
         <div class="mb-3 flex flex-col">
           <div class="mb-2 flex items-center gap-3">
             <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">{{ app.name }}</h1>
-            <span
-              v-if="app.customapp"
-              class="inline-flex shrink-0 items-center gap-1 rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:border-purple-500/20 dark:bg-purple-500/10 dark:text-purple-400"
-            >
-              Custom App by Yantr
-            </span>
           </div>
           <div class="flex flex-wrap gap-2">
             <span

@@ -374,20 +374,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Load catalog once to check customapp flag per project.
-	catalog, _ := apps.GetCatalogCached(false)
-	isCustomApp := func(baseID string) bool {
-		if catalog == nil {
-			return false
-		}
-		for i := range catalog.Apps {
-			if catalog.Apps[i].ID == baseID {
-				return catalog.Apps[i].CustomApp
-			}
-		}
-		return false
-	}
-
 	var allStdout, allStderr strings.Builder
 	updatedCount := 0
 
@@ -399,12 +385,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		baseID := getBaseAppID(projectID)
-
-		// Guard: never auto-update customapp stacks (locally built images have no registry).
-		if isCustomApp(baseID) {
-			shared.Log("warn", fmt.Sprintf("[update] skipping customapp stack %s — auto-update disabled", projectID))
-			continue
-		}
 
 		appPath := filepath.Join(apps.GetAppsDir(), baseID)
 		ref := compose.GetProjectComposeRef(appPath, projectID)

@@ -242,15 +242,6 @@ async function deployApp() {
 
 <template>
   <div class="space-y-6">
-    <!-- Custom App Notice -->
-    <div v-if="app.customapp" class="flex items-start gap-3 rounded-2xl border border-purple-200 bg-purple-50 px-5 py-4 dark:border-purple-500/20 dark:bg-purple-500/10">
-      <div class="mt-1 h-2 w-2 shrink-0 rounded-full bg-purple-500"></div>
-      <div>
-        <div class="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400">{{ t('appDeployForm.customAppTitle') }}</div>
-        <p class="text-[11px] leading-relaxed text-purple-700 dark:text-purple-300">{{ t('appDeployForm.customAppDesc') }}</p>
-      </div>
-    </div>
-
     <!-- Configuration -->
     <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
       <div class="mb-5 flex items-center justify-between">

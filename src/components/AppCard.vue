@@ -2,9 +2,8 @@
 import { toRefs, computed, ref } from "vue";
 import { useI18n } from 'vue-i18n'
 import AppLogo from "./AppLogo.vue";
-import { 
-  Layers,
-  Sparkles
+import {
+  Layers
 } from "@lucide/vue";
 
 const { t } = useI18n()
@@ -58,9 +57,7 @@ function handleClick() {
     @keydown.space.prevent="handleClick"
     :class="[
       'group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white dark:bg-black p-6 border transition-all duration-300',
-      app?.customapp
-        ? 'border-amber-400/50 dark:border-amber-500/30 hover:border-amber-500/80 dark:hover:border-amber-400/60 shadow-[0_4px_20px_rgba(245,158,11,0.06)] dark:shadow-[0_4px_25px_rgba(245,158,11,0.08)]'
-        : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700',
+      'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700',
       isInteractive
         ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1'
         : 'cursor-default opacity-80'
@@ -69,12 +66,6 @@ function handleClick() {
     tabindex="0"
     :aria-label="`Open ${app?.name ?? 'app'} details`"
   >
-    <!-- Ambient Yantr-built background glow -->
-    <div
-      v-if="app?.customapp"
-      class="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-amber-500/10 blur-2xl dark:bg-amber-500/15"
-    ></div>
-
     <div class="flex items-start justify-between gap-4">
       <div class="w-14 h-14 shrink-0 transition-transform duration-300 group-hover:scale-105">
         <AppLogo
@@ -103,14 +94,6 @@ function handleClick() {
         >
           <span class="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
           {{ t('appCard.ready') }}
-        </span>
-        
-        <span
-          v-if="app?.customapp"
-          class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-[9px] font-bold uppercase tracking-[0.1em] text-amber-700 dark:text-amber-300"
-        >
-          <Sparkles :size="10" class="text-amber-500" />
-          Yantr built
         </span>
       </div>
     </div>

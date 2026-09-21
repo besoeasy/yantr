@@ -106,7 +106,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		appInfo = map[string]interface{}{
 			"name": entry.Name, "logo": entry.Logo, "tags": entry.Tags,
 			"ports": entry.Ports, "short_description": entry.ShortDescription,
-			"website": entry.Website, "customapp": entry.CustomApp,
+			"website": entry.Website,
 		}
 	}
 

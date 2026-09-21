@@ -446,8 +446,6 @@
     "openingPort": "正在打开 {portMapping}…",
     "portOpened": "已打开 {portMapping}",
     "failedToOpenPort": "打开端口失败",
-    "builtByYantr": "由 Yantr 构建",
-    "customAppNoUpdate": "此应用由 Yantr 团队定制构建，不支持自动更新。",
     "caddyAuthTitle": "认证",
     "caddyAuthHeading": "使用 Caddy Auth Proxy 保护",
     "caddyAuthHint": "启用内置的 Caddy 代理以在此应用程序前添加基本身份验证。",
@@ -705,9 +703,5 @@
     "online": "Online",
     "offline": "Offline",
     "connectionStatus": "Connection Status"
-  },
-  "appDeployForm": {
-    "customAppTitle": "Custom App Built by Yantr Team",
-    "customAppDesc": "This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled."
   }
 }

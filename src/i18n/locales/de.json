@@ -446,8 +446,6 @@
     "openingPort": "Öffne {portMapping}…",
     "portOpened": "{portMapping} geöffnet",
     "failedToOpenPort": "Fehler beim Öffnen des Ports",
-    "builtByYantr": "Von Yantr entwickelt",
-    "customAppNoUpdate": "Diese App wurde vom Yantr-Team entwickelt und unterstützt keine automatischen Updates.",
     "caddyAuthTitle": "Authentifizierung",
     "caddyAuthHeading": "Mit Caddy Auth Proxy schützen",
     "caddyAuthHint": "Aktivieren Sie den integrierten Caddy-Proxy, um eine Basisauthentifizierung vor dieser App hinzuzufügen.",
@@ -705,9 +703,5 @@
     "online": "Online",
     "offline": "Offline",
     "connectionStatus": "Connection Status"
-  },
-  "appDeployForm": {
-    "customAppTitle": "Custom App Built by Yantr Team",
-    "customAppDesc": "This is a custom app created and maintained by the Yantr team. It uses a locally-built image, so automatic updates are disabled."
   }
 }
