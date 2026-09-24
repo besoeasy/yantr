@@ -1,0 +1,23 @@
+x-yantr:
+  name: "fedora"
+  tags: [linux, fedora, modern, podman, self-hosted]
+  short_description: "Modern Fedora Linux container for general-purpose workloads."
+  description: >
+    A modern Fedora Linux container for development, experimentation, and
+    server applications. Fedora provides current tools, a strong package
+    ecosystem, and a community-driven platform in a compact container image.
+  usecases: ["Run development and experimentation environments.", "Host server applications on a current Linux platform."]
+  website: "https://fedoraproject.org/"
+
+services:
+  fedora:
+    image: docker.io/fedora:latest
+    labels:
+      yantr.app: "fedora"
+    environment:
+    volumes:
+      - fedora_data:/data
+    restart: unless-stopped
+
+volumes:
+  fedora_data:
