@@ -6,7 +6,7 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, Trash2, Network, Terminal, HardDrive, ShieldCheck, Database, Copy, Check } from '@lucide/vue'
+import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database } from '@lucide/vue'
 import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
@@ -35,18 +35,6 @@ const showOnlyDescribedPorts = ref(true)
 const loadErrorState = {
   stats: false,
   logs: false,
-}
-
-const copiedCommand = ref(false)
-const copyExecCommand = async () => {
-  try {
-    await navigator.clipboard.writeText(`podman exec -it ${selectedContainer.value.name} /bin/sh`)
-    copiedCommand.value = true
-    setTimeout(() => copiedCommand.value = false, 2000)
-    toast.success('Command copied to clipboard')
-  } catch (err) {
-    toast.error('Failed to copy command')
-  }
 }
 
 function notifyLoadErrorOnce(key, message) {
@@ -520,13 +508,6 @@ onUnmounted(() => {
                 {{ t('containerDetail.output') }}
               </button>
               <button
-                @click="activeTab = 'terminal'"
-                :class="activeTab === 'terminal' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-              >
-                Terminal
-              </button>
-              <button
                 @click="activeTab = 'env'"
                 :class="activeTab === 'env' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
@@ -548,32 +529,6 @@ onUnmounted(() => {
                 :refreshing="refreshingLogs" 
                 @refresh="fetchContainerLogs" 
               />
-            </div>
-
-            <div v-else-if="activeTab === 'terminal'" class="space-y-4">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
-                  <Terminal :size="12" /> Container Shell Access
-                </div>
-              </div>
-              <div class="bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl p-5">
-                <p class="text-[11px] text-gray-500 dark:text-zinc-400 mb-4 font-medium leading-relaxed">
-                  To access the interactive shell for this container, open your host terminal and run the following command:
-                </p>
-                <div class="flex items-center gap-3 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-lg p-3">
-                  <div class="flex-1 font-mono text-[11px] text-gray-900 dark:text-zinc-300 select-all overflow-x-auto whitespace-nowrap scrollbar-thin">
-                    podman exec -it {{ selectedContainer.name }} /bin/sh
-                  </div>
-                  <button
-                    @click="copyExecCommand"
-                    class="p-2 rounded-md transition-colors shrink-0"
-                    :class="copiedCommand ? 'text-green-600 bg-green-50 dark:bg-green-500/10' : 'text-gray-500 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800'"
-                    :title="copiedCommand ? 'Copied!' : 'Copy command'"
-                  >
-                    <component :is="copiedCommand ? Check : Copy" :size="14" />
-                  </button>
-                </div>
-              </div>
             </div>
 
             <div v-else class="space-y-4">
