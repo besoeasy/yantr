@@ -1,0 +1,25 @@
+x-yantr:
+  name: "python"
+  tags: [python, programming, scripting, podman, self-hosted]
+  short_description: "Python development environment for scripting, automation, and applications."
+  description: >
+    A Python development environment with the standard interpreter, pip, and
+    core utilities for scripting, automation, data processing, and application
+    development. Keep virtual environments, source files, and project artifacts
+    in a persistent volume while working in an isolated rootless container.
+  usecases: ["Write scripts and automation tools.", "Develop Python applications and notebooks."]
+  website: "https://www.python.org/"
+
+services:
+  python:
+    image: docker.io/python:latest
+    labels:
+      yantr.app: "python"
+    environment: {}
+    command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
+    volumes:
+      - python_data:/data
+    restart: unless-stopped
+
+volumes:
+  python_data:

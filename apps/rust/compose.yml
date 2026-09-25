@@ -1,0 +1,25 @@
+x-yantr:
+  name: "rust"
+  tags: [rust, programming, systems, podman, self-hosted]
+  short_description: "Rust development environment for systems, WebAssembly, and CLI tools."
+  description: >
+    A Rust development environment with Cargo, the compiler, and standard utilities
+    for building reliable systems software, command-line tools, WebAssembly modules,
+    and services. Keep Cargo caches, source code, and build artifacts in a persistent
+    volume for efficient iterative development.
+  usecases: ["Build reliable command-line tools.", "Develop WebAssembly and systems applications."]
+  website: "https://www.rust-lang.org/"
+
+services:
+  rust:
+    image: docker.io/rust:latest
+    labels:
+      yantr.app: "rust"
+    environment: {}
+    command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
+    volumes:
+      - rust_data:/data
+    restart: unless-stopped
+
+volumes:
+  rust_data:

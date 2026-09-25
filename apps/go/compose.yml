@@ -1,0 +1,25 @@
+x-yantr:
+  name: "go"
+  tags: [golang, programming, dev, podman, self-hosted]
+  short_description: "Go development environment for building and testing modern applications."
+  description: >
+    A Go development environment with the official toolchain, module support,
+    and build utilities for creating command-line programs, web services, and
+    cloud-native applications. Keep source code and project artifacts in a
+    persistent volume while developing in an isolated rootless container.
+  usecases: ["Build Go command-line programs.", "Develop and test Go web services."]
+  website: "https://go.dev/"
+
+services:
+  go:
+    image: docker.io/golang:latest
+    labels:
+      yantr.app: "go"
+    environment: {}
+    command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
+    volumes:
+      - go_data:/data
+    restart: unless-stopped
+
+volumes:
+  go_data:
