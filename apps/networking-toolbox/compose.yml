@@ -1,12 +1,12 @@
 x-yantr:
   name: Networking Toolbox
   tags: [network, tools, self-hosted, homelab, podman]
-  short_description: Collection of many networking utilities - port scanner, IP
-    info, DNS tools, and more.
-  description: Networking Toolbox bundles offline networking utilities such as
-    port scanner, IP lookup, DNS checker, traceroute, ping, HTTP header viewer,
-    and SSL certificate inspector. Useful for troubleshooting, verifying
-    configurations, and learning network diagnostics.
+  short_description: Networking utilities for subnetting, DNS, TLS, HTTP, and diagnostics.
+  description: >
+    Networking Toolbox bundles subnetting, IP, DNS, HTTP, TLS, and network
+    diagnostics. Calculators work locally, while DNS, WHOIS/RDAP, geolocation,
+    and live reachability checks may contact external services. Use it to plan
+    addressing, inspect websites, and troubleshoot certificates and connectivity.
   usecases:
     [
       Check your public IP and location info.,
@@ -18,7 +18,7 @@ x-yantr:
   notes:
     [
       Extensive collection of networking tools,
-      All tools work offline,
+      Calculators work offline; lookup and live diagnostic tools may require internet access.,
       Great for troubleshooting
     ]
 

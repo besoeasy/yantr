@@ -3,11 +3,11 @@ x-yantr:
   tags: [ utility, privacy, notes, wiki, productivity ]
   short_description: Minimalist open-source pastebin with zero-knowledge server
     design using client-side AES encryption.
-  description: PrivateBin is a minimalist, open-source online pastebin where the
-    server has zero knowledge of pasted data. All data is encrypted and
-    decrypted in the browser using 256-bit AES in Galois Counter Mode before
-    being sent to the server. The encryption key is part of the URL fragment,
-    meaning e...
+  description: >
+    PrivateBin is a minimalist pastebin where the server never receives the
+    decryption key. Text is encrypted in the browser with AES-GCM, and the key
+    stays in the URL fragment. Share encrypted notes, configuration snippets,
+    one-time messages, and content with optional passwords and expiration.
   usecases:
     [
       "Share sensitive information like passwords, API keys, or configuration

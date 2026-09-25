@@ -2,11 +2,11 @@ x-yantr:
   name: SwingMusic
   tags: [ media, entertainment, music, audio, self-hosted ]
   short_description: Modern self-hosted music player with clean interface and audio visualization.
-  description: SwingMusic is a beautiful, modern music player for your self-hosted
-    music library. It features a clean minimalist interface, gapless playback,
-    queue management, playlists, search, albums/artists views, and audio
-    visualization. Simply point it to your music folder and enjoy. Supports
-    common...
+  description: >
+    SwingMusic is a self-hosted music player for browsing a local library from
+    any browser. It offers album and artist views, search, playlists, queues,
+    gapless playback, metadata extraction, and audio visualization. Point it at
+    music storage for a private alternative to hosted music services.
   usecases:
     [
       Stream your local music collection from any browser.,

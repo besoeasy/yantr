@@ -3,11 +3,11 @@ x-yantr:
   tags: [ tools, network, monitoring, dashboard, utility ]
   short_description: Self-hosted uptime monitoring tool with status pages,
     notifications, and 30+ check types.
-  description: Uptime Kuma is a fancy self-hosted monitoring tool that helps you
-    monitor your services and get notified when they go down. It supports
-    HTTP(s), TCP, Ping, DNS, Push, Steam Game Server, and more than 30 other
-    protocol types. Features include beautiful status pages with uptime history,
-    mult...
+  description: >
+    Uptime Kuma is a self-hosted dashboard for tracking services over time. It
+    supports HTTP(S), TCP, ping, DNS, push, certificate, and many other checks
+    with history, notifications, and status pages. Monitor APIs, self-hosted apps,
+    networks, and container endpoints from one interface.
   usecases:
     [
       "Monitor your self-hosted services (Home Assistant, Jellyfin, Nextcloud)
@@ -16,8 +16,7 @@ x-yantr:
         services are running smoothly.,
       Track SSL certificate expiration dates and get notified before
         certificates expire.,
-      Monitor Docker containers without installing agents - uses Docker socket
-        for native container health checks.
+      Monitor container-backed services through their HTTP or TCP endpoints.
     ]
   website: https://github.com/louislam/uptime-kuma/wiki
   notes:

@@ -1,12 +1,13 @@
 x-yantr:
   name: Samba
-  tags: [ network, storage, utility, files, gaming ]
+  tags: [ network, file-sharing, storage, smb, self-hosted ]
   short_description: SMB/CIFS file sharing for Windows, Mac, and Linux to access
     storage on your network.
-  description: Samba is the standard Windows interoperability suite for Unix-like
-    systems, providing SMB/CIFS file sharing that works with Windows, macOS, and
-    Linux clients. This Docker image makes it easy to set up a network share
-    that appears in your file explorer. Features include simple user manageme...
+  description: >
+    Samba provides SMB/CIFS file sharing for Windows, macOS, and Linux clients.
+    This image publishes a central folder with user credentials and persistent
+    storage, accessible from File Explorer, Finder, or Linux file managers. Use it
+    for documents, media, and shared storage consumed by Plex or Jellyfin.
   usecases:
     [
       Share folders with all computers on your network.,

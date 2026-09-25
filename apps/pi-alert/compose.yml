@@ -3,11 +3,11 @@ x-yantr:
   tags: [ network, monitoring, security, dashboard, utility ]
   short_description: Network scanner that detects devices, alerts on new
     connections, and tracks device history.
-  description: Pi.Alert is a powerful network monitoring tool that continuously
-    scans your network to detect all connected devices. It builds a database of
-    all devices by MAC address, hostname, and vendor, alerting you when new
-    devices appear or unknown devices connect. Features include automatic
-    device...
+  description: >
+    Pi.Alert scans your local network and records devices by MAC address, hostname,
+    and vendor. Alert on new or unknown devices, review first-seen and last-seen
+    history, and investigate changes over time. Webhook notifications make it useful
+    for home labs, offices, and small businesses.
   usecases:
     [
       Monitor your home network for new device connections.,

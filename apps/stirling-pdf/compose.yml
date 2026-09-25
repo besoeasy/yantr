@@ -2,11 +2,11 @@ x-yantr:
   name: Stirling-PDF
   tags: [ tools, utility, pdf, self-hosted, homelab ]
   short_description: All-in-one PDF manipulation tool - merge, split, convert, compress, and more.
-  description: Stirling-PDF is a powerful, locally-hosted web application for all
-    your PDF needs. It provides over 30 PDF operations without sending your
-    documents to any external service. Features include merging/splitting PDFs,
-    rotating pages, extracting images, converting between formats (PDF to
-    image...
+  description: >
+    Stirling-PDF is a self-hosted web app for PDF work without uploading
+    documents to a third party. Merge, split, rotate, compress, convert, OCR,
+    compare, and edit pages in the browser. It is useful for batch jobs, scanned
+    documents, and privacy-sensitive paperwork.
   usecases:
     [
       Merge multiple PDF files into one document.,

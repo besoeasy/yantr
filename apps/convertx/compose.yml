@@ -1,6 +1,6 @@
 x-yantr:
   name: ConvertX
-  tags: [ tools, utility, storage, files, self-hosted ]
+  tags: [ conversion, documents, media, ffmpeg, self-hosted ]
   short_description: Self-hosted file converter - audio, video, images, documents, and archives.
   description: ConvertX is a self-hosted file conversion tool for audio, video,
     images, documents, and archives. It processes files locally on your server,
@@ -8,9 +8,9 @@ x-yantr:
     common codecs and formats without external services.
   usecases:
     [
-      Convert video files between formats.,
-      Extract audio from video files.,
-      Convert images to different formats.
+      Convert video, audio, and images between supported formats.,
+      Extract audio from video files for offline listening.,
+      Process documents and archives locally through the web interface.
     ]
   website: https://github.com/C4illin/ConvertX
   notes: [ Multiple format support, Local processing only, Web interface for easy use ]

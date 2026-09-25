@@ -1,12 +1,12 @@
 x-yantr:
-  name: VS Code
+  name: code-server
   tags: [ development, terminal, ide, self-hosted, homelab ]
-  short_description: Web-based VS Code IDE accessible via browser for remote
-    development and server management.
-  description: A self-hosted VS Code IDE powered by code-server. Full VS Code
-    experience in the browser with syntax highlighting, debugging, Git, and
-    extensions. Ideal for remote development and server management from any
-    device.
+  short_description: Self-hosted VS Code in a browser, powered by code-server, with a terminal and extensions.
+  description: >
+    code-server runs VS Code in a browser on your infrastructure. It provides a
+    remote workspace with a terminal, Git, debugging, extensions, and persistent
+    settings. Use it to edit projects or manage a server from any browser, with
+    access protected by the generated password and HTTPS in production.
   usecases:
     [
       Develop and debug applications remotely using a full-featured IDE

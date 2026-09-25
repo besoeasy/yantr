@@ -2,17 +2,19 @@ x-yantr:
   name: File Browser
   tags: [ files, storage, self-hosted, file-manager, web ]
   short_description: Self-hosted web file manager with a clean, modern interface.
-  description: File Browser provides a web-based file management interface for
-    your server. Browse, upload, delete, preview, rename and edit files.
-    Supports user management, sharing, and authentication. A lightweight
-    alternative to cloud storage services.
+  description: >
+    File Browser provides a web UI for browsing, uploading, downloading,
+    previewing, and editing files stored on a host volume. This stack disables
+    built-in authentication, so restrict access to a trusted network or place it
+    behind an authenticated proxy before exposing it.
   usecases:
     [
       Browse and manage files on your server through any web browser.,
-      Upload and download files securely without exposing SSH access.,
+      Upload and download files through the web UI on a trusted network.,
       Share files with others via direct links.
     ]
   website: https://filebrowser.org
+  notes: ["This stack disables built-in authentication; restrict access to a trusted network or use an authenticated proxy."]
 
 services:
   server:

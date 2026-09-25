@@ -3,10 +3,11 @@ x-yantr:
   tags: [tools, utility, self-hosted, homelab, podman]
   short_description: Simple HTTP service that displays request details - ideal for
     testing proxies and ingress.
-  description: Whoami is an extremely simple HTTP service that prints all incoming
-    request details back to the client. When you access it, it displays the
-    hostname, IP address, headers, and other request information. It's primarily
-    used for testing reverse proxies, load balancers, Kubernetes ingress, Doc...
+  description: >
+    Whoami is a tiny Traefik HTTP service that returns request and host
+    information as text or JSON. Use it to verify reverse proxies, load balancers,
+    ingress controllers, headers, client IPs, and network paths. Deploy it behind
+    the service you are testing, then confirm what each layer forwards.
   usecases:
     [
       Test reverse proxy configurations.,

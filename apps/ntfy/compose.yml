@@ -3,11 +3,11 @@ x-yantr:
   tags: [ notifications, alerts, push, messaging, automation ]
   short_description: Self-hosted push notification server — send alerts via plain
     HTTP to any device.
-  description: ntfy is a simple HTTP-based pub/sub notification service. Publish a
-    message with a plain curl command and receive it instantly on your phone,
-    desktop, or browser — no account, no SDK, no fuss. Topics are created on the
-    fly; subscribers listen via a URL. Ideal for alerting from cron jobs,
-    scripts,...
+  description: >
+    ntfy is a lightweight HTTP pub/sub notification service. Publish alerts with
+    curl or an SDK and receive them on mobile, desktop, or the web. Topics support
+    attachments, priorities, and authentication, making ntfy useful for cron jobs,
+    CI/CD, home automation, and monitoring.
   usecases:
     [
       "Get instant alerts from cron jobs, scripts, or server events on your

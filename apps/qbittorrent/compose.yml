@@ -1,11 +1,12 @@
 x-yantr:
   name: qBittorrent
   tags: [ download, network, torrent, p2p, search ]
-  short_description: Popular torrent client with web UI, search plugins, and no ads.
-  description: qBittorrent is a feature-packed, cross-platform torrent client with
-    a clean modern interface. It includes integrated search engine plugins, RSS
-    support, sequential downloading, IP filtering, bandwidth scheduling, and
-    more. The LinuxServer.io Docker image includes the qBittorrent-nox daemon...
+  short_description: Feature-rich torrent client with a web UI, search plugins, and no ads.
+  description: >
+    qBittorrent is a cross-platform BitTorrent client with an ad-free web
+    interface. This image runs the headless qBittorrent-nox daemon with search
+    plugins, RSS downloads, categories, bandwidth scheduling, and remote controls.
+    Manage large torrent libraries and automated media workflows from a browser.
   usecases:
     [
       Download torrents with feature-rich UI.,

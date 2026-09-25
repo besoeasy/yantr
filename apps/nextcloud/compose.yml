@@ -3,11 +3,11 @@ x-yantr:
   tags: [ productivity, utility, storage, files, sync ]
   short_description: Self-hosted cloud platform for file sync, calendars,
     contacts, and collaborative productivity.
-  description: Nextcloud is a self-hosted cloud platform for file sync, calendars,
-    contacts, chat, and collaborative editing. It includes end-to-end
-    encryption, 2FA, file versioning, federated sharing, and a rich app
-    ecosystem—providing a privacy-first alternative to hosted productivity
-    suites.
+  description: >
+    Nextcloud is a self-hosted platform for file sync, calendars, contacts, chat,
+    and collaborative editing. It supports encryption, 2FA, file versioning,
+    federated sharing, and an app ecosystem. End-to-end encryption requires
+    supported clients and configuration and is not default server behavior.
   usecases:
     [
       Replace Google Drive or Dropbox with your own self-hosted file sync and

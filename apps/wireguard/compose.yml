@@ -3,11 +3,11 @@ x-yantr:
   tags: [ network, security, vpn, privacy, self-hosted ]
   short_description: Fast, modern VPN with state-of-the-art cryptography for
     secure remote network access.
-  description: WireGuard is a fast, modern, and secure VPN protocol that uses
-    state-of-the-art cryptography. It provides a lightweight and efficient way
-    to create secure point-to-point connections. This deployment includes the
-    wg-easy web UI for easy management. WireGuard is significantly faster than
-    Ope...
+  description: >
+    WireGuard is a modern VPN protocol with efficient cryptography. This
+    deployment uses wg-easy to create peers, manage keys, and configure a private
+    network through a web UI. Reach home services, protect traffic on untrusted
+    networks, or connect sites; protect the admin interface.
   usecases:
     [
       Access your home network remotely by connecting to your WireGuard VPN

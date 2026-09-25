@@ -3,11 +3,11 @@ x-yantr:
   tags: [ security, tools, bitcoin, crypto, blockchain ]
   short_description: Bitcoin wallet with hardware device support, multisig, and
     air-gapped signing.
-  description: Specter Desktop is a beginner-friendly yet powerful Bitcoin wallet
-    that works with hardware wallets (Ledger, Trezor, etc.), supports multisig
-    configurations, and offers air-gapped signing for enhanced security. It
-    connects to your Bitcoin node for full verification while providing a
-    clean...
+  description: >
+    Specter Desktop is a Bitcoin wallet focused on hardware-wallet security and
+    self-custody. Connect to a Bitcoin node, use Ledger or Trezor devices,
+    configure multisig wallets, and sign transactions air-gapped. Review fees,
+    confirmations, and transaction details before broadcasting.
   usecases:
     [
       Manage Bitcoin with hardware wallet.,

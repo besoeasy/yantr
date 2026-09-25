@@ -2,10 +2,11 @@ x-yantr:
   name: Tailscale
   tags: [ network, security, vpn, privacy, self-hosted ]
   short_description: Zero-config VPN using WireGuard protocol with easy mesh networking.
-  description: Tailscale is a zero-config VPN that uses the WireGuard protocol to
-    create a secure, encrypted tunnel between your devices. It makes it easy to
-    connect your computers, phones, and servers together securely without the
-    complexity of traditional VPNs. Unlike WireGuard, Tailscale handles the k...
+  description: >
+    Tailscale creates a WireGuard mesh without VPN setup. Its coordination service
+    handles key exchange and NAT traversal while traffic stays encrypted between
+    peers. Reach home services, share resources, or route traffic through an exit
+    node. This deployment requires host networking and the TUN device.
   usecases:
     [
       Access your home network from anywhere by connecting to your Tailscale

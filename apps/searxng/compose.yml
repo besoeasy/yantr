@@ -3,11 +3,11 @@ x-yantr:
   tags: [tools, security, self-hosted, homelab, podman]
   short_description: Privacy-focused metasearch engine that aggregates results
     from 80+ search engines without tracking.
-  description: SearXNG is a free and privacy-focused metasearch engine that can be
-    self-hosted. It aggregates results from over 80 search engines (Google,
-    Bing, DuckDuckGo, Wikipedia, etc.) while keeping your searches private - no
-    tracking, no logging, no personalization. It strips tracking parameters
-    fr...
+  description: >
+    SearXNG is a privacy-friendly metasearch engine that queries many providers
+    from one self-hosted interface. It avoids default tracking, strips tracking
+    parameters, and supports themes, languages, and engine configuration. Run it
+    as a private search endpoint for your household or server.
   usecases:
     [
       Search the web without being tracked - your search queries never leave

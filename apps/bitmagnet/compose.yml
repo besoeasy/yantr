@@ -18,9 +18,8 @@ x-yantr:
     [
       Bitmagnet bundles its own PostgreSQL instance — no separate database
         setup is required.,
-      The Web UI runs on port 3333 but is not published to the host by
-        default. Access it via a reverse proxy or change the port mapping in
-        compose.yml.,
+      Container port 3333 is published with automatic host-port assignment; use
+        the assigned host port or a reverse proxy.,
       DHT crawling uses port 3334 (TCP + UDP). Ensure this port is open on
         your firewall for effective peer discovery.,
       The default PostgreSQL password is `postgresx`. Change the

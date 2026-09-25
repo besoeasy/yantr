@@ -17,7 +17,7 @@ x-yantr:
       Use as a disaster-recovery solution so your code remains accessible even
         if GitHub is unavailable.
     ]
-  website: https://giteamirror.com/
+  website: https://gitea-mirror.raylabs.io
   notes:
     [
       First user to sign up becomes the admin — secure the instance

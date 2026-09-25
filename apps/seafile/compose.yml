@@ -9,8 +9,8 @@ x-yantr:
     all data private on your infrastructure.
   usecases:
     [
-      "Sync documents and media across devices via encrypted, efficient delta
-        sync.",
+      "Sync documents and media across devices using Seafile's efficient delta
+        sync clients.",
       Share folders with teams using permissions and group management.,
       Host your own file collaboration server with audit logging and backup
         support.

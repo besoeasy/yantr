@@ -8,9 +8,9 @@ x-yantr:
     low-memory servers.
   usecases:
     [
-      Download torrents with powerful client.,
-      Use plugins for extended features.,
-      Remote torrent management.
+      Download torrents with plugins and remote management.,
+      Run a low-memory BitTorrent daemon on a home server.,
+      Automate downloads with RSS and bandwidth scheduling.
     ]
   website: https://deluge-torrent.org/
   notes:

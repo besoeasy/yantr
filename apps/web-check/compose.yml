@@ -3,11 +3,11 @@ x-yantr:
   tags: [ tools, network, utility, monitoring, dashboard ]
   short_description: All-in-one website analysis tool - SSL, DNS, headers,
     performance, and security checks.
-  description: Web Check is a comprehensive web analysis tool that provides
-    detailed insights into any website. It performs over 30 different checks
-    including SSL certificate validation, DNS records analysis, HTTP headers
-    inspection, WHOIS lookup, tech stack detection (CMS, frameworks, analytics),
-    server...
+  description: >
+    Web Check is a self-hosted website analysis dashboard with more than 30
+    checks. Inspect TLS certificates, DNS, HTTP headers, WHOIS, security posture,
+    technology fingerprints, and page metadata without sending analysis to a third
+    party. Use it for uptime reviews, security audits, and domain research.
   usecases:
     [
       Analyze SSL certificate details and expiration dates.,

@@ -3,15 +3,13 @@ x-yantr:
   tags: [ ai, agent, llm, automation, self-hosted ]
   short_description: Self-hosted autonomous AI agent framework with a web interface.
   description: >
-    Agent Zero is an open-source AI agent framework with a browser-based
-    interface to define, run, and chain agents for tasks like research, coding,
-    and file management — entirely on your own hardware, with no data sent to
-    third-party cloud services.
+    Agent Zero is an agent framework with a browser UI for running tool-using
+    agents in a Linux environment. It supports projects, plugins, browser and
+    desktop automation, and multiple LLM providers. Prompts and tool data are
+    sent to whichever model or external service you configure.
   usecases:
     [
-      "Run autonomous AI agents locally to perform multi-step tasks such as
-        web research, code generation, or file operations without relying on
-        cloud providers.",
+      Run tool-using agents locally with a browser UI and configurable providers.,
       "Build and chain custom agent workflows that combine multiple tools and
         LLM calls to automate repetitive or complex tasks.",
       "Experiment with different LLM backends (OpenAI, Ollama, etc.) by

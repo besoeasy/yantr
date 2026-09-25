@@ -3,11 +3,11 @@ x-yantr:
   tags: [ monitoring, automation, alerts, web, self-hosted ]
   short_description: Monitor any website for changes and get notified instantly
     via email or webhook.
-  description: changedetection.io watches web pages for any changes and notifies
-    you the moment something updates. Track product prices, stock availability,
-    news articles, government pages, job listings, or any content on the web.
-    Supports CSS and XPath selectors to watch specific page sections, visual
-    screensh...
+  description: >
+    changedetection.io is a self-hosted website change detector. Watch pages
+    with CSS/XPath selectors or browser mode for JavaScript sites, then receive
+    alerts by email, Slack, Discord, Telegram, ntfy, or Apprise integrations.
+    Track prices, stock, documentation, news, and listings without manual checks.
   usecases:
     [
       Monitor product pages for price drops or stock restocks.,

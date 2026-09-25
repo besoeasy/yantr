@@ -1,11 +1,12 @@
 x-yantr:
   name: GUPT
   tags: [ messaging, nostr, privacy, e2e-encrypted, self-hosted ]
-  short_description: Anonymous, end-to-end encrypted messenger on Nostr with WebRTC calls.
-  description: GUPT is a self-hosted, anonymous, end-to-end encrypted messenger
-    with no accounts required. Built on Nostr relays with WebRTC for voice and
-    video calls, it supports encrypted media uploads, group rooms, offline
-    caching, and ships as an installable PWA.
+  short_description: Browser-based Nostr messenger with encrypted chat and WebRTC calls.
+  description: >
+    GUPT is a browser-based, serverless messenger and privacy suite that uses
+    Nostr relays for encrypted chat, groups, passwords, notes, bookmarks, and
+    file sharing. Self-hosting this container hosts the web client; durable
+    messages still depend on the public or private Nostr relays you configure.
   usecases:
     [
       Chat anonymously with end-to-end encrypted direct messages without

@@ -3,11 +3,11 @@ x-yantr:
   tags: [ productivity, security, password-manager, privacy, self-hosted ]
   short_description: Lightweight, open-source Bitwarden-compatible password
     manager server written in Rust.
-  description: Vaultwarden (formerly Bitwarden_RS) is a lightweight, open-source
-    server implementation of the Bitwarden password management API, written in
-    Rust. It's fully compatible with official Bitwarden clients including
-    browser extensions, desktop apps, and mobile apps. All passwords are
-    encrypted...
+  description: >
+    Vaultwarden is a lightweight Rust server implementing the Bitwarden API for
+    browser, desktop, and mobile clients. Store passwords, notes, cards, and TOTP
+    codes on infrastructure you control, with client-side encryption keeping the
+    server from learning your master password. Deploy behind HTTPS.
   usecases:
     [
       "Store and manage all your passwords in a self-hosted vault that only

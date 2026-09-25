@@ -2,11 +2,11 @@ x-yantr:
   name: ownCloud
   tags: [ files, cloud, storage, sync, collaboration ]
   short_description: Self-hosted cloud storage to sync files and collaborate securely.
-  description: ownCloud is a self-hosted, enterprise-ready file synchronization
-    and sharing platform. It provides a secure space to store, sync, and share
-    your files across all your devices (desktop and mobile). As an alternative
-    to Google Drive or Dropbox, ownCloud gives you complete control over your
-    data. It...
+  description: >
+    ownCloud is a self-hosted file sync and collaboration platform. Store, share,
+    and work across devices with mobile and desktop clients, web access, sharing
+    links, versioning, and groupware integration. Run it as a private alternative
+    to cloud storage while keeping data and accounts under control.
   usecases:
     [
       "Sync files seamlessly across Windows, macOS, Linux, iOS, and Android.",

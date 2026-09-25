@@ -1,13 +1,13 @@
 x-yantr:
   name: Syncthing
   tags: [ tools, utility, storage, files, self-hosted ]
-  short_description: Continuous file synchronization between devices with
-    peer-to-peer encryption and no cloud depend...
-  description: Syncthing is a continuous file synchronization program that syncs
-    files between two or more computers in real-time. It replaces proprietary
-    cloud services with an open, decentralized, and private solution. Files are
-    synced directly between your devices using peer-to-peer connections,
-    meani...
+  short_description: Private peer-to-peer file synchronization across your devices,
+    without a cloud account.
+  description: >
+    Syncthing synchronizes files between computers, phones, and servers over
+    direct peer-to-peer connections. Devices exchange encrypted blocks, resolve
+    conflicts, and keep local copies when peers are offline. Use it for private
+    document, photo, and backup replication across a home lab or network.
   usecases:
     [
       Sync your photos from your phone to your home server automatically when

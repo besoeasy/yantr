@@ -3,11 +3,11 @@ x-yantr:
   tags: [ download, network, torrent, p2p, self-hosted ]
   short_description: Fast, lightweight BitTorrent client with web interface and
     native Docker support.
-  description: Transmission is a fast, lightweight BitTorrent client that runs as
-    a daemon with a web interface. It's known for its low resource usage,
-    simplicity, and reliability. Features include a web UI for remote
-    management, magnet link support, peer exchange, DHT, encryption, bandwidth
-    scheduling,...
+  description: >
+    Transmission is a lightweight BitTorrent daemon with a web interface for
+    headless servers. It supports magnet links, DHT, peer exchange, encryption,
+    bandwidth scheduling, watch folders, and remote control while keeping resource
+    use modest. Use it for open-source downloads or a home torrent server.
   usecases:
     [
       "Download Linux ISOs, open-source software, and public domain media via

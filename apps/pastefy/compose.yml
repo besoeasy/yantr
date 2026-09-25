@@ -1,6 +1,6 @@
 x-yantr:
   name: Pastefy
-  tags: [ tools, productivity, git, development, devops ]
+  tags: [ pastebin, code-sharing, api, privacy, productivity ]
   short_description: Beautiful, feature-rich pastebin with folders, encryption, and API support.
   description: Pastefy is a modern pastebin app for storing and sharing code
     snippets, notes, and text. It includes folder organization, syntax

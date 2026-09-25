@@ -1,19 +1,19 @@
 x-yantr:
   name: Stremio
   tags: [ media, streaming, video, self-hosted, homelab ]
-  short_description: Media center for streaming with addons - movies, shows, and video content.
-  description: Stremio is a media center application that lets you discover and
-    watch videos. It supports movies, TV shows, and video content through
-    community-built addons. The server version allows you to host your own
-    streaming backend. Features include addons for various content sources,
-    library for...
+  short_description: Self-hosted streaming endpoint for Stremio clients and addons.
+  description: >
+    Stremio organizes movies, shows, and video content through community addons.
+    This entry deploys the streaming server, not the web interface or media
+    files, so pair it with the desktop app or web.stremio.com. Use the endpoint
+    to provide addon-based discovery and streaming to clients.
   usecases:
     [
-      Organize your video library.,
-      Discover new movies and shows through addons.,
-      Track what you've watched.
+      Connect Stremio desktop or web clients to a self-hosted streaming endpoint.,
+      Provide addon-based discovery for movies and shows.,
+      Reach the streaming server from a trusted LAN or secure tunnel.
     ]
-  website: https://github.com/Stremio/stremio-web
+  website: https://hub.docker.com/r/stremio/server
   notes:
     [
       This deploys the Stremio streaming server only (not the web UI). Use

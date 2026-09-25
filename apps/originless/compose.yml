@@ -2,16 +2,17 @@ x-yantr:
   name: Originless
   tags: [ storage, files, privacy, ipfs, self-hosted ]
   short_description: Self-hosted anonymous file storage backend built on IPFS.
-  description: Originless is a self-hosted storage backend built on IPFS. It lets
-    you upload and share files anonymously with no accounts, no tracking, and no
-    logs. Works as a drop-in backend for apps, screenshot tools, pastebin-style
-    pastes, Nostr clients, and anything else that needs durable file hosting.
+  description: >
+    Originless is a self-hosted IPFS storage API for uploading and retrieving
+    files without accounts or tracking. It integrates with screenshot tools,
+    pastebins, and custom apps through REST. Local CIDs may disappear after
+    garbage collection; use pinning or external retention when durability matters.
   usecases:
     [
       Use as a self-hosted image and file host for your apps without relying
         on third-party cloud storage.,
-      Host files anonymously on IPFS — content persists across the network
-        even if your node goes offline.,
+      Host and retrieve IPFS-addressed files through a self-hosted node, while
+        accounting for unpinned local content.,
       Drop it into any tool or platform via the simple REST API in minutes.
     ]
   website: https://github.com/besoeasy/Originless

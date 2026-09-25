@@ -1,12 +1,12 @@
 x-yantr:
   name: OmniRoute
   tags: [ ai, llm, gateway, proxy, self-hosted ]
-  short_description: Free AI gateway routing 290+ providers through one OpenAI-compatible endpoint.
+  short_description: Self-hosted AI gateway routing many providers through one OpenAI-compatible endpoint.
   description: >
-    OmniRoute is a free, self-hosted AI gateway that consolidates 290+ LLM
-    providers behind a single OpenAI-compatible endpoint. It provides
-    automatic fallback, intelligent token compression, and smart routing,
-    integrating smoothly with AI developer tools and coding assistants.
+    OmniRoute is a self-hosted AI gateway that routes requests across many
+    providers through one OpenAI-compatible endpoint. It adds fallback, token
+    compression, and smart routing for AI developer tools. Configure provider
+    credentials in the dashboard and choose a model policy for predictable behavior.
   usecases:
     [
       "Route all your AI coding tools through one endpoint with automatic
@@ -16,7 +16,7 @@ x-yantr:
       "Run a local AI proxy that supports every major provider — OpenAI,
         Anthropic, Google, DeepSeek, Mistral, and 280+ more."
     ]
-  website: https://github.com/diegosouzapw/OmniRoute
+  website: https://omniroute.online
   env_generators:
     REDIS_PASSWORD: { length: 32, charset: hex }
   notes:

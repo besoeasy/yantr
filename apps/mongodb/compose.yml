@@ -1,6 +1,6 @@
 x-yantr:
   name: MongoDB
-  tags: [ database, storage, files, utility, notes ]
+  tags: [ database, nosql, documents, backend, self-hosted ]
   short_description: Popular NoSQL document database with flexible JSON-like
     documents and powerful querying.
   description: MongoDB is a NoSQL document database using flexible JSON-like

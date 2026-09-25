@@ -1,12 +1,12 @@
 x-yantr:
   name: Snort
-  tags: [ social, security, network, firewall, nostr ]
+  tags: [ nostr, social, decentralized, web, pwa ]
   short_description: Fast, lightweight Nostr client with real-time updates and clean interface.
-  description: Snort is a blazing fast, lightweight Nostr client built with React.
-    It provides a clean, modern interface for using the Nostr decentralized
-    social network. Features include real-time updates via WebSocket, following
-    management, notes and threads, likes and reposts, zaps (Lightning
-    payments...
+  description: >
+    Snort is a lightweight Nostr web client for reading and publishing on the
+    decentralized social network. Connect to one or more relays for notes,
+    threads, follows, replies, likes, reposts, direct messages, and Lightning
+    zaps. Relay choice and account security remain the user's responsibility.
   usecases:
     [
       "Access Nostr social network through a fast, modern web interface.",

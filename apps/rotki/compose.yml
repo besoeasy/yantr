@@ -3,11 +3,11 @@ x-yantr:
   tags: [ productivity, security, utility, bitcoin, crypto ]
   short_description: Self-hosted crypto portfolio tracker with DeFi support, tax
     reports, and privacy focus.
-  description: Rotki is a free, open-source portfolio tracker and DeFi wallet
-    analyzer with a focus on privacy. It helps you track your cryptocurrency
-    holdings across wallets and exchanges, analyzes DeFi positions, calculates
-    profits/losses, and generates tax reports. Features include support for 50+
-    exc...
+  description: >
+    Rotki is a privacy-focused cryptocurrency portfolio tracker and DeFi analyzer.
+    Connect exchanges and wallets, review holdings and transactions, inspect
+    staking, lending, and liquidity positions, and generate performance or tax
+    reports. Run it locally to keep financial data under your control.
   usecases:
     [
       Track all your crypto holdings across exchanges in one dashboard.,

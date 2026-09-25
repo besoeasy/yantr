@@ -2,16 +2,16 @@ x-yantr:
   name: OpenCode
   tags: [ development, productivity, ai, terminal, utility ]
   short_description: AI coding assistant in browser - edit files, run commands, and get AI help.
-  description: OpenCode is an AI-powered browser IDE combining editor, terminal,
-    and AI code support. It includes file browsing, command execution,
-    AI-assisted debugging and code explanations, git integration, and cloud
-    workspace sharing. Great for flexible development, remote coding, and quick
-    sessions.
+  description: >
+    OpenCode is a browser-based coding agent with an editor, terminal, Git, and
+    AI assistance. Inspect projects, edit files, run commands, debug code, and
+    get explanations from any device. The web server keeps the workspace in your
+    browser, while providers receive prompts and tool data for each session.
   usecases:
     [
-      Code from any browser.,
-      Get AI assistance with coding.,
-      Collaborative development.
+      Run coding-agent sessions from a browser.,
+      Inspect project files and run terminal commands through the agent.,
+      Attach a terminal session to an existing OpenCode web server.
     ]
   website: https://github.com/anomalyco/opencode
   notes: [ Browser-based IDE, AI assistant integration, Terminal access ]
