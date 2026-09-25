@@ -1,0 +1,34 @@
+x-yantr:
+  name: "jupyterlab"
+  tags: [development, python, notebooks, data-science, self-hosted]
+  short_description: "Browser-based JupyterLab for notebooks, code, and data exploration."
+  description: >
+    JupyterLab is a browser workspace for notebooks, terminals, code editors, and
+    data files. It supports Python kernels, Markdown, rich outputs, and extensions
+    for development workflows. Use it for experiments, teaching, notebooks, and
+    lightweight analysis with notebooks stored in a persistent volume.
+  usecases: ["Run Python notebooks and experiments.", "Edit scripts and launch terminals in the browser.", "Keep notebooks and data files in a persistent workspace."]
+  website: "https://jupyter.org/"
+  env_generators:
+    JUPYTER_TOKEN: {length: 32, charset: alnum}
+  notes: ["The generated Jupyter token is required to sign in.", "Use the volume browser to add notebooks and data files."]
+
+services:
+  jupyterlab:
+    image: quay.io/jupyter/base-notebook:latest
+    labels:
+      yantr.app: "jupyterlab"
+      yantr.service.8888: "Web UI"
+      yantr.port.8888: "HTTP"
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN}
+      JUPYTER_ALLOW_INSECURE_WRITES: "false"
+    ports:
+      - "8888"
+    volumes:
+      - jupyter_work:/home/jovyan/work
+    restart: unless-stopped
+
+volumes:
+  jupyter_work:

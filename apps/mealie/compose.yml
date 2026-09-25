@@ -1,0 +1,33 @@
+x-yantr:
+  name: "mealie"
+  tags: [recipes, cooking, meal-planning, self-hosted, productivity]
+  short_description: "Self-hosted recipe manager for meal plans, shopping lists, and cooking."
+  description: >
+    Mealie is a self-hosted recipe manager for saving recipes from the web,
+    organizing ingredients, planning meals, and building shopping lists. It
+    provides a clean browser UI, import tools, and household user support, with
+    recipes and application data kept in a persistent volume.
+  usecases: ["Save and organize recipes from the web.", "Plan weekly meals for your household.", "Generate shopping lists from planned meals."]
+  website: "https://docs.mealie.io/"
+  notes: ["Create the first administrator account after deployment.", "Disable public sign-up after creating the initial account if the app is exposed."]
+
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    labels:
+      yantr.app: "mealie"
+      yantr.service.9000: "Web UI"
+      yantr.port.9000: "HTTP"
+    environment:
+      ALLOW_SIGNUP: "true"
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+    ports:
+      - "9000"
+    volumes:
+      - mealie_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  mealie_data:

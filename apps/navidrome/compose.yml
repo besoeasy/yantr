@@ -1,0 +1,36 @@
+x-yantr:
+  name: "navidrome"
+  tags: [music, streaming, media, self-hosted, audio]
+  short_description: "Self-hosted music server for streaming your personal library."
+  description: >
+    Navidrome is a lightweight music server and web player for organizing and
+    streaming a personal collection. It provides library browsing, search,
+    playlists, multi-user support, and responsive clients for phones, tablets,
+    and desktops. Keep configuration and music in separate persistent volumes.
+  usecases: ["Stream a personal music library to any device.", "Organize albums, artists, and playlists.", "Listen through the browser or mobile clients."]
+  website: "https://www.navidrome.org/"
+  notes: ["Add music files through the volume browser before importing them.", "Create the first administrator account after deployment."]
+
+services:
+  navidrome:
+    image: docker.io/deluan/navidrome:latest
+    labels:
+      yantr.app: "navidrome"
+      yantr.service.4533: "Web UI"
+      yantr.port.4533: "HTTP"
+    environment:
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+      ND_LOGLEVEL: info
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    ports:
+      - "4533"
+    volumes:
+      - navidrome_data:/data
+      - navidrome_music:/music
+    restart: unless-stopped
+
+volumes:
+  navidrome_data:
+  navidrome_music:

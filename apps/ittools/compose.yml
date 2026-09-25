@@ -1,0 +1,23 @@
+x-yantr:
+  name: "ittools"
+  tags: [developer, utilities, tools, self-hosted, web]
+  short_description: "Browser-based collection of developer and system utilities."
+  description: >
+    IT-Tools is a browser collection of utilities for developers and system
+    administrators. It includes encoders, converters, generators, inspectors,
+    validators, and formatting tools without local installation. Run it on your
+    own infrastructure for a quick private reference.
+  usecases: ["Encode, decode, and format data in the browser.", "Generate hashes, UUIDs, passwords, and identifiers.", "Inspect headers, URLs, timestamps, and other technical values."]
+  website: "https://corentinth.github.io/it-tools/"
+  notes: ["This app is stateless and does not need a persistent volume.", "Protect access to the utility page on shared or public networks."]
+
+services:
+  ittools:
+    image: docker.io/corentinth/it-tools:latest
+    labels:
+      yantr.app: "ittools"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    ports:
+      - "80"
+    restart: unless-stopped

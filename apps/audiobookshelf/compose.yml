@@ -1,0 +1,39 @@
+x-yantr:
+  name: "audiobookshelf"
+  tags: [audiobooks, podcasts, media, streaming, self-hosted]
+  short_description: "Self-hosted audiobook and podcast server with progress tracking."
+  description: >
+    Audiobookshelf is a self-hosted server for audiobooks, podcasts, and related
+    media. It provides a web player, progress sync, metadata matching, search,
+    and multi-user support. Use separate persistent volumes for configuration,
+    metadata, audiobooks, and podcasts.
+  usecases: ["Listen to audiobooks in the browser or mobile app.", "Organize and search a podcast library.", "Track listening progress across devices."]
+  website: "https://www.audiobookshelf.org/"
+  notes: ["Add media through the volume browser before importing it.", "Create the first user account after deployment."]
+
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    labels:
+      yantr.app: "audiobookshelf"
+      yantr.service.80: "Web UI"
+      yantr.port.80: "HTTP"
+    environment:
+      CONFIG_PATH: /config
+      METADATA_PATH: /metadata
+      AUDIOBOOKSHELF_UID: ${PUID:-1000}
+      AUDIOBOOKSHELF_GID: ${PGID:-1000}
+    ports:
+      - "80"
+    volumes:
+      - audiobookshelf_config:/config
+      - audiobookshelf_metadata:/metadata
+      - audiobookshelf_audiobooks:/audiobooks
+      - audiobookshelf_podcasts:/podcasts
+    restart: unless-stopped
+
+volumes:
+  audiobookshelf_config:
+  audiobookshelf_metadata:
+  audiobookshelf_audiobooks:
+  audiobookshelf_podcasts:

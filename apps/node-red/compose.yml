@@ -1,0 +1,32 @@
+x-yantr:
+  name: "nodered"
+  tags: [automation, iot, workflows, development, self-hosted]
+  short_description: "Browser-based low-code automation for APIs, devices, and workflows."
+  description: >
+    Node-RED is a browser flow editor for connecting hardware, APIs, services,
+    and automation. It supports HTTP, MQTT, databases, messaging, cloud providers,
+    and custom JavaScript functions, with flows stored in a persistent volume for
+    integrations and lightweight backend workflows.
+  usecases: ["Build API and webhook workflows.", "Connect IoT devices and MQTT topics.", "Prototype automations with custom JavaScript functions."]
+  website: "https://nodered.org/"
+  notes: ["Node-RED creates an admin password on first visit.", "Protect the editor and exposed flows with HTTPS or an access proxy."]
+
+services:
+  nodered:
+    image: docker.io/nodered/node-red:latest
+    labels:
+      yantr.app: "node-red"
+      yantr.service.1880: "Web UI"
+      yantr.port.1880: "HTTP"
+    environment:
+      TZ: ${TZ:-UTC}
+      NODE_RED_HOST: 0.0.0.0
+      NODE_RED_PORT: 1880
+    ports:
+      - "1880"
+    volumes:
+      - nodered_data:/data
+    restart: unless-stopped
+
+volumes:
+  nodered_data:

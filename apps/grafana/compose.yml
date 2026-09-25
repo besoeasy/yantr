@@ -1,0 +1,34 @@
+x-yantr:
+  name: "grafana"
+  tags: [monitoring, observability, dashboards, metrics, self-hosted]
+  short_description: "Self-hosted dashboards and visualization for metrics, logs, and traces."
+  description: >
+    Grafana is a self-hosted observability dashboard for exploring metrics, logs,
+    and traces from Prometheus, Loki, Tempo, InfluxDB, and other sources. It
+    provides panels, alerting, annotations, dashboards, and user management,
+    turning telemetry into useful visualizations on your own infrastructure.
+  usecases: ["Visualize Prometheus and InfluxDB metrics.", "Build dashboards for services and infrastructure.", "Correlate logs, metrics, and traces in one interface."]
+  website: "https://grafana.com/"
+  env_generators:
+    GF_SECURITY_ADMIN_PASSWORD: {length: 24, charset: alnum_symbols}
+  notes: ["Create the admin account on first visit.", "Configure data sources after deployment; Prometheus is available as a separate Yantr app."]
+
+services:
+  grafana:
+    image: docker.io/grafana/grafana:latest
+    labels:
+      yantr.app: "grafana"
+      yantr.service.3000: "Web UI"
+      yantr.port.3000: "HTTP"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    ports:
+      - "3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  grafana_data:
