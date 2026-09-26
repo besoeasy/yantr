@@ -7,8 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "podman": "podman stop yantr || true && podman rm yantr || true && sleep 2 && podman build -t yantr:dev . && podman run -d --name yantr --network host --security-opt label=disable -v ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock:/run/podman/podman.sock -v yantr_data:/data:z yantr:dev",
-    "website": "node scripts/website-build.js",
-    "check": "node scripts/check.js"
+    "website": "node scripts/website-build.js"
   },
   "dependencies": {
     "@lucide/vue": "latest",
