@@ -15,8 +15,24 @@ services:
     image: docker.io/golang:latest
     labels:
       yantr.app: "go"
+      yantr.service.8080: "Web server"
+      yantr.port.8080: "HTTP"
+      yantr.service.9000: "API server"
+      yantr.port.9000: "HTTP"
+      yantr.service.3000: "Frontend dev server"
+      yantr.port.3000: "HTTP"
+      yantr.service.9090: "Metrics / pprof"
+      yantr.port.9090: "HTTP"
+      yantr.service.50051: "gRPC service"
+      yantr.port.50051: "TCP"
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
+    ports:
+      - "8080"
+      - "9000"
+      - "3000"
+      - "9090"
+      - "50051"
     volumes:
       - go_data:/data
     restart: unless-stopped
