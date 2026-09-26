@@ -159,7 +159,6 @@ services:
       yantr.service.8080: "Web UI"
       yantr.port.8080: "HTTP"
     environment:
-      TZ: ${TZ:-UTC}
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     ports:
