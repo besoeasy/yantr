@@ -513,27 +513,6 @@
     "deployWatchtower": "部署 Watchtower",
     "viewApp": "查看应用"
   },
-  "tailscaleSetupCard": {
-    "meshVpn": "网格 VPN",
-    "tailscale": "Tailscale",
-    "notInstalled": "未安装",
-    "wireGuardE2E": "WireGuard 端到端加密",
-    "zeroPortForward": "零端口转发",
-    "worksBehindCgnat": "支持 CGNAT",
-    "tailscaleDeployed": "Tailscale 已部署",
-    "containerStarting": "容器启动中…",
-    "authKey": "认证密钥",
-    "authKeyPlaceholder": "tskey-auth-…",
-    "mustStartWith": "必须以",
-    "andBeChars": "开头且 ≥ 30 个字符",
-    "keyLooksValid": "密钥看起来有效",
-    "deploying": "部署中…",
-    "deployTailscale": "部署 Tailscale",
-    "getAuthKey": "获取认证密钥",
-    "viewApp": "查看应用",
-    "deploymentFailed": "部署失败",
-    "networkError": "网络错误"
-  },
   "quickMetrics": {
     "averageUptime": {
       "title": "平均运行时间",
@@ -609,22 +588,6 @@
       "setupUpdates": "设置更新",
       "updatesPaused": "更新已暂停",
       "interval": "间隔"
-    },
-    "tailscaleStatusCard": {
-      "meshVpn": "网格 VPN",
-      "active": "活动",
-      "down": "离线",
-      "uptime": "运行时间",
-      "status": "状态",
-      "offline": "离线",
-      "wireGuardMeshActive": "WireGuard 网格活动",
-      "remoteAccessUnavailable": "远程访问不可用",
-      "encryption": "加密",
-      "wireGuard": "WireGuard",
-      "ports": "端口",
-      "version": "版本",
-      "connected": "已连接",
-      "stopped": "已停止"
     }
   },
   "sponsorCard": {
@@ -696,12 +659,5 @@
     "stopped": "Stopped",
     "manage": "Manage",
     "install": "Install"
-  },
-  "tailscaleCard": {
-    "privateAccess": "Private Access",
-    "description": "Join this host to your Tailscale network and reach services securely.",
-    "online": "Online",
-    "offline": "Offline",
-    "connectionStatus": "Connection Status"
   }
 }

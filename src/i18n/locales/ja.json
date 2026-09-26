@@ -513,27 +513,6 @@
     "deployWatchtower": "Watchtowerをデプロイ",
     "viewApp": "アプリを見る"
   },
-  "tailscaleSetupCard": {
-    "meshVpn": "メッシュVPN",
-    "tailscale": "Tailscale",
-    "notInstalled": "未インストール",
-    "wireGuardE2E": "WireGuard E2E",
-    "zeroPortForward": "ポートフォワード不要",
-    "worksBehindCgnat": "CGNAT環境でも動作",
-    "tailscaleDeployed": "Tailscaleをデプロイしました",
-    "containerStarting": "コンテナを起動中…",
-    "authKey": "認証キー",
-    "authKeyPlaceholder": "tskey-auth-…",
-    "mustStartWith": "で始まる必要があります",
-    "andBeChars": "かつ30文字以上",
-    "keyLooksValid": "キーは有効です",
-    "deploying": "デプロイ中…",
-    "deployTailscale": "Tailscaleをデプロイ",
-    "getAuthKey": "認証キーを取得",
-    "viewApp": "アプリを見る",
-    "deploymentFailed": "デプロイに失敗しました",
-    "networkError": "ネットワークエラー"
-  },
   "quickMetrics": {
     "averageUptime": {
       "title": "平均稼働時間",
@@ -609,22 +588,6 @@
       "setupUpdates": "更新を設定",
       "updatesPaused": "更新が一時停止されています",
       "interval": "間隔"
-    },
-    "tailscaleStatusCard": {
-      "meshVpn": "メッシュVPN",
-      "active": "アクティブ",
-      "down": "停止中",
-      "uptime": "稼働時間",
-      "status": "ステータス",
-      "offline": "オフライン",
-      "wireGuardMeshActive": "WireGuardメッシュがアクティブ",
-      "remoteAccessUnavailable": "リモートアクセス利用不可",
-      "encryption": "暗号化",
-      "wireGuard": "WireGuard",
-      "ports": "ポート",
-      "version": "バージョン",
-      "connected": "接続済み",
-      "stopped": "停止"
     }
   },
   "sponsorCard": {
@@ -696,12 +659,5 @@
     "stopped": "Stopped",
     "manage": "Manage",
     "install": "Install"
-  },
-  "tailscaleCard": {
-    "privateAccess": "Private Access",
-    "description": "Join this host to your Tailscale network and reach services securely.",
-    "online": "Online",
-    "offline": "Offline",
-    "connectionStatus": "Connection Status"
   }
 }

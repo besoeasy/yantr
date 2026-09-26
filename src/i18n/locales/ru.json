@@ -513,27 +513,6 @@
     "deployWatchtower": "Развернуть Watchtower",
     "viewApp": "Просмотр приложения"
   },
-  "tailscaleSetupCard": {
-    "meshVpn": "Mesh-VPN",
-    "tailscale": "Tailscale",
-    "notInstalled": "Не установлен",
-    "wireGuardE2E": "WireGuard E2E",
-    "zeroPortForward": "Без переброски портов",
-    "worksBehindCgnat": "Работает за CGNAT",
-    "tailscaleDeployed": "Tailscale развёрнут",
-    "containerStarting": "Контейнер запускается…",
-    "authKey": "Ключ авторизации",
-    "authKeyPlaceholder": "tskey-auth-…",
-    "mustStartWith": "Должен начинаться с",
-    "andBeChars": "и быть ≥ 30 символов",
-    "keyLooksValid": "Ключ выглядит действительным",
-    "deploying": "Развёртывание…",
-    "deployTailscale": "Развернуть Tailscale",
-    "getAuthKey": "Получить ключ авторизации",
-    "viewApp": "Просмотр приложения",
-    "deploymentFailed": "Ошибка развёртывания",
-    "networkError": "Сетевая ошибка"
-  },
   "quickMetrics": {
     "averageUptime": {
       "title": "Ср. время работы",
@@ -609,22 +588,6 @@
       "setupUpdates": "Настроить обновления",
       "updatesPaused": "Обновления приостановлены",
       "interval": "Интервал"
-    },
-    "tailscaleStatusCard": {
-      "meshVpn": "Mesh-VPN",
-      "active": "Активен",
-      "down": "Не работает",
-      "uptime": "Время работы",
-      "status": "Статус",
-      "offline": "Офлайн",
-      "wireGuardMeshActive": "WireGuard mesh активен",
-      "remoteAccessUnavailable": "Удалённый доступ недоступен",
-      "encryption": "Шифрование",
-      "wireGuard": "WireGuard",
-      "ports": "Порты",
-      "version": "Версия",
-      "connected": "Подключено",
-      "stopped": "Остановлено"
     }
   },
   "sponsorCard": {
@@ -696,12 +659,5 @@
     "stopped": "Stopped",
     "manage": "Manage",
     "install": "Install"
-  },
-  "tailscaleCard": {
-    "privateAccess": "Private Access",
-    "description": "Join this host to your Tailscale network and reach services securely.",
-    "online": "Online",
-    "offline": "Offline",
-    "connectionStatus": "Connection Status"
   }
 }

@@ -132,7 +132,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 | ☁️ Cloud & Files | Nextcloud, Seafile, Syncthing, MinIO |
 | 🔐 Security | Vaultwarden, AdGuard Home, Pi-hole, WireGuard |
 | 🛠️ Dev Tools | Supabase, PostgreSQL, MongoDB, n8n, Gitea |
-| 📡 Networking | Tailscale, Cloudflare Tunnel, Glances |
+| 📡 Networking | Cloudflare Tunnel, Glances |
 | 📝 Productivity | Memos, Wiki.js, Linkwarden, FreshRSS |
 | 💰 Finance | Actual Budget, Ghostfolio, Rotki |
 | ⛓️ Bitcoin | Bitcoin Knots, Monerod, Cashu.me |
@@ -151,7 +151,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 **No dependency hell** — Python, Node, CUDA, whatever — each app brings its own runtime inside its container. Nothing conflicts.
 
-**Built-in networking** — Port conflict detection, Tailscale for private access, and Cloudflare Tunnel for public exposure.
+**Built-in networking** — Port conflict detection and Cloudflare Tunnel for public exposure.
 
 **Volume browser** — Inspect and manage your app data directly from the browser.
 

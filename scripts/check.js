@@ -277,7 +277,7 @@ async function checkCompose(appName, composePath) {
           const reqMatch = val.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/);
           if (reqMatch) {
             const varName = reqMatch[1];
-            const systemVars = ["TZ", "PUID", "PGID", "TUNNEL_TOKEN", "TAILSCALE_AUTH_KEY", "TELEGRAM_BOT_TOKEN", "NOSTR_NSEC", "AUTHCODE"];
+            const systemVars = ["TZ", "PUID", "PGID", "TUNNEL_TOKEN", "TELEGRAM_BOT_TOKEN", "NOSTR_NSEC", "AUTHCODE"];
             if (!systemVars.includes(varName) && !envGenerators[varName]) {
               fail(
                 appName,

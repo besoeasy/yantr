@@ -513,27 +513,6 @@
     "deployWatchtower": "Déployer Watchtower",
     "viewApp": "Voir l'app"
   },
-  "tailscaleSetupCard": {
-    "meshVpn": "VPN maillé",
-    "tailscale": "Tailscale",
-    "notInstalled": "Non installé",
-    "wireGuardE2E": "WireGuard E2E",
-    "zeroPortForward": "Zéro transfert de port",
-    "worksBehindCgnat": "Fonctionne derrière CGNAT",
-    "tailscaleDeployed": "Tailscale déployé",
-    "containerStarting": "Conteneur en démarrage…",
-    "authKey": "Clé d'authentification",
-    "authKeyPlaceholder": "tskey-auth-…",
-    "mustStartWith": "Doit commencer par",
-    "andBeChars": "et avoir ≥ 30 caractères",
-    "keyLooksValid": "La clé semble valide",
-    "deploying": "Déploiement…",
-    "deployTailscale": "Déployer Tailscale",
-    "getAuthKey": "Obtenir la clé d'authentification",
-    "viewApp": "Voir l'app",
-    "deploymentFailed": "Échec du déploiement",
-    "networkError": "Erreur réseau"
-  },
   "quickMetrics": {
     "averageUptime": {
       "title": "Disponibilité moy.",
@@ -609,22 +588,6 @@
       "setupUpdates": "Configurer les mises à jour",
       "updatesPaused": "Mises à jour en pause",
       "interval": "Intervalle"
-    },
-    "tailscaleStatusCard": {
-      "meshVpn": "VPN maillé",
-      "active": "Actif",
-      "down": "Hors service",
-      "uptime": "Disponibilité",
-      "status": "Statut",
-      "offline": "Hors ligne",
-      "wireGuardMeshActive": "Maillage WireGuard actif",
-      "remoteAccessUnavailable": "Accès distant indisponible",
-      "encryption": "Chiffrement",
-      "wireGuard": "WireGuard",
-      "ports": "Ports",
-      "version": "Version",
-      "connected": "Connecté",
-      "stopped": "Arrêté"
     }
   },
   "sponsorCard": {
@@ -696,12 +659,5 @@
     "stopped": "Stopped",
     "manage": "Manage",
     "install": "Install"
-  },
-  "tailscaleCard": {
-    "privateAccess": "Private Access",
-    "description": "Join this host to your Tailscale network and reach services securely.",
-    "online": "Online",
-    "offline": "Offline",
-    "connectionStatus": "Connection Status"
   }
 }
