@@ -267,6 +267,22 @@ else
   fi
   log_info "Podman installed successfully."
 fi
+
+# Builds triggered via the host Podman socket default to
+# /etc/containers/seccomp.json on the server side, but
+# Debian/Ubuntu only ship /usr/share/containers/seccomp.json — so builds fail with
+# "opening seccomp profile failed". Link the system path when it's missing.
+if [ ! -f /etc/containers/seccomp.json ] && [ -f /usr/share/containers/seccomp.json ]; then
+  log_info "Linking missing /etc/containers/seccomp.json for remote builds..."
+  if [ "$IS_ROOT" -eq 1 ]; then
+    mkdir -p /etc/containers && ln -sf /usr/share/containers/seccomp.json /etc/containers/seccomp.json || true
+  elif [ -n "$SUDO" ]; then
+    $SUDO mkdir -p /etc/containers && $SUDO ln -sf /usr/share/containers/seccomp.json /etc/containers/seccomp.json || true
+  else
+    log_warn "Cannot create /etc/containers/seccomp.json (no sudo). Remote app builds may fail;"
+    log_warn "run manually: sudo mkdir -p /etc/containers && sudo ln -sf /usr/share/containers/seccomp.json /etc/containers/seccomp.json"
+  fi
+fi
 step_ok "Podman ready."
 
 # 3. Configure systemd & socket
