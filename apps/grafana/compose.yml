@@ -13,13 +13,12 @@ x-yantr:
     GF_SECURITY_ADMIN_PASSWORD: {length: 24, charset: alnum_symbols}
   notes: ["Create the admin account on first visit.", "Configure data sources after deployment; Prometheus is available as a separate Yantr app."]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: grafana}
+
 services:
   grafana:
     image: docker.io/grafana/grafana:latest
-    labels:
-      yantr.app: "grafana"
-      yantr.service.3000: "Web UI"
-      yantr.port.3000: "HTTP"
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
