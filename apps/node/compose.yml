@@ -9,21 +9,16 @@ x-yantr:
   usecases: ["Run JavaScript server applications.", "Develop and test Node.js projects."]
   website: "https://nodejs.org/"
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: node}
+    - {port: 5173, protocol: HTTP, label: "Vite dev server", service: node}
+    - {port: 5858, protocol: TCP, label: "Alt debugger", service: node}
+    - {port: 8080, protocol: HTTP, label: "Alt dev server", service: node}
+    - {port: 9229, protocol: TCP, label: "Node debugger", service: node}
+
 services:
   node:
     image: docker.io/node:lts
-    labels:
-      yantr.app: "node"
-      yantr.service.3000: "Frontend dev server"
-      yantr.port.3000: "HTTP"
-      yantr.service.5173: "Vite dev server"
-      yantr.port.5173: "HTTP"
-      yantr.service.8080: "Alt dev server"
-      yantr.port.8080: "HTTP"
-      yantr.service.9229: "Node debugger"
-      yantr.port.9229: "TCP"
-      yantr.service.5858: "Alt debugger"
-      yantr.port.5858: "TCP"
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
