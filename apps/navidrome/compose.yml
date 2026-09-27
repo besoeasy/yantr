@@ -11,13 +11,12 @@ x-yantr:
   website: "https://www.navidrome.org/"
   notes: ["Add music files through the volume browser before importing them.", "Create the first administrator account after deployment."]
 
+  ports:
+    - {port: 4533, protocol: HTTP, label: "Web UI", service: navidrome}
+
 services:
   navidrome:
     image: docker.io/deluan/navidrome:latest
-    labels:
-      yantr.app: "navidrome"
-      yantr.service.4533: "Web UI"
-      yantr.port.4533: "HTTP"
     environment:
       ND_MUSICFOLDER: /music
       ND_DATAFOLDER: /data
