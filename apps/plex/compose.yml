@@ -20,13 +20,12 @@ x-yantr:
         custom compose edit."
     ]
 
+  ports:
+    - {port: 32400, protocol: HTTP, label: "Web UI", service: plex}
+
 services:
   plex:
     image: lscr.io/linuxserver/plex:latest
-    labels:
-      yantr.app: plex
-      yantr.service.32400: Web UI
-      yantr.port.32400: HTTP
     environment:
       PUID: ${PUID:-1000}
       PGID: ${PGID:-1000}
