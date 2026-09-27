@@ -14,16 +14,16 @@ func TestParseLogTail(t *testing.T) {
 			in   string
 			want string
 		}{
-			{"", "100"},               // default
-			{"  ", "100"},             // blank
-			{"200", "200"},            // what the UI sends
+			{"", "100"},    // default
+			{"  ", "100"},  // blank
+			{"200", "200"}, // what the UI sends
 			{"1", "1"},
 			{"1000", "1000"},
-			{"1001", "1000"},          // clamped
-			{"999999", "1000"},        // clamped hard
-			{" 500 ", "500"},          // trimmed
-			{"all", "1000"},           // never passed through unbounded
-			{"ALL", "1000"},           // case-insensitive
+			{"1001", "1000"},   // clamped
+			{"999999", "1000"}, // clamped hard
+			{" 500 ", "500"},   // trimmed
+			{"all", "1000"},    // never passed through unbounded
+			{"ALL", "1000"},    // case-insensitive
 		}
 		for _, tc := range cases {
 			got, err := parseLogTail(tc.in)

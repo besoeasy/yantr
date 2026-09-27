@@ -261,7 +261,7 @@ func TestServicesToResuscitate(t *testing.T) {
 
 	t.Run("excludes already running services", func(t *testing.T) {
 		active := map[projectService]bool{
-			{"immich", "redis"}:  true,
+			{"immich", "redis"}:    true,
 			{"immich", "database"}: true,
 		}
 		got := servicesToResuscitate(path, "immich", active)

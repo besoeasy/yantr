@@ -203,10 +203,10 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 			// Cumulative counters; the client differences consecutive samples.
 			// `percent` is intentionally absent rather than wrong.
 			"cpu": map[string]interface{}{
-				"usage":        stats.CPUStats.CPUUsage.TotalUsage,
-				"systemUsage":  stats.CPUStats.SystemUsage,
-				"onlineCpus":   stats.CPUStats.OnlineCPUs,
-				"sampledAtMs":  shared.NowMs(),
+				"usage":       stats.CPUStats.CPUUsage.TotalUsage,
+				"systemUsage": stats.CPUStats.SystemUsage,
+				"onlineCpus":  stats.CPUStats.OnlineCPUs,
+				"sampledAtMs": shared.NowMs(),
 			},
 			"memory":  map[string]interface{}{"usage": memUsage, "rawUsage": rawMem, "cache": cache, "limit": limit, "percent": fmt.Sprintf("%.2f", memPct)},
 			"network": map[string]interface{}{"rx": netRx, "tx": netTx},
