@@ -23,13 +23,12 @@ x-yantr:
       Database of device history over time
     ]
 
+  ports:
+    - {port: 20211, protocol: UDP, label: "Monitoring", service: pi-alert}
+
 services:
   pi-alert:
     image: docker.io/jokobsk/pi.alert:latest
-    labels:
-      yantr.app: pi-alert
-      yantr.service.20211: Monitoring
-      yantr.port.20211: UDP
     ports:
       - 20211/udp
     volumes:
