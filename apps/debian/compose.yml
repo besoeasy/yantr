@@ -9,21 +9,16 @@ x-yantr:
   usecases: ["Host general-purpose server applications.", "Set up a stable development environment."]
   website: "https://www.debian.org/"
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "HTTP server", service: debian}
+    - {port: 443, protocol: HTTPS, label: "HTTPS server", service: debian}
+    - {port: 3000, protocol: HTTP, label: "Dev server", service: debian}
+    - {port: 8080, protocol: HTTP, label: "Web server", service: debian}
+    - {port: 9000, protocol: HTTP, label: "Alt server", service: debian}
+
 services:
   debian:
     image: docker.io/debian:latest
-    labels:
-      yantr.app: "debian"
-      yantr.service.8080: "Web server"
-      yantr.port.8080: "HTTP"
-      yantr.service.80: "HTTP server"
-      yantr.port.80: "HTTP"
-      yantr.service.443: "HTTPS server"
-      yantr.port.443: "HTTPS"
-      yantr.service.3000: "Dev server"
-      yantr.port.3000: "HTTP"
-      yantr.service.9000: "Alt server"
-      yantr.port.9000: "HTTP"
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
