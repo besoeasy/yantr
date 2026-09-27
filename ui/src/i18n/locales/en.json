@@ -345,6 +345,13 @@
     "imageDeleted": "Image deleted successfully",
     "refresh": "Refresh images"
   },
+  "storage": {
+    "title": "Storage",
+    "subtitle": "Manage images and volumes",
+    "searchPlaceholder": "Search images and volumes...",
+    "refresh": "Refresh storage",
+    "loadFailed": "Failed to load volumes"
+  },
   "logs": {
     "systemOutput": "System Output",
     "all": "All",

@@ -340,6 +340,13 @@
     "imageDeleted": "イメージを正常に削除しました",
     "refresh": "を更新"
   },
+  "storage": {
+    "title": "ストレージ",
+    "subtitle": "イメージとボリュームの管理",
+    "searchPlaceholder": "イメージとボリュームを検索...",
+    "refresh": "ストレージを更新",
+    "loadFailed": "ボリュームの読み込みに失敗しました"
+  },
   "logs": {
     "systemOutput": "システム出力",
     "all": "すべて",

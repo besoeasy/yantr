@@ -105,7 +105,10 @@ async function freeCurrent() {
 function goToManage() {
   const item = current.value
   if (!item) return
-  router.push(item.kind === 'image' ? '/images' : '/volumes')
+  router.push({
+    path: '/storage',
+    query: { tab: item.kind === 'image' ? 'images-unused' : 'volumes-unused' },
+  })
 }
 
 const { start: startBiggestUnusedCardPolling } = usePolling(fetchUnused, 30000)

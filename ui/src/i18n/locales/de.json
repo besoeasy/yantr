@@ -340,6 +340,13 @@
     "imageDeleted": "Image erfolgreich gelöscht",
     "refresh": "Images aktualisieren"
   },
+  "storage": {
+    "title": "Speicher",
+    "subtitle": "Images und Volumes verwalten",
+    "searchPlaceholder": "Images und Volumes suchen...",
+    "refresh": "Speicher aktualisieren",
+    "loadFailed": "Volumes konnten nicht geladen werden"
+  },
   "logs": {
     "systemOutput": "Systemausgabe",
     "all": "Alle",

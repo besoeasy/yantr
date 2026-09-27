@@ -340,6 +340,13 @@
     "imageDeleted": "镜像删除成功",
     "refresh": "刷新镜像"
   },
+  "storage": {
+    "title": "存储",
+    "subtitle": "管理镜像和卷",
+    "searchPlaceholder": "搜索镜像和卷...",
+    "refresh": "刷新存储",
+    "loadFailed": "加载卷失败"
+  },
   "logs": {
     "systemOutput": "系统输出",
     "all": "全部",
