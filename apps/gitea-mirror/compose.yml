@@ -36,6 +36,9 @@ x-yantr:
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{32,}$
 
+  ports:
+    - {port: 4321, protocol: HTTP, label: "Web UI", service: gitea-mirror}
+
 services:
   gitea-mirror:
     image: ghcr.io/raylabshq/gitea-mirror:latest
@@ -47,10 +50,6 @@ services:
     environment:
       PORT: 4321
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-    labels:
-      yantr.app: gitea-mirror
-      yantr.service.4321: Web UI
-      yantr.port.4321: HTTP
 
 volumes:
   gitea-mirror-data: null
