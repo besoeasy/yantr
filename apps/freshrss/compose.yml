@@ -23,13 +23,12 @@ x-yantr:
       Mobile-friendly interface works well on phones
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: freshrss}
+
 services:
   freshrss:
     image: docker.io/linuxserver/freshrss:latest
-    labels:
-      yantr.app: freshrss
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     volumes:
