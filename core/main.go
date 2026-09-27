@@ -519,6 +519,9 @@ func main() {
 	r.Get("/api/network/identity", handleNetworkIdentity)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/telemetry/stats", handleTelemetryStats)
+	r.Get("/api/jobs", handleJobsList)
+	r.Get("/api/jobs/active", handleJobsActive)
+	r.Get("/api/jobs/{id}", handleJobDetail)
 
 	// SPA static serving (production)
 	distDir := getDistDir()
