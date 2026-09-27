@@ -6,6 +6,7 @@ import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { formatUptime } from '../utils/metrics'
+import { usePolling } from '../composables/usePolling'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -13,7 +14,6 @@ const { currentTime } = useCurrentTime()
 
 // --- Container polling ---
 const containers = ref([])
-let refreshInterval = null
 
 async function fetchContainers() {
   try {
@@ -23,13 +23,11 @@ async function fetchContainers() {
   } catch {}
 }
 
+const { start: startCloudflaredCardPolling } = usePolling(fetchContainers, 15000)
+
 onMounted(() => {
   fetchContainers()
-  refreshInterval = setInterval(fetchContainers, 15000)
-})
-
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
+  startCloudflaredCardPolling();
 })
 
 const cloudflaredContainer = computed(() => {

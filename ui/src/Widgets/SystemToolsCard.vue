@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { ClipboardList, HardDrive, Layers, Wrench } from "@lucide/vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
+import { usePolling } from '../composables/usePolling'
 
 const router = useRouter();
 const { t } = useI18n();
@@ -12,7 +13,7 @@ const { apiUrl } = useApiUrl();
 
 const imageCount = ref(null);
 const volumeCount = ref(null);
-let interval = null;
+
 
 async function fetchCounts() {
   try {
@@ -31,13 +32,11 @@ async function fetchCounts() {
   }
 }
 
+const { start: startSystemToolsCardPolling } = usePolling(fetchCounts, 30000)
+
 onMounted(() => {
   fetchCounts();
-  interval = setInterval(fetchCounts, 30000);
-});
-
-onUnmounted(() => {
-  if (interval) clearInterval(interval);
+  startSystemToolsCardPolling();;
 });
 </script>
 

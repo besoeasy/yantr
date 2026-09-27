@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
+import { usePolling } from "../composables/usePolling";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
@@ -210,7 +211,6 @@ const reportIssueUrl = computed(() => {
   return `${base}?title=${encodeURIComponent(title)}`;
 });
 
-let refreshInterval = null;
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -442,13 +442,13 @@ async function exportVolume(volumeName) {
   }
 }
 
-onMounted(async () => {
-  await fetchStack();
-  refreshInterval = setInterval(fetchStack, 8000);
-});
+// usePolling owns the timer, the in-flight guard, the visibility pause and the
+// abort, so slow 8s ticks against an endpoint that re-inspects every container
+// can no longer overlap.
+const { start: startStackPolling } = usePolling(fetchStack, 8000);
 
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval);
+onMounted(() => {
+  startStackPolling();
 });
 </script>
 

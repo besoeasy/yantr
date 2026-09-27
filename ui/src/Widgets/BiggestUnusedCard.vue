@@ -7,6 +7,7 @@ import { formatBytes } from '../utils/metrics.js'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useNotification } from '../composables/useNotification'
+import { usePolling } from '../composables/usePolling'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -17,7 +18,6 @@ const unusedImages = ref([])
 const unusedVolumes = ref([])
 const deleting = ref(false)
 const flipKey = ref(0)
-let refreshInterval = null
 
 function imageName(img) {
   const tag = img?.tags?.[0]
@@ -108,13 +108,11 @@ function goToManage() {
   router.push(item.kind === 'image' ? '/images' : '/volumes')
 }
 
+const { start: startBiggestUnusedCardPolling } = usePolling(fetchUnused, 30000)
+
 onMounted(() => {
   fetchUnused()
-  refreshInterval = setInterval(fetchUnused, 30000)
-})
-
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
+  startBiggestUnusedCardPolling();
 })
 </script>
 

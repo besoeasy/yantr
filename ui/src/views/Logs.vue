@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import { usePolling } from '../composables/usePolling'
 import { useI18n } from 'vue-i18n'
 import { useApiUrl } from '../composables/useApiUrl'
 import { useNotification } from '../composables/useNotification'
@@ -14,7 +15,6 @@ const logFilter = ref('all')
 const loading = ref(false)
 const autoRefresh = ref(true)
 const searchQuery = ref('')
-let refreshInterval = null
 const logContainer = ref(null)
 const loadErrorShown = ref(false)
 
@@ -69,17 +69,14 @@ function clearLogs() {
   logsData.value = { ...logsData.value, logs: [], count: 0 }
 }
 
-onMounted(() => {
-  fetchLogs()
-  refreshInterval = setInterval(() => {
-    if (autoRefresh.value) {
-      fetchLogs()
-    }
-  }, 2000)
+// The Auto/Play toolbar toggle maps to shouldRun, so pausing stops the request
+// entirely instead of firing a timer that immediately decides to do nothing.
+const { start: startLogsPolling } = usePolling(fetchLogs, 2000, {
+  shouldRun: () => autoRefresh.value
 })
 
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
+onMounted(() => {
+  startLogsPolling()
 })
 </script>
 

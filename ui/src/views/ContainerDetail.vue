@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { usePolling } from '../composables/usePolling'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useNotification } from '../composables/useNotification'
@@ -27,7 +28,6 @@ const deleting = ref(false)
 const refreshingLogs = ref(false)
 const browsingVolume = ref({})
 const showVolumeMenu = ref({})
-let statsInterval = null
 const autoScrollLogs = ref(true)
 const activeTab = ref('resources')
 const showOnlyDescribedPorts = ref(true)
@@ -300,23 +300,31 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
   }
 }
 
+// Stats are polled only while the Resources tab is actually on screen. Before
+// this, a 2s /stats poll ran even on the Output and Env tabs, and each poll
+// opened a podman stats stream on the host.
+const { start: startStatsPolling, stop: stopStatsPolling } = usePolling(
+  async () => {
+    if (activeTab.value !== 'resources') return
+    await fetchContainerStats()
+  },
+  2000
+)
+
 onMounted(async () => {
   await fetchContainerDetail()
   await Promise.all([
     fetchContainerStats(),
     fetchContainerLogs()
   ])
-  
-  statsInterval = setInterval(() => {
-    fetchContainerStats()
-  }, 2000)
-  
+  startStatsPolling()
 })
 
-onUnmounted(() => {
-  if (statsInterval) {
-    clearInterval(statsInterval)
-  }
+watch(activeTab, (tab) => {
+  // Off Resources means the numbers are not displayed; stop spending a request
+  // every 2s on them.
+  if (tab === 'resources') startStatsPolling()
+  else stopStatsPolling()
 })
 </script>
 

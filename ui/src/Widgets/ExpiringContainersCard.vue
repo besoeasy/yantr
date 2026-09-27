@@ -6,13 +6,13 @@ import { formatDuration } from '../utils/metrics.js'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
+import { usePolling } from '../composables/usePolling'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
 const { currentTime } = useCurrentTime()
 
 const containers = ref([])
-let refreshInterval = null
 
 async function fetchContainers() {
   try {
@@ -22,13 +22,11 @@ async function fetchContainers() {
   } catch {}
 }
 
+const { start: startExpiringContainersCardPolling } = usePolling(fetchContainers, 15000)
+
 onMounted(() => {
   fetchContainers()
-  refreshInterval = setInterval(fetchContainers, 15000)
-})
-
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
+  startExpiringContainersCardPolling();
 })
 
 const stats = computed(() => {

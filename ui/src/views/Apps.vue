@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
+import { usePolling } from "../composables/usePolling";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
@@ -31,7 +32,6 @@ const appSearch = ref("");
 const selectedTag = ref(null);
 
 const hourSeed = ref(getDateHourSeed());
-let refreshInterval = null;
 let seedInterval = null;
 const loadErrorState = {
   apps: false,
@@ -187,13 +187,18 @@ function viewAppDetail(appId) {
 }
 
 // Lifecycle
+// The container list is polled through usePolling. The hourly seed rotation
+// below stays a plain interval: it is a local string comparison with no request
+// and no race, so the composable would only add ceremony.
+const { start: startContainersPolling } = usePolling(fetchContainers, 10000);
+
 onMounted(async () => {
   window.addEventListener('keydown', focusSearch);
   loading.value = true;
   await Promise.all([fetchApps(), fetchContainers()]);
   loading.value = false;
 
-  refreshInterval = setInterval(fetchContainers, 10000);
+  startContainersPolling();
 
   seedInterval = setInterval(() => {
     const nextSeed = getDateHourSeed();
@@ -204,7 +209,6 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval);
   if (seedInterval) clearInterval(seedInterval);
   window.removeEventListener('keydown', focusSearch);
 });

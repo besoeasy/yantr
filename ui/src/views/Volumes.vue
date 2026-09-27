@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { usePolling } from '../composables/usePolling'
 import { HardDrive, Eye, EyeOff, ExternalLink, Loader2, RefreshCw, Trash2, AlertCircle, Box, Check, Download } from '@lucide/vue'
 import StatCard from '../components/StatCard.vue'
 import SizeDistributionChart from '../components/SizeDistributionChart.vue'
@@ -200,14 +201,10 @@ function formatDate(dateString) {
   })
 }
 
-let refreshInterval = null
-onMounted(() => {
-  fetchVolumes()
-  refreshInterval = setInterval(fetchVolumes, 10000)
-})
+const { start: startVolumesPolling } = usePolling(fetchVolumes, 10000)
 
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval)
+onMounted(() => {
+  startVolumesPolling()
 })
 </script>
 

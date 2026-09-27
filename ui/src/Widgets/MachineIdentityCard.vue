@@ -1,5 +1,6 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import { usePolling } from "../composables/usePolling";
 import { useI18n } from 'vue-i18n'
 import { Globe, MapPin, Network, RefreshCw, Server, ShieldCheck, AlertCircle } from "@lucide/vue";
 
@@ -13,7 +14,6 @@ const error = ref(null);
 const identity = ref(null);
 const isIpHovered = ref(false);
 const isLocationHovered = ref(false);
-let refreshHandle = null;
 
 async function loadIdentity({ force } = { force: false }) {
   try {
@@ -37,18 +37,24 @@ async function loadIdentity({ force } = { force: false }) {
   }
 }
 
-onMounted(async () => {
-  await loadIdentity();
-  refreshHandle = setInterval(() => {
-    loadIdentity();
-  }, Math.max(30_000, Number(props.refreshMs) || 300_000));
+// The poll period comes from a prop, so it is clamped to a sane floor (the
+// upstream identity lookup is rate-limited and cached server-side for 5 min).
+const identityPollMs = computed(() => Math.max(30_000, Number(props.refreshMs) || 300_000));
+// Wrapped, not passed directly: usePolling invokes its task with the
+// AbortSignal as the first argument, and loadIdentity's first parameter is a
+// `{ force }` options object.
+const { start: startIdentityPolling, stop: stopIdentityPolling } = usePolling(
+  () => loadIdentity(),
+  identityPollMs.value
+);
+
+watch(identityPollMs, () => {
+  stopIdentityPolling();
+  startIdentityPolling();
 });
 
-onUnmounted(() => {
-  if (refreshHandle) {
-    clearInterval(refreshHandle);
-    refreshHandle = null;
-  }
+onMounted(() => {
+  startIdentityPolling();
 });
 
 const locationText = computed(() => {

@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onUnmounted } from 'vue'
+import { ref } from 'vue'
+import { usePolling } from '../composables/usePolling'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Server, ChevronRight, ChevronDown, Network, ExternalLink, Activity, Terminal } from '@lucide/vue'
@@ -35,7 +36,6 @@ const containerStats = ref(null)
 const containerLogs = ref([])
 const refreshingLogs = ref(false)
 const autoScrollLogs = ref(true)
-let statsInterval = null
 
 // Monotonic expansion token.
 //
@@ -114,25 +114,26 @@ async function fetchContainerLogs(svcId = expandedServiceId.value) {
   }
 }
 
+// Key-scoped poll: only the expanded service, and only while its Resources tab
+// is showing. shouldRun reads the reactive guards, so a tick after a collapse
+// is skipped before any request is made.
+const { start: startStatsPolling, stop: stopStatsPolling } = usePolling(
+  () => fetchContainerStats(expandedServiceId.value),
+  2000,
+  { shouldRun: () => expandedServiceId.value !== null && activeTab.value === 'resources' }
+)
+
 function startStatsInterval(svcId) {
-  clearStatsInterval()
-  statsInterval = setInterval(() => {
-    if (expandedServiceId.value === svcId && activeTab.value === 'resources') {
-      fetchContainerStats(svcId)
-    }
-  }, 2000)
+  // A different service was expanded: re-key the poll. The token check in
+  // toggleService already guarantees this only happens for the current one.
+  stopStatsPolling()
+  expandedServiceId.value = svcId
+  startStatsPolling()
 }
 
 function clearStatsInterval() {
-  if (statsInterval) {
-    clearInterval(statsInterval)
-    statsInterval = null
-  }
+  stopStatsPolling()
 }
-
-onUnmounted(() => {
-  clearStatsInterval()
-})
 
 function goToContainer(svcId) {
   router.push(`/containers/${svcId}`)

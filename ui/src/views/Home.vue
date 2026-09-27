@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { usePolling } from "../composables/usePolling";
 import { useRouter } from "vue-router";
 import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "@lucide/vue";
 
@@ -35,7 +36,6 @@ const volumeBrowsers = ref([]);
 const loading = ref(false);
 const activeFilter = ref("all");
 
-let containersRefreshInterval = null;
 const loadErrorState = {
   containers: false,
   volumeBrowsers: false,
@@ -109,19 +109,13 @@ async function refreshAll() {
   await Promise.all([fetchContainers(), fetchVolumeBrowsers()]);
 }
 
-onMounted(async () => {
-  loading.value = true;
-  await refreshAll();
-  loading.value = false;
+// One poller for the two dashboard fetches, so the in-flight guard also covers
+// the fan-out: previously a slow tick let the next 10s tick start another pair
+// of requests while the first was still running.
+const { start: startHomePolling } = usePolling(refreshAll, 10000);
 
-  containersRefreshInterval = setInterval(refreshAll, 10000);
-});
-
-onUnmounted(() => {
-  if (containersRefreshInterval) {
-    clearInterval(containersRefreshInterval);
-    containersRefreshInterval = null;
-  }
+onMounted(() => {
+  startHomePolling();
 });
 </script>
 

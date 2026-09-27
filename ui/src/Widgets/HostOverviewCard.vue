@@ -5,6 +5,7 @@ import { Server, Activity } from "@lucide/vue";
 import { formatBytes } from "../utils/metrics";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
+import { usePolling } from '../composables/usePolling'
 
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
@@ -13,7 +14,7 @@ const systemInfo = ref(null);
 const volumes = ref([]);
 const loading = ref(true);
 const error = ref(null);
-let refreshInterval = null;
+
 
 const displayCores = ref(0);
 const displayMemBytes = ref(0);
@@ -123,13 +124,11 @@ async function fetchData() {
   }
 }
 
+const { start: startHostOverviewCardPolling } = usePolling(fetchData, 30000)
+
 onMounted(() => {
   fetchData();
-  refreshInterval = setInterval(fetchData, 30000);
-});
-
-onUnmounted(() => {
-  if (refreshInterval) clearInterval(refreshInterval);
+  startHostOverviewCardPolling();;
 });
 </script>
 
