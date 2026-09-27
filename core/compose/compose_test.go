@@ -2,6 +2,89 @@ package compose
 
 import "testing"
 
+func TestNormalizePortOverridesTyped(t *testing.T) {
+	raw := []interface{}{
+		map[string]interface{}{"containerPort": float64(8080), "protocol": "tcp", "hostPort": float64(9090)},
+		map[string]interface{}{"containerPort": "51820", "protocol": "UDP", "hostPort": "51821"},
+		map[string]interface{}{"containerPort": 0, "protocol": "tcp", "hostPort": 1},
+		map[string]interface{}{"containerPort": 80, "protocol": "bogus", "hostPort": 8080},
+	}
+	got := NormalizePortOverrides(raw)
+	if len(got) != 2 {
+		t.Fatalf("expected 2 overrides, got %+v", got)
+	}
+	if got[0] != (PortOverride{ContainerPort: 8080, Protocol: "tcp", HostPort: 9090}) {
+		t.Fatalf("unexpected first override: %+v", got[0])
+	}
+	if got[1] != (PortOverride{ContainerPort: 51820, Protocol: "udp", HostPort: 51821}) {
+		t.Fatalf("unexpected second override: %+v", got[1])
+	}
+}
+
+func TestNormalizePortOverridesLegacyMap(t *testing.T) {
+	raw := map[string]interface{}{
+		"8080/tcp":  float64(9090),
+		"51820/UDP": "51821",
+		"bad":       1,
+		"0/tcp":     1,
+	}
+	got := NormalizePortOverrides(raw)
+	if len(got) != 2 {
+		t.Fatalf("expected 2 overrides, got %+v", got)
+	}
+	byKey := map[string]int{}
+	for _, o := range got {
+		byKey[o.Protocol] = o.HostPort
+		if o.ContainerPort != 8080 && o.ContainerPort != 51820 {
+			t.Fatalf("unexpected override: %+v", o)
+		}
+	}
+	if byKey["tcp"] != 9090 || byKey["udp"] != 51821 {
+		t.Fatalf("unexpected overrides: %+v", got)
+	}
+}
+
+func TestApplyCustomPortMappingsTyped(t *testing.T) {
+	doc, err := Parse(`
+services:
+  app:
+    image: example:latest
+    ports:
+      - "8080"
+      - "51820/udp"
+`)
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	err = ApplyTransforms(doc, TransformOptions{
+		ProjectID: "test", AppID: "test",
+		CustomPortMappings: []PortOverride{
+			{ContainerPort: 8080, Protocol: "tcp", HostPort: 9090},
+			{ContainerPort: 51820, Protocol: "udp", HostPort: 51920},
+		},
+		HostDockerSocket: "/run/podman.sock",
+	})
+	if err != nil {
+		t.Fatalf("ApplyTransforms: %v", err)
+	}
+	svcs := getServices(doc)
+	svc := svcs["app"].(map[string]interface{})
+	ports := svc["ports"].([]interface{})
+	var strs []string
+	for _, p := range ports {
+		strs = append(strs, p.(string))
+	}
+	want := map[string]bool{"9090:8080": true, "51920:51820/udp": true}
+	if len(strs) != 2 {
+		t.Fatalf("expected 2 ports, got %v", strs)
+	}
+	for _, s := range strs {
+		if !want[s] {
+			t.Fatalf("unexpected port %q in %v", s, strs)
+		}
+	}
+}
+
 func TestNormalizeImageRef(t *testing.T) {
 	cases := []struct {
 		in   string
