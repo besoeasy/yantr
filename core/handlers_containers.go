@@ -9,10 +9,13 @@ import (
 	"core/supervisor"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
 	dockerctr "github.com/docker/docker/api/types/container"
 	"github.com/go-chi/chi/v5"
@@ -185,10 +188,59 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// maxLogTail caps the ?tail parameter for container logs.
+//
+// Podman honours Tail: "all", which makes the engine stream the container's
+// entire log. Without a cap, one authenticated request against a chatty
+// container is an unbounded read held entirely in memory before a single byte
+// reaches the client. The UI only ever asks for 200, so this is invisible to it.
+const maxLogTail = 1000
+
+// maxLogBytes is a backstop against a container whose engine-side tail filter
+// is not honoured. Whatever happens upstream, the process will not buffer more
+// than this per request.
+const maxLogBytes = 8 << 20 // 8 MiB
+
+// parseLogTail validates and clamps ?tail.
+//
+// "all" is deliberately collapsed to the cap rather than passed through: the
+// whole point is that the engine must never be asked for an unbounded read.
+func parseLogTail(raw string) (string, error) {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return "100", nil
+	}
+	if strings.EqualFold(raw, "all") {
+		return strconv.Itoa(maxLogTail), nil
+	}
+	n, err := strconv.Atoi(raw)
+	if err != nil {
+		return "", fmt.Errorf("tail must be a positive integer or \"all\"")
+	}
+	if n <= 0 {
+		return "", fmt.Errorf("tail must be greater than zero")
+	}
+	if n > maxLogTail {
+		n = maxLogTail
+	}
+	return strconv.Itoa(n), nil
+}
+
 func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	tail := coalesce(r.URL.Query().Get("tail"), "100")
-	logsBody, err := podman.ContainerLogs(context.Background(), id, dockerctr.LogsOptions{
+
+	tail, err := parseLogTail(r.URL.Query().Get("tail"))
+	if err != nil {
+		jsonErr(w, 400, "INVALID_TAIL", err.Error())
+		return
+	}
+
+	// A wedged engine socket would otherwise hold this goroutine forever; the
+	// route carries no withWriteTimeout wrapper of its own.
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+
+	logsBody, err := podman.ContainerLogs(ctx, id, dockerctr.LogsOptions{
 		ShowStdout: true, ShowStderr: true, Tail: tail, Timestamps: true,
 	})
 	if err != nil {
@@ -196,16 +248,11 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer logsBody.Close()
-	buf := make([]byte, 32*1024)
+
 	var raw strings.Builder
-	for {
-		n, err := logsBody.Read(buf)
-		if n > 0 {
-			raw.Write(buf[:n])
-		}
-		if err != nil {
-			break
-		}
+	if _, err := io.Copy(&raw, io.LimitReader(logsBody, maxLogBytes)); err != nil {
+		jsonErr(w, 500, "LOGS_READ_FAILED", err.Error())
+		return
 	}
 	var lines []string
 	for _, line := range strings.Split(raw.String(), "\n") {
@@ -281,12 +328,10 @@ func handleContainerStart(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINER_START_FAILED", err.Error())
 		return
 	}
-	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
-		if proj := compose.ComposeProjectLabel(info.Config.Labels); proj != "" {
-			baseID := getBaseAppID(proj)
-			supervisor.RecordStackDeployed(proj, baseID)
-		}
-	}
+	// Starting one service must not mark the whole project deployed — that would
+	// silently re-arm the watchdog and boot resuscitation for services the user
+	// stopped. Only this service's stop mark is cleared.
+	recordContainerServiceStarted(id)
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container started successfully"})
 }
 
@@ -296,11 +341,10 @@ func handleContainerStop(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINER_STOP_FAILED", err.Error())
 		return
 	}
-	if info, err := podman.ContainerInspect(context.Background(), id); err == nil && info.Config != nil {
-		if proj := compose.ComposeProjectLabel(info.Config.Labels); proj != "" {
-			supervisor.RecordStackStopped(proj)
-		}
-	}
+	// Record the stop against this service only. Marking the whole project
+	// stopped would disable crash recovery and boot resuscitation for every
+	// sibling service in a multi-service stack.
+	recordContainerServiceStopped(id)
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container stopped successfully"})
 }
 
@@ -310,5 +354,48 @@ func handleContainerRestart(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINER_RESTART_FAILED", err.Error())
 		return
 	}
+	// Restart is an explicit user request, so it also clears an existing
+	// intentional-stop mark. Previously this handler recorded nothing, leaving a
+	// project that had been stopped marked stopped forever.
+	recordContainerServiceStarted(id)
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container restarted successfully"})
+}
+
+// recordContainerServiceStopped marks the stopped container's compose service as
+// intentionally stopped. Standalone containers have no project label and are
+// simply skipped.
+func recordContainerServiceStopped(id string) {
+	project, service, ok := containerProjectAndService(id)
+	if !ok {
+		return
+	}
+	supervisor.RecordStackServiceStopped(project, service)
+	shared.Log("info", fmt.Sprintf("[container] recorded service stop: project=%s service=%s", project, service))
+}
+
+func recordContainerServiceStarted(id string) {
+	project, service, ok := containerProjectAndService(id)
+	if !ok {
+		return
+	}
+	supervisor.RecordStackServiceStarted(project, service)
+	shared.Log("info", fmt.Sprintf("[container] recorded service start: project=%s service=%s", project, service))
+}
+
+// containerProjectAndService reads the compose project and service labels off a
+// container, falling back to the container name when the service label is absent.
+func containerProjectAndService(id string) (project, service string, ok bool) {
+	info, err := podman.ContainerInspect(context.Background(), id)
+	if err != nil || info.Config == nil {
+		return "", "", false
+	}
+	project = compose.ComposeProjectLabel(info.Config.Labels)
+	if project == "" {
+		return "", "", false
+	}
+	service = compose.ComposeServiceLabel(info.Config.Labels)
+	if service == "" {
+		service = strings.TrimPrefix(info.Name, "/")
+	}
+	return project, service, true
 }

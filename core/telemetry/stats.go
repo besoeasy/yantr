@@ -91,7 +91,9 @@ func saveStatsToDisk(s *FleetStats) {
 		return
 	}
 	_ = os.MkdirAll(filepath.Dir(cacheFilePath()), 0o755)
-	_ = os.WriteFile(cacheFilePath(), raw, 0o600)
+	// Self-healing cache, so atomicity is not critical here — but it costs
+	// nothing and avoids serving a half-written cache to the Fleet page.
+	_ = shared.WriteFileAtomic(cacheFilePath(), raw, 0o600)
 }
 
 // GetFleetStatsCached returns aggregated telemetry, cached briefly.

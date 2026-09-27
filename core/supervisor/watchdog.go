@@ -146,10 +146,12 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	if projectID == "" {
 		return
 	}
+	service := compose.ComposeServiceLabel(msg.Actor.Attributes)
 
-	// Don't auto-restart if the stack was intentionally stopped by the user
-	// or is currently being torn down (reaper / stack delete / container delete).
-	if !IsStackRunning(projectID) || IsStackRemoving(projectID) {
+	// Don't auto-restart if the stack was intentionally stopped by the user, if
+	// this individual service was, or if the stack is currently being torn down
+	// (reaper / stack delete / container delete).
+	if !ShouldAutoRestart(projectID, service) {
 		return
 	}
 
@@ -194,7 +196,7 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	}
 
 	shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s, service %s) died unexpectedly (exit %d). Auto-restarting...",
-		containerID[:12], projectID, compose.ComposeServiceLabel(msg.Actor.Attributes), exitCode))
+		containerID[:12], projectID, service, exitCode))
 
 	// Deliberately restart the single container rather than the project.
 	//

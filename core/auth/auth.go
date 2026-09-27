@@ -42,6 +42,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"core/shared"
 )
 
 // AuthConfig holds the persisted auth configuration.
@@ -181,7 +183,10 @@ func SaveAuthConfig(publicKeyHex string) (*AuthConfig, error) {
 	if err := os.MkdirAll(filepath.Dir(authFilePath()), 0755); err != nil {
 		return nil, err
 	}
-	if err := os.WriteFile(authFilePath(), data, 0600); err != nil {
+	// Atomic: a truncated auth.json is a truncated public key, which fails
+	// validatePubKeyHex and makes the install permanently unbootable with no
+	// recovery path other than deleting the file and re-running setup.
+	if err := shared.WriteFileAtomic(authFilePath(), data, 0600); err != nil {
 		return nil, err
 	}
 

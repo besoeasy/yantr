@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	"core/compose"
+	"core/shared"
 )
 
 // StackState represents the persisted state of a deployed compose stack.
@@ -16,6 +19,24 @@ type StackState struct {
 	AppID     string `json:"appId"`
 	Status    string `json:"status"` // "running" or "stopped"
 	UpdatedAt int64  `json:"updatedAt"`
+
+	// StoppedServices lists the compose service names the user intentionally
+	// stopped, for stacks whose Status is still "running".
+	//
+	// Desired state is tracked per service rather than per container because
+	// container IDs are ephemeral — `compose up -d` recreates containers with new
+	// IDs — whereas the compose service name is stable.
+	//
+	// This is what makes "stop one service of a multi-service stack" behave:
+	// the project stays "running" so its other services keep crash recovery,
+	// and resuscitate brings the non-stopped subset back without resurrecting
+	// the one the user stopped. Before this existed, stopping any single service
+	// marked the whole project stopped, which silently disabled the watchdog and
+	// boot resuscitation for every sibling service.
+	//
+	// Absent in older state.json files; nil then correctly means "nothing
+	// intentionally stopped".
+	StoppedServices []string `json:"stoppedServices,omitempty"`
 }
 
 // State is the schema stored in state.json.
@@ -101,12 +122,21 @@ func Init(appsDir string) {
 	saveStateLocked()
 }
 
+// saveStateLocked persists appState atomically. Callers must hold stateMu.
+//
+// The write is logged rather than silently dropped: it previously used
+// `_ = os.WriteFile(...)`, so an unwritable or full /data failed invisibly and
+// the in-memory state drifted away from disk with no indication of why.
 func saveStateLocked() {
 	p := stateFilePath()
 	_ = os.MkdirAll(filepath.Dir(p), 0755)
 	data, err := json.MarshalIndent(appState, "", "  ")
-	if err == nil {
-		_ = os.WriteFile(p, data, 0644)
+	if err != nil {
+		shared.Log("error", "[supervisor] state marshal failed: "+err.Error())
+		return
+	}
+	if err := shared.WriteFileAtomic(p, data, 0644); err != nil {
+		shared.Log("error", "[supervisor] state write failed at "+p+": "+err.Error())
 	}
 }
 
@@ -124,6 +154,11 @@ func RecordStackDeployed(projectID, appID string) {
 }
 
 // RecordStackStopped marks that a stack was intentionally stopped by the user.
+//
+// This is the whole-project primitive, for stack-level stop. Prefer
+// RecordStackServiceStopped for a single service: flipping the project to
+// "stopped" also turns off watchdog crash recovery and boot resuscitation for
+// every other service in the stack.
 func RecordStackStopped(projectID string) {
 	stateMu.Lock()
 	defer stateMu.Unlock()
@@ -133,6 +168,113 @@ func RecordStackStopped(projectID string) {
 		appState.Stacks[projectID] = s
 		saveStateLocked()
 	}
+}
+
+// RecordStackServiceStopped marks one compose service as intentionally stopped,
+// leaving the rest of the stack running and recoverable.
+//
+// service may be empty, in which case there is no service dimension to record
+// and the call is a no-op.
+func RecordStackServiceStopped(projectID, service string) {
+	service = strings.TrimSpace(service)
+	if projectID == "" || service == "" {
+		return
+	}
+	stateMu.Lock()
+	defer stateMu.Unlock()
+	s, ok := appState.Stacks[projectID]
+	if !ok {
+		// Unknown project: nothing to persist. IsStackRunning already reports
+		// false for it, so crash recovery is off regardless.
+		return
+	}
+	if !containsString(s.StoppedServices, service) {
+		s.StoppedServices = append(s.StoppedServices, service)
+		sort.Strings(s.StoppedServices)
+	}
+	s.UpdatedAt = time.Now().Unix()
+	appState.Stacks[projectID] = s
+	saveStateLocked()
+}
+
+// RecordStackServiceStarted clears the intentionally-stopped mark for one
+// compose service, so the watchdog may revive it and boot resuscitation brings
+// it back. Starting a service of a fully stopped project reopens the project.
+func RecordStackServiceStarted(projectID, service string) {
+	service = strings.TrimSpace(service)
+	if projectID == "" || service == "" {
+		return
+	}
+	stateMu.Lock()
+	defer stateMu.Unlock()
+	s, ok := appState.Stacks[projectID]
+	if !ok {
+		return
+	}
+	if filtered := removeString(s.StoppedServices, service); len(filtered) != len(s.StoppedServices) {
+		s.StoppedServices = filtered
+	}
+	s.Status = "running"
+	s.UpdatedAt = time.Now().Unix()
+	appState.Stacks[projectID] = s
+	saveStateLocked()
+}
+
+// IsServiceStopped reports whether a compose service was intentionally stopped.
+func IsServiceStopped(projectID, service string) bool {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
+	s, ok := appState.Stacks[projectID]
+	if !ok {
+		return false
+	}
+	return containsString(s.StoppedServices, strings.TrimSpace(service))
+}
+
+// GetStackStoppedServices returns the intentionally-stopped services of a
+// stack, or nil when the stack is unknown.
+func GetStackStoppedServices(projectID string) []string {
+	stateMu.RLock()
+	defer stateMu.RUnlock()
+	s, ok := appState.Stacks[projectID]
+	if !ok {
+		return nil
+	}
+	out := make([]string, len(s.StoppedServices))
+	copy(out, s.StoppedServices)
+	return out
+}
+
+// ShouldAutoRestart reports whether the watchdog may restart a container. The
+// project must be running, not mid-teardown, and the container's own service
+// must not have been stopped on purpose.
+func ShouldAutoRestart(projectID, service string) bool {
+	if !IsStackRunning(projectID) || IsStackRemoving(projectID) {
+		return false
+	}
+	return !IsServiceStopped(projectID, service)
+}
+
+func containsString(list []string, want string) bool {
+	for _, v := range list {
+		if v == want {
+			return true
+		}
+	}
+	return false
+}
+
+func removeString(list []string, drop string) []string {
+	out := list[:0]
+	for _, v := range list {
+		if v != drop {
+			out = append(out, v)
+		}
+	}
+	if len(out) == 0 {
+		return nil
+	}
+	return out
 }
 
 // RecordStackRemoved removes the stack from persisted state entirely.

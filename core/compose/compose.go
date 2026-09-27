@@ -16,6 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"core/shared"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -130,7 +132,7 @@ func Stringify(doc ComposeDoc) (string, error) {
 // WriteProjectCompose writes a project-specific compose file and returns its ref.
 func WriteProjectCompose(appPath, projectID, content string) (ComposeRef, error) {
 	composePath := ProjectComposePath(appPath, projectID)
-	if err := os.WriteFile(composePath, []byte(content), 0644); err != nil {
+	if err := shared.WriteFileAtomic(composePath, []byte(content), 0644); err != nil {
 		return ComposeRef{}, err
 	}
 	return ComposeRef{
@@ -163,7 +165,7 @@ func WriteProjectEnv(appPath, projectID string, environment map[string]interface
 	}
 
 	content := strings.Join(lines, "\n") + "\n"
-	if err := os.WriteFile(envPath, []byte(content), 0600); err != nil {
+	if err := shared.WriteFileAtomic(envPath, []byte(content), 0600); err != nil {
 		return "", err
 	}
 	return envPath, nil
@@ -411,6 +413,17 @@ func getServices(doc ComposeDoc) map[string]interface{} {
 		return svcs
 	}
 	return map[string]interface{}{}
+}
+
+// ServiceNames returns the compose service names in a stable (sorted) order.
+func ServiceNames(doc ComposeDoc) []string {
+	svcs := getServices(doc)
+	names := make([]string, 0, len(svcs))
+	for name := range svcs {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }
 
 // ServiceImages returns the image references declared by the compose services,
