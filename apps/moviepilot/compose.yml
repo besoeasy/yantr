@@ -39,6 +39,10 @@ x-yantr:
       length: 32
       charset: alnum_symbols
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: moviepilot}
+    - {port: 3001, protocol: HTTP, label: "API", service: moviepilot}
+
 services:
   moviepilot:
     stdin_open: true
@@ -62,12 +66,6 @@ services:
       SUPERUSER: ${SUPERUSER}
       SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
     restart: unless-stopped
-    labels:
-      yantr.app: moviepilot
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.3001: API
-      yantr.port.3001: HTTP
 
 volumes:
   moviepilot-config:
