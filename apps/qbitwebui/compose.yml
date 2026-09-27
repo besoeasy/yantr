@@ -22,13 +22,12 @@ x-yantr:
       "Generate an encryption key with: openssl rand -hex 32",
     ]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: qbitwebui}
+
 services:
   qbitwebui:
     image: ghcr.io/mkbula/qbitwebui:latest
-    labels:
-      yantr.app: qbitwebui
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
     environment:
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
     ports:
