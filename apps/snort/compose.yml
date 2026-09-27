@@ -22,13 +22,12 @@ x-yantr:
       NIP-05 verification supported
     ]
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: snort}
+
 services:
   snort:
     image: docker.io/voidic/snort:v0.3.0
-    labels:
-      yantr.app: snort
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     init: true
