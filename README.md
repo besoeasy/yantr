@@ -122,7 +122,7 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 ## 📦 App Catalog
 
-350+ curated apps, one-click deploy.
+A curated app catalog, one-click deploy.
 
 | Category | Apps |
 |---|---|
