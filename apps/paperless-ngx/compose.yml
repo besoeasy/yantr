@@ -29,13 +29,12 @@ x-yantr:
         conversion and OCR."
     ]
 
+  ports:
+    - {port: 8000, protocol: HTTP, label: "Web UI", service: paperless-ngx}
+
 services:
   paperless-ngx:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
-    labels:
-      yantr.app: paperless-ngx
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
     ports:
       - "8000"
     environment:
@@ -61,16 +60,12 @@ services:
 
   paperless-broker:
     image: docker.io/redis:7-alpine
-    labels:
-      yantr.app: paperless-ngx
     volumes:
       - paperless_redis_data:/data
     restart: unless-stopped
 
   paperless-db:
     image: docker.io/postgres:16-alpine
-    labels:
-      yantr.app: paperless-ngx
     environment:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
