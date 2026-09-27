@@ -27,6 +27,11 @@ x-yantr:
         in a production environment.
     ]
 
+  ports:
+    - {port: 3333, protocol: HTTP, label: "Web UI", service: bitmagnet}
+    - {port: 3334, protocol: TCP, label: "Port 3334", service: bitmagnet}
+    - {port: 3334, protocol: UDP, label: "Port 3334", service: bitmagnet}
+
 services:
   bitmagnet:
     image: ghcr.io/bitmagnet-io/bitmagnet:latest
@@ -54,10 +59,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    labels:
-      yantr.app: bitmagnet
-      yantr.service.3333: Web UI
-      yantr.port.3333: HTTP
   postgres:
     image: docker.io/postgres:16-alpine
     restart: unless-stopped
@@ -74,10 +75,6 @@ services:
         - pg_isready -U postgres
       start_period: 20s
       interval: 10s
-    labels:
-      yantr.app: bitmagnet
-      yantr.service.3333: Web UI
-      yantr.port.3333: HTTP
 
 volumes:
   bitmagnet_config: null
