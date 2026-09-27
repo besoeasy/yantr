@@ -23,6 +23,9 @@ x-yantr:
       Mount folders as volumes for persistent storage
     ]
 
+  ports:
+    - {port: 445, protocol: TCP, label: "File Sharing", service: samba}
+
 services:
   samba:
     image: docker.io/dockurr/samba:latest
@@ -35,10 +38,6 @@ services:
     volumes:
       - samba-storage:/storage
     restart: unless-stopped
-    labels:
-      yantr.app: samba
-      yantr.service.445: File Sharing
-      yantr.port.445: TCP
 
 volumes:
   samba-storage:
