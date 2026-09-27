@@ -28,13 +28,12 @@ x-yantr:
       "Data is stored locally with optional cloud sync to your own server"
     ]
 
+  ports:
+    - {port: 5006, protocol: HTTP, label: "Web UI", service: actual-budget}
+
 services:
   actual-budget:
     image: docker.io/actualbudget/actual-server:latest
-    labels:
-      yantr.app: "actual-budget"
-      yantr.service.5006: "Web UI"
-      yantr.port.5006: "HTTP"
     ports:
       - "5006"
     volumes:
