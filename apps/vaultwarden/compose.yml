@@ -28,13 +28,12 @@ x-yantr:
       WebSocket support enabled for real-time notifications
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: vaultwarden}
+
 services:
   vaultwarden:
     image: docker.io/vaultwarden/server:latest
-    labels:
-      yantr.app: vaultwarden
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     volumes:
