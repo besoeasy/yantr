@@ -26,13 +26,12 @@ x-yantr:
       Can be exposed for external triggers or used internally only
     ]
 
+  ports:
+    - {port: 5678, protocol: HTTP, label: "Web UI", service: n8n}
+
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n:latest
-    labels:
-      yantr.app: n8n
-      yantr.service.5678: Web UI
-      yantr.port.5678: HTTP
     ports:
       - "5678"
     volumes:
