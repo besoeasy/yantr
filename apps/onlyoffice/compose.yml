@@ -24,13 +24,12 @@ x-yantr:
   env_generators:
     JWT_SECRET: { length: 32, charset: base64url }
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: onlyoffice}
+
 services:
   onlyoffice:
     image: docker.io/onlyoffice/documentserver:latest
-    labels:
-      yantr.app: onlyoffice
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     environment:
