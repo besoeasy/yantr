@@ -22,13 +22,12 @@ x-yantr:
       Syntax highlighting for 190+ languages
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: pastefy}
+
 services:
   pastefy:
     image: docker.io/interaapps/pastefy:latest
-    labels:
-      yantr.app: pastefy
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     volumes:
