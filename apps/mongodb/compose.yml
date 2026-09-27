@@ -24,13 +24,12 @@ x-yantr:
       Can require authentication in production deployments
     ]
 
+  ports:
+    - {port: 27017, protocol: TCP, label: "Database", service: mongodb}
+
 services:
   mongodb:
     image: docker.io/mongo:latest
-    labels:
-      yantr.app: mongodb
-      yantr.service.27017: Database
-      yantr.port.27017: TCP
     ports:
       - "27017"
     volumes:
