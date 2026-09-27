@@ -201,9 +201,17 @@ func ParseEnvFile(content string) map[string]string {
 		}
 		key := strings.TrimSpace(line[:idx])
 		val := line[idx+1:]
-		if (strings.HasPrefix(val, `"`) && strings.HasSuffix(val, `"`)) ||
-			(strings.HasPrefix(val, `'`) && strings.HasSuffix(val, `'`)) {
-			val = val[1 : len(val)-1]
+		// Strip a matching pair of surrounding quotes. The length check matters:
+		// a one-character value such as `"` satisfies both HasPrefix and
+		// HasSuffix, and val[1:len(val)-1] on it is val[1:0], which panics. That
+		// is reachable end to end — the deploy form accepts a lone quote, it
+		// lands in the project .env, and the next parse dies. ParseEnvFile runs
+		// from the reaper and boot goroutines too, where a panic is not
+		// recovered and takes the process with it.
+		if len(val) >= 2 {
+			if q := val[0]; (q == '"' || q == '\'') && val[len(val)-1] == q {
+				val = val[1 : len(val)-1]
+			}
 		}
 		if key != "" {
 			env[key] = val
