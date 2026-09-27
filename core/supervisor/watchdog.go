@@ -136,6 +136,19 @@ func StartWatchdog(ctx context.Context) {
 	}
 }
 
+// shortID truncates a container ID for log output.
+//
+// The watchdog runs on its own goroutine, started with context.Background(), so
+// middleware.Recoverer does not cover it: a panic here takes down the whole
+// process. A die event's Actor.ID is engine-supplied and only guaranteed
+// non-empty, so slicing it directly panics on any ID shorter than 12 chars.
+func shortID(id string) string {
+	if len(id) > 12 {
+		return id[:12]
+	}
+	return id
+}
+
 func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	containerID := msg.Actor.ID
 	if containerID == "" {
@@ -191,12 +204,12 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	}
 
 	if isFlapping(containerID) {
-		shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s) crashed repeatedly (>5 times in 60s). Suppressing restart to prevent flap loop.", containerID[:12], projectID))
+		shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s) crashed repeatedly (>5 times in 60s). Suppressing restart to prevent flap loop.", shortID(containerID), projectID))
 		return
 	}
 
 	shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s, service %s) died unexpectedly (exit %d). Auto-restarting...",
-		containerID[:12], projectID, service, exitCode))
+		shortID(containerID), projectID, service, exitCode))
 
 	// Deliberately restart the single container rather than the project.
 	//
@@ -216,8 +229,8 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	startCancel()
 
 	if startErr != nil {
-		shared.Log("error", fmt.Sprintf("[watchdog] failed to restart container %s: %v", containerID[:12], startErr))
+		shared.Log("error", fmt.Sprintf("[watchdog] failed to restart container %s: %v", shortID(containerID), startErr))
 	} else {
-		shared.Log("info", fmt.Sprintf("[watchdog] container %s restarted successfully", containerID[:12]))
+		shared.Log("info", fmt.Sprintf("[watchdog] container %s restarted successfully", shortID(containerID)))
 	}
 }

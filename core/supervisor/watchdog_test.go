@@ -1,6 +1,7 @@
 package supervisor
 
 import (
+	"strings"
 	"testing"
 	"time"
 )
@@ -106,5 +107,54 @@ func TestForgetContainer(t *testing.T) {
 	}
 	if !keptThere {
 		t.Error("ForgetContainer dropped an unrelated entry")
+	}
+}
+
+// shortID guards the log-only truncation of a container ID.
+//
+// The watchdog runs on its own goroutine (started with context.Background()), so
+// middleware.Recoverer does not cover it: a panic in handleDieEvent takes down
+// the whole process. A die event's Actor.ID is engine-supplied and only
+// guaranteed non-empty, so the previous id[:12] panicked on any ID shorter than
+// 12 characters.
+func TestShortIDNeverPanicsOnShortIDs(t *testing.T) {
+	cases := []struct {
+		in   string
+		want string
+	}{
+		{"", ""},
+		{"a", "a"},
+		{"abc", "abc"},
+		{"abcdefghijk", "abcdefghijk"},           // 11 chars: one short of the old panic
+		{"abcdefghijkl", "abcdefghijkl"},         // 12 chars: exactly the boundary
+		{"abcdefghijklm", "abcdefghijkl"},        // 13 chars: truncates
+		{"0123456789abcdef0123", "0123456789ab"}, // 20 chars: truncates to 12
+		{"c3f1a2b4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2",
+			"c3f1a2b4d5e6"},
+	}
+	for _, tc := range cases {
+		got := shortID(tc.in)
+		if got != tc.want {
+			t.Errorf("shortID(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+		if len(tc.in) >= 12 && len(got) != 12 {
+			t.Errorf("shortID(%q) length = %d, want 12 for a full-length ID", tc.in, len(got))
+		}
+	}
+}
+
+// Every ID length from 0 up past the boundary must survive, which is the actual
+// crash condition: any short Actor.ID reaching handleDieEvent.
+func TestShortIDHandlesEveryLengthUpToBoundary(t *testing.T) {
+	for n := 0; n <= 16; n++ {
+		id := strings.Repeat("x", n)
+		got := shortID(id)
+		want := id
+		if n > 12 {
+			want = id[:12]
+		}
+		if got != want {
+			t.Errorf("shortID(len %d) = %q, want %q", n, got, want)
+		}
 	}
 }
