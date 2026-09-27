@@ -9,13 +9,12 @@ x-yantr:
   usecases: ["Host files for personal access.", "Share files via direct links."]
   website: "https://github.com/AlphaNecron/Void"
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: void}
+
 services:
   void:
     image: docker.io/alphanecron/void:v1
-    labels:
-      yantr.app: "void"
-      yantr.service.8080: "Web UI"
-      yantr.port.8080: "HTTP"
     ports:
       - "8080"
     volumes:
