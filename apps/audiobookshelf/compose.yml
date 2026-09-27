@@ -11,13 +11,12 @@ x-yantr:
   website: "https://www.audiobookshelf.org/"
   notes: ["Add media through the volume browser before importing it.", "Create the first user account after deployment."]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: audiobookshelf}
+
 services:
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
-    labels:
-      yantr.app: "audiobookshelf"
-      yantr.service.80: "Web UI"
-      yantr.port.80: "HTTP"
     environment:
       CONFIG_PATH: /config
       METADATA_PATH: /metadata
