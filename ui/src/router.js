@@ -37,17 +37,6 @@ const router = createRouter({
       name: "storage",
       component: () => import(/* webpackChunkName: "storage" */ "./views/Storage.vue"),
     },
-    // Images and volumes were separate pages with identical chrome and their own
-    // nested active/unused tabs. They now share one tabbed page; these redirects
-    // keep deep links, bookmarks, and the widget buttons working.
-    {
-      path: "/images",
-      redirect: () => ({ path: "/storage", query: { tab: "images-active" } }),
-    },
-    {
-      path: "/volumes",
-      redirect: () => ({ path: "/storage", query: { tab: "volumes-active" } }),
-    },
     {
       path: "/logs",
       name: "logs",
