@@ -22,13 +22,12 @@ x-yantr:
       Multisig capable
     ]
 
+  ports:
+    - {port: 25441, protocol: HTTP, label: "Web UI", service: specter-desktop}
+
 services:
   specter-desktop:
     image: ghcr.io/cryptoadvance/specter-desktop:v2.1.1
-    labels:
-      yantr.app: specter-desktop
-      yantr.service.25441: Web UI
-      yantr.port.25441: HTTP
     ports:
       - "25441"
     restart: unless-stopped
