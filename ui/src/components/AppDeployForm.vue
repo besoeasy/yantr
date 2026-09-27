@@ -1,9 +1,10 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useNotification } from "../composables/useNotification";
 import { useApiUrl } from "../composables/useApiUrl";
+import { useJobs } from "../composables/useJobs";
 import { getApiErrorMessage, readJsonResponse } from "../composables/useApiResponse";
 import { usePortConflict } from "../composables/usePortConflict";
 import { AlertTriangle, Check, Play, Plus, X } from "@lucide/vue";
@@ -23,6 +24,25 @@ const router = useRouter();
 const toast = useNotification();
 const { apiUrl } = useApiUrl();
 const { t } = useI18n();
+const { fetchActiveJob, pollJobUntilDone } = useJobs();
+
+onMounted(async () => {
+  try {
+    const active = await fetchActiveJob(props.app.id);
+    if (active && active.status === "running") {
+      deploying.value = true;
+      toast.info(t('appDetail.deploymentStillRunning', { name: props.app.name }) || `Deployment for ${props.app.name} is in progress...`);
+      const pollRes = await pollJobUntilDone(active.id);
+      deploying.value = false;
+      if (pollRes.success) {
+        toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
+        setTimeout(() => router.push("/"), 1500);
+      }
+    }
+  } catch (err) {
+    console.warn("Failed checking active job:", err);
+  }
+});
 
 // State
 const deploying = ref(false);
@@ -243,7 +263,29 @@ async function deployApp() {
       throw new Error(getApiErrorMessage(result, t('appDetail.deploymentFailed')));
     }
   } catch (error) {
-    if (error.message.includes("timeout")) {
+    try {
+      const activeJob = await fetchActiveJob(props.app.id);
+      if (activeJob && activeJob.status === "running") {
+        toast.info(t('appDetail.deploymentStillRunning', { name: props.app.name }) || `Deployment for ${props.app.name} is in progress...`);
+        const pollResult = await pollJobUntilDone(activeJob.id);
+        if (pollResult.success) {
+          if (temporaryInstall.value) {
+            toast.success(t('appDetail.deployedAsTemporary', { name: props.app.name, hours: expirationHours.value }));
+          } else {
+            toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
+          }
+          setTimeout(() => router.push("/"), 1500);
+          return;
+        } else if (pollResult.error) {
+          toast.error(t('appDetail.deploymentFailedMessage', { message: pollResult.error }));
+          return;
+        }
+      }
+    } catch (checkErr) {
+      console.warn("Failed checking active job:", checkErr);
+    }
+
+    if (error.message && error.message.includes("timeout")) {
       toast.error(t('appDetail.deploymentTimeout', { name: props.app.name }));
     } else {
       toast.error(t('appDetail.deploymentFailedMessage', { message: error.message }));

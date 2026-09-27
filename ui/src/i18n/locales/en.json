@@ -197,7 +197,8 @@
     "installedSuccessfully": "{name} installed successfully! 🎉",
     "deploymentFailed": "Deployment failed",
     "deploymentTimeout": "Deployment timeout - {name} is taking longer than expected",
-    "deploymentFailedMessage": "Deployment failed: {message}"
+    "deploymentFailedMessage": "Deployment failed: {message}",
+    "deploymentStillRunning": "Deployment for {name} is still running in background…"
   },
   "container": {
     "status": "Status",
@@ -450,6 +451,8 @@
     "updateAlreadyLatest": "Already up to date — no new images found",
     "updateFailed": "Update failed",
     "updateTimedOut": "Update timed out — the image pull took too long",
+    "updateStillRunning": "Update is still running in background…",
+    "removalStillRunning": "Stack removal is still in background…",
     "portFormInvalid": "Enter a valid port mapping like 9000, 9000:9000, or 53:53/udp.",
     "openingPort": "Opening {portMapping}…",
     "portOpened": "Opened {portMapping}",

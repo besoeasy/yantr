@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
+import { useJobs } from "../composables/useJobs";
 import { formatDuration } from "../utils/metrics";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
@@ -28,6 +29,7 @@ const { apiUrl } = useApiUrl();
 const { currentTime } = useCurrentTime();
 const toast = useNotification();
 const { openVolumeBrowser } = useYantrAuth();
+const { fetchActiveJob, pollJobUntilDone } = useJobs();
 
 const projectId = computed(() => route.params.projectId);
 
@@ -59,6 +61,29 @@ async function updateStack() {
       toast.error(data.error || t("stackView.updateFailed"));
     }
   } catch (e) {
+    try {
+      const active = await fetchActiveJob("system");
+      if (active && active.status === "running") {
+        toast.info(t("stackView.updateStillRunning") || "Update is still running in background...");
+        const pollResult = await pollJobUntilDone(active.id);
+        if (pollResult.success) {
+          const count = pollResult.job?.result?.updatedCount ?? 0;
+          if (count > 0) {
+            toast.success(t("stackView.updateComplete", { count }));
+          } else {
+            toast.info(t("stackView.updateAlreadyLatest"));
+          }
+          await fetchStack();
+          return;
+        } else if (pollResult.error) {
+          toast.error(pollResult.error || t("stackView.updateFailed"));
+          return;
+        }
+      }
+    } catch (checkErr) {
+      console.warn("Failed checking active autoupdate job:", checkErr);
+    }
+
     if (e?.message?.includes("timed out") || String(e).toLowerCase().includes("timeout")) {
       toast.error(t("stackView.updateTimedOut"));
     } else {
@@ -244,6 +269,24 @@ async function removeStack() {
       throw new Error(data.message || t("stackView.removalFailed"));
     }
   } catch (e) {
+    try {
+      const active = await fetchActiveJob(projectId.value);
+      if (active && active.status === "running") {
+        toast.info(t("stackView.removalStillRunning") || "Stack removal is still in progress...");
+        const pollResult = await pollJobUntilDone(active.id);
+        if (pollResult.success) {
+          toast.success(t("stackView.stackRemoved", { name }));
+          router.push("/");
+          return;
+        } else if (pollResult.error) {
+          toast.error(t("stackView.failedToRemove", { error: pollResult.error }));
+          return;
+        }
+      }
+    } catch (checkErr) {
+      console.warn("Failed checking active removal job:", checkErr);
+    }
+
     toast.error(t("stackView.failedToRemove", { error: e.message }));
   } finally {
     removing.value = false;
