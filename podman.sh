@@ -11,6 +11,7 @@ podman build -t yantr:dev .
 
 podman run --rm \
   --name yantr \
+  --replace \
   --network host \
   --security-opt label=disable \
   -e CONTAINER_HOST=unix:///run/podman/podman.sock \
