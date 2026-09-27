@@ -21,13 +21,12 @@ x-yantr:
       Multiple test file sizes available
     ]
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: speedtest}
+
 services:
   speedtest:
     image: ghcr.io/librespeed/speedtest:latest
-    labels:
-      yantr.app: librespeed
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     restart: unless-stopped
