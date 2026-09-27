@@ -16,6 +16,9 @@ x-yantr:
   website: https://github.com/anomalyco/opencode
   notes: [ Browser-based IDE, AI assistant integration, Terminal access ]
 
+  ports:
+    - {port: 4096, protocol: HTTP, label: "Web UI", service: opencode}
+
 services:
   opencode:
     image: ghcr.io/anomalyco/opencode:latest
@@ -25,10 +28,6 @@ services:
       - 0.0.0.0
       - --port
       - "4096"
-    labels:
-      yantr.app: opencode
-      yantr.service.4096: Web UI
-      yantr.port.4096: HTTP
     environment:
       HOME: /home/opencode
       OPENCODE_CONFIG_CONTENT: '{"permission":"allow"}'
