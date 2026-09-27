@@ -13,13 +13,12 @@ x-yantr:
     ]
   website: https://github.com/ellite/Wallos
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: server}
+
 services:
   server:
     image: docker.io/bellamy/wallos:latest
-    labels:
-      yantr.app: wallos
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     volumes:
