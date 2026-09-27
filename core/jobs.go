@@ -91,12 +91,27 @@ func (j *Job) Fail(err error, exitCode int) {
 	}
 }
 
-func (j *Job) Snapshot() Job {
+type JobSnapshot struct {
+	ID          string                 `json:"id"`
+	Type        string                 `json:"type"`   // "deploy", "autoupdate", "stack_delete", "stack_restart", "container_delete"
+	Target      string                 `json:"target"` // appId, projectId, or containerId
+	Title       string                 `json:"title"`
+	Status      JobStatus              `json:"status"`
+	Progress    string                 `json:"progress"`
+	Logs        []string               `json:"logs"`
+	ExitCode    int                    `json:"exitCode"`
+	Result      map[string]interface{} `json:"result,omitempty"`
+	Error       string                 `json:"error,omitempty"`
+	CreatedAt   time.Time              `json:"createdAt"`
+	CompletedAt *time.Time             `json:"completedAt,omitempty"`
+}
+
+func (j *Job) Snapshot() JobSnapshot {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
 	logsCopy := make([]string, len(j.Logs))
 	copy(logsCopy, j.Logs)
-	return Job{
+	return JobSnapshot{
 		ID:          j.ID,
 		Type:        j.Type,
 		Target:      j.Target,
@@ -179,7 +194,7 @@ func (s *JobStore) FindActiveByTarget(target string) *Job {
 	return nil
 }
 
-func (s *JobStore) List(limit int) []Job {
+func (s *JobStore) List(limit int) []JobSnapshot {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
@@ -187,7 +202,7 @@ func (s *JobStore) List(limit int) []Job {
 		limit = len(s.seq)
 	}
 
-	result := make([]Job, 0, limit)
+	result := make([]JobSnapshot, 0, limit)
 	// Iterate in reverse (newest first)
 	for i := len(s.seq) - 1; i >= 0 && len(result) < limit; i-- {
 		id := s.seq[i]

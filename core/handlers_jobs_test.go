@@ -30,8 +30,8 @@ func TestHandleJobsEndpoints(t *testing.T) {
 	}
 
 	var listResp struct {
-		Success bool  `json:"success"`
-		Jobs    []Job `json:"jobs"`
+		Success bool          `json:"success"`
+		Jobs    []JobSnapshot `json:"jobs"`
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &listResp); err != nil {
 		t.Fatalf("failed to parse list resp: %v", err)
@@ -50,9 +50,9 @@ func TestHandleJobsEndpoints(t *testing.T) {
 	}
 
 	var activeResp struct {
-		Success bool `json:"success"`
-		Active  bool `json:"active"`
-		Job     *Job `json:"job"`
+		Success bool         `json:"success"`
+		Active  bool         `json:"active"`
+		Job     *JobSnapshot `json:"job"`
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &activeResp); err != nil {
 		t.Fatalf("failed to parse active resp: %v", err)
@@ -71,14 +71,14 @@ func TestHandleJobsEndpoints(t *testing.T) {
 	}
 
 	var detailResp struct {
-		Success bool `json:"success"`
-		Job     Job  `json:"job"`
+		Success bool        `json:"success"`
+		Job     JobSnapshot `json:"job"`
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &detailResp); err != nil {
 		t.Fatalf("failed to parse detail resp: %v", err)
 	}
 	if detailResp.Job.ID != j.ID || len(detailResp.Job.Logs) != 1 {
-		t.Fatalf("unexpected detail resp job: %+v", detailResp.Job)
+		t.Fatalf("unexpected detail resp job: %+v", detailResp.Job.ID)
 	}
 
 	// Complete the job

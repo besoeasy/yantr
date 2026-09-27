@@ -377,6 +377,9 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	var allStdout, allStderr strings.Builder
 	updatedCount := 0
 
+	job := globalJobs.Create("autoupdate", "system", "Auto-update containers")
+	job.SetProgress("Checking for updates...")
+
 	// 1. Process Compose Projects natively
 	cmdName, cmdArgs, cmdErr := getComposeCommand()
 	for projectID := range projectSet {
@@ -405,9 +408,10 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		before, beforeErr := podman.LocalImageIDs(podman.Background())
 
 		shared.Log("info", fmt.Sprintf("[update] pulling latest images for stack: %s", projectID))
+		job.SetProgress(fmt.Sprintf("Pulling images for %s...", projectID))
 		pullCtx, pullCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		pullArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "pull")
-		outPull, errPull, exitPull, _ := spawnExec(pullCtx, cmdName, pullArgs, env, appPath)
+		outPull, errPull, exitPull, _ := spawnExecJob(pullCtx, job, cmdName, pullArgs, env, appPath)
 		pullCancel()
 
 		allStdout.WriteString(outPull + "\n")
@@ -421,9 +425,10 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		newerImage := imagesChanged(stackImages, before, beforeErr)
 
 		shared.Log("info", fmt.Sprintf("[update] recreating stack: %s", projectID))
+		job.SetProgress(fmt.Sprintf("Recreating stack %s...", projectID))
 		upCtx, upCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		upArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "up", "-d")
-		outUp, errUp, exitUp, _ := spawnExec(upCtx, cmdName, upArgs, env, appPath)
+		outUp, errUp, exitUp, _ := spawnExecJob(upCtx, job, cmdName, upArgs, env, appPath)
 		upCancel()
 
 		allStdout.WriteString(outUp + "\n")
@@ -484,8 +489,14 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	job.Complete(map[string]interface{}{
+		"success":      true,
+		"updatedCount": updatedCount,
+	})
+
 	jsonResp(w, 200, map[string]interface{}{
 		"success":      true,
+		"jobId":        job.ID,
 		"updatedCount": updatedCount,
 		"output":       allStdout.String(),
 		"warnings":     allStderr.String(),

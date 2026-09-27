@@ -205,34 +205,25 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 			env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 			args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "down")
 			shared.Log("info", fmt.Sprintf("[stack] removing: project=%s", projectID))
+			job := globalJobs.Create("stack_delete", projectID, fmt.Sprintf("Delete stack %s", projectID))
+			job.SetProgress(fmt.Sprintf("Removing stack %s...", projectID))
 			downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
-			out, errStr, exitCode, err := spawnExec(downCtx, cmdName, args, env, appPath)
+			out, errStr, exitCode, err := spawnExecJob(downCtx, job, cmdName, args, env, appPath)
 			downCancel()
-			if out != "" {
-				for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-					if line != "" {
-						shared.Log("info", "[stack] "+line)
-					}
-				}
-			}
-			if errStr != "" {
-				for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
-					if line != "" {
-						shared.Log("info", "[stack] "+line)
-					}
-				}
-			}
 			if exitCode == 0 {
 				shared.Log("info", fmt.Sprintf("[stack] removed: project=%s", projectID))
 				compose.DeleteProjectCompose(appPath, projectID)
 				supervisor.RecordStackRemoved(projectID)
+				job.Complete(map[string]interface{}{"success": true, "removed": true})
 				jsonResp(w, 200, map[string]interface{}{
 					"success": true,
+					"jobId":   job.ID,
 					"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
 					"removed": true,
 				})
 				return
 			}
+			job.Fail(fmt.Errorf("compose down failed: %s", coalesce(errStr, out)), exitCode)
 			shared.Log("error", fmt.Sprintf("[stack] compose down failed: project=%s exit=%d err=%v", projectID, exitCode, err))
 			jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("podman compose down failed (exit %d)", exitCode))
 			return
@@ -277,35 +268,25 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
 	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "restart")
 	shared.Log("info", fmt.Sprintf("[stack] restarting: project=%s", projectID))
+	job := globalJobs.Create("stack_restart", projectID, fmt.Sprintf("Restart stack %s", projectID))
+	job.SetProgress(fmt.Sprintf("Restarting stack %s...", projectID))
 	restartCtx, restartCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
-	out, errStr, exitCode, err := spawnExec(restartCtx, cmdName, args, env, appPath)
+	out, errStr, exitCode, err := spawnExecJob(restartCtx, job, cmdName, args, env, appPath)
 	restartCancel()
-
-	if out != "" {
-		for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-			if line != "" {
-				shared.Log("info", "[stack] "+line)
-			}
-		}
-	}
-	if errStr != "" {
-		for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
-			if line != "" {
-				shared.Log("info", "[stack] "+line)
-			}
-		}
-	}
 
 	if exitCode == 0 {
 		shared.Log("info", fmt.Sprintf("[stack] restarted: project=%s", projectID))
 		supervisor.RecordStackDeployed(projectID, baseID)
+		job.Complete(map[string]interface{}{"success": true, "restarted": true})
 		jsonResp(w, 200, map[string]interface{}{
 			"success": true,
+			"jobId":   job.ID,
 			"message": fmt.Sprintf("Stack '%s' restarted successfully", projectID),
 		})
 		return
 	}
 
+	job.Fail(fmt.Errorf("compose restart failed: %s", coalesce(errStr, out)), exitCode)
 	shared.Log("error", fmt.Sprintf("[stack] compose restart failed: project=%s exit=%d err=%v", projectID, exitCode, err))
 	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("podman compose restart failed (exit %d)", exitCode))
 }

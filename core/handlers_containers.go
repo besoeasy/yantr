@@ -243,33 +243,23 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 				env, _ := compose.GetComposeProcessEnv(appPath, project, podman.SocketPath, podman.HostSocket())
 				args := append(cmdArgs, "-p", project, "-f", ref.ComposeFile, "down")
 				shared.Log("info", fmt.Sprintf("[container] removing stack: project=%s container=%s", project, name))
+				job := globalJobs.Create("container_delete", id, fmt.Sprintf("Delete container %s", name))
+				job.SetProgress(fmt.Sprintf("Removing stack for container %s...", name))
 				downCtx, downCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
-				out, errStr, exitCode, _ := spawnExec(downCtx, cmdName, args, env, appPath)
+				out, errStr, exitCode, _ := spawnExecJob(downCtx, job, cmdName, args, env, appPath)
 				downCancel()
-				if out != "" {
-					for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-						if line != "" {
-							shared.Log("info", "[container] "+line)
-						}
-					}
-				}
-				if errStr != "" {
-					for _, line := range strings.Split(strings.TrimSpace(errStr), "\n") {
-						if line != "" {
-							shared.Log("info", "[container] "+line)
-						}
-					}
-				}
 				if exitCode == 0 {
 					shared.Log("info", fmt.Sprintf("[container] stack removed: project=%s", project))
 					compose.DeleteProjectCompose(appPath, project)
 					supervisor.RecordStackRemoved(project)
+					job.Complete(map[string]interface{}{"success": true, "stackRemoved": true})
 					jsonResp(w, 200, map[string]interface{}{
-						"success": true, "message": fmt.Sprintf("App stack '%s' removed successfully", project),
+						"success": true, "jobId": job.ID, "message": fmt.Sprintf("App stack '%s' removed successfully", project),
 						"container": name, "stackRemoved": true,
 					})
 					return
 				}
+				job.Fail(fmt.Errorf("compose down failed: %s", coalesce(errStr, out)), exitCode)
 				shared.Log("error", fmt.Sprintf("[container] compose down failed: project=%s exit=%d", project, exitCode))
 			}
 		}

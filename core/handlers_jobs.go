@@ -21,7 +21,7 @@ func handleJobsList(w http.ResponseWriter, r *http.Request) {
 	jobType := strings.TrimSpace(r.URL.Query().Get("type"))
 
 	all := globalJobs.List(50)
-	filtered := make([]Job, 0, len(all))
+	filtered := make([]JobSnapshot, 0, len(all))
 
 	for _, j := range all {
 		if target != "" && j.Target != target {
@@ -65,7 +65,7 @@ func handleJobsActive(w http.ResponseWriter, r *http.Request) {
 
 	// List all running jobs
 	all := globalJobs.List(50)
-	running := make([]Job, 0)
+	running := make([]JobSnapshot, 0)
 	for _, j := range all {
 		if j.Status == JobStatusRunning {
 			running = append(running, j)

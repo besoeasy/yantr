@@ -202,33 +202,30 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	composeEnv, _ := compose.GetComposeProcessEnv(appPath, projectName, podman.SocketPath, podman.HostSocket())
 	args := append(cmdArgs, "-p", projectName, "-f", ref.ComposeFile, "up", "-d")
 	shared.Log("info", fmt.Sprintf("[deploy] starting: app=%s project=%s cmd=%s %s", body.AppID, projectName, cmdName, strings.Join(args, " ")))
+	
+	job := globalJobs.Create("deploy", projectName, fmt.Sprintf("Deploy %s", body.AppID))
+	job.SetProgress(fmt.Sprintf("Deploying %s...", body.AppID))
+
 	deployCtx, deployCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 	defer deployCancel()
-	stdout, stderr, exitCode, _ := spawnExec(deployCtx, cmdName, args, composeEnv, appPath)
-	if stdout != "" {
-		for _, line := range strings.Split(strings.TrimSpace(stdout), "\n") {
-			if line != "" {
-				shared.Log("info", "[deploy] "+line)
-			}
-		}
-	}
-	if stderr != "" {
-		for _, line := range strings.Split(strings.TrimSpace(stderr), "\n") {
-			if line != "" {
-				shared.Log("info", "[deploy] "+line)
-			}
-		}
-	}
+	stdout, stderr, exitCode, _ := spawnExecJob(deployCtx, job, cmdName, args, composeEnv, appPath)
 	if exitCode != 0 {
 		shared.Log("error", fmt.Sprintf("[deploy] FAILED: app=%s exit=%d", body.AppID, exitCode))
+		job.Fail(fmt.Errorf("%s", coalesce(stderr, stdout)), exitCode)
 		jsonErr(w, 500, "DEPLOYMENT_FAILED", coalesce(stderr, stdout))
 		return
 	}
 	shared.Log("info", fmt.Sprintf("[deploy] SUCCESS: app=%s project=%s", body.AppID, projectName))
 	supervisor.RecordStackDeployed(projectName, body.AppID)
+	job.Complete(map[string]interface{}{
+		"appId":       body.AppID,
+		"projectName": projectName,
+		"temporary":   body.ExpiresIn > 0,
+	})
 
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
+		"jobId":   job.ID,
 		"message": fmt.Sprintf("App '%s' deployed successfully", body.AppID),
 		"appId":   body.AppID, "output": stdout, "warnings": stderr,
 		"temporary": body.ExpiresIn > 0,
