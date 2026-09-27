@@ -16,6 +16,9 @@ x-yantr:
   website: https://github.com/jpillora/cloud-torrent
   notes: [ Magnet link support, Streaming while downloading, Simple and lightweight ]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: cloud-torrent}
+
 services:
   cloud-torrent:
     image: docker.io/jpillora/cloud-torrent:latest
@@ -24,10 +27,6 @@ services:
     ports:
       - "3000"
     restart: unless-stopped
-    labels:
-      yantr.app: cloud-torrent
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
 
 volumes:
   cloud-torrent-downloads:
