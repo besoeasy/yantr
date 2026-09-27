@@ -5,21 +5,22 @@ Each app is a single `apps/<app-name>/compose.yml`. No `info.json`, no `Dockerfi
 
 ## `x-yantr` metadata block
 **Required:** `name`, `tags` (3–5), `short_description` (50–100 chars), `description` (200–300 chars, YAML `>` block), `usecases` (≥2), `website`.
-**Optional:** `notes` (list), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`).
+**Optional:** `notes` (list), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`), `ports` (list of `{port, protocol, label, service}`; protocol ∈ `HTTP`, `HTTPS`, `TCP`, `UDP`).
 
 Flat arrays (`tags`, `usecases`, `notes`) always use flow sequences:
 ```yaml
 tags: [tools, utility, self-hosted, homelab, podman]
 ```
 
-## Service labels
-`labels` is always a map, never a sequence. `yantr.app` is required on every service.
+Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml
-labels:
-  yantr.app: "my-app"
-  yantr.service.8080: "Web UI"
-  yantr.port.8080: "HTTP"   # HTTP | HTTPS | TCP | UDP
+x-yantr:
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: my-app}
 ```
+
+## Service labels
+Do not add `yantr.app` / `yantr.service.N` / `yantr.port.N` labels. Identity comes from the app folder + native compose project/service labels (`core/compose/compose.go:ComposeProjectLabel`). Runtime-only labels (`yantr.expireAt`, `yantr.temporary`, `yantr.system`) are injected by the backend.
 
 ## Critical rules
 1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling requires it).
@@ -44,14 +45,12 @@ x-yantr:
   env_generators:
     ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
   notes: ["Set admin email in the deploy form if the app requires one."]
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: my-app}
 
 services:
   my-app:
     image: ghcr.io/example/my-app:latest
-    labels:
-      yantr.app: "my-app"
-      yantr.service.8080: "Web UI"
-      yantr.port.8080: "HTTP"
     environment:
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
