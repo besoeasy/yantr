@@ -22,6 +22,9 @@ x-yantr:
       Mobile-friendly responsive design
     ]
 
+  ports:
+    - {port: 5230, protocol: HTTP, label: "Web UI", service: memos}
+
 services:
   memos:
     image: docker.io/neosmemo/memos:stable
@@ -29,10 +32,6 @@ services:
       - memos_data:/var/opt/memos
     ports:
       - 5230
-    labels:
-      yantr.app: memos
-      yantr.service.5230: Web UI
-      yantr.port.5230: HTTP
 
 volumes:
   memos_data: null
