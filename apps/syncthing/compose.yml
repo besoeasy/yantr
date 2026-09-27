@@ -26,6 +26,12 @@ x-yantr:
       No account or cloud required - all peer-to-peer
     ]
 
+  ports:
+    - {port: 8384, protocol: HTTP, label: "Web UI", service: syncthing}
+    - {port: 21027, protocol: UDP, label: "Port 21027", service: syncthing}
+    - {port: 22000, protocol: TCP, label: "Port 22000", service: syncthing}
+    - {port: 22000, protocol: UDP, label: "Port 22000", service: syncthing}
+
 services:
   syncthing:
     image: docker.io/syncthing/syncthing:latest
@@ -38,10 +44,6 @@ services:
       - 22000/udp
       - 21027/udp
     restart: unless-stopped
-    labels:
-      yantr.app: syncthing
-      yantr.service.8384: Web UI
-      yantr.port.8384: HTTP
 
 volumes:
   syncthing_data: null
