@@ -67,6 +67,35 @@ type App struct {
 type Catalog struct {
 	Apps  []App `json:"apps"`
 	Count int   `json:"count"`
+
+	// Index maps app ID to a pointer into Apps. It is built once per cache fill
+	// alongside Apps, so it cannot drift from the slice it indexes and it
+	// invalidates together with it. Callers that only need a membership test
+	// must use IsCatalogApp rather than rebuilding their own map per request.
+	//
+	// Treated as read-only by consumers.
+	Index map[string]*App `json:"-"`
+}
+
+// GetCatalogIndex returns the cached app ID -> *App index. The map is owned by
+// the catalog cache and must not be mutated by callers.
+func GetCatalogIndex() map[string]*App {
+	cat, _ := GetCatalogCached(false)
+	if cat == nil || cat.Index == nil {
+		return map[string]*App{}
+	}
+	return cat.Index
+}
+
+// IsCatalogApp reports whether id is a known catalog app. Cheaper than
+// GetCatalogIndex for the common membership check.
+func IsCatalogApp(id string) bool {
+	cat, _ := GetCatalogCached(false)
+	if cat == nil || cat.Index == nil {
+		return false
+	}
+	_, ok := cat.Index[id]
+	return ok
 }
 
 var (
@@ -147,7 +176,7 @@ func loadCatalog() (*Catalog, error) {
 	entries, err := os.ReadDir(appsDir)
 	if err != nil {
 		shared.Log("warn", "apps: failed to read appsDir "+appsDir+": "+err.Error())
-		return &Catalog{Apps: []App{}, Count: 0}, nil
+		return &Catalog{Apps: []App{}, Count: 0, Index: map[string]*App{}}, nil
 	}
 
 	var apps []App
@@ -236,7 +265,17 @@ func loadCatalog() (*Catalog, error) {
 			return apps[i].ID < apps[j].ID
 		})
 	}
-	return &Catalog{Apps: apps, Count: len(apps)}, nil
+
+	// Build the ID index once, here, so every consumer shares one map per cache
+	// fill instead of rebuilding it per request. Pointers stay valid for as long
+	// as the cache entry does because the cache replaces the whole Catalog
+	// rather than mutating Apps in place.
+	index := make(map[string]*App, len(apps))
+	for i := range apps {
+		index[apps[i].ID] = &apps[i]
+	}
+
+	return &Catalog{Apps: apps, Count: len(apps), Index: index}, nil
 }
 
 // ─── Structured port parsing (x-yantr.ports) ──────────────────────────────────

@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"core/compose"
 )
 
 func TestSupervisorState(t *testing.T) {
@@ -85,7 +87,11 @@ func TestSupervisorAutoDiscovery(t *testing.T) {
 	if err := os.MkdirAll(vaultAppDir, 0755); err != nil {
 		t.Fatal(err)
 	}
-	composeFile := filepath.Join(vaultAppDir, "compose.discovered-proj.yml")
+	// The filename must match what the deploy path actually writes —
+	// compose.ProjectComposeFileName, i.e. hidden with a leading dot. This test
+	// previously created "compose.<id>.yml", which the glob could never match,
+	// so the dead discovery path still had a passing test.
+	composeFile := filepath.Join(vaultAppDir, compose.ProjectComposeFileName("discovered-proj"))
 	if err := os.WriteFile(composeFile, []byte("services: {}"), 0644); err != nil {
 		t.Fatal(err)
 	}

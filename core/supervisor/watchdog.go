@@ -20,13 +20,59 @@ var (
 	restartHistory   = make(map[string][]time.Time)
 )
 
+// restartHistoryTTL is the only window isFlapping ever consults. An entry whose
+// newest timestamp is older than this can never influence a flap decision, so
+// it is pure retained memory.
+const restartHistoryTTL = 60 * time.Second
+
+// ForgetContainer drops a container's restart history. Call it when a container
+// is removed; otherwise every ID the watchdog has ever seen is retained for the
+// life of the process, because isFlapping only prunes keys it is called with.
+func ForgetContainer(containerID string) {
+	if containerID == "" {
+		return
+	}
+	restartHistoryMu.Lock()
+	defer restartHistoryMu.Unlock()
+	delete(restartHistory, containerID)
+}
+
+// sweepRestartHistory drops entries with no restart inside restartHistoryTTL,
+// bounding the map to containers that died recently.
+func sweepRestartHistory() {
+	cutoff := time.Now().Add(-restartHistoryTTL)
+
+	restartHistoryMu.Lock()
+	defer restartHistoryMu.Unlock()
+	for id, times := range restartHistory {
+		if len(times) == 0 || times[len(times)-1].Before(cutoff) {
+			delete(restartHistory, id)
+		}
+	}
+}
+
+// StartHistorySweeper periodically prunes stale restart history entries.
+func StartHistorySweeper(ctx context.Context) {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			shared.Log("info", "[watchdog] history sweeper stopped")
+			return
+		case <-ticker.C:
+			sweepRestartHistory()
+		}
+	}
+}
+
 // isFlapping checks if a container has crashed too many times recently.
 func isFlapping(containerID string) bool {
 	restartHistoryMu.Lock()
 	defer restartHistoryMu.Unlock()
 
 	now := time.Now()
-	cutoff := now.Add(-60 * time.Second)
+	cutoff := now.Add(-restartHistoryTTL)
 
 	var recent []time.Time
 	for _, t := range restartHistory[containerID] {
@@ -150,6 +196,19 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 	shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s, service %s) died unexpectedly (exit %d). Auto-restarting...",
 		containerID[:12], projectID, compose.ComposeServiceLabel(msg.Actor.Attributes), exitCode))
 
+	// Deliberately restart the single container rather than the project.
+	//
+	// The watchdog's job is crash recovery, not reconciliation: ContainerStart
+	// re-runs the exact same container spec, so it does not re-pull, re-create,
+	// or disturb the project's healthy services. `compose up -d` would converge
+	// the project correctly but churns every service on each crash and can
+	// cascade, which is the wrong trade for a container that merely died.
+	//
+	// The known gap is dependency ordering: if the dead service is a database
+	// the app depends on, the app stays running against a downed dependency
+	// until it exits on its own and `restart: unless-stopped` reorders the
+	// stack. Accepted deliberately — see issue #96. Compose reordering on every
+	// crash is the more expensive failure.
 	startCtx, startCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	startErr := podman.ContainerStart(startCtx, containerID, dockerctr.StartOptions{})
 	startCancel()

@@ -40,9 +40,30 @@ func ComposeServiceLabel(labels map[string]string) string {
 	return labels["io.podman.compose.service"]
 }
 
+// projectComposePrefix is the hidden-file prefix for per-project compose files.
+const projectComposePrefix = ".compose."
+
 // ProjectComposeFileName returns the hidden compose filename for a project instance.
 func ProjectComposeFileName(projectID string) string {
-	return ".compose." + projectID + ".yml"
+	return projectComposePrefix + projectID + ".yml"
+}
+
+// ProjectComposeGlobPattern matches every per-project compose file inside one
+// app directory.
+//
+// It lives next to ProjectComposeFileName on purpose. The pattern used to be
+// hand-written in the supervisor package as "compose.*.yml", which cannot match
+// the hidden ".compose.<projectID>.yml" files the product actually writes — so
+// stack auto-discovery was dead code that still had a passing unit test, because
+// the test created a filename production never produced. Declaring both halves
+// here makes that drift impossible.
+const ProjectComposeGlobPattern = projectComposePrefix + "*.yml"
+
+// ProjectIDFromComposeFileName is the inverse of ProjectComposeFileName. It
+// trims affixes rather than splitting on "." so a project ID that contains a
+// dot still round-trips.
+func ProjectIDFromComposeFileName(fileName string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(fileName, projectComposePrefix), ".yml")
 }
 
 // ProjectComposePath returns the full path to the project-specific compose file.
@@ -367,16 +388,22 @@ func isSocketPlaceholder(src string) bool {
 	return src == "${HOST_PODMAN_SOCKET}" || src == "$HOST_PODMAN_SOCKET"
 }
 
-// isSocketHostSource reports whether a volume source looks like a container
-// engine socket (docker.sock / podman.sock in any directory, e.g.
-// /var/run/docker.sock, /run/podman/podman.sock,
+// isSocketHostSource reports whether a volume source looks like a socket file,
+// in any directory (e.g. /var/run/docker.sock, /run/podman/podman.sock,
 // /run/user/1000/podman/podman.sock) or the placeholder itself.
+//
+// The match is deliberately any *.sock basename rather than only the engine
+// sockets. The policy this guards is "the sole permitted host-side socket is
+// ${HOST_PODMAN_SOCKET}" — and both AGENTS.md and the rejection error state
+// that as a blanket *.sock rule. Matching only docker.sock/podman.sock left
+// sibling engine sockets (containerd.sock, and any future engine socket under a
+// different name) mounting unmolested, which is exactly the class of access the
+// placeholder exists to gate.
 func isSocketHostSource(src string) bool {
 	if isSocketPlaceholder(src) {
 		return true
 	}
-	base := path.Base(src)
-	return base == "docker.sock" || base == "podman.sock"
+	return strings.HasSuffix(path.Base(src), ".sock")
 }
 
 func getServices(doc ComposeDoc) map[string]interface{} {

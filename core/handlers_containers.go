@@ -24,7 +24,7 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINERS_FETCH_FAILED", err.Error())
 		return
 	}
-	catalogMap := getCatalogMap()
+	catalogMap := apps.GetCatalogIndex()
 
 	// Find Yantr projects
 	yantrProjects := map[string]bool{}
@@ -104,7 +104,7 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	lbl := parseAppLabels(info.Config.Labels)
 	project := compose.ComposeProjectLabel(info.Config.Labels)
 	appID := coalesce(lbl.App, getBaseAppID(project), strings.TrimPrefix(info.Name, "/"))
-	entry := getCatalogMap()[appID]
+	entry := apps.GetCatalogIndex()[appID]
 	name := strings.TrimPrefix(info.Name, "/")
 
 	jsonResp(w, 200, map[string]interface{}{
@@ -252,6 +252,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 					shared.Log("info", fmt.Sprintf("[container] stack removed: project=%s", project))
 					compose.DeleteProjectCompose(appPath, project)
 					supervisor.RecordStackRemoved(project)
+					supervisor.ForgetContainer(id)
 					job.Complete(map[string]interface{}{"success": true, "stackRemoved": true})
 					jsonResp(w, 200, map[string]interface{}{
 						"success": true, "jobId": job.ID, "message": fmt.Sprintf("App stack '%s' removed successfully", project),
@@ -269,6 +270,8 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "CONTAINER_REMOVE_FAILED", err.Error())
 		return
 	}
+	// The container is gone; drop its watchdog restart history.
+	supervisor.ForgetContainer(id)
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": fmt.Sprintf("Container '%s' removed successfully", name)})
 }
 

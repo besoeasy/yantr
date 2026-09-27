@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
+
+	"core/compose"
 )
 
 // StackState represents the persisted state of a deployed compose stack.
@@ -75,21 +76,22 @@ func Init(appsDir string) {
 
 	// Auto-discover deployed compose files if appsDir is provided
 	if appsDir != "" {
-		matches, err := filepath.Glob(filepath.Join(appsDir, "*", "compose.*.yml"))
+		// The pattern comes from the compose package, which owns the filename
+		// convention, so the glob cannot drift from what is actually written.
+		matches, err := filepath.Glob(filepath.Join(appsDir, "*", compose.ProjectComposeGlobPattern))
 		if err == nil {
 			for _, m := range matches {
-				base := filepath.Base(m) // compose.<projectID>.yml
-				parts := strings.Split(base, ".")
-				if len(parts) >= 3 {
-					projectID := parts[1]
-					appID := filepath.Base(filepath.Dir(m))
-					if _, exists := appState.Stacks[projectID]; !exists {
-						appState.Stacks[projectID] = StackState{
-							ProjectID: projectID,
-							AppID:     appID,
-							Status:    "running",
-							UpdatedAt: time.Now().Unix(),
-						}
+				projectID := compose.ProjectIDFromComposeFileName(filepath.Base(m))
+				if projectID == "" {
+					continue
+				}
+				appID := filepath.Base(filepath.Dir(m))
+				if _, exists := appState.Stacks[projectID]; !exists {
+					appState.Stacks[projectID] = StackState{
+						ProjectID: projectID,
+						AppID:     appID,
+						Status:    "running",
+						UpdatedAt: time.Now().Unix(),
 					}
 				}
 			}

@@ -229,7 +229,10 @@ func parseAppLabels(labels map[string]string) appLabelSet {
 		return appLabelSet{}
 	}
 	// Only treat as managed when the project resolves to a catalog app.
-	if _, ok := getCatalogMap()[baseID]; !ok {
+	// IsCatalogApp reads the catalog's shared index instead of building a map,
+	// which matters here: this runs once per container, and the containers
+	// endpoint calls parseAppLabels twice per container.
+	if !apps.IsCatalogApp(baseID) {
 		return appLabelSet{}
 	}
 	svc := strings.TrimSpace(labels["com.docker.compose.service"])
@@ -287,18 +290,6 @@ func entryPorts(e *apps.App) interface{} {
 		return []apps.PortInfo{}
 	}
 	return e.Ports
-}
-
-func getCatalogMap() map[string]*apps.App {
-	cat, _ := apps.GetCatalogCached(false)
-	m := map[string]*apps.App{}
-	if cat == nil {
-		return m
-	}
-	for i := range cat.Apps {
-		m[cat.Apps[i].ID] = &cat.Apps[i]
-	}
-	return m
 }
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
@@ -467,6 +458,7 @@ func main() {
 	supervisor.Init(appsPath)
 	go supervisor.Resuscitate(appsPath, getComposeCommand)
 	go supervisor.StartWatchdog(context.Background())
+	go supervisor.StartHistorySweeper(context.Background())
 
 	// Router
 	r := chi.NewRouter()

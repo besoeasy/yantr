@@ -11,11 +11,80 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	dockerctr "github.com/docker/docker/api/types/container"
 	"github.com/go-chi/chi/v5"
 )
+
+// ─── Stable response ordering ────────────────────────────────────────────────
+// The stack response is assembled from Go maps, whose iteration order Go
+// randomises on every pass. The stack view polls this endpoint every 8s, so
+// leaving the slices unsorted made rows visibly reshuffle on each refresh.
+// These helpers impose a total order on the response so repeated polls of an
+// unchanged stack return byte-identical slices.
+
+// mapUint16 reads a uint16 field from a response fragment, tolerating a missing
+// or mistyped value.
+func mapUint16(m map[string]interface{}, key string) uint16 {
+	if v, ok := m[key].(uint16); ok {
+		return v
+	}
+	return 0
+}
+
+// mapString reads a string field from a response fragment, tolerating a missing
+// or mistyped value.
+func mapString(m map[string]interface{}, key string) string {
+	if v, ok := m[key].(string); ok {
+		return v
+	}
+	return ""
+}
+
+// sortPublishedPorts orders ports by host port, then container port, then
+// service, then protocol. Ports are compared numerically, not as the composite
+// map key strings, so 9000 sorts after 8080 rather than before it.
+func sortPublishedPorts(ports []map[string]interface{}) {
+	sort.SliceStable(ports, func(i, j int) bool {
+		a, b := ports[i], ports[j]
+		if ha, hb := mapUint16(a, "hostPort"), mapUint16(b, "hostPort"); ha != hb {
+			return ha < hb
+		}
+		if ca, cb := mapUint16(a, "containerPort"), mapUint16(b, "containerPort"); ca != cb {
+			return ca < cb
+		}
+		if sa, sb := mapString(a, "service"), mapString(b, "service"); sa != sb {
+			return sa < sb
+		}
+		return mapString(a, "protocol") < mapString(b, "protocol")
+	})
+}
+
+// sortMounts orders mounts by container destination, then source.
+func sortMounts(mounts []map[string]interface{}) {
+	sort.SliceStable(mounts, func(i, j int) bool {
+		a, b := mounts[i], mounts[j]
+		if da, db := mapString(a, "destination"), mapString(b, "destination"); da != db {
+			return da < db
+		}
+		return mapString(a, "source") < mapString(b, "source")
+	})
+}
+
+// sortServices orders a stack's services by compose service name, then container
+// name. The pre-sort order came from ContainerList, which makes no ordering
+// guarantee.
+func sortServices(services []map[string]interface{}) {
+	sort.SliceStable(services, func(i, j int) bool {
+		a, b := services[i], services[j]
+		if sa, sb := mapString(a, "composeService"), mapString(b, "composeService"); sa != sb {
+			return sa < sb
+		}
+		return mapString(a, "name") < mapString(b, "name")
+	})
+}
 
 func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
@@ -36,7 +105,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	baseID := getBaseAppID(projectID)
-	entry := getCatalogMap()[baseID]
+	entry := apps.GetCatalogIndex()[baseID]
 
 	// Catalog display metadata (x-yantr.ports) indexed by container port.
 	// Prefer the entry whose service matches the running compose service so
@@ -103,6 +172,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	for _, p := range portMap {
 		pPorts = append(pPorts, p)
 	}
+	sortPublishedPorts(pPorts)
 
 	var services []map[string]interface{}
 	for _, c := range pcs {
@@ -123,6 +193,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		for _, m := range mountMap {
 			mounts = append(mounts, m)
 		}
+		sortMounts(mounts)
 		var networks []map[string]interface{}
 		for netName, nc := range info.NetworkSettings.Networks {
 			if nc.IPAddress == "" {
@@ -151,6 +222,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 			"hasYantrLabel": isPrimary,
 		})
 	}
+	sortServices(services)
 
 	var appInfo interface{}
 	if entry != nil {
@@ -214,6 +286,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 				shared.Log("info", fmt.Sprintf("[stack] removed: project=%s", projectID))
 				compose.DeleteProjectCompose(appPath, projectID)
 				supervisor.RecordStackRemoved(projectID)
+				forgetStackContainers(projectContainers)
 				job.Complete(map[string]interface{}{"success": true, "removed": true})
 				jsonResp(w, 200, map[string]interface{}{
 					"success": true,
@@ -236,6 +309,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 			_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
 		}
 		_ = podman.ContainerRemove(context.Background(), id, dockerctr.RemoveOptions{})
+		supervisor.ForgetContainer(id)
 	}
 
 	compose.DeleteProjectCompose(appPath, projectID)
@@ -245,6 +319,14 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"message": fmt.Sprintf("Stack '%s' removed successfully", projectID),
 	})
+}
+
+// forgetStackContainers drops watchdog restart history for every container in a
+// torn-down stack.
+func forgetStackContainers(ctrs []dockerctr.Summary) {
+	for _, c := range ctrs {
+		supervisor.ForgetContainer(c.ID)
+	}
 }
 
 func handleStackRestart(w http.ResponseWriter, r *http.Request) {
