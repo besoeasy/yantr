@@ -21,13 +21,12 @@ x-yantr:
       App data is stored in a Docker volume mounted at /app/data.,
     ]
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: bifrost}
+
 services:
   bifrost:
     image: docker.io/maximhq/bifrost:latest
-    labels:
-      yantr.app: bifrost
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     volumes:
