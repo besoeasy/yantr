@@ -15,6 +15,12 @@ apps/*/.compose.temp.yml
 apps/*/.compose.tmp.yml
 apps/*/compose.override.yml
 
+# Per-project files generated at deploy time by core/compose
+#   .compose.<project>.yml  rendered compose stack
+#   .env.<project>          resolved deploy env (may hold secrets)
+apps/*/.compose.*.yml
+apps/*/.env.*
+
 # Website generated assets
 website/tailwind.css
 website/apps.json
