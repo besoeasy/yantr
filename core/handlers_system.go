@@ -73,6 +73,16 @@ func sweepExpiredContainers() {
 
 	// Tear down expired Compose stacks.
 	for projectID, meta := range expiredProjects {
+		// The reaper is a single goroutine on a 1-minute ticker, so this must
+		// never block: a project lock held by a 10-minute `compose down` would
+		// stall reaping of every *other* project, silently. Skip and retry on
+		// the next tick instead.
+		release, locked := shared.TryLockProject(projectID)
+		if !locked {
+			shared.Log("info", fmt.Sprintf("[reaper] project %s busy, skipping this tick", projectID))
+			continue
+		}
+
 		shared.Log("info", fmt.Sprintf("[reaper] removing expired stack: %s", projectID))
 		// Tell the watchdog to back off so it doesn't restart containers
 		// mid-teardown and race the compose down.
@@ -109,6 +119,7 @@ func sweepExpiredContainers() {
 			supervisor.RecordStackRemoved(projectID)
 		}
 		supervisor.UnmarkStackRemoving(projectID)
+		release()
 	}
 
 	// Tear down standalone expired containers.
@@ -387,6 +398,17 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			allStderr.WriteString(fmt.Sprintf("[update] podman compose not available for %s: %v\n", projectID, cmdErr))
 			continue
 		}
+
+		// Per project, inside the loop: locking once around the whole loop would
+		// let one slow project's 30-minute `up -d` block every other project in
+		// the same request and hold the job open for all of them.
+		release, locked := shared.TryLockProject(projectID)
+		if !locked {
+			shared.Log("warn", fmt.Sprintf("[update] skipping %s: another operation in progress", projectID))
+			allStderr.WriteString(fmt.Sprintf("[update] skipped %s: another operation is already in progress\n", projectID))
+			continue
+		}
+
 		baseID := getBaseAppID(projectID)
 
 		appPath := filepath.Join(apps.GetAppsDir(), baseID)
@@ -394,6 +416,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 
 		if _, statErr := os.Stat(ref.ComposePath); statErr != nil {
 			allStderr.WriteString(fmt.Sprintf("[update] compose.yml not found for %s\n", projectID))
+			release()
 			continue
 		}
 
@@ -419,6 +442,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 
 		if exitPull != 0 {
 			shared.Log("error", fmt.Sprintf("[update] pull failed for %s (exit=%d)", projectID, exitPull))
+			release()
 			continue
 		}
 
@@ -436,6 +460,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 
 		if exitUp != 0 {
 			shared.Log("error", fmt.Sprintf("[update] 'up -d' failed for %s (exit=%d)", projectID, exitUp))
+			release()
 			continue
 		}
 
@@ -447,6 +472,8 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		} else {
 			shared.Log("info", fmt.Sprintf("[update] stack %s is already up to date", projectID))
 		}
+
+		release()
 	}
 
 	// 2. Process standalone containers using podman auto-update

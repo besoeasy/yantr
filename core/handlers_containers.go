@@ -309,6 +309,16 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 		supervisor.MarkStackRemoving(project)
 		defer supervisor.UnmarkStackRemoving(project)
 
+		// Acquired before the flag so a teardown queued behind a deploy does not
+		// let the watchdog in while it waits.
+		release, locked := shared.TryLockProject(project)
+		if !locked {
+			jsonErr(w, 409, "PROJECT_BUSY",
+				fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", project))
+			return
+		}
+		defer release()
+
 		baseID := getBaseAppID(project)
 		appPath := filepath.Join(apps.GetAppsDir(), baseID)
 		ref := compose.GetProjectComposeRef(appPath, project)

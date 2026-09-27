@@ -155,6 +155,17 @@ func Resuscitate(appsDir string, getComposeCmd func() (string, []string, error))
 		shared.Log("info", fmt.Sprintf("[supervisor] resuscitating stack %q (%d/%d) services=%v...",
 			s.ProjectID, completed+1, total, upServices))
 
+		// The HTTP server is already accepting requests at this point, so a
+		// concurrent deploy or delete could target the same project. Skip rather
+		// than block: a stack missed here is picked up by the next boot or the
+		// next restart, whereas blocking would stall every later stack.
+		release, locked := shared.TryLockProject(s.ProjectID)
+		if !locked {
+			shared.Log("warn", fmt.Sprintf("[supervisor] stack %q busy, skipping this boot", s.ProjectID))
+			completed++
+			continue
+		}
+
 		execCtx, execCancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		cmd := exec.CommandContext(execCtx, cmdName, args...)
 		cmd.Dir = appPath
@@ -172,6 +183,7 @@ func Resuscitate(appsDir string, getComposeCmd func() (string, []string, error))
 		} else {
 			shared.Log("info", fmt.Sprintf("[supervisor] stack %q resuscitated successfully (%d/%d)", s.ProjectID, completed+1, total))
 		}
+		release()
 
 		completed++
 		// Gentle delay between sequential stack startups to prevent I/O and CPU spikes

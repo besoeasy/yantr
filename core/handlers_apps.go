@@ -171,6 +171,17 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		projectName = fmt.Sprintf("%s-%d", body.AppID, body.InstanceID)
 	}
 
+	// Hold the project lock across the .env write, the .compose write and the
+	// compose run itself. Taking it only around the writes would leave the
+	// actual race — two compose operations against one project — open.
+	release, locked := shared.TryLockProject(projectName)
+	if !locked {
+		jsonErr(w, 409, "PROJECT_BUSY",
+			fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", projectName))
+		return
+	}
+	defer release()
+
 	if _, err := compose.WriteProjectEnv(appPath, projectName, body.Environment); err != nil {
 		jsonErr(w, 500, "ENV_WRITE_FAILED", err.Error())
 		return

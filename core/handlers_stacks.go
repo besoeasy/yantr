@@ -268,6 +268,18 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	supervisor.MarkStackRemoving(projectID)
 	defer supervisor.UnmarkStackRemoving(projectID)
 
+	// Acquired before MarkStackRemoving so the watchdog also stays out of the
+	// way of a teardown that is queued behind a deploy: without this, a pending
+	// `down` has not set the flag yet and the watchdog can restart a container
+	// the teardown is about to kill.
+	release, locked := shared.TryLockProject(projectID)
+	if !locked {
+		jsonErr(w, 409, "PROJECT_BUSY",
+			fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", projectID))
+		return
+	}
+	defer release()
+
 	baseID := getBaseAppID(projectID)
 	appPath := filepath.Join(apps.GetAppsDir(), baseID)
 	ref := compose.GetProjectComposeRef(appPath, projectID)
@@ -331,6 +343,14 @@ func forgetStackContainers(ctrs []dockerctr.Summary) {
 
 func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
+
+	release, locked := shared.TryLockProject(projectID)
+	if !locked {
+		jsonErr(w, 409, "PROJECT_BUSY",
+			fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", projectID))
+		return
+	}
+	defer release()
 
 	baseID := getBaseAppID(projectID)
 	appPath := filepath.Join(apps.GetAppsDir(), baseID)
