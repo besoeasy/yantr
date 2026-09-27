@@ -20,6 +20,11 @@ x-yantr:
       Plugin ecosystem available
     ]
 
+  ports:
+    - {port: 6881, protocol: TCP, label: "Port 6881", service: deluge}
+    - {port: 6881, protocol: UDP, label: "Port 6881", service: deluge}
+    - {port: 8112, protocol: HTTP, label: "Web UI", service: deluge}
+
 services:
   deluge:
     image: docker.io/linuxserver/deluge:latest
@@ -30,10 +35,6 @@ services:
       - "6881"
       - 6881/udp
     restart: unless-stopped
-    labels:
-      yantr.app: deluge
-      yantr.service.8112: Web UI
-      yantr.port.8112: HTTP
 
 volumes:
   deluge-downloads: null
