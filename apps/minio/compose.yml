@@ -22,6 +22,10 @@ x-yantr:
       Distributed mode available for multi-node deployments
     ]
 
+  ports:
+    - {port: 9000, protocol: HTTP, label: "API", service: minio}
+    - {port: 9001, protocol: HTTP, label: "Console", service: minio}
+
 services:
   minio:
     image: quay.io/minio/minio:latest
@@ -35,12 +39,6 @@ services:
       MINIO_ROOT_PASSWORD: ${WEBPASSWORD:-minioadmin}
     volumes:
       - minio_data:/data
-    labels:
-      yantr.app: minio
-      yantr.service.9001: Console
-      yantr.port.9001: HTTP
-      yantr.service.9000: API
-      yantr.port.9000: HTTP
 
 volumes:
   minio_data: null
