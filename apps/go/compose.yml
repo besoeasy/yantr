@@ -10,21 +10,16 @@ x-yantr:
   usecases: ["Build Go command-line programs.", "Develop and test Go web services."]
   website: "https://go.dev/"
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: go}
+    - {port: 8080, protocol: HTTP, label: "Web server", service: go}
+    - {port: 9000, protocol: HTTP, label: "API server", service: go}
+    - {port: 9090, protocol: HTTP, label: "Metrics / pprof", service: go}
+    - {port: 50051, protocol: TCP, label: "gRPC service", service: go}
+
 services:
   go:
     image: docker.io/golang:latest
-    labels:
-      yantr.app: "go"
-      yantr.service.8080: "Web server"
-      yantr.port.8080: "HTTP"
-      yantr.service.9000: "API server"
-      yantr.port.9000: "HTTP"
-      yantr.service.3000: "Frontend dev server"
-      yantr.port.3000: "HTTP"
-      yantr.service.9090: "Metrics / pprof"
-      yantr.port.9090: "HTTP"
-      yantr.service.50051: "gRPC service"
-      yantr.port.50051: "TCP"
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
