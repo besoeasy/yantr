@@ -15,6 +15,9 @@ x-yantr:
     ]
   website: https://myspeed.dev
 
+  ports:
+    - {port: 5216, protocol: HTTP, label: "Web UI", service: myspeed}
+
 services:
   myspeed:
     image: docker.io/germannewsmaker/myspeed:latest
@@ -24,10 +27,6 @@ services:
     ports:
       - "5216"
     restart: unless-stopped
-    labels:
-      yantr.app: myspeed
-      yantr.service.5216: Web UI
-      yantr.port.5216: HTTP
 
 volumes:
   myspeed_data: null
