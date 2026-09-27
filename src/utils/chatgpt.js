@@ -6,8 +6,8 @@ export function buildChatGptExplainUrl(appid) {
 
 Instructions:
 - Fetch the compose.yml from the URL (use the raw GitHub URL if needed).
-- Understand the project using the compose contents AND the compose labels (especially yantr.* labels).
-- If present, treat the yantr.website label as the canonical project/app website.
+- Understand the project using the compose contents AND the x-yantr metadata block (especially x-yantr.ports for network/label info).
+- If present, treat the x-yantr.website field as the canonical project/app website.
 - Use the internet to fetch/verify up-to-date info (official docs/GitHub) before listing features and alternatives.
 
 Tell me:
