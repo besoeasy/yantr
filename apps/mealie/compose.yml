@@ -11,13 +11,12 @@ x-yantr:
   website: "https://docs.mealie.io/"
   notes: ["Create the first administrator account after deployment.", "Disable public sign-up after creating the initial account if the app is exposed."]
 
+  ports:
+    - {port: 9000, protocol: HTTP, label: "Web UI", service: mealie}
+
 services:
   mealie:
     image: ghcr.io/mealie-recipes/mealie:latest
-    labels:
-      yantr.app: "mealie"
-      yantr.service.9000: "Web UI"
-      yantr.port.9000: "HTTP"
     environment:
       ALLOW_SIGNUP: "true"
       PUID: ${PUID:-1000}
