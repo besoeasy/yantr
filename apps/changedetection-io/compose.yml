@@ -25,6 +25,9 @@ x-yantr:
       Enable the built-in browser (Playwright) for JavaScript-rendered pages.
     ]
 
+  ports:
+    - {port: 5000, protocol: HTTP, label: "Web UI", service: changedetection}
+
 services:
   changedetection:
     image: ghcr.io/dgtlmoon/changedetection.io:latest
@@ -33,10 +36,6 @@ services:
     volumes:
       - changedetection_data:/datastore
     restart: unless-stopped
-    labels:
-      yantr.app: changedetection-io
-      yantr.service.5000: Web UI
-      yantr.port.5000: HTTP
 
 volumes:
   changedetection_data: null
