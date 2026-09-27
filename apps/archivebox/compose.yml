@@ -32,13 +32,12 @@ x-yantr:
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
 
+  ports:
+    - {port: 8000, protocol: HTTP, label: "Web UI", service: archivebox}
+
 services:
   archivebox:
     image: docker.io/archivebox/archivebox
-    labels:
-      yantr.app: archivebox
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
     stop_grace_period: 1m
     shm_size: 1gb
     ports:
