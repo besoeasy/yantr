@@ -26,6 +26,11 @@ x-yantr:
         API calls if using self-hosted.
     ]
 
+  ports:
+    - {port: 3232, protocol: HTTP, label: "Web UI", service: originless}
+    - {port: 4001, protocol: TCP, label: "Port 4001", service: originless}
+    - {port: 4001, protocol: UDP, label: "Port 4001", service: originless}
+
 services:
   originless:
     image: ghcr.io/besoeasy/originless:latest
@@ -40,10 +45,6 @@ services:
       - 4001/tcp
       - 4001/udp
     restart: unless-stopped
-    labels:
-      yantr.app: originless
-      yantr.service.3232: Web UI
-      yantr.port.3232: HTTP
 
 volumes:
   originless: null
