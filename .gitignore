@@ -1,20 +1,49 @@
+# Dependencies & build outputs
 node_modules
 dist
-tmp
+.vite
 
+# Environment files
+.env
+.env.local
+.env.*.local
 apps/*/.env
+
+# App compose temp & override files
 apps/*/compose.temp.yml
 apps/*/.compose.temp.yml
 apps/*/.compose.tmp.yml
+apps/*/compose.override.yml
 
+# Website generated assets
 website/tailwind.css
 website/apps.json
 website/apps
 website/github-data.json
 website/catalog
 
-# Temp files created by agents
+# Binaries & test artifacts
+yantr
+core/yantr
+*.test
+coverage.out
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# Temp files
+tmp
 check_output*.txt
 *.txtn
-yantr
 .npm-cache
