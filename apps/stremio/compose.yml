@@ -31,6 +31,10 @@ x-yantr:
       Use responsibly.
     ]
 
+  ports:
+    - {port: 11470, protocol: HTTP, label: "Streaming Server", service: stremio}
+    - {port: 12470, protocol: HTTPS, label: "Streaming Server (TLS)", service: stremio}
+
 services:
   stremio:
     image: docker.io/stremio/server:latest
@@ -40,9 +44,3 @@ services:
       - "12470"
     environment:
       NO_CORS: "1"
-    labels:
-      yantr.app: stremio
-      yantr.service.11470: Streaming Server
-      yantr.port.11470: HTTP
-      yantr.service.12470: Streaming Server (TLS)
-      yantr.port.12470: HTTPS
