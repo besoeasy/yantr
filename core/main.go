@@ -183,18 +183,49 @@ func getComposeCommand() (string, []string, error) {
 	return cachedComposeCmd, cachedComposeArgs, cachedComposeErr
 }
 
-// ─── Label parsing ────────────────────────────────────────────────────────────
-
+// ─── Identity (x-yantr + native compose labels) ─────────────────────────────────
+// Identity no longer comes from yantr.app labels in compose files. New stacks
+// are identified by native compose project labels; old running containers with
+// yantr.app are still honored as a fallback until redeployed.
 type appLabelSet struct {
 	App     string `json:"app"`
 	Service string `json:"service"`
 }
 
 func parseAppLabels(labels map[string]string) appLabelSet {
-	return appLabelSet{
-		App:     labels["yantr.app"],
-		Service: labels["yantr.app"],
+	// Legacy fallback for containers deployed before the x-yantr.ports migration.
+	if app := strings.TrimSpace(labels["yantr.app"]); app != "" {
+		svc := app
+		if s := strings.TrimSpace(labels["com.docker.compose.service"]); s != "" {
+			svc = s
+		} else if s := strings.TrimSpace(labels["io.podman.compose.service"]); s != "" {
+			svc = s
+		}
+		return appLabelSet{App: app, Service: svc}
 	}
+	project := strings.TrimSpace(labels["com.docker.compose.project"])
+	if project == "" {
+		project = strings.TrimSpace(labels["io.podman.compose.project"])
+	}
+	if project == "" {
+		return appLabelSet{}
+	}
+	baseID := getBaseAppID(project)
+	if baseID == "" {
+		return appLabelSet{}
+	}
+	// Only treat as managed when the project resolves to a catalog app.
+	if _, ok := getCatalogMap()[baseID]; !ok {
+		return appLabelSet{}
+	}
+	svc := strings.TrimSpace(labels["com.docker.compose.service"])
+	if svc == "" {
+		svc = strings.TrimSpace(labels["io.podman.compose.service"])
+	}
+	if svc == "" {
+		svc = baseID
+	}
+	return appLabelSet{App: baseID, Service: svc}
 }
 
 // ─── Catalog helpers ──────────────────────────────────────────────────────────
