@@ -27,13 +27,12 @@ x-yantr:
       "External storage support for mounting S3, FTP, SMB, and other backends"
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: nextcloud}
+
 services:
   nextcloud:
     image: docker.io/nextcloud:stable
-    labels:
-      yantr.app: nextcloud
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     environment:
@@ -59,10 +58,6 @@ services:
     volumes:
       - nextcloud_db:/var/lib/mysql
     restart: unless-stopped
-    labels:
-      yantr.app: nextcloud
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
 
 volumes:
   nextcloud_data: null
