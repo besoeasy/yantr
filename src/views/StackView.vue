@@ -74,30 +74,54 @@ const showOnlyDescribedPorts = ref(true);
 const browsingVolume = ref({});
 const showVolumeMenu = ref({});
 
-// Build a port-number → {label, protocol} lookup from the info.json ports array
+// Build a service-aware index from the x-yantr.ports array.
+// Keyed by container port -> list of {protocol, label, service}.
 function buildPortLabels(ports) {
-  const labels = {};
-  if (!Array.isArray(ports)) return labels;
+  const byPort = {};
+  if (!Array.isArray(ports)) return byPort;
   for (const p of ports) {
-    if (p.port != null) {
-      labels[String(p.port)] = {
-        protocol: (p.protocol || "").toLowerCase(),
-        label: p.label || null,
-      };
-    }
+    if (p.port == null) continue;
+    const key = String(p.port);
+    if (!byPort[key]) byPort[key] = [];
+    byPort[key].push({
+      protocol: (p.protocol || "").toLowerCase(),
+      label: p.label || null,
+      service: p.service || null,
+    });
   }
-  return labels;
+  return byPort;
 }
 
-// Merge published ports with described labels from info.json
+function lookupPortLabel(cands, service) {
+  if (!cands || cands.length === 0) return null;
+  if (service) {
+    const exact = cands.find((c) => c.service === service);
+    if (exact) return exact;
+  }
+  return cands[0];
+}
+
+// Merge published ports with described labels from x-yantr.ports.
+// Backend already enriches publishedPorts with label/displayProtocol/service;
+// the catalog merge is a fallback for older API responses.
 const enrichedPorts = computed(() => {
   if (!stack.value) return [];
   const portLabels = buildPortLabels(stack.value.app?.ports);
-  return stack.value.publishedPorts.map((p) => ({
-    ...p,
-    label: portLabels[String(p.containerPort)]?.label || null,
-    labeledProtocol: portLabels[String(p.containerPort)]?.protocol || null,
-  }));
+  return stack.value.publishedPorts.map((p) => {
+    if (p.label || p.displayProtocol) {
+      return {
+        ...p,
+        label: p.label || null,
+        labeledProtocol: (p.displayProtocol || "").toLowerCase() || null,
+      };
+    }
+    const match = lookupPortLabel(portLabels[String(p.containerPort)], p.service);
+    return {
+      ...p,
+      label: match?.label || null,
+      labeledProtocol: match?.protocol || null,
+    };
+  });
 });
 
 const visiblePorts = computed(() => {
