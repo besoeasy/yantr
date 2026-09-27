@@ -33,6 +33,11 @@ x-yantr:
       length: 16
       charset: alnum_symbols
 
+  ports:
+    - {port: 9091, protocol: HTTP, label: "Web Interface", service: transmission}
+    - {port: 51413, protocol: TCP, label: "Port 51413", service: transmission}
+    - {port: 51413, protocol: UDP, label: "Port 51413", service: transmission}
+
 services:
   transmission:
     image: docker.io/linuxserver/transmission:latest
@@ -47,10 +52,6 @@ services:
       - "51413"
       - 51413/udp
     restart: unless-stopped
-    labels:
-      yantr.app: transmission
-      yantr.service.9091: Web Interface
-      yantr.port.9091: HTTP
 
 volumes:
   transmission_config:
