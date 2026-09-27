@@ -21,6 +21,9 @@ x-yantr:
       Responsive mobile-friendly UI
     ]
 
+  ports:
+    - {port: 1970, protocol: HTTP, label: "Web UI", service: swingmusic}
+
 services:
   swingmusic:
     image: ghcr.io/swingmx/swingmusic:latest
@@ -30,10 +33,6 @@ services:
     ports:
       - "1970"
     restart: unless-stopped
-    labels:
-      yantr.app: swingmusic
-      yantr.service.1970: Web UI
-      yantr.port.1970: HTTP
 
 volumes:
   swingmusic-music:
