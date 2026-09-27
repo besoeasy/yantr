@@ -19,13 +19,12 @@ x-yantr:
       length: 32
       charset: alnum
 
+  ports:
+    - {port: 2283, protocol: HTTP, label: "Web UI", service: immich-server}
+
 services:
   immich-server:
     image: ghcr.io/immich-app/immich-server:release
-    labels:
-      yantr.app: immich
-      yantr.service.2283: Web UI
-      yantr.port.2283: HTTP
     environment:
       DB_HOSTNAME: database
       DB_USERNAME: postgres
@@ -42,26 +41,14 @@ services:
     restart: unless-stopped
   immich-machine-learning:
     image: ghcr.io/immich-app/immich-machine-learning:release
-    labels:
-      yantr.app: immich
-      yantr.service.2283: Web UI
-      yantr.port.2283: HTTP
     volumes:
       - immich_model_cache:/cache
     restart: unless-stopped
   redis:
     image: docker.io/redis:6.2-alpine@sha256:e3b17ba9479deec4b7d1eeec1548a253acc5374d68d3b27937fcfe4df8d18c7e
-    labels:
-      yantr.app: immich
-      yantr.service.2283: Web UI
-      yantr.port.2283: HTTP
     restart: unless-stopped
   database:
     image: docker.io/tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:90724186f0a3517cf6914295b5ab410db9ce23190a2d9d0b9dd6463e3fa298f0
-    labels:
-      yantr.app: immich
-      yantr.service.2283: Web UI
-      yantr.port.2283: HTTP
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: postgres
