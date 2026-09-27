@@ -16,13 +16,12 @@ x-yantr:
   website: https://filebrowser.org
   notes: ["This stack disables built-in authentication; restrict access to a trusted network or use an authenticated proxy."]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: server}
+
 services:
   server:
     image: docker.io/filebrowser/filebrowser:latest
-    labels:
-      yantr.app: file-browser
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     restart: unless-stopped
     environment:
       FB_PORT: 80
