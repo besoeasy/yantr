@@ -34,7 +34,3 @@ services:
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN}
     restart: unless-stopped
-    labels:
-      yantr.app: cloudflared
-      yantr.service.80: Internal
-      yantr.port.80: TCP
