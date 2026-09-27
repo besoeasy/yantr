@@ -122,6 +122,7 @@ const reportIssueUrl = computed(() => {
                       <th class="px-4 py-3">{{ t('appDetail.port') }}</th>
                       <th class="px-4 py-3">{{ t('appDetail.protocol') }}</th>
                       <th class="px-4 py-3">{{ t('appDetail.label') }}</th>
+                      <th class="px-4 py-3">Service</th>
                   </tr>
               </thead>
               <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -131,6 +132,7 @@ const reportIssueUrl = computed(() => {
                           <span class="rounded bg-zinc-50 px-2 py-0.5 text-[10px] uppercase tracking-wider text-zinc-500 dark:bg-zinc-800/50">{{ p.protocol }}</span>
                       </td>
                       <td class="px-4 py-3 font-mono text-xs text-zinc-500">{{ p.label }}</td>
+                      <td class="px-4 py-3 font-mono text-xs text-zinc-500">{{ p.service || '—' }}</td>
                   </tr>
               </tbody>
           </table>
