@@ -15,13 +15,12 @@ x-yantr:
   website: https://github.com/C4illin/ConvertX
   notes: [ Multiple format support, Local processing only, Web interface for easy use ]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: convertx}
+
 services:
   convertx:
     image: ghcr.io/c4illin/convertx:latest
-    labels:
-      yantr.app: convertx
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
     ports:
       - "3000"
     restart: unless-stopped
