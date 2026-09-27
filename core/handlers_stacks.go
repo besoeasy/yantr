@@ -38,19 +38,63 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	baseID := getBaseAppID(projectID)
 	entry := getCatalogMap()[baseID]
 
+	// Catalog display metadata (x-yantr.ports) indexed by container port.
+	// Prefer the entry whose service matches the running compose service so
+	// multi-service apps keep their service dimension.
+	type portMeta struct {
+		label, displayProtocol, service string
+	}
+	byPort := map[uint16][]apps.PortInfo{}
+	if entry != nil {
+		for _, pi := range entry.Ports {
+			if pi.Port >= 1 && pi.Port <= 65535 {
+				byPort[uint16(pi.Port)] = append(byPort[uint16(pi.Port)], pi)
+			}
+		}
+	}
+	lookupMeta := func(privatePort uint16, composeService string) portMeta {
+		cands := byPort[privatePort]
+		if len(cands) == 0 {
+			return portMeta{}
+		}
+		for _, c := range cands {
+			if c.Service != "" && c.Service == composeService {
+				return portMeta{label: c.Label, displayProtocol: c.Protocol, service: c.Service}
+			}
+		}
+		// No service-specific match — use the first entry for this port.
+		return portMeta{label: cands[0].Label, displayProtocol: cands[0].Protocol, service: cands[0].Service}
+	}
+	primaryServices := map[string]bool{}
+	if entry != nil {
+		for _, pi := range entry.Ports {
+			if pi.Service != "" {
+				primaryServices[pi.Service] = true
+			}
+		}
+	}
+
 	portMap := map[string]map[string]interface{}{}
 	for _, c := range pcs {
+		composeService := compose.ComposeServiceLabel(c.Labels)
+		if composeService == "" {
+			composeService = strings.TrimPrefix(c.Names[0], "/")
+		}
 		for _, p := range c.Ports {
 			if p.PublicPort == 0 {
 				continue
 			}
-			portSpecificKey := fmt.Sprintf("yantr.service.%d", p.PrivatePort)
-			svc := coalesce(c.Labels[portSpecificKey], strings.TrimPrefix(c.Names[0], "/"), "unknown")
+			meta := lookupMeta(p.PrivatePort, composeService)
+			svc := meta.service
+			if svc == "" {
+				svc = coalesce(composeService, strings.TrimPrefix(c.Names[0], "/"), "unknown")
+			}
 			key := fmt.Sprintf("%d:%d:%s:%s", p.PublicPort, p.PrivatePort, p.Type, svc)
 			if _, ok := portMap[key]; !ok {
 				portMap[key] = map[string]interface{}{
 					"hostPort": p.PublicPort, "containerPort": p.PrivatePort,
 					"protocol": p.Type, "service": svc,
+					"label": meta.label, "displayProtocol": meta.displayProtocol,
 				}
 			}
 		}
@@ -92,12 +136,19 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		if len(c.Names) > 0 {
 			name = strings.TrimPrefix(c.Names[0], "/")
 		}
+		composeService := compose.ComposeServiceLabel(c.Labels)
+		// Primary = service that owns a display port in x-yantr.ports.
+		// Falls back to managed-stack membership when catalog has no ports.
+		isPrimary := primaryServices[composeService]
+		if entry != nil && len(entry.Ports) == 0 {
+			isPrimary = lbl.App != ""
+		}
 		services = append(services, map[string]interface{}{
-			"id": c.ID, "name": name, "composeService": compose.ComposeServiceLabel(c.Labels),
+			"id": c.ID, "name": name, "composeService": composeService,
 			"image": c.Image, "state": c.State, "status": c.Status, "created": c.Created,
 			"rawPorts": c.Ports, "mounts": mounts, "networks": networks,
-			"service":       coalesce(lbl.Service, name),
-			"hasYantrLabel": lbl.App != "",
+			"service":       coalesce(composeService, lbl.Service, name),
+			"hasYantrLabel": isPrimary,
 		})
 	}
 
