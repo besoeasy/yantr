@@ -24,13 +24,12 @@ x-yantr:
       Data stored locally - no third party can see your holdings
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: rotki}
+
 services:
   rotki:
     image: docker.io/rotki/rotki:latest
-    labels:
-      yantr.app: rotki
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     ports:
       - "80"
     volumes:
