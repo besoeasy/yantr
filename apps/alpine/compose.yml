@@ -9,21 +9,16 @@ x-yantr:
   usecases: ["Run lightweight utility scripts.", "Experiment with minimal Linux environments."]
   website: "https://alpinelinux.org/"
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "HTTP server", service: alpine}
+    - {port: 443, protocol: HTTPS, label: "HTTPS server", service: alpine}
+    - {port: 3000, protocol: HTTP, label: "Dev server", service: alpine}
+    - {port: 8080, protocol: HTTP, label: "Web server", service: alpine}
+    - {port: 9000, protocol: HTTP, label: "Alt server", service: alpine}
+
 services:
   alpine:
     image: docker.io/alpine:latest
-    labels:
-      yantr.app: "alpine"
-      yantr.service.8080: "Web server"
-      yantr.port.8080: "HTTP"
-      yantr.service.80: "HTTP server"
-      yantr.port.80: "HTTP"
-      yantr.service.443: "HTTPS server"
-      yantr.port.443: "HTTPS"
-      yantr.service.3000: "Dev server"
-      yantr.port.3000: "HTTP"
-      yantr.service.9000: "Alt server"
-      yantr.port.9000: "HTTP"
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
