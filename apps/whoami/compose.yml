@@ -23,13 +23,12 @@ x-yantr:
       No configuration needed - just works
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: whoami}
+
 services:
   whoami:
     image: docker.io/traefik/whoami
     ports:
       - "80"
     restart: unless-stopped
-    labels:
-      yantr.port.80: HTTP
-      yantr.app: whoami
-      yantr.service.80: Web UI
