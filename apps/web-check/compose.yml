@@ -23,13 +23,12 @@ x-yantr:
       Great for security auditing
     ]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: web-check}
+
 services:
   web-check:
     image: docker.io/lissy93/web-check:latest
     ports:
       - "3000"
     restart: unless-stopped
-    labels:
-      yantr.app: web-check
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
