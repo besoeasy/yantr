@@ -253,7 +253,8 @@
     "success": {
       "deletedSuccessfully": "{name} успешно удалён!",
       "volumeBrowserStarted": "Браузер томов запущен{expiry}"
-    }
+    },
+    "cpuWarmingUp": "Первый замер получен — загрузка CPU появится при следующем опросе"
   },
   "volumes": {
     "title": "Тома",

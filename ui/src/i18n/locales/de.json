@@ -253,7 +253,8 @@
     "success": {
       "deletedSuccessfully": "{name} erfolgreich gelöscht!",
       "volumeBrowserStarted": "Volume-Browser gestartet{expiry}"
-    }
+    },
+    "cpuWarmingUp": "Erste Messung erfasst — die CPU-Auslastung erscheint beim nächsten Abruf"
   },
   "volumes": {
     "title": "Volumes",

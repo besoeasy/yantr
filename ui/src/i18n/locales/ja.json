@@ -253,7 +253,8 @@
     "success": {
       "deletedSuccessfully": "{name}を正常に削除しました！",
       "volumeBrowserStarted": "ボリュームブラウザを起動しました{expiry}"
-    }
+    },
+    "cpuWarmingUp": "初回サンプル取得済み — CPU使用率は次のポーリングで表示されます"
   },
   "volumes": {
     "title": "ボリューム",

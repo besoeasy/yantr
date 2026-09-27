@@ -253,7 +253,8 @@
     "success": {
       "deletedSuccessfully": "{name} supprimé avec succès !",
       "volumeBrowserStarted": "Explorateur de volume démarré{expiry}"
-    }
+    },
+    "cpuWarmingUp": "Premier échantillon prélevé — le taux CPU s'affiche à la requête suivante"
   },
   "volumes": {
     "title": "Volumes",

@@ -130,9 +130,34 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleContainerStats returns one instantaneous sample of container resource
+// usage.
+//
+// CPU is reported as raw cumulative counters, not as a percentage. Podman only
+// populates precpu_stats when the request asks for stream=1; a single-shot
+// request (stream=0) therefore always returns precpu_stats as all zeros, so the
+// usual
+//
+//	(cpu_delta / system_delta) * online_cpus * 100
+//
+// degenerates to (container_lifetime_ns / host_lifetime_ns), which is a
+// monotonic ramp unrelated to current load — a container pegging a core reports
+// single digits for as long as it lives, and a falling load still shows a rising
+// number.
+//
+// Using stream=1 is not the fix: the first object in a stream has a
+// back-to-back precpu with a ~0ms window, so system_delta is frequently 0 and the
+// result silently becomes 0.00. The correct computation needs two samples, and
+// the UI already polls every 2s — so the counters go out raw and
+// ContainerResources.vue differences consecutive samples client-side, with no
+// extra requests and no added latency.
 func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
-	statsResp, err := podman.ContainerStats(context.Background(), id, false)
+
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+
+	statsResp, err := podman.ContainerStats(ctx, id, false)
 	if err != nil {
 		jsonErr(w, 500, "STATS_FETCH_FAILED", err.Error())
 		return
@@ -143,12 +168,7 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 		jsonErr(w, 500, "STATS_DECODE_FAILED", err.Error())
 		return
 	}
-	cpuDelta := float64(stats.CPUStats.CPUUsage.TotalUsage - stats.PreCPUStats.CPUUsage.TotalUsage)
-	sysDelta := float64(stats.CPUStats.SystemUsage - stats.PreCPUStats.SystemUsage)
-	cpuPct := 0.0
-	if sysDelta > 0 {
-		cpuPct = (cpuDelta / sysDelta) * float64(stats.CPUStats.OnlineCPUs) * 100
-	}
+
 	rawMem := float64(stats.MemoryStats.Usage)
 	limit := float64(stats.MemoryStats.Limit)
 	cache := float64(stats.MemoryStats.Stats["inactive_file"])
@@ -180,7 +200,14 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
 		"stats": map[string]interface{}{
-			"cpu":     map[string]interface{}{"percent": fmt.Sprintf("%.2f", cpuPct), "usage": stats.CPUStats.CPUUsage.TotalUsage},
+			// Cumulative counters; the client differences consecutive samples.
+			// `percent` is intentionally absent rather than wrong.
+			"cpu": map[string]interface{}{
+				"usage":        stats.CPUStats.CPUUsage.TotalUsage,
+				"systemUsage":  stats.CPUStats.SystemUsage,
+				"onlineCpus":   stats.CPUStats.OnlineCPUs,
+				"sampledAtMs":  shared.NowMs(),
+			},
 			"memory":  map[string]interface{}{"usage": memUsage, "rawUsage": rawMem, "cache": cache, "limit": limit, "percent": fmt.Sprintf("%.2f", memPct)},
 			"network": map[string]interface{}{"rx": netRx, "tx": netTx},
 			"blockIO": map[string]interface{}{"read": blkR, "write": blkW},

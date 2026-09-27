@@ -253,7 +253,8 @@
     "success": {
       "deletedSuccessfully": "{name} 删除成功！",
       "volumeBrowserStarted": "卷浏览器已启动{expiry}"
-    }
+    },
+    "cpuWarmingUp": "已获取首次采样 — CPU 使用率将在下次轮询时显示"
   },
   "volumes": {
     "title": "卷",

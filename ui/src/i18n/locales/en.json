@@ -254,7 +254,8 @@
     "success": {
       "deletedSuccessfully": "{name} deleted successfully!",
       "volumeBrowserStarted": "Volume browser started{expiry}"
-    }
+    },
+    "cpuWarmingUp": "First sample taken — CPU rate appears on the next poll"
   },
   "volumes": {
     "title": "Volumes",
