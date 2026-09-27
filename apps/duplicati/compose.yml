@@ -23,13 +23,12 @@ x-yantr:
       Incremental backups only store changed files
     ]
 
+  ports:
+    - {port: 8200, protocol: HTTP, label: "Web UI", service: duplicati}
+
 services:
   duplicati:
     image: docker.io/linuxserver/duplicati:latest
-    labels:
-      yantr.app: duplicati
-      yantr.service.8200: Web UI
-      yantr.port.8200: HTTP
     ports:
       - "8200"
     volumes:
