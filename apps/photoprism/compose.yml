@@ -24,13 +24,12 @@ x-yantr:
       length: 32
       charset: alnum
 
+  ports:
+    - {port: 2342, protocol: HTTP, label: "Web UI", service: photoprism}
+
 services:
   photoprism:
     image: docker.io/photoprism/photoprism:latest
-    labels:
-      yantr.app: photoprism
-      yantr.service.2342: Web UI
-      yantr.port.2342: HTTP
     ports:
       - "2342"
     environment:
@@ -50,10 +49,6 @@ services:
       - mariadb
   mariadb:
     image: docker.io/mariadb:11
-    labels:
-      yantr.app: photoprism
-      yantr.service.2342: Web UI
-      yantr.port.2342: HTTP
     environment:
       MARIADB_AUTO_UPGRADE: "1"
       MARIADB_INITDAEMON_BUG_WORKAROUND: "1"
