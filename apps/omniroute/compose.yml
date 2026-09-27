@@ -28,13 +28,12 @@ x-yantr:
         providers."
     ]
 
+  ports:
+    - {port: 20128, protocol: HTTP, label: "Dashboard", service: omniroute}
+
 services:
   omniroute:
     image: docker.io/diegosouzapw/omniroute:latest
-    labels:
-      yantr.app: omniroute
-      yantr.service.20128: Dashboard
-      yantr.port.20128: HTTP
     ports:
       - "20128"
     environment:
@@ -50,8 +49,6 @@ services:
 
   omniroute-redis:
     image: docker.io/redis:7-alpine
-    labels:
-      yantr.app: omniroute
     volumes:
       - omniroute_redis_data:/data
     restart: unless-stopped
