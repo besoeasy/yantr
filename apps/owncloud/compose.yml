@@ -30,6 +30,9 @@ x-yantr:
       length: 24
       charset: alnum
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: owncloud}
+
 services:
   owncloud:
     image: docker.io/owncloud/server:latest
@@ -55,10 +58,6 @@ services:
       - owncloud-mariadb
       - owncloud-redis
     restart: unless-stopped
-    labels:
-      yantr.app: owncloud
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
   owncloud-mariadb:
     image: docker.io/mariadb:10.11
     environment:
@@ -73,10 +72,6 @@ services:
     volumes:
       - owncloud_db:/var/lib/mysql
     restart: unless-stopped
-    labels:
-      yantr.app: owncloud
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
   owncloud-redis:
     image: docker.io/redis:6-alpine
     command:
@@ -85,10 +80,6 @@ services:
     volumes:
       - owncloud_redis:/data
     restart: unless-stopped
-    labels:
-      yantr.app: owncloud
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
 
 volumes:
   owncloud_data: null
