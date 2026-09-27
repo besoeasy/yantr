@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -37,11 +36,12 @@ type PortMapping struct {
 	Protocol      string `json:"protocol"`
 }
 
-// PortInfo describes a port exposed by an app — derived from yantr.port.N labels.
+// PortInfo describes a port exposed by an app — derived from x-yantr.ports.
 type PortInfo struct {
 	Port     int    `json:"port"`
 	Protocol string `json:"protocol"`
 	Label    string `json:"label"`
+	Service  string `json:"service,omitempty"`
 }
 
 // App represents a single app in the catalog.
@@ -124,17 +124,21 @@ type xYantr struct {
 	Website          string                  `yaml:"website"`
 	Notes            []string                `yaml:"notes"`
 	EnvGenerators    map[string]EnvGenerator `yaml:"env_generators"`
+	Ports            []xyPort                `yaml:"ports"`
+}
+
+// xyPort is a single structured port entry under x-yantr.ports.
+type xyPort struct {
+	Port     int    `yaml:"port"`
+	Protocol string `yaml:"protocol"`
+	Label    string `yaml:"label"`
+	Service  string `yaml:"service"`
 }
 
 // composeFile is a minimal representation of the top-level compose.yml structure.
 type composeFile struct {
-	XYantr   xYantr                    `yaml:"x-yantr"`
-	Services map[string]composeService `yaml:"services"`
-}
-
-// composeService captures only the labels we care about.
-type composeService struct {
-	Labels map[string]string `yaml:"labels"`
+	XYantr   xYantr                  `yaml:"x-yantr"`
+	Services map[string]interface{} `yaml:"services"`
 }
 
 // ─── Catalog loader ───────────────────────────────────────────────────────────
@@ -178,8 +182,8 @@ func loadCatalog() (*Catalog, error) {
 			meta := cf.XYantr
 			composeStr := string(composeContent)
 
-			// Derive port info from yantr.port.N labels across all services
-			ports := parsePortLabels(cf.Services)
+			// Structured display ports — single source of truth.
+			ports := parseXyPorts(meta.Ports, cf.Services)
 
 			// Parse env vars and port mappings from raw compose text
 			envVars := parseEnvVars(composeStr)
@@ -235,37 +239,71 @@ func loadCatalog() (*Catalog, error) {
 	return &Catalog{Apps: apps, Count: len(apps)}, nil
 }
 
-// ─── Label-based port parsing ─────────────────────────────────────────────────
+// ─── Structured port parsing (x-yantr.ports) ──────────────────────────────────
 
-// parsePortLabels scans every service's labels for yantr.port.N: "PROTOCOL"
-// and yantr.service.N: "Label", returning a deduplicated PortInfo list.
-func parsePortLabels(services map[string]composeService) []PortInfo {
-	seen := map[int]bool{}
+// validDisplayProtocols is the closed set for x-yantr.ports[].protocol.
+var validDisplayProtocols = map[string]bool{
+	"HTTP": true, "HTTPS": true, "TCP": true, "UDP": true,
+}
+
+// parseXyPorts normalises x-yantr.ports into a deduplicated, sorted PortInfo list.
+// Key is (port, PROTOCOL, service) so multi-service / multi-protocol apps keep
+// their service dimension. Unknown services are kept (forward-compat) but the
+// common mistake — labeling a port owned by another service — is fixed at
+// migration time by assigning service to the actual exposing service.
+func parseXyPorts(in []xyPort, services map[string]interface{}) []PortInfo {
+	seen := map[string]bool{}
 	var ports []PortInfo
 
-	for _, svc := range services {
-		for key, protocol := range svc.Labels {
-			// key format: yantr.port.{N}
-			if !strings.HasPrefix(key, "yantr.port.") {
-				continue
-			}
-			portStr := strings.TrimPrefix(key, "yantr.port.")
-			n, err := strconv.Atoi(portStr)
-			if err != nil || seen[n] {
-				continue
-			}
-			seen[n] = true
-			serviceLabel := coalesce(svc.Labels[fmt.Sprintf("yantr.service.%d", n)], fmt.Sprintf("Port %d", n))
-			ports = append(ports, PortInfo{
-				Port:     n,
-				Protocol: strings.ToUpper(protocol),
-				Label:    serviceLabel,
-			})
+	for _, p := range in {
+		if p.Port < 1 || p.Port > 65535 {
+			continue
 		}
+		proto := strings.ToUpper(strings.TrimSpace(p.Protocol))
+		if proto == "" {
+			proto = "TCP"
+		}
+		if !validDisplayProtocols[proto] {
+			continue
+		}
+		label := strings.TrimSpace(p.Label)
+		if label == "" {
+			label = fmt.Sprintf("Port %d", p.Port)
+		}
+		service := strings.TrimSpace(p.Service)
+		// Drop references to services that don't exist — these are the
+		// owncloud-style bogus entries the old label system hid via dedup.
+		// Keep empty service (unspecified) for forward-compat.
+		if service != "" && services != nil {
+			if _, ok := services[service]; !ok {
+				continue
+			}
+		}
+		key := fmt.Sprintf("%d/%s/%s", p.Port, proto, service)
+		if seen[key] {
+			continue
+		}
+		seen[key] = true
+		ports = append(ports, PortInfo{
+			Port:     p.Port,
+			Protocol: proto,
+			Label:    label,
+			Service:  service,
+		})
 	}
 
 	if ports == nil {
 		ports = []PortInfo{}
+	} else {
+		sort.Slice(ports, func(i, j int) bool {
+			if ports[i].Port != ports[j].Port {
+				return ports[i].Port < ports[j].Port
+			}
+			if ports[i].Protocol != ports[j].Protocol {
+				return ports[i].Protocol < ports[j].Protocol
+			}
+			return ports[i].Service < ports[j].Service
+		})
 	}
 	return ports
 }
