@@ -23,6 +23,9 @@ x-yantr:
       Update tracker definitions regularly for best results
     ]
 
+  ports:
+    - {port: 9117, protocol: HTTP, label: "Web UI", service: jackett}
+
 services:
   jackett:
     image: docker.io/linuxserver/jackett:latest
@@ -35,10 +38,6 @@ services:
     ports:
       - "9117"
     restart: unless-stopped
-    labels:
-      yantr.app: jackett
-      yantr.service.9117: Web UI
-      yantr.port.9117: HTTP
 
 volumes:
   jackett_config: null
