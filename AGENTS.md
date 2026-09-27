@@ -1,141 +1,35 @@
-# Yantr — App Authoring Instructions
+# AGENTS.md — Yantr App Authoring
 
-## App Structure
+## Structure
+Each app is a single `apps/<app-name>/compose.yml`. No `info.json`, no `Dockerfile`. Optional `logo.svg` in the same folder.
 
-Each app lives in `apps/<app-name>/compose.yml` — a single file with no `info.json` and no `Dockerfile`.
+## `x-yantr` metadata block
+**Required:** `name`, `tags` (3–5), `short_description` (50–100 chars), `description` (200–300 chars, YAML `>` block), `usecases` (≥2), `website`.
+**Optional:** `notes` (list), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`).
 
-All metadata is in the top-level `x-yantr` key. Podman Compose ignores `x-*` fields, so the file remains fully deployable.
-
-### x-yantr Metadata Block
-
-**Required fields:**
-- `name` — display name (lowercase, alphanumeric only, no spaces)
-- `tags` — 3–5 lowercase strings
-- `short_description` — 50–100 chars
-- `description` — 200–300 chars (use YAML `>` block scalar for multi-line)
-- `usecases` — ≥2 strings
-- `website` — https:// URL
-
-**Optional fields:**
-- `logo` — omitted; place `logo.svg` in the app folder instead (auto-detected)
-- `notes` — list of strings explaining manual setup steps
-- `env_generators` — map of `VAR → {length, charset}` for auto-generated secrets. `charset` values: `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`
-
-**YAML style — always use flow sequences for flat arrays (`tags`, `usecases`, `notes`):**
+Flat arrays (`tags`, `usecases`, `notes`) always use flow sequences:
 ```yaml
-# ✅ correct
 tags: [tools, utility, self-hosted, homelab, podman]
-usecases: ["Use case one.", "Use case two."]
-notes: ["Note one.", "Note two."]
-
-# ❌ wrong — violates the flow-sequence convention
-tags:
-  - tools
-  - utility
 ```
 
-### Port Labels on Services
-
-`labels` MUST always be a map (key-value dict), never a sequence. `yantr.app` is strictly required on every service.
-
+## Service labels
+`labels` is always a map, never a sequence. `yantr.app` is required on every service.
 ```yaml
 labels:
   yantr.app: "my-app"
   yantr.service.8080: "Web UI"
-  yantr.port.8080: "HTTP"
+  yantr.port.8080: "HTTP"   # HTTP | HTTPS | TCP | UDP
 ```
 
-Supported protocols: `HTTP`, `HTTPS`, `TCP`, `UDP`
+## Critical rules
+1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling requires it).
+2. **`:latest` only** — never pin a version tag.
+3. **Logo** — local `logo.svg`, square, ≥256×256, auto-detected. No URLs; omit if none.
+4. **Auto port assignment only** (`"8080"`) — never explicit mapping (`"8080:8080"`), even if the app would normally want a fixed host port (e.g. VPN/peer protocol).
+5. **Prebuilt images only** — never `build:`; no Dockerfile/entrypoint.sh in the app folder.
+6. **Container socket** — host side must be `${HOST_PODMAN_SOCKET}`, container side stays `/var/run/docker.sock`. Any other `*.sock` host source aborts the deploy (`core/compose/compose.go:applyDockerSocketTransform`).
 
-## Critical Rules
-
-### 1. Always Use Named Podman Volumes
-All persistent data MUST use named Podman volumes — never bind mounts. Declare every volume at the top-level `volumes:` key. In rootless Podman, named volumes are managed under user storage (`~/.local/share/containers/storage/volumes/`) and automatically labeled with the proper SELinux context (`container_file_t`).
-
-```yaml
-# ✅ correct
-volumes:
-  - my_app_data:/data
-
-volumes:
-  my_app_data:
-
-# ❌ wrong — bind mounts fail under rootless permissions/SELinux
-volumes:
-  - ./data:/data
-```
-
-### 2. Always Use Latest Images
-Always use the `:latest` tag (or the upstream's equivalent rolling tag). Never pin to a specific version number.
-
-```yaml
-# ✅ correct
-image: ghcr.io/example/my-app:latest
-
-# ❌ wrong
-image: ghcr.io/example/my-app:1.2.3
-```
-
-### 3. Logo — SVG
-Place a `logo.svg` in the app folder alongside `compose.yml` (auto-detected, no field needed). SVGs must be square, minimum 256×256. Omit if no logo is available — do not use URLs.
-
-```yaml
-# ✅ correct — local SVG (auto-detected, no logo field needed)
-# apps/my-app/logo.svg  (256x256 or larger, square)
-
-# ❌ wrong
-logo: "https://example.com/logo.png"
-```
-
-### 4. Prefer Auto Port Assignment — Avoid Mapped Ports
-Use Podman's automatic port assignment `"8080"` instead of explicit host mappings `"8080:8080"`. Only use mapped ports when the app absolutely cannot function without a fixed host port (e.g. a VPN or peer protocol that must bind to a specific port).
-
-```yaml
-# ✅ correct — let Podman assign the host port
-ports:
-  - "8080"
-
-# ❌ wrong — avoid unless the app cannot work without it
-ports:
-  - "8080:8080"
-```
-
-### 5. App Images — Always Pull, Never Build
-Every app MUST use a prebuilt upstream image (`image: ...:latest`) so deploys pull instead of building on the host. Building at deploy time is fragile (host build backends differ — e.g. missing seccomp profiles break remote builds). Never use Compose `build` (no `dockerfile_inline`, no `Dockerfile`, no `entrypoint.sh` or other build files in the app folder) — keep it to `compose.yml` and optional `logo.svg`.
-
-```yaml
-# ✅ correct — prebuilt image, deploys pull
-services:
-  my-app:
-    image: ghcr.io/example/my-app:latest
-
-# ❌ wrong — never build at deploy time
-services:
-  my-app:
-    build:
-      context: .
-      dockerfile_inline: |
-        FROM debian:stable
-        RUN apt-get update && apt-get install -y --no-install-recommends curl
-        CMD ["my-app"]
-```
-
-### 6. Container Socket — Use ${HOST_PODMAN_SOCKET}, Never docker.sock
-Yantr is Podman-only. Apps needing the container engine API (Glances, Homarr, Portainer, …) MUST use the `${HOST_PODMAN_SOCKET}` placeholder on the host side. Yantr resolves it per deploy to the host's rootless Podman socket. Keep `/var/run/docker.sock` on the container side — images hardcode that path. Any other `*.sock` host source aborts the deploy with an error.
-
-```yaml
-# ✅ correct
-volumes:
-  - "${HOST_PODMAN_SOCKET}:/var/run/docker.sock:ro"
-
-# ❌ wrong — deploy WILL fail
-volumes:
-  - /var/run/docker.sock:/var/run/docker.sock:ro
-  - /run/podman/podman.sock:/var/run/docker.sock:ro
-```
-
-## Minimal App Example
-
+## Minimal example
 ```yaml
 # apps/my-app/compose.yml
 x-yantr:
@@ -171,24 +65,13 @@ volumes:
   my_app_data:
 ```
 
-## Validation
+## Validation (manual — no linter exists)
+- Every `${VAR}` without a default has a matching `env_generators` entry — otherwise it deploys empty (`core/apps/catalog.go:parseEnvVars`).
+- Flat arrays use flow sequences, not block sequences.
+- `labels` is a map; every service has `yantr.app`.
 
-There is no automated linter for `apps/*/compose.yml`. These rules are enforced by review, not by a script — verify them by hand before opening a PR.
-
-Check these manually after any app change:
-- Every `${VAR}` used without a default has a matching `env_generators` entry. Without one, the deploy still succeeds but the variable reaches the container empty (`core/apps/catalog.go:parseEnvVars` only records the name and default), so the app either starts misconfigured or fails at runtime.
-- Flat arrays (`tags`, `usecases`, `notes`) use flow sequences, not block sequences.
-- `labels` is a map, not a sequence, and every service carries `yantr.app`.
-
-For changes to the Go core, run:
-
+Go core changes:
 ```sh
 cd core && go build ./... && go vet ./... && go test ./...
 ```
-
-Note: `gofmt -l .` currently reports pre-existing drift in `apps/catalog.go`, `handlers_images.go`, `handlers_system.go`, and `main.go`. Don't reformat those files wholesale — it buries the real change in noise.
-
-### The one hard rule
-
-Enforced in code at `core/compose/compose.go:applyDockerSocketTransform`, and it aborts the deploy:
-- Any volume with a `*.sock` host source other than `${HOST_PODMAN_SOCKET}` is rejected — see Critical Rule 6.
+`gofmt -l .` shows pre-existing drift in `apps/catalog.go`, `handlers_images.go`, `handlers_system.go`, `main.go` — don't mass-reformat those.
