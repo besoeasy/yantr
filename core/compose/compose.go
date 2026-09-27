@@ -243,12 +243,20 @@ func BuildProjectComposeContent(baseContent string, opts TransformOptions) (stri
 	return Stringify(doc)
 }
 
+// PortOverride is a typed host-port override for a single container port.
+// Protocol is transport protocol (tcp/udp, lowercased at normalize time).
+type PortOverride struct {
+	ContainerPort int    `json:"containerPort"`
+	Protocol      string `json:"protocol"`
+	HostPort      int    `json:"hostPort"`
+}
+
 // TransformOptions holds the options for compose transforms.
 type TransformOptions struct {
 	ProjectID          string
 	AppID              string
 	ExpiresIn          float64
-	CustomPortMappings map[string]interface{}
+	CustomPortMappings []PortOverride
 	ExtraEnv           map[string]interface{}
 	MasterApp          string
 	HostDockerSocket   string
@@ -525,7 +533,24 @@ func suffixServiceVolume(entry, instanceID string) string {
 	return src + "_" + instanceID + ":" + parts[1]
 }
 
-func applyCustomPortMappings(services map[string]interface{}, customPortMappings map[string]interface{}) {
+func applyCustomPortMappings(services map[string]interface{}, customPortMappings []PortOverride) {
+	overrideMap := map[string]int{}
+	for _, o := range customPortMappings {
+		if o.ContainerPort < 1 || o.ContainerPort > 65535 || o.HostPort < 1 || o.HostPort > 65535 {
+			continue
+		}
+		proto := strings.ToLower(strings.TrimSpace(o.Protocol))
+		if proto == "" {
+			proto = "tcp"
+		}
+		if proto != "tcp" && proto != "udp" {
+			continue
+		}
+		overrideMap[fmt.Sprintf("%d/%s", o.ContainerPort, proto)] = o.HostPort
+	}
+	if len(overrideMap) == 0 {
+		return
+	}
 	for _, svcRaw := range services {
 		svc, ok := svcRaw.(map[string]interface{})
 		if !ok {
@@ -545,8 +570,8 @@ func applyCustomPortMappings(services map[string]interface{}, customPortMappings
 				continue
 			}
 			key := fmt.Sprintf("%d/%s", parsed.Target, parsed.Protocol)
-			if mappedPort, ok := customPortMappings[key]; ok {
-				hostPort := fmt.Sprintf("%v", mappedPort)
+			if mappedPort, ok := overrideMap[key]; ok {
+				hostPort := strconv.Itoa(mappedPort)
 				ports[i] = hostPort + ":" + strconv.Itoa(parsed.Target) +
 					func() string {
 						if parsed.Protocol != "tcp" {
@@ -558,6 +583,87 @@ func applyCustomPortMappings(services map[string]interface{}, customPortMappings
 		}
 		svc["ports"] = ports
 	}
+}
+
+// NormalizePortOverrides accepts both the new typed array
+// [{containerPort, protocol, hostPort}] and the legacy map
+// {"8080/tcp": 9090} and returns a validated override list.
+func NormalizePortOverrides(raw interface{}) []PortOverride {
+	if raw == nil {
+		return nil
+	}
+	// Typed array path.
+	if list, ok := raw.([]interface{}); ok {
+		var out []PortOverride
+		for _, item := range list {
+			m, ok := item.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			cp := toPortInt(m["containerPort"])
+			hp := toPortInt(m["hostPort"])
+			if cp == 0 || hp == 0 {
+				continue
+			}
+			proto := strings.ToLower(strings.TrimSpace(fmt.Sprintf("%v", m["protocol"])))
+			if proto == "" {
+				proto = "tcp"
+			}
+			if proto != "tcp" && proto != "udp" {
+				continue
+			}
+			out = append(out, PortOverride{ContainerPort: cp, Protocol: proto, HostPort: hp})
+		}
+		return out
+	}
+	// Legacy map path: {"8080/tcp": 9090}.
+	if m, ok := raw.(map[string]interface{}); ok {
+		var out []PortOverride
+		for k, v := range m {
+			proto := "tcp"
+			portStr := strings.TrimSpace(k)
+			if idx := strings.LastIndex(portStr, "/"); idx >= 0 {
+				p := strings.ToLower(strings.TrimSpace(portStr[idx+1:]))
+				if p == "tcp" || p == "udp" {
+					proto = p
+					portStr = strings.TrimSpace(portStr[:idx])
+				}
+			}
+			cp, err := strconv.Atoi(portStr)
+			if err != nil || cp < 1 || cp > 65535 {
+				continue
+			}
+			hp := toPortInt(v)
+			if hp == 0 {
+				continue
+			}
+			out = append(out, PortOverride{ContainerPort: cp, Protocol: proto, HostPort: hp})
+		}
+		return out
+	}
+	return nil
+}
+
+func toPortInt(v interface{}) int {
+	switch n := v.(type) {
+	case int:
+		if n >= 1 && n <= 65535 {
+			return n
+		}
+	case int64:
+		if n >= 1 && n <= 65535 {
+			return int(n)
+		}
+	case float64:
+		if n >= 1 && n <= 65535 {
+			return int(n)
+		}
+	case string:
+		if p, err := strconv.Atoi(strings.TrimSpace(n)); err == nil && p >= 1 && p <= 65535 {
+			return p
+		}
+	}
+	return 0
 }
 
 func applyExtraEnv(services map[string]interface{}, extraEnv map[string]interface{}) {
