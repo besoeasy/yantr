@@ -15,10 +15,6 @@ services:
     image: docker.io/wisdomsky/cloudflared-web:latest
     restart: unless-stopped
     network_mode: host
-    labels:
-      yantr.app: "cloudflared-web"
-      yantr.service.14333: "Web UI"
-      yantr.port.14333: "HTTP"
     volumes:
       - cloudflared_web_data:/config
     environment:
