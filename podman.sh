@@ -9,7 +9,7 @@ podman rmi -f yantr:dev 2>/dev/null || true
 
 podman build -t yantr:dev .
 
-podman run -d \
+podman run --rm \
   --name yantr \
   --network host \
   --security-opt label=disable \
