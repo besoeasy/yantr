@@ -204,7 +204,21 @@ async function deployApp() {
     }
 
     if (customizePorts.value && Object.keys(customPortMappings.value).length > 0) {
-      requestBody.customPortMappings = customPortMappings.value;
+      // Typed overrides: [{containerPort, protocol, hostPort}].
+      const overrides = [];
+      for (const [key, hostPort] of Object.entries(customPortMappings.value)) {
+        const hp = parseInt(hostPort, 10);
+        if (!hp || hp < 1 || hp > 65535) continue;
+        const sep = key.lastIndexOf('/');
+        const containerPort = parseInt(sep >= 0 ? key.slice(0, sep) : key, 10);
+        const protocol = (sep >= 0 ? key.slice(sep + 1) : 'tcp').toLowerCase();
+        if (!containerPort || containerPort < 1 || containerPort > 65535) continue;
+        if (protocol !== 'tcp' && protocol !== 'udp') continue;
+        overrides.push({ containerPort, protocol, hostPort: hp });
+      }
+      if (overrides.length > 0) {
+        requestBody.customPortMappings = overrides;
+      }
     }
 
     const response = await fetch(`${apiUrl.value}/api/deploy`, {
