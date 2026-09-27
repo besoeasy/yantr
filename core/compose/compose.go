@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -375,6 +376,85 @@ func getServices(doc ComposeDoc) map[string]interface{} {
 		return svcs
 	}
 	return map[string]interface{}{}
+}
+
+// ServiceImages returns the image references declared by the compose services,
+// de-duplicated and in a stable order. Services without an `image` key (for
+// example build-only services) are skipped.
+func ServiceImages(doc ComposeDoc) []string {
+	seen := map[string]bool{}
+	var refs []string
+	for _, svcRaw := range getServices(doc) {
+		svc, ok := svcRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		ref, ok := svc["image"].(string)
+		if !ok {
+			continue
+		}
+		ref = strings.TrimSpace(ref)
+		if ref == "" {
+			continue
+		}
+		key := NormalizeImageRef(ref)
+		if key == "" || seen[key] {
+			continue
+		}
+		seen[key] = true
+		refs = append(refs, ref)
+	}
+	sort.Strings(refs)
+	return refs
+}
+
+// NormalizeImageRef expands an image reference to the fully-qualified form
+// Podman reports in RepoTags, so compose-side refs can be matched against
+// engine-side image IDs regardless of how terse the compose file is.
+//
+//	alpine                        -> docker.io/library/alpine:latest
+//	ghcr.io/foo/bar               -> ghcr.io/foo/bar:latest
+//	docker.io/library/postgres:16 -> docker.io/library/postgres:16
+//
+// References pinned by digest are returned with the digest stripped so they
+// still match the RepoTag of the same image.
+func NormalizeImageRef(ref string) string {
+	ref = strings.TrimSpace(ref)
+	if ref == "" {
+		return ""
+	}
+	// Drop any digest pin — we match on the tag, not the manifest digest.
+	if idx := strings.Index(ref, "@"); idx != -1 {
+		ref = ref[:idx]
+	}
+
+	name := ref
+	tag := "latest"
+	// A colon after the last slash is a tag; a colon before it is a registry port.
+	if idx := strings.LastIndex(ref, ":"); idx != -1 && idx > strings.LastIndex(ref, "/") {
+		name, tag = ref[:idx], ref[idx+1:]
+	}
+
+	// Docker Hub shorthand. Podman expands three forms to an implicit
+	// "library" namespace, and a compose file may use any of them:
+	//   "alpine"                  -> docker.io/library/alpine
+	//   "docker.io/postgres"      -> docker.io/library/postgres
+	//   "linuxserver/sonarr"       -> docker.io/linuxserver/sonarr
+	// A leading component containing a dot or colon is a real registry host,
+	// so it is left alone.
+	parts := strings.Split(name, "/")
+	switch {
+	case len(parts) == 1:
+		name = "docker.io/library/" + name
+	case parts[0] == "docker.io" || parts[0] == "index.docker.io":
+		if len(parts) == 2 {
+			name = "docker.io/library/" + parts[1]
+		}
+	case !strings.ContainsAny(parts[0], ".:"):
+		name = "docker.io/" + name
+	}
+
+	return name + ":" + tag
 }
 
 func getInstanceID(projectID, appID string) int {

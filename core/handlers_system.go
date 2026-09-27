@@ -395,6 +395,15 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 
 		env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
+
+		// Snapshot the stack's image IDs before the pull so we can tell whether
+		// anything actually changed. Sniffing the pull output for phrases like
+		// "downloaded newer image" only matches Docker Compose v2 wording —
+		// podman-compose says "Copying blob"/"Writing manifest" instead, which
+		// made every real update report as "already up to date".
+		stackImages := stackImageRefs(ref.ComposePath)
+		before, beforeErr := podman.LocalImageIDs(podman.Background())
+
 		shared.Log("info", fmt.Sprintf("[update] pulling latest images for stack: %s", projectID))
 		pullCtx, pullCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
 		pullArgs := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "pull")
@@ -409,11 +418,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		// Detect whether any image was actually newer before recreating.
-		pullCombined := strings.ToLower(outPull + "\n" + errPull)
-		newerImage := strings.Contains(pullCombined, "downloaded newer image") ||
-			strings.Contains(pullCombined, "pull complete") ||
-			strings.Contains(pullCombined, "digest:")
+		newerImage := imagesChanged(stackImages, before, beforeErr)
 
 		shared.Log("info", fmt.Sprintf("[update] recreating stack: %s", projectID))
 		upCtx, upCancel := context.WithTimeout(context.Background(), spawnTimeoutLong)
@@ -487,3 +492,59 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// stackImageRefs returns the normalized image references declared by a compose
+// file. An unreadable or malformed file yields no references, which makes
+// imagesChanged fall back to "nothing changed" rather than guessing.
+func stackImageRefs(composePath string) []string {
+	data, err := os.ReadFile(composePath)
+	if err != nil {
+		return nil
+	}
+	doc, err := compose.Parse(string(data))
+	if err != nil {
+		return nil
+	}
+	refs := compose.ServiceImages(doc)
+	normalized := make([]string, 0, len(refs))
+	for _, ref := range refs {
+		if n := compose.NormalizeImageRef(ref); n != "" {
+			normalized = append(normalized, n)
+		}
+	}
+	return normalized
+}
+
+// imagesChanged reports whether pulling altered the local image ID behind any
+// of the stack's references. A reference absent from `before` but present in
+// `after` counts as a change — that is a first-time pull.
+//
+// If the pre-pull snapshot failed, or the compose file declared no images, the
+// answer is false: the pull already happened either way, so this only affects
+// reporting and telemetry, and under-reporting is the safer failure mode.
+func imagesChanged(refs []string, before map[string]string, beforeErr error) bool {
+	if beforeErr != nil || len(refs) == 0 {
+		return false
+	}
+	after, err := podman.LocalImageIDs(podman.Background())
+	if err != nil {
+		shared.Log("warn", "[update] could not read image list after pull: "+err.Error())
+		return false
+	}
+	return imageIDsDiffer(refs, before, after)
+}
+
+// imageIDsDiffer is the pure comparison behind imagesChanged, split out so it
+// can be tested without a live Podman socket.
+func imageIDsDiffer(refs []string, before, after map[string]string) bool {
+	for _, ref := range refs {
+		prev, hadBefore := before[ref]
+		now, hasAfter := after[ref]
+		if !hadBefore && hasAfter {
+			return true
+		}
+		if hasAfter && prev != now {
+			return true
+		}
+	}
+	return false
+}

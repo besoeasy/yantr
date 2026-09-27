@@ -28,7 +28,7 @@ tags: [tools, utility, self-hosted, homelab, podman]
 usecases: ["Use case one.", "Use case two."]
 notes: ["Note one.", "Note two."]
 
-# ❌ wrong — check.js WILL fail
+# ❌ wrong — violates the flow-sequence convention
 tags:
   - tools
   - utility
@@ -173,9 +173,22 @@ volumes:
 
 ## Validation
 
-Run `node check.js` after any app changes. It will fail if:
-- `compose.yml` uses `${VAR}` without a default and `env_generators` is missing the matching entry
-- Flat arrays use block sequences instead of flow sequences
+There is no automated linter for `apps/*/compose.yml`. These rules are enforced by review, not by a script — verify them by hand before opening a PR.
 
-Deploy-time hard rule (enforced in `core/compose/compose.go`, not `check.js`):
-- Any volume with a `*.sock` host source other than `${HOST_PODMAN_SOCKET}` aborts the deploy — see Critical Rule 6.
+Check these manually after any app change:
+- Every `${VAR}` used without a default has a matching `env_generators` entry. Without one, the deploy still succeeds but the variable reaches the container empty (`core/apps/catalog.go:parseEnvVars` only records the name and default), so the app either starts misconfigured or fails at runtime.
+- Flat arrays (`tags`, `usecases`, `notes`) use flow sequences, not block sequences.
+- `labels` is a map, not a sequence, and every service carries `yantr.app`.
+
+For changes to the Go core, run:
+
+```sh
+cd core && go build ./... && go vet ./... && go test ./...
+```
+
+Note: `gofmt -l .` currently reports pre-existing drift in `apps/catalog.go`, `handlers_images.go`, `handlers_system.go`, and `main.go`. Don't reformat those files wholesale — it buries the real change in noise.
+
+### The one hard rule
+
+Enforced in code at `core/compose/compose.go:applyDockerSocketTransform`, and it aborts the deploy:
+- Any volume with a `*.sock` host source other than `${HOST_PODMAN_SOCKET}` is rejected — see Critical Rule 6.

@@ -69,6 +69,28 @@ func ImageList(ctx context.Context, options dockerimage.ListOptions) ([]dockerim
 	return Client.ImageList(ctx, options)
 }
 
+// LocalImageIDs returns a snapshot of locally cached images, keyed by fully
+// qualified reference ("docker.io/library/alpine:latest") with the image ID as
+// the value. Taking two snapshots around a pull and diffing them yields a
+// structural, provider-independent answer to "did anything actually change?",
+// without parsing human-readable CLI output.
+func LocalImageIDs(ctx context.Context) (map[string]string, error) {
+	images, err := ImageList(ctx, dockerimage.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	out := make(map[string]string, len(images))
+	for _, img := range images {
+		for _, tag := range img.RepoTags {
+			if tag == "" || tag == "<none>:<none>" {
+				continue
+			}
+			out[tag] = img.ID
+		}
+	}
+	return out, nil
+}
+
 // ImageInspectWithRaw wraps the Podman API to inspect an image.
 func ImageInspectWithRaw(ctx context.Context, imageID string) (dockertypes.ImageInspect, []byte, error) {
 	return Client.ImageInspectWithRaw(ctx, imageID)
