@@ -66,14 +66,27 @@ const allPortMappings = computed(() => {
     return []
   }
   
-  const portLabels = {}
+  const portByPort = {}
   for (const p of (selectedContainer.value.app?.ports || [])) {
     if (p.port != null) {
-      portLabels[String(p.port)] = {
+      const key = String(p.port)
+      if (!portByPort[key]) portByPort[key] = []
+      portByPort[key].push({
         protocol: (p.protocol || '').toLowerCase(),
         label: p.label || null,
-      }
+        service: p.service || null,
+      })
     }
+  }
+  const containerService = selectedContainer.value.app?.service || selectedContainer.value.name
+  function lookupLabel(privatePort) {
+    const cands = portByPort[String(privatePort)]
+    if (!cands || cands.length === 0) return null
+    if (containerService) {
+      const exact = cands.find((c) => c.service === containerService)
+      if (exact) return exact
+    }
+    return cands[0]
   }
   
   const mappings = []
@@ -88,7 +101,7 @@ const allPortMappings = computed(() => {
       bindings.forEach(binding => {
         if (binding.HostPort && !seenHostPorts.has(binding.HostPort)) {
           seenHostPorts.add(binding.HostPort)
-          const label = portLabels[privatePort] || portLabels[binding.HostPort]
+          const label = lookupLabel(privatePort) || lookupLabel(binding.HostPort)
           mappings.push({
             containerPort: privatePort,
             hostPort: binding.HostPort,
@@ -100,7 +113,7 @@ const allPortMappings = computed(() => {
         }
       })
     } else {
-      const label = portLabels[privatePort]
+      const label = lookupLabel(privatePort)
       mappings.push({
         containerPort: privatePort,
         hostPort: null,
