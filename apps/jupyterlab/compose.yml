@@ -13,13 +13,12 @@ x-yantr:
     JUPYTER_TOKEN: {length: 32, charset: alnum}
   notes: ["The generated Jupyter token is required to sign in.", "Use the volume browser to add notebooks and data files."]
 
+  ports:
+    - {port: 8888, protocol: HTTP, label: "Web UI", service: jupyterlab}
+
 services:
   jupyterlab:
     image: quay.io/jupyter/base-notebook:latest
-    labels:
-      yantr.app: "jupyterlab"
-      yantr.service.8888: "Web UI"
-      yantr.port.8888: "HTTP"
     environment:
       JUPYTER_ENABLE_LAB: "yes"
       JUPYTER_TOKEN: ${JUPYTER_TOKEN}
