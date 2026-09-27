@@ -23,13 +23,12 @@ x-yantr:
       Can be customized with environment variables
     ]
 
+  ports:
+    - {port: 5000, protocol: HTTP, label: "Web UI", service: whoogle}
+
 services:
   whoogle:
     image: docker.io/benbusby/whoogle-search:latest
-    labels:
-      yantr.app: whoogle
-      yantr.service.5000: Web UI
-      yantr.port.5000: HTTP
     ports:
       - "5000"
     volumes:
