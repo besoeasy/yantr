@@ -27,13 +27,12 @@ x-yantr:
       Push endpoint available for services to send their own status updates
     ]
 
+  ports:
+    - {port: 3001, protocol: HTTP, label: "Web UI", service: uptime-kuma}
+
 services:
   uptime-kuma:
     image: docker.io/louislam/uptime-kuma:latest
-    labels:
-      yantr.app: uptime-kuma
-      yantr.service.3001: Web UI
-      yantr.port.3001: HTTP
     ports:
       - "3001"
     volumes:
