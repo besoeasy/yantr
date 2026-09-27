@@ -24,13 +24,12 @@ x-yantr:
         only expose it on a trusted network."
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: agent-zero}
+
 services:
   agent-zero:
     image: docker.io/agent0ai/agent-zero:latest
-    labels:
-      yantr.app: agent-zero
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     restart: unless-stopped
     ports:
       - "80"
