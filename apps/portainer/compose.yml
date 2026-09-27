@@ -25,13 +25,12 @@ x-yantr:
       Can manage multiple Docker environments from a single Portainer instance
     ]
 
+  ports:
+    - {port: 9443, protocol: HTTPS, label: "Web UI", service: portainer}
+
 services:
   portainer:
     image: docker.io/portainer/portainer-ce:latest
-    labels:
-      yantr.app: portainer
-      yantr.service.9443: Web UI
-      yantr.port.9443: HTTPS
     ports:
       - "9443"
     volumes:
