@@ -20,13 +20,12 @@ x-yantr:
       "CPU-only mode works out of the box without additional configuration",
     ]
 
+  ports:
+    - {port: 8001, protocol: HTTP, label: "Web UI", service: 8mb-local}
+
 services:
   8mb-local:
     image: docker.io/jms1717/8mblocal:latest
-    labels:
-      yantr.app: 8mb-local
-      yantr.service.8001: Web UI
-      yantr.port.8001: HTTP
     environment:
       AUTH_ENABLED: "false"
       FILE_RETENTION_HOURS: "12"
