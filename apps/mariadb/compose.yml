@@ -24,13 +24,12 @@ x-yantr:
       Data persists in the mariadb_data volume
     ]
 
+  ports:
+    - {port: 3306, protocol: TCP, label: "Database", service: mariadb}
+
 services:
   mariadb:
     image: docker.io/mariadb:latest
-    labels:
-      yantr.app: mariadb
-      yantr.service.3306: Database
-      yantr.port.3306: TCP
     ports:
       - "3306"
     environment:
