@@ -36,14 +36,13 @@ x-yantr:
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
 
+  ports:
+    - {port: 8002, protocol: HTTP, label: "Web UI", service: seafile}
+
 services:
   seafile-db:
     image: docker.io/mariadb:10.6
     restart: unless-stopped
-    labels:
-      yantr.app: seafile
-      yantr.service.8002: Web UI
-      yantr.port.8002: HTTP
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: seafile
@@ -54,10 +53,6 @@ services:
   seafile:
     image: docker.io/seafileltd/seafile-mc:latest
     restart: unless-stopped
-    labels:
-      yantr.app: seafile
-      yantr.service.8002: Web UI
-      yantr.port.8002: HTTP
     depends_on:
       - seafile-db
     ports:
