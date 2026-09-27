@@ -15,13 +15,12 @@ x-yantr:
     ]
   website: https://github.com/RobinLinus/snapdrop
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: server}
+
 services:
   server:
     image: docker.io/linuxserver/snapdrop:latest
-    labels:
-      yantr.app: snapdrop
-      yantr.service.80: Web UI
-      yantr.port.80: HTTP
     restart: unless-stopped
     ports:
       - "80"
