@@ -25,13 +25,12 @@ x-yantr:
       Can be set as browser default search engine
     ]
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: searxng}
+
 services:
   searxng:
     image: docker.io/searxng/searxng:latest
-    labels:
-      yantr.app: searxng
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     volumes:
