@@ -326,6 +326,17 @@ func securityHeadersMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// withWriteTimeout sets an explicit connection write deadline for long-running compose handlers.
+func withWriteTimeout(timeout time.Duration) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			rc := http.NewResponseController(w)
+			_ = rc.SetWriteDeadline(time.Now().Add(timeout))
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
 func authMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
@@ -480,18 +491,18 @@ func main() {
 	r.Get("/api/apps", handleApps)
 	r.Get("/api/apps/{id}/logo", handleAppLogo)
 	r.Get("/api/apps/{id}/check-arch", handleCheckArch)
-	r.Post("/api/deploy", handleDeploy)
+	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/deploy", handleDeploy)
 	r.Get("/api/containers", handleContainers)
 	r.Get("/api/containers/{id}", handleContainerDetail)
 	r.Get("/api/containers/{id}/stats", handleContainerStats)
 	r.Get("/api/containers/{id}/logs", handleContainerLogs)
-	r.Delete("/api/containers/{id}", handleContainerDelete)
+	r.With(withWriteTimeout(spawnTimeoutMedium)).Delete("/api/containers/{id}", handleContainerDelete)
 	r.Post("/api/containers/{id}/start", handleContainerStart)
 	r.Post("/api/containers/{id}/stop", handleContainerStop)
 	r.Post("/api/containers/{id}/restart", handleContainerRestart)
 	r.Get("/api/stacks/{projectId}", handleStackDetail)
-	r.Delete("/api/stacks/{projectId}", handleStackDelete)
-	r.Post("/api/stacks/{projectId}/restart", handleStackRestart)
+	r.With(withWriteTimeout(spawnTimeoutMedium)).Delete("/api/stacks/{projectId}", handleStackDelete)
+	r.With(withWriteTimeout(spawnTimeoutMedium)).Post("/api/stacks/{projectId}/restart", handleStackRestart)
 	r.Get("/api/images", handleImages)
 	r.Get("/api/image-details/{id}", handleImageDetails)
 	r.Delete("/api/images/{id}", handleImageDelete)
@@ -506,7 +517,7 @@ func main() {
 	r.Get("/api/ports/used", handlePortsUsed)
 	r.Post("/api/ports/suggest", handlePortsSuggest)
 	r.Get("/api/network/identity", handleNetworkIdentity)
-	r.Post("/api/autoupdate/run", handleAutoupdateRun)
+	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/telemetry/stats", handleTelemetryStats)
 
 	// SPA static serving (production)
