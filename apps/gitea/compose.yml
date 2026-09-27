@@ -18,6 +18,10 @@ x-yantr:
       length: 32
       charset: alnum
 
+  ports:
+    - {port: 2222, protocol: TCP, label: "SSH", service: server}
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: server}
+
 services:
   db:
     image: docker.io/postgres:16-alpine
@@ -28,23 +32,11 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - gitea_pgdata:/var/lib/postgresql/data
-    labels:
-      yantr.app: gitea
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.2222: SSH
-      yantr.port.2222: TCP
   server:
     image: docker.io/gitea/gitea:latest
     restart: unless-stopped
     depends_on:
       - db
-    labels:
-      yantr.app: gitea
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.2222: SSH
-      yantr.port.2222: TCP
     ports:
       - "3000"
       - "2222"
