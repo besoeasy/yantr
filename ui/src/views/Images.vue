@@ -159,7 +159,7 @@ onMounted(() => {
           
           <div class="flex items-center gap-3">
             <SearchInput v-model="searchQuery" :placeholder="t('images.searchPlaceholder')" />
-            <button @click="fetchImages" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
+            <button @click="fetchImages" :aria-label="t('images.refresh')" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
               <Database class="h-4 w-4 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white" :class="{ 'animate-spin': loading }" />
             </button>
           </div>

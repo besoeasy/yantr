@@ -131,7 +131,8 @@
     "loadingCatalog": "Загрузка каталога...",
     "noAppsFound": "Приложения не найдены",
     "noAppsFoundDesc": "Не удалось найти приложения, соответствующие вашим критериям поиска.",
-    "clearAllFilters": "Очистить все фильтры"
+    "clearAllFilters": "Очистить все фильтры",
+    "clearSearch": "Очистить поиск"
   },
   "appDetail": {
     "catalog": "Каталог",
@@ -197,7 +198,10 @@
     "generatedValuesCount": "Сгенерировано {count} безопасных значений",
     "generationFailed": "Не удалось сгенерировать значение",
     "invalidGeneratorRule": "Недопустимое правило генератора",
-    "noGeneratorForVariable": "Правило безопасной генерации не найдено"
+    "noGeneratorForVariable": "Правило безопасной генерации не найдено",
+    "removeVar": "Удалить переменную",
+    "expiresAfter": "Истекает через",
+    "hostPortFor": "Хост-порт для порта контейнера {port} ({protocol})"
   },
   "container": {
     "status": "Статус",
@@ -207,7 +211,14 @@
     "start": "Запустить",
     "stop": "Остановить",
     "logs": "Журналы",
-    "details": "Подробности"
+    "details": "Подробности",
+    "serviceHeader": "{name} — показать или скрыть детали службы",
+    "starting": "Запуск…",
+    "stopping": "Остановка…",
+    "restarting": "Перезапуск…",
+    "startFailed": "Не удалось запустить контейнер",
+    "stopFailed": "Не удалось остановить контейнер",
+    "restartFailed": "Не удалось перезапустить контейнер"
   },
   "containerDetail": {
     "containers": "Контейнеры",
@@ -314,7 +325,8 @@
     "deleteVolume": "Удалить том {name}?",
     "deleteAllUnused": "Удалить все {count} неиспользуемых тома?",
     "mb": "МБ",
-    "notAvailable": "Н/Д"
+    "notAvailable": "Н/Д",
+    "refresh": "Обновить тома"
   },
   "appOverview": {
     "back": "Назад",
@@ -358,7 +370,8 @@
     "cleanedUp": "Очищено {count} образов",
     "cleanupInterrupted": "Очистка прервана: {error}",
     "deletionFailed": "Ошибка удаления: {message}",
-    "imageDeleted": "Образ успешно удалён"
+    "imageDeleted": "Образ успешно удалён",
+    "refresh": "Обновить образы"
   },
   "logs": {
     "systemOutput": "Вывод системы",
@@ -464,7 +477,22 @@
     "caddyAuthDisabled": "Auth Proxy выключен",
     "caddyAuthServePortRequired": "Введите защищенный порт.",
     "caddyAuthTargetPortRequired": "Введите порт приложения.",
-    "caddyProxiesRunning": "Активные прокси"
+    "caddyProxiesRunning": "Активные прокси",
+    "loadFailedTitle": "Не удалось загрузить стек",
+    "loadFailedHint": "Сервер не ответил для {id}. Повторные попытки будут каждые несколько секунд, либо попробуйте сейчас.",
+    "retry": "Повторить",
+    "restartStack": "Перезапустить",
+    "restarting": "Перезапуск…",
+    "restartingStack": "Перезапуск {name}…",
+    "stackRestarted": "Стек перезапущен",
+    "restartFailed": "Ошибка перезапуска",
+    "startStack": "Запустить все",
+    "stopStack": "Остановить все",
+    "startingStack": "Запуск {name}…",
+    "stoppingStack": "Остановка {name}…",
+    "stackStarted": "Все службы запущены",
+    "stackStopped": "Все службы остановлены",
+    "serviceActionFailed": "{failed} из {total} служб не ответили"
   },
   "appCard": {
     "active": "Активно ({count})",

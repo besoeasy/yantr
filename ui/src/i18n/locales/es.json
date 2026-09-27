@@ -131,7 +131,8 @@
     "loadingCatalog": "Cargando catálogo...",
     "noAppsFound": "No se encontraron apps",
     "noAppsFoundDesc": "No encontramos aplicaciones que coincidan con tu búsqueda.",
-    "clearAllFilters": "Limpiar filtros"
+    "clearAllFilters": "Limpiar filtros",
+    "clearSearch": "Borrar búsqueda"
   },
   "appDetail": {
     "catalog": "Catálogo",
@@ -197,7 +198,10 @@
     "generatedValuesCount": "Se generaron {count} valores seguros",
     "generationFailed": "No se pudo generar un valor que coincida con esta regla",
     "invalidGeneratorRule": "Regla regex del generador inválida",
-    "noGeneratorForVariable": "No se encontró ninguna regla de generador seguro para esta aplicación"
+    "noGeneratorForVariable": "No se encontró ninguna regla de generador seguro para esta aplicación",
+    "removeVar": "Eliminar variable",
+    "expiresAfter": "Caduca después de",
+    "hostPortFor": "Puerto del host para el puerto {port} del contenedor ({protocol})"
   },
   "container": {
     "status": "Estado",
@@ -207,7 +211,14 @@
     "start": "Iniciar",
     "stop": "Detener",
     "logs": "Registros",
-    "details": "Detalles"
+    "details": "Detalles",
+    "serviceHeader": "{name} — alternar detalles del servicio",
+    "starting": "Iniciando…",
+    "stopping": "Deteniendo…",
+    "restarting": "Reiniciando…",
+    "startFailed": "No se pudo iniciar el contenedor",
+    "stopFailed": "No se pudo detener el contenedor",
+    "restartFailed": "No se pudo reiniciar el contenedor"
   },
   "containerDetail": {
     "containers": "Contenedores",
@@ -314,7 +325,8 @@
     "deleteVolume": "¿Eliminar volumen {name}?",
     "deleteAllUnused": "¿Eliminar los {count} volúmenes sin usar?",
     "mb": "MB",
-    "notAvailable": "N/D"
+    "notAvailable": "N/D",
+    "refresh": "Actualizar volúmenes"
   },
   "appOverview": {
     "back": "Atrás",
@@ -358,7 +370,8 @@
     "cleanedUp": "Se limpiaron {count} imágenes",
     "cleanupInterrupted": "Limpieza interrumpida: {error}",
     "deletionFailed": "Error en la eliminación: {message}",
-    "imageDeleted": "Imagen eliminada con éxito"
+    "imageDeleted": "Imagen eliminada con éxito",
+    "refresh": "Actualizar imágenes"
   },
   "logs": {
     "systemOutput": "Salida del sistema",
@@ -464,7 +477,22 @@
     "caddyAuthDisabled": "Auth proxy deshabilitado",
     "caddyAuthServePortRequired": "Ingrese un puerto protegido antes de habilitar.",
     "caddyAuthTargetPortRequired": "Ingrese el puerto de la aplicación antes de habilitar.",
-    "caddyProxiesRunning": "Proxies Activos"
+    "caddyProxiesRunning": "Proxies Activos",
+    "loadFailedTitle": "No se pudo cargar este stack",
+    "loadFailedHint": "El servidor no respondió para {id}. Seguirá reintentando cada pocos segundos, o puedes intentarlo ahora.",
+    "retry": "Reintentar",
+    "restartStack": "Reiniciar",
+    "restarting": "Reiniciando…",
+    "restartingStack": "Reiniciando {name}…",
+    "stackRestarted": "Stack reiniciado",
+    "restartFailed": "Error al reiniciar",
+    "startStack": "Iniciar todo",
+    "stopStack": "Detener todo",
+    "startingStack": "Iniciando {name}…",
+    "stoppingStack": "Deteniendo {name}…",
+    "stackStarted": "Todos los servicios iniciados",
+    "stackStopped": "Todos los servicios detenidos",
+    "serviceActionFailed": "{failed} de {total} servicios no respondieron"
   },
   "appCard": {
     "active": "Activo ({count})",

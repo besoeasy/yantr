@@ -131,7 +131,8 @@
     "loadingCatalog": "正在加载目录...",
     "noAppsFound": "未找到应用",
     "noAppsFoundDesc": "我们找不到符合您搜索条件的任何应用。",
-    "clearAllFilters": "清除所有筛选"
+    "clearAllFilters": "清除所有筛选",
+    "clearSearch": "清除搜索"
   },
   "appDetail": {
     "catalog": "目录",
@@ -197,7 +198,10 @@
     "generatedValuesCount": "生成了 {count} 个安全值",
     "generationFailed": "未能生成匹配该规则的值",
     "invalidGeneratorRule": "无效的生成器规则",
-    "noGeneratorForVariable": "未找到此应用的安全生成器规则"
+    "noGeneratorForVariable": "未找到此应用的安全生成器规则",
+    "removeVar": "移除变量",
+    "expiresAfter": "有效期",
+    "hostPortFor": "容器端口 {port} ({protocol}) 对应的主机端口"
   },
   "container": {
     "status": "状态",
@@ -207,7 +211,14 @@
     "start": "启动",
     "stop": "停止",
     "logs": "日志",
-    "details": "详情"
+    "details": "详情",
+    "serviceHeader": "{name} — 切换服务详情",
+    "starting": "启动中…",
+    "stopping": "停止中…",
+    "restarting": "重启中…",
+    "startFailed": "无法启动容器",
+    "stopFailed": "无法停止容器",
+    "restartFailed": "无法重启容器"
   },
   "containerDetail": {
     "containers": "容器",
@@ -314,7 +325,8 @@
     "deleteVolume": "删除卷 {name}？",
     "deleteAllUnused": "删除所有 {count} 个未使用的卷？",
     "mb": "MB",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "refresh": "刷新卷"
   },
   "appOverview": {
     "back": "返回",
@@ -358,7 +370,8 @@
     "cleanedUp": "已清理 {count} 个镜像",
     "cleanupInterrupted": "清理中断：{error}",
     "deletionFailed": "删除失败：{message}",
-    "imageDeleted": "镜像删除成功"
+    "imageDeleted": "镜像删除成功",
+    "refresh": "刷新镜像"
   },
   "logs": {
     "systemOutput": "系统输出",
@@ -464,7 +477,22 @@
     "caddyAuthDisabled": "Auth Proxy 已禁用",
     "caddyAuthServePortRequired": "在启用之前输入保护端口。",
     "caddyAuthTargetPortRequired": "在启用之前输入应用端口。",
-    "caddyProxiesRunning": "活动代理"
+    "caddyProxiesRunning": "活动代理",
+    "loadFailedTitle": "无法加载此堆栈",
+    "loadFailedHint": "服务器未响应 {id}。它会每隔几秒重试，你也可以立即重试。",
+    "retry": "重试",
+    "restartStack": "重启",
+    "restarting": "重启中…",
+    "restartingStack": "正在重启 {name}…",
+    "stackRestarted": "堆栈已重启",
+    "restartFailed": "重启失败",
+    "startStack": "全部启动",
+    "stopStack": "全部停止",
+    "startingStack": "正在启动 {name}…",
+    "stoppingStack": "正在停止 {name}…",
+    "stackStarted": "所有服务已启动",
+    "stackStopped": "所有服务已停止",
+    "serviceActionFailed": "{total} 个服务中有 {failed} 个未响应"
   },
   "appCard": {
     "active": "活动 ({count})",

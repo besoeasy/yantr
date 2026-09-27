@@ -131,7 +131,8 @@
     "loadingCatalog": "カタログを読み込み中...",
     "noAppsFound": "アプリが見つかりません",
     "noAppsFoundDesc": "検索条件に一致するアプリケーションが見つかりませんでした。",
-    "clearAllFilters": "フィルターをすべてクリア"
+    "clearAllFilters": "フィルターをすべてクリア",
+    "clearSearch": "検索をクリア"
   },
   "appDetail": {
     "catalog": "カタログ",
@@ -197,7 +198,10 @@
     "generatedValuesCount": "{count}個の安全な値を生成しました",
     "generationFailed": "値の生成に失敗しました",
     "invalidGeneratorRule": "無効な正規表現ルール",
-    "noGeneratorForVariable": "このアプリに安全なジェネレータールールが見つかりません"
+    "noGeneratorForVariable": "このアプリに安全なジェネレータールールが見つかりません",
+    "removeVar": "変数を削除",
+    "expiresAfter": "有効期限",
+    "hostPortFor": "コンテナポート {port} ({protocol}) のホストポート"
   },
   "container": {
     "status": "ステータス",
@@ -207,7 +211,14 @@
     "start": "起動",
     "stop": "停止",
     "logs": "ログ",
-    "details": "詳細"
+    "details": "詳細",
+    "serviceHeader": "{name} — サービスの詳細を切り替え",
+    "starting": "開始中…",
+    "stopping": "停止中…",
+    "restarting": "再起動中…",
+    "startFailed": "コンテナを開始できませんでした",
+    "stopFailed": "コンテナを停止できませんでした",
+    "restartFailed": "コンテナを再起動できませんでした"
   },
   "containerDetail": {
     "containers": "コンテナ",
@@ -314,7 +325,8 @@
     "deleteVolume": "ボリューム{name}を削除しますか？",
     "deleteAllUnused": "{count}件の未使用ボリュームをすべて削除しますか？",
     "mb": "MB",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "refresh": "ボリュームを更新"
   },
   "appOverview": {
     "back": "戻る",
@@ -358,7 +370,8 @@
     "cleanedUp": "{count}件のイメージをクリーンアップしました",
     "cleanupInterrupted": "クリーンアップが中断されました: {error}",
     "deletionFailed": "削除に失敗しました: {message}",
-    "imageDeleted": "イメージを正常に削除しました"
+    "imageDeleted": "イメージを正常に削除しました",
+    "refresh": "を更新"
   },
   "logs": {
     "systemOutput": "システム出力",
@@ -464,7 +477,22 @@
     "caddyAuthDisabled": "Authプロキシを無効にしました",
     "caddyAuthServePortRequired": "有効にする前に保護されたポートを入力してください。",
     "caddyAuthTargetPortRequired": "有効にする前にアプリのポートを入力してください。",
-    "caddyProxiesRunning": "アクティブなプロキシ"
+    "caddyProxiesRunning": "アクティブなプロキシ",
+    "loadFailedTitle": "スタックを読み込めませんでした",
+    "loadFailedHint": "{id} に対してサーバーが応答しませんでした。数秒ごとに再試行します。今すぐ再試行することもできます。",
+    "retry": "再試行",
+    "restartStack": "再起動",
+    "restarting": "再起動中…",
+    "restartingStack": "{name} を再起動しています…",
+    "stackRestarted": "スタックを再起動しました",
+    "restartFailed": "再起動に失敗しました",
+    "startStack": "すべて開始",
+    "stopStack": "すべて停止",
+    "startingStack": "{name} を開始しています…",
+    "stoppingStack": "{name} を停止しています…",
+    "stackStarted": "すべてのサービスを開始しました",
+    "stackStopped": "すべてのサービスを停止しました",
+    "serviceActionFailed": "{total} 個中 {failed} 個のサービスが応答しませんでした"
   },
   "appCard": {
     "active": "アクティブ ({count})",

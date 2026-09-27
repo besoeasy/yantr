@@ -301,6 +301,7 @@ onUnmounted(() => {
             <button
               v-if="appSearch"
               @click="appSearch = ''"
+              :aria-label="t('apps.clearSearch')"
               class="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
             >
               <X :size="14" />

@@ -71,6 +71,11 @@ const allPorts = computed(() => {
 });
 
 // Port conflict detection
+// Port conflict detection.
+//
+// Also detects duplicates *within this form*, not just against other running
+// containers — previously assigning one host port to two fields was reported as
+// "Available" twice and then failed at `podman compose up`.
 const { getPortStatus: getPortStatusFn } = usePortConflict(computed(() => props.containers));
 
 function getPortStatus(port) {
@@ -310,7 +315,10 @@ async function deployApp() {
         <!-- Environment Vars -->
         <div v-if="app.environment?.length > 0" class="space-y-4">
           <div v-for="env in app.environment" :key="env.envVar" class="space-y-1.5">
-            <label class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
+            <!-- for/id associate the label with the input below. The input is a
+                 sibling, not a descendant, so without `for` the variable had no
+                 accessible name at all. -->
+            <label :for="`env-${env.envVar}`" class="flex w-full items-center justify-between text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
               {{ env.name }}
               <div class="flex items-center gap-2">
                 <button
@@ -325,6 +333,7 @@ async function deployApp() {
               </div>
             </label>
             <input
+              :id="`env-${env.envVar}`"
               v-model="envValues[env.envVar]"
               type="text"
               :placeholder="env.default || t('appDetail.value')"
@@ -363,6 +372,7 @@ async function deployApp() {
               />
               <button
                 @click="removeExtraEnvRow(i)"
+                :aria-label="t('appDetail.removeVar')"
                 class="shrink-0 rounded-md p-1.5 text-zinc-400 transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
               >
                 <X :size="13" />
@@ -386,7 +396,8 @@ async function deployApp() {
               </div>
               
               <div v-if="temporaryInstall" class="mt-4 pl-7">
-                  <select v-model.number="expirationHours" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white">
+                  <label :for="'expiry-hours'" class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500">{{ t('appDetail.expiresAfter') }}</label>
+                  <select id="expiry-hours" v-model.number="expirationHours" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white">
                       <option :value="1">{{ t('appDetail.1hour') }}</option>
                       <option :value="6">{{ t('appDetail.6hours') }}</option>
                       <option :value="12">{{ t('appDetail.12hours') }}</option>
@@ -416,7 +427,9 @@ async function deployApp() {
                       </div>
                       <div class="flex items-center gap-2">
                           <span class="text-sm text-zinc-400">→</span>
+                          <label :for="`port-${port.hostPort}-${port.protocol}`" class="a11y-visually-hidden">{{ t('appDetail.hostPortFor', { port: port.containerPort, protocol: port.protocol }) }}</label>
                           <input
+                          :id="`port-${port.hostPort}-${port.protocol}`"
                           v-model="customPortMappings[port.hostPort + '/' + port.protocol]"
                           type="number"
                           :placeholder="port.hostPort"

@@ -6,7 +6,7 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database } from '@lucide/vue'
+import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw } from '@lucide/vue'
 import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
@@ -267,6 +267,45 @@ const scrollToBottom = () => {
         const el = document.getElementById('terminal-logs')
         if (el) el.scrollTop = el.scrollHeight
     }, 100)
+}
+
+// start / stop / restart for a single container.
+//
+// These three routes were registered in core/main.go with no UI caller, so the
+// whole `container.*` i18n block existed with nothing rendering it and users
+// could not stop or restart anything.
+//
+// The server now records the intent per compose service (see #87), so stopping
+// one service of a multi-service stack no longer disables crash recovery for
+// its siblings, and a service stopped here stays stopped across a reboot.
+const busyAction = ref(null)
+
+async function lifecycleAction(action) {
+  if (busyAction.value) return;
+  const id = route.params.id;
+  if (!id) return;
+
+  busyAction.value = action;
+  const labels = {
+    start: ['container.starting', 'container.startFailed'],
+    stop: ['container.stopping', 'container.stopFailed'],
+    restart: ['container.restarting', 'container.restartFailed'],
+  };
+  const [okKey, errKey] = labels[action] || labels.restart;
+
+  try {
+    const res = await fetch(`${apiUrl.value}/api/containers/${id}/${action}`, { method: 'POST' });
+    if (!res.ok) {
+      const body = await readJsonResponse(res);
+      throw new Error(getApiErrorMessage(body, t(errKey)));
+    }
+    toast.success(t(okKey));
+    await fetchContainerDetail();
+  } catch (e) {
+    toast.error(t(errKey, { error: e.message }));
+  } finally {
+    busyAction.value = null;
+  }
 }
 
 async function deleteContainer() {
@@ -553,6 +592,33 @@ onUnmounted(() => {
         <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.control') }}</h3>
            
+           <div class="grid grid-cols-3 gap-2">
+              <button
+                @click="lifecycleAction('start')"
+                :disabled="busyAction !== null"
+                :aria-label="t('container.start')"
+                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
+              >
+                <Play :size="13" />{{ t('container.start') }}
+              </button>
+              <button
+                @click="lifecycleAction('stop')"
+                :disabled="busyAction !== null"
+                :aria-label="t('container.stop')"
+                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
+              >
+                <Square :size="13" />{{ t('container.stop') }}
+              </button>
+              <button
+                @click="lifecycleAction('restart')"
+                :disabled="busyAction !== null"
+                :aria-label="t('container.restart')"
+                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
+              >
+                <RotateCcw :size="13" />{{ t('container.restart') }}
+              </button>
+           </div>
+
            <button 
               @click="deleteContainer"
               :disabled="deleting"

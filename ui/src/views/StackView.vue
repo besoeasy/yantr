@@ -7,6 +7,7 @@ import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
 import { formatDuration } from "../utils/metrics";
+import { appUrl, isNavigableProtocol } from "../utils/url";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
 import StackServiceList from "../components/StackServiceList.vue";
@@ -20,6 +21,9 @@ import {
   Download,
   Loader2,
   Bug,
+  AlertTriangle,
+  Play,
+  Square,
 } from "@lucide/vue";
 
 const route = useRoute();
@@ -35,8 +39,13 @@ const projectId = computed(() => route.params.projectId);
 
 const stack = ref(null);
 const loading = ref(true);
+// Set when a load failed and no stack data has ever arrived. The page body is
+// gated on `stack`, so without this a failed first request rendered a blank
+// screen with only a transient toast and no way to retry.
+const loadFailed = ref(false);
 const removing = ref(false);
 const updating = ref(false);
+const restarting = ref(false);
 
 async function updateStack() {
   if (updating.value || !stack.value) return;
@@ -188,10 +197,9 @@ const namedVolumes = computed(() => allMounts.value.filter((m) => m.type === "vo
 // Bind mounts and tmpfs — shown in a simple compact list
 const otherMounts = computed(() => allMounts.value.filter((m) => m.type !== "volume" || !m.name));
 
-function appUrl(hostPort, proto) {
-  const scheme = proto === "https" ? "https" : "http";
-  return `${scheme}://${window.location.hostname}:${hostPort}`;
-}
+// appUrl is shared with ContainerDetail so both render the same link. The local
+// copy used to emit a bare `2001:db8::1:8080` on IPv6 hosts, which no browser
+// can parse.
 
 // Prefilled GitHub issue URL — title carries the app name, body is left for the user
 const reportIssueUrl = computed(() => {
@@ -235,15 +243,30 @@ async function fetchStack() {
     const data = await res.json();
     if (data.success) {
       stack.value = data.stack;
-    } else {
+      loadFailed.value = false;
+    } else if (res.status === 404) {
+      // A stack that is genuinely gone should send the user back to the grid.
       toast.error(t("stackView.stackNotFound"));
       router.push("/");
+      return;
+    } else {
+      // Report a malformed-but-present response without ejecting the user.
+      loadFailed.value = true;
     }
   } catch (e) {
+    // Network/server failure. A toast alone is not enough: the whole page body
+    // is gated on `stack`, so nothing rendered and there was no way to retry.
     toast.error(t("stackView.failedToLoadStack"));
+    loadFailed.value = true;
   } finally {
     loading.value = false;
   }
+}
+
+function retryLoad() {
+  loadFailed.value = false;
+  loading.value = true;
+  fetchStack();
 }
 
 
@@ -257,14 +280,26 @@ async function removeStack() {
   toast.info(t("stackView.removingStack", { name }));
 
   try {
-    const firstId = stack.value?.services?.[0]?.id;
-    if (!firstId) throw new Error(t("stackView.noContainerFound"));
-
-    const res = await fetch(`${apiUrl.value}/api/containers/${firstId}`, { method: "DELETE" });
+    // Must be the stack endpoint, not DELETE /api/containers/{id}.
+    //
+    // The container endpoint only tears the whole project down when the compose
+    // file is present *and* `podman compose` is available *and* `compose down`
+    // exits 0. On any of those three failures it falls through to removing that
+    // single container and still answers success — so the UI reported the stack
+    // removed while every sibling kept running, contradicting the confirmation
+    // the user just accepted.
+    //
+    // It also keyed its job on the container ID, so the fetchActiveJob
+    // recovery below could never match; the stack endpoint keys on projectId.
+    const res = await fetch(`${apiUrl.value}/api/stacks/${projectId.value}`, { method: "DELETE" });
     const data = await res.json();
-    if (data.success) {
+
+    if (data.success && data.removed) {
       toast.success(t("stackView.stackRemoved", { name }));
       router.push("/");
+    } else if (data.success) {
+      // Defensive: the endpoint sets `removed`. Without it, treat as incomplete.
+      throw new Error(t("stackView.removalFailed"));
     } else {
       throw new Error(data.message || t("stackView.removalFailed"));
     }
@@ -294,6 +329,65 @@ async function removeStack() {
 }
 
 // ── lifecycle ─────────────────────────────────────────────────────────────────
+
+// POST /api/stacks/{projectId}/restart existed on the server with no UI caller at
+// all. The per-container start/stop endpoints are wired up in ContainerDetail.
+async function restartStack() {
+  if (restarting.value) return;
+  restarting.value = true;
+  toast.info(t("stackView.restartingStack", { name: stack.value?.app?.name || projectId.value }));
+
+  try {
+    const res = await fetch(`${apiUrl.value}/api/stacks/${projectId.value}/restart`, { method: "POST" });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || t("stackView.restartFailed"));
+    }
+    // Let the poll pick up the new state; do not navigate away.
+    await fetchStack();
+    toast.success(t("stackView.stackRestarted"));
+  } catch (e) {
+    toast.error(t("stackView.restartFailed", { error: e.message }));
+  } finally {
+    restarting.value = false;
+  }
+}
+
+// Start/stop every service of the stack.
+//
+// There is no stack-level start/stop endpoint. Driving the containers one by one
+// is safe *now* precisely because the server records the intent per compose
+// service (see #87): a service stopped here stays stopped across a reboot and
+// the watchdog leaves it alone, while its running siblings keep crash recovery.
+// Under the old per-project model this would have been the wrong thing to add.
+async function setStackServices(desired) {
+  const action = desired === "running" ? "start" : "stop";
+  const services = stack.value?.services ?? [];
+  if (services.length === 0) {
+    toast.error(t("stackView.noContainerFound"));
+    return;
+  }
+
+  const name = stack.value?.app?.name || projectId.value;
+  toast.info(desired === "running" ? t("stackView.startingStack", { name }) : t("stackView.stoppingStack", { name }));
+
+  const results = await Promise.allSettled(
+    services.map((s) =>
+      fetch(`${apiUrl.value}/api/containers/${s.id}/${action}`, { method: "POST" }).then((r) => {
+        if (!r.ok) throw new Error(r.statusText || String(r.status));
+        return r.json();
+      })
+    )
+  );
+
+  const failed = results.filter((r) => r.status === "rejected").length;
+  if (failed > 0) {
+    toast.error(t("stackView.serviceActionFailed", { failed, total: services.length }));
+  } else {
+    toast.success(desired === "running" ? t("stackView.stackStarted") : t("stackView.stackStopped"));
+  }
+  await fetchStack();
+}
 
 // ── Volume browsing ──────────────────────────────────────────────────────────
 
@@ -363,7 +457,22 @@ onUnmounted(() => {
 
     <!-- Loading -->
     <div v-if="loading" class="mx-auto flex max-w-7xl justify-center p-8 py-32">
-       <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
+       <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>    </div>
+
+    <!-- Load failure: the page body is gated on `stack`, so without this the
+         whole view rendered as a blank screen with only a transient toast. -->
+    <div v-else-if="loadFailed" class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-32 text-center">
+      <AlertTriangle :size="32" class="text-amber-500" />
+      <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+        {{ t("stackView.loadFailedTitle") }}
+      </p>
+      <p class="max-w-md text-xs text-zinc-500">{{ t("stackView.loadFailedHint", { id: projectId }) }}</p>
+      <button
+        @click="retryLoad"
+        class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900"
+      >
+        <RotateCcw :size="13" />{{ t("stackView.retry") }}
+      </button>
     </div>
 
     <!-- Content -->
@@ -418,6 +527,32 @@ onUnmounted(() => {
                 class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
               >
                 <ExternalLink :size="13" />{{ t("stackView.appPage") }}
+              </button>
+
+              <!-- Restart (server endpoint, previously unreachable from the UI) -->
+              <button
+                @click="restartStack"
+                :disabled="restarting"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
+              >
+                <RotateCcw :size="13" :class="restarting ? 'animate-spin' : ''" />
+                {{ restarting ? t("stackView.restarting") : t("stackView.restartStack") }}
+              </button>
+
+              <!-- Start / Stop every service of the stack -->
+              <button
+                v-if="overallState !== 'running'"
+                @click="setStackServices('running')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
+              >
+                <Play :size="13" />{{ t("stackView.startStack") }}
+              </button>
+              <button
+                v-else
+                @click="setStackServices('stopped')"
+                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
+              >
+                <Square :size="13" />{{ t("stackView.stopStack") }}
               </button>
 
               <!-- Update -->
@@ -512,8 +647,8 @@ onUnmounted(() => {
 
             <div class="mt-auto">
               <a
-                v-if="p.protocol === 'tcp'"
-                :href="appUrl(p.hostPort, p.labeledProtocol || 'http')"
+                v-if="p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
+                :href="appUrl(p.hostPort, p.labeledProtocol)"
                 target="_blank"
                 class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               >

@@ -131,7 +131,8 @@
     "loadingCatalog": "Loading catalog...",
     "noAppsFound": "No apps found",
     "noAppsFoundDesc": "We couldn't find any applications matching your search criteria.",
-    "clearAllFilters": "Clear all filters"
+    "clearAllFilters": "Clear all filters",
+    "clearSearch": "Clear search"
   },
   "appDetail": {
     "catalog": "Catalog",
@@ -198,7 +199,10 @@
     "deploymentFailed": "Deployment failed",
     "deploymentTimeout": "Deployment timeout - {name} is taking longer than expected",
     "deploymentFailedMessage": "Deployment failed: {message}",
-    "deploymentStillRunning": "Deployment for {name} is still running in background…"
+    "deploymentStillRunning": "Deployment for {name} is still running in background…",
+    "removeVar": "Remove variable",
+    "expiresAfter": "Expires after",
+    "hostPortFor": "Host port for container port {port} ({protocol})"
   },
   "container": {
     "status": "Status",
@@ -208,7 +212,14 @@
     "start": "Start",
     "stop": "Stop",
     "logs": "Logs",
-    "details": "Details"
+    "details": "Details",
+    "serviceHeader": "{name} — toggle service details",
+    "starting": "Starting…",
+    "stopping": "Stopping…",
+    "restarting": "Restarting…",
+    "startFailed": "Could not start the container",
+    "stopFailed": "Could not stop the container",
+    "restartFailed": "Could not restart the container"
   },
   "containerDetail": {
     "containers": "Containers",
@@ -319,7 +330,8 @@
     "exportSuccess": "Volume '{name}' backup downloaded",
     "exportFailed": "Failed to backup volume: {message}",
     "mb": "MB",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "refresh": "Refresh volumes"
   },
   "appOverview": {
     "back": "Back",
@@ -363,7 +375,8 @@
     "cleanedUp": "Cleaned up {count} images",
     "cleanupInterrupted": "Cleanup interrupted: {error}",
     "deletionFailed": "Deletion failed: {message}",
-    "imageDeleted": "Image deleted successfully"
+    "imageDeleted": "Image deleted successfully",
+    "refresh": "Refresh images"
   },
   "logs": {
     "systemOutput": "System Output",
@@ -475,7 +488,22 @@
     "caddyAuthDisabled": "Auth proxy disabled",
     "caddyAuthServePortRequired": "Enter a protected port before enabling.",
     "caddyAuthTargetPortRequired": "Enter the app port before enabling.",
-    "caddyProxiesRunning": "Active Proxies"
+    "caddyProxiesRunning": "Active Proxies",
+    "loadFailedTitle": "Could not load this stack",
+    "loadFailedHint": "The server did not respond for {id}. It will keep retrying every few seconds, or you can try again now.",
+    "retry": "Try again",
+    "restartStack": "Restart",
+    "restarting": "Restarting…",
+    "restartingStack": "Restarting {name}…",
+    "stackRestarted": "Stack restarted",
+    "restartFailed": "Restart failed",
+    "startStack": "Start all",
+    "stopStack": "Stop all",
+    "startingStack": "Starting {name}…",
+    "stoppingStack": "Stopping {name}…",
+    "stackStarted": "All services started",
+    "stackStopped": "All services stopped",
+    "serviceActionFailed": "{failed} of {total} services did not respond"
   },
   "appCard": {
     "active": "Active ({count})",

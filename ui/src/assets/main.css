@@ -1318,3 +1318,20 @@ to{opacity:1;transform:translateY(0);}
 @keyframes ping{75%,
 to{opacity:0;transform:scale(2);}
 }
+
+/* ─── Accessibility utilities ────────────────────────────────────────────────
+   There is no Tailwind runtime: main.css is a hand-curated set of only the
+   utility classes this SPA actually uses, so a utility has to exist here to be
+   used in a template. Visually hides an element while keeping it available to
+   screen readers, for label text that must not be shown. */
+.a11y-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}

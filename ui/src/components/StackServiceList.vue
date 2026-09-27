@@ -37,20 +37,41 @@ const refreshingLogs = ref(false)
 const autoScrollLogs = ref(true)
 let statsInterval = null
 
+// Monotonic expansion token.
+//
+// Two races are fixed with this:
+//  1. A slow fetch for service A resolved *after* the user had expanded B, and
+//     its continuation then called startStatsInterval(A). That cleared B's
+//     interval and installed one whose guard (expandedServiceId === A) could
+//     never be true again, so B's panel silently froze on one-shot numbers.
+//  2. Two in-flight fetches for the *same* service could resolve out of order,
+//     letting the older response overwrite the newer numbers.
+// Only the newest token may install a timer or write results.
+let statsSeq = 0
+
 async function toggleService(svcId) {
   if (expandedServiceId.value === svcId) {
     expandedServiceId.value = null
     clearStatsInterval()
     return
   }
-  
+
+  // Clear the outgoing service's timer *before* awaiting. Clearing it only in
+  // the continuation is what allowed a late response to destroy the interval
+  // belonging to the service the user is actually looking at.
+  clearStatsInterval()
+  statsSeq += 1
+  const token = statsSeq
+
   expandedServiceId.value = svcId
   activeTab.value = 'resources'
   containerStats.value = null
   containerLogs.value = []
-  
-  await fetchContainerStats(svcId)
-  startStatsInterval(svcId)
+
+  await fetchContainerStats(svcId, token)
+  if (token === statsSeq && expandedServiceId.value === svcId) {
+    startStatsInterval(svcId)
+  }
 }
 
 function selectTab(svcId, tab) {
@@ -60,14 +81,21 @@ function selectTab(svcId, tab) {
   }
 }
 
-async function fetchContainerStats(svcId) {
+async function fetchContainerStats(svcId, token = null) {
+  const myToken = token === null ? statsSeq : token
   try {
     const res = await fetch(`${apiUrl.value}/api/containers/${svcId}/stats`)
     const data = await expectApiSuccess(res)
+    if (myToken !== statsSeq) return
     if (expandedServiceId.value === svcId) {
       containerStats.value = data.stats
     }
   } catch {
+    // Drop the numbers rather than leaving a panel showing values that are no
+    // longer being refreshed — it reads as live but is not.
+    if (myToken === statsSeq && expandedServiceId.value === svcId) {
+      containerStats.value = null
+    }
   }
 }
 
@@ -129,10 +157,21 @@ function goToContainer(svcId) {
         class="group rounded-2xl border border-gray-100 dark:border-zinc-800 smooth-shadow transition-all duration-300 overflow-hidden"
         style="background: var(--surface)"
       >
-        <!-- Header -->
-        <div 
+        <!-- Header
+             Keyboard reachable. The expanded panel holds the Resources/Output
+             tabs and the Details link to the container page, so without
+             role/tabindex/keydown a keyboard-only user could not read stats,
+             read logs, or navigate onward from this page at all. The pattern
+             (including the focus ring) is copied from YantraContainersGrid. -->
+        <div
           @click="toggleService(svc.id)"
-          class="p-5 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors flex flex-col"
+          @keydown.enter.prevent="toggleService(svc.id)"
+          @keydown.space.prevent="toggleService(svc.id)"
+          role="button"
+          tabindex="0"
+          :aria-expanded="expandedServiceId === svc.id"
+          :aria-label="t('container.serviceHeader', { name: svc.service || svc.name })"
+          class="p-5 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-900/50 transition-colors flex flex-col focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
         >
           <div class="flex items-start gap-4">
             <div

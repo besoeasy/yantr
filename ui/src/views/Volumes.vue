@@ -229,7 +229,7 @@ onUnmounted(() => {
           
           <div class="flex items-center gap-3">
             <SearchInput v-model="searchQuery" :placeholder="t('volumes.searchPlaceholder')" />
-            <button @click="fetchVolumes" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
+            <button @click="fetchVolumes" :aria-label="t('volumes.refresh')" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
               <RefreshCw class="h-4 w-4 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white" :class="{ 'animate-spin': loading }" />
             </button>
           </div>
@@ -277,12 +277,11 @@ onUnmounted(() => {
                   </div>
                   <h4 class="mb-5 truncate font-mono text-sm font-medium text-zinc-900 dark:text-white" :title="volume.name">{{ volume.name }}</h4>
                   <div class="mt-auto flex gap-2">
-                      <a href="#" @click.prevent="openVolumeBrowser(volume.name)"
-                         target="_blank"
+                      <button type="button" @click="openVolumeBrowser(volume.name)"
                          class="flex flex-1 items-center justify-center gap-2 rounded-xl border border-zinc-900 bg-zinc-900 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100">
                          <ExternalLink class="h-4 w-4" />
                          {{ t('volumes.openFinder') }}
-                      </a>
+                      </button>
                   </div>
               </div>
            </div>
@@ -345,11 +344,11 @@ onUnmounted(() => {
                                {{ t('volumes.export') }}
                             </button>
                             <div v-if="volume.isBrowsing" class="inline-flex items-center gap-1.5">
-                               <a href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
+                               <button type="button" @click="openVolumeBrowser(volume.name)"
                                   class="inline-flex items-center gap-1.5 rounded-lg border border-blue-600 bg-blue-600 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-blue-700">
                                   <ExternalLink class="h-3 w-3" />
                                   {{ t('volumes.open') }}
-                               </a>
+                               </button>
                                <button @click="stopBrowsing(volume.name)"
                                   :disabled="actionLoading[volume.name]"
                                   class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-zinc-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-red-500 transition-colors hover:border-red-400 hover:text-red-600 dark:border-red-900/40 dark:bg-zinc-900">
@@ -405,11 +404,12 @@ onUnmounted(() => {
                             <Loader2 v-if="exportingVolume[volume.name]" class="h-4 w-4 animate-spin text-amber-500" />
                             <Download v-else class="h-4 w-4" />
                          </button>
-                         <a v-if="volume.isBrowsing" href="#" @click.prevent="openVolumeBrowser(volume.name)" target="_blank"
+                         <button v-if="volume.isBrowsing" type="button" @click="openVolumeBrowser(volume.name)"
                             class="rounded-lg p-2 text-blue-500 transition-colors hover:bg-blue-50 dark:hover:bg-blue-500/10"
-                            title="Open Browser">
+                            :title="t('volumes.openFinder')"
+                            :aria-label="t('volumes.openFinder')">
                             <ExternalLink class="h-4 w-4" />
-                         </a>
+                         </button>
                          <button v-if="volume.isBrowsing" @click="stopBrowsing(volume.name)"
                             :disabled="actionLoading[volume.name]"
                             class="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"

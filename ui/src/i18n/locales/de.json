@@ -131,7 +131,8 @@
     "loadingCatalog": "Katalog wird geladen...",
     "noAppsFound": "Keine Apps gefunden",
     "noAppsFoundDesc": "Wir konnten keine Anwendungen finden, die Ihren Suchkriterien entsprechen.",
-    "clearAllFilters": "Alle Filter löschen"
+    "clearAllFilters": "Alle Filter löschen",
+    "clearSearch": "Suche zurücksetzen"
   },
   "appDetail": {
     "catalog": "Katalog",
@@ -197,7 +198,10 @@
     "generatedValuesCount": "{count} sichere(n) Wert(e) generiert",
     "generationFailed": "Fehler beim Generieren eines Wertes",
     "invalidGeneratorRule": "Ungültige Generator-Regex-Regel",
-    "noGeneratorForVariable": "Keine sichere Generatorregel gefunden"
+    "noGeneratorForVariable": "Keine sichere Generatorregel gefunden",
+    "removeVar": "Variable entfernen",
+    "expiresAfter": "Läuft ab nach",
+    "hostPortFor": "Host-Port für Container-Port {port} ({protocol})"
   },
   "container": {
     "status": "Status",
@@ -207,7 +211,14 @@
     "start": "Starten",
     "stop": "Stoppen",
     "logs": "Protokolle",
-    "details": "Details"
+    "details": "Details",
+    "serviceHeader": "{name} — Servicedetails umschalten",
+    "starting": "Wird gestartet…",
+    "stopping": "Wird gestoppt…",
+    "restarting": "Wird neu gestartet…",
+    "startFailed": "Container konnte nicht gestartet werden",
+    "stopFailed": "Container konnte nicht gestoppt werden",
+    "restartFailed": "Container konnte nicht neu gestartet werden"
   },
   "containerDetail": {
     "containers": "Container",
@@ -314,7 +325,8 @@
     "deleteVolume": "Volume {name} löschen?",
     "deleteAllUnused": "Alle {count} ungenutzten Volumes löschen?",
     "mb": "MB",
-    "notAvailable": "N/V"
+    "notAvailable": "N/V",
+    "refresh": "Volumes aktualisieren"
   },
   "appOverview": {
     "back": "Zurück",
@@ -358,7 +370,8 @@
     "cleanedUp": "{count} Images bereinigt",
     "cleanupInterrupted": "Bereinigung unterbrochen: {error}",
     "deletionFailed": "Löschen fehlgeschlagen: {message}",
-    "imageDeleted": "Image erfolgreich gelöscht"
+    "imageDeleted": "Image erfolgreich gelöscht",
+    "refresh": "Images aktualisieren"
   },
   "logs": {
     "systemOutput": "Systemausgabe",
@@ -464,7 +477,22 @@
     "caddyAuthDisabled": "Auth-Proxy deaktiviert",
     "caddyAuthServePortRequired": "Geben Sie einen geschützten Port ein, bevor Sie aktivieren.",
     "caddyAuthTargetPortRequired": "Geben Sie den App-Port ein, bevor Sie aktivieren.",
-    "caddyProxiesRunning": "Aktive Proxies"
+    "caddyProxiesRunning": "Aktive Proxies",
+    "loadFailedTitle": "Stack konnte nicht geladen werden",
+    "loadFailedHint": "Der Server hat nicht auf {id} geantwortet. Es wird alle paar Sekunden erneut versuchen, oder Sie können es jetzt erneut versuchen.",
+    "retry": "Erneut versuchen",
+    "restartStack": "Neu starten",
+    "restarting": "Wird neu gestartet…",
+    "restartingStack": "{name} wird neu gestartet…",
+    "stackRestarted": "Stack neu gestartet",
+    "restartFailed": "Neustart fehlgeschlagen",
+    "startStack": "Alle starten",
+    "stopStack": "Alle stoppen",
+    "startingStack": "{name} wird gestartet…",
+    "stoppingStack": "{name} wird gestoppt…",
+    "stackStarted": "Alle Dienste gestartet",
+    "stackStopped": "Alle Dienste gestoppt",
+    "serviceActionFailed": "{failed} von {total} Diensten haben nicht reagiert"
   },
   "appCard": {
     "active": "Aktiv ({count})",

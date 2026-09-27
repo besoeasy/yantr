@@ -177,9 +177,15 @@ onUnmounted(() => {
           <span class="flex items-center gap-1.5"><div class="w-1.5 h-1.5 rounded-full bg-green-500" :class="{'animate-pulse': autoRefresh}"></div> {{ t('logs.ln') }} {{ logsData.count || 0 }}</span>
           <span>{{ t('logs.utf8') }}</span>
        </div>
-       <div class="flex gap-2 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer" @click="scrollToBottom" :title="t('logs.scrollToBottom')">
+       <button
+         type="button"
+         class="flex gap-2 hover:text-gray-900 dark:hover:text-white transition-colors cursor-pointer focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+         @click="scrollToBottom"
+         :title="t('logs.scrollToBottom')"
+         :aria-label="t('logs.scrollToBottom')"
+       >
           <ArrowDown class="w-3.5 h-3.5" />
-       </div>
+       </button>
     </div>
   </div>
 </template>
