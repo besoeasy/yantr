@@ -37,6 +37,9 @@ x-yantr:
       charset: alnum_symbols
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$
 
+  ports:
+    - {port: 8443, protocol: HTTP, label: "Web UI", service: vscode}
+
 services:
   vscode:
     image: lscr.io/linuxserver/code-server:latest
@@ -50,10 +53,6 @@ services:
     volumes:
       - vscode-data:/config
     restart: unless-stopped
-    labels:
-      yantr.app: vscode
-      yantr.service.8443: Web UI
-      yantr.port.8443: HTTP
 
 volumes:
   vscode-data:
