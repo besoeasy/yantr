@@ -26,6 +26,10 @@ x-yantr:
         pipelines.
     ]
 
+  ports:
+    - {port: 22, protocol: TCP, label: "SSH", service: forgejo}
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: forgejo}
+
 services:
   forgejo:
     image: codeberg.org/forgejo/forgejo:16-rootless
@@ -38,12 +42,6 @@ services:
       - forgejo_data:/var/lib/gitea
       - forgejo_config:/etc/gitea
     restart: unless-stopped
-    labels:
-      yantr.app: forgejo
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
-      yantr.service.22: SSH
-      yantr.port.22: TCP
 
 volumes:
   forgejo_data: null
