@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Clock, Activity, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics'
@@ -19,7 +19,10 @@ async function fetchContainers() {
     const response = await fetch(`${apiUrl.value}/api/containers`)
     const data = await expectApiSuccess(response, 'Failed to load containers')
     containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {}
+  } catch {
+    // Intentionally swallowed: the card renders its "no data" state when
+    // `containers` is empty, which is the correct outcome for a failed load
+  }
 }
 
 const { start: startAverageUptimeCardPolling } = usePolling(fetchContainers, 15000)

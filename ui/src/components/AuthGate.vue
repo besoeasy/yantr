@@ -158,7 +158,7 @@ on the server or database. If lost, your account cannot be recovered.
 const bgCanvas = ref(null)
 let canvasCtx = null
 let particles = []
-let mouse = { x: -500, y: -500, targetX: -500, targetY: -500, active: false }
+const mouse = { x: -500, y: -500, targetX: -500, targetY: -500, active: false }
 let raf = null
 
 const isSetup = computed(() => !authState.configured)
@@ -488,6 +488,7 @@ onUnmounted(() => {
                 <input
                   ref="passwordInput"
                   v-model="password"
+                  :aria-label="t('authGate.password')"
                   :type="showPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Enter secure master password"
@@ -514,6 +515,7 @@ onUnmounted(() => {
               <div class="relative">
                 <input
                   v-model="pin"
+                  :aria-label="t('authGate.pin')"
                   :type="showPin ? 'text' : 'password'"
                   inputmode="numeric"
                   autocomplete="off"
@@ -592,6 +594,7 @@ onUnmounted(() => {
               <input
                 ref="confirmPasswordInput"
                 v-model="passwordConfirm"
+                :aria-label="t('authGate.passwordConfirm')"
                 type="password"
                 autocomplete="off"
                 placeholder="Re-enter master password"
@@ -612,6 +615,7 @@ onUnmounted(() => {
               </div>
               <input
                 v-model="pinConfirm"
+                :aria-label="t('authGate.pinConfirm')"
                 type="password"
                 inputmode="numeric"
                 autocomplete="off"

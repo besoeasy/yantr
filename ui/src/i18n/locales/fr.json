@@ -587,7 +587,11 @@
       "copyFailed": "Échec de la copie."
     },
     "setupNote": "Une clé sécurisée sera générée et stockée dans votre navigateur.",
-    "loginNote": "Votre clé est stockée dans ce navigateur."
+    "loginNote": "Votre clé est stockée dans ce navigateur.",
+    "password": "Mot de passe principal",
+    "passwordConfirm": "Confirmer le mot de passe",
+    "pin": "PIN numérique",
+    "pinConfirm": "Confirmer le PIN"
   },
   "openSourceCard": {
     "label": "Code public",
@@ -610,6 +614,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "Cela ne ressemble pas à un jeton de tunnel — collez le jeton complet depuis dash.cloudflare.com."
+    "invalidToken": "Cela ne ressemble pas à un jeton de tunnel — collez le jeton complet depuis dash.cloudflare.com.",
+    "tunnelToken": "Jeton du tunnel"
   }
 }

@@ -598,7 +598,11 @@
       "copyFailed": "Copy failed."
     },
     "setupNote": "A secure key will be generated and stored in your browser. Keep this device safe.",
-    "loginNote": "Your key is stored in this browser. Use this device to access Yantr."
+    "loginNote": "Your key is stored in this browser. Use this device to access Yantr.",
+    "password": "Master password",
+    "passwordConfirm": "Confirm password",
+    "pin": "Numeric PIN",
+    "pinConfirm": "Confirm PIN"
   },
   "openSourceCard": {
     "label": "Source available",
@@ -621,6 +625,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "That doesn't look like a tunnel token — paste the full token from dash.cloudflare.com."
+    "invalidToken": "That doesn't look like a tunnel token — paste the full token from dash.cloudflare.com.",
+    "tunnelToken": "Tunnel token"
   }
 }

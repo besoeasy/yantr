@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@lucide/vue": "latest",
@@ -16,7 +18,12 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@vitejs/plugin-vue": "^5.2.3",
+    "eslint": "^10.11.0",
+    "eslint-plugin-vue": "^10.11.1",
+    "eslint-plugin-vuejs-accessibility": "^2.6.0",
+    "globals": "^17.12.0",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2"
   }

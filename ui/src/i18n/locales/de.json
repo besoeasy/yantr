@@ -587,7 +587,11 @@
       "copyFailed": "Kopieren fehlgeschlagen."
     },
     "setupNote": "Ein sicherer Schlüssel wird generiert und in Ihrem Browser gespeichert.",
-    "loginNote": "Ihr Schlüssel ist in diesem Browser gespeichert."
+    "loginNote": "Ihr Schlüssel ist in diesem Browser gespeichert.",
+    "password": "Hauptpasswort",
+    "passwordConfirm": "Passwort bestätigen",
+    "pin": "Numerische PIN",
+    "pinConfirm": "PIN bestätigen"
   },
   "openSourceCard": {
     "label": "Quelloffen",
@@ -610,6 +614,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein."
+    "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein.",
+    "tunnelToken": "Tunnel-Token"
   }
 }

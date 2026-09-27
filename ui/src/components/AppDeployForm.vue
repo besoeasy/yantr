@@ -62,9 +62,6 @@ const instanceCount = computed(() => {
 
 const nextInstanceNumber = computed(() => instanceCount.value + 1);
 
-const infoPorts = computed(() => {
-  return Array.isArray(props.app?.ports) ? props.app.ports : [];
-});
 
 const allPorts = computed(() => {
   return Array.isArray(props.app?.composePorts) ? props.app.composePorts : [];
@@ -360,6 +357,7 @@ async function deployApp() {
               <input
                 v-model="row.key"
                 type="text"
+                :aria-label="t('appDetail.varName')"
                 :placeholder="t('appDetail.varName')"
                 class="w-2/5 rounded-xl border border-zinc-200 bg-transparent px-2.5 py-2 font-mono text-xs uppercase text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />
@@ -367,6 +365,7 @@ async function deployApp() {
               <input
                 v-model="row.value"
                 type="text"
+                :aria-label="t('appDetail.varValue')"
                 :placeholder="t('appDetail.varValue')"
                 class="flex-1 rounded-xl border border-zinc-200 bg-transparent px-2.5 py-2 font-mono text-xs text-zinc-900 transition-all placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-white dark:focus:ring-white"
               />

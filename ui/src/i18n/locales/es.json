@@ -587,7 +587,11 @@
       "copyFailed": "Error al copiar."
     },
     "setupNote": "Se generará una clave segura y se almacenará en su navegador.",
-    "loginNote": "Su clave está almacenada en este navegador."
+    "loginNote": "Su clave está almacenada en este navegador.",
+    "password": "Contraseña maestra",
+    "passwordConfirm": "Confirmar contraseña",
+    "pin": "PIN numérico",
+    "pinConfirm": "Confirmar PIN"
   },
   "openSourceCard": {
     "label": "Código público",
@@ -610,6 +614,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "Eso no parece un token de túnel — pega el token completo de dash.cloudflare.com."
+    "invalidToken": "Eso no parece un token de túnel — pega el token completo de dash.cloudflare.com.",
+    "tunnelToken": "Token del túnel"
   }
 }

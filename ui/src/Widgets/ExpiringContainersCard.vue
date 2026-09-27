@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted} from 'vue'
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Timer, Hourglass, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics.js'
@@ -19,7 +19,10 @@ async function fetchContainers() {
     const response = await fetch(`${apiUrl.value}/api/containers`)
     const data = await expectApiSuccess(response, 'Failed to load containers')
     containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {}
+  } catch {
+    // Intentionally swallowed: an empty list renders nothing, which is the
+    // correct outcome when the fetch fails
+  }
 }
 
 const { start: startExpiringContainersCardPolling } = usePolling(fetchContainers, 15000)

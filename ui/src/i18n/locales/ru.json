@@ -587,7 +587,11 @@
       "copyFailed": "Не удалось скопировать."
     },
     "setupNote": "Ключ будет сгенерирован и сохранен в вашем браузере.",
-    "loginNote": "Ваш ключ сохранен в этом браузере."
+    "loginNote": "Ваш ключ сохранен в этом браузере.",
+    "password": "Мастер-пароль",
+    "passwordConfirm": "Подтвердите пароль",
+    "pin": "Цифровой PIN",
+    "pinConfirm": "Подтвердите PIN"
   },
   "openSourceCard": {
     "label": "Исходники открыты",
@@ -610,6 +614,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "Это не похоже на токен туннеля — вставьте полный токен из dash.cloudflare.com."
+    "invalidToken": "Это не похоже на токен туннеля — вставьте полный токен из dash.cloudflare.com.",
+    "tunnelToken": "Токен туннеля"
   }
 }

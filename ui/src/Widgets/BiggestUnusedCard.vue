@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { HardDrive, Layers, Trash2 } from '@lucide/vue'

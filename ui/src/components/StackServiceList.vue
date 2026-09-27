@@ -11,7 +11,7 @@ import { expectApiSuccess } from '../composables/useApiResponse'
 import ContainerLogs from './ContainerLogs.vue'
 import ContainerResources from './ContainerResources.vue'
 
-const props = defineProps({
+defineProps({
   services: {
     type: Array,
     required: true
@@ -109,6 +109,9 @@ async function fetchContainerLogs(svcId = expandedServiceId.value) {
       containerLogs.value = Array.isArray(data.logs) ? data.logs : []
     }
   } catch {
+    // Intentionally swallowed: a failed log fetch keeps the previously fetched
+    // lines visible. Clearing them would make a transient engine hiccup look
+    // like "this container produced no output".
   } finally {
     refreshingLogs.value = false
   }
@@ -153,7 +156,7 @@ function goToContainer(svcId) {
 
     <div class="grid gap-3">
       <div
-        v-for="(svc, i) in services"
+        v-for="svc in services"
         :key="svc.id"
         class="group rounded-2xl border border-gray-100 dark:border-zinc-800 smooth-shadow transition-all duration-300 overflow-hidden"
         style="background: var(--surface)"

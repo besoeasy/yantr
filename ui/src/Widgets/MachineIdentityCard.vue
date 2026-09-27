@@ -135,7 +135,20 @@ const displayLocation = computed(() => {
       <!-- Success/Loading State -->
       <template v-else>
          <!-- IP Address -->
-         <div class="group/ip mb-6" @mouseenter="isIpHovered = true" @mouseleave="isIpHovered = false">
+         <!-- A toggle control, so a <button>: it gets native focus, keyboard
+              activation and correct semantics for free. As a div with mouse
+              handlers the masked value was permanently hidden from keyboard
+              and screen-reader users with no way to unmask it. -->
+         <button
+            type="button"
+            class="group/ip mb-6 w-full cursor-pointer text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+            :aria-pressed="!isIpHovered"
+            @mouseenter="isIpHovered = true"
+            @mouseleave="isIpHovered = false"
+            @focus="isIpHovered = true"
+            @blur="isIpHovered = false"
+            @click="isIpHovered = !isIpHovered"
+         >
            <div class="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
              {{ t('quickMetrics.machineIdentity.publicEndpoint') }}
              <ShieldCheck v-if="identity?.ip" class="h-3.5 w-3.5 text-emerald-500" />
@@ -145,12 +158,21 @@ const displayLocation = computed(() => {
            <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-300 group-hover/ip:text-black sm:text-5xl dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
              {{ displayIp }}
            </div>
-         </div>
+         </button>
 
          <!-- Details Grid -->
          <div class="grid grid-cols-2 gap-2">
            <!-- Location Card -->
-           <div class="group/location flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50" @mouseenter="isLocationHovered = true" @mouseleave="isLocationHovered = false">
+           <button
+              type="button"
+              class="group/location flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              :aria-pressed="!isLocationHovered"
+              @mouseenter="isLocationHovered = true"
+              @mouseleave="isLocationHovered = false"
+              @focus="isLocationHovered = true"
+              @blur="isLocationHovered = false"
+              @click="isLocationHovered = !isLocationHovered"
+           >
               <div class="flex items-center justify-between gap-2">
                  <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                    <MapPin class="h-3.5 w-3.5" />
@@ -161,7 +183,7 @@ const displayLocation = computed(() => {
               <div v-else class="truncate text-sm font-black text-zinc-900 transition-colors duration-300 dark:text-white" :title="locationText">
                 {{ displayLocation }}
               </div>
-           </div>
+           </button>
            
            <!-- Provider Card -->
            <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">

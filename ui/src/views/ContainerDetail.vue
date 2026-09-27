@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { usePolling } from '../composables/usePolling'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -12,7 +12,6 @@ import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
-import { formatBytes } from '../utils/metrics'
 
 const route = useRoute()
 const router = useRouter()

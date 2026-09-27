@@ -136,7 +136,7 @@ function getDateHourSeed() {
 }
 
 function seededRandom(seed) {
-  let x = Math.sin(seed) * 10000;
+  const x = Math.sin(seed) * 10000;
   return x - Math.floor(x);
 }
 
@@ -291,6 +291,7 @@ onUnmounted(() => {
               ref="searchInput"
               v-model="appSearch"
               type="text"
+              :aria-label="t('apps.searchPlaceholder')"
               :placeholder="t('apps.searchPlaceholder')"
               class="w-full bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-xl pl-11 pr-24 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-zinc-500 focus:outline-none focus:border-gray-300 dark:focus:border-zinc-700 focus:bg-white dark:focus:bg-[#0A0A0A] focus:shadow-sm transition-all duration-300"
             />

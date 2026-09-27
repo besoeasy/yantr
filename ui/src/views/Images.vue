@@ -85,6 +85,8 @@ async function fetchImages() {
       imagesData.value = data
     }
   } catch {
+    // Intentionally swallowed: a failed refresh leaves the previously loaded
+    // list on screen rather than blanking the table.
   } finally {
     loading.value = false
   }
@@ -125,7 +127,10 @@ async function deleteAllUnusedImages() {
         const response = await fetch(`${apiUrl.value}/api/images/${image.id}`, { method: 'DELETE' })
         const data = await response.json()
         if (data.success) deleted++
-      } catch (error) {}
+      } catch {
+        // One image failing to delete must not abort the rest of the sweep; the
+        // success toast below reports how many actually went.
+      }
     }
     await fetchImages()
     toast.success(t('images.cleanedUp', { count: deleted }))

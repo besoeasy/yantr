@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted} from 'vue'
+import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Cloud, CloudOff, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
@@ -20,7 +20,10 @@ async function fetchContainers() {
     const response = await fetch(`${apiUrl.value}/api/containers`)
     const data = await expectApiSuccess(response, 'Failed to load containers')
     containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {}
+  } catch {
+    // Intentionally swallowed: with no container list the card shows its
+    // "not installed" state, which is the right answer for a failed load
+  }
 }
 
 const { start: startCloudflaredCardPolling } = usePolling(fetchContainers, 15000)
@@ -59,7 +62,6 @@ const imageVersion = computed(() => {
   return tag.length > 12 ? tag.slice(0, 12) + '…' : tag
 })
 
-const containerName = computed(() => cloudflaredContainer.value?.name || '—')
 
 // --- Setup / Deploy ---
 const tunnelToken = ref('')
@@ -167,6 +169,7 @@ async function deploy() {
             <input
               v-model="tunnelToken"
               type="text"
+              :aria-label="t('cloudflaredCard.tunnelToken')"
               placeholder="eyJhIjoiY…"
               autocomplete="off"
               spellcheck="false"

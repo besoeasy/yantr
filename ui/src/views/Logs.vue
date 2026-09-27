@@ -114,7 +114,7 @@ onMounted(() => {
 
        <div class="flex items-center gap-2">
           <div class="relative group">
-             <input v-model="searchQuery" type="text" :placeholder="t('logs.filterLogs')" class="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
+             <input v-model="searchQuery" type="text" :aria-label="t('logs.filterLogs')" :placeholder="t('logs.filterLogs')" class="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
           </div>
           
           <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-zinc-700 mx-2"></div>

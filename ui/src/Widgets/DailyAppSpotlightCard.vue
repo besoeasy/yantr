@@ -79,7 +79,7 @@ async function fetchData() {
     apps.value = Array.isArray(appsData.apps) ? appsData.apps : [];
     containers.value = Array.isArray(containersData.containers) ? containersData.containers : [];
     loadFailed.value = false;
-  } catch (error) {
+  } catch {
     loadFailed.value = true;
   }
 }

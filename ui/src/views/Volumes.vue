@@ -88,6 +88,8 @@ async function fetchVolumes() {
     const data = await expectApiSuccess(res, t('volumes.failedToStartBrowser'))
     volumesData.value = data
   } catch {
+    // Intentionally swallowed: a failed refresh keeps the previous list on
+    // screen rather than blanking the table.
   } finally {
     loading.value = false
   }
@@ -181,7 +183,9 @@ async function deleteAllUnusedVolumes() {
         const response = await fetch(`${apiUrl.value}/api/volumes/${volume.name}`, { method: 'DELETE' })
         await expectApiSuccess(response)
         deleted++
-      } catch {}
+      } catch {
+        // One volume failing to delete must not abort the rest of the sweep.
+      }
     }
     toast.success(t('volumes.cleanedUp', { count: deleted }))
     await fetchVolumes()

@@ -16,6 +16,7 @@ defineEmits(['update:modelValue'])
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       type="text"
+      :aria-label="ariaLabel || placeholder"
       :placeholder="placeholder"
       class="w-full sm:w-64 pl-9 pr-4 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all"
     />

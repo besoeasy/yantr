@@ -587,7 +587,11 @@
       "copyFailed": "复制失败。"
     },
     "setupNote": "系统将生成安全密钥并存储在您的浏览器中。",
-    "loginNote": "您的密钥已存储在此浏览器中。"
+    "loginNote": "您的密钥已存储在此浏览器中。",
+    "password": "主密码",
+    "passwordConfirm": "确认密码",
+    "pin": "数字 PIN",
+    "pinConfirm": "确认 PIN"
   },
   "openSourceCard": {
     "label": "源码公开",
@@ -610,6 +614,7 @@
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
-    "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。"
+    "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。",
+    "tunnelToken": "隧道令牌"
   }
 }

@@ -1,13 +1,11 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { usePolling } from "../composables/usePolling";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
-import { useCurrentTime } from "../composables/useCurrentTime";
 import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
-import { formatDuration } from "../utils/metrics";
 import { appUrl, isNavigableProtocol } from "../utils/url";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
@@ -31,7 +29,6 @@ const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
-const { currentTime } = useCurrentTime();
 const toast = useNotification();
 const { openVolumeBrowser } = useYantrAuth();
 const { fetchActiveJob, pollJobUntilDone } = useJobs();
@@ -214,12 +211,6 @@ const reportIssueUrl = computed(() => {
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-function formatUptime(service) {
-  if (service.state !== "running" || !service.created) return null;
-  const uptime = currentTime.value - service.created * 1000;
-  if (uptime <= 0) return t("stackView.justStarted");
-  return formatDuration(uptime);
-}
 
 const overallState = computed(() => {
   if (!stack.value) return "unknown";
@@ -253,7 +244,7 @@ async function fetchStack() {
       // Report a malformed-but-present response without ejecting the user.
       loadFailed.value = true;
     }
-  } catch (e) {
+  } catch {
     // Network/server failure. A toast alone is not enough: the whole page body
     // is gated on `stack`, so nothing rendered and there was no way to retry.
     toast.error(t("stackView.failedToLoadStack"));
@@ -401,13 +392,13 @@ async function browseVolume(volumeName, expiryMinutes = 60) {
       body: JSON.stringify({ expiryMinutes }),
     });
     const data = await response.json();
-    if (data.success) {
-      const expiryText = expiryMinutes > 0 ? ` (${t("stackView.expiresIn", { minutes: expiryMinutes })})` : ` (${t("stackView.noExpiry")})`;
-      toast.success(t("stackView.volumeBrowserStarted", { expiry: expiryText }));
-      openVolumeBrowser(volumeName);
-    } else {
+    if (!data.success) {
+      throw new Error(data.message || t("stackView.failedToStartVolumeBrowser"));
     }
-  } catch (e) {
+    const expiryText = expiryMinutes > 0 ? ` (${t("stackView.expiresIn", { minutes: expiryMinutes })})` : ` (${t("stackView.noExpiry")})`;
+    toast.success(t("stackView.volumeBrowserStarted", { expiry: expiryText }));
+    openVolumeBrowser(volumeName);
+  } catch {
     toast.error(t("stackView.failedToStartVolumeBrowser"));
   } finally {
     delete browsingVolume.value[volumeName];
