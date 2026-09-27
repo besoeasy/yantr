@@ -23,13 +23,12 @@ x-yantr:
       "Includes built-in service discovery for Docker and Kubernetes."
     ]
 
+  ports:
+    - {port: 9090, protocol: HTTP, label: "Web UI", service: prometheus}
+
 services:
   prometheus:
     image: docker.io/prom/prometheus:latest
-    labels:
-      yantr.app: prometheus
-      yantr.service.9090: Web UI
-      yantr.port.9090: HTTP
     ports:
       - "9090"
     volumes:
