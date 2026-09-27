@@ -88,7 +88,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		ExpiresIn          float64                `json:"expiresIn"`
 		InstanceID         int                    `json:"instanceId"`
 		MasterApp          string                 `json:"masterApp"`
-		CustomPortMappings map[string]interface{} `json:"customPortMappings"`
+		CustomPortMappings interface{}            `json:"customPortMappings"`
 	}
 	if !parseJSON(w, r, &body) {
 		return
@@ -178,7 +178,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 
 	modifiedContent, err := compose.BuildProjectComposeContent(string(baseContent), compose.TransformOptions{
 		ProjectID: projectName, AppID: body.AppID,
-		ExpiresIn: body.ExpiresIn, CustomPortMappings: body.CustomPortMappings,
+		ExpiresIn: body.ExpiresIn, CustomPortMappings: compose.NormalizePortOverrides(body.CustomPortMappings),
 		ExtraEnv: extraEnv, MasterApp: body.MasterApp,
 		HostDockerSocket: podman.HostSocket(),
 	})
