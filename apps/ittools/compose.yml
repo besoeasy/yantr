@@ -11,13 +11,12 @@ x-yantr:
   website: "https://corentinth.github.io/it-tools/"
   notes: ["This app is stateless and does not need a persistent volume.", "Protect access to the utility page on shared or public networks."]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI", service: ittools}
+
 services:
   ittools:
     image: docker.io/corentinth/it-tools:latest
-    labels:
-      yantr.app: "ittools"
-      yantr.service.80: "Web UI"
-      yantr.port.80: "HTTP"
     ports:
       - "80"
     restart: unless-stopped
