@@ -1,13 +1,8 @@
 {
   "nav": {
-    "home": "Главная",
-    "apps": "Приложения",
-    "telegram": "Telegram",
     "language": "Язык",
     "lightMode": "Светлая тема",
-    "darkMode": "Тёмная тема",
-    "theme": "Тема",
-    "telemetry": "Флот"
+    "darkMode": "Тёмная тема"
   },
   "telemetry": {
     "eyebrow": "Телеметрия",
@@ -27,15 +22,6 @@
   "common": {
     "loading": "Загрузка...",
     "error": "Ошибка",
-    "success": "Успешно",
-    "cancel": "Отмена",
-    "confirm": "Подтвердить",
-    "save": "Сохранить",
-    "delete": "Удалить",
-    "edit": "Изменить",
-    "back": "Назад",
-    "next": "Далее",
-    "previous": "Назад",
     "refresh": "Обновить"
   },
   "home": {
@@ -221,21 +207,9 @@
     "restartFailed": "Не удалось перезапустить контейнер"
   },
   "containerDetail": {
-    "containers": "Контейнеры",
-    "expiresAt": "Истекает",
-    "expired": "Истёк",
-    "day": "день",
-    "days": "дней",
-    "hour": "час",
-    "hours": "часов",
-    "minute": "минута",
-    "minutes": "минут",
-    "lessThanMinute": "Менее минуты",
     "descriptionNotAvailable": "Описание использования контейнера недоступно.",
-    "image": "Образ",
     "id": "ID",
     "networkAccess": "Сетевой доступ",
-    "internalAddresses": "Внутренние адреса",
     "internalAddressesHint": "Используйте эти IP в сети, если хотите связать приложения вручную.",
     "allPorts": "Все порты",
     "described": "Описанные",
@@ -269,7 +243,7 @@
     "control": "Управление",
     "terminateContainer": "Завершить контейнер",
     "terminating": "Завершение...",
-    "warning": "Предупреждение: это действие необратимо. Все связанные тома и данные будут безвозвратно удалены.",
+    "warning": "Контейнер и его сеть будут удалены. Именованные тома сохраняются, поэтому данные приложения останутся при повторном развёртывании.",
     "error": {
       "containerNotFound": "Контейнер не найден",
       "failedToLoadDetails": "Не удалось загрузить детали контейнера",
@@ -278,16 +252,8 @@
     },
     "success": {
       "deletedSuccessfully": "{name} успешно удалён!",
-      "volumesRemoved": "Тома удалены: {volumes}",
       "volumeBrowserStarted": "Браузер томов запущен{expiry}"
     }
-  },
-  "system": {
-    "title": "Система",
-    "images": "Образы",
-    "volumes": "Тома",
-    "logs": "Журналы",
-    "cleaner": "Очистка системы"
   },
   "volumes": {
     "title": "Тома",
@@ -389,32 +355,23 @@
     "scrollToBottom": "Прокрутить вниз"
   },
   "stackView": {
-    "dashboard": "Панель управления",
-    "refresh": "Обновить",
     "running": "запущен",
     "partial": "частично",
     "stopped": "остановлен",
-    "website": "Веб-сайт",
     "appPage": "Страница приложения",
     "removeStack": "Удалить стек",
     "removing": "Удаление…",
     "networkAccess": "Сетевой доступ",
     "allPorts": "Все порты",
     "described": "Описанные",
-    "hostPort": "Порт хоста",
-    "containerPort": "Порт контейнера",
-    "service": "Сервис",
     "open": "Открыть",
     "noPortsPublished": "Порты не публикуются на хост — все сервисы общаются внутри.",
     "noInternalAddresses": "Для этого стека нет доступных внутренних сетевых адресов.",
-    "port": "Порт",
     "storageVolumes": "Тома хранилища",
     "browseFiles": "Просмотр файлов",
     "startingWebDAV": "Запуск WebDAV-сервера…",
     "oneHourAccess": "Доступ на 1 час",
     "permanentAccess": "Постоянный доступ",
-    "environmentVariables": "Переменные окружения",
-    "serviceLabel": "Сервис:",
     "networkAliases": "Алиасы:",
     "justStarted": "Только что запущен",
     "stackNotFound": "Стек не найден",
@@ -430,17 +387,9 @@
     "expiresIn": "истекает через {minutes}м",
     "noExpiry": "без срока действия",
     "bindMounts": "Bind-монтирования",
-    "type": "Тип",
-    "hostPath": "Путь на хосте",
-    "containerPath": "Путь в контейнере",
     "containers": "Контейнеры",
     "uptime": "Время работы",
     "primary": "основной",
-    "internalPort": "Внутренний порт (не опубликован на хосте)",
-    "logs": "Журналы",
-    "configurationVariables": "Переменные конфигурации",
-    "hide": "Скрыть",
-    "show": "Показать",
     "updateStack": "Обновить",
     "updating": "Обновление…",
     "updatingStack": "Загрузка последних образов для {name}…",
@@ -448,20 +397,6 @@
     "updateAlreadyLatest": "Уже актуально — новых образов не найдено",
     "updateFailed": "Ошибка обновления",
     "updateTimedOut": "Тайм-аут обновления — загрузка образа заняла слишком много времени",
-    "openAnotherPort": "Открыть другой порт",
-    "auth": "Аутентификация",
-    "openAnotherPortHint": "Используйте синтаксис портов после развертывания. Например: 9000:9000, 9000 для авто или 53:53/udp.",
-    "portMappingLabel": "Проброс портов",
-    "portMappingHint": "Если вы введете 9000, Podman назначит случайный порт хоста для контейнера.",
-    "openPortAction": "Открыть порт",
-    "openingPortAction": "Открытие…",
-    "portFormInvalid": "Введите правильный порт.",
-    "openingPort": "Открытие {portMapping}…",
-    "portOpened": "Открыт {portMapping}",
-    "failedToOpenPort": "Не удалось открыть порт",
-    "caddyAuthTitle": "Аутентификация",
-    "caddyAuthHeading": "Защитить через Caddy Auth Proxy",
-    "caddyAuthHint": "Включите встроенный прокси Caddy для базовой авторизации.",
     "caddyAuthTargetPort": "Порт контейнера",
     "caddyAuthTargetHint": "Порт, на котором работает приложение.",
     "caddyAuthServePort": "Защищенный порт",
@@ -477,7 +412,6 @@
     "caddyAuthDisabled": "Auth Proxy выключен",
     "caddyAuthServePortRequired": "Введите защищенный порт.",
     "caddyAuthTargetPortRequired": "Введите порт приложения.",
-    "caddyProxiesRunning": "Активные прокси",
     "loadFailedTitle": "Не удалось загрузить стек",
     "loadFailedHint": "Сервер не ответил для {id}. Повторные попытки будут каждые несколько секунд, либо попробуйте сейчас.",
     "retry": "Повторить",
@@ -492,7 +426,9 @@
     "stoppingStack": "Остановка {name}…",
     "stackStarted": "Все службы запущены",
     "stackStopped": "Все службы остановлены",
-    "serviceActionFailed": "{failed} из {total} служб не ответили"
+    "serviceActionFailed": "{failed} из {total} служб не ответили",
+    "internalAddresses": "Внутренние адреса",
+    "internalAddressesHint": "Доступны с других контейнеров в этом стеке."
   },
   "appCard": {
     "active": "Активно ({count})",
@@ -674,18 +610,5 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "Это не похоже на токен туннеля — вставьте полный токен из dash.cloudflare.com."
-  },
-  "portainerCard": {
-    "dockerEnvironment": "Среда контейнеров",
-    "online": "Online",
-    "offline": "Offline",
-    "currentUptime": "Current Uptime",
-    "appStatus": "App Status",
-    "ready": "Ready",
-    "state": "State",
-    "running": "Running",
-    "stopped": "Stopped",
-    "manage": "Manage",
-    "install": "Install"
   }
 }

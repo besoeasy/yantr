@@ -1,13 +1,8 @@
 {
   "nav": {
-    "home": "首页",
-    "apps": "应用",
-    "telegram": "Telegram",
     "language": "语言",
     "lightMode": "浅色模式",
-    "darkMode": "深色模式",
-    "theme": "主题",
-    "telemetry": "集群"
+    "darkMode": "深色模式"
   },
   "telemetry": {
     "eyebrow": "遥测",
@@ -27,15 +22,6 @@
   "common": {
     "loading": "加载中...",
     "error": "错误",
-    "success": "成功",
-    "cancel": "取消",
-    "confirm": "确认",
-    "save": "保存",
-    "delete": "删除",
-    "edit": "编辑",
-    "back": "返回",
-    "next": "下一步",
-    "previous": "上一步",
     "refresh": "刷新"
   },
   "home": {
@@ -221,21 +207,9 @@
     "restartFailed": "无法重启容器"
   },
   "containerDetail": {
-    "containers": "容器",
-    "expiresAt": "过期时间",
-    "expired": "已过期",
-    "day": "天",
-    "days": "天",
-    "hour": "小时",
-    "hours": "小时",
-    "minute": "分钟",
-    "minutes": "分钟",
-    "lessThanMinute": "不到一分钟",
     "descriptionNotAvailable": "容器使用说明不可用。",
-    "image": "镜像",
     "id": "ID",
     "networkAccess": "网络访问",
-    "internalAddresses": "内部地址",
     "internalAddressesHint": "如果你想手动连接应用，可以使用这些按网络划分的 IP。",
     "allPorts": "所有端口",
     "described": "已描述",
@@ -269,7 +243,7 @@
     "control": "控制",
     "terminateContainer": "终止容器",
     "terminating": "终止中...",
-    "warning": "警告：此操作不可逆。所有关联的卷和数据将被永久销毁。",
+    "warning": "将移除容器及其网络。命名卷会保留，因此在重新部署后应用数据仍然存在。",
     "error": {
       "containerNotFound": "未找到容器",
       "failedToLoadDetails": "加载容器详情失败",
@@ -278,16 +252,8 @@
     },
     "success": {
       "deletedSuccessfully": "{name} 删除成功！",
-      "volumesRemoved": "已删除卷：{volumes}",
       "volumeBrowserStarted": "卷浏览器已启动{expiry}"
     }
-  },
-  "system": {
-    "title": "系统",
-    "images": "镜像",
-    "volumes": "卷",
-    "logs": "日志",
-    "cleaner": "系统清理"
   },
   "volumes": {
     "title": "卷",
@@ -389,32 +355,23 @@
     "scrollToBottom": "滚动到底部"
   },
   "stackView": {
-    "dashboard": "仪表板",
-    "refresh": "刷新",
     "running": "运行中",
     "partial": "部分运行",
     "stopped": "已停止",
-    "website": "网站",
     "appPage": "应用页面",
     "removeStack": "移除堆栈",
     "removing": "移除中…",
     "networkAccess": "网络访问",
     "allPorts": "所有端口",
     "described": "已描述",
-    "hostPort": "主机端口",
-    "containerPort": "容器端口",
-    "service": "服务",
     "open": "打开",
     "noPortsPublished": "未发布端口到主机 — 所有服务内部通信。",
     "noInternalAddresses": "此堆栈没有可用的内部网络地址。",
-    "port": "端口",
     "storageVolumes": "存储卷",
     "browseFiles": "浏览文件",
     "startingWebDAV": "正在启动 WebDAV 服务器…",
     "oneHourAccess": "1 小时访问",
     "permanentAccess": "永久访问",
-    "environmentVariables": "环境变量",
-    "serviceLabel": "服务：",
     "networkAliases": "别名：",
     "justStarted": "刚刚启动",
     "stackNotFound": "未找到堆栈",
@@ -430,17 +387,9 @@
     "expiresIn": "{minutes} 分钟后过期",
     "noExpiry": "永不过期",
     "bindMounts": "绑定挂载",
-    "type": "类型",
-    "hostPath": "主机路径",
-    "containerPath": "容器路径",
     "containers": "容器",
     "uptime": "运行时间",
     "primary": "主要",
-    "internalPort": "内部端口（未发布到主机）",
-    "logs": "日志",
-    "configurationVariables": "配置变量",
-    "hide": "隐藏",
-    "show": "显示",
     "updateStack": "更新",
     "updating": "更新中…",
     "updatingStack": "正在拉取 {name} 的最新镜像…",
@@ -448,20 +397,6 @@
     "updateAlreadyLatest": "已是最新版本 — 未找到新镜像",
     "updateFailed": "更新失败",
     "updateTimedOut": "更新超时 — 镜像拉取耗时过长",
-    "openAnotherPort": "打开其他端口",
-    "auth": "认证",
-    "openAnotherPortHint": "使用端口语法，例如 9000:9000、自动分配 9000，或 53:53/udp。",
-    "portMappingLabel": "端口映射",
-    "portMappingHint": "如果您仅输入 9000，Podman 将为容器端口 9000 分配一个随机主机端口。",
-    "openPortAction": "打开端口",
-    "openingPortAction": "正在打开…",
-    "portFormInvalid": "请输入有效的端口映射。",
-    "openingPort": "正在打开 {portMapping}…",
-    "portOpened": "已打开 {portMapping}",
-    "failedToOpenPort": "打开端口失败",
-    "caddyAuthTitle": "认证",
-    "caddyAuthHeading": "使用 Caddy Auth Proxy 保护",
-    "caddyAuthHint": "启用内置的 Caddy 代理以在此应用程序前添加基本身份验证。",
     "caddyAuthTargetPort": "容器端口",
     "caddyAuthTargetHint": "此应用程序当前运行的端口。",
     "caddyAuthServePort": "保护端口",
@@ -477,7 +412,6 @@
     "caddyAuthDisabled": "Auth Proxy 已禁用",
     "caddyAuthServePortRequired": "在启用之前输入保护端口。",
     "caddyAuthTargetPortRequired": "在启用之前输入应用端口。",
-    "caddyProxiesRunning": "活动代理",
     "loadFailedTitle": "无法加载此堆栈",
     "loadFailedHint": "服务器未响应 {id}。它会每隔几秒重试，你也可以立即重试。",
     "retry": "重试",
@@ -492,7 +426,9 @@
     "stoppingStack": "正在停止 {name}…",
     "stackStarted": "所有服务已启动",
     "stackStopped": "所有服务已停止",
-    "serviceActionFailed": "{total} 个服务中有 {failed} 个未响应"
+    "serviceActionFailed": "{total} 个服务中有 {failed} 个未响应",
+    "internalAddresses": "内部地址",
+    "internalAddressesHint": "此堆栈中的其他容器可以访问。"
   },
   "appCard": {
     "active": "活动 ({count})",
@@ -674,18 +610,5 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。"
-  },
-  "portainerCard": {
-    "dockerEnvironment": "容器环境",
-    "online": "Online",
-    "offline": "Offline",
-    "currentUptime": "Current Uptime",
-    "appStatus": "App Status",
-    "ready": "Ready",
-    "state": "State",
-    "running": "Running",
-    "stopped": "Stopped",
-    "manage": "Manage",
-    "install": "Install"
   }
 }

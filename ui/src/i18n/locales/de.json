@@ -1,13 +1,8 @@
 {
   "nav": {
-    "home": "Start",
-    "apps": "Apps",
-    "telegram": "Telegram",
     "language": "Sprache",
     "lightMode": "Hellmodus",
-    "darkMode": "Dunkelmodus",
-    "theme": "Design",
-    "telemetry": "Flotte"
+    "darkMode": "Dunkelmodus"
   },
   "telemetry": {
     "eyebrow": "Telemetrie",
@@ -27,15 +22,6 @@
   "common": {
     "loading": "Laden...",
     "error": "Fehler",
-    "success": "Erfolg",
-    "cancel": "Abbrechen",
-    "confirm": "Bestätigen",
-    "save": "Speichern",
-    "delete": "Löschen",
-    "edit": "Bearbeiten",
-    "back": "Zurück",
-    "next": "Weiter",
-    "previous": "Zurück",
     "refresh": "Aktualisieren"
   },
   "home": {
@@ -221,21 +207,9 @@
     "restartFailed": "Container konnte nicht neu gestartet werden"
   },
   "containerDetail": {
-    "containers": "Container",
-    "expiresAt": "Läuft ab am",
-    "expired": "Abgelaufen",
-    "day": "Tag",
-    "days": "Tage",
-    "hour": "Stunde",
-    "hours": "Stunden",
-    "minute": "Minute",
-    "minutes": "Minuten",
-    "lessThanMinute": "Weniger als eine Minute",
     "descriptionNotAvailable": "Container-Nutzungsbeschreibung nicht verfügbar.",
-    "image": "Image",
     "id": "ID",
     "networkAccess": "Netzwerkzugang",
-    "internalAddresses": "Interne Adressen",
     "internalAddressesHint": "Nutze diese IPs pro Netzwerk, wenn du Apps manuell verbinden willst.",
     "allPorts": "Alle Ports",
     "described": "Beschrieben",
@@ -269,7 +243,7 @@
     "control": "Steuerung",
     "terminateContainer": "Container beenden",
     "terminating": "Wird beendet...",
-    "warning": "Warnung: Diese Aktion ist unwiderruflich. Alle zugehörigen Volumes und Daten werden dauerhaft gelöscht.",
+    "warning": "Der Container und sein Netzwerk werden entfernt. Benannte Volumes bleiben erhalten, damit die Daten bei einer erneuten Installation erhalten bleiben.",
     "error": {
       "containerNotFound": "Container nicht gefunden",
       "failedToLoadDetails": "Container-Details konnten nicht geladen werden",
@@ -278,16 +252,8 @@
     },
     "success": {
       "deletedSuccessfully": "{name} erfolgreich gelöscht!",
-      "volumesRemoved": "Volumes entfernt: {volumes}",
       "volumeBrowserStarted": "Volume-Browser gestartet{expiry}"
     }
-  },
-  "system": {
-    "title": "System",
-    "images": "Images",
-    "volumes": "Volumes",
-    "logs": "Protokolle",
-    "cleaner": "System-Reiniger"
   },
   "volumes": {
     "title": "Volumes",
@@ -389,32 +355,23 @@
     "scrollToBottom": "Nach unten scrollen"
   },
   "stackView": {
-    "dashboard": "Dashboard",
-    "refresh": "Aktualisieren",
     "running": "läuft",
     "partial": "teilweise",
     "stopped": "gestoppt",
-    "website": "Webseite",
     "appPage": "App-Seite",
     "removeStack": "Stack entfernen",
     "removing": "Wird entfernt…",
     "networkAccess": "Netzwerkzugang",
     "allPorts": "Alle Ports",
     "described": "Beschrieben",
-    "hostPort": "Host-Port",
-    "containerPort": "Container-Port",
-    "service": "Dienst",
     "open": "Öffnen",
     "noPortsPublished": "Keine Ports am Host veröffentlicht — alle Dienste kommunizieren intern.",
     "noInternalAddresses": "Für diesen Stack sind keine internen Netzwerkadressen verfügbar.",
-    "port": "Port",
     "storageVolumes": "Speicher-Volumes",
     "browseFiles": "Dateien durchsuchen",
     "startingWebDAV": "WebDAV-Server wird gestartet…",
     "oneHourAccess": "1-Stunden-Zugang",
     "permanentAccess": "Dauerhafter Zugang",
-    "environmentVariables": "Umgebungsvariablen",
-    "serviceLabel": "Dienst:",
     "networkAliases": "Aliasse:",
     "justStarted": "Gerade gestartet",
     "stackNotFound": "Stack nicht gefunden",
@@ -430,17 +387,9 @@
     "expiresIn": "läuft in {minutes}m ab",
     "noExpiry": "kein Ablaufdatum",
     "bindMounts": "Bind-Mounts",
-    "type": "Typ",
-    "hostPath": "Host-Pfad",
-    "containerPath": "Container-Pfad",
     "containers": "Container",
     "uptime": "Betriebszeit",
     "primary": "primär",
-    "internalPort": "Interner Port (nicht am Host veröffentlicht)",
-    "logs": "Protokolle",
-    "configurationVariables": "Konfigurationsvariablen",
-    "hide": "Ausblenden",
-    "show": "Anzeigen",
     "updateStack": "Aktualisieren",
     "updating": "Aktualisierung…",
     "updatingStack": "Neueste Images für {name} werden geladen…",
@@ -448,20 +397,6 @@
     "updateAlreadyLatest": "Bereits aktuell — keine neuen Images gefunden",
     "updateFailed": "Aktualisierung fehlgeschlagen",
     "updateTimedOut": "Aktualisierung abgebrochen — der Image-Download hat zu lange gedauert",
-    "openAnotherPort": "Anderen Port öffnen",
-    "auth": "Authentifizierung",
-    "openAnotherPortHint": "Verwenden Sie die Port-Syntax nach der Bereitstellung. Beispiele: 9000:9000, 9000 für automatische Host-Zuweisung, oder 53:53/udp.",
-    "portMappingLabel": "Port-Mapping",
-    "portMappingHint": "Wenn Sie nur 9000 eingeben, weist Podman dem Container-Port 9000 einen zufälligen Host-Port zu.",
-    "openPortAction": "Port öffnen",
-    "openingPortAction": "Öffnen…",
-    "portFormInvalid": "Geben Sie ein gültiges Port-Mapping ein.",
-    "openingPort": "Öffne {portMapping}…",
-    "portOpened": "{portMapping} geöffnet",
-    "failedToOpenPort": "Fehler beim Öffnen des Ports",
-    "caddyAuthTitle": "Authentifizierung",
-    "caddyAuthHeading": "Mit Caddy Auth Proxy schützen",
-    "caddyAuthHint": "Aktivieren Sie den integrierten Caddy-Proxy, um eine Basisauthentifizierung vor dieser App hinzuzufügen.",
     "caddyAuthTargetPort": "Container-Port",
     "caddyAuthTargetHint": "Der Port, auf dem diese App derzeit läuft.",
     "caddyAuthServePort": "Geschützter Port",
@@ -477,7 +412,6 @@
     "caddyAuthDisabled": "Auth-Proxy deaktiviert",
     "caddyAuthServePortRequired": "Geben Sie einen geschützten Port ein, bevor Sie aktivieren.",
     "caddyAuthTargetPortRequired": "Geben Sie den App-Port ein, bevor Sie aktivieren.",
-    "caddyProxiesRunning": "Aktive Proxies",
     "loadFailedTitle": "Stack konnte nicht geladen werden",
     "loadFailedHint": "Der Server hat nicht auf {id} geantwortet. Es wird alle paar Sekunden erneut versuchen, oder Sie können es jetzt erneut versuchen.",
     "retry": "Erneut versuchen",
@@ -492,7 +426,9 @@
     "stoppingStack": "{name} wird gestoppt…",
     "stackStarted": "Alle Dienste gestartet",
     "stackStopped": "Alle Dienste gestoppt",
-    "serviceActionFailed": "{failed} von {total} Diensten haben nicht reagiert"
+    "serviceActionFailed": "{failed} von {total} Diensten haben nicht reagiert",
+    "internalAddresses": "Interne Adressen",
+    "internalAddressesHint": "Von anderen Containern in diesem Stack erreichbar."
   },
   "appCard": {
     "active": "Aktiv ({count})",
@@ -674,18 +610,5 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein."
-  },
-  "portainerCard": {
-    "dockerEnvironment": "Container-Umgebung",
-    "online": "Online",
-    "offline": "Offline",
-    "currentUptime": "Current Uptime",
-    "appStatus": "App Status",
-    "ready": "Ready",
-    "state": "State",
-    "running": "Running",
-    "stopped": "Stopped",
-    "manage": "Manage",
-    "install": "Install"
   }
 }

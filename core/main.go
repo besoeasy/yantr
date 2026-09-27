@@ -440,8 +440,10 @@ func handleAppLogo(w http.ResponseWriter, r *http.Request) {
 
 // sweepExpiredContainers finds all running containers whose yantr.expireAt label
 // is in the past and tears them down. Stacks are removed via `podman compose down`
-// (which also cleans up networks/volumes). Standalone containers are stopped and
-// removed directly. Called every minute from a background goroutine.
+// (which also cleans up the project's network, but not its named volumes — no
+// -v/--volumes, matching the in-app delete behaviour and the UI copy).
+// Standalone containers are stopped and removed directly. Called every minute
+// from a background goroutine.
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 

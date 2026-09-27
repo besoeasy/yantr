@@ -29,7 +29,6 @@ const browsingVolume = ref({})
 const showVolumeMenu = ref({})
 let statsInterval = null
 const autoScrollLogs = ref(true)
-const currentTime = ref(Date.now())
 const activeTab = ref('resources')
 const showOnlyDescribedPorts = ref(true)
 const loadErrorState = {
@@ -46,8 +45,6 @@ function notifyLoadErrorOnce(key, message) {
 function clearLoadError(key) {
   loadErrorState[key] = false
 }
-
-let timeUpdateInterval = null
 
 const containerVolumes = computed(() => {
   if (!selectedContainer.value?.mounts) return []
@@ -145,59 +142,6 @@ const filteredPortMappings = computed(() => {
     return allPortMappings.value
   }
   return allPortMappings.value.filter(mapping => mapping.label)
-})
-
-const expirationInfo = computed(() => {
-  if (!selectedContainer.value?.expireAt) return null
-  
-  const expireAtTimestamp = parseInt(selectedContainer.value.expireAt, 10)
-  if (isNaN(expireAtTimestamp)) return null
-  
-  const expireAtMs = expireAtTimestamp * 1000
-  const timeLeftMs = expireAtMs - currentTime.value
-  
-  if (timeLeftMs <= 0) {
-    return {
-      expired: true,
-      timeLeft: t('containerDetail.expired'),
-      urgency: 'critical',
-      percentage: 0
-    }
-  }
-  
-  const totalMinutes = Math.floor(timeLeftMs / 60000)
-  const hours = Math.floor(totalMinutes / 60)
-  const days = Math.floor(hours / 24)
-  const minutes = totalMinutes % 60
-  
-  const oneDayMs = 86400000
-  const percentage = Math.min(100, Math.max(0, (timeLeftMs / oneDayMs) * 100))
-  
-  let timeLeft = ''
-  let urgency = 'normal'
-  
-  if (days > 0) {
-    timeLeft = `${days} ${days === 1 ? t('containerDetail.day') : t('containerDetail.days')}${hours % 24 > 0 ? `, ${hours % 24} ${hours % 24 === 1 ? t('containerDetail.hour') : t('containerDetail.hours')}` : ''}`
-    urgency = days < 1 ? 'warning' : 'normal'
-  } else if (hours > 0) {
-    timeLeft = `${hours} ${hours === 1 ? t('containerDetail.hour') : t('containerDetail.hours')}${minutes > 0 ? `, ${minutes} ${minutes === 1 ? t('containerDetail.minute') : t('containerDetail.minutes')}` : ''}`
-    urgency = hours < 2 ? 'critical' : 'warning'
-  } else if (totalMinutes > 0) {
-    timeLeft = `${totalMinutes} ${totalMinutes === 1 ? t('containerDetail.minute') : t('containerDetail.minutes')}`
-    urgency = 'critical'
-  } else {
-    timeLeft = t('containerDetail.lessThanMinute')
-    urgency = 'critical'
-  }
-  
-  return {
-    expired: false,
-    timeLeft,
-    urgency,
-    percentage,
-    expireAt: new Date(expireAtMs).toLocaleString(),
-    totalMinutes
-  }
 })
 
 function appUrl(port, protocol = 'http') {
@@ -319,12 +263,10 @@ async function deleteContainer() {
     const data = await readJsonResponse(response)
 
     if (response.ok && data.success) {
-      let message = t('containerDetail.success.deletedSuccessfully', { name: selectedContainer.value.name })
-      const removedVolumes = Array.isArray(data.volumesRemoved) ? data.volumesRemoved : []
-      if (removedVolumes.length > 0) {
-        message += `\n\n${t('containerDetail.success.volumesRemoved', { volumes: data.volumesRemoved.join(', ') })}`
-      }
-      toast.success(message)
+      // No volumesRemoved handling: the backend has never sent that field, so
+      // the branch was unreachable. It was a leftover from a removed
+      // "remove volumes" option.
+      toast.success(t('containerDetail.success.deletedSuccessfully', { name: selectedContainer.value.name }))
       router.push('/home')
     } else {
       throw new Error(getApiErrorMessage(data, t('containerDetail.error.deletionFailed', { error: t('common.error') })))
@@ -369,17 +311,11 @@ onMounted(async () => {
     fetchContainerStats()
   }, 2000)
   
-  timeUpdateInterval = setInterval(() => {
-    currentTime.value = Date.now()
-  }, 1000)
 })
 
 onUnmounted(() => {
   if (statsInterval) {
     clearInterval(statsInterval)
-  }
-  if (timeUpdateInterval) {
-    clearInterval(timeUpdateInterval)
   }
 })
 </script>
