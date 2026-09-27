@@ -27,6 +27,9 @@ x-yantr:
       No account required - runs completely locally with no telemetry
     ]
 
+  ports:
+    - {port: 8096, protocol: HTTP, label: "Web UI", service: jellyfin}
+
 services:
   jellyfin:
     image: docker.io/linuxserver/jellyfin:latest
@@ -36,10 +39,6 @@ services:
     ports:
       - "8096"
     restart: unless-stopped
-    labels:
-      yantr.app: jellyfin
-      yantr.service.8096: Web UI
-      yantr.port.8096: HTTP
 
 volumes:
   jellyfin-config:
