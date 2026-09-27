@@ -15,35 +15,30 @@ const appsOutputDir = path.join(websiteDir, 'apps');
 const appsDir = path.join(__dirname, '..', 'apps');
 const siteUrl = 'https://yantr.org';
 
-function normaliseLabels(raw) {
-  if (!raw) return {};
-  if (Array.isArray(raw)) {
-    const out = {};
-    for (const l of raw) {
-      if (typeof l !== 'string') continue;
-      const idx = l.indexOf('=');
-      out[idx === -1 ? l : l.slice(0, idx)] = idx === -1 ? '' : l.slice(idx + 1);
-    }
-    return out;
-  }
-  return typeof raw === 'object' ? raw : {};
-}
+const DISPLAY_PROTOCOLS = new Set(['HTTP', 'HTTPS', 'TCP', 'UDP']);
 
-function parsePortLabels(services) {
-  const ports = [];
+function parseXyPorts(metaPorts, services) {
+  const out = [];
   const seen = new Set();
-  for (const svc of Object.values(services ?? {})) {
-    const labels = normaliseLabels(svc?.labels);
-    for (const [key, protocol] of Object.entries(labels)) {
-      if (!key.startsWith('yantr.port.')) continue;
-      const portNum = parseInt(key.replace('yantr.port.', ''), 10);
-      if (isNaN(portNum) || seen.has(portNum)) continue;
-      seen.add(portNum);
-      const serviceLabel = labels[`yantr.service.${portNum}`] || `Port ${portNum}`;
-      ports.push({ port: portNum, protocol: protocol.toUpperCase(), label: serviceLabel });
-    }
+  if (!Array.isArray(metaPorts)) return out;
+  const serviceNames = new Set(Object.keys(services ?? {}));
+  for (const p of metaPorts) {
+    const portNum = Number(p?.port);
+    if (!Number.isInteger(portNum) || portNum < 1 || portNum > 65535) continue;
+    const protocol = String(p?.protocol ?? 'TCP').trim().toUpperCase();
+    if (!DISPLAY_PROTOCOLS.has(protocol)) continue;
+    const label = String(p?.label ?? '').trim() || `Port ${portNum}`;
+    const service = String(p?.service ?? '').trim();
+    // Drop bogus entries referencing services that don't exist (the old
+    // label system hid these via port-only dedup).
+    if (service && !serviceNames.has(service)) continue;
+    const key = `${portNum}/${protocol}/${service}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ port: portNum, protocol, label, service });
   }
-  return ports;
+  out.sort((a, b) => a.port - b.port || (a.protocol < b.protocol ? -1 : 1) || (a.service < b.service ? -1 : 1));
+  return out;
 }
 
 function parseAppFolder(appId, appPath) {
@@ -66,7 +61,7 @@ function parseAppFolder(appId, appPath) {
     const services = composeData?.services ?? {};
     const serviceName = Object.keys(services)[0] || null;
     const image = serviceName ? (services[serviceName]?.image || null) : null;
-    const ports = parsePortLabels(services);
+    const ports = parseXyPorts(meta?.ports, services);
     const hasLogo = fs.existsSync(path.join(appPath, 'logo.svg'));
 
     return {
