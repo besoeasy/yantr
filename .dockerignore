@@ -19,8 +19,6 @@ README.md
 LICENSE
 *.md
 
-# Old UI folder (no longer needed)
-ui
 
 # Test files
 *.test.js

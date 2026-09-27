@@ -1,14 +1,13 @@
 # ─── Stage 1: Build Vue.js Frontend ──────────────────────────────────────────
 FROM docker.io/library/node:lts AS frontend-builder
 
-WORKDIR /app
+WORKDIR /app/ui
 
-COPY package.json package-lock.json* ./
+COPY ui/package.json ui/package-lock.json* ./
 RUN npm ci --prefer-offline --no-audit || npm install
 
-COPY . .
+COPY ui/ ./
 RUN VITE_BUILD_TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ) npm run build
-RUN rm -rf node_modules .npm
 
 # ─── Stage 2: Build Go Core Backend ──────────────────────────────────────────
 FROM docker.io/library/golang:1.25-alpine AS backend-builder
@@ -72,7 +71,7 @@ WORKDIR /app
 RUN mkdir -p /data
 
 # Copy compiled assets
-COPY --from=frontend-builder /app/dist ./dist
+COPY --from=frontend-builder /app/ui/dist ./dist
 COPY --from=backend-builder /yantr ./yantr
 COPY apps/ ./apps/
 

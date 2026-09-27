@@ -28,12 +28,15 @@ jobs:
         with:
           node-version: 24
           cache: npm
+          cache-dependency-path: scripts/package-lock.json
 
       - name: Install dependencies
-        run: npm i
+        working-directory: scripts
+        run: npm ci
 
       - name: Build website
-        run: npm run website
+        working-directory: scripts
+        run: npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

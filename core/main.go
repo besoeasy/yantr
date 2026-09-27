@@ -110,8 +110,22 @@ func getAppsDir() string {
 }
 
 func getDistDir() string {
+	if d := os.Getenv("YANTR_DIST_DIR"); d != "" {
+		return d
+	}
 	exe, _ := os.Executable()
-	return filepath.Join(filepath.Dir(exe), "dist")
+	dist := filepath.Join(filepath.Dir(exe), "dist")
+	if _, err := os.Stat(dist); err == nil {
+		return dist
+	}
+	for _, candidate := range []string{"ui/dist", "../ui/dist"} {
+		if _, err := os.Stat(candidate); err == nil {
+			if abs, err := filepath.Abs(candidate); err == nil {
+				return abs
+			}
+		}
+	}
+	return dist
 }
 
 func getBaseAppID(projectID string) string {
