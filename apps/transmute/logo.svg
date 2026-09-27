@@ -1,0 +1,7 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <title>Transmute</title>
+  <rect width="256" height="256" rx="56" fill="#1F2937"/>
+  <path d="M60 84c0-11 9-20 20-20h30l16 20h50c11 0 20 9 20 20v8H60z" fill="#4B5563"/>
+  <path d="M60 108h136v72c0 11-9 20-20 20H80c-11 0-20-9-20-20z" fill="#9CA3AF"/>
+  <path d="M104 128h48M136 112l16 16-16 16" stroke="#111827" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

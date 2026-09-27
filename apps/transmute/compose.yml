@@ -1,0 +1,37 @@
+x-yantr:
+  name: "Transmute"
+  tags: [productivity, tools, files, utility, self-hosted]
+  short_description: "Self-hosted file converter and compressor for images, video, audio, and documents."
+  description: >
+    Converts and compresses images, video, audio, documents, spreadsheets,
+    subtitles and fonts entirely on your own hardware. Nothing is uploaded to a
+    third party, there are no file size limits, and no watermarks are added.
+    Conversions run as local background jobs, so large files never block the UI.
+  usecases:
+    [
+      "Convert images, video, and audio between formats without uploading anything off-site.",
+      "Compress images, video, and archives to reduce size before sharing or archiving.",
+      "Convert documents, spreadsheets, subtitles, and fonts between formats locally.",
+    ]
+  website: "https://transmute.sh"
+  notes:
+    [
+      "Everything runs locally; no file ever leaves your network.",
+      "Large conversions run as background jobs and can take several minutes to finish.",
+      "Built-in authentication and OIDC/SSO are available from the app's own settings.",
+    ]
+
+  ports:
+    - {port: 3313, protocol: HTTP, label: "Web UI", service: transmute}
+
+services:
+  transmute:
+    image: ghcr.io/transmute-app/transmute:latest
+    volumes:
+      - transmute_data:/app/data
+    ports:
+      - "3313"
+    restart: unless-stopped
+
+volumes:
+  transmute_data:
