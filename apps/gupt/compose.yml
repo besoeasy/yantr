@@ -24,13 +24,12 @@ x-yantr:
         Nostr relays.
     ]
 
+  ports:
+    - {port: 8000, protocol: HTTP, label: "Web UI", service: gupt}
+
 services:
   gupt:
     image: ghcr.io/besoeasy/gupt:latest
-    labels:
-      yantr.app: gupt
-      yantr.service.8000: Web UI
-      yantr.port.8000: HTTP
     ports:
       - "8000"
     restart: unless-stopped
