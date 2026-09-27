@@ -28,6 +28,9 @@ x-yantr:
         for private use.
     ]
 
+  ports:
+    - {port: 80, protocol: HTTP, label: "Web UI & API", service: ntfy}
+
 services:
   ntfy:
     image: docker.io/binwiederhier/ntfy:latest
@@ -38,10 +41,6 @@ services:
       - ntfy_cache:/var/cache/ntfy
       - ntfy_data:/etc/ntfy
     restart: unless-stopped
-    labels:
-      yantr.app: ntfy
-      yantr.service.80: Web UI & API
-      yantr.port.80: HTTP
 
 volumes:
   ntfy_cache: null
