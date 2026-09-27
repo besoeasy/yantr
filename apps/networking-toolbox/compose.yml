@@ -22,13 +22,12 @@ x-yantr:
       Great for troubleshooting
     ]
 
+  ports:
+    - {port: 3000, protocol: HTTP, label: "Web UI", service: networking-toolbox}
+
 services:
   networking-toolbox:
     image: docker.io/lissy93/networking-toolbox:latest
-    labels:
-      yantr.app: networking-toolbox
-      yantr.service.3000: Web UI
-      yantr.port.3000: HTTP
     ports:
       - "3000"
     restart: unless-stopped
