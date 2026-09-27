@@ -15,5 +15,4 @@ podman run -d \
   --security-opt label=disable \
   -e CONTAINER_HOST=unix:///run/podman/podman.sock \
   -v "$SOCKET:/run/podman/podman.sock" \
-  -v yantr_data:/data:z \
   yantr:dev
