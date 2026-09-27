@@ -20,6 +20,9 @@ x-yantr:
       Audio extraction support
     ]
 
+  ports:
+    - {port: 8081, protocol: HTTP, label: "Web UI", service: metube}
+
 services:
   metube:
     image: ghcr.io/alexta69/metube:latest
@@ -29,10 +32,6 @@ services:
     ports:
       - "8081"
     restart: unless-stopped
-    labels:
-      yantr.app: metube
-      yantr.service.8081: Web UI
-      yantr.port.8081: HTTP
 
 volumes:
   metube_downloads: null
