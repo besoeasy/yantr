@@ -9,13 +9,12 @@ x-yantr:
   usecases: ["Browse family photos in a gallery view.", "Organize and view photo collections."]
   website: "https://github.com/foldergram/foldergram"
 
+  ports:
+    - {port: 4141, protocol: HTTP, label: "Web UI", service: foldergram}
+
 services:
   foldergram:
     image: ghcr.io/foldergram/foldergram:latest
-    labels:
-      yantr.app: "foldergram"
-      yantr.service.4141: "Web UI"
-      yantr.port.4141: "HTTP"
     ports:
       - "4141"
     environment:
