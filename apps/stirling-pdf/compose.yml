@@ -22,13 +22,12 @@ x-yantr:
       OCR requires additional language packs
     ]
 
+  ports:
+    - {port: 8080, protocol: HTTP, label: "Web UI", service: stirling-pdf}
+
 services:
   stirling-pdf:
     image: docker.io/frooodle/s-pdf:latest
-    labels:
-      yantr.app: stirling-pdf
-      yantr.service.8080: Web UI
-      yantr.port.8080: HTTP
     ports:
       - "8080"
     volumes:
