@@ -22,13 +22,12 @@ x-yantr:
       Can export to InfluxDB for long-term storage
     ]
 
+  ports:
+    - {port: 61208, protocol: HTTP, label: "Web UI", service: glances}
+
 services:
   glances:
     image: docker.io/nicolargo/glances:latest
-    labels:
-      yantr.app: glances
-      yantr.service.61208: Web UI
-      yantr.port.61208: HTTP
     ports:
       - "61208"
     volumes:
