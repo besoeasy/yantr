@@ -28,6 +28,10 @@ x-yantr:
       Each client needs a QR code or config file to connect
     ]
 
+  ports:
+    - {port: 51820, protocol: UDP, label: "VPN Tunnel", service: wireguard}
+    - {port: 51821, protocol: HTTP, label: "Admin Panel", service: wireguard}
+
 services:
   wireguard:
     image: ghcr.io/wg-easy/wg-easy:15
@@ -44,12 +48,6 @@ services:
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-    labels:
-      yantr.app: wireguard
-      yantr.service.51821: Admin Panel
-      yantr.port.51821: HTTP
-      yantr.service.51820: VPN Tunnel
-      yantr.port.51820: UDP
 
 volumes:
   wireguard_data: null
