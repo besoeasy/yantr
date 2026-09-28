@@ -495,6 +495,7 @@ func main() {
 	r.Post("/api/containers/{id}/stop", handleContainerStop)
 	r.Post("/api/containers/{id}/restart", handleContainerRestart)
 	r.Get("/api/stacks/{projectId}", handleStackDetail)
+	r.Get("/api/stacks/{projectId}/env", handleStackEnv)
 	r.With(withWriteTimeout(spawnTimeoutMedium)).Delete("/api/stacks/{projectId}", handleStackDelete)
 	r.With(withWriteTimeout(spawnTimeoutMedium)).Post("/api/stacks/{projectId}/restart", handleStackRestart)
 	r.Get("/api/images", handleImages)

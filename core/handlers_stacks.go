@@ -242,6 +242,59 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleStackEnv returns the stored environment for a project instance so the
+// deploy form can prefill it when editing an existing install. Only the
+// project .env file is returned — extra vars baked into the generated compose
+// file are not recoverable here and must be re-entered.
+func handleStackEnv(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+	if projectID == "" {
+		jsonErr(w, 400, "PROJECT_ID_REQUIRED", "projectId is required")
+		return
+	}
+	baseID := getBaseAppID(projectID)
+	if !validAppID.MatchString(baseID) {
+		jsonErr(w, 400, "INVALID_PROJECT_ID", "Invalid project ID")
+		return
+	}
+
+	// Only expose env for a project that is actually running.
+	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	if err != nil {
+		jsonErr(w, 500, "PODMAN_ERROR", err.Error())
+		return
+	}
+	running := false
+	for _, c := range all {
+		if compose.ComposeProjectLabel(c.Labels) == projectID {
+			running = true
+			break
+		}
+	}
+	if !running {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack not found or no containers")
+		return
+	}
+
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	if _, statErr := os.Stat(filepath.Join(appPath, "compose.yml")); statErr != nil {
+		jsonErr(w, 404, "APP_NOT_FOUND", "App not found")
+		return
+	}
+
+	env, err := compose.LoadProjectEnv(appPath, projectID)
+	if err != nil {
+		jsonResp(w, 200, map[string]interface{}{
+			"success": true, "projectId": projectID, "exists": false,
+			"env": map[string]string{},
+		})
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{
+		"success": true, "projectId": projectID, "exists": true, "env": env,
+	})
+}
+
 func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
 

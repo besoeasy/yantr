@@ -54,13 +54,128 @@ const customPortMappings = ref({});
 const extraEnvRows = ref([]);
 
 // Computed
-const canDeploy = computed(() => !deploying.value);
+const canDeploy = computed(() => !deploying.value && !loadingEnv.value);
 
-const instanceCount = computed(() => {
-  return props.containers.filter((c) => c.app.id === props.app.id).length;
+// Distinct running instances (project IDs) of this app. The container list
+// carries one entry per container, so counting containers overcounts
+// multi-service apps — and the next number must be max+1, not count+1, or a
+// deleted middle instance causes the new deploy to overwrite a live one.
+const appInstances = computed(() => {
+  const seen = [];
+  for (const c of props.containers) {
+    if (c?.app?.id !== props.app.id) continue;
+    const pid = c?.app?.projectId;
+    if (!pid || seen.includes(pid)) continue;
+    seen.push(pid);
+  }
+  return seen.sort();
 });
 
-const nextInstanceNumber = computed(() => instanceCount.value + 1);
+function instanceNumber(projectId) {
+  if (projectId === props.app.id) return 1;
+  const rest = projectId.slice(props.app.id.length + 1);
+  const n = parseInt(rest, 10);
+  return Number.isInteger(n) && n > 1 ? n : 0;
+}
+
+const instanceCount = computed(() => appInstances.value.length);
+
+const nextInstanceNumber = computed(() => {
+  let max = 0;
+  for (const pid of appInstances.value) {
+    max = Math.max(max, instanceNumber(pid));
+  }
+  return max + 1;
+});
+
+// "" = deploy a new instance; otherwise the project ID being edited in place.
+const editProjectId = ref("");
+const loadingEnv = ref(false);
+
+const EXPIRY_TIERS = [1, 6, 12, 24, 72, 168, 336, 720];
+
+function resetNewForm() {
+  envValues.value = {};
+  extraEnvRows.value = [];
+  customPortMappings.value = {};
+  customizePorts.value = false;
+  temporaryInstall.value = false;
+  expirationHours.value = 24;
+}
+
+async function onInstanceChange() {
+  const pid = editProjectId.value;
+  if (!pid) {
+    // Back to a fresh deploy: drop the previous instance's secrets so they
+    // can never leak into the new instance's env file.
+    resetNewForm();
+    return;
+  }
+  await loadInstanceEnv(pid);
+}
+
+async function loadInstanceEnv(pid) {
+  loadingEnv.value = true;
+  try {
+    const res = await fetch(`${apiUrl.value}/api/stacks/${encodeURIComponent(pid)}/env`);
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    // Prefill everything stored, not just catalog-declared vars: undeclared
+    // keys have no visible input, but carrying them through preserves them
+    // instead of silently deleting them on save.
+    envValues.value = { ...(data.env || {}) };
+
+    // Preserve current host ports so an env-only edit does not remap them.
+    const instanceContainers = props.containers.filter(
+      (c) => c?.app?.id === props.app.id && c?.app?.projectId === pid
+    );
+    const published = [];
+    for (const c of instanceContainers) {
+      for (const p of c?.ports ?? []) {
+        if (p?.PublicPort) published.push(p);
+      }
+    }
+    const mappings = {};
+    for (const port of allPorts.value) {
+      // Catalog ports serialize as strings, podman reports numbers.
+      const match = published.find(
+        (p) => Number(p.PrivatePort) === Number(port.containerPort) &&
+          String(p.Type || "").toLowerCase() === String(port.protocol || "").toLowerCase()
+      );
+      if (match) mappings[`${port.hostPort}/${port.protocol}`] = match.PublicPort;
+    }
+    customPortMappings.value = mappings;
+    customizePorts.value = Object.keys(mappings).length > 0;
+
+    // Preserve temporary-install expiry. Expiry is stamped from deploy time,
+    // so round the remaining life UP to the next tier rather than silently
+    // un-expiring the install.
+    let remainingHours = 0;
+    for (const c of instanceContainers) {
+      const at = parseInt(c?.labels?.["yantr.expireAt"], 10);
+      if (Number.isFinite(at) && at > 0) {
+        remainingHours = Math.max(remainingHours, Math.ceil((at - Date.now() / 1000) / 3600));
+      }
+    }
+    if (remainingHours > 0) {
+      temporaryInstall.value = true;
+      expirationHours.value = EXPIRY_TIERS.find((h) => h >= remainingHours) ?? remainingHours;
+    } else {
+      temporaryInstall.value = false;
+    }
+
+    toast.success(t('appDetail.envLoaded', { project: pid }));
+  } catch (e) {
+    // Fall back to a blank new-instance form rather than saving half-loaded state.
+    editProjectId.value = "";
+    resetNewForm();
+    toast.error(t('appDetail.loadEnvFailed', { message: e?.message || e }));
+  } finally {
+    loadingEnv.value = false;
+  }
+}
 
 
 const allPorts = computed(() => {
@@ -203,7 +318,10 @@ async function deployApp() {
   }
 
   deploying.value = true;
-  const instanceNum = nextInstanceNumber.value;
+  const editing = editProjectId.value !== "";
+  const instanceNum = editing
+    ? instanceNumber(editProjectId.value) || nextInstanceNumber.value
+    : nextInstanceNumber.value;
   const instanceSuffix = instanceNum > 1 ? ` #${instanceNum}` : "";
   toast.info(t('appDetail.deployingApp', { name: props.app.name, suffix: instanceSuffix }));
 
@@ -254,6 +372,8 @@ async function deployApp() {
     if (response.ok && result.success) {
       if (result.temporary) {
         toast.success(t('appDetail.deployedAsTemporary', { name: props.app.name, hours: expirationHours.value }));
+      } else if (editing) {
+        toast.success(t('appDetail.updatedSuccessfully', { name: props.app.name }));
       } else {
         toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
       }
@@ -273,6 +393,8 @@ async function deployApp() {
         if (pollResult.success) {
           if (temporaryInstall.value) {
             toast.success(t('appDetail.deployedAsTemporary', { name: props.app.name, hours: expirationHours.value }));
+          } else if (editing) {
+            toast.success(t('appDetail.updatedSuccessfully', { name: props.app.name }));
           } else {
             toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
           }
@@ -300,6 +422,24 @@ async function deployApp() {
 
 <template>
   <div class="space-y-6">
+    <!-- Target instance: fresh deploy or edit an existing install in place -->
+    <div v-if="appInstances.length > 0" class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
+      <label for="target-instance" class="mb-1 block text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
+        {{ t('appDetail.targetInstance') }}
+      </label>
+      <select
+        id="target-instance"
+        v-model="editProjectId"
+        @change="onInstanceChange"
+        :disabled="deploying || loadingEnv"
+        class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white"
+      >
+        <option value="">{{ t('appDetail.newInstance') }} (#{{ nextInstanceNumber }})</option>
+        <option v-for="pid in appInstances" :key="pid" :value="pid">{{ t('appDetail.editInstance') }} #{{ instanceNumber(pid) }} — {{ pid }}</option>
+      </select>
+      <p v-if="editProjectId" class="mt-2 leading-tight text-[10px] text-zinc-500">{{ t('appDetail.extraVarsEditHint') }}</p>
+    </div>
+
     <!-- Configuration -->
     <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
       <div class="mb-5 flex items-center justify-between">
@@ -467,7 +607,7 @@ async function deployApp() {
               </span>
               <span v-else class="flex items-center justify-center gap-2">
                  <Play :size="14" fill="currentColor" />
-                 {{ instanceCount > 0 ? t('appDetail.deployAnother') : t('appDetail.installApp') }}
+                 {{ editProjectId ? t('appDetail.updateInstance') : (instanceCount > 0 ? t('appDetail.deployAnother') : t('appDetail.installApp')) }}
               </span>
            </button>
            <div v-if="instanceCount > 0" class="mt-3 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-500">
