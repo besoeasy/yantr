@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"strings"
 	"testing"
 )
@@ -114,5 +115,72 @@ Writing manifest to image destination
 	)
 	if !detected {
 		t.Error("digest-diff detection should report this pull as an update")
+	}
+}
+
+func TestClassifyUpdate(t *testing.T) {
+	const alpine = "docker.io/library/alpine:latest"
+	snap := func(id string) map[string]string { return map[string]string{alpine: id} }
+	snapErr := errors.New("snapshot failed")
+
+	cases := []struct {
+		name                string
+		refs                []string
+		before, after       map[string]string
+		beforeErr, afterErr error
+		want                updateCheck
+	}{
+		{
+			name:   "identical digests skip the recreate",
+			refs:   []string{alpine},
+			before: snap("sha256:same"), after: snap("sha256:same"),
+			want: updateUnchanged,
+		},
+		{
+			name:   "moved digest recreates and counts",
+			refs:   []string{alpine},
+			before: snap("sha256:old"), after: snap("sha256:new"),
+			want: updateChanged,
+		},
+		{
+			name:   "first-time pull counts as changed",
+			refs:   []string{alpine},
+			before: map[string]string{}, after: snap("sha256:new"),
+			want: updateChanged,
+		},
+		{
+			name:   "unrelated image churn is unchanged",
+			refs:   []string{alpine},
+			before: snap("sha256:a"), after: map[string]string{alpine: "sha256:a", "docker.io/library/redis:7": "sha256:z"},
+			want: updateUnchanged,
+		},
+		{
+			name:   "pre-pull snapshot failure recreates without counting",
+			refs:   []string{alpine},
+			before: nil, after: snap("sha256:new"),
+			beforeErr: snapErr,
+			want:      updateUnknown,
+		},
+		{
+			name:   "post-pull snapshot failure recreates without counting",
+			refs:   []string{alpine},
+			before: snap("sha256:old"), after: nil,
+			afterErr: snapErr,
+			want:     updateUnknown,
+		},
+		{
+			name:   "no image refs recreates without counting",
+			refs:   nil,
+			before: snap("sha256:a"), after: snap("sha256:b"),
+			want: updateUnknown,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			if got := classifyUpdate(c.refs, c.before, c.beforeErr, c.after, c.afterErr); got != c.want {
+				t.Errorf("classifyUpdate = %v, want %v", got, c.want)
+			}
+		})
 	}
 }

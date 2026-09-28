@@ -435,7 +435,27 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		newerImage := imagesChanged(stackImages, before, beforeErr)
+		// Compare image IDs before/after the pull. When the snapshots prove
+		// nothing changed, skip the recreate entirely: `up -d` would restart
+		// every container for a guaranteed no-op. When the comparison is
+		// inconclusive (snapshot failed, or the compose file declared no
+		// images), recreate anyway — failing to adopt a real update is worse
+		// than an unnecessary restart — but do not count it as an update.
+		after, afterErr := podman.LocalImageIDs(podman.Background())
+		if afterErr != nil {
+			shared.Log("warn", "[update] could not read image list after pull: "+afterErr.Error())
+		}
+		check := classifyUpdate(stackImages, before, beforeErr, after, afterErr)
+
+		if check == updateUnchanged {
+			shared.Log("info", fmt.Sprintf("[update] stack %s is already up to date", projectID))
+			job.SetProgress(fmt.Sprintf("Stack %s is already up to date", projectID))
+			release()
+			continue
+		}
+		if check == updateUnknown {
+			shared.Log("warn", fmt.Sprintf("[update] could not determine whether images changed for %s — recreating to be safe", projectID))
+		}
 
 		shared.Log("info", fmt.Sprintf("[update] recreating stack: %s", projectID))
 		job.SetProgress(fmt.Sprintf("Recreating stack %s...", projectID))
@@ -453,13 +473,16 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		// Count as updated only when a newer image was pulled AND the stack came up cleanly.
-		if newerImage {
+		// Count as updated only when a newer image was provably pulled AND the
+		// stack came up cleanly. An inconclusive comparison still recreates
+		// (above) but is never reported as an update: under-reporting is the
+		// safer failure mode.
+		if check == updateChanged {
 			updatedCount++
 			shared.Log("info", fmt.Sprintf("[update] stack %s was updated", projectID))
 			telemetry.TrackUpdatesForContainers([]string{projectID})
 		} else {
-			shared.Log("info", fmt.Sprintf("[update] stack %s is already up to date", projectID))
+			shared.Log("info", fmt.Sprintf("[update] stack %s recreated (change inconclusive)", projectID))
 		}
 
 		release()
@@ -493,7 +516,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 
 // stackImageRefs returns the normalized image references declared by a compose
 // file. An unreadable or malformed file yields no references, which makes
-// imagesChanged fall back to "nothing changed" rather than guessing.
+// classifyUpdate return updateUnknown rather than guessing.
 func stackImageRefs(composePath string) []string {
 	data, err := os.ReadFile(composePath)
 	if err != nil {
@@ -513,26 +536,35 @@ func stackImageRefs(composePath string) []string {
 	return normalized
 }
 
-// imagesChanged reports whether pulling altered the local image ID behind any
-// of the stack's references. A reference absent from `before` but present in
-// `after` counts as a change — that is a first-time pull.
-//
-// If the pre-pull snapshot failed, or the compose file declared no images, the
-// answer is false: the pull already happened either way, so this only affects
-// reporting and telemetry, and under-reporting is the safer failure mode.
-func imagesChanged(refs []string, before map[string]string, beforeErr error) bool {
-	if beforeErr != nil || len(refs) == 0 {
-		return false
+// updateCheck classifies the result of a pull for a stack.
+type updateCheck int
+
+const (
+	// updateUnchanged means the before/after snapshots prove no image ID
+	// behind the stack's references moved. The recreate can be skipped.
+	updateUnchanged updateCheck = iota
+	// updateChanged means an image ID provably moved (or an image appeared
+	// that was not local before — a first-time pull).
+	updateChanged
+	// updateUnknown means the comparison is inconclusive: a snapshot failed
+	// or the compose file declared no images. The caller recreates anyway
+	// but must not report it as an update.
+	updateUnknown
+)
+
+// classifyUpdate is the pure decision behind the update flow, split out so it
+// can be tested without a live Podman socket.
+func classifyUpdate(refs []string, before map[string]string, beforeErr error, after map[string]string, afterErr error) updateCheck {
+	if beforeErr != nil || afterErr != nil || len(refs) == 0 {
+		return updateUnknown
 	}
-	after, err := podman.LocalImageIDs(podman.Background())
-	if err != nil {
-		shared.Log("warn", "[update] could not read image list after pull: "+err.Error())
-		return false
+	if imageIDsDiffer(refs, before, after) {
+		return updateChanged
 	}
-	return imageIDsDiffer(refs, before, after)
+	return updateUnchanged
 }
 
-// imageIDsDiffer is the pure comparison behind imagesChanged, split out so it
+// imageIDsDiffer is the pure comparison behind classifyUpdate, split out so it
 // can be tested without a live Podman socket.
 func imageIDsDiffer(refs []string, before, after map[string]string) bool {
 	for _, ref := range refs {
