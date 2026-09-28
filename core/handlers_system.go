@@ -488,6 +488,24 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		release()
 	}
 
+	// Pull + recreate orphans the superseded images (they lose their tag).
+	// Reclaim them now, but only when something actually updated — a no-op
+	// update must not delete anything. dangling=true removes untagged layers
+	// only, the same safe default as the manual prune endpoint.
+	prunedImages := 0
+	var prunedBytes uint64
+	if updatedCount > 0 {
+		filters := dockerfilters.NewArgs()
+		filters.Add("dangling", "true")
+		if pruned, err := podman.ImagesPrune(context.Background(), filters); err == nil {
+			prunedImages = len(pruned.ImagesDeleted)
+			prunedBytes = pruned.SpaceReclaimed
+			shared.Log("info", fmt.Sprintf("[update] pruned %d dangling images, reclaimed %d bytes", prunedImages, prunedBytes))
+		} else {
+			shared.Log("warn", "[update] post-update prune failed: "+err.Error())
+		}
+	}
+
 	// Dump logs cleanly
 	for _, line := range strings.Split(strings.TrimSpace(allStdout.String()), "\n") {
 		if line != "" {
@@ -503,14 +521,16 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	job.Complete(map[string]interface{}{
 		"success":      true,
 		"updatedCount": updatedCount,
+		"prunedImages": prunedImages, "spaceReclaimed": prunedBytes,
 	})
 
 	jsonResp(w, 200, map[string]interface{}{
 		"success":      true,
 		"jobId":        job.ID,
 		"updatedCount": updatedCount,
-		"output":       allStdout.String(),
-		"warnings":     allStderr.String(),
+		"prunedImages": prunedImages, "spaceReclaimed": prunedBytes,
+		"output":   allStdout.String(),
+		"warnings": allStderr.String(),
 	})
 }
 
