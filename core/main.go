@@ -484,7 +484,6 @@ func main() {
 	r.Get("/api/logs", handleLogs)
 	r.Get("/api/apps", handleApps)
 	r.Get("/api/apps/{id}/logo", handleAppLogo)
-	r.Get("/api/apps/{id}/check-arch", handleCheckArch)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/deploy", handleDeploy)
 	r.Get("/api/containers", handleContainers)
 	r.Get("/api/containers/{id}", handleContainerDetail)

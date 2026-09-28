@@ -7,7 +7,6 @@ import (
 	"core/podman"
 	"core/shared"
 	"core/supervisor"
-	"core/system"
 	"core/telemetry"
 	"fmt"
 	"net/http"
@@ -18,7 +17,6 @@ import (
 
 	dockerfilters "github.com/docker/docker/api/types/filters"
 	dockernet "github.com/docker/docker/api/types/network"
-	"github.com/go-chi/chi/v5"
 )
 
 func handleApps(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +29,6 @@ func handleApps(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{"success": true, "count": cat.Count, "apps": cat.Apps})
 }
 
-var imageRe = regexp.MustCompile(`image:\s*([^\s\n]+)`)
 var validEnvKey = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
 
 // validateEnvMap ensures user-supplied env vars cannot break out of the
@@ -54,30 +51,6 @@ func validateEnvMap(env map[string]interface{}) error {
 		}
 	}
 	return nil
-}
-
-func handleCheckArch(w http.ResponseWriter, r *http.Request) {
-	appID := chi.URLParam(r, "id")
-	if !validAppID.MatchString(appID) {
-		jsonErr(w, 400, "INVALID_APP_ID", "Invalid app ID")
-		return
-	}
-	composePath := filepath.Join(apps.GetAppsDir(), appID, "compose.yml")
-	content, err := os.ReadFile(composePath)
-	if err != nil {
-		jsonErr(w, 404, "APP_NOT_FOUND", "App not found")
-		return
-	}
-	m := imageRe.FindSubmatch(content)
-	if m == nil {
-		jsonErr(w, 400, "IMAGE_NOT_FOUND", "Could not extract image name from compose file")
-		return
-	}
-	jsonResp(w, 200, map[string]interface{}{
-		"success": true, "appId": appID,
-		"image":     strings.TrimSpace(string(m[1])),
-		"supported": "unknown", "systemArch": system.GetSystemArch(), "imageArch": "unknown",
-	})
 }
 
 func handleDeploy(w http.ResponseWriter, r *http.Request) {

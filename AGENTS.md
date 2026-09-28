@@ -73,4 +73,4 @@ Go core changes:
 ```sh
 cd core && go build ./... && go vet ./... && go test ./...
 ```
-`gofmt -l .` shows pre-existing drift in `apps/catalog.go`, `handlers_images.go`, `handlers_system.go`, `main.go` — don't mass-reformat those.
+`gofmt -l .` shows pre-existing drift in `apps/catalog.go`, `handlers_apps.go`, `handlers_images.go`, `main.go` — don't mass-reformat those.

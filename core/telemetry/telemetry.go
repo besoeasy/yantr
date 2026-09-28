@@ -155,15 +155,6 @@ func TrackInstall(appID string) {
 	Ping("install", map[string]interface{}{"app": appID})
 }
 
-// TrackSelfUpdate sends a self-update event.
-func TrackSelfUpdate(updatedCount int, version string) {
-	shared.Log("info", fmt.Sprintf("[telemetry] tracking self-update: updated=%d v=%s", updatedCount, version))
-	Ping("selfupdate", map[string]interface{}{
-		"updated": updatedCount,
-		"v":       version,
-	})
-}
-
 // TrackUpdatesForContainers tracks update events for specific container names.
 func TrackUpdatesForContainers(containerNames []string) {
 	if !isEnabled || len(containerNames) == 0 {
