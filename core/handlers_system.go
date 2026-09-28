@@ -23,18 +23,6 @@ import (
 	dockerfilters "github.com/docker/docker/api/types/filters"
 )
 
-func runPodmanAutoUpdate(containerNames []string) (string, string, int, error) {
-	env := map[string]string{
-		"CONTAINER_HOST": "unix://" + podman.SocketPath,
-		"PODMAN_HOST":   "unix://" + podman.SocketPath,
-		"DOCKER_HOST":   "unix://" + podman.SocketPath,
-		"PODMAN_SOCKET": podman.SocketPath,
-	}
-	wctx, wcancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
-	defer wcancel()
-	return spawnExec(wctx, "podman", []string{"auto-update"}, env, "")
-}
-
 func sweepExpiredContainers() {
 	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: false})
 	if err != nil {
@@ -357,7 +345,10 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		idSet[id] = true
 	}
 
-	var standaloneNames []string
+	// Only containers belonging to a Compose project are updatable. Standalone
+	// containers (e.g. the volume browser) are filtered out of the container
+	// list, so they are never offered to the UI, and they are rebuilt from
+	// scratch on their next Start anyway — there is nothing to update here.
 	projectSet := map[string]bool{}
 
 	for _, c := range ctrs {
@@ -370,17 +361,15 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		if match {
-			project := compose.ComposeProjectLabel(c.Labels)
-			if project != "" {
-				projectSet[project] = true
-			} else if len(c.Names) > 0 {
-				standaloneNames = append(standaloneNames, strings.TrimPrefix(c.Names[0], "/"))
-			}
+		if !match {
+			continue
+		}
+		if project := compose.ComposeProjectLabel(c.Labels); project != "" {
+			projectSet[project] = true
 		}
 	}
 
-	if len(projectSet) == 0 && len(standaloneNames) == 0 {
+	if len(projectSet) == 0 {
 		jsonErr(w, 404, "CONTAINERS_NOT_RUNNING", "None of the provided container IDs are currently running")
 		return
 	}
@@ -391,7 +380,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	job := globalJobs.Create("autoupdate", "system", "Auto-update containers")
 	job.SetProgress("Checking for updates...")
 
-	// 1. Process Compose Projects natively
+	// Process Compose projects natively.
 	cmdName, cmdArgs, cmdErr := getComposeCommand()
 	for projectID := range projectSet {
 		if cmdErr != nil {
@@ -474,34 +463,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 
 		release()
-	}
-
-	// 2. Process standalone containers using podman auto-update
-	if len(standaloneNames) > 0 {
-		shared.Log("info", fmt.Sprintf("[update] running podman auto-update for standalone containers: %s", strings.Join(standaloneNames, ", ")))
-		wOut, wErr, wExit, err := runPodmanAutoUpdate(standaloneNames)
-		if err != nil {
-			allStderr.WriteString(fmt.Sprintf("[update] podman auto-update error: %v\n", err))
-		} else {
-			allStdout.WriteString(wOut + "\n")
-			allStderr.WriteString(wErr + "\n")
-
-			wCombined := strings.ToLower(wOut + "\n" + wErr)
-			var updatedNames []string
-			for _, name := range standaloneNames {
-				if strings.Contains(wCombined, strings.ToLower(name)) &&
-					(strings.Contains(wCombined, "found new") || strings.Contains(wCombined, "updating") || strings.Contains(wCombined, "updated")) {
-					updatedNames = append(updatedNames, name)
-				}
-			}
-			if len(updatedNames) > 0 {
-				updatedCount += len(updatedNames)
-				shared.Log("info", fmt.Sprintf("[update] images updated for: %s", strings.Join(updatedNames, ", ")))
-				telemetry.TrackUpdatesForContainers(updatedNames)
-			} else {
-				shared.Log("info", fmt.Sprintf("[update] no updates found for: %s (exit=%d)", strings.Join(standaloneNames, ", "), wExit))
-			}
-		}
 	}
 
 	// Dump logs cleanly
