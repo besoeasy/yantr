@@ -420,6 +420,8 @@
     "updatingStack": "Pulling latest images for {name}…",
     "updateComplete": "{count} container(s) updated to the latest image",
     "updateAlreadyLatest": "Already up to date — no new images found",
+    "definitionChanged": "App definition changed",
+    "definitionChangedHint": "The catalog version of this app changed since it was deployed. Updating refreshes images only — redeploy from the app page to apply the new definition.",
     "updateFailed": "Update failed",
     "updateTimedOut": "Update timed out — the image pull took too long",
     "updateStillRunning": "Update is still running in background…",

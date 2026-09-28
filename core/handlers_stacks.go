@@ -295,6 +295,51 @@ func handleStackEnv(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// handleStackDrift reports whether the catalog compose file changed since the
+// project was deployed. The Update button only refreshes images, so a drifted
+// stack needs a redeploy to pick up the new definition.
+func handleStackDrift(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+	if projectID == "" {
+		jsonErr(w, 400, "PROJECT_ID_REQUIRED", "projectId is required")
+		return
+	}
+	baseID := getBaseAppID(projectID)
+	if !validAppID.MatchString(baseID) {
+		jsonErr(w, 400, "INVALID_PROJECT_ID", "Invalid project ID")
+		return
+	}
+
+	// Only report drift for a project that is actually running.
+	all, err := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true})
+	if err != nil {
+		jsonErr(w, 500, "PODMAN_ERROR", err.Error())
+		return
+	}
+	running := false
+	for _, c := range all {
+		if compose.ComposeProjectLabel(c.Labels) == projectID {
+			running = true
+			break
+		}
+	}
+	if !running {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack not found or no containers")
+		return
+	}
+
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	drifted, tracked, err := compose.CheckDrift(appPath, projectID)
+	if err != nil {
+		jsonErr(w, 404, "APP_NOT_FOUND", "App not found")
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{
+		"success": true, "projectId": projectID,
+		"drifted": drifted, "tracked": tracked,
+	})
+}
+
 func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 	projectID := chi.URLParam(r, "projectId")
 

@@ -44,6 +44,20 @@ const loadFailed = ref(false);
 const removing = ref(false);
 const updating = ref(false);
 const restarting = ref(false);
+// True when the catalog definition moved after this stack was deployed.
+// Fetched once per page load: the catalog only changes on Yantr updates,
+// which reload the page anyway, so the 8s stack poll does not need it.
+const drifted = ref(false);
+
+async function fetchDrift() {
+  try {
+    const res = await fetch(`${apiUrl.value}/api/stacks/${projectId.value}/drift`);
+    const data = await res.json();
+    drifted.value = res.ok && data.success === true && data.drifted === true;
+  } catch {
+    drifted.value = false;
+  }
+}
 
 async function updateStack() {
   if (updating.value || !stack.value) return;
@@ -258,6 +272,7 @@ function retryLoad() {
   loadFailed.value = false;
   loading.value = true;
   fetchStack();
+  fetchDrift();
 }
 
 
@@ -440,6 +455,7 @@ const { start: startStackPolling } = usePolling(fetchStack, 8000);
 
 onMounted(() => {
   startStackPolling();
+  fetchDrift();
 });
 </script>
 
@@ -468,6 +484,24 @@ onMounted(() => {
 
     <!-- Content -->
     <main v-else-if="stack" class="mx-auto max-w-7xl animate-fadeIn space-y-6 px-6 py-8">
+      <!-- Drift: the catalog definition changed after this stack was deployed.
+           Update only refreshes images, so point at the app page for a redeploy. -->
+      <div v-if="drifted" class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center dark:border-amber-500/20 dark:bg-amber-500/10">
+        <div class="flex flex-1 items-start gap-2.5">
+          <AlertTriangle :size="16" class="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+          <div>
+            <p class="text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300">{{ t("stackView.definitionChanged") }}</p>
+            <p class="mt-0.5 text-xs text-amber-700 dark:text-amber-400/90">{{ t("stackView.definitionChangedHint") }}</p>
+          </div>
+        </div>
+        <button
+          @click="router.push(`/apps/${stack.appname || stack.appId}`)"
+          class="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-amber-300 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-amber-800 transition-all hover:bg-amber-100 dark:border-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/10"
+        >
+          <ExternalLink :size="13" />{{ t("stackView.appPage") }}
+        </button>
+      </div>
+
       <!-- ── App Header ───────────────────────────────────────────────────────────── -->
       <div class="group relative flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
          <!-- Logo -->

@@ -7,6 +7,9 @@ package compose
 
 import (
 	"bufio"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -256,10 +259,72 @@ func GetComposeProcessEnv(appPath, projectID, dockerSocket, hostSocket string) (
 	return env, nil
 }
 
-// DeleteProjectCompose removes both the project compose file and env file.
+// DeleteProjectCompose removes the project compose file, env file, and drift
+// baseline.
 func DeleteProjectCompose(appPath, projectID string) {
 	_ = os.Remove(ProjectComposePath(appPath, projectID))
 	_ = os.Remove(ProjectEnvPath(appPath, projectID))
+	_ = os.Remove(ProjectMetaPath(appPath, projectID))
+}
+
+// ProjectMetaFileName returns the hidden baseline filename for a project.
+func ProjectMetaFileName(projectID string) string {
+	return ".meta." + projectID
+}
+
+// ProjectMetaPath returns the full path to the project baseline file.
+func ProjectMetaPath(appPath, projectID string) string {
+	return filepath.Join(appPath, ProjectMetaFileName(projectID))
+}
+
+// projectMeta records the catalog state a project was deployed from.
+type projectMeta struct {
+	BaseSha256 string `json:"baseSha256"`
+}
+
+// WriteProjectMetaForContent records the hash of the catalog compose content
+// a project was deployed from. Later catalog changes are detected by
+// comparing the live file against this baseline (see CheckDrift).
+func WriteProjectMetaForContent(appPath, projectID, baseContent string) error {
+	sum := sha256.Sum256([]byte(baseContent))
+	meta := projectMeta{BaseSha256: hex.EncodeToString(sum[:])}
+	data, err := json.Marshal(meta)
+	if err != nil {
+		return err
+	}
+	data = append(data, '\n')
+	return shared.WriteFileAtomic(ProjectMetaPath(appPath, projectID), data, 0644)
+}
+
+// ReadProjectMeta returns the recorded baseline hash, or ok=false when the
+// project predates drift tracking (or the file is unreadable).
+func ReadProjectMeta(appPath, projectID string) (hash string, ok bool) {
+	data, err := os.ReadFile(ProjectMetaPath(appPath, projectID))
+	if err != nil {
+		return "", false
+	}
+	var meta projectMeta
+	if err := json.Unmarshal(data, &meta); err != nil || meta.BaseSha256 == "" {
+		return "", false
+	}
+	return meta.BaseSha256, true
+}
+
+// CheckDrift reports whether the catalog compose file changed since the
+// project was deployed. tracked=false means no baseline exists — the caller
+// must not report drift in that case. A missing baseline heals itself: the
+// next deploy records one.
+func CheckDrift(appPath, projectID string) (drifted, tracked bool, err error) {
+	base, err := os.ReadFile(filepath.Join(appPath, "compose.yml"))
+	if err != nil {
+		return false, false, err
+	}
+	deployed, ok := ReadProjectMeta(appPath, projectID)
+	if !ok {
+		return false, false, nil
+	}
+	sum := sha256.Sum256(base)
+	return hex.EncodeToString(sum[:]) != deployed, true, nil
 }
 
 // BuildProjectComposeContent applies project-level transforms to a base compose file.

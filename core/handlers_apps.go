@@ -204,6 +204,13 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Record what the project was deployed from so the drift endpoint can
+	// tell a stale install apart from a current one. A failure here only
+	// disables drift reporting for this project — never the deploy itself.
+	if err := compose.WriteProjectMetaForContent(appPath, projectName, string(baseContent)); err != nil {
+		shared.Log("warn", fmt.Sprintf("[deploy] failed to record drift baseline for %s: %v", projectName, err))
+	}
+
 	cmdName, cmdArgs, err := getComposeCommand()
 	if err != nil {
 		shared.Log("error", "[deploy] compose command not found: "+err.Error())
