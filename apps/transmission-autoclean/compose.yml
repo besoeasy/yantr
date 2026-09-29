@@ -1,0 +1,74 @@
+x-yantr:
+  name: "Transmission AutoClean"
+  tags: [download, torrent, p2p, self-hosted, automation]
+  short_description: "Transmission with a sidecar that deletes downloads older than 30 days."
+  description: >
+    Transmission is a lightweight BitTorrent daemon with a web interface for
+    headless servers. This variant adds a cleanup sidecar that shares the
+    downloads volume and removes files untouched for 30 days on a fixed
+    schedule, so a long-lived download box stops growing without a hand.
+  usecases:
+    [
+      "Run a BitTorrent box whose disk usage stays bounded without manual cleaning.",
+      "Delete completed downloads older than 30 days while the client keeps running.",
+      "Seed public domain media from a home server and reclaim space afterwards."
+    ]
+  website: https://transmissionbt.com/
+  notes:
+    [
+      "Web UI on port 9091; set the user and password in the deploy form.",
+      "The autoclean sidecar sweeps every CLEAN_INTERVAL seconds (default 86400) and deletes files in the downloads volume whose mtime is older than AUTO_CLEAN_DAYS (default 30), then removes the directories it emptied.",
+      "Cleanup is purely age based: it also deletes data of torrents still in the client, which Transmission will then report as missing and re-download.",
+      "Tune AUTO_CLEAN_DAYS and CLEAN_INTERVAL in the deploy form; both accept their default values, so nothing is required."
+    ]
+  env_generators:
+    TRANSMISSION_USER:
+      length: 8
+      charset: alpha
+    TRANSMISSION_PASS:
+      length: 16
+      charset: alnum_symbols
+
+  ports:
+    - {port: 9091, protocol: HTTP, show: true, label: "Web Interface", service: transmission}
+    - {port: 51413, protocol: TCP, label: "Peer Port", service: transmission}
+    - {port: 51413, protocol: UDP, label: "Peer Port", service: transmission}
+
+services:
+  transmission:
+    image: docker.io/linuxserver/transmission:latest
+    environment:
+      USER: ${TRANSMISSION_USER}
+      PASS: ${TRANSMISSION_PASS}
+    volumes:
+      - transmission_autoclean_config:/config
+      - transmission_autoclean_downloads:/downloads
+    ports:
+      - "9091"
+      - "51413"
+      - 51413/udp
+    restart: unless-stopped
+  autoclean:
+    image: docker.io/alpine:latest
+    environment:
+      AUTO_CLEAN_DAYS: ${AUTO_CLEAN_DAYS:-30}
+      CLEAN_INTERVAL: ${CLEAN_INTERVAL:-86400}
+    command:
+      - /bin/sh
+      - -c
+      - |
+        while :; do
+          echo "[autoclean] sweeping downloads older than ${AUTO_CLEAN_DAYS:-30} days"
+          find /downloads -mindepth 1 -mtime +${AUTO_CLEAN_DAYS:-30} -type f -print -delete
+          find /downloads -mindepth 1 -depth -type d -empty -delete
+          sleep ${CLEAN_INTERVAL:-86400}
+        done
+    volumes:
+      - transmission_autoclean_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  transmission_autoclean_config:
+    name: transmission_autoclean_config
+  transmission_autoclean_downloads:
+    name: transmission_autoclean_downloads
