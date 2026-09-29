@@ -1,0 +1,29 @@
+x-yantr:
+  name: "BitBoard"
+  tags: [crypto, dashboard, finance, self-hosted, homelab]
+  short_description: "Customizable live crypto price dashboard with a clean dark interface."
+  description: >
+    BitBoard is a lightweight, self-hosted crypto price dashboard. Track live prices
+    from public CoinGecko data with no account or API key: search assets, add and remove
+    coins instantly, reorder cards with drag and drop, and switch quote currencies.
+    Made for desktops, tablets, and always-on displays.
+  usecases: ["Monitor crypto prices live on a secondary monitor or tablet display.", "Build a personalized board with your coins, currencies, and card layout.", "Track daily markets from a fast dashboard running on your own hardware."]
+  website: "https://github.com/egzola/bitboard"
+  notes: ["Pinned to 1.0.0 because upstream publishes no :latest tag — switch when one exists.", "No login or API key needed — prices come from public CoinGecko market data.", "Your board configuration persists in a named volume across restarts and updates.", "Public API rate limits may occasionally slow price updates."]
+  ports:
+    - {port: 3711, protocol: HTTP, show: true, label: "Web UI", service: bitboard}
+
+services:
+  bitboard:
+    image: ghcr.io/egzola/bitboard:1.0.0
+    restart: on-failure
+    stop_grace_period: 1m
+    environment:
+      PORT: 3711
+    ports:
+      - "3711"
+    volumes:
+      - bitboard_data:/data
+
+volumes:
+  bitboard_data:

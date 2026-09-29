@@ -1,0 +1,28 @@
+x-yantr:
+  name: "Opengist"
+  tags: [pastebin, snippets, git, self-hosted, productivity]
+  short_description: "Self-hosted pastebin powered by Git, like GitHub Gist on your own server."
+  description: >
+    Opengist is a self-hosted pastebin where every snippet is a Git repository.
+    Create public, unlisted, or private snippets in the web UI, then clone, push,
+    and pull them over HTTP or SSH like normal Git repos. Includes syntax highlighting,
+    revision history, forks, likes, search, and OAuth login.
+  usecases: ["Share code snippets and notes with public, unlisted, or private visibility.", "Version snippets with Git — clone, push, and pull them over HTTP or SSH.", "Run a self-hosted alternative to GitHub Gist for your team or homelab."]
+  website: "https://opengist.io"
+  notes: ["Web UI runs on port 6157.", "Port 2222 (TCP) is Git-over-SSH access to snippets; forward the assigned host port if you use it.", "Snippets are stored as Git repositories in a named volume, so they survive restarts and updates."]
+  ports:
+    - {port: 6157, protocol: HTTP, show: true, label: "Web UI", service: opengist}
+    - {port: 2222, protocol: TCP, label: "SSH (Git)", service: opengist}
+
+services:
+  opengist:
+    image: ghcr.io/thomiceli/opengist:latest
+    ports:
+      - "6157"
+      - "2222"
+    volumes:
+      - opengist_data:/opengist
+    restart: unless-stopped
+
+volumes:
+  opengist_data:
