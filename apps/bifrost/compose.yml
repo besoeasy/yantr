@@ -22,7 +22,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: bifrost}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: bifrost}
 
 services:
   bifrost:

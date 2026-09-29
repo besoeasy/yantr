@@ -33,7 +33,7 @@ x-yantr:
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
 
   ports:
-    - {port: 8000, protocol: HTTP, label: "Web UI", service: archivebox}
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: archivebox}
 
 services:
   archivebox:

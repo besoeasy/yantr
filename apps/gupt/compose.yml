@@ -25,7 +25,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8000, protocol: HTTP, label: "Web UI", service: gupt}
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: gupt}
 
 services:
   gupt:

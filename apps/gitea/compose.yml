@@ -20,7 +20,7 @@ x-yantr:
 
   ports:
     - {port: 2222, protocol: TCP, label: "SSH", service: server}
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: server}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: server}
 
 services:
   db:

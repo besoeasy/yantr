@@ -38,7 +38,7 @@ x-yantr:
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{12,}$
 
   ports:
-    - {port: 8443, protocol: HTTP, label: "Web UI", service: vscode}
+    - {port: 8443, protocol: HTTP, show: true, label: "Web UI", service: vscode}
 
 services:
   vscode:

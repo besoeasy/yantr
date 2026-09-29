@@ -11,11 +11,11 @@ x-yantr:
   website: "https://www.rust-lang.org/"
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: rust}
-    - {port: 5000, protocol: HTTP, label: "API server", service: rust}
-    - {port: 8000, protocol: HTTP, label: "Web server", service: rust}
-    - {port: 8080, protocol: HTTP, label: "Alt web server", service: rust}
-    - {port: 9000, protocol: HTTP, label: "Dev server", service: rust}
+    - {port: 3000, protocol: HTTP, show: true, label: "Frontend dev server", service: rust}
+    - {port: 5000, protocol: HTTP, show: true, label: "API server", service: rust}
+    - {port: 8000, protocol: HTTP, show: true, label: "Web server", service: rust}
+    - {port: 8080, protocol: HTTP, show: true, label: "Alt web server", service: rust}
+    - {port: 9000, protocol: HTTP, show: true, label: "Dev server", service: rust}
 
 services:
   rust:

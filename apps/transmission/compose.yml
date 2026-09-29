@@ -34,7 +34,7 @@ x-yantr:
       charset: alnum_symbols
 
   ports:
-    - {port: 9091, protocol: HTTP, label: "Web Interface", service: transmission}
+    - {port: 9091, protocol: HTTP, show: true, label: "Web Interface", service: transmission}
     - {port: 51413, protocol: TCP, label: "Port 51413", service: transmission}
     - {port: 51413, protocol: UDP, label: "Port 51413", service: transmission}
 

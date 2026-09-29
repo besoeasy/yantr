@@ -30,7 +30,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8000, protocol: HTTP, label: "Web UI", service: paperless-ngx}
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: paperless-ngx}
 
 services:
   paperless-ngx:

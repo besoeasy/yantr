@@ -7,11 +7,12 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw } from '@lucide/vue'
+import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw, Wrench } from '@lucide/vue'
 import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
+import { appUrl, isNavigableProtocol } from '../utils/url'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,7 +30,9 @@ const browsingVolume = ref({})
 const showVolumeMenu = ref({})
 const autoScrollLogs = ref(true)
 const activeTab = ref('resources')
-const showOnlyDescribedPorts = ref(true)
+// "Access" shows only ports the app marked show: true; "All" also lists work
+// ports — ports that exist for protocol plumbing and have no UI surface.
+const showAccessPorts = ref(true)
 const loadErrorState = {
   stats: false,
   logs: false,
@@ -71,6 +74,7 @@ const allPortMappings = computed(() => {
         protocol: (p.protocol || '').toLowerCase(),
         label: p.label || null,
         service: p.service || null,
+        show: p.show === true
       })
     }
   }
@@ -104,7 +108,10 @@ const allPortMappings = computed(() => {
             hostIp: binding.HostIp || '0.0.0.0',
             protocol: type,
             label: label?.label || null,
-            labeledProtocol: label?.protocol || null
+            labeledProtocol: label?.protocol || null,
+            // A published port with no catalog entry has no show flag and is
+            // therefore not an access port — it only appears under "All".
+            show: label?.show === true
           })
         }
       })
@@ -116,7 +123,8 @@ const allPortMappings = computed(() => {
         hostIp: null,
         protocol: type,
         label: label?.label || null,
-        labeledProtocol: label?.protocol || null
+        labeledProtocol: label?.protocol || null,
+        show: label?.show === true
       })
     }
   })
@@ -131,34 +139,23 @@ const allPortMappings = computed(() => {
   })
 })
 
-const hasDescribedPorts = computed(() => allPortMappings.value.some(m => m.label))
+// Ports the user is meant to reach, per x-yantr.ports `show: true`.
+const accessPortMappings = computed(() => allPortMappings.value.filter(m => m.show))
+
+const hasAccessPorts = computed(() => accessPortMappings.value.length > 0)
 
 const filteredPortMappings = computed(() => {
-  if (!hasDescribedPorts.value) {
+  if (!showAccessPorts.value) {
     return allPortMappings.value
   }
-  if (!showOnlyDescribedPorts.value) {
-    return allPortMappings.value
+  // Fall back to the catalogued ports if nothing is flagged show: true, so an
+  // app that has not opted any port in yet does not render an empty grid.
+  if (!hasAccessPorts.value) {
+    const described = allPortMappings.value.filter(mapping => mapping.label)
+    return described.length > 0 ? described : allPortMappings.value
   }
-  return allPortMappings.value.filter(mapping => mapping.label)
+  return accessPortMappings.value
 })
-
-function appUrl(port, protocol = 'http') {
-  const normalizedProtocol = protocol.replace('://', '').replace(':', '')
-  let host = window.location.hostname || 'localhost'
-
-  if (host.includes(':') && !host.startsWith('[')) {
-    host = `[${host}]`
-  }
-
-  const portString = String(port ?? '').trim()
-  const portMatch = portString.match(/\d+/)
-  if (!portMatch) {
-    return `${normalizedProtocol}://${host}`
-  }
-
-  return `${normalizedProtocol}://${host}:${portMatch[0]}`
-}
 
 async function fetchContainerDetail() {
   try {
@@ -368,20 +365,20 @@ watch(activeTab, (tab) => {
         <div v-if="allPortMappings.length > 0" class="space-y-4">
            <div class="flex items-center justify-between">
              <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.networkAccess') }}</h3>
-             <div v-if="hasDescribedPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
+             <div v-if="hasAccessPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
                <button
-                 @click="showOnlyDescribedPorts = false"
-                 :class="!showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
+                 @click="showAccessPorts = false"
+                 :class="!showAccessPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                  class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
                >
                  {{ t('containerDetail.allPorts') }}
                </button>
                <button
-                 @click="showOnlyDescribedPorts = true"
-                 :class="showOnlyDescribedPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
+                 @click="showAccessPorts = true"
+                 :class="showAccessPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                  class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
                >
-                 {{ t('containerDetail.described') }}
+                 {{ t('containerDetail.access') }}
                </button>
              </div>
            </div>
@@ -418,14 +415,19 @@ watch(activeTab, (tab) => {
                  </div>
                </div>
 
-               <a v-if="mapping.hostPort && mapping.protocol === 'tcp'"
-                  :href="appUrl(mapping.hostPort, mapping.labeledProtocol || 'http')"
+               <a v-if="mapping.show && mapping.hostPort && mapping.protocol === 'tcp' && isNavigableProtocol(mapping.labeledProtocol)"
+                  :href="appUrl(mapping.hostPort, mapping.labeledProtocol)"
                   target="_blank"
                   class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-[11px] font-bold uppercase tracking-wider"
                >
                   <ExternalLink :size="12" />
                   {{ t('containerDetail.open') }}
                </a>
+               <div v-else-if="!mapping.show" :title="t('containerDetail.workPortHint')"
+                    class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50/40 dark:bg-zinc-900/20 border border-dashed border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-600 rounded-lg text-[11px] font-bold uppercase tracking-wider">
+                 <Wrench :size="12" />
+                 {{ t('containerDetail.workPort') }}
+               </div>
                <div v-else class="w-full flex items-center justify-center px-3 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 rounded-lg text-[11px] font-bold uppercase tracking-wider">
                  {{ t('containerDetail.internalOnly') }}
                </div>

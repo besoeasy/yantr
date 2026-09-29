@@ -24,7 +24,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8200, protocol: HTTP, label: "Web UI", service: duplicati}
+    - {port: 8200, protocol: HTTP, show: true, label: "Web UI", service: duplicati}
 
 services:
   duplicati:

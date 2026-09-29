@@ -23,7 +23,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 25441, protocol: HTTP, label: "Web UI", service: specter-desktop}
+    - {port: 25441, protocol: HTTP, show: true, label: "Web UI", service: specter-desktop}
 
 services:
   specter-desktop:

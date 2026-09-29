@@ -26,7 +26,7 @@ x-yantr:
     INFLUX_ADMIN_TOKEN: { length: 32, charset: base64url }
 
   ports:
-    - {port: 8086, protocol: HTTP, label: "API", service: influxdb}
+    - {port: 8086, protocol: HTTP, show: true, label: "API", service: influxdb}
 
 services:
   influxdb:

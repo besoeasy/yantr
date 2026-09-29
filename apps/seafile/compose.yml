@@ -37,7 +37,7 @@ x-yantr:
       regex: ^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$
 
   ports:
-    - {port: 8002, protocol: HTTP, label: "Web UI", service: seafile}
+    - {port: 8002, protocol: HTTP, show: true, label: "Web UI", service: seafile}
 
 services:
   seafile-db:

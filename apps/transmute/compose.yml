@@ -22,7 +22,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 3313, protocol: HTTP, label: "Web UI", service: transmute}
+    - {port: 3313, protocol: HTTP, show: true, label: "Web UI", service: transmute}
 
 services:
   transmute:

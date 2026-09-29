@@ -16,7 +16,7 @@ x-yantr:
   website: https://github.com/RobinLinus/snapdrop
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: server}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: server}
 
 services:
   server:

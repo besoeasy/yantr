@@ -10,10 +10,10 @@ x-yantr:
   website: "https://nodejs.org/"
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: node}
-    - {port: 5173, protocol: HTTP, label: "Vite dev server", service: node}
+    - {port: 3000, protocol: HTTP, show: true, label: "Frontend dev server", service: node}
+    - {port: 5173, protocol: HTTP, show: true, label: "Vite dev server", service: node}
     - {port: 5858, protocol: TCP, label: "Alt debugger", service: node}
-    - {port: 8080, protocol: HTTP, label: "Alt dev server", service: node}
+    - {port: 8080, protocol: HTTP, show: true, label: "Alt dev server", service: node}
     - {port: 9229, protocol: TCP, label: "Node debugger", service: node}
 
 services:

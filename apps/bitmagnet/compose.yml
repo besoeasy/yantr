@@ -28,7 +28,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 3333, protocol: HTTP, label: "Web UI", service: bitmagnet}
+    - {port: 3333, protocol: HTTP, show: true, label: "Web UI", service: bitmagnet}
     - {port: 3334, protocol: TCP, label: "Port 3334", service: bitmagnet}
     - {port: 3334, protocol: UDP, label: "Port 3334", service: bitmagnet}
 

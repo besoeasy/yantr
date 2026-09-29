@@ -29,7 +29,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 5006, protocol: HTTP, label: "Web UI", service: actual-budget}
+    - {port: 5006, protocol: HTTP, show: true, label: "Web UI", service: actual-budget}
 
 services:
   actual-budget:

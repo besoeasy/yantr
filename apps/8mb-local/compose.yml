@@ -21,7 +21,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8001, protocol: HTTP, label: "Web UI", service: 8mb-local}
+    - {port: 8001, protocol: HTTP, show: true, label: "Web UI", service: 8mb-local}
 
 services:
   8mb-local:

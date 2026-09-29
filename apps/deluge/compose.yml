@@ -23,7 +23,7 @@ x-yantr:
   ports:
     - {port: 6881, protocol: TCP, label: "Port 6881", service: deluge}
     - {port: 6881, protocol: UDP, label: "Port 6881", service: deluge}
-    - {port: 8112, protocol: HTTP, label: "Web UI", service: deluge}
+    - {port: 8112, protocol: HTTP, show: true, label: "Web UI", service: deluge}
 
 services:
   deluge:

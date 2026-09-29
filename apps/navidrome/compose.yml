@@ -12,7 +12,7 @@ x-yantr:
   notes: ["Add music files through the volume browser before importing them.", "Create the first administrator account after deployment."]
 
   ports:
-    - {port: 4533, protocol: HTTP, label: "Web UI", service: navidrome}
+    - {port: 4533, protocol: HTTP, show: true, label: "Web UI", service: navidrome}
 
 services:
   navidrome:

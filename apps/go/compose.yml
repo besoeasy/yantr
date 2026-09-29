@@ -11,9 +11,9 @@ x-yantr:
   website: "https://go.dev/"
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: go}
-    - {port: 8080, protocol: HTTP, label: "Web server", service: go}
-    - {port: 9000, protocol: HTTP, label: "API server", service: go}
+    - {port: 3000, protocol: HTTP, show: true, label: "Frontend dev server", service: go}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web server", service: go}
+    - {port: 9000, protocol: HTTP, show: true, label: "API server", service: go}
     - {port: 9090, protocol: HTTP, label: "Metrics / pprof", service: go}
     - {port: 50051, protocol: TCP, label: "gRPC service", service: go}
 

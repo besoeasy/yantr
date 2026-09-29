@@ -29,7 +29,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 20128, protocol: HTTP, label: "Dashboard", service: omniroute}
+    - {port: 20128, protocol: HTTP, show: true, label: "Dashboard", service: omniroute}
 
 services:
   omniroute:

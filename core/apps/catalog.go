@@ -42,6 +42,38 @@ type PortInfo struct {
 	Protocol string `json:"protocol"`
 	Label    string `json:"label"`
 	Service  string `json:"service,omitempty"`
+
+	// Show marks a port the user is meant to interact with. It gates the
+	// "Open" affordance in the UI and is the reason it is serialised
+	// unconditionally: the UI has to distinguish "work port" (Show false)
+	// from "no catalog entry at all", and omitting the field would collapse
+	// both into undefined.
+	//
+	// Deny by default — a port with no `show` key in x-yantr.ports is a work
+	// port: it is still published and still serves its protocol, it just has
+	// no UI surface. See parseXyPorts.
+	Show bool `json:"show"`
+}
+
+// ShownPorts returns only the ports the app marked show: true, in catalog
+// order. Callers that render a port list should use this rather than Ports so
+// work ports stay out of the user's way; Ports remains the full set because
+// port metadata is needed even for work ports (a work port still identifies
+// its owning service, and still gets published).
+func (a *App) ShownPorts() []PortInfo {
+	if a == nil {
+		return nil
+	}
+	var out []PortInfo
+	for _, p := range a.Ports {
+		if p.Show {
+			out = append(out, p)
+		}
+	}
+	if out == nil {
+		return []PortInfo{}
+	}
+	return out
 }
 
 // App represents a single app in the catalog.
@@ -162,6 +194,10 @@ type xyPort struct {
 	Protocol string `yaml:"protocol"`
 	Label    string `yaml:"label"`
 	Service  string `yaml:"service"`
+
+	// Show opts the port into the user-facing UI. Absent means false: see
+	// PortInfo.Show.
+	Show bool `yaml:"show"`
 }
 
 // composeFile is a minimal representation of the top-level compose.yml structure.
@@ -290,8 +326,15 @@ var validDisplayProtocols = map[string]bool{
 // their service dimension. Unknown services are kept (forward-compat) but the
 // common mistake — labeling a port owned by another service — is fixed at
 // migration time by assigning service to the actual exposing service.
+//
+// `show` is deny-by-default: a port without it is a work port. Work ports are
+// kept in the list (they are still published, and they still identify their
+// service) and reach the UI only behind its "All" toggle. When the same
+// (port, protocol, service) is declared twice, Show is OR-ed rather than taken
+// from whichever entry happened to be read first, so a duplicate work-port
+// declaration can never silently hide a port another entry exposes.
 func parseXyPorts(in []xyPort, services map[string]interface{}) []PortInfo {
-	seen := map[string]bool{}
+	idxByKey := map[string]int{}
 	var ports []PortInfo
 
 	for _, p := range in {
@@ -319,15 +362,19 @@ func parseXyPorts(in []xyPort, services map[string]interface{}) []PortInfo {
 			}
 		}
 		key := fmt.Sprintf("%d/%s/%s", p.Port, proto, service)
-		if seen[key] {
+		if i, ok := idxByKey[key]; ok {
+			if p.Show {
+				ports[i].Show = true
+			}
 			continue
 		}
-		seen[key] = true
+		idxByKey[key] = len(ports)
 		ports = append(ports, PortInfo{
 			Port:     p.Port,
 			Protocol: proto,
 			Label:    label,
 			Service:  service,
+			Show:     p.Show,
 		})
 	}
 

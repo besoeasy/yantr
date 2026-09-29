@@ -14,6 +14,7 @@ import {
   Globe,
   ExternalLink,
   Network,
+  Wrench,
   Trash2,
   HardDrive,
   RotateCcw,
@@ -114,14 +115,16 @@ async function updateStack() {
     updating.value = false;
   }
 }
-const showOnlyDescribedPorts = ref(true);
+// "Access" shows only ports the app marked show: true; "All" also lists work
+// ports — ports that exist for protocol plumbing and have no UI surface.
+const showAccessPorts = ref(true);
 
 // Volume browsing state
 const browsingVolume = ref({});
 const showVolumeMenu = ref({});
 
 // Build a service-aware index from the x-yantr.ports array.
-// Keyed by container port -> list of {protocol, label, service}.
+// Keyed by container port -> list of {protocol, label, service, show}.
 function buildPortLabels(ports) {
   const byPort = {};
   if (!Array.isArray(ports)) return byPort;
@@ -133,6 +136,7 @@ function buildPortLabels(ports) {
       protocol: (p.protocol || "").toLowerCase(),
       label: p.label || null,
       service: p.service || null,
+      show: p.show === true,
     });
   }
   return byPort;
@@ -148,36 +152,38 @@ function lookupPortLabel(cands, service) {
 }
 
 // Merge published ports with described labels from x-yantr.ports.
-// Backend already enriches publishedPorts with label/displayProtocol/service;
+// Backend already enriches publishedPorts with label/displayProtocol/service/show;
 // the catalog merge is a fallback for older API responses.
 const enrichedPorts = computed(() => {
   if (!stack.value) return [];
   const portLabels = buildPortLabels(stack.value.app?.ports);
   return stack.value.publishedPorts.map((p) => {
-    if (p.label || p.displayProtocol) {
-      return {
-        ...p,
-        label: p.label || null,
-        labeledProtocol: (p.displayProtocol || "").toLowerCase() || null,
-      };
-    }
     const match = lookupPortLabel(portLabels[String(p.containerPort)], p.service);
     return {
       ...p,
-      label: match?.label || null,
-      labeledProtocol: match?.protocol || null,
+      label: p.label || match?.label || null,
+      labeledProtocol: (p.displayProtocol || match?.protocol || "").toLowerCase() || null,
+      // The backend is authoritative: it resolves show against the running
+      // service. The catalog entry is the fallback for responses that predate
+      // the field, and `=== true` keeps undefined (old payload) hidden.
+      show: p.show === true || (p.show === undefined && match?.show === true),
     };
   });
 });
 
+// Ports the user is meant to reach. A port that is published but not catalogued
+// has no show flag at all, so it is not access — it only appears under "All".
+const accessPorts = computed(() => enrichedPorts.value.filter((p) => p.show));
+
 const visiblePorts = computed(() => {
-  if (!showOnlyDescribedPorts.value) return enrichedPorts.value;
-  const described = enrichedPorts.value.filter((p) => p.label);
-  // Fall back to all if none have descriptions
-  return described.length > 0 ? described : enrichedPorts.value;
+  if (!showAccessPorts.value) return enrichedPorts.value;
+  // Fall back to the catalogued ports if nothing is flagged show: true — an
+  // app that has not opted any port in yet would otherwise render an empty
+  // grid and look like it published nothing.
+  return accessPorts.value.length > 0 ? accessPorts.value : enrichedPorts.value.filter((p) => p.label);
 });
 
-const hasDescribedPorts = computed(() => enrichedPorts.value.some((p) => p.label));
+const hasAccessPorts = computed(() => accessPorts.value.length > 0);
 
 const servicesWithNetworks = computed(() => {
   if (!stack.value?.services) return [];
@@ -622,13 +628,17 @@ onMounted(() => {
             <span
               v-if="enrichedPorts.length > 0"
               class="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              :title="accessPorts.length < enrichedPorts.length ? t('stackView.portsWithWorkCount', { access: accessPorts.length, total: enrichedPorts.length }) : ''"
             >
-              {{ visiblePorts.length }}
+              <template v-if="showAccessPorts && accessPorts.length < enrichedPorts.length">
+                {{ accessPorts.length }}/{{ enrichedPorts.length }}
+              </template>
+              <template v-else>{{ visiblePorts.length }}</template>
             </span>
           </div>
-          <div v-if="hasDescribedPorts" class="flex items-center gap-1 rounded-lg bg-zinc-50 p-1 dark:bg-zinc-900">
-            <button @click="showOnlyDescribedPorts = false" :class="!showOnlyDescribedPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.allPorts") }}</button>
-            <button @click="showOnlyDescribedPorts = true" :class="showOnlyDescribedPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.described") }}</button>
+          <div v-if="hasAccessPorts" class="flex items-center gap-1 rounded-lg bg-zinc-50 p-1 dark:bg-zinc-900">
+            <button @click="showAccessPorts = false" :class="!showAccessPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.allPorts") }}</button>
+            <button @click="showAccessPorts = true" :class="showAccessPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.access") }}</button>
           </div>
         </div>
 
@@ -672,13 +682,20 @@ onMounted(() => {
 
             <div class="mt-auto">
               <a
-                v-if="p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
+                v-if="p.show && p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
                 :href="appUrl(p.hostPort, p.labeledProtocol)"
                 target="_blank"
                 class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               >
                 <ExternalLink :size="12" />{{ t("stackView.open") }}
               </a>
+              <div
+                v-else-if="!p.show"
+                class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-600"
+                :title="t('stackView.workPortHint')"
+              >
+                <Wrench :size="12" />{{ t("stackView.workPort") }}
+              </div>
               <div
                 v-else
                 class="flex w-full items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"

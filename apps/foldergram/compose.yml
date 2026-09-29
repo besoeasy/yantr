@@ -10,7 +10,7 @@ x-yantr:
   website: "https://github.com/foldergram/foldergram"
 
   ports:
-    - {port: 4141, protocol: HTTP, label: "Web UI", service: foldergram}
+    - {port: 4141, protocol: HTTP, show: true, label: "Web UI", service: foldergram}
 
 services:
   foldergram:

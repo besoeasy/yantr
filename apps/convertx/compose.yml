@@ -16,7 +16,7 @@ x-yantr:
   notes: [ Multiple format support, Local processing only, Web interface for easy use ]
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: convertx}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: convertx}
 
 services:
   convertx:

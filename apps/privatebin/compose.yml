@@ -31,7 +31,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: privatebin}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: privatebin}
 
 services:
   privatebin:

@@ -11,11 +11,11 @@ x-yantr:
   website: "https://www.python.org/"
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: python}
-    - {port: 5000, protocol: HTTP, label: "Flask / API", service: python}
+    - {port: 3000, protocol: HTTP, show: true, label: "Frontend dev server", service: python}
+    - {port: 5000, protocol: HTTP, show: true, label: "Flask / API", service: python}
     - {port: 5432, protocol: TCP, label: "Postgres client", service: python}
-    - {port: 8000, protocol: HTTP, label: "Dev HTTP server", service: python}
-    - {port: 8080, protocol: HTTP, label: "Alt dev server", service: python}
+    - {port: 8000, protocol: HTTP, show: true, label: "Dev HTTP server", service: python}
+    - {port: 8080, protocol: HTTP, show: true, label: "Alt dev server", service: python}
 
 services:
   python:

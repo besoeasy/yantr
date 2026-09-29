@@ -24,7 +24,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 9117, protocol: HTTP, label: "Web UI", service: jackett}
+    - {port: 9117, protocol: HTTP, show: true, label: "Web UI", service: jackett}
 
 services:
   jackett:

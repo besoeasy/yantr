@@ -28,7 +28,7 @@ x-yantr:
 
   ports:
     - {port: 22, protocol: TCP, label: "SSH", service: forgejo}
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: forgejo}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: forgejo}
 
 services:
   forgejo:

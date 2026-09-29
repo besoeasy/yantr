@@ -23,7 +23,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 61208, protocol: HTTP, label: "Web UI", service: glances}
+    - {port: 61208, protocol: HTTP, show: true, label: "Web UI", service: glances}
 
 services:
   glances:

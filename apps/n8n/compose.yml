@@ -27,7 +27,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 5678, protocol: HTTP, label: "Web UI", service: n8n}
+    - {port: 5678, protocol: HTTP, show: true, label: "Web UI", service: n8n}
 
 services:
   n8n:

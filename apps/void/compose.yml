@@ -10,7 +10,7 @@ x-yantr:
   website: "https://github.com/AlphaNecron/Void"
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: void}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: void}
 
 services:
   void:

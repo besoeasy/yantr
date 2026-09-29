@@ -31,7 +31,7 @@ x-yantr:
       charset: alnum
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: owncloud}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: owncloud}
 
 services:
   owncloud:

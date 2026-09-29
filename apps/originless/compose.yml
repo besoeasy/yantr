@@ -27,7 +27,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 3232, protocol: HTTP, label: "Web UI", service: originless}
+    - {port: 3232, protocol: HTTP, show: true, label: "Web UI", service: originless}
     - {port: 4001, protocol: TCP, label: "Port 4001", service: originless}
     - {port: 4001, protocol: UDP, label: "Port 4001", service: originless}
 

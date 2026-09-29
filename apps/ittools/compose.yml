@@ -12,7 +12,7 @@ x-yantr:
   notes: ["This app is stateless and does not need a persistent volume.", "Protect access to the utility page on shared or public networks."]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: ittools}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: ittools}
 
 services:
   ittools:

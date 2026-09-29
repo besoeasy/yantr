@@ -12,7 +12,7 @@ x-yantr:
   notes: ["Add books to the books volume through the volume browser.", "Complete the web setup wizard on first visit."]
 
   ports:
-    - {port: 8083, protocol: HTTP, label: "Web UI", service: calibre-web}
+    - {port: 8083, protocol: HTTP, show: true, label: "Web UI", service: calibre-web}
 
 services:
   calibre-web:

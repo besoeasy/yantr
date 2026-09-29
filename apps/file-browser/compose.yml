@@ -17,7 +17,7 @@ x-yantr:
   notes: ["This stack disables built-in authentication; restrict access to a trusted network or use an authenticated proxy."]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: server}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: server}
 
 services:
   server:

@@ -24,13 +24,13 @@ x-yantr:
     ]
 
   ports:
-    - {port: 20211, protocol: UDP, label: "Monitoring", service: pi-alert}
+    - {port: 20211, protocol: HTTP, show: true, label: "Web UI", service: pi-alert}
 
 services:
   pi-alert:
     image: docker.io/jokobsk/pi.alert:latest
     ports:
-      - 20211/udp
+      - "20211"
     volumes:
       - pi_alert_config:/config
     restart: unless-stopped

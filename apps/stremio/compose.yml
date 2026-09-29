@@ -32,8 +32,8 @@ x-yantr:
     ]
 
   ports:
-    - {port: 11470, protocol: HTTP, label: "Streaming Server", service: stremio}
-    - {port: 12470, protocol: HTTPS, label: "Streaming Server (TLS)", service: stremio}
+    - {port: 11470, protocol: HTTP, show: true, label: "Streaming Server", service: stremio}
+    - {port: 12470, protocol: HTTPS, show: true, label: "Streaming Server (TLS)", service: stremio}
 
 services:
   stremio:

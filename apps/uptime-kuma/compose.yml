@@ -28,7 +28,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 3001, protocol: HTTP, label: "Web UI", service: uptime-kuma}
+    - {port: 3001, protocol: HTTP, show: true, label: "Web UI", service: uptime-kuma}
 
 services:
   uptime-kuma:

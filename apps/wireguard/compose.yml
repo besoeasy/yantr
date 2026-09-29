@@ -30,7 +30,7 @@ x-yantr:
 
   ports:
     - {port: 51820, protocol: UDP, label: "VPN Tunnel", service: wireguard}
-    - {port: 51821, protocol: HTTP, label: "Admin Panel", service: wireguard}
+    - {port: 51821, protocol: HTTP, show: true, label: "Admin Panel", service: wireguard}
 
 services:
   wireguard:

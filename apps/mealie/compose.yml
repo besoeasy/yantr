@@ -12,7 +12,7 @@ x-yantr:
   notes: ["Create the first administrator account after deployment.", "Disable public sign-up after creating the initial account if the app is exposed."]
 
   ports:
-    - {port: 9000, protocol: HTTP, label: "Web UI", service: mealie}
+    - {port: 9000, protocol: HTTP, show: true, label: "Web UI", service: mealie}
 
 services:
   mealie:

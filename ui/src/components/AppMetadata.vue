@@ -22,9 +22,23 @@ const appTags = computed(() => {
   return Array.isArray(props.app?.tags) ? props.app.tags : [];
 });
 
-const infoPorts = computed(() => {
+const allPorts = computed(() => {
   return Array.isArray(props.app?.ports) ? props.app.ports : [];
 });
+
+// Only ports the app marked `show: true` are user-facing; the rest are work
+// ports that exist for protocol plumbing. Apps that have not opted any port in
+// yet fall back to listing everything, so the spec table is never empty for an
+// app that does publish ports.
+const accessPorts = computed(() => allPorts.value.filter((p) => p.show === true));
+const workPorts = computed(() => allPorts.value.filter((p) => p.show !== true));
+const infoPorts = computed(() => {
+  if (accessPorts.value.length > 0) return accessPorts.value;
+  return allPorts.value;
+});
+const hiddenWorkPortCount = computed(() =>
+  accessPorts.value.length > 0 ? workPorts.value.length : 0
+);
 
 const chatGptUrl = computed(() => {
   if (!props.app) return "";
@@ -137,6 +151,9 @@ const reportIssueUrl = computed(() => {
               </tbody>
           </table>
       </div>
+      <p v-if="hiddenWorkPortCount > 0" class="text-[11px] text-zinc-500">
+        {{ t('appDetail.workPortsHidden', { count: hiddenWorkPortCount }) }}
+      </p>
     </div>
 
     <!-- Image Details -->

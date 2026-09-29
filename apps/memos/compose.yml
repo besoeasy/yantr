@@ -23,7 +23,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 5230, protocol: HTTP, label: "Web UI", service: memos}
+    - {port: 5230, protocol: HTTP, show: true, label: "Web UI", service: memos}
 
 services:
   memos:

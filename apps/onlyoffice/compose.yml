@@ -25,7 +25,7 @@ x-yantr:
     JWT_SECRET: { length: 32, charset: base64url }
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: onlyoffice}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: onlyoffice}
 
 services:
   onlyoffice:

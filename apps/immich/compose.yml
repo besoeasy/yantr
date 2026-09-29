@@ -20,7 +20,7 @@ x-yantr:
       charset: alnum
 
   ports:
-    - {port: 2283, protocol: HTTP, label: "Web UI", service: immich-server}
+    - {port: 2283, protocol: HTTP, show: true, label: "Web UI", service: immich-server}
 
 services:
   immich-server:

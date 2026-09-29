@@ -12,7 +12,7 @@ x-yantr:
   notes: ["Node-RED creates an admin password on first visit.", "Protect the editor and exposed flows with HTTPS or an access proxy."]
 
   ports:
-    - {port: 1880, protocol: HTTP, label: "Web UI", service: nodered}
+    - {port: 1880, protocol: HTTP, show: true, label: "Web UI", service: nodered}
 
 services:
   nodered:

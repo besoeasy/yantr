@@ -12,7 +12,7 @@ x-yantr:
   notes: ["Add media through the volume browser before importing it.", "Create the first user account after deployment."]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: audiobookshelf}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: audiobookshelf}
 
 services:
   audiobookshelf:

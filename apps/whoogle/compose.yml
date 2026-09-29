@@ -24,7 +24,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 5000, protocol: HTTP, label: "Web UI", service: whoogle}
+    - {port: 5000, protocol: HTTP, show: true, label: "Web UI", service: whoogle}
 
 services:
   whoogle:

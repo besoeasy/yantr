@@ -23,8 +23,8 @@ x-yantr:
     ]
 
   ports:
-    - {port: 9000, protocol: HTTP, label: "API", service: minio}
-    - {port: 9001, protocol: HTTP, label: "Console", service: minio}
+    - {port: 9000, protocol: HTTP, show: true, label: "API", service: minio}
+    - {port: 9001, protocol: HTTP, show: true, label: "Console", service: minio}
 
 services:
   minio:

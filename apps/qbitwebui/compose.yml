@@ -23,7 +23,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: qbitwebui}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: qbitwebui}
 
 services:
   qbitwebui:

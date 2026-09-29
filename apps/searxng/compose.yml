@@ -26,7 +26,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8080, protocol: HTTP, label: "Web UI", service: searxng}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: searxng}
 
 services:
   searxng:

@@ -17,7 +17,7 @@ x-yantr:
   notes: [ Browser-based IDE, AI assistant integration, Terminal access ]
 
   ports:
-    - {port: 4096, protocol: HTTP, label: "Web UI", service: opencode}
+    - {port: 4096, protocol: HTTP, show: true, label: "Web UI", service: opencode}
 
 services:
   opencode:

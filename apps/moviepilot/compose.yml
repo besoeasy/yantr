@@ -40,8 +40,8 @@ x-yantr:
       charset: alnum_symbols
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: moviepilot}
-    - {port: 3001, protocol: HTTP, label: "API", service: moviepilot}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: moviepilot}
+    - {port: 3001, protocol: HTTP, show: true, label: "API", service: moviepilot}
 
 services:
   moviepilot:

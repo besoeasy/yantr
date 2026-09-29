@@ -22,7 +22,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 1970, protocol: HTTP, label: "Web UI", service: swingmusic}
+    - {port: 1970, protocol: HTTP, show: true, label: "Web UI", service: swingmusic}
 
 services:
   swingmusic:

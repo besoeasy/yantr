@@ -25,7 +25,7 @@ x-yantr:
       charset: alnum
 
   ports:
-    - {port: 2342, protocol: HTTP, label: "Web UI", service: photoprism}
+    - {port: 2342, protocol: HTTP, show: true, label: "Web UI", service: photoprism}
 
 services:
   photoprism:

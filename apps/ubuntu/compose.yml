@@ -10,11 +10,11 @@ x-yantr:
   website: "https://ubuntu.com/"
 
   ports:
-    - {port: 80, protocol: HTTP, label: "HTTP server", service: ubuntu}
-    - {port: 443, protocol: HTTPS, label: "HTTPS server", service: ubuntu}
-    - {port: 3000, protocol: HTTP, label: "Dev server", service: ubuntu}
-    - {port: 8080, protocol: HTTP, label: "Web server", service: ubuntu}
-    - {port: 9000, protocol: HTTP, label: "Alt server", service: ubuntu}
+    - {port: 80, protocol: HTTP, show: true, label: "HTTP server", service: ubuntu}
+    - {port: 443, protocol: HTTPS, show: true, label: "HTTPS server", service: ubuntu}
+    - {port: 3000, protocol: HTTP, show: true, label: "Dev server", service: ubuntu}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web server", service: ubuntu}
+    - {port: 9000, protocol: HTTP, show: true, label: "Alt server", service: ubuntu}
 
 services:
   ubuntu:

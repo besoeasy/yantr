@@ -14,7 +14,7 @@ x-yantr:
   notes: ["Create the admin account on first visit.", "Configure data sources after deployment; Prometheus is available as a separate Yantr app."]
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: grafana}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: grafana}
 
 services:
   grafana:

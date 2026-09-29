@@ -24,8 +24,8 @@ x-yantr:
     ]
 
   ports:
-    - {port: 45001, protocol: HTTP, label: "Torrent UI", service: torbox}
-    - {port: 45000, protocol: HTTP, label: "File Server", service: torbox}
+    - {port: 45001, protocol: HTTP, show: true, label: "Torrent UI", service: torbox}
+    - {port: 45000, protocol: HTTP, show: true, label: "File Server", service: torbox}
     - {port: 51413, protocol: TCP, label: "Peer Port", service: torbox}
     - {port: 51413, protocol: UDP, label: "Peer Port", service: torbox}
 

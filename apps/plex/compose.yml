@@ -21,7 +21,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 32400, protocol: HTTP, label: "Web UI", service: plex}
+    - {port: 32400, protocol: HTTP, show: true, label: "Web UI", service: plex}
 
 services:
   plex:

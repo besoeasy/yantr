@@ -28,7 +28,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 7575, protocol: HTTP, label: "Web UI", service: homarr}
+    - {port: 7575, protocol: HTTP, show: true, label: "Web UI", service: homarr}
 
 services:
   homarr:

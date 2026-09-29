@@ -17,7 +17,7 @@ x-yantr:
   notes: [ Magnet link support, Streaming while downloading, Simple and lightweight ]
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Web UI", service: cloud-torrent}
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: cloud-torrent}
 
 services:
   cloud-torrent:

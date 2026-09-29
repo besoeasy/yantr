@@ -28,7 +28,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: nextcloud}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: nextcloud}
 
 services:
   nextcloud:

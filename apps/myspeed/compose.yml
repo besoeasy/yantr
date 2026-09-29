@@ -16,7 +16,7 @@ x-yantr:
   website: https://myspeed.dev
 
   ports:
-    - {port: 5216, protocol: HTTP, label: "Web UI", service: myspeed}
+    - {port: 5216, protocol: HTTP, show: true, label: "Web UI", service: myspeed}
 
 services:
   myspeed:

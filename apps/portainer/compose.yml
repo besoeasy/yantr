@@ -26,7 +26,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 9443, protocol: HTTPS, label: "Web UI", service: portainer}
+    - {port: 9443, protocol: HTTPS, show: true, label: "Web UI", service: portainer}
 
 services:
   portainer:

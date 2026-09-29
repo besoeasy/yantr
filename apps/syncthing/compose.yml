@@ -27,7 +27,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8384, protocol: HTTP, label: "Web UI", service: syncthing}
+    - {port: 8384, protocol: HTTP, show: true, label: "Web UI", service: syncthing}
     - {port: 21027, protocol: UDP, label: "Port 21027", service: syncthing}
     - {port: 22000, protocol: TCP, label: "Port 22000", service: syncthing}
     - {port: 22000, protocol: UDP, label: "Port 22000", service: syncthing}

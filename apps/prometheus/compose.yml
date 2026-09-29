@@ -24,7 +24,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 9090, protocol: HTTP, label: "Web UI", service: prometheus}
+    - {port: 9090, protocol: HTTP, show: true, label: "Web UI", service: prometheus}
 
 services:
   prometheus:

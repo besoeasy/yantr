@@ -112,6 +112,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	// multi-service apps keep their service dimension.
 	type portMeta struct {
 		label, displayProtocol, service string
+		show                            bool
 	}
 	byPort := map[uint16][]apps.PortInfo{}
 	if entry != nil {
@@ -128,12 +129,16 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, c := range cands {
 			if c.Service != "" && c.Service == composeService {
-				return portMeta{label: c.Label, displayProtocol: c.Protocol, service: c.Service}
+				return portMeta{label: c.Label, displayProtocol: c.Protocol, service: c.Service, show: c.Show}
 			}
 		}
 		// No service-specific match — use the first entry for this port.
-		return portMeta{label: cands[0].Label, displayProtocol: cands[0].Protocol, service: cands[0].Service}
+		return portMeta{label: cands[0].Label, displayProtocol: cands[0].Protocol, service: cands[0].Service, show: cands[0].Show}
 	}
+	// A service counts as primary when it owns any catalogued port, work ports
+	// included: a work port is still the reason the service is the app's
+	// front-facing container (the torrent peer port belongs to the same
+	// service as the web UI).
 	primaryServices := map[string]bool{}
 	if entry != nil {
 		for _, pi := range entry.Ports {
@@ -164,6 +169,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 					"hostPort": p.PublicPort, "containerPort": p.PrivatePort,
 					"protocol": p.Type, "service": svc,
 					"label": meta.label, "displayProtocol": meta.displayProtocol,
+					"show": meta.show,
 				}
 			}
 		}

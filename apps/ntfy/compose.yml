@@ -29,7 +29,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI & API", service: ntfy}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI & API", service: ntfy}
 
 services:
   ntfy:

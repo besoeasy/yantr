@@ -10,10 +10,10 @@ x-yantr:
   website: "https://bun.sh/"
 
   ports:
-    - {port: 3000, protocol: HTTP, label: "Frontend dev server", service: bun}
-    - {port: 4000, protocol: HTTP, label: "Alt web server", service: bun}
-    - {port: 5173, protocol: HTTP, label: "Vite dev server", service: bun}
-    - {port: 8080, protocol: HTTP, label: "Alt dev server", service: bun}
+    - {port: 3000, protocol: HTTP, show: true, label: "Frontend dev server", service: bun}
+    - {port: 4000, protocol: HTTP, show: true, label: "Alt web server", service: bun}
+    - {port: 5173, protocol: HTTP, show: true, label: "Vite dev server", service: bun}
+    - {port: 8080, protocol: HTTP, show: true, label: "Alt dev server", service: bun}
     - {port: 9229, protocol: TCP, label: "Bun debugger", service: bun}
 
 services:

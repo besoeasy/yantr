@@ -14,7 +14,7 @@ x-yantr:
   notes: ["The generated Jupyter token is required to sign in.", "Use the volume browser to add notebooks and data files."]
 
   ports:
-    - {port: 8888, protocol: HTTP, label: "Web UI", service: jupyterlab}
+    - {port: 8888, protocol: HTTP, show: true, label: "Web UI", service: jupyterlab}
 
 services:
   jupyterlab:

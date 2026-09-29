@@ -28,7 +28,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8096, protocol: HTTP, label: "Web UI", service: jellyfin}
+    - {port: 8096, protocol: HTTP, show: true, label: "Web UI", service: jellyfin}
 
 services:
   jellyfin:

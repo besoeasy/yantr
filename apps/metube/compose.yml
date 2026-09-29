@@ -21,7 +21,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 8081, protocol: HTTP, label: "Web UI", service: metube}
+    - {port: 8081, protocol: HTTP, show: true, label: "Web UI", service: metube}
 
 services:
   metube:

@@ -23,7 +23,7 @@ x-yantr:
     ]
 
   ports:
-    - {port: 80, protocol: HTTP, label: "Web UI", service: pastefy}
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: pastefy}
 
 services:
   pastefy:
