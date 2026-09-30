@@ -1,0 +1,33 @@
+x-yantr:
+  name: "Wealthfolio"
+  tags: [finance, investments, portfolio, self-hosted, tools]
+  short_description: "Investment tracker for stocks, crypto, and portfolio goals."
+  description: >
+    WealthFolio tracks investments across stocks and crypto with holdings,
+    performance, and allocation views. Private alternative to spreadsheet
+    tracking. Single container with a data volume and generated secret.
+  usecases: ["Track stock and crypto holdings in one dashboard.", "Review allocation and performance over time.", "Self-host portfolio tracking without cloud accounts."]
+  website: "https://wealthfolio.app/"
+  env_generators:
+    WF_SECRET_KEY: {length: 32, charset: hex}
+  notes: ["Secret key is auto-generated on install.", "Portfolio data persists in a named volume."]
+  ports:
+    - {port: 8088, protocol: HTTP, show: true, label: "Web UI", service: wealthfolio}
+
+services:
+  wealthfolio:
+    image: docker.io/wealthfolio/wealthfolio:latest
+    environment:
+      WF_LISTEN_ADDR: 0.0.0.0:8088
+      WF_DB_PATH: /data/wealthfolio.db
+      WF_AUTH_REQUIRED: "false"
+      WF_REQUEST_TIMEOUT_MS: "30000"
+      WF_SECRET_KEY: ${WF_SECRET_KEY}
+    ports:
+      - "8088"
+    volumes:
+      - wealthfolio_data:/data
+    restart: unless-stopped
+
+volumes:
+  wealthfolio_data:
