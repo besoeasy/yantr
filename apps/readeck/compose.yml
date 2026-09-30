@@ -1,0 +1,33 @@
+x-yantr:
+  name: "Readeck"
+  tags: [reading, bookmarks, rss, self-hosted, productivity]
+  short_description: "Read-later app with highlights, feeds, and clean article views."
+  description: >
+    Readeck saves articles for later with readable extraction, highlights,
+    labels, and RSS support. Self-hosted alternative to Pocket and Instapaper.
+    Single container with a data volume and generated secret.
+  usecases: ["Save articles to read later with clean extraction.", "Highlight and label saved content for research.", "Follow feeds with a private Pocket alternative."]
+  website: "https://readeck.org"
+  env_generators:
+    READECK_SECRET_KEY: {length: 32, charset: hex}
+  notes: ["Secret key is auto-generated on install.", "Library persists in a named volume."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: readeck}
+
+services:
+  readeck:
+    image: codeberg.org/readeck/readeck:latest
+    environment:
+      READECK_LOG_LEVEL: info
+      READECK_SERVER_HOST: 0.0.0.0
+      READECK_SERVER_PORT: "8000"
+      READECK_LOG_FORMAT: text
+      READECK_SECRET_KEY: ${READECK_SECRET_KEY}
+    ports:
+      - "8000"
+    volumes:
+      - readeck_data:/readeck
+    restart: unless-stopped
+
+volumes:
+  readeck_data:
