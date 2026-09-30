@@ -1,0 +1,33 @@
+x-yantr:
+  name: "SABnzbd"
+  tags: [downloads, usenet, automation, self-hosted, media]
+  short_description: "Usenet downloader with queue management and automation APIs."
+  description: >
+    SABnzbd fetches Usenet articles with queuing, repair, post-processing, and
+    integrations for Sonarr and Radarr. Ships with ffmpeg for media handling.
+    Single container with config and downloads volumes.
+  usecases: ["Download from Usenet with repair and post-processing.", "Integrate with Sonarr and Radarr for automation.", "Manage download queues from a web dashboard."]
+  website: "https://sabnzbd.org/"
+  notes: ["Add Usenet server details in the setup wizard.", "Downloads persist in a named volume."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: sabnzbd}
+
+services:
+  sabnzbd:
+    image: docker.io/linuxserver/sabnzbd:latest
+    environment:
+      DOCKER_MODS: linuxserver/mods:universal-package-install
+      INSTALL_PACKAGES: ffmpeg
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8080"
+    volumes:
+      - sabnzbd_data:/config
+      - sabnzbd_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  sabnzbd_data:
+  sabnzbd_downloads:
