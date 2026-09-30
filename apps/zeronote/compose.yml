@@ -1,0 +1,22 @@
+x-yantr:
+  name: "ZeroNote"
+  tags: [notes, markdown, productivity, self-hosted, tools]
+  short_description: "Distraction-free notes with Markdown and instant search."
+  description: >
+    ZeroNote keeps note-taking fast with Markdown, instant search, and a clean
+    editor that stays out of the way. Ideal for daily notes and quick ideas.
+    Stateless single container with nothing to configure.
+  usecases: ["Take daily notes with Markdown and instant search.", "Capture quick ideas in a clean editor.", "Self-host a tiny notes app with zero setup."]
+  website: "https://github.com/besoeasy/ZeroNote"
+  notes: ["Stateless app with no volumes.", "Notes stay in the browser session."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: zeronote}
+
+services:
+  zeronote:
+    image: ghcr.io/besoeasy/zeronote:latest
+    environment:
+      NODE_ENV: production
+    ports:
+      - "8000"
+    restart: unless-stopped
