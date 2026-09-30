@@ -1,0 +1,25 @@
+x-yantr:
+  name: "Trip"
+  tags: [travel, planning, maps, self-hosted, tools]
+  short_description: "Travel planner with itineraries, places, and route maps."
+  description: >
+    Trip organizes travel with itineraries, saved places, routes, and maps in
+    one shared workspace for groups. Ideal for planning vacations and road
+    trips. Single container with a storage volume for data.
+  usecases: ["Plan vacations with itineraries and saved places.", "Share routes and maps with travel groups.", "Organize road trips in one workspace."]
+  website: "https://github.com/itskovacs/trip"
+  notes: ["Trip data persists in a named volume.", "Configure maps providers in the web UI."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: trip}
+
+services:
+  trip:
+    image: ghcr.io/itskovacs/trip:latest
+    ports:
+      - "8000"
+    volumes:
+      - trip_data:/app/storage
+    restart: unless-stopped
+
+volumes:
+  trip_data:
