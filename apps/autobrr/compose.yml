@@ -1,0 +1,25 @@
+x-yantr:
+  name: "Autobrr"
+  tags: [automation, torrents, media, self-hosted, tools]
+  short_description: "Automation for torrent trackers with filters and actions."
+  description: >
+    Autobrr monitors IRC announce channels and matches releases against filters
+    to trigger qBittorrent, Sonarr, or Radarr actions. Built for autobdl-style
+    automation. Single container with a config volume for persistence.
+  usecases: ["Auto-grab tracker releases with filter matching.", "Trigger download clients and media managers on match.", "Run IRC-based release automation on your server."]
+  website: "https://autobrr.com/"
+  notes: ["Connect trackers and download clients in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 7474, protocol: HTTP, show: true, label: "Web UI", service: autobrr}
+
+services:
+  autobrr:
+    image: ghcr.io/autobrr/autobrr:latest
+    ports:
+      - "7474"
+    volumes:
+      - autobrr_data:/config
+    restart: unless-stopped
+
+volumes:
+  autobrr_data:
