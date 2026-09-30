@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Pingvin Share"
+  tags: [files, sharing, storage, self-hosted, tools]
+  short_description: "Self-hosted file sharing with expiring links, like WeTransfer."
+  description: >
+    Pingvin Share uploads files and generates shareable links with expiry and
+    password options. Lightweight alternative to WeTransfer for personal use.
+    Single container with backend and image volumes for persistence.
+  usecases: ["Share large files with expiring links and passwords.", "Run a private WeTransfer alternative on your server.", "Upload and manage shared files from a clean web UI."]
+  website: "https://stonith404.github.io/pingvin-share/introduction"
+  notes: ["Expose via a tunnel to share links publicly.", "Uploads persist in named volumes."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: pingvin-share}
+
+services:
+  pingvin-share:
+    image: docker.io/stonith404/pingvin-share:latest
+    ports:
+      - "3000"
+    volumes:
+      - pingvin_data:/opt/app/backend/data
+      - pingvin_images:/opt/app/frontend/public/img
+    restart: unless-stopped
+
+volumes:
+  pingvin_data:
+  pingvin_images:
