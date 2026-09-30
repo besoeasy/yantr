@@ -1,0 +1,40 @@
+x-yantr:
+  name: "AnythingLLM"
+  tags: [ai, chat, rag, agents, self-hosted]
+  short_description: "Private AI workspace with chat, RAG, and agent skills."
+  description: >
+    AnythingLLM chats with docs, connects tools, and runs agents on your own
+    models or hosted APIs. Workspaces keep teams separate. Single container
+    with storage, uploads, and collector volumes plus secrets.
+  usecases: ["Chat with documents using retrieval-augmented answers.", "Run agents on local or hosted LLM providers.", "Host private AI workspaces for your team."]
+  website: "https://anythingllm.com/"
+  env_generators:
+    ANYTHINGLLM_JWT_SECRET: {length: 32, charset: hex}
+    ANYTHINGLLM_SIG_KEY: {length: 32, charset: hex}
+    ANYTHINGLLM_SIG_SALT: {length: 32, charset: hex}
+  notes: ["Secrets are auto-generated on install.", "Storage and collector dirs persist in named volumes."]
+  ports:
+    - {port: 3001, protocol: HTTP, show: true, label: "Web UI", service: anything-llm}
+
+services:
+  anything-llm:
+    image: docker.io/mintplexlabs/anythingllm:latest
+    environment:
+      SERVER_PORT: "3001"
+      STORAGE_DIR: /app/server/storage
+      DISABLE_TELEMETRY: "true"
+      JWT_SECRET: ${ANYTHINGLLM_JWT_SECRET}
+      SIG_KEY: ${ANYTHINGLLM_SIG_KEY}
+      SIG_SALT: ${ANYTHINGLLM_SIG_SALT}
+    ports:
+      - "3001"
+    volumes:
+      - anythingllm_storage:/app/server/storage
+      - anythingllm_hotdir:/app/collector/hotdir
+      - anythingllm_outputs:/app/collector/outputs
+    restart: unless-stopped
+
+volumes:
+  anythingllm_storage:
+  anythingllm_hotdir:
+  anythingllm_outputs:
