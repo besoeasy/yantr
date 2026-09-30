@@ -1,0 +1,20 @@
+x-yantr:
+  name: "Morphos"
+  tags: [converter, files, api, self-hosted, tools]
+  short_description: "File converter API and UI for documents and media tasks."
+  description: >
+    Morphos converts documents and media through a simple web UI backed by a
+    clean API for automation. Useful for everyday file tasks without cloud
+    uploads. Stateless single container with nothing to configure.
+  usecases: ["Convert documents and media without cloud uploads.", "Automate conversions through a clean API.", "Self-host a tiny converter for everyday tasks."]
+  website: "https://github.com/danvergara/morphos"
+  notes: ["Stateless app with no volumes.", "API available alongside the web UI."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: morphos}
+
+services:
+  morphos:
+    image: ghcr.io/danvergara/morphos-server:latest
+    ports:
+      - "8080"
+    restart: unless-stopped
