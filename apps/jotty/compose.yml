@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Jotty"
+  tags: [bookmarks, search, productivity, self-hosted, tools]
+  short_description: "Bookmark manager with full-text search and auto-tagging."
+  description: >
+    Jotty saves bookmarks with snapshots, full-text search, tagging, and
+    collections for research. Fast self-hosted alternative to cloud bookmark
+    tools. Single container with app, config, and cache volumes.
+  usecases: ["Save bookmarks with snapshots and full-text search.", "Organize research with tags and collections.", "Self-host bookmarking without cloud lock-in."]
+  website: "https://jotty.page"
+  notes: ["Bookmarks persist in named volumes.", "Import existing bookmarks in the web UI."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: jotty}
+
+services:
+  jotty:
+    image: ghcr.io/fccview/jotty:latest
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000"
+    volumes:
+      - jotty_data:/app/data
+      - jotty_config:/app/config
+      - jotty_cache:/app/.next/cache
+    restart: unless-stopped
+
+volumes:
+  jotty_data:
+  jotty_config:
+  jotty_cache:
