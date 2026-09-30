@@ -1,0 +1,25 @@
+x-yantr:
+  name: "WingFit"
+  tags: [fitness, health, tracking, self-hosted, tools]
+  short_description: "Fitness tracker for workouts, stats, and training streaks."
+  description: >
+    WingFit logs workouts with stats, streaks, and progress views for strength
+    and cardio training. Clean self-hosted alternative to fitness cloud apps
+    for daily use. Single container with a storage volume.
+  usecases: ["Log strength and cardio workouts with stats.", "Build training streaks with progress views.", "Self-host fitness tracking without cloud accounts."]
+  website: "https://github.com/itskovacs/wingfit"
+  notes: ["Workout data persists in a named volume.", "Configure exercises in the web UI."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: wingfit}
+
+services:
+  wingfit:
+    image: ghcr.io/itskovacs/wingfit:latest
+    ports:
+      - "8000"
+    volumes:
+      - wingfit_data:/app/storage
+    restart: unless-stopped
+
+volumes:
+  wingfit_data:
