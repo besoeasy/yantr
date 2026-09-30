@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Bazarr"
+  tags: [media, subtitles, automation, self-hosted, tools]
+  short_description: "Subtitle manager for Sonarr and Radarr with provider search."
+  description: >
+    Bazarr fetches missing subtitles for movies and series managed by Sonarr
+    and Radarr. Searches providers, syncs timing, and upgrades automatically.
+    Single container with config and media volumes for persistence.
+  usecases: ["Auto-download missing subtitles for movies and series.", "Sync subtitle timing with Sonarr and Radarr libraries.", "Manage subtitle providers from a single dashboard."]
+  website: "https://www.bazarr.media/"
+  notes: ["Connect Sonarr and Radarr in the web UI.", "Config and media persist in named volumes."]
+  ports:
+    - {port: 6767, protocol: HTTP, show: true, label: "Web UI", service: bazarr}
+
+services:
+  bazarr:
+    image: docker.io/linuxserver/bazarr:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "6767"
+    volumes:
+      - bazarr_data:/config
+      - bazarr_media:/downloads
+    restart: unless-stopped
+
+volumes:
+  bazarr_data:
+  bazarr_media:
