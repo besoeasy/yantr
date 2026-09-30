@@ -1,0 +1,32 @@
+x-yantr:
+  name: "HomeBox"
+  tags: [inventory, home, organization, self-hosted, homelab]
+  short_description: "Home inventory and organization system for tracking belongings."
+  description: >
+    HomeBox catalogs devices, tools, and household items with labels, locations,
+    and attachments. Built for home users, it stays simple while keeping
+    everything searchable. Single container with a data volume for persistence.
+  usecases: ["Catalog home inventory with locations, labels, and photos.", "Track warranties and details for devices and tools.", "Organize household belongings with fast search."]
+  website: "https://homebox.software"
+  env_generators:
+    HBOX_AUTH_API_KEY_PEPPER: {length: 32, charset: hex}
+  notes: ["API key pepper is auto-generated on install.", "Inventory data persists in a named volume."]
+  ports:
+    - {port: 7745, protocol: HTTP, show: true, label: "Web UI", service: homebox}
+
+services:
+  homebox:
+    image: ghcr.io/sysadminsmedia/homebox:latest
+    environment:
+      HBOX_LOG_LEVEL: info
+      HBOX_LOG_FORMAT: text
+      HBOX_WEB_MAX_UPLOAD_SIZE: "10"
+      HBOX_AUTH_API_KEY_PEPPER: ${HBOX_AUTH_API_KEY_PEPPER}
+    ports:
+      - "7745"
+    volumes:
+      - homebox_data:/data
+    restart: unless-stopped
+
+volumes:
+  homebox_data:
