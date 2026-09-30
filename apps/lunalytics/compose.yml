@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Lunalytics"
+  tags: [monitoring, uptime, status, self-hosted, tools]
+  short_description: "Uptime and status monitoring with alerts and status pages."
+  description: >
+    Lunalytics watches websites and services with checks, incident alerts, and
+    shareable status pages. Lightweight alternative to hosted monitors. Single
+    container with data and log volumes for persistence.
+  usecases: ["Monitor website uptime with checks and alerts.", "Publish status pages for your services.", "Track incidents across homelab apps."]
+  website: "https://lunalytics.xyz/"
+  notes: ["Configure monitors and notifications in the web UI.", "Data and logs persist in named volumes."]
+  ports:
+    - {port: 2308, protocol: HTTP, show: true, label: "Web UI", service: lunalytics}
+
+services:
+  lunalytics:
+    image: docker.io/ksjaay/lunalytics:latest
+    ports:
+      - "2308"
+    volumes:
+      - lunalytics_data:/app/data
+      - lunalytics_logs:/app/logs
+    restart: unless-stopped
+
+volumes:
+  lunalytics_data:
+  lunalytics_logs:
