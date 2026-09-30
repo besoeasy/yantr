@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Obsidian"
+  tags: [notes, markdown, knowledge-base, self-hosted, productivity]
+  short_description: "Obsidian notes in the browser with vault sync and Graph view."
+  description: >
+    This packages Obsidian for browser access with your vaults on a config
+    volume. Edit Markdown, browse the graph, and sync via your own plugins of
+    choice. Single container ideal for remote note-taking sessions.
+  usecases: ["Access Obsidian vaults from any browser.", "Edit Markdown with Graph view remotely.", "Keep vaults on your server with plugin support."]
+  website: "https://obsidian.md/"
+  notes: ["Vaults persist in a named config volume.", "Configure sync plugins in the web UI."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: obsidian}
+
+services:
+  obsidian:
+    image: docker.io/linuxserver/obsidian:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "3000"
+    volumes:
+      - obsidian_data:/config
+    restart: unless-stopped
+
+volumes:
+  obsidian_data:
