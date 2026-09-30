@@ -1,0 +1,38 @@
+x-yantr:
+  name: "Yuvomi"
+  tags: [media, tracking, movies, self-hosted, tools]
+  short_description: "Media tracker for movies, shows, and watchlist discovery."
+  description: >
+    Yuvomi tracks movies and shows with watchlists, progress, and discovery
+    across your libraries. Clean self-hosted alternative to cloud trackers.
+    Single container with app and backup volumes and secrets.
+  usecases: ["Track movies and shows with watchlists and progress.", "Discover new content from your libraries.", "Self-host media tracking without cloud accounts."]
+  website: "https://github.com/ulsklyc/yuvomi"
+  env_generators:
+    YUVOMI_SESSION_SECRET: {length: 32, charset: hex}
+    YUVOMI_DB_KEY: {length: 32, charset: hex}
+  notes: ["Secrets are auto-generated on install.", "Library and backups persist in named volumes."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: yuvomi}
+
+services:
+  yuvomi:
+    image: ghcr.io/ulsklyc/yuvomi:latest
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DB_PATH: /data/yuvomi.db
+      BACKUP_DIR: /backups
+      SESSION_SECRET: ${YUVOMI_SESSION_SECRET}
+      DB_ENCRYPTION_KEY: ${YUVOMI_DB_KEY}
+      SESSION_SECURE: "false"
+    ports:
+      - "3000"
+    volumes:
+      - yuvomi_data:/data
+      - yuvomi_backups:/backups
+    restart: unless-stopped
+
+volumes:
+  yuvomi_data:
+  yuvomi_backups:
