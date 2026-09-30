@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Downtify"
+  tags: [music, downloads, playlists, self-hosted, tools]
+  short_description: "Music downloader for playlists with a clean web dashboard."
+  description: >
+    Downtify pulls tracks and playlists for offline listening with queue
+    management, history, and a clean dashboard for control. Built for personal
+    music archiving on your server. Single container with named volumes.
+  usecases: ["Download playlists for offline listening.", "Queue tracks with history in a web dashboard.", "Archive personal music collections on your server."]
+  website: "https://github.com/henriquesebastiao/downtify"
+  notes: ["Downloads persist in a named volume.", "Configure sources in the web UI."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: downtify}
+
+services:
+  downtify:
+    image: ghcr.io/henriquesebastiao/downtify:latest
+    ports:
+      - "8000"
+    volumes:
+      - downtify_downloads:/downloads
+      - downtify_data:/data
+    restart: unless-stopped
+
+volumes:
+  downtify_downloads:
+  downtify_data:
