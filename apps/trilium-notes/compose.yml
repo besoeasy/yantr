@@ -1,0 +1,28 @@
+x-yantr:
+  name: "Trilium Notes"
+  tags: [notes, knowledge-base, wiki, self-hosted, productivity]
+  short_description: "Hierarchical note-taking with rich text, code, and canvas support."
+  description: >
+    Trilium Notes organizes ideas into a deep tree with cloning, rich WYSIWYG
+    editing, code notes, canvases, and strong search. Self-hosted and
+    single-container, it suits personal knowledge bases, research collections,
+    and project documentation.
+  usecases: ["Build a personal knowledge base with nested notes and cloning.", "Keep developer notes with syntax-highlighted code and canvases.", "Organize research and project docs with fast search and relations."]
+  website: "https://github.com/TriliumNext/Trilium"
+  notes: ["Data lives in a named volume under /data.", "First-run setup happens in the web UI."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: trilium-notes}
+
+services:
+  trilium-notes:
+    image: docker.io/triliumnext/trilium:latest
+    environment:
+      TRILIUM_DATA_DIR: /data
+    ports:
+      - "8080"
+    volumes:
+      - trilium_data:/data
+    restart: unless-stopped
+
+volumes:
+  trilium_data:
