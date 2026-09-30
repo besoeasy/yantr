@@ -1,0 +1,25 @@
+x-yantr:
+  name: "Enclosed"
+  tags: [notes, encryption, sharing, privacy, self-hosted]
+  short_description: "End-to-end encrypted notes shared with a link and password."
+  description: >
+    Enclosed sends private notes with passwords, expiry, and attachments,
+    encrypted in the browser before upload. Nothing readable touches the server.
+    Single container with a data volume for encrypted payloads.
+  usecases: ["Share secrets with password-protected expiring links.", "Send encrypted notes with file attachments.", "Self-host a private Pastebin alternative."]
+  website: "https://enclosed.cc/"
+  notes: ["Notes are encrypted in the browser before upload.", "Payloads persist in a named volume."]
+  ports:
+    - {port: 8787, protocol: HTTP, show: true, label: "Web UI", service: enclosed}
+
+services:
+  enclosed:
+    image: docker.io/corentinth/enclosed:latest
+    ports:
+      - "8787"
+    volumes:
+      - enclosed_data:/app/.data
+    restart: unless-stopped
+
+volumes:
+  enclosed_data:
