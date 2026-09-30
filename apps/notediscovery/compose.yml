@@ -1,0 +1,25 @@
+x-yantr:
+  name: "NoteDiscovery"
+  tags: [notes, search, knowledge-base, self-hosted, tools]
+  short_description: "Note discovery with search, tags, and linked exploration."
+  description: >
+    NoteDiscovery indexes Markdown notes for fast search, tag browsing, and
+    backlink exploration. Ideal for growing knowledge gardens. Single container
+    with a data volume so notes survive restarts and updates.
+  usecases: ["Search Markdown notes with tags and backlinks.", "Explore linked notes across a knowledge garden.", "Self-host note discovery on your server."]
+  website: "https://github.com/gamosoft/notediscovery"
+  notes: ["Notes persist in a named volume.", "Point it at your Markdown collection in the UI."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: notediscovery}
+
+services:
+  notediscovery:
+    image: ghcr.io/gamosoft/notediscovery:latest
+    ports:
+      - "8000"
+    volumes:
+      - notediscovery_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  notediscovery_data:
