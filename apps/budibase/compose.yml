@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Budibase"
+  tags: [low-code, development, dashboards, self-hosted, tools]
+  short_description: "Low-code platform for internal tools, dashboards, and CRUD apps."
+  description: >
+    Budibase builds internal apps, dashboards, and workflows on Postgres, MySQL,
+    or REST sources with auth and automations. Self-hosted alternative to
+    Retool. Single container with a data volume for persistence.
+  usecases: ["Build internal dashboards and CRUD apps without boilerplate.", "Automate workflows on top of existing databases.", "Self-host a Retool alternative for your team."]
+  website: "https://budibase.com/"
+  env_generators:
+    JWT_SECRET: {length: 32, charset: hex}
+  notes: ["JWT secret is auto-generated on install.", "App data persists in a named volume."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: budibase}
+
+services:
+  budibase:
+    image: docker.io/budibase/budibase:latest
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "80"
+    volumes:
+      - budibase_data:/data
+    restart: unless-stopped
+
+volumes:
+  budibase_data:
