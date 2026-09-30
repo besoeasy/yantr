@@ -1,0 +1,20 @@
+x-yantr:
+  name: "MQTTX Web"
+  tags: [mqtt, iot, messaging, development, tools]
+  short_description: "Browser MQTT client for testing brokers and IoT messaging."
+  description: >
+    MQTTX Web connects to any MQTT broker over WebSockets to publish, subscribe,
+    and inspect messages with a clean UI. Handy for IoT development and
+    debugging flows. Stateless single container with no volumes.
+  usecases: ["Test MQTT brokers with publish and subscribe flows.", "Debug IoT messaging from a browser client.", "Inspect topics and payloads during development."]
+  website: "https://mqttx.app/"
+  notes: ["Stateless client; point it at your broker WebSocket URL."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: mqttx-web}
+
+services:
+  mqttx-web:
+    image: docker.io/emqx/mqttx-web:latest
+    ports:
+      - "80"
+    restart: unless-stopped
