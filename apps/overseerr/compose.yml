@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Overseerr"
+  tags: [media, movies, requests, self-hosted, plex]
+  short_description: "Media request manager for Plex and Jellyfin with discovery."
+  description: >
+    Overseerr lets users request movies and shows with approvals, discovery,
+    user management, and notifications. Pairs with Plex, Jellyfin, Sonarr, and
+    Radarr for automated fulfillment. Single container with a config volume.
+  usecases: ["Let users request movies and shows with approval flows.", "Discover new content with synced Plex and Jellyfin libraries.", "Automate requests with Sonarr and Radarr integration."]
+  website: "https://overseerr.dev/"
+  notes: ["Connect to Plex/Jellyfin plus Sonarr/Radarr in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 5055, protocol: HTTP, show: true, label: "Web UI", service: overseerr}
+
+services:
+  overseerr:
+    image: docker.io/linuxserver/overseerr:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "5055"
+    volumes:
+      - overseerr_data:/config
+    restart: unless-stopped
+
+volumes:
+  overseerr_data:
