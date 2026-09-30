@@ -1,0 +1,31 @@
+x-yantr:
+  name: "LibreTranslate"
+  tags: [translation, language, api, privacy, self-hosted]
+  short_description: "Free offline translation API supporting many language pairs."
+  description: >
+    LibreTranslate serves machine translation over a simple API and web UI
+    without cloud dependencies. Models download on first run, which can take a
+    while and use disk space. Single container with model and key volumes.
+  usecases: ["Translate text privately without cloud services.", "Integrate translation into apps via a simple API.", "Host offline translation for a team or homelab."]
+  website: "https://libretranslate.com"
+  notes: ["First start downloads translation models and can take 10+ minutes.", "Models and API keys persist in named volumes."]
+  ports:
+    - {port: 5000, protocol: HTTP, show: true, label: "Web UI", service: libretranslate}
+
+services:
+  libretranslate:
+    image: docker.io/libretranslate/libretranslate:latest
+    environment:
+      LT_API_KEYS: "true"
+      LT_API_KEYS_DB_PATH: /app/db/api_keys.db
+      LT_UPDATE_MODELS: "true"
+    ports:
+      - "5000"
+    volumes:
+      - libretranslate_keys:/app/db
+      - libretranslate_models:/home/libretranslate/.local
+    restart: unless-stopped
+
+volumes:
+  libretranslate_keys:
+  libretranslate_models:
