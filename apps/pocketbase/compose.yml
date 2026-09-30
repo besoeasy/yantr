@@ -1,0 +1,32 @@
+x-yantr:
+  name: "PocketBase"
+  tags: [database, backend, development, self-hosted, api]
+  short_description: "Open-source backend with SQLite, auth, and realtime in one file."
+  description: >
+    PocketBase bundles an embedded database, auth, file storage, dashboard UI,
+    and realtime subscriptions into a single binary. Ideal for SaaS prototypes
+    and mobile backends. Single container with data, public, hooks, and
+    migration volumes.
+  usecases: ["Prototype SaaS and mobile backends with auth and storage.", "Manage structured data with a built-in dashboard UI.", "Use realtime subscriptions for live app updates."]
+  website: "https://pocketbase.io/"
+  notes: ["Admin dashboard setup happens in the web UI on first run.", "Data, hooks, and migrations persist in named volumes."]
+  ports:
+    - {port: 8090, protocol: HTTP, show: true, label: "Web UI", service: pocketbase}
+
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    ports:
+      - "8090"
+    volumes:
+      - pocketbase_data:/pb_data
+      - pocketbase_public:/pb_public
+      - pocketbase_hooks:/pb_hooks
+      - pocketbase_migrations:/pb_migrations
+    restart: unless-stopped
+
+volumes:
+  pocketbase_data:
+  pocketbase_public:
+  pocketbase_hooks:
+  pocketbase_migrations:
