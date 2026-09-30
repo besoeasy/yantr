@@ -1,0 +1,22 @@
+x-yantr:
+  name: "Vert"
+  tags: [converter, files, media, privacy, self-hosted]
+  short_description: "Elegant file converter for images, audio, video, and docs."
+  description: >
+    Vert converts files across formats with a clean queue UI, running jobs
+    locally on your own server. Privacy-friendly alternative to cloud
+    converters. Stateless single container with no volumes to manage.
+  usecases: ["Convert images, audio, and video between formats.", "Queue file conversions with a clean web UI.", "Self-host a private alternative to cloud converters."]
+  website: "https://vert.sh/"
+  notes: ["Stateless app with no volumes.", "Files are processed locally on your server."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: vert}
+
+services:
+  vert:
+    image: ghcr.io/vert-sh/vert:latest
+    environment:
+      PUB_ENV: production
+    ports:
+      - "80"
+    restart: unless-stopped
