@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Wizarr"
+  tags: [media, invites, plex, jellyfin, self-hosted]
+  short_description: "Invite manager for Plex and Jellyfin with easy onboarding."
+  description: >
+    Wizarr creates invite links and onboarding flows for media servers, with
+    user approval and requests. Simplifies sharing Plex and Jellyfin with
+    friends. Single container with a data volume for persistence.
+  usecases: ["Invite friends to Plex and Jellyfin with links.", "Approve users with guided onboarding flows.", "Manage media access from one dashboard."]
+  website: "https://github.com/wizarrrr/wizarr"
+  notes: ["Connect media servers in the web UI.", "Invites persist in a named volume."]
+  ports:
+    - {port: 5690, protocol: HTTP, show: true, label: "Web UI", service: wizarr}
+
+services:
+  wizarr:
+    image: ghcr.io/wizarrrr/wizarr:latest
+    environment:
+      DISABLE_BUILTIN_AUTH: "false"
+      PORT: "5690"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "5690"
+    volumes:
+      - wizarr_data:/data
+    restart: unless-stopped
+
+volumes:
+  wizarr_data:
