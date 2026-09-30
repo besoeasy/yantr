@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Donetick"
+  tags: [tasks, chores, productivity, self-hosted, home]
+  short_description: "Chore and task manager with recurring schedules and assignments."
+  description: >
+    Donetick organizes household chores and tasks with recurring schedules,
+    assignees, and flexible allocation strategies. Built for families and shared
+    homes, it keeps responsibilities clear. Single container with SQLite and
+    config volumes.
+  usecases: ["Schedule recurring household chores with assignees.", "Organize family tasks with flexible allocation strategies.", "Self-host a simple task board for a shared home."]
+  website: "https://donetick.com/"
+  notes: ["Uses SQLite by default with data in named volumes.", "Web UI runs on port 2021 inside the container."]
+  ports:
+    - {port: 2021, protocol: HTTP, show: true, label: "Web UI", service: donetick}
+
+services:
+  donetick:
+    image: docker.io/donetick/donetick:latest
+    environment:
+      DT_ENV: selfhosted
+      DT_SQLITE_PATH: /donetick-data/donetick.db
+    ports:
+      - "2021"
+    volumes:
+      - donetick_data:/donetick-data
+      - donetick_config:/config
+    restart: unless-stopped
+
+volumes:
+  donetick_data:
+  donetick_config:
