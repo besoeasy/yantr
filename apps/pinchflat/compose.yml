@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Pinchflat"
+  tags: [media, youtube, downloads, self-hosted, automation]
+  short_description: "YouTube media manager with auto-downloads and Plex setup."
+  description: >
+    Pinchflat pulls YouTube channels and playlists on schedules with metadata
+    for Plex, Jellyfin, and Emby libraries. Hands-off archiving for media
+    servers. Single container with config and media volumes.
+  usecases: ["Auto-download YouTube channels and playlists.", "Feed media servers with metadata-rich downloads.", "Archive online videos on your own storage."]
+  website: "https://github.com/kieraneglin/pinchflat"
+  notes: ["Add download sources in the web UI.", "Media persists in named volumes."]
+  ports:
+    - {port: 8945, protocol: HTTP, show: true, label: "Web UI", service: pinchflat}
+
+services:
+  pinchflat:
+    image: ghcr.io/kieraneglin/pinchflat:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8945"
+    volumes:
+      - pinchflat_data:/config
+      - pinchflat_media:/downloads
+    restart: unless-stopped
+
+volumes:
+  pinchflat_data:
+  pinchflat_media:
