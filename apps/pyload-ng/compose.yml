@@ -1,0 +1,31 @@
+x-yantr:
+  name: "pyLoad"
+  tags: [downloads, manager, automation, self-hosted, tools]
+  short_description: "Download manager for one-click hosters and containers."
+  description: >
+    pyLoad fetches downloads from file hosters and video sites with queuing,
+    retries, and a web dashboard. Handles reconnects and captchas via plugins.
+    Single container with config and downloads volumes for persistence.
+  usecases: ["Queue downloads from file hosters in one dashboard.", "Automate retries and reconnects for flaky hosts.", "Self-host a lightweight download manager."]
+  website: "https://pyload.net/"
+  notes: ["Add hoster accounts and plugins in the web UI.", "Downloads persist in a named volume."]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: pyload-ng}
+
+services:
+  pyload-ng:
+    image: docker.io/linuxserver/pyload-ng:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8000"
+    volumes:
+      - pyload_data:/config
+      - pyload_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  pyload_data:
+  pyload_downloads:
