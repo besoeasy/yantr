@@ -1,0 +1,30 @@
+x-yantr:
+  name: "Excalidraw"
+  tags: [whiteboard, diagrams, drawing, self-hosted, productivity]
+  short_description: "Hand-drawn style whiteboard for sketches, diagrams, and ideas."
+  description: >
+    Excalidraw is a virtual whiteboard with a hand-drawn look for diagrams,
+    wireframes, and brainstorming. This self-hosted build adds persistence via
+    SQLite, so boards survive restarts. Single container with a named volume
+    for data.
+  usecases: ["Sketch architecture diagrams and wireframes in a hand-drawn style.", "Brainstorm visually with a persistent self-hosted whiteboard.", "Share quick visual ideas without a cloud account."]
+  website: "https://excalidraw.com/"
+  notes: ["Boards persist in a named volume via SQLite.", "Web client runs on port 80 inside the container."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: excalidraw}
+
+services:
+  excalidraw:
+    image: ghcr.io/ozencb/excalidraw-persist:latest
+    environment:
+      PORT: "4000"
+      NODE_ENV: production
+      DB_PATH: /app/data/database.sqlite
+    ports:
+      - "80"
+    volumes:
+      - excalidraw_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  excalidraw_data:
