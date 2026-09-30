@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Stash"
+  tags: [finance, savings, goals, self-hosted, tools]
+  short_description: "Savings tracker with goals, streaks, and visual progress."
+  description: >
+    Stash motivates saving with goals, streaks, and visual progress for personal
+    finance targets. Lightweight and private for daily use on your server.
+    Single container with app and model volumes for data.
+  usecases: ["Set savings goals with streaks and progress views.", "Track personal finance targets privately.", "Stay motivated with visual savings milestones."]
+  website: "https://github.com/savewithstash/stash"
+  notes: ["Goals persist in named volumes.", "Configure targets in the web UI."]
+  ports:
+    - {port: 5173, protocol: HTTP, show: true, label: "Web UI", service: stash}
+
+services:
+  stash:
+    image: docker.io/savewithstash/stash:latest
+    environment:
+      PORT: "5173"
+    ports:
+      - "5173"
+    volumes:
+      - stash_data:/app/data
+      - stash_models:/app/models
+    restart: unless-stopped
+
+volumes:
+  stash_data:
+  stash_models:
