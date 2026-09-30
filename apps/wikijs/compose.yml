@@ -1,0 +1,30 @@
+x-yantr:
+  name: "Wiki.js"
+  tags: [wiki, documentation, knowledge-base, self-hosted, productivity]
+  short_description: "Powerful wiki software with Markdown, diagrams, and theming."
+  description: >
+    Wiki.js turns documentation into a fast, searchable site with Markdown
+    editing, diagrams, version history, and access controls. Git-backed storage
+    keeps content portable. Single container with data, repo, and config
+    volumes.
+  usecases: ["Write team docs with Markdown, diagrams, and search.", "Version wiki content with Git-backed storage.", "Self-host a fast knowledge base with access controls."]
+  website: "https://js.wiki/"
+  notes: ["Admin setup happens in the web UI on first run.", "Content and config persist in named volumes."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: wikijs}
+
+services:
+  wikijs:
+    image: docker.io/linuxserver/wikijs:latest
+    ports:
+      - "3000"
+    volumes:
+      - wikijs_data:/data
+      - wikijs_repo:/app/wiki/data/repo
+      - wikijs_config:/config
+    restart: unless-stopped
+
+volumes:
+  wikijs_data:
+  wikijs_repo:
+  wikijs_config:
