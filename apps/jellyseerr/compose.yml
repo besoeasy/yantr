@@ -1,0 +1,25 @@
+x-yantr:
+  name: "Jellyseerr"
+  tags: [media, movies, requests, self-hosted, jellyfin]
+  short_description: "Movie and show request hub for Jellyfin, Plex, and Emby."
+  description: >
+    Jellyseerr (Seerr) collects media requests with discovery, watchlist sync,
+    user quotas, and notifications. Works with Jellyfin, Plex, Emby, Sonarr, and
+    Radarr. Single container with a config volume for persistence.
+  usecases: ["Collect movie and show requests with approval workflows.", "Sync watchlists from Jellyfin, Plex, and Emby users.", "Forward approved requests to Sonarr and Radarr automatically."]
+  website: "https://github.com/seerr-team/seerr"
+  notes: ["Connect media servers and downloaders in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 5055, protocol: HTTP, show: true, label: "Web UI", service: jellyseerr}
+
+services:
+  jellyseerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    ports:
+      - "5055"
+    volumes:
+      - jellyseerr_data:/app/config
+    restart: unless-stopped
+
+volumes:
+  jellyseerr_data:
