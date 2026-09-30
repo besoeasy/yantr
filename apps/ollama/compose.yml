@@ -1,0 +1,28 @@
+x-yantr:
+  name: "Ollama"
+  tags: [ai, llm, models, self-hosted, development]
+  short_description: "Run large language models locally with an OpenAI-style API."
+  description: >
+    Ollama serves open models locally with GPU or CPU, exposing an API for
+    chat, embeddings, and tools. Models download on demand into a named volume.
+    Single container that pairs with Open WebUI or AnythingLLM.
+  usecases: ["Run open LLMs locally without cloud dependencies.", "Serve embeddings and chat via an OpenAI-style API.", "Pair with Open WebUI for a private ChatGPT alternative."]
+  website: "https://ollama.com/"
+  notes: ["Models download on demand and can use significant disk space.", "API on port 11434; pair with Open WebUI for a chat UI."]
+  ports:
+    - {port: 11434, protocol: HTTP, show: true, label: "API", service: ollama}
+
+services:
+  ollama:
+    image: docker.io/ollama/ollama:latest
+    environment:
+      OLLAMA_ORIGINS: "*"
+      OLLAMA_CONTEXT_LENGTH: "8192"
+    ports:
+      - "11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
