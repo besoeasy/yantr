@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Appsmith"
+  tags: [low-code, development, dashboards, self-hosted, tools]
+  short_description: "Low-code builder for admin panels and database CRUD apps."
+  description: >
+    Appsmith connects to Postgres, MySQL, Mongo, and REST APIs to build admin
+    panels with drag-and-drop widgets, JS queries, and SSO. Self-hosted
+    alternative to Retool. Single container with a stacks volume for data and
+    git persistence.
+  usecases: ["Build admin panels on Postgres, MySQL, and REST APIs.", "Ship internal CRUD tools with drag-and-drop widgets.", "Self-host a Retool alternative with SSO support."]
+  website: "https://www.appsmith.com/"
+  env_generators:
+    APPSMITH_ENCRYPTION: {length: 32, charset: alnum}
+  notes: ["Encryption secrets are auto-generated on install.", "Stacks persist in a named volume."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: appsmith}
+
+services:
+  appsmith:
+    image: docker.io/appsmith/appsmith-ce:latest
+    environment:
+      APPSMITH_ENCRYPTION_PASSWORD: ${APPSMITH_ENCRYPTION}
+      APPSMITH_ENCRYPTION_SALT: ${APPSMITH_ENCRYPTION}
+    ports:
+      - "80"
+    volumes:
+      - appsmith_data:/appsmith-stacks
+    restart: unless-stopped
+
+volumes:
+  appsmith_data:
