@@ -1,0 +1,25 @@
+x-yantr:
+  name: "The Lounge"
+  tags: [chat, irc, communication, self-hosted, tools]
+  short_description: "Modern self-hosted web IRC client with always-on connections."
+  description: >
+    The Lounge stays connected to IRC servers while you are offline, with
+    push-style history, file sharing, and a responsive interface for desktop and
+    mobile. Self-hosted and private. Single container with a config volume.
+  usecases: ["Stay connected to IRC with persistent history while offline.", "Chat from desktop and mobile with a responsive web UI.", "Self-host a private IRC client on your own server."]
+  website: "https://thelounge.chat"
+  notes: ["Account setup happens in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 9000, protocol: HTTP, show: true, label: "Web UI", service: thelounge}
+
+services:
+  thelounge:
+    image: ghcr.io/thelounge/thelounge:latest
+    ports:
+      - "9000"
+    volumes:
+      - thelounge_data:/var/opt/thelounge
+    restart: unless-stopped
+
+volumes:
+  thelounge_data:
