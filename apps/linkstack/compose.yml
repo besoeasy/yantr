@@ -1,0 +1,25 @@
+x-yantr:
+  name: "LinkStack"
+  tags: [links, sharing, social, self-hosted, tools]
+  short_description: "Customizable link-in-bio page for sharing all your links."
+  description: >
+    LinkStack offers a Linktree-style page to collect socials, projects, and
+    contact links in one shareable profile. Highly themeable with admin controls
+    and click stats. Single container with a content volume for persistence.
+  usecases: ["Publish a link-in-bio page for social profiles.", "Collect project, shop, and contact links in one place.", "Self-host a themeable alternative to Linktree."]
+  website: "https://linkstack.org/"
+  notes: ["Admin setup happens in the web UI on first run.", "Content persists in a named volume."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: linkstack}
+
+services:
+  linkstack:
+    image: docker.io/linkstackorg/linkstack:latest
+    ports:
+      - "80"
+    volumes:
+      - linkstack_data:/htdocs
+    restart: unless-stopped
+
+volumes:
+  linkstack_data:
