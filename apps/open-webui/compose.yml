@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Open WebUI"
+  tags: [ai, chat, llm, self-hosted, tools]
+  short_description: "Chat UI for local and hosted LLMs with RAG and pipelines."
+  description: >
+    Open WebUI offers a ChatGPT-style interface for Ollama and OpenAI-compatible
+    backends, with file RAG, web search, and user management. Private by design
+    for teams. Single container with a data volume for persistence.
+  usecases: ["Chat with local Ollama models through a polished UI.", "Search docs with retrieval-augmented file chat.", "Host a private ChatGPT alternative for your team."]
+  website: "https://openwebui.com/"
+  notes: ["Connect an Ollama backend in the UI; pairs with the Ollama app.", "Set OLLAMA_BASE_URL if your models run on another host."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: open-webui}
+
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-}
+    ports:
+      - "8080"
+    volumes:
+      - open_webui_data:/app/backend/data
+    restart: unless-stopped
+
+volumes:
+  open_webui_data:
