@@ -1,0 +1,32 @@
+x-yantr:
+  name: "LeafWiki"
+  tags: [wiki, documentation, markdown, self-hosted, productivity]
+  short_description: "Minimal wiki with Markdown editing and clean reading views."
+  description: >
+    LeafWiki keeps documentation simple with Markdown, page trees, search, and
+    admin controls for small teams. Lightweight alternative to heavy wiki
+    platforms. Single container with a data volume and secrets.
+  usecases: ["Write team docs in Markdown with page trees.", "Search a lightweight wiki without heavy setup.", "Self-host documentation for a small team."]
+  website: "https://leafwiki.com/"
+  env_generators:
+    LEAFWIKI_JWT_SECRET: {length: 32, charset: hex}
+    LEAFWIKI_ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
+  notes: ["Admin password is auto-generated on install.", "Content persists in a named volume."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: leafwiki}
+
+services:
+  leafwiki:
+    image: ghcr.io/perber/leafwiki:latest
+    environment:
+      LEAFWIKI_JWT_SECRET: ${LEAFWIKI_JWT_SECRET}
+      LEAFWIKI_ADMIN_PASSWORD: ${LEAFWIKI_ADMIN_PASSWORD}
+      LEAFWIKI_ALLOW_INSECURE: "true"
+    ports:
+      - "8080"
+    volumes:
+      - leafwiki_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  leafwiki_data:
