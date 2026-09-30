@@ -1,0 +1,27 @@
+x-yantr:
+  name: "DumbPad"
+  tags: [notes, notepad, markdown, self-hosted, tools]
+  short_description: "Minimal notepad with Markdown, sharing, and no accounts needed."
+  description: >
+    DumbPad is a tiny shared notepad with Markdown, multiple pads, and link
+    sharing. No logins or setup friction for quick notes. Single container with
+    a data volume so pads survive restarts and updates easily.
+  usecases: ["Jot quick notes with Markdown in shared pads.", "Share pad links without accounts or setup.", "Self-host a tiny notepad for a team or family."]
+  website: "https://github.com/DumbWareio/DumbPad"
+  notes: ["Pads persist in a named volume.", "No login required by default."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: dumbpad}
+
+services:
+  dumbpad:
+    image: docker.io/dumbwareio/dumbpad:latest
+    environment:
+      SITE_TITLE: DumbPad
+    ports:
+      - "3000"
+    volumes:
+      - dumbpad_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  dumbpad_data:
