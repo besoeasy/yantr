@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Papra"
+  tags: [documents, search, organization, self-hosted, productivity]
+  short_description: "Document hub with tagging, search, and organized libraries."
+  description: >
+    Papra organizes documents with tagging, full-text search, and sharing for
+    teams and personal archives. Clean alternative to scattered files. Single
+    container with an app-data volume and generated secret.
+  usecases: ["Organize documents with tags and full-text search.", "Share libraries with teams from one hub.", "Archive files with a clean searchable interface."]
+  website: "https://papra.app"
+  env_generators:
+    AUTH_SECRET: {length: 32, charset: hex}
+  notes: ["Auth secret is auto-generated on install.", "Documents persist in a named volume."]
+  ports:
+    - {port: 1221, protocol: HTTP, show: true, label: "Web UI", service: papra}
+
+services:
+  papra:
+    image: ghcr.io/papra-hq/papra:latest
+    environment:
+      AUTH_SECRET: ${AUTH_SECRET}
+    ports:
+      - "1221"
+    volumes:
+      - papra_data:/app/app-data
+    restart: unless-stopped
+
+volumes:
+  papra_data:
