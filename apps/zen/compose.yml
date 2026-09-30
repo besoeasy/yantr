@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Zen"
+  tags: [media, tracking, movies, self-hosted, tools]
+  short_description: "Release tracker with watchlists and multi-source search."
+  description: >
+    Zen tracks movies and shows across sources with watchlists, progress, and
+    discovery in one clean UI. Self-hosted alternative to cloud trackers.
+    Single container with data and image volumes for persistence.
+  usecases: ["Track releases with watchlists and progress.", "Search across sources from one clean UI.", "Self-host media tracking without cloud accounts."]
+  website: "https://github.com/sheshbabu/zen"
+  notes: ["Library persists in named volumes.", "Configure sources in the web UI."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: zen}
+
+services:
+  zen:
+    image: ghcr.io/sheshbabu/zen/zen:latest
+    ports:
+      - "8080"
+    volumes:
+      - zen_data:/data
+      - zen_images:/images
+    restart: unless-stopped
+
+volumes:
+  zen_data:
+  zen_images:
