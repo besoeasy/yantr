@@ -1,0 +1,36 @@
+x-yantr:
+  name: "Flatnotes"
+  tags: [notes, markdown, productivity, self-hosted, homelab]
+  short_description: "Self-hosted Markdown notes with search, tags, and WYSIWYG editing."
+  description: >
+    Flatnotes stores every note as a plain Markdown file with no database to
+    manage. It offers fast full-text search, tagging, wikilinks, and a responsive
+    interface with light and dark themes. Single-container deployment keeps setup
+    minimal and data fully portable.
+  usecases: ["Take Markdown notes with WYSIWYG or raw editing and full-text search.", "Organize ideas with tags and wikilinks across a personal knowledge base.", "Keep notes as portable plain files without database lock-in."]
+  website: "https://github.com/dullage/flatnotes"
+  env_generators:
+    FLATNOTES_PASSWORD: {length: 20, charset: alnum_symbols}
+    FLATNOTES_SECRET_KEY: {length: 32, charset: hex}
+  notes: ["Default username is admin with an auto-generated password.", "Notes are stored as plain Markdown files in a named volume."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: flatnotes}
+
+services:
+  flatnotes:
+    image: docker.io/dullage/flatnotes:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      FLATNOTES_AUTH_TYPE: "password"
+      FLATNOTES_USERNAME: ${FLATNOTES_USERNAME:-admin}
+      FLATNOTES_PASSWORD: ${FLATNOTES_PASSWORD}
+      FLATNOTES_SECRET_KEY: ${FLATNOTES_SECRET_KEY}
+    ports:
+      - "8080"
+    volumes:
+      - flatnotes_data:/data
+    restart: unless-stopped
+
+volumes:
+  flatnotes_data:
