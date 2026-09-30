@@ -1,0 +1,27 @@
+x-yantr:
+  name: "LubeLogger"
+  tags: [vehicles, maintenance, tracking, self-hosted, tools]
+  short_description: "Vehicle maintenance, fuel, and expense tracking for your cars."
+  description: >
+    LubeLogger logs services, repairs, fuel fill-ups, and costs per vehicle
+    with reminders and stats. Keeps full ownership history for one or many
+    cars. Single container with app and key volumes for data.
+  usecases: ["Log services, repairs, and fuel fill-ups per vehicle.", "Track ownership costs with reminders and stats.", "Manage one or many cars from a single dashboard."]
+  website: "https://lubelogger.com/"
+  notes: ["Vehicle data persists in named volumes.", "No login by default; add a password in settings."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: lubelogger}
+
+services:
+  lubelogger:
+    image: ghcr.io/hargata/lubelogger:latest
+    ports:
+      - "8080"
+    volumes:
+      - lubelogger_data:/App/data
+      - lubelogger_keys:/root/.aspnet/DataProtection-Keys
+    restart: unless-stopped
+
+volumes:
+  lubelogger_data:
+  lubelogger_keys:
