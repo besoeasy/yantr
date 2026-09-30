@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Grocy"
+  tags: [home, groceries, recipes, self-hosted, productivity]
+  short_description: "Grocery, pantry, recipe, and household chore management hub."
+  description: >
+    Grocy tracks pantry stock, shopping lists, recipes, batteries, and chores
+    from one self-hosted dashboard. First login uses admin/admin, then change
+    the password. Single container with a config volume for persistence.
+  usecases: ["Track pantry stock and shopping lists for the household.", "Manage recipes, meal plans, and chores in one place.", "Run a lightweight home-management hub on your own server."]
+  website: "https://grocy.info/"
+  notes: ["First login is admin/admin; change the password after setup.", "Data persists in a named config volume."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: grocy}
+
+services:
+  grocy:
+    image: docker.io/linuxserver/grocy:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "80"
+    volumes:
+      - grocy_data:/config
+    restart: unless-stopped
+
+volumes:
+  grocy_data:
