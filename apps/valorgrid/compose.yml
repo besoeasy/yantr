@@ -1,0 +1,30 @@
+x-yantr:
+  name: "ValorGrid"
+  tags: [finance, portfolio, investments, self-hosted, tools]
+  short_description: "Portfolio tracker with holdings, dividends, and analytics."
+  description: >
+    ValorGrid tracks portfolios with holdings, dividends, transactions, and
+    performance analytics in one dashboard. Private alternative to
+    spreadsheets. Single container with a data volume for persistence.
+  usecases: ["Track holdings, dividends, and transactions.", "Review portfolio performance with analytics.", "Self-host investment tracking privately."]
+  website: "https://github.com/aivm23/valorgrid"
+  notes: ["Portfolio data persists in a named volume.", "Set auth credentials in the web UI."]
+  ports:
+    - {port: 1325, protocol: HTTP, show: true, label: "Web UI", service: valorgrid}
+
+services:
+  valorgrid:
+    image: ghcr.io/aivm23/valorgrid:latest
+    environment:
+      HOST: 0.0.0.0
+      PORT: "1325"
+      PORTFOLIO_DB_PATH: /data/portfolio.sqlite
+      VALORGRID_BACKUP_DIR: /data/backups
+    ports:
+      - "1325"
+    volumes:
+      - valorgrid_data:/data
+    restart: unless-stopped
+
+volumes:
+  valorgrid_data:
