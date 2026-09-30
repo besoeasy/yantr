@@ -1,0 +1,20 @@
+x-yantr:
+  name: "Element"
+  tags: [chat, matrix, communication, self-hosted, tools]
+  short_description: "Matrix chat client for encrypted rooms and communities."
+  description: >
+    Element Web connects to any Matrix homeserver for encrypted chats, rooms,
+    spaces, and video calls. Pair it with a homeserver like Synapse for full
+    self-hosting. Stateless single container with no volumes to manage.
+  usecases: ["Chat over Matrix with encryption and rooms.", "Join communities and spaces from a web client.", "Pair with a self-hosted Synapse homeserver."]
+  website: "https://element.io/"
+  notes: ["Stateless client; point it at your Matrix homeserver URL.", "Pair with Synapse for a fully self-hosted setup."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: element}
+
+services:
+  element:
+    image: docker.io/vectorim/element-web:latest
+    ports:
+      - "80"
+    restart: unless-stopped
