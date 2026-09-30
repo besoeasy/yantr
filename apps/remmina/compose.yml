@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Remmina"
+  tags: [remote-desktop, rdp, vnc, self-hosted, tools]
+  short_description: "Remote desktop client for RDP, VNC, and SSH in a browser."
+  description: >
+    Remmina in a browser connects to Windows, Linux, and macOS hosts over RDP,
+    VNC, and SSH with saved profiles and credentials. Handy for remote admin
+    work from anywhere. Single container with a config volume.
+  usecases: ["Connect to Windows hosts over RDP from a browser.", "Manage VNC and SSH sessions with saved profiles.", "Run remote admin from anywhere without a local client."]
+  website: "https://remmina.org/"
+  notes: ["Connection profiles persist in a named volume.", "Supports RDP, VNC, SSH, and SPICE protocols."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: remmina}
+
+services:
+  remmina:
+    image: docker.io/linuxserver/remmina:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "3000"
+    volumes:
+      - remmina_data:/config
+    restart: unless-stopped
+
+volumes:
+  remmina_data:
