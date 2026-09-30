@@ -1,0 +1,29 @@
+x-yantr:
+  name: "Tautulli"
+  tags: [media, plex, monitoring, stats, self-hosted]
+  short_description: "Plex monitoring with watch history, stats, and notifications."
+  description: >
+    Tautulli monitors Plex activity with live dashboards, watch history, library
+    stats, and notifications for new content or stopped streams. Helps tune
+    libraries and sharing. Single container with a config volume.
+  usecases: ["Monitor live Plex streams with history and dashboards.", "Get notifications for new content and stopped streams.", "Analyze library stats and user activity over time."]
+  website: "https://tautulli.com/"
+  notes: ["Connect to a Plex server in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 8181, protocol: HTTP, show: true, label: "Web UI", service: tautulli}
+
+services:
+  tautulli:
+    image: docker.io/linuxserver/tautulli:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8181"
+    volumes:
+      - tautulli_data:/config
+    restart: unless-stopped
+
+volumes:
+  tautulli_data:
