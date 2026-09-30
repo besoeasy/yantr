@@ -1,0 +1,21 @@
+x-yantr:
+  name: "BentoPDF"
+  tags: [pdf, documents, tools, privacy, self-hosted]
+  short_description: "Privacy-first PDF toolkit that runs fully in your browser."
+  description: >
+    BentoPDF handles merge, split, compress, convert, and sign workflows without
+    uploading files anywhere. Everything runs locally in the browser session,
+    keeping documents private. Stateless single container with no volumes to
+    manage.
+  usecases: ["Merge, split, and compress PDFs without uploading them anywhere.", "Convert documents and images to PDF privately in the browser.", "Run a lightweight PDF toolkit for a homelab or small team."]
+  website: "https://bentopdf.com/"
+  notes: ["Stateless app with no volumes; files stay in your browser session."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: bentopdf}
+
+services:
+  bentopdf:
+    image: ghcr.io/alam00000/bentopdf:latest
+    ports:
+      - "8080"
+    restart: unless-stopped
