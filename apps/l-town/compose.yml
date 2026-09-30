@@ -1,0 +1,20 @@
+x-yantr:
+  name: "L-Town"
+  tags: [links, sharing, social, self-hosted, tools]
+  short_description: "Modern link-in-bio pages with themes and custom domains."
+  description: >
+    L-Town builds fast personal pages for socials, projects, and contact links
+    with themes and analytics. Lightweight alternative to hosted bio tools.
+    Stateless single container with nothing to configure.
+  usecases: ["Publish a personal page for socials and projects.", "Theme link-in-bio pages with analytics.", "Self-host bio links without platform lock-in."]
+  website: "https://github.com/besoeasy/linktown"
+  notes: ["Stateless app with no volumes.", "Configure pages in the web UI."]
+  ports:
+    - {port: 30300, protocol: HTTP, show: true, label: "Web UI", service: l-town}
+
+services:
+  l-town:
+    image: ghcr.io/besoeasy/l-town:latest
+    ports:
+      - "30300"
+    restart: unless-stopped
