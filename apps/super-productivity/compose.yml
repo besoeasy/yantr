@@ -1,0 +1,21 @@
+x-yantr:
+  name: "Super Productivity"
+  tags: [tasks, productivity, time-tracking, self-hosted, homelab]
+  short_description: "Task, time, and project manager with offline-first workflow."
+  description: >
+    Super Productivity combines tasks, time tracking, and project boards in one
+    fast interface with keyboard-first flows. Data stays in the browser by
+    default with optional sync integrations. Stateless single container that
+    just serves the web app.
+  usecases: ["Plan daily tasks with time tracking and project boards.", "Work offline-first with data kept in the browser.", "Self-host a fast task manager for personal productivity."]
+  website: "https://super-productivity.com/"
+  notes: ["By default data stays in the browser; configure sync integrations to share across devices."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: super-productivity}
+
+services:
+  super-productivity:
+    image: docker.io/johannesjo/super-productivity:latest
+    ports:
+      - "80"
+    restart: unless-stopped
