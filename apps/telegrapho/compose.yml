@@ -1,0 +1,22 @@
+x-yantr:
+  name: "Telegrapho"
+  tags: [publishing, writing, sharing, self-hosted, tools]
+  short_description: "Anonymous publishing with instant Telegraph-style pages."
+  description: >
+    Telegrapho publishes simple rich-text pages with images via shareable
+    links, no accounts needed. Great for quick posts and announcements on your
+    server. Stateless single container with nothing to configure.
+  usecases: ["Publish quick posts with shareable links.", "Share rich-text pages without accounts.", "Host anonymous publishing on your server."]
+  website: "https://github.com/egzola/telegrapho"
+  notes: ["Stateless app with no volumes.", "Expose via a tunnel to share pages publicly."]
+  ports:
+    - {port: 3712, protocol: HTTP, show: true, label: "Web UI", service: telegrapho}
+
+services:
+  telegrapho:
+    image: ghcr.io/egzola/telegrapho:latest
+    environment:
+      PORT: "3712"
+    ports:
+      - "3712"
+    restart: unless-stopped
