@@ -1,0 +1,20 @@
+x-yantr:
+  name: "Mazanoke"
+  tags: [media, converter, tools, privacy, self-hosted]
+  short_description: "Browser media toolkit for conversions without any uploads."
+  description: >
+    Mazanoke converts images, audio, and video entirely in the browser with no
+    server uploads. Fast, private, and stateless for everyday media tasks.
+    Single container with nothing to persist or configure.
+  usecases: ["Convert images, audio, and video without uploading files.", "Run private media conversions in the browser.", "Self-host a lightweight converter for everyday tasks."]
+  website: "https://mazanoke.com/"
+  notes: ["Stateless app; conversions happen locally in the browser."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: mazanoke}
+
+services:
+  mazanoke:
+    image: ghcr.io/civilblur/mazanoke:latest
+    ports:
+      - "80"
+    restart: unless-stopped
