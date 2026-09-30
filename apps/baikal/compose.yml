@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Baikal"
+  tags: [calendar, contacts, sync, self-hosted, productivity]
+  short_description: "Lightweight CalDAV and CardDAV server for calendars and contacts."
+  description: >
+    Baikal syncs calendars and address books across phones and desktops via open
+    CalDAV and CardDAV protocols. Includes a web admin for users and books.
+    Single container with config and data volumes for persistence.
+  usecases: ["Sync calendars across phones and desktops with CalDAV.", "Share address books with CardDAV clients.", "Self-host contacts and calendars without a cloud account."]
+  website: "https://sabre.io/baikal/"
+  notes: ["Web admin manages users, calendars, and address books.", "Data persists in named volumes."]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: baikal}
+
+services:
+  baikal:
+    image: ghcr.io/aalmenar/baikal:latest
+    ports:
+      - "80"
+    volumes:
+      - baikal_config:/var/www/baikal/config
+      - baikal_data:/var/www/baikal/Specific
+    restart: unless-stopped
+
+volumes:
+  baikal_config:
+  baikal_data:
