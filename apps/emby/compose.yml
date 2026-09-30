@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Emby"
+  tags: [media, movies, streaming, self-hosted, tv]
+  short_description: "Media server for movies, shows, music, and live TV streaming."
+  description: >
+    Emby organizes movies, shows, music, and photos with metadata, transcoding,
+    and apps for TV, mobile, and web. Alternative to Plex and Jellyfin. Single
+    container with config and media volumes for persistence.
+  usecases: ["Stream movies and shows to TV, mobile, and web apps.", "Organize media libraries with metadata and artwork.", "Run a private media server as a Plex alternative."]
+  website: "https://emby.media/"
+  notes: ["Place media in the media volume; libraries are set up in the web UI.", "Config persists in a named volume."]
+  ports:
+    - {port: 8096, protocol: HTTP, show: true, label: "Web UI", service: emby}
+
+services:
+  emby:
+    image: docker.io/linuxserver/emby:latest
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: ${TZ:-UTC}
+    ports:
+      - "8096"
+    volumes:
+      - emby_data:/config
+      - emby_media:/media
+    restart: unless-stopped
+
+volumes:
+  emby_data:
+  emby_media:
