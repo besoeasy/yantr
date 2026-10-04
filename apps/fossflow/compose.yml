@@ -1,0 +1,41 @@
+x-yantr:
+  name: "FossFLOW"
+  tags: [diagrams, infrastructure, networking, self-hosted]
+  short_description: "Draw clean isometric infrastructure diagrams right in the browser."
+  description: >
+    Build clear isometric diagrams of cloud and infrastructure setups by dragging
+    provider icons onto a grid. FossFLOW runs in your browser and can save
+    diagrams to the server so they follow you between devices. Export finished
+    diagrams as images for docs or runbooks.
+  usecases:
+    [
+      "Sketch an architecture diagram by dragging provider icons onto a canvas.",
+      "Save diagrams server-side so they are available on every device you use.",
+      "Export a finished diagram as an image for documentation or a pull request.",
+    ]
+  website: "https://github.com/stan-smith/FossFLOW"
+  notes:
+    [
+      "Server-side storage is enabled, so saved diagrams live in the named volume.",
+      "Git backup is disabled by default because it would require repository credentials.",
+      "The canvas is client-side, so editing stays responsive even for large diagrams.",
+    ]
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: fossflow}
+
+services:
+  fossflow:
+    image: docker.io/stnsmith/fossflow:latest
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      ENABLE_SERVER_STORAGE: "true"
+      STORAGE_PATH: /data/diagrams
+      ENABLE_GIT_BACKUP: "false"
+    ports:
+      - "80"
+    volumes:
+      - fossflow_data:/data/diagrams
+
+volumes:
+  fossflow_data:
