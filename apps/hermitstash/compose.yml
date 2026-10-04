@@ -1,0 +1,47 @@
+x-yantr:
+  name: "HermitStash"
+  tags: [files, sharing, encryption, self-hosted]
+  short_description: "Post-quantum encrypted file sharing that you host yourself."
+  description: >
+    HermitStash shares files using post-quantum encryption, so shared secrets stay
+    readable even against a future quantum adversary. It runs on your own
+    hardware, supports expiring links and one-time downloads, and generates its
+    encryption keys on first boot. Recipients need no account.
+  usecases:
+    [
+      "Share sensitive files with post-quantum encryption instead of plain HTTPS.",
+      "Send a one-time download link that stops working after a single use.",
+      "Host encrypted file exchange on hardware you control, without accounts for recipients.",
+    ]
+  website: "https://hermitstash.com"
+  notes:
+    [
+      "First-run admin credentials are printed in the container logs and saved in the data volume.",
+      "There is no TLS certificate by default, so reach it over plain HTTP on a trusted network only.",
+      "Email verification is disabled because no mail backend is configured; reset links are manual in the admin UI.",
+      "A 256 MB shared memory size is required for the crypto operations to run.",
+    ]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: hermitstash}
+
+services:
+  hermitstash:
+    image: ghcr.io/dotcoocoo/hermitstash:latest
+    restart: unless-stopped
+    shm_size: "256m"
+    environment:
+      UMASK: "022"
+      TZ: Etc/UTC
+      NODE_ENV: production
+      EMAIL_VERIFICATION: "false"
+    ports:
+      - "3000"
+    volumes:
+      - hermitstash_data:/app/data
+      - hermitstash_uploads:/app/uploads
+      - hermitstash_custom:/app/public/img/custom
+
+volumes:
+  hermitstash_data:
+  hermitstash_uploads:
+  hermitstash_custom:
