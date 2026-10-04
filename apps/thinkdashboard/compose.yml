@@ -1,0 +1,36 @@
+x-yantr:
+  name: "ThinkDashboard"
+  tags: [dashboard, bookmarks, productivity, self-hosted]
+  short_description: "Keyboard-driven bookmark dashboard with tags, search, and quick launch."
+  description: >
+    A lightweight start page for your browser. ThinkDashboard keeps bookmarks,
+    notes, and links on a single keyboard-first board with tags and instant
+    search. There is no account to create and no external service: everything
+    lives in a local volume that you own and can back up yourself.
+  usecases:
+    [
+      "Replace browser start pages with one keyboard-driven board of your own links.",
+      "Group bookmarks with tags and find them with instant search as you type.",
+      "Keep personal notes and links beside each other in a single local app.",
+    ]
+  website: "https://github.com/MatiasDesuu/ThinkDashboard"
+  notes:
+    [
+      "Built for keyboard control: give focus to the board and navigate without the mouse.",
+      "Bookmarks and settings persist in a named volume across restarts and updates.",
+      "Renders entirely in the browser, so the dashboard stays fast on phones and tablets.",
+    ]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: thinkdashboard}
+
+services:
+  thinkdashboard:
+    image: ghcr.io/matiasdesuu/thinkdashboard:latest
+    restart: unless-stopped
+    ports:
+      - "8080"
+    volumes:
+      - thinkdashboard_data:/app/data
+
+volumes:
+  thinkdashboard_data:
