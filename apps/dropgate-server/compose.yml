@@ -1,0 +1,48 @@
+x-yantr:
+  name: "Dropgate Server"
+  tags: [files, sharing, transfer, privacy, self-hosted]
+  short_description: "Privacy-first file drop with encrypted uploads and P2P transfer."
+  description: >
+    Dropgate Server is a file drop you run yourself: a guest uploads a file, gets
+    a link, and it is delivered without a third party ever holding it. Uploads are
+    encrypted, expire on a timer, and can be capped to a single download, with
+    direct peer-to-peer transfer when both sides support it.
+  usecases:
+    [
+      "Send a file to someone on your network without emailing or cloud drives.",
+      "Receive files from a guest through a link that expires within hours.",
+      "Transfer large files peer to peer so they never rest on the server.",
+    ]
+  website: "https://diamonddigital.dev/projects/dropgate"
+  notes:
+    [
+      "Uploads are end-to-end encrypted and expire after 24 hours by default.",
+      "Limits are 100 MB per file and 10 GB of total storage; tune them in the environment block.",
+      "Each upload is capped at a single download before it is discarded.",
+    ]
+  ports:
+    - {port: 52443, protocol: HTTP, show: true, label: "Web UI", service: dropgate-server}
+
+services:
+  dropgate-server:
+    image: docker.io/willtda/dropgate-server:latest
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "52443"
+      SERVER_NAME: Dropgate Server
+      ENABLE_WEB_UI: "true"
+      ENABLE_UPLOAD: "true"
+      UPLOAD_ENABLE_E2EE: "true"
+      UPLOAD_PRESERVE_UPLOADS: "false"
+      UPLOAD_MAX_FILE_SIZE_MB: "100"
+      UPLOAD_MAX_STORAGE_GB: "10"
+      UPLOAD_MAX_FILE_LIFETIME_HOURS: "24"
+      UPLOAD_MAX_FILE_DOWNLOADS: "1"
+      ENABLE_P2P: "true"
+    ports:
+      - "52443"
+    volumes:
+      - dropgate_uploads:/usr/src/app/uploads
+
+volumes:
+  dropgate_uploads:
