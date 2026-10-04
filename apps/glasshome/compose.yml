@@ -1,0 +1,36 @@
+x-yantr:
+  name: "GlassHome"
+  tags: [home-assistant, dashboard, automation, self-hosted]
+  short_description: "A calm, local-first dashboard for your Home Assistant instance."
+  description: >
+    GlassHome gives Home Assistant a cleaner front door. It reads your entities
+    and areas and presents them on a single glanceable page, with rooms, lights,
+    and sensors grouped the way your home actually works. Point it at an existing
+    Home Assistant URL and it serves any device on the network.
+  usecases:
+    [
+      "Give a Home Assistant instance a cleaner, calmer overview page.",
+      "Check lights, sensors, and rooms at a glance from a phone or tablet.",
+      "Keep the dashboard on your own network with no cloud account involved.",
+    ]
+  website: "https://glasshome.app"
+  notes:
+    [
+      "After deploying, point GlassHome at your Home Assistant URL in its settings.",
+      "Needs a long-lived access token from Home Assistant to read your entities.",
+      "Dashboard preferences and layout persist in the named volume.",
+    ]
+  ports:
+    - {port: 3123, protocol: HTTP, show: true, label: "Web UI", service: glasshome}
+
+services:
+  glasshome:
+    image: ghcr.io/glasshome/dash:latest
+    restart: unless-stopped
+    ports:
+      - "3123"
+    volumes:
+      - glasshome_data:/data
+
+volumes:
+  glasshome_data:
