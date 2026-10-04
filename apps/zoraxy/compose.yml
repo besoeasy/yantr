@@ -1,0 +1,42 @@
+x-yantr:
+  name: "Zoraxy"
+  tags: [proxy, networking, ssl, reverse-proxy, self-hosted]
+  short_description: "Reverse proxy manager with automated SSL certificate handling."
+  description: >
+    Zoraxy puts a web interface in front of reverse proxying: point it at your
+    services, group them into rules, and let it obtain and renew TLS certificates
+    for the hostnames you expose. Traffic rules and redirects are managed from the
+    browser instead of hand-edited config files.
+  usecases:
+    [
+      "Expose several homelab services on one hostname or port with path rules.",
+      "Get and renew TLS certificates for the services you publish.",
+      "Manage redirects and traffic rules without editing proxy config by hand.",
+    ]
+  website: "https://zoraxy.aroz.org/"
+  notes:
+    [
+      "The first visit redirects to setup, where you create the administrator account.",
+      "Unauthenticated access is disabled: do not enable NOAUTH on a reachable network.",
+      "Automatic certificates use the HTTP-01 challenge and need public ports 80 and 443; with auto-assigned host ports that will not work, so bring your own certificates or use a DNS challenge.",
+      "Container, GeoIP, and ZeroTier integrations are disabled so the app needs no host access.",
+    ]
+  ports:
+    - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: zoraxy}
+
+services:
+  zoraxy:
+    image: docker.io/zoraxydocker/zoraxy:latest
+    restart: unless-stopped
+    environment:
+      FASTGEOIP: "false"
+      ZEROTIER: "false"
+      DOCKER: "false"
+      NOAUTH: "false"
+    ports:
+      - "8000"
+    volumes:
+      - zoraxy_config:/opt/zoraxy/config
+
+volumes:
+  zoraxy_config:
