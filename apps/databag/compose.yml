@@ -1,0 +1,40 @@
+x-yantr:
+  name: "Databag"
+  tags: [social, fediverse, activitypub, messaging, self-hosted]
+  short_description: "Tiny self-hosted ActivityPub messenger for the decentralized web."
+  description: >
+    Databag is a deliberately small messenger that speaks ActivityPub, so your
+    accounts can talk to Mastodon and Lemmy while the messages stay on hardware
+    you control. It ships with a web interface and a single admin account, and
+    needs no external database or mail server.
+  usecases:
+    [
+      "Message friends on Mastodon or Lemmy from a server you host yourself.",
+      "Keep conversations on your own hardware instead of a third-party chat service.",
+      "Run a tiny single-user ActivityPub server for a handful of accounts.",
+    ]
+  website: "https://github.com/balzack/databag"
+  notes:
+    [
+      "The admin password is generated during deploy and shown in the deploy form.",
+      "Data and accounts live in a named volume, so uninstalling removes the volume with it.",
+      "Federation only works for accounts that can reach your server from the internet.",
+    ]
+  env_generators:
+    ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
+  ports:
+    - {port: 7000, protocol: HTTP, show: true, label: "Web UI", service: databag}
+
+services:
+  databag:
+    image: docker.io/balzack/databag:latest
+    restart: unless-stopped
+    environment:
+      ADMIN: ${ADMIN_PASSWORD}
+    ports:
+      - "7000"
+    volumes:
+      - databag_data:/var/lib/databag
+
+volumes:
+  databag_data:
