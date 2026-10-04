@@ -1,0 +1,33 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>BitBoard</title>
+<defs>
+<linearGradient id="bb-bg" x1="18" y1="4" x2="238" y2="252" gradientUnits="userSpaceOnUse">
+<stop stop-color="#1E293B"/>
+<stop offset="1" stop-color="#0A0F1A"/>
+</linearGradient>
+<radialGradient id="bb-glow" cx="0" cy="0" r="1" gradientTransform="translate(200 46) rotate(132.5) scale(184)">
+<stop stop-color="#22D3EE" stop-opacity="0.30"/>
+<stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+</radialGradient>
+<linearGradient id="bb-bars" x1="43" y1="196" x2="213" y2="78" gradientUnits="userSpaceOnUse">
+<stop stop-color="#34D399"/>
+<stop offset="0.55" stop-color="#2DD4BF"/>
+<stop offset="1" stop-color="#22D3EE"/>
+</linearGradient>
+<clipPath id="bb-panel">
+<rect x="32" y="32" width="192" height="192" rx="30"/>
+</clipPath>
+</defs>
+<rect width="256" height="256" fill="url(#bb-bg)"/>
+<rect width="256" height="256" fill="url(#bb-glow)"/>
+<rect x="32" y="32" width="192" height="192" rx="30" fill="#FFFFFF" fill-opacity="0.045"/>
+<g clip-path="url(#bb-panel)">
+<rect x="43" y="154" width="26" height="42" rx="10" fill="url(#bb-bars)" fill-opacity="0.55"/>
+<rect x="91" y="132" width="26" height="64" rx="10" fill="url(#bb-bars)" fill-opacity="0.7"/>
+<rect x="139" y="106" width="26" height="90" rx="10" fill="url(#bb-bars)" fill-opacity="0.85"/>
+<rect x="187" y="78" width="26" height="118" rx="10" fill="url(#bb-bars)"/>
+<rect x="187" y="78" width="26" height="34" rx="10" fill="#FFFFFF" fill-opacity="0.28"/>
+</g>
+<rect x="32.5" y="32.5" width="191" height="191" rx="29.5" stroke="#FFFFFF" stroke-opacity="0.10"/>
+<rect x="57" y="194" width="142" height="4" rx="2" fill="#FFFFFF" fill-opacity="0.14"/>
+</svg>
