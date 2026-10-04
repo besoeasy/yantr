@@ -1,0 +1,36 @@
+x-yantr:
+  name: "OctoPrint"
+  tags: [3d-printing, printer, hardware, self-hosted]
+  short_description: "A snappy web interface for monitoring and controlling 3D printers."
+  description: >
+    OctoPrint turns a 3D printer into something you can watch and steer from a
+    browser: live temperature graphs, print progress, and controls for pausing or
+    stopping a job. It also keeps printer settings, filament profiles, and a
+    searchable history of every print you have run.
+  usecases:
+    [
+      "Watch temperatures and layer progress of a running print from any browser.",
+      "Pause, resume, or stop a print without walking to the machine.",
+      "Keep a searchable history of past prints and the filament they used.",
+    ]
+  website: "https://octoprint.org/"
+  notes:
+    [
+      "Talking to a printer over USB needs the host's /dev passed into the container, which yantr does not allow, so the UI and settings work but direct USB printer control does not.",
+      "Use it with a network-attached printer, or add host device access yourself if you need USB.",
+      "Settings, plugins, and print history persist in the named volume.",
+    ]
+  ports:
+    - {port: 5000, protocol: HTTP, show: true, label: "Web UI", service: octoprint}
+
+services:
+  octoprint:
+    image: docker.io/octoprint/octoprint:latest
+    restart: unless-stopped
+    ports:
+      - "5000"
+    volumes:
+      - octoprint_data:/octoprint
+
+volumes:
+  octoprint_data:
