@@ -1,0 +1,36 @@
+x-yantr:
+  name: "Bitwatch"
+  tags: [bitcoin, monitoring, dashboard, self-hosted]
+  short_description: "Watch Bitcoin addresses and their balances update in real time."
+  description: >
+    Bitwatch keeps a list of Bitcoin addresses on one screen and refreshes their
+    balances and recent activity as blocks arrive. Add an address, give it a
+    label, and see it update without opening a block explorer. Useful for cold
+    storage, donation addresses, or savings you do not want to check by hand.
+  usecases:
+    [
+      "Keep an eye on cold storage and long-term Bitcoin addresses at a glance.",
+      "Watch donation or savings addresses update without opening a block explorer.",
+      "Label several addresses and compare their balances on one page.",
+    ]
+  website: "https://github.com/zapomatic/bitwatch"
+  notes:
+    [
+      "Reads public Bitcoin chain data, so it needs outbound internet access but no API key.",
+      "The address list and its settings persist in the named volume.",
+      "Balances refresh on the chain's schedule rather than instantly after each transaction.",
+    ]
+  ports:
+    - {port: 3117, protocol: HTTP, show: true, label: "Web UI", service: bitwatch}
+
+services:
+  bitwatch:
+    image: ghcr.io/zapomatic/bitwatch:latest
+    restart: unless-stopped
+    ports:
+      - "3117"
+    volumes:
+      - bitwatch_data:/app/server/data
+
+volumes:
+  bitwatch_data:
