@@ -7,7 +7,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run"
   },
   "dependencies": {
     "@lucide/vue": "latest",
@@ -25,6 +26,7 @@
     "eslint-plugin-vuejs-accessibility": "^2.6.0",
     "globals": "^17.12.0",
     "vite": "^6.2.4",
-    "vite-plugin-vue-devtools": "^7.7.2"
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vitest": "^3.2.7"
   }
 }

@@ -151,6 +151,12 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 // the UI already polls every 2s — so the counters go out raw and
 // ContainerResources.vue differences consecutive samples client-side, with no
 // extra requests and no added latency.
+//
+// system_cpu_usage is deliberately not sent. Rootless Podman reports it for the
+// user's cgroup slice rather than the whole host, so pairing it with the
+// host-wide online_cpus yields a rate inflated by the slice's share of the
+// machine (measured: 1680% for a container pegging one core). The client
+// normalizes against sampledAtMs instead; see ui/src/utils/cpu.js.
 func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
@@ -204,7 +210,6 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 			// `percent` is intentionally absent rather than wrong.
 			"cpu": map[string]interface{}{
 				"usage":       stats.CPUStats.CPUUsage.TotalUsage,
-				"systemUsage": stats.CPUStats.SystemUsage,
 				"onlineCpus":  stats.CPUStats.OnlineCPUs,
 				"sampledAtMs": shared.NowMs(),
 			},
