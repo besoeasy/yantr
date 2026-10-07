@@ -230,6 +230,7 @@
     "env": "Env",
     "cpu": "CPU",
     "ram": "RAM",
+    "ramOfLimit": "{percent}% от лимита {limit}",
     "networkIO": "Сетевой ввод/вывод",
     "blockIO": "Блочный ввод/вывод",
     "noResourceData": "Данные о ресурсах недоступны.",

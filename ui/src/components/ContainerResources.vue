@@ -54,7 +54,13 @@ watch(
         <Activity :size="12" /> {{ t('containerDetail.ram') }}
       </div>
       <div class="text-3xl font-mono font-bold tracking-tighter text-gray-900 dark:text-white">
-        {{ containerStats.memory.percent }}%
+        {{ formatBytes(containerStats.memory.usage) }}
+      </div>
+      <!-- A percentage is only meaningful against a limit the container is
+           actually held to. When none is set, Podman reports host RAM as the
+           limit, which pins every container at 0.00%. -->
+      <div v-if="!containerStats.memory.unlimited" class="mt-1 text-[11px] text-gray-500 dark:text-zinc-400">
+        {{ t('containerDetail.ramOfLimit', { percent: containerStats.memory.percent, limit: formatBytes(containerStats.memory.limit) }) }}
       </div>
     </div>
 

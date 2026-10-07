@@ -251,6 +251,7 @@
     "env": "Env",
     "cpu": "CPU",
     "ram": "RAM",
+    "ramOfLimit": "{percent}% of {limit} limit",
     "networkIO": "Network I/O",
     "blockIO": "Block I/O",
     "noResourceData": "No resource data available.",

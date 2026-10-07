@@ -230,6 +230,7 @@
     "env": "環境変数",
     "cpu": "CPU",
     "ram": "RAM",
+    "ramOfLimit": "{limit} の上限のうち {percent}%",
     "networkIO": "ネットワークI/O",
     "blockIO": "ブロックI/O",
     "noResourceData": "リソースデータがありません。",

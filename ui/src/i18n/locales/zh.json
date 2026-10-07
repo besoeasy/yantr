@@ -230,6 +230,7 @@
     "env": "环境变量",
     "cpu": "CPU",
     "ram": "内存",
+    "ramOfLimit": "{limit} 上限的 {percent}%",
     "networkIO": "网络 I/O",
     "blockIO": "块 I/O",
     "noResourceData": "没有可用的资源数据。",

@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	dockerctr "github.com/docker/docker/api/types/container"
@@ -130,6 +131,59 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// hostMemoryTotal returns the host's total RAM, cached after the first success.
+//
+// It exists to tell a genuine container memory limit apart from Podman's
+// stand-in for "no limit configured", so a failed lookup returns 0 rather than
+// poisoning the cache with a wrong answer.
+func hostMemoryTotal(ctx context.Context) float64 {
+	hostMemMu.Lock()
+	cached := hostMemBytes
+	hostMemMu.Unlock()
+	if cached > 0 {
+		return cached
+	}
+
+	info, err := podman.Info(ctx)
+	if err != nil {
+		shared.Log("warn", "[stats] could not read host memory total: "+err.Error())
+		return 0
+	}
+
+	hostMemMu.Lock()
+	hostMemBytes = float64(info.MemTotal)
+	hostMemMu.Unlock()
+	return hostMemBytes
+}
+
+var (
+	hostMemMu    sync.Mutex
+	hostMemBytes float64
+)
+
+// hasRealMemoryLimit reports whether limit is a ceiling the container is
+// actually held to.
+//
+// When no limit is configured, cgroup v2 reports memory.max as the string "max"
+// and the Podman API surfaces it as the host's total RAM instead. Every app in
+// the catalog ships without a memory limit, so this is the common case, not an
+// edge one: dividing a typical container's usage by host RAM pinned the reported
+// percentage at 0.00% (measured 324 KB against a 24.24 GB host). A percentage is
+// only meaningful against a real ceiling, so the caller reports absolute bytes
+// when this is false.
+func hasRealMemoryLimit(limit, hostTotal float64) bool {
+	if limit <= 0 {
+		return false
+	}
+	// Anything at or above the host total is Podman's stand-in for "unlimited".
+	// The 1% margin keeps a limit that happens to land exactly on host RAM from
+	// being mistaken for a genuine one.
+	if hostTotal > 0 && limit >= hostTotal*0.99 {
+		return false
+	}
+	return true
+}
+
 // handleContainerStats returns one instantaneous sample of container resource
 // usage.
 //
@@ -157,6 +211,9 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 // host-wide online_cpus yields a rate inflated by the slice's share of the
 // machine (measured: 1680% for a container pegging one core). The client
 // normalizes against sampledAtMs instead; see ui/src/utils/cpu.js.
+//
+// Memory reports absolute usage as the headline figure, plus a percentage only
+// when the container is held to a real limit. See hasRealMemoryLimit.
 func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
@@ -185,9 +242,10 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 	if memUsage < 0 {
 		memUsage = 0
 	}
-	memPct := 0.0
-	if limit > 0 {
-		memPct = (memUsage / limit) * 100
+	limited := hasRealMemoryLimit(limit, hostMemoryTotal(ctx))
+	memPct := ""
+	if limited {
+		memPct = fmt.Sprintf("%.2f", (memUsage/limit)*100)
 	}
 	var netRx, netTx float64
 	for _, n := range stats.Networks {
@@ -213,7 +271,12 @@ func handleContainerStats(w http.ResponseWriter, r *http.Request) {
 				"onlineCpus":  stats.CPUStats.OnlineCPUs,
 				"sampledAtMs": shared.NowMs(),
 			},
-			"memory":  map[string]interface{}{"usage": memUsage, "rawUsage": rawMem, "cache": cache, "limit": limit, "percent": fmt.Sprintf("%.2f", memPct)},
+			"memory": map[string]interface{}{
+				"usage": memUsage, "rawUsage": rawMem, "limit": limit,
+				// Empty unless the container is held to a real limit, and
+				// `unlimited` says why. See hasRealMemoryLimit.
+				"percent": memPct, "unlimited": !limited,
+			},
 			"network": map[string]interface{}{"rx": netRx, "tx": netTx},
 			"blockIO": map[string]interface{}{"read": blkR, "write": blkW},
 		},
