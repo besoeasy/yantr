@@ -7,7 +7,7 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw, Wrench } from '@lucide/vue'
+import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw, Wrench, Terminal, Copy } from '@lucide/vue'
 import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
@@ -22,6 +22,12 @@ const { apiUrl } = useApiUrl()
 const { openVolumeBrowser } = useYantrAuth()
 
 const selectedContainer = ref(null)
+const shellPath = ref('')
+const shellLoading = ref(false)
+const shellError = ref('')
+const shellCommand = computed(() => shellPath.value && selectedContainer.value
+  ? `podman exec -it ${selectedContainer.value.id} ${shellPath.value}`
+  : '')
 const containerStats = ref(null)
 const containerLogs = ref([])
 const deleting = ref(false)
@@ -162,9 +168,38 @@ async function fetchContainerDetail() {
     const response = await fetch(`${apiUrl.value}/api/containers/${route.params.id}`)
     const data = await expectApiSuccess(response, t('containerDetail.error.containerNotFound'))
     selectedContainer.value = data.container
+    shellPath.value = ''
+    shellError.value = ''
+    if (data.container.state === 'running') fetchContainerShell(data.container.id)
   } catch (error) {
     toast.error(error.message || t('containerDetail.error.failedToLoadDetails'))
     router.push('/')
+  }
+}
+
+async function fetchContainerShell(id) {
+  shellLoading.value = true
+  try {
+    const response = await fetch(`${apiUrl.value}/api/containers/${id}/shell`)
+    const data = await expectApiSuccess(response, t('containerDetail.shellDetectionFailed'))
+    if (selectedContainer.value?.id === id && selectedContainer.value.state === 'running') {
+      shellPath.value = data.shell || ''
+    }
+  } catch {
+    if (selectedContainer.value?.id === id && selectedContainer.value.state === 'running') {
+      shellError.value = t('containerDetail.shellDetectionFailed')
+    }
+  } finally {
+    shellLoading.value = false
+  }
+}
+
+async function copyShellCommand() {
+  try {
+    await navigator.clipboard.writeText(shellCommand.value)
+    toast.success(t('containerDetail.shellCopied'))
+  } catch {
+    toast.error(t('containerDetail.shellCopyFailed'))
   }
 }
 
@@ -360,6 +395,36 @@ watch(activeTab, (tab) => {
                  </div>
               </div>
            </div>
+        </div>
+
+        <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-3">
+          <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
+            <Terminal :size="14" />
+            {{ t('containerDetail.shellAccess') }}
+          </div>
+          <p v-if="selectedContainer.state !== 'running'" class="text-xs text-gray-500 dark:text-zinc-400">
+            {{ t('containerDetail.shellStopped') }}
+          </p>
+          <p v-else-if="shellLoading" class="text-xs text-gray-500 dark:text-zinc-400">
+            {{ t('containerDetail.detectingShell') }}
+          </p>
+          <p v-else-if="shellError || !shellCommand" class="text-xs text-gray-500 dark:text-zinc-400">
+            {{ shellError || t('containerDetail.noShell') }}
+          </p>
+          <template v-else>
+            <p class="text-xs text-gray-500 dark:text-zinc-400">{{ t('containerDetail.shellHint') }}</p>
+            <div class="flex items-center gap-2">
+              <code class="min-w-0 flex-1 overflow-x-auto rounded-lg bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 text-xs text-gray-800 dark:text-zinc-200 whitespace-nowrap">{{ shellCommand }}</code>
+              <button
+                type="button"
+                @click="copyShellCommand"
+                :aria-label="t('containerDetail.copyShellCommand')"
+                class="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
+              >
+                <Copy :size="14" />{{ t('containerDetail.copyShellCommand') }}
+              </button>
+            </div>
+          </template>
         </div>
 
         <div v-if="allPortMappings.length > 0" class="space-y-4">

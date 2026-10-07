@@ -487,6 +487,7 @@ func main() {
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/deploy", handleDeploy)
 	r.Get("/api/containers", handleContainers)
 	r.Get("/api/containers/{id}", handleContainerDetail)
+	r.Get("/api/containers/{id}/shell", handleContainerShell)
 	r.Get("/api/containers/{id}/stats", handleContainerStats)
 	r.Get("/api/containers/{id}/logs", handleContainerLogs)
 	r.With(withWriteTimeout(spawnTimeoutMedium)).Delete("/api/containers/{id}", handleContainerDelete)
