@@ -175,7 +175,6 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 		return
 	}
 
-	// If it exited with code 0 without being killed, it completed cleanly
 	if info.State != nil && info.State.ExitCode == 0 && !info.State.OOMKilled {
 		return
 	}
@@ -192,7 +191,6 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 		return
 	}
 
-	// Check restart policy
 	policy := ""
 	if info.HostConfig != nil {
 		policy = string(info.HostConfig.RestartPolicy.Name)

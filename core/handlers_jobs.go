@@ -63,7 +63,6 @@ func handleJobsActive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// List all running jobs
 	all := globalJobs.List(50)
 	running := make([]JobSnapshot, 0)
 	for _, j := range all {

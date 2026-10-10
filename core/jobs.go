@@ -164,7 +164,6 @@ func (s *JobStore) Create(jobType, target, title string) *Job {
 	s.jobs[id] = j
 	s.seq = append(s.seq, id)
 
-	// Enforce retention limit
 	if len(s.seq) > maxRetainedJobs {
 		removeID := s.seq[0]
 		s.seq = s.seq[1:]
@@ -203,7 +202,6 @@ func (s *JobStore) List(limit int) []JobSnapshot {
 	}
 
 	result := make([]JobSnapshot, 0, limit)
-	// Iterate in reverse (newest first)
 	for i := len(s.seq) - 1; i >= 0 && len(result) < limit; i-- {
 		id := s.seq[i]
 		if j, ok := s.jobs[id]; ok {
@@ -213,7 +211,6 @@ func (s *JobStore) List(limit int) []JobSnapshot {
 	return result
 }
 
-// lineWriter buffers stream bytes and invokes onLine on complete newlines.
 type lineWriter struct {
 	builder *strings.Builder
 	buf     bytes.Buffer
@@ -238,7 +235,6 @@ func (w *lineWriter) Write(p []byte) (n int, err error) {
 	for {
 		line, err := w.buf.ReadBytes('\n')
 		if err != nil {
-			// Incomplete line remains in buffer
 			w.buf.Write(line)
 			break
 		}

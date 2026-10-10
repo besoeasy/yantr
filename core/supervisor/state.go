@@ -95,7 +95,6 @@ func Init(appsDir string) {
 		appState.Stacks = make(map[string]StackState)
 	}
 
-	// Auto-discover deployed compose files if appsDir is provided
 	if appsDir != "" {
 		// The pattern comes from the compose package, which owns the filename
 		// convention, so the glob cannot drift from what is actually written.

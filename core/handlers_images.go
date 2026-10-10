@@ -161,7 +161,6 @@ func handleImageDetails(w http.ResponseWriter, r *http.Request) {
 	for _, imgName := range imageNames {
 		info, _, err := podman.ImageInspectWithRaw(context.Background(), imgName)
 		if err != nil {
-			// Image not found locally, skip
 			continue
 		}
 		

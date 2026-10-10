@@ -55,7 +55,6 @@ func GetLogs(level string, limit int) []LogEntry {
 	if limit > 0 && len(filtered) > limit {
 		filtered = filtered[len(filtered)-limit:]
 	}
-	// Reverse for most-recent-first display
 	for i, j := 0, len(filtered)-1; i < j; i, j = i+1, j-1 {
 		filtered[i], filtered[j] = filtered[j], filtered[i]
 	}
@@ -67,7 +66,6 @@ func GetBaseAppID(projectID string) string {
 	if projectID == "" {
 		return projectID
 	}
-	// Strip trailing -<number>
 	for i := len(projectID) - 1; i >= 0; i-- {
 		c := projectID[i]
 		if c >= '0' && c <= '9' {

@@ -57,7 +57,6 @@ var publicPaths = map[string]bool{
 // They are static assets scoped to a known app ID, so they're treated as public.
 var appLogoPathPattern = regexp.MustCompile(`^/api/apps/[a-z0-9][a-z0-9_-]*/logo$`)
 
-// isPublicPath reports whether a request path bypasses auth.
 func isPublicPath(path string) bool {
 	if publicPaths[path] {
 		return true
@@ -448,7 +447,6 @@ func handleAppLogo(w http.ResponseWriter, r *http.Request) {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 func main() {
-	// Configure apps directory
 	appsPath := getAppsDir()
 	apps.SetAppsDir(appsPath)
 	shared.Log("info", "📂 Apps directory: "+appsPath)
@@ -456,20 +454,17 @@ func main() {
 
 	telemetry.StartPresenceScheduler(version)
 
-	// Supervisor state engine & resuscitation
 	supervisor.Init(appsPath)
 	go supervisor.Resuscitate(appsPath, getComposeCommand)
 	go supervisor.StartWatchdog(context.Background())
 	go supervisor.StartHistorySweeper(context.Background())
 
-	// Router
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(corsMiddleware)
 	r.Use(authMiddleware)
 	r.Use(securityHeadersMiddleware)
 
-	// Browse proxy
 	r.HandleFunc("/browse/*", browseProxyHandler)
 
 	// Public routes
@@ -519,7 +514,6 @@ func main() {
 	r.Get("/api/jobs/active", handleJobsActive)
 	r.Get("/api/jobs/{id}", handleJobDetail)
 
-	// SPA static serving (production)
 	distDir := getDistDir()
 	uiBase := coalesce(os.Getenv("UI_BASE_PATH"), "/")
 	if _, err := os.Stat(distDir); err == nil {
@@ -542,7 +536,6 @@ func main() {
 		})
 	}
 
-	// Start temporary-install reaper (checks every minute)
 	go func() {
 		shared.Log("info", "🧹 Starting temporary-install reaper (1 min interval)")
 		ticker := time.NewTicker(1 * time.Minute)
@@ -552,10 +545,8 @@ func main() {
 		}
 	}()
 
-	// Clean up any dangling volume browser containers from previous runs
 	go browserRegistry.StopAll()
 
-	// Server startup log
 	shared.Log("info", strings.Repeat("=", 50))
 	shared.Log("info", "🚀 Yantr Core Server Started (Go)")
 	shared.Log("info", strings.Repeat("=", 50))
@@ -571,7 +562,6 @@ func main() {
 		WriteTimeout: 120 * time.Second,
 	}
 
-	// Graceful shutdown
 	go func() {
 		sigCh := make(chan os.Signal, 1)
 		signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)

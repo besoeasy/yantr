@@ -35,7 +35,6 @@ func resolveSocketPath() string {
 		return s
 	}
 
-	// 1. Check XDG_RUNTIME_DIR (standard user session path)
 	if xdg := os.Getenv("XDG_RUNTIME_DIR"); xdg != "" {
 		p := xdg + "/podman/podman.sock"
 		if _, err := os.Stat(p); err == nil {
@@ -43,19 +42,16 @@ func resolveSocketPath() string {
 		}
 	}
 
-	// 2. Check current UID user socket
 	uid := os.Getuid()
 	userSocket := fmt.Sprintf("/run/user/%d/podman/podman.sock", uid)
 	if _, err := os.Stat(userSocket); err == nil {
 		return userSocket
 	}
 
-	// 3. Check standard rootless UID 1000
 	if _, err := os.Stat("/run/user/1000/podman/podman.sock"); err == nil {
 		return "/run/user/1000/podman/podman.sock"
 	}
 
-	// 4. Container-mounted or rootful podman paths
 	for _, candidate := range []string{
 		"/run/podman/podman.sock",
 		"/var/run/podman/podman.sock",

@@ -32,7 +32,6 @@ func sweepExpiredContainers() {
 
 	now := time.Now().Unix()
 
-	// Collect expired projects (deduplicated) and standalone containers.
 	type projectMeta struct{ appID, project string }
 	expiredProjects := map[string]projectMeta{}
 	var standaloneIDs []string
@@ -59,7 +58,6 @@ func sweepExpiredContainers() {
 		}
 	}
 
-	// Tear down expired Compose stacks.
 	for projectID, meta := range expiredProjects {
 		// The reaper is a single goroutine on a 1-minute ticker, so this must
 		// never block: a project lock held by a 10-minute `compose down` would
@@ -94,7 +92,6 @@ func sweepExpiredContainers() {
 			}
 		}
 		if !removed {
-			// Fallback: force-remove every container in the project.
 			shared.Log("warn", fmt.Sprintf("[reaper] compose down failed for %s — force-removing containers", projectID))
 			if stale, listErr := podman.ContainerList(context.Background(), dockerctr.ListOptions{All: true}); listErr == nil {
 				for _, c := range stale {
@@ -110,7 +107,6 @@ func sweepExpiredContainers() {
 		release()
 	}
 
-	// Tear down standalone expired containers.
 	for _, id := range standaloneIDs {
 		shared.Log("info", fmt.Sprintf("[reaper] removing expired standalone container: %s", id))
 		_ = podman.ContainerStop(context.Background(), id, dockerctr.StopOptions{})
@@ -380,7 +376,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	job := globalJobs.Create("autoupdate", "system", "Auto-update containers")
 	job.SetProgress("Checking for updates...")
 
-	// Process Compose projects natively.
 	cmdName, cmdArgs, cmdErr := getComposeCommand()
 	for projectID := range projectSet {
 		if cmdErr != nil {
@@ -506,7 +501,6 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Dump logs cleanly
 	for _, line := range strings.Split(strings.TrimSpace(allStdout.String()), "\n") {
 		if line != "" {
 			shared.Log("info", "[update] "+line)

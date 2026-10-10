@@ -20,20 +20,17 @@ import (
 )
 
 var (
-	// browserRegistry is the global instance of the volume browser manager.
 	browserRegistry = newVolumeBrowserRegistry()
 
 	invalidNameChars = regexp.MustCompile(`[^a-zA-Z0-9_.-]`)
 )
 
-// browser tracks an ephemeral dufs container.
 type browser struct {
 	containerID string
 	port        int
 	expireAt    int64 // unix timestamp, 0 = no expiry
 }
 
-// volumeBrowserRegistry manages ephemeral dufs browser containers.
 type volumeBrowserRegistry struct {
 	mu       sync.Mutex
 	browsers map[string]*browser
@@ -45,10 +42,8 @@ func newVolumeBrowserRegistry() *volumeBrowserRegistry {
 		browsers: map[string]*browser{},
 		reserved: map[int]bool{},
 	}
-	// Clean up any stale or orphan browser containers from previous runs or crashes on startup
 	go r.cleanupOrphans()
 
-	// Cleanup expired browsers every minute
 	go func() {
 		ticker := time.NewTicker(time.Minute)
 		for range ticker.C {
@@ -103,11 +98,9 @@ func resolveBrowserImage() string {
 }
 
 func ensureBrowserImage(ctx context.Context, imageName string) error {
-	// If image already exists locally, nothing to do
 	if _, _, err := podman.ImageInspectWithRaw(ctx, imageName); err == nil {
 		return nil
 	}
-	// Pull the minimal browser image on demand
 	reader, err := podman.ImagePull(ctx, imageName, dockerimage.PullOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to pull %q: %w", imageName, err)
@@ -139,14 +132,12 @@ func (r *volumeBrowserRegistry) findFreePort() (int, error) {
 	return 0, fmt.Errorf("could not find a free port")
 }
 
-// Start spawns an ephemeral dufs browser container for a volume.
 func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int, error) {
 	if expiryMinutes <= 0 {
 		expiryMinutes = 30 // default to 30 min auto-expiry to avoid permanent container sprawl
 	}
 
 	r.mu.Lock()
-	// If this volume is already active, refresh expiry and reuse port
 	if b, ok := r.browsers[volumeName]; ok {
 		b.expireAt = time.Now().Unix() + int64(expiryMinutes*60)
 		p := b.port
@@ -168,7 +159,6 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	// Verify volume exists
 	if _, err := podman.VolumeInspect(ctx, volumeName); err != nil {
 		return 0, fmt.Errorf("failed to inspect volume %q: %w", volumeName, err)
 	}
@@ -188,7 +178,6 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 
 	containerName := browserContainerName(volumeName)
 
-	// Clean up any stale container with the same name before creating
 	_ = podman.ContainerRemove(ctx, containerName, dockerctr.RemoveOptions{Force: true})
 
 	stopTimeout := 1
@@ -254,13 +243,11 @@ func (r *volumeBrowserRegistry) Start(volumeName string, expiryMinutes int) (int
 	return p, nil
 }
 
-// Stop stops and removes the ephemeral browser container for a volume.
 func (r *volumeBrowserRegistry) Stop(volumeName string) bool {
 	r.mu.Lock()
 	b, ok := r.browsers[volumeName]
 	if !ok {
 		r.mu.Unlock()
-		// Also clean up any lingering container with this name
 		go func() {
 			containerName := browserContainerName(volumeName)
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -282,7 +269,6 @@ func (r *volumeBrowserRegistry) Stop(volumeName string) bool {
 	return true
 }
 
-// IsBrowsing reports whether a browser container is active for the volume.
 func (r *volumeBrowserRegistry) IsBrowsing(volumeName string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -290,7 +276,6 @@ func (r *volumeBrowserRegistry) IsBrowsing(volumeName string) bool {
 	return ok
 }
 
-// GetPort returns the port for a volume browser, or 0 if not active.
 func (r *volumeBrowserRegistry) GetPort(volumeName string) int {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -306,7 +291,6 @@ type browserInfo struct {
 	ExpireAt   int64  `json:"expireAt"`
 }
 
-// List returns all active browsers.
 func (r *volumeBrowserRegistry) List() []browserInfo {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -317,7 +301,6 @@ func (r *volumeBrowserRegistry) List() []browserInfo {
 	return result
 }
 
-// StopAll stops and removes all active browser containers.
 func (r *volumeBrowserRegistry) StopAll() {
 	r.mu.Lock()
 	browsers := r.browsers
@@ -334,7 +317,6 @@ func (r *volumeBrowserRegistry) StopAll() {
 		_ = podman.ContainerRemove(ctx, b.containerID, dockerctr.RemoveOptions{Force: true})
 	}
 
-	// Clean up any remaining orphan containers
 	r.cleanupOrphans()
 }
 
