@@ -30,7 +30,6 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 	}
 	catalogMap := apps.GetCatalogIndex()
 
-	// Find Yantr projects
 	yantrProjects := map[string]bool{}
 	for _, c := range containers {
 		lbl := parseAppLabels(c.Labels)

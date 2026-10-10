@@ -217,7 +217,6 @@ var archOnce sync.Once
 
 func GetSystemArch() string {
 	archOnce.Do(func() {
-		// Try uname -m first
 		out, err := exec.Command("uname", "-m").Output()
 		if err == nil {
 			arch := strings.TrimSpace(string(out))
@@ -236,7 +235,6 @@ func GetSystemArch() string {
 			}
 			return
 		}
-		// Fallback to Go runtime
 		systemArch = runtime.GOARCH
 	})
 	return systemArch

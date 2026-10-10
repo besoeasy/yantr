@@ -250,7 +250,6 @@ func loadCatalog() (*Catalog, error) {
 			// Structured display ports — single source of truth.
 			ports := parseXyPorts(meta.Ports, cf.Services)
 
-			// Parse env vars and port mappings from raw compose text
 			envVars := parseEnvVars(composeStr)
 			composePorts := parseComposePorts(composeStr)
 

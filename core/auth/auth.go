@@ -212,7 +212,6 @@ func SaveAuthConfig(publicKeyHex string) (*AuthConfig, error) {
 // Ed25519 token (proving the caller controls the key), then saves the
 // public key from the token as the admin.
 func BootstrapFromToken(token string) (*AuthConfig, error) {
-	// Reject if already configured (env or file).
 	if readEnvAuthConfig() != nil {
 		return nil, fmt.Errorf("auth is managed by environment variable")
 	}
@@ -237,7 +236,6 @@ func BootstrapFromToken(token string) (*AuthConfig, error) {
 		return nil, err
 	}
 
-	// Verify the signature against the token's own public key.
 	if err := verifyEd25519(tok.PublicKey, tok.Signature, tok.Message); err != nil {
 		return nil, fmt.Errorf("invalid signature: %w", err)
 	}
@@ -247,7 +245,6 @@ func BootstrapFromToken(token string) (*AuthConfig, error) {
 		return nil, fmt.Errorf("token replayed")
 	}
 
-	// All good — save this public key as admin.
 	return SaveAuthConfig(tok.PublicKey)
 }
 
@@ -272,7 +269,6 @@ type authToken struct {
 // the same 60s window a nonce is retained for.
 const tokenTTL = 60 * time.Second
 
-// minNonceLen is the shortest nonce accepted in a signed message.
 const minNonceLen = 8
 
 // maxTrackedNonces caps the replay cache. Only nonces from tokens that already
@@ -390,7 +386,6 @@ func VerifyToken(token string, cfg *AuthConfig) error {
 		return err
 	}
 
-	// Check the public key matches the configured admin key.
 	if strings.ToLower(tok.PublicKey) != strings.ToLower(cfg.PublicKeyHex) {
 		return fmt.Errorf("unknown public key")
 	}
@@ -401,7 +396,6 @@ func VerifyToken(token string, cfg *AuthConfig) error {
 		return err
 	}
 
-	// Verify Ed25519 signature over the raw message.
 	if err := verifyEd25519(tok.PublicKey, tok.Signature, tok.Message); err != nil {
 		return fmt.Errorf("invalid signature: %w", err)
 	}

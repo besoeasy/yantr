@@ -90,7 +90,6 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check external networks
 	if doc, err := compose.Parse(string(baseContent)); err == nil {
 		if networks, ok := doc["networks"].(map[string]interface{}); ok {
 			var missing []string
@@ -127,7 +126,6 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Build extra env
 	extraEnv := map[string]interface{}{}
 	for k, v := range body.ExtraEnv {
 		k = strings.TrimSpace(k)

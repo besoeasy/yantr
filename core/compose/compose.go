@@ -230,7 +230,6 @@ func GetComposeProcessEnv(appPath, projectID, dockerSocket, hostSocket string) (
 		projectEnv = map[string]string{}
 	}
 
-	// Start with current process environment
 	env := map[string]string{}
 	for _, e := range os.Environ() {
 		idx := strings.Index(e, "=")
@@ -238,11 +237,9 @@ func GetComposeProcessEnv(appPath, projectID, dockerSocket, hostSocket string) (
 			env[e[:idx]] = e[idx+1:]
 		}
 	}
-	// Overlay project env
 	for k, v := range projectEnv {
 		env[k] = v
 	}
-	// Set Podman / Docker socket environment for compose providers
 	env["CONTAINER_HOST"] = "unix://" + dockerSocket
 	env["DOCKER_HOST"] = "unix://" + dockerSocket
 	env["PODMAN_HOST"] = "unix://" + dockerSocket
@@ -362,18 +359,15 @@ type TransformOptions struct {
 func ApplyTransforms(doc ComposeDoc, opts TransformOptions) error {
 	services := getServices(doc)
 
-	// Instance transforms
 	instanceID := getInstanceID(opts.ProjectID, opts.AppID)
 	if instanceID > 0 {
 		applyInstanceTransforms(doc, services, instanceID)
 	}
 
-	// Custom port mappings
 	if len(opts.CustomPortMappings) > 0 {
 		applyCustomPortMappings(services, opts.CustomPortMappings)
 	}
 
-	// Extra env
 	if len(opts.ExtraEnv) > 0 {
 		applyExtraEnv(services, opts.ExtraEnv)
 	}
@@ -705,7 +699,6 @@ func NormalizePortOverrides(raw interface{}) []PortOverride {
 	if raw == nil {
 		return nil
 	}
-	// Typed array path.
 	if list, ok := raw.([]interface{}); ok {
 		var out []PortOverride
 		for _, item := range list {
@@ -785,7 +778,6 @@ func applyExtraEnv(services map[string]interface{}, extraEnv map[string]interfac
 		if !ok {
 			continue
 		}
-		// Normalize environment to map
 		switch env := svc["environment"].(type) {
 		case []interface{}:
 			envMap := map[string]interface{}{}
@@ -870,7 +862,6 @@ type portEntry struct {
 
 func parseComposePortString(s string) *portEntry {
 	s = strings.Trim(s, `"'`)
-	// strip /protocol
 	proto := "tcp"
 	if idx := strings.LastIndex(s, "/"); idx >= 0 {
 		p := strings.ToLower(s[idx+1:])
@@ -966,7 +957,6 @@ func formatPortBinding(b PortBinding) string {
 	return strconv.Itoa(*b.HostPort) + ":" + strconv.Itoa(b.ContainerPort) + proto
 }
 
-// ParseComposePortInput parses a compose port string like "8080", "8080:8080", "53:53/udp".
 type ParsedPort struct {
 	HostPort        *int
 	ContainerPort   int
