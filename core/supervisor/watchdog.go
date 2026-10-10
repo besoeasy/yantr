@@ -201,8 +201,11 @@ func handleDieEvent(ctx context.Context, msg dockerevents.Message) {
 		return
 	}
 
+	// This suppresses only the watchdog's own restart. A container carrying
+	// `restart: unless-stopped` is restarted by Podman regardless of what
+	// happens here, so the flap window cannot actually be closed by this check.
 	if isFlapping(containerID) {
-		shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s) crashed repeatedly (>5 times in 60s). Suppressing restart to prevent flap loop.", shortID(containerID), projectID))
+		shared.Log("warn", fmt.Sprintf("[watchdog] container %s (project %s) crashed repeatedly (5+ times in 60s). Suppressing watchdog-initiated restart; its own restart policy still applies.", shortID(containerID), projectID))
 		return
 	}
 
