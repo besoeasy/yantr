@@ -37,3 +37,14 @@ export function formatUptime(ms) {
   return `${d}d ${h % 24}h`
 }
 
+// formatBitRate renders a bits-per-second rate. Network counters are read in
+// bits already (see core/system/hoststats.go rateBits), so this does not scale.
+export function formatBitRate(bitsPerSecond) {
+  const value = Number(bitsPerSecond)
+  if (!Number.isFinite(value) || value <= 0) return '0 bps'
+  const units = ['bps', 'kbps', 'Mbps', 'Gbps', 'Tbps']
+  const i = Math.min(Math.floor(Math.log(value) / Math.log(1000)), units.length - 1)
+  const scaled = value / Math.pow(1000, i)
+  return `${scaled >= 100 || i === 0 ? Math.round(scaled) : scaled.toFixed(1)} ${units[i]}`
+}
+

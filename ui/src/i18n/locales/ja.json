@@ -531,7 +531,17 @@
       "cores": "コア",
       "memory": "メモリ",
       "kernel": "カーネル {kernel}",
-      "podman": "Podman"
+      "podman": "Podman",
+      "cpu": "CPU",
+      "cpuHistory": "過去4分間のCPU使用率",
+      "load": "ロードアベレージ",
+      "uptime": "稼働時間",
+      "disk": "ディスク",
+      "free": "{size} 空き",
+      "network": "ネットワーク",
+      "rxTx": "受信 · 送信",
+      "temperature": "温度",
+      "unavailable": "利用不可"
     },
     "machineIdentity": {
       "title": "識別情報",

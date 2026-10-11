@@ -531,7 +531,17 @@
       "cores": "Núcleos",
       "memory": "Memoria",
       "kernel": "Kernel {kernel}",
-      "podman": "Podman"
+      "podman": "Podman",
+      "cpu": "CPU",
+      "cpuHistory": "Uso de CPU durante los últimos 4 minutos",
+      "load": "Carga",
+      "uptime": "Tiempo activo",
+      "disk": "Disco",
+      "free": "{size} libres",
+      "network": "Red",
+      "rxTx": "rx · tx",
+      "temperature": "Temperatura",
+      "unavailable": "No disponible"
     },
     "machineIdentity": {
       "title": "Identidad",

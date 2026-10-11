@@ -531,7 +531,17 @@
       "cores": "Ядра",
       "memory": "Память",
       "kernel": "Ядро {kernel}",
-      "podman": "Podman"
+      "podman": "Podman",
+      "cpu": "CPU",
+      "cpuHistory": "Загрузка CPU за последние 4 минуты",
+      "load": "Средняя нагрузка",
+      "uptime": "Время работы",
+      "disk": "Диск",
+      "free": "{size} свободно",
+      "network": "Сеть",
+      "rxTx": "приём · передача",
+      "temperature": "Температура",
+      "unavailable": "Недоступно"
     },
     "machineIdentity": {
       "title": "Идентификатор",

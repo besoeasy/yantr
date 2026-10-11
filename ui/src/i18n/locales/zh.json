@@ -531,7 +531,17 @@
       "cores": "核心",
       "memory": "内存",
       "kernel": "内核 {kernel}",
-      "podman": "Podman"
+      "podman": "Podman",
+      "cpu": "CPU",
+      "cpuHistory": "过去 4 分钟的 CPU 使用率",
+      "load": "平均负载",
+      "uptime": "运行时间",
+      "disk": "磁盘",
+      "free": "可用 {size}",
+      "network": "网络",
+      "rxTx": "接收 · 发送",
+      "temperature": "温度",
+      "unavailable": "不可用"
     },
     "machineIdentity": {
       "title": "身份信息",
