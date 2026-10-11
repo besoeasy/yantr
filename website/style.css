@@ -1,4 +1,4 @@
-/* Yantr website — vanilla CSS (no Tailwind). Shared by index.html, install.html, and apps/ */
+/* Yantr website — vanilla CSS (no Tailwind). Shared by index.html and apps/ */
 :root {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -291,12 +291,6 @@ code, pre { font-family: var(--font-mono); }
   color: var(--gray-700);
   box-shadow: var(--shadow-xs);
   transition: all 0.2s ease;
-}
-.hero-pill:hover {
-  border-color: var(--gray-400);
-  color: var(--black);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-sm);
 }
 .hero-pill .dot {
   width: 0.5rem;
