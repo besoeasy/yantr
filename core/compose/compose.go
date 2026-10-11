@@ -692,62 +692,34 @@ func applyCustomPortMappings(services map[string]interface{}, customPortMappings
 	}
 }
 
-// NormalizePortOverrides accepts both the new typed array
-// [{containerPort, protocol, hostPort}] and the legacy map
-// {"8080/tcp": 9090} and returns a validated override list.
+// NormalizePortOverrides accepts the typed array
+// [{containerPort, protocol, hostPort}] and returns a validated override list.
 func NormalizePortOverrides(raw interface{}) []PortOverride {
-	if raw == nil {
+	list, ok := raw.([]interface{})
+	if !ok {
 		return nil
 	}
-	if list, ok := raw.([]interface{}); ok {
-		var out []PortOverride
-		for _, item := range list {
-			m, ok := item.(map[string]interface{})
-			if !ok {
-				continue
-			}
-			cp := toPortInt(m["containerPort"])
-			hp := toPortInt(m["hostPort"])
-			if cp == 0 || hp == 0 {
-				continue
-			}
-			proto := strings.ToLower(strings.TrimSpace(fmt.Sprintf("%v", m["protocol"])))
-			if proto == "" {
-				proto = "tcp"
-			}
-			if proto != "tcp" && proto != "udp" {
-				continue
-			}
-			out = append(out, PortOverride{ContainerPort: cp, Protocol: proto, HostPort: hp})
+	var out []PortOverride
+	for _, item := range list {
+		m, ok := item.(map[string]interface{})
+		if !ok {
+			continue
 		}
-		return out
-	}
-	// Legacy map path: {"8080/tcp": 9090}.
-	if m, ok := raw.(map[string]interface{}); ok {
-		var out []PortOverride
-		for k, v := range m {
-			proto := "tcp"
-			portStr := strings.TrimSpace(k)
-			if idx := strings.LastIndex(portStr, "/"); idx >= 0 {
-				p := strings.ToLower(strings.TrimSpace(portStr[idx+1:]))
-				if p == "tcp" || p == "udp" {
-					proto = p
-					portStr = strings.TrimSpace(portStr[:idx])
-				}
-			}
-			cp, err := strconv.Atoi(portStr)
-			if err != nil || cp < 1 || cp > 65535 {
-				continue
-			}
-			hp := toPortInt(v)
-			if hp == 0 {
-				continue
-			}
-			out = append(out, PortOverride{ContainerPort: cp, Protocol: proto, HostPort: hp})
+		cp := toPortInt(m["containerPort"])
+		hp := toPortInt(m["hostPort"])
+		if cp == 0 || hp == 0 {
+			continue
 		}
-		return out
+		proto := strings.ToLower(strings.TrimSpace(fmt.Sprintf("%v", m["protocol"])))
+		if proto == "" {
+			proto = "tcp"
+		}
+		if proto != "tcp" && proto != "udp" {
+			continue
+		}
+		out = append(out, PortOverride{ContainerPort: cp, Protocol: proto, HostPort: hp})
 	}
-	return nil
+	return out
 }
 
 func toPortInt(v interface{}) int {
@@ -997,11 +969,6 @@ func ParseComposePortInput(input string) *ParsedPort {
 		return &ParsedPort{HostPort: &hostPort, ContainerPort: containerPort, Protocol: proto, HasExplicitHost: true}
 	}
 	return nil
-}
-
-// ParseDockerPortInput is an alias for ParseComposePortInput for backwards compatibility.
-func ParseDockerPortInput(input string) *ParsedPort {
-	return ParseComposePortInput(input)
 }
 
 // ApplyCurrentPublishedPorts syncs published port bindings from running containers into the compose doc.

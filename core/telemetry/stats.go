@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -180,85 +179,18 @@ func fetchAndAggregate() (*FleetStats, error) {
 	return Aggregate(events), nil
 }
 
-// ParseEvent accepts JSON or the legacy "event key=value" text.
+// ParseEvent accepts a JSON event payload.
 func ParseEvent(raw string) (Event, bool) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return Event{}, false
 	}
-	if strings.HasPrefix(raw, "{") {
-		var evt Event
-		if err := json.Unmarshal([]byte(raw), &evt); err != nil || evt.Event == "" {
-			return Event{}, false
-		}
-		evt.Country = strings.ToUpper(strings.TrimSpace(evt.Country))
-		return evt, true
-	}
-	return parseLegacy(raw)
-}
-
-var legacyKeys = []string{"country", "os", "arch", "cores", "ram_gb", "stacks", "v", "app", "updated", "node"}
-
-func parseLegacy(raw string) (Event, bool) {
-	eventName, rest, _ := strings.Cut(strings.TrimSpace(raw), " ")
-	if eventName == "" {
+	var evt Event
+	if err := json.Unmarshal([]byte(raw), &evt); err != nil || evt.Event == "" {
 		return Event{}, false
 	}
-	evt := Event{Event: eventName}
-
-	type span struct {
-		key      string
-		valStart int
-		start    int
-	}
-	var spans []span
-	for _, key := range legacyKeys {
-		token := key + "="
-		from := 0
-		for from < len(rest) {
-			i := strings.Index(rest[from:], token)
-			if i < 0 {
-				break
-			}
-			pos := from + i
-			if pos == 0 || rest[pos-1] == ' ' {
-				spans = append(spans, span{key: key, start: pos, valStart: pos + len(token)})
-			}
-			from = pos + len(token)
-		}
-	}
-	sort.Slice(spans, func(i, j int) bool { return spans[i].start < spans[j].start })
-	for i, s := range spans {
-		end := len(rest)
-		if i+1 < len(spans) {
-			end = spans[i+1].start
-		}
-		val := strings.TrimSpace(rest[s.valStart:end])
-		switch s.key {
-		case "country":
-			evt.Country = strings.ToUpper(val)
-		case "os":
-			evt.OS = val
-		case "arch":
-			evt.Arch = val
-		case "cores":
-			evt.Cores, _ = strconv.Atoi(val)
-		case "ram_gb":
-			n, _ := strconv.ParseInt(val, 10, 64)
-			evt.RAMGB = n
-		case "stacks":
-			evt.Stacks, _ = strconv.Atoi(val)
-		case "v":
-			evt.Version = val
-		case "app":
-			evt.App = val
-		case "updated":
-			evt.Updated, _ = strconv.Atoi(val)
-		case "node":
-			evt.Node = val
-		}
-	}
-	return evt, evt.Event != ""
+	evt.Country = strings.ToUpper(strings.TrimSpace(evt.Country))
+	return evt, true
 }
 
 // Aggregate reduces events into dashboard stats. Latest presence wins per node.

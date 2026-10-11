@@ -23,33 +23,14 @@ func TestHostSocketStripsUnixPrefix(t *testing.T) {
 	}
 }
 
-// Without the env var and with no Podman to ask (a hand-rolled `podman run`
-// on a host without the CLI), we fall back to the in-container mount point
-// rather than returning an empty path.
+// Without the env var there is no fallback discovery — guessing from inside
+// the container can only yield the in-container mount point, which does not
+// exist on a rootless host. The value is still returned rather than empty so
+// callers fail with a clear path, and the omission is reported on stderr.
 func TestHostSocketFallsBackToSocketPath(t *testing.T) {
 	t.Setenv("HOST_PODMAN_SOCKET", "")
-	t.Setenv("PATH", "") // makes the discovery exec fail deterministically
 	if got := HostSocket(); got != SocketPath {
 		t.Fatalf("HostSocket() = %q, want fallback %q", got, SocketPath)
-	}
-}
-
-// A failed discovery must not be cached: the package-level cache only ever
-// holds a successful lookup, so a later call retries instead of pinning a
-// wrong path for the process lifetime.
-func TestHostSocketDoesNotCacheFailedDiscovery(t *testing.T) {
-	t.Setenv("HOST_PODMAN_SOCKET", "")
-	t.Setenv("PATH", "")
-
-	if got := HostSocket(); got != SocketPath {
-		t.Fatalf("HostSocket() = %q, want %q", got, SocketPath)
-	}
-
-	hostSocketMu.Lock()
-	cached := discoveredSocket
-	hostSocketMu.Unlock()
-	if cached != "" {
-		t.Fatalf("discoveredSocket = %q, want it left empty after a failed lookup", cached)
 	}
 }
 

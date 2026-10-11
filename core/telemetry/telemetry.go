@@ -178,13 +178,10 @@ func TrackUpdatesForContainers(containerNames []string) {
 			if len(c.Names) > 0 {
 				name = strings.TrimPrefix(c.Names[0], "/")
 			}
-			// New identity: native compose project -> base app ID.
-			// Legacy fallback: yantr.app label on old containers.
-			appID := strings.TrimSpace(c.Labels["yantr.app"])
-			if appID == "" {
-				if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
-					appID = shared.GetBaseAppID(proj)
-				}
+			// Identity: native compose project -> base app ID.
+			appID := ""
+			if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
+				appID = shared.GetBaseAppID(proj)
 			}
 			if name != "" && wanted[name] && appID != "" {
 				appIDs[appID] = true
@@ -256,13 +253,10 @@ func listYantrApps() []string {
 	seen := map[string]bool{}
 	var apps []string
 	for _, c := range ctrs {
-		// New identity: native compose project -> base app ID.
-		// Legacy fallback: yantr.app label on old containers.
-		app := strings.TrimSpace(c.Labels["yantr.app"])
-		if app == "" {
-			if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
-				app = shared.GetBaseAppID(proj)
-			}
+		// Identity: native compose project -> base app ID.
+		app := ""
+		if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
+			app = shared.GetBaseAppID(proj)
 		}
 		if app == "" || seen[app] {
 			continue

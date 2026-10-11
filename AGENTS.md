@@ -54,12 +54,14 @@ An app may legitimately have zero access ports — a database or a file share ha
 Do not add `yantr.app` / `yantr.service.N` / `yantr.port.N` labels. Identity comes from the app folder + native compose project/service labels (`core/compose/compose.go:ComposeProjectLabel`). Runtime-only labels (`yantr.expireAt`, `yantr.temporary`, `yantr.system`) are injected by the backend.
 
 ## Critical rules
+Yantr is **rootless-only**, and that is a load-bearing constraint rather than a default. `website/install.sh` refuses to run as root, and no part of the stack supports rootful Podman. A root-mode install would attach Yantr to a rootful Podman service, so every app it deployed would hold real host root — exactly what the rootless architecture exists to prevent. Do not reintroduce a root code path, and do not assume `/run/podman/podman.sock` or `/var/run/podman/podman.sock` ever exists: the host socket is always the per-user `%t/podman/podman.sock`.
+
 1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling requires it).
 2. **`:latest` only** — never pin a version tag.
 3. **Logo** — local `logo.svg`, square, ≥256×256, auto-detected. No URLs; omit if none.
 4. **Auto port assignment only** (`"8080"`) — never explicit mapping (`"8080:8080"`), even if the app would normally want a fixed host port (e.g. VPN/peer protocol).
 5. **Prebuilt images only** — never `build:`; no Dockerfile/entrypoint.sh in the app folder.
-6. **Container socket** — host side must be `${HOST_PODMAN_SOCKET}`, container side stays `/var/run/docker.sock`. Any other `*.sock` host source aborts the deploy (`core/compose/compose.go:applyDockerSocketTransform`).
+6. **Container socket** — host side must be `${HOST_PODMAN_SOCKET}`, container side stays `/var/run/docker.sock`. Any other `*.sock` host source aborts the deploy (`core/compose/compose.go:applyDockerSocketTransform`). The placeholder is set by default: `install.sh` writes the host socket path into the Quadlet as `HOST_PODMAN_SOCKET` (as does `test.sh` and the documented hand-rolled installs), so it resolves on every deploy without the app doing anything. There is no runtime fallback discovery — if it is ever unset, `podman.HostSocket()` logs one warning to stderr and returns the in-container path, which does not exist on a rootless host, so apps mounting `/var/run/docker.sock` fail to deploy.
 7. **Mark every user-facing port `show: true`** — the key is optional and defaults to off, so a forgotten port is a work port nobody can click. See Port visibility.
 
 ## Minimal example

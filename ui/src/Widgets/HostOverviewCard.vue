@@ -37,7 +37,7 @@ function countUpTo(targetRef, targetVal, duration = 900) {
 
 // Counts come straight from the /api/system/info payload — no extra
 // /api/containers or /api/images round-trips needed for this card.
-const podmanInfo = computed(() => systemInfo.value?.podman ?? systemInfo.value?.docker ?? {});
+const podmanInfo = computed(() => systemInfo.value?.podman ?? {});
 const runningCount = computed(() => podmanInfo.value?.containers?.running ?? 0);
 const stoppedCount = computed(() => podmanInfo.value?.containers?.stopped ?? 0);
 const imagesCount = computed(() => podmanInfo.value?.images ?? 0);

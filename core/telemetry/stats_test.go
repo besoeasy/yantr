@@ -19,14 +19,6 @@ func TestParseEventJSON(t *testing.T) {
 	}
 }
 
-func TestParseEventLegacy(t *testing.T) {
-	raw := `presence v=20260730 country=CN os=Debian 12 (bookworm) arch=x86_64 cores=2 ram_gb=7 stacks=1`
-	evt, ok := ParseEvent(raw)
-	if !ok || evt.Country != "CN" || evt.OS != "Debian 12 (bookworm)" || evt.RAMGB != 7 || evt.Cores != 2 {
-		t.Fatalf("legacy %+v ok=%v", evt, ok)
-	}
-}
-
 func TestAggregateLatestPresenceWins(t *testing.T) {
 	events := []Event{
 		{Event: "presence", Node: "n1", TS: 1, Country: "US", OS: "Debian", RAMGB: 8, Apps: []string{"jellyfin"}},
@@ -54,14 +46,5 @@ func TestAggregateLatestPresenceWins(t *testing.T) {
 	body, _ := json.Marshal(stats)
 	if len(body) == 0 {
 		t.Fatal("empty json")
-	}
-}
-
-func TestAggregateFingerprintsLegacyNodes(t *testing.T) {
-	a, _ := ParseEvent(`presence country=US os=QTS 5.2.9 arch=x86_64 cores=4 ram_gb=15 stacks=0 v=20260730`)
-	b, _ := ParseEvent(`presence country=US os=QTS 5.2.9 arch=x86_64 cores=4 ram_gb=15 stacks=0 v=20260730`)
-	stats := Aggregate([]Event{a, b})
-	if stats.Nodes != 1 {
-		t.Fatalf("expected 1 fingerprinted node, got %d", stats.Nodes)
 	}
 }

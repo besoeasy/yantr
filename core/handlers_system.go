@@ -200,7 +200,6 @@ func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
 			"memory":  map[string]interface{}{"total": info.MemTotal},
 			"storage": map[string]interface{}{"driver": info.Driver},
 			"podman":  podmanMap,
-			"docker":  podmanMap, // preserved for UI backward-compatibility
 			"os": map[string]interface{}{
 				"type": info.OSType, "name": info.OperatingSystem,
 				"arch": info.Architecture, "kernel": info.KernelVersion,

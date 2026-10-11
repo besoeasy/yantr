@@ -26,29 +26,6 @@ func TestNormalizePortOverridesTyped(t *testing.T) {
 	}
 }
 
-func TestNormalizePortOverridesLegacyMap(t *testing.T) {
-	raw := map[string]interface{}{
-		"8080/tcp":  float64(9090),
-		"51820/UDP": "51821",
-		"bad":       1,
-		"0/tcp":     1,
-	}
-	got := NormalizePortOverrides(raw)
-	if len(got) != 2 {
-		t.Fatalf("expected 2 overrides, got %+v", got)
-	}
-	byKey := map[string]int{}
-	for _, o := range got {
-		byKey[o.Protocol] = o.HostPort
-		if o.ContainerPort != 8080 && o.ContainerPort != 51820 {
-			t.Fatalf("unexpected override: %+v", o)
-		}
-	}
-	if byKey["tcp"] != 9090 || byKey["udp"] != 51821 {
-		t.Fatalf("unexpected overrides: %+v", got)
-	}
-}
-
 func TestApplyCustomPortMappingsTyped(t *testing.T) {
 	doc, err := Parse(`
 services:
