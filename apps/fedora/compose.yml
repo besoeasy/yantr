@@ -1,6 +1,6 @@
 x-yantr:
   name: "fedora"
-  tags: [linux, fedora, modern, podman, self-hosted]
+  tags: [linux, fedora, devbox]
   short_description: "Modern Fedora Linux container for general-purpose workloads."
   description: >
     A modern Fedora Linux container for development, experimentation, and
