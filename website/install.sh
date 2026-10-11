@@ -146,17 +146,37 @@ if [ "$(uname -s)" != "Linux" ]; then
   exit 1
 fi
 
-SUDO=""
-if [ "$(id -u)" -ne 0 ]; then
-  if have sudo; then
-    SUDO="sudo"
+# Yantr is rootless-only by design. Installing as root attaches Yantr to a
+# rootful Podman service, so every app it deploys would hold real host root —
+# the exact outcome the rootless architecture exists to prevent. Refuse rather
+# than silently install the weaker setup.
+if [ "$(id -u)" -eq 0 ]; then
+  log_error "Yantr must run as your normal user, not root."
+  echo "        Root mode gives every deployed app full host root, which"
+  echo "        contradicts the rootless isolation Yantr is built on."
+  if [ "$MODE" = "uninstall" ]; then
+    echo -e "        Re-run as the user who installed it:  ${BOLD}${CYAN}sudo -u \$USER bash install.sh --uninstall${NC}"
+  else
+    echo -e "        Re-run without sudo:  ${BOLD}${CYAN}sudo -u \$USER bash install.sh${NC}"
   fi
+  exit 1
 fi
 
-IS_ROOT=0
-if [ "$(id -u)" -eq 0 ]; then
-  IS_ROOT=1
+# sudo is still needed for host-level setup: installing Podman, linking the
+# seccomp profile, allocating subuid/subgid ranges, and enabling lingering.
+SUDO=""
+if have sudo; then
+  SUDO="sudo"
 fi
+
+# The systemd user bus is often unset over SSH. Resolve the session once here —
+# both the install and the uninstall path need these.
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
+
+QUADLET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd"
+QUADLET_FILE="$QUADLET_DIR/yantr.container"
+SYSTEMCTL="systemctl --user"
 
 # Environment preflight — modern installers show what they detected up front.
 DISTRO="$(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"' || true)"
@@ -164,11 +184,7 @@ if [ -z "$DISTRO" ]; then
   DISTRO="Unknown Linux"
 fi
 ARCH="$(uname -m)"
-if [ "$IS_ROOT" -eq 1 ]; then
-  RUN_MODE="root"
-else
-  RUN_MODE="rootless (user: ${USER:-unknown})"
-fi
+RUN_MODE="rootless (user: ${USER:-unknown})"
 if have podman; then
   PODMAN_INFO="$(podman --version 2>/dev/null || echo "podman: unknown version")"
 else
@@ -180,16 +196,6 @@ log_debug "verbose=$VERBOSE purge=$PURGE use_color=$USE_COLOR ascii=$ASCII"
 
 if [ "$MODE" = "uninstall" ]; then
   STEP_TOTAL=3
-
-  if [ "$IS_ROOT" -eq 1 ]; then
-    QUADLET_FILE="/etc/containers/systemd/yantr.container"
-    SYSTEMCTL="systemctl"
-  else
-    export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-    export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
-    QUADLET_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd/yantr.container"
-    SYSTEMCTL="systemctl --user"
-  fi
   log_debug "quadlet file: $QUADLET_FILE"
 
   # 1/3 Stop and disable service, remove container if still exists
@@ -208,11 +214,7 @@ if [ "$MODE" = "uninstall" ]; then
   log_step "Removing Quadlet specification..."
   if [ -f "$QUADLET_FILE" ]; then
     log_info "Removing: ${QUADLET_FILE}"
-    if [ "$IS_ROOT" -eq 1 ]; then
-      $SUDO rm -f "$QUADLET_FILE"
-    else
-      rm -f "$QUADLET_FILE"
-    fi
+    rm -f "$QUADLET_FILE"
   else
     log_info "No Quadlet file found (already removed)."
   fi
@@ -274,9 +276,7 @@ fi
 # "opening seccomp profile failed". Link the system path when it's missing.
 if [ ! -f /etc/containers/seccomp.json ] && [ -f /usr/share/containers/seccomp.json ]; then
   log_info "Linking missing /etc/containers/seccomp.json for remote builds..."
-  if [ "$IS_ROOT" -eq 1 ]; then
-    mkdir -p /etc/containers && ln -sf /usr/share/containers/seccomp.json /etc/containers/seccomp.json || true
-  elif [ -n "$SUDO" ]; then
+  if [ -n "$SUDO" ]; then
     $SUDO mkdir -p /etc/containers && $SUDO ln -sf /usr/share/containers/seccomp.json /etc/containers/seccomp.json || true
   else
     log_warn "Cannot create /etc/containers/seccomp.json (no sudo). Remote app builds may fail;"
@@ -286,80 +286,61 @@ fi
 step_ok "Podman ready."
 
 # 3. Configure systemd & socket
-if [ "$IS_ROOT" -eq 1 ]; then
-  log_step "Configuring Podman system service (root mode)..."
-  systemctl enable --now podman.socket
-  QUADLET_DIR="/etc/containers/systemd"
-  $SUDO mkdir -p "$QUADLET_DIR"
-  QUADLET_FILE="$QUADLET_DIR/yantr.container"
-  SYSTEMCTL="systemctl"
-  SOCKET_BIND="/run/podman/podman.sock:/run/podman/podman.sock"
-  WANTED_BY="multi-user.target"
-else
-  log_step "Configuring Rootless Podman & systemd user service..."
+log_step "Configuring Rootless Podman & systemd user service..."
 
-  # Ensure user runtime dir is set for systemd user bus (especially over SSH)
-  export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-  export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
-
-  # Check /etc/subuid and /etc/subgid allocations
-  if [ -f /etc/subuid ] && ! grep -q "^${USER}:" /etc/subuid 2>/dev/null; then
-    USERMOD="usermod"
-    if ! have usermod && [ -x /usr/sbin/usermod ]; then
-      USERMOD="/usr/sbin/usermod"
-    fi
-    if [ -n "$SUDO" ]; then
-      log_info "Configuring subuid and subgid ranges for ${USER}..."
-      $SUDO "$USERMOD" --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER" 2>/dev/null || true
-    else
-      log_warn "User '${USER}' is missing subuid/subgid allocations in /etc/subuid."
-      log_warn "If rootless Podman fails, run: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${USER}"
-    fi
+# Check /etc/subuid and /etc/subgid allocations
+if [ -f /etc/subuid ] && ! grep -q "^${USER}:" /etc/subuid 2>/dev/null; then
+  USERMOD="usermod"
+  if ! have usermod && [ -x /usr/sbin/usermod ]; then
+    USERMOD="/usr/sbin/usermod"
   fi
-
-  # Enable user lingering so services persist after logout and auto-start on boot
-  if have loginctl; then
-    IS_LINGERING="no"
-    if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
-      IS_LINGERING="yes"
-    fi
-
-    if [ "$IS_LINGERING" = "yes" ]; then
-      log_info "User lingering is already enabled."
-    else
-      log_info "Enabling user lingering with loginctl..."
-      # 1. Try non-interactive unprivileged loginctl without polkit tty agent
-      if loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1; then
-        :
-      # 2. Try passwordless sudo if available
-      elif [ -n "$SUDO" ] && sudo -n true 2>/dev/null; then
-        $SUDO loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1 || true
-      # 3. If running interactively with sudo available, prompt cleanly with context
-      elif [ -n "$SUDO" ] && [ -c /dev/tty ]; then
-        log_info "Enabling user lingering requires sudo privileges (keeps Yantr running after logout):"
-        $SUDO loginctl --no-ask-password enable-linger "$USER" </dev/tty >/dev/null 2>&1 || true
-      fi
-
-      if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
-        log_info "User lingering enabled."
-      else
-        log_warn "Could not enable user lingering automatically."
-        log_warn "Containers might stop when you log out. To keep Yantr running 24/7, run: sudo loginctl enable-linger $USER"
-      fi
-    fi
+  if [ -n "$SUDO" ]; then
+    log_info "Configuring subuid and subgid ranges for ${USER}..."
+    $SUDO "$USERMOD" --add-subuids 100000-165535 --add-subgids 100000-165535 "$USER" 2>/dev/null || true
+  else
+    log_warn "User '${USER}' is missing subuid/subgid allocations in /etc/subuid."
+    log_warn "If rootless Podman fails, run: sudo usermod --add-subuids 100000-165535 --add-subgids 100000-165535 ${USER}"
   fi
-
-  # Enable and start rootless podman.socket
-  log_info "Enabling user Podman socket..."
-  systemctl --user --no-ask-password enable --now podman.socket
-
-  QUADLET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd"
-  mkdir -p "$QUADLET_DIR"
-  QUADLET_FILE="$QUADLET_DIR/yantr.container"
-  SYSTEMCTL="systemctl --user"
-  SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock"
-  WANTED_BY="default.target"
 fi
+
+# Enable user lingering so services persist after logout and auto-start on boot
+if have loginctl; then
+  IS_LINGERING="no"
+  if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
+    IS_LINGERING="yes"
+  fi
+
+  if [ "$IS_LINGERING" = "yes" ]; then
+    log_info "User lingering is already enabled."
+  else
+    log_info "Enabling user lingering with loginctl..."
+    # 1. Try non-interactive unprivileged loginctl without polkit tty agent
+    if loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1; then
+      :
+    # 2. Try passwordless sudo if available
+    elif [ -n "$SUDO" ] && sudo -n true 2>/dev/null; then
+      $SUDO loginctl --no-ask-password enable-linger "$USER" >/dev/null 2>&1 || true
+    # 3. If running interactively with sudo available, prompt cleanly with context
+    elif [ -n "$SUDO" ] && [ -c /dev/tty ]; then
+      log_info "Enabling user lingering requires sudo privileges (keeps Yantr running after logout):"
+      $SUDO loginctl --no-ask-password enable-linger "$USER" </dev/tty >/dev/null 2>&1 || true
+    fi
+
+    if [ -f "/var/lib/systemd/linger/$USER" ] || [ "$(loginctl show-user "$USER" --property=Linger 2>/dev/null)" = "Linger=yes" ]; then
+      log_info "User lingering enabled."
+    else
+      log_warn "Could not enable user lingering automatically."
+      log_warn "Containers might stop when you log out. To keep Yantr running 24/7, run: sudo loginctl enable-linger $USER"
+    fi
+  fi
+fi
+
+# Enable and start rootless podman.socket
+log_info "Enabling user Podman socket..."
+systemctl --user --no-ask-password enable --now podman.socket
+
+mkdir -p "$QUADLET_DIR"
+SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock"
 log_debug "quadlet file: $QUADLET_FILE"
 log_debug "socket bind: $SOCKET_BIND"
 step_ok "System service configured."
@@ -387,13 +368,9 @@ AutoUpdate=registry
 Restart=always
 
 [Install]
-WantedBy=${WANTED_BY}"
+WantedBy=default.target"
 
-if [ "$IS_ROOT" -eq 1 ]; then
-  echo "$QUADLET_CONTENT" | $SUDO tee "$QUADLET_FILE" > /dev/null
-else
-  echo "$QUADLET_CONTENT" > "$QUADLET_FILE"
-fi
+echo "$QUADLET_CONTENT" > "$QUADLET_FILE"
 step_ok "Quadlet specification written."
 
 # 5. Reload systemd and start Yantr service
@@ -436,7 +413,7 @@ else
 fi
 echo -e "\n  ${BOLD}Next steps:${NC}"
 echo -e "  ${BULLET} Status:    ${CYAN}${SYSTEMCTL} status yantr${NC}"
-echo -e "  ${BULLET} Logs:      ${CYAN}journalctl $([ "$IS_ROOT" -eq 0 ] && echo "--user ") -u yantr -f${NC}"
+echo -e "  ${BULLET} Logs:      ${CYAN}journalctl --user -u yantr -f${NC}"
 echo -e "  ${BULLET} Restart:   ${CYAN}${SYSTEMCTL} restart yantr${NC}"
 echo -e "  ${BULLET} Update:    ${CYAN}podman auto-update${NC}"
 echo -e "  ${BULLET} Uninstall: ${CYAN}curl -fsSL https://yantr.org/install.sh | bash -s -- --uninstall${NC}"

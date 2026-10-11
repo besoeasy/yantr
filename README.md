@@ -104,6 +104,8 @@ One-line installation on Linux (automatically configures rootless Podman and sys
 curl -fsSL https://yantr.org/install.sh | bash
 ```
 
+> **Run as your normal user — never with `sudo`.** Yantr is rootless-only by design. Installed as root it would attach to a rootful Podman service, so every app it deploys would hold full host root — exactly what the architecture above exists to prevent. The installer refuses to run as root.
+
 Or run manually with rootless Podman:
 
 ```bash
