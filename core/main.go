@@ -394,6 +394,13 @@ func browseProxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	target, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", p))
 	proxy := httputil.NewSingleHostReverseProxy(target)
+	// Start now waits for readiness, so a proxy failure means the browser
+	// died between lookup and request — tell the client to retry/start again
+	// instead of surfacing an empty 502.
+	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, err error) {
+		shared.Log("warn", fmt.Sprintf("[browser] proxy to %q failed: %v", volumeName, err))
+		http.Error(w, fmt.Sprintf("Volume browser for %q is starting or unreachable. Retry in a few seconds, or restart it from the Volumes page.", volumeName), http.StatusBadGateway)
+	}
 	proxy.ServeHTTP(w, r)
 }
 
@@ -544,8 +551,6 @@ func main() {
 			sweepExpiredContainers()
 		}
 	}()
-
-	go browserRegistry.StopAll()
 
 	shared.Log("info", strings.Repeat("=", 50))
 	shared.Log("info", "🚀 Yantr Core Server Started (Go)")
