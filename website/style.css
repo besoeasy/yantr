@@ -459,7 +459,9 @@ code, pre { font-family: var(--font-mono); }
 .marquee-section {
   overflow: clip;
   contain: paint;
-  max-width: 100%;
+  /* No max-width here: .full-bleed sets width:100vw to break out of the
+     72rem container, and a max-width:100% on this element silently clamps that
+     back to the container and the row never reaches the screen edge. */
   padding: 1rem 0 3rem;
   background-image: radial-gradient(circle, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
@@ -470,8 +472,10 @@ code, pre { font-family: var(--font-mono); }
   padding: 0.5rem 0;
   width: 100%;
   max-width: 100%;
-  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  /* Deliberately no edge mask: the row is a ticker and runs the full width
+     of the viewport, so pills are cut hard at both edges instead of fading
+     out over 8% of the screen on each side. The loop stays seamless because
+     the track holds the pill set twice back to back. */
 }
 .marquee-center {
   margin-top: 2rem;
