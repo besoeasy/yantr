@@ -1104,13 +1104,12 @@
           const minDim = Math.min(window.innerWidth, window.innerHeight);
           const scale = Math.max(0.45, Math.min(1, minDim / 700));
 
-          // Two rings, not four: the inner pair orbited straight through the
-          // title and description, and the radial fade over the text was
-          // mostly there to hide that collision. Keeping the outer two leaves
-          // the copy legible and drops 16 chips off the page.
+          // A single ring. Every ring added since the first started crossing the
+          // title or the description, and the radial fade over the copy is
+          // only there to soften that overlap. One wide ring keeps the hero
+          // feeling alive without anything sitting on the words.
           const rings = [
-            { r: Math.round(390 * scale), count: 13, dur: 88, dir: "CW" },
-            { r: Math.round(520 * scale), count: 13, dur: 115, dir: "CCW" },
+            { r: Math.round(460 * scale), count: 16, dur: 100, dir: "CW" },
           ];
 
           const totalNeeded = rings.reduce((s, ring) => s + ring.count, 0);
