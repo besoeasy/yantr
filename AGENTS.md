@@ -53,8 +53,17 @@ An app may legitimately have zero access ports — a database or a file share ha
 ## Service labels
 Do not add `yantr.app` / `yantr.service.N` / `yantr.port.N` labels. Identity comes from the app folder + native compose project/service labels (`core/compose/compose.go:ComposeProjectLabel`). Runtime-only labels (`yantr.expireAt`, `yantr.temporary`, `yantr.system`) are injected by the backend.
 
+## Installer
+`install.sh` lives at the repo root and is **not** published on the website. The documented one-liner fetches it from jsDelivr, which resolves `@latest` to the newest tagged release:
+
+```
+curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
+```
+
+That is deliberate: users get a released installer, never an unreviewed commit off `main`. Keep the URL as the `INSTALL_URL` variable at the top of the script and reference it everywhere the script prints its own usage (help text, the uninstall hint) — do not hardcode a second copy. If you add a self-referencing URL, use a tag (`@v1.2.3`) rather than a branch (`@main`), or the installer stops being release-pinned.
+
 ## Critical rules
-Yantr is **rootless-only**, and that is a load-bearing constraint rather than a default. `website/install.sh` refuses to run as root, and no part of the stack supports rootful Podman. A root-mode install would attach Yantr to a rootful Podman service, so every app it deployed would hold real host root — exactly what the rootless architecture exists to prevent. Do not reintroduce a root code path, and do not assume `/run/podman/podman.sock` or `/var/run/podman/podman.sock` ever exists: the host socket is always the per-user `%t/podman/podman.sock`.
+Yantr is **rootless-only**, and that is a load-bearing constraint rather than a default. `install.sh` refuses to run as root, and no part of the stack supports rootful Podman. A root-mode install would attach Yantr to a rootful Podman service, so every app it deployed would hold real host root — exactly what the rootless architecture exists to prevent. Do not reintroduce a root code path, and do not assume `/run/podman/podman.sock` or `/var/run/podman/podman.sock` ever exists: the host socket is always the per-user `%t/podman/podman.sock`.
 
 1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling requires it).
 2. **`:latest` only** — never pin a version tag.

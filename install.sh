@@ -11,6 +11,11 @@ set -euo pipefail
 
 SCRIPT_START=$SECONDS
 
+# Canonical distribution URL. jsDelivr resolves `@latest` to the newest tagged
+# GitHub release, so this always serves a released installer instead of whatever
+# happens to sit on the default branch.
+INSTALL_URL="https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh"
+
 # --------------------------------------------------------------------------
 # CLI options (parsed before anything else so --help/--no-color apply early)
 # --------------------------------------------------------------------------
@@ -106,8 +111,8 @@ if [ "$MODE" = "help" ]; then
   echo -e "${DIM}Native Linux · Rootless Podman · Quadlet systemd${NC}"
   echo ""
   echo -e "${BOLD}Usage:${NC}"
-  echo -e "  ${CYAN}curl -fsSL https://yantr.org/install.sh | bash${NC}                  # Install / update / repair Yantr"
-  echo -e "  ${CYAN}curl -fsSL https://yantr.org/install.sh | bash -s -- --uninstall${NC} # Uninstall Yantr service"
+  echo -e "  ${CYAN}curl -fsSL ${INSTALL_URL} | bash${NC}                  # Install / update / repair Yantr"
+  echo -e "  ${CYAN}curl -fsSL ${INSTALL_URL} | bash -s -- --uninstall${NC} # Uninstall Yantr service"
   echo ""
   echo -e "${BOLD}Options:${NC}"
   echo "  --uninstall, -u   Uninstall Yantr systemd Quadlet service"
@@ -125,6 +130,10 @@ if [ "$MODE" = "help" ]; then
   echo -e "${BOLD}Examples:${NC}"
   echo "  bash install.sh --verbose"
   echo "  bash install.sh --uninstall --purge"
+  echo "  curl -fsSL ${INSTALL_URL} -o install.sh && bash install.sh --verbose"
+  echo ""
+  echo -e "${DIM}  Pin an exact release by replacing @latest with a tag, e.g."
+  echo -e "  https://cdn.jsdelivr.net/gh/besoeasy/yantr@v1.0.0/install.sh${NC}"
   echo ""
   exit 0
 fi
@@ -424,6 +433,6 @@ echo -e "  ${BULLET} Status:    ${CYAN}${SYSTEMCTL} status yantr${NC}"
 echo -e "  ${BULLET} Logs:      ${CYAN}journalctl --user -u yantr -f${NC}"
 echo -e "  ${BULLET} Restart:   ${CYAN}${SYSTEMCTL} restart yantr${NC}"
 echo -e "  ${BULLET} Update:    ${CYAN}podman auto-update${NC}"
-echo -e "  ${BULLET} Uninstall: ${CYAN}curl -fsSL https://yantr.org/install.sh | bash -s -- --uninstall${NC}"
+echo -e "  ${BULLET} Uninstall: ${CYAN}curl -fsSL ${INSTALL_URL} | bash -s -- --uninstall${NC}"
 echo -e "\n  ${DIM}Tip: re-run this installer anytime to update or repair the setup.${NC}"
 echo ""

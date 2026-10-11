@@ -36,7 +36,7 @@ func resolveSocketPath() string {
 	}
 
 	// Fallback: the path install.sh bind-mounts the socket to inside the
-	// container (website/install.sh).
+	// container (install.sh).
 	return "/run/podman/podman.sock"
 }
 

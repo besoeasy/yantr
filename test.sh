@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Rebuild and run Yantr locally.
 #
-# Mirrors what website/install.sh generates, so a dev run exercises the same
+# Mirrors what install.sh generates, so a dev run exercises the same
 # socket contract as production: the host path is passed in explicitly via
 # HOST_PODMAN_SOCKET instead of being rediscovered at runtime.
 set -euo pipefail

@@ -101,8 +101,10 @@ Yantr automatically detects and routes Docker socket requests to Podman's unpriv
 One-line installation on Linux (automatically configures rootless Podman and systemd Quadlet):
 
 ```bash
-curl -fsSL https://yantr.org/install.sh | bash
+curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
 ```
+
+The script is also in the repo root as [`install.sh`](install.sh). The one-liner above resolves `@latest` to the newest tagged release via jsDelivr, so users always get a released installer — never whatever is sitting on `main`.
 
 > **Run as your normal user — never with `sudo`.** Yantr is rootless-only by design. Installed as root it would attach to a rootful Podman service, so every app it deploys would hold full host root — exactly what the architecture above exists to prevent. The installer refuses to run as root.
 
