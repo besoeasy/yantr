@@ -3,7 +3,7 @@ name: ghcr
 # Manual release: Actions tab -> Publish Container Image -> Run workflow.
 # Optionally pass a custom tag (default: YYYY.MM.DD, bare CalVer like airlock).
 # The same tag versions the container image and the GitHub release.
-# Retention: only the newest 60 releases are kept, oldest pruned first.
+# Retention: only the newest 100 releases are kept, oldest pruned first.
 
 on:
   workflow_dispatch:
@@ -119,7 +119,7 @@ jobs:
       - name: Prune old releases (keep newest $KEEP)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KEEP: 60
+          KEEP: 100
         run: |
           set -e
           [[ "$KEEP" =~ ^[0-9]+$ ]] || { echo "Invalid KEEP: $KEEP" >&2; exit 1; }
