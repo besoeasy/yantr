@@ -340,9 +340,16 @@ log_info "Enabling user Podman socket..."
 systemctl --user --no-ask-password enable --now podman.socket
 
 mkdir -p "$QUADLET_DIR"
-SOCKET_BIND="%t/podman/podman.sock:/run/podman/podman.sock"
+
+# One host socket path, used for both the bind into Yantr and the
+# HOST_PODMAN_SOCKET the app hands to child containers that mount
+# /var/run/docker.sock. Deriving both from one variable keeps them from
+# drifting apart.
+HOST_SOCK="${XDG_RUNTIME_DIR}/podman/podman.sock"
+SOCKET_BIND="${HOST_SOCK}:/run/podman/podman.sock"
 log_debug "quadlet file: $QUADLET_FILE"
 log_debug "socket bind: $SOCKET_BIND"
+log_debug "host socket: $HOST_SOCK"
 step_ok "System service configured."
 
 # 4. Write Quadlet container specification
@@ -360,6 +367,7 @@ ContainerName=yantr
 Network=host
 SecurityLabelDisable=true
 Environment=CONTAINER_HOST=unix:///run/podman/podman.sock
+Environment=HOST_PODMAN_SOCKET=${HOST_SOCK}
 Volume=yantr_data:/data:z
 Volume=${SOCKET_BIND}
 AutoUpdate=registry

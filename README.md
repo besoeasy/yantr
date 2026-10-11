@@ -113,10 +113,13 @@ podman run -d \
   --name yantr \
   --network host \
   --security-opt label=disable \
+  -e HOST_PODMAN_SOCKET=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock \
   -v ${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/podman/podman.sock:/run/podman/podman.sock \
   -v yantr_data:/data:z \
   ghcr.io/besoeasy/yantr:latest
 ```
+
+`HOST_PODMAN_SOCKET` tells Yantr where the socket lives **on the host**, which is the path it hands to apps mounting `/var/run/docker.sock` (Portainer, Homarr, Glances). Without it Yantr has to ask the Podman API at runtime, and apps that need the socket can fail to deploy.
 
 Open **http://localhost:5252** and create your operator account on first visit.
 
