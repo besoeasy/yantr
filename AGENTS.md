@@ -62,6 +62,8 @@ curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
 
 That is deliberate: users get a released installer, never an unreviewed commit off `main`. Keep the URL as the `INSTALL_URL` variable at the top of the script and reference it everywhere the script prints its own usage (help text, the uninstall hint) — do not hardcode a second copy. If you add a self-referencing URL, use a tag (`@v1.2.3`) rather than a branch (`@main`), or the installer stops being release-pinned.
 
+The generated Quadlet also mounts `/:/host:ro` and `/sys:/sys:ro` for the host metrics dashboard. Those are Yantr's *own* binds and do not relax rule 1 — apps still use named volumes only. They are host-path binds, which normally need `:z` relabeling and would break on Fedora without it; they work only because the same Quadlet sets `SecurityLabelDisable=true`. Treat the two lines as a pair.
+
 ## Critical rules
 Yantr is **rootless-only**, and that is a load-bearing constraint rather than a default. `install.sh` refuses to run as root, and no part of the stack supports rootful Podman. A root-mode install would attach Yantr to a rootful Podman service, so every app it deployed would hold real host root — exactly what the rootless architecture exists to prevent. Do not reintroduce a root code path, and do not assume `/run/podman/podman.sock` or `/var/run/podman/podman.sock` ever exists: the host socket is always the per-user `%t/podman/podman.sock`.
 

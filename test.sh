@@ -3,7 +3,8 @@
 #
 # Mirrors what install.sh generates, so a dev run exercises the same
 # socket contract as production: the host path is passed in explicitly via
-# HOST_PODMAN_SOCKET instead of being rediscovered at runtime.
+# HOST_PODMAN_SOCKET instead of being rediscovered at runtime. The two :ro
+# binds are the host metrics mounts, same as the generated Quadlet.
 set -euo pipefail
 
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
@@ -22,4 +23,6 @@ podman run --rm \
   -e CONTAINER_HOST=unix:///run/podman/podman.sock \
   -e HOST_PODMAN_SOCKET="$HOST_SOCK" \
   -v "$HOST_SOCK:/run/podman/podman.sock" \
+  -v /:/host:ro \
+  -v /sys:/sys:ro \
   yantr:dev

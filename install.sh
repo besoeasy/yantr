@@ -365,6 +365,19 @@ step_ok "System service configured."
 log_step "Writing Quadlet specification..."
 log_info "Target: ${QUADLET_FILE}"
 
+# Two read-only host binds back the host metrics on the dashboard (disk usage
+# and hardware temperatures). Everything else — CPU, memory, load, uptime, disk
+# I/O and per-interface network — comes from /proc and needs no mount, because
+# those files are not PID- or network-namespaced and Network=host already
+# shares the host's interfaces.
+#
+# These are host-path binds, which is exactly the case :z relabeling exists
+# for, and they work unlabelled only because SecurityLabelDisable=true above
+# runs Yantr without SELinux confinement. If you ever remove that line, these
+# two mounts break on Fedora/RHEL — see AGENTS.md.
+#
+# Both are strictly :ro and are not removable by the container, so this adds
+# read access to nothing Yantr could not already infer from the socket it holds.
 QUADLET_CONTENT="[Unit]
 Description=Yantr
 After=network-online.target
@@ -379,6 +392,8 @@ Environment=CONTAINER_HOST=unix:///run/podman/podman.sock
 Environment=HOST_PODMAN_SOCKET=${HOST_SOCK}
 Volume=yantr_data:/data:z
 Volume=${SOCKET_BIND}
+Volume=/:/host:ro
+Volume=/sys:/sys:ro
 AutoUpdate=registry
 
 [Service]
