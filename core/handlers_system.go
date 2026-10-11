@@ -209,6 +209,13 @@ func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func handleSystemMetrics(w http.ResponseWriter, r *http.Request) {
+	jsonResp(w, 200, map[string]interface{}{
+		"success": true,
+		"metrics": system.HostSnapshot(),
+	})
+}
+
 func handleSystemPrune(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		Images  bool `json:"images"`

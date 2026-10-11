@@ -1,0 +1,612 @@
+// Package system — host metrics collected natively from procfs.
+//
+// Yantr runs with --network host and without --pid host, which means the files
+// this file reads are the HOST's, not the container's: /proc/stat,
+// /proc/meminfo, /proc/loadavg, /proc/uptime, /proc/diskstats and /proc/net/dev
+// are not PID- or network-namespaced, and the network namespace is the host's.
+// So CPU, memory, load, uptime, disk I/O and per-interface traffic are accurate
+// with no bind mount at all.
+//
+// Two things are not: filesystem usage needs the real filesystems, and hardware
+// sensors live in /sys. Those need the read-only binds the installer adds
+// (`Volume=/:/host:ro`, `Volume=/sys:/sys:ro`). When they are absent the
+// collector reports those sections under Degraded rather than failing — an
+// upgraded host that has not re-run the installer keeps working.
+package system
+
+import (
+	"bufio"
+	"os"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
+	"sync"
+	"syscall"
+	"time"
+)
+
+// ---------------------------------------------------------------- data shapes
+
+// HostMetrics is the whole payload behind GET /api/system/metrics. Pointer
+// fields and the Ready flags exist so "unknown" is never rendered as a real
+// zero: a tile bound for a missing /host bind must show as unavailable, not as
+// a healthy-looking 0%.
+type HostMetrics struct {
+	CPU       CPUStats    `json:"cpu"`
+	Mem       MemStats    `json:"mem"`
+	Load      LoadStats   `json:"load"`
+	UptimeSec float64     `json:"uptimeSec"`
+	Net       []NetStats  `json:"net"`
+	Disk      []DiskStats `json:"disk"`
+	TempC     *float64    `json:"tempC"`
+	Degraded  []string    `json:"degraded"`
+}
+
+type CPUStats struct {
+	// Ready is false on the very first sample: a CPU percentage is a rate, so
+	// it needs two readings to exist. The UI holds at "—" rather than drawing
+	// a flat zero line that reads like a dead host.
+	Ready    bool      `json:"ready"`
+	TotalPct float64   `json:"totalPct"`
+	Cores    []float64 `json:"cores"`
+	// Count is the number of cores the kernel is currently reporting. There is
+	// deliberately no separate "online" count: a core only appears in
+	// /proc/stat while it is online, so Count already is that number, and a
+	// second field derived from "did this core do work" would read as
+	// activity while claiming to be availability.
+	Count     int    `json:"count"`
+	ModelName string `json:"modelName,omitempty"`
+}
+
+type MemStats struct {
+	Ready          bool    `json:"ready"`
+	TotalBytes     uint64  `json:"totalBytes"`
+	UsedBytes      uint64  `json:"usedBytes"`
+	AvailableBytes uint64  `json:"availableBytes"`
+	UsedPct        float64 `json:"usedPct"`
+	SwapTotalBytes uint64  `json:"swapTotalBytes"`
+	SwapUsedBytes  uint64  `json:"swapUsedBytes"`
+}
+
+type LoadStats struct {
+	Ready   bool    `json:"ready"`
+	One     float64 `json:"one"`
+	Five    float64 `json:"five"`
+	Fifteen float64 `json:"fifteen"`
+	// Running/Total are the process counts that ride along on the same line.
+	Running int `json:"running"`
+	Total   int `json:"total"`
+}
+
+type NetStats struct {
+	Iface string  `json:"iface"`
+	RxBps float64 `json:"rxBps"`
+	TxBps float64 `json:"txBps"`
+}
+
+type DiskStats struct {
+	Mount string `json:"mount"`
+	// FSType is the hexadecimal filesystem magic (0x9123683e is btrfs), not a
+	// device node: a named-volume rootless container has no /dev entry worth
+	// showing, and this is enough to tell btrfs from ext4 from zfs in a bug
+	// report.
+	FSType     string  `json:"fsType"`
+	UsedPct    float64 `json:"usedPct"`
+	TotalBytes uint64  `json:"totalBytes"`
+	FreeBytes  uint64  `json:"freeBytes"`
+}
+
+// --------------------------------------------------------------- path sources
+
+// sources is every filesystem location the collector touches. It is a struct
+// rather than a set of constants so tests can point it at fixture files and
+// assert on parsed output without a live host.
+type sources struct {
+	stat      string
+	meminfo   string
+	loadavg   string
+	uptime    string
+	netDev    string
+	diskstats string
+	sysRoot   string // /sys, or the host bind when there is one
+	hostRoot  string // prefix that makes host paths visible, "" when not bound
+}
+
+// hostRoots are probed in order. The installer binds the host filesystem at
+// /host; an empty prefix means "we are already looking at the real thing",
+// which is the case when Yantr runs without the bind (or in development).
+var hostRootCandidates = []string{"/host", ""}
+
+var sysRootCandidates = []string{"/sys", ""}
+
+func detectSources() sources {
+	s := sources{
+		stat:      "/proc/stat",
+		meminfo:   "/proc/meminfo",
+		loadavg:   "/proc/loadavg",
+		uptime:    "/proc/uptime",
+		netDev:    "/proc/net/dev",
+		diskstats: "/proc/diskstats",
+	}
+	for _, root := range hostRootCandidates {
+		if root == "" || isDir(filepath.Join(root, "proc")) {
+			s.hostRoot = root
+			break
+		}
+	}
+	for _, root := range sysRootCandidates {
+		if root == "" || isDir(filepath.Join(root, "class")) {
+			s.sysRoot = root
+			break
+		}
+	}
+	return s
+}
+
+func isDir(path string) bool {
+	fi, err := os.Stat(path)
+	return err == nil && fi.IsDir()
+}
+
+// hostPath resolves a host-absolute path against the detected host root.
+func (s sources) hostPath(p string) string {
+	if s.hostRoot == "" {
+		return p
+	}
+	return filepath.Join(s.hostRoot, p)
+}
+
+// sysPath resolves a /sys-absolute path against the detected sys root.
+func (s sources) sysPath(p string) string {
+	if s.sysRoot == "" {
+		return p
+	}
+	return filepath.Join(s.sysRoot, p)
+}
+
+// ---------------------------------------------------------------- the sampler
+
+type cpuTimes struct{ idle, total uint64 }
+
+type netCounters struct {
+	rx, tx uint64
+}
+
+// collector holds the previous reading, because CPU and network rates are
+// deltas between two samples and cannot be derived from one.
+type collector struct {
+	sources sources
+
+	mu        sync.Mutex
+	prevCPU   []cpuTimes
+	prevCPUAt time.Time
+	prevNet   map[string]netCounters
+	prevNetAt time.Time
+}
+
+var hostCollector = &collector{sources: detectSources()}
+
+// HostMetrics returns a full sample. Safe for concurrent use; each call
+// advances the rate baseline, so the first call after a restart reports CPU
+// and network as not-ready.
+func HostSnapshot() HostMetrics { return hostCollector.snapshot() }
+
+func (c *collector) snapshot() HostMetrics {
+	s := c.sources
+	now := time.Now()
+	out := HostMetrics{
+		Net:      []NetStats{},
+		Disk:     []DiskStats{},
+		Degraded: []string{},
+	}
+
+	cpuCounters, cpuErr := readProcStat(s.stat)
+	if cpuErr != nil {
+		out.Degraded = append(out.Degraded, "cpu")
+	} else {
+		out.CPU.Count = len(cpuCounters) - 1 // the aggregate "cpu" line is not a core
+
+		c.mu.Lock()
+		if len(c.prevCPU) == len(cpuCounters) && !c.prevCPUAt.IsZero() {
+			if elapsed := now.Sub(c.prevCPUAt).Seconds(); elapsed > 0 {
+				out.CPU.TotalPct, out.CPU.Cores = cpuPercentages(c.prevCPU, cpuCounters, elapsed)
+				out.CPU.Ready = true
+			}
+		}
+		c.prevCPU, c.prevCPUAt = cpuCounters, now
+		c.mu.Unlock()
+		if out.CPU.Cores == nil {
+			// Every array in this payload serializes as [] and never as null,
+			// so the UI can map over them without a guard on every field.
+			out.CPU.Cores = []float64{}
+		}
+	}
+
+	if mem, err := readMeminfo(s.meminfo); err == nil {
+		out.Mem = mem
+	} else {
+		out.Degraded = append(out.Degraded, "memory")
+	}
+
+	if load, err := readLoadavg(s.loadavg); err == nil {
+		out.Load = load
+	} else {
+		out.Degraded = append(out.Degraded, "load")
+	}
+
+	if up, err := readUptime(s.uptime); err == nil {
+		out.UptimeSec = up
+	}
+
+	netCounters, netErr := readNetDev(s.netDev)
+	if netErr != nil {
+		out.Degraded = append(out.Degraded, "network")
+	} else {
+		c.mu.Lock()
+		if c.prevNet != nil && now.Sub(c.prevNetAt).Seconds() > 0 {
+			elapsed := now.Sub(c.prevNetAt).Seconds()
+			ifaces := make([]NetStats, 0, len(netCounters))
+			for name, cur := range netCounters {
+				if name == "lo" || strings.HasPrefix(name, "veth") || strings.HasPrefix(name, "podman") || strings.HasPrefix(name, "br-") {
+					continue
+				}
+				prev, seen := c.prevNet[name]
+				if !seen {
+					continue // interface came up after the last sample
+				}
+				rx, tx := rateBits(cur.rx, prev.rx, elapsed), rateBits(cur.tx, prev.tx, elapsed)
+				if rx < 0 || tx < 0 {
+					continue // counter reset (interface bounced); a negative rate is a lie
+				}
+				ifaces = append(ifaces, NetStats{Iface: name, RxBps: rx, TxBps: tx})
+			}
+			sort.Slice(ifaces, func(i, j int) bool { return ifaces[i].Iface < ifaces[j].Iface })
+			out.Net = ifaces
+		}
+		c.prevNet, c.prevNetAt = netCounters, now
+		c.mu.Unlock()
+	}
+
+	if disks, err := readDisks(s); err == nil && len(disks) > 0 {
+		out.Disk = disks
+	} else {
+		out.Degraded = append(out.Degraded, "disk")
+	}
+
+	if temp, err := readTemperature(s); err == nil {
+		out.TempC = temp
+	} else {
+		out.Degraded = append(out.Degraded, "temperature")
+	}
+
+	return out
+}
+
+// ------------------------------------------------------------- /proc parsing
+
+// readProcStat returns the aggregate "cpu" line first, then one entry per
+// core. Each entry keeps idle and total separately because the percentage is
+// (totalDelta - idleDelta) / totalDelta.
+func readProcStat(path string) ([]cpuTimes, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	var out []cpuTimes
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		fields := strings.Fields(sc.Text())
+		if len(fields) < 5 || !strings.HasPrefix(fields[0], "cpu") {
+			continue
+		}
+		var vals []uint64
+		bad := false
+		for _, fld := range fields[1:] {
+			v, err := strconv.ParseUint(fld, 10, 64)
+			if err != nil {
+				bad = true
+				break
+			}
+			vals = append(vals, v)
+		}
+		if bad || len(vals) < 4 {
+			continue
+		}
+		var sum uint64
+		for _, v := range vals {
+			sum += v
+		}
+		idle := vals[3] + vals[4] // idle + iowait, the convention top and htop use
+		out = append(out, cpuTimes{idle: idle, total: sum})
+	}
+	if err := sc.Err(); err != nil {
+		return nil, err
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// cpuPercentages turns two /proc/stat readings into busy percentages. It is
+// pure so the arithmetic can be pinned by tests, and it refuses to divide by a
+// zero delta: a window with no elapsed jiffies yields ok=false rather than
+// +Inf, which is the failure mode the container stats endpoint already had to
+// work around (see handlers_containers.go on rootless system_delta).
+func cpuPercentages(prev, cur []cpuTimes, elapsedSec float64) (total float64, cores []float64) {
+	if len(prev) != len(cur) || len(cur) == 0 || elapsedSec <= 0 {
+		return 0, nil
+	}
+	cores = make([]float64, 0, len(cur)-1)
+	for i := range cur {
+		dTotal := float64(cur[i].total - prev[i].total)
+		dIdle := float64(cur[i].idle - prev[i].idle)
+		pct := 0.0
+		if dTotal > 0 && cur[i].total >= prev[i].total && cur[i].idle >= prev[i].idle {
+			pct = (dTotal - dIdle) / dTotal * 100
+		}
+		if pct < 0 {
+			pct = 0
+		}
+		if pct > 100 {
+			pct = 100
+		}
+		if i == 0 {
+			total = pct
+			continue
+		}
+		cores = append(cores, pct)
+	}
+	return total, cores
+}
+
+func readMeminfo(path string) (MemStats, error) {
+	fields, err := readKVFile(path)
+	if err != nil {
+		return MemStats{}, err
+	}
+	total := fields["MemTotal"]
+	available, ok := fields["MemAvailable"]
+	if !ok { // very old kernels without MemAvailable
+		available = fields["MemFree"] + fields["Buffers"] + fields["Cached"]
+	}
+	used := uint64(0)
+	if total > available {
+		used = total - available
+	}
+	out := MemStats{
+		Ready:          total > 0,
+		TotalBytes:     total * 1024,
+		UsedBytes:      used * 1024,
+		AvailableBytes: available * 1024,
+	}
+	if total > 0 {
+		out.UsedPct = float64(used) / float64(total) * 100
+	}
+	if swapTotal := fields["SwapTotal"]; swapTotal > 0 {
+		out.SwapTotalBytes = swapTotal * 1024
+		usedSwap := swapTotal - fields["SwapFree"]
+		if swapTotal >= fields["SwapFree"] {
+			out.SwapUsedBytes = usedSwap * 1024
+		}
+	}
+	return out, nil
+}
+
+func readLoadavg(path string) (LoadStats, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return LoadStats{}, err
+	}
+	fields := strings.Fields(string(raw))
+	if len(fields) < 3 {
+		return LoadStats{}, os.ErrNotExist
+	}
+	one, err1 := strconv.ParseFloat(fields[0], 64)
+	five, err2 := strconv.ParseFloat(fields[1], 64)
+	fifteen, err3 := strconv.ParseFloat(fields[2], 64)
+	if err1 != nil || err2 != nil || err3 != nil {
+		return LoadStats{}, os.ErrNotExist
+	}
+	out := LoadStats{Ready: true, One: one, Five: five, Fifteen: fifteen}
+	// "0.42 0.58 0.59 1/234 5678" — the run/total pair is the 4th field.
+	if len(fields) >= 4 {
+		if parts := strings.SplitN(fields[3], "/", 2); len(parts) == 2 {
+			out.Running, _ = strconv.Atoi(parts[0])
+			out.Total, _ = strconv.Atoi(parts[1])
+		}
+	}
+	return out, nil
+}
+
+func readUptime(path string) (float64, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return 0, err
+	}
+	fields := strings.Fields(string(raw))
+	if len(fields) == 0 {
+		return 0, os.ErrNotExist
+	}
+	return strconv.ParseFloat(fields[0], 64)
+}
+
+// readNetDev parses /proc/net/dev. Because Yantr shares the host network
+// namespace these are the host's interfaces, which is the whole reason the
+// installer sets Network=host.
+func readNetDev(path string) (map[string]netCounters, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	out := map[string]netCounters{}
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		line := sc.Text()
+		colon := strings.Index(line, ":")
+		if colon < 0 {
+			continue // the two header lines have no interface name
+		}
+		name := strings.TrimSpace(line[:colon])
+		if name == "" || strings.ContainsAny(name, " \t") {
+			continue
+		}
+		cols := strings.Fields(line[colon+1:])
+		if len(cols) < 9 {
+			continue
+		}
+		rx, err1 := strconv.ParseUint(cols[0], 10, 64)
+		tx, err2 := strconv.ParseUint(cols[8], 10, 64)
+		if err1 != nil || err2 != nil {
+			continue
+		}
+		out[name] = netCounters{rx: rx, tx: tx}
+	}
+	if err := sc.Err(); err != nil {
+		return nil, err
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+func rateBits(cur, prev uint64, elapsedSec float64) float64 {
+	if cur < prev || elapsedSec <= 0 {
+		return -1
+	}
+	return float64(cur-prev) * 8 / elapsedSec
+}
+
+// readKVFile parses "Key:   12345 kB" style proc files into raw kilobytes.
+func readKVFile(path string) (map[string]uint64, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	out := map[string]uint64{}
+	for _, line := range strings.Split(string(raw), "\n") {
+		colon := strings.Index(line, ":")
+		if colon < 0 {
+			continue
+		}
+		key := strings.TrimSpace(line[:colon])
+		value := strings.Fields(line[colon+1:])
+		if key == "" || len(value) == 0 {
+			continue
+		}
+		v, err := strconv.ParseUint(value[0], 10, 64)
+		if err != nil {
+			continue
+		}
+		out[key] = v
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// -------------------------------------------------------------- disk and temp
+
+// diskCandidates are the filesystems reported on the card. Mount enumeration
+// is deliberately not used: /proc/mounts inside a container is the CONTAINER's
+// mount namespace, so it would only ever list the overlay and our own binds.
+// These are the paths a homelab user actually cares about seeing fill up.
+var diskCandidates = []string{"/", "/home", "/var", "/data", "/srv", "/opt", "/mnt"}
+
+// skipFSTypes never carry user data and would only add noise to the card.
+var skipFSTypes = map[string]bool{
+	"tmpfs": true, "devtmpfs": true, "devfs": true, "proc": true, "sysfs": true,
+	"cgroup": true, "cgroup2": true, "overlay": true, "squashfs": true,
+	"securityfs": true, "pstore": true, "debugfs": true, "tracefs": true,
+	"configfs": true, "fusectl": true, "mqueue": true, "hugetlbfs": true,
+	"bpf": true, "autofs": true, "binfmt_misc": true, "nsfs": true,
+}
+
+func readDisks(s sources) ([]DiskStats, error) {
+	out := make([]DiskStats, 0, len(diskCandidates))
+	seenDevice := map[uint64]bool{}
+
+	for _, mount := range diskCandidates {
+		path := s.hostPath(mount)
+		var st syscall.Statfs_t
+		if err := syscall.Statfs(path, &st); err != nil {
+			continue
+		}
+		fsType := strconv.FormatInt(int64(st.Type), 16)
+		if skipFSTypes[fsType] {
+			continue
+		}
+		total := st.Blocks * uint64(st.Bsize)
+		free := st.Bavail * uint64(st.Bsize)
+		if total == 0 {
+			continue
+		}
+		// / and /home are frequently two paths into one filesystem; reporting
+		// both would double the same bytes on the card. stat(2)'s device id is
+		// the conservative key — it never merges two real filesystems, so the
+		// failure mode is a redundant tile rather than a full data disk going
+		// invisible. Note that btrfs gives each subvolume its own st_dev, so a
+		// btrfs host legitimately reports / and /home separately even when the
+		// numbers match, because filling one subvolume does not fill the other.
+		fi, err := os.Stat(path)
+		if err != nil {
+			continue
+		}
+		if sys, ok := fi.Sys().(*syscall.Stat_t); ok {
+			if seenDevice[sys.Dev] {
+				continue
+			}
+			seenDevice[sys.Dev] = true
+		}
+		used := uint64(0)
+		if total > free {
+			used = total - free
+		}
+		out = append(out, DiskStats{
+			Mount:      mount,
+			FSType:     fsType,
+			UsedPct:    float64(used) / float64(total) * 100,
+			TotalBytes: total,
+			FreeBytes:  free,
+		})
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// readTemperature prefers the ACPI thermal zones and falls back to hwmon,
+// skipping implausible readings so a broken sensor reports as missing rather
+// than as a believable-looking 0°C or 1000°C.
+func readTemperature(s sources) (*float64, error) {
+	var candidates []string
+	if zones, err := filepath.Glob(s.sysPath("/class/thermal/thermal_zone*/temp")); err == nil {
+		candidates = append(candidates, zones...)
+	}
+	if hwmons, err := filepath.Glob(s.sysPath("/class/hwmon/hwmon*/temp*_input")); err == nil {
+		candidates = append(candidates, hwmons...)
+	}
+	for _, path := range candidates {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		milli, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+		if err != nil {
+			continue
+		}
+		c := milli / 1000
+		if c > 0 && c < 120 {
+			return &c, nil
+		}
+	}
+	return nil, os.ErrNotExist
+}

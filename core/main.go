@@ -500,6 +500,7 @@ func main() {
 	r.Delete("/api/volumes/{name}", handleVolumeDelete)
 	r.Get("/api/volumes/{name}/export", handleVolumeExport)
 	r.Get("/api/system/info", handleSystemInfo)
+	r.Get("/api/system/metrics", handleSystemMetrics)
 	r.Post("/api/system/prune", handleSystemPrune)
 	r.Get("/api/ports/used", handlePortsUsed)
 	r.Post("/api/ports/suggest", handlePortsSuggest)
