@@ -15,7 +15,7 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
 
-[Why Podman?](#️-rootless-by-design-why-podman-over-docker) · [Quick Start](#-quick-start) · [App Catalog](#-app-catalog) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
+[Why Podman?](#️-rootless-by-design-why-podman-over-docker) · [Quick Start](#-quick-start) · [App Catalog](#-app-catalog) · [Community](#-community) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
 
 </div>
 
@@ -170,6 +170,22 @@ A curated app catalog, one-click deploy.
 
 ---
 
+## 💬 Community
+
+[![Discord](https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/YZG5NVUcAt)
+[![Discord Members](https://img.shields.io/badge/chat-yantr-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/YZG5NVUcAt)
+
+Stuck on a deploy, or want an app that isn't in the catalog yet? Come say hi on [discord.gg/YZG5NVUcAt](https://discord.gg/YZG5NVUcAt).
+
+- **App requests** — vote and discuss what lands in the catalog next.
+- **Troubleshooting** — paste logs, get help from people running Yantr on real hardware.
+- **Setup help** — rootless Podman, Quadlet, SELinux, port conflicts.
+- **Show and tell** — what you're self-hosting.
+
+Issues and bug reports still belong on [GitHub](https://github.com/besoeasy/yantr/issues) so they stay searchable and trackable.
+
+---
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=besoeasy%2Fyantr&type=date&legend=top-left">
@@ -197,5 +213,5 @@ The source stays public. The short version is at the top of [`LICENSE`](LICENSE)
 
 <div align="center">
   <sub>Vue 3 · Go · Podman · Custom CSS</sub><br/><br/>
-  <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
+  <a href="https://yantr.org">yantr.org</a> · <a href="https://discord.gg/YZG5NVUcAt">Discord</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
 </div>
