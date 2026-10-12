@@ -653,6 +653,15 @@
     "description": "The source is public. Free for personal and homelab use — not for commercial use. Star the repo, contribute, or report issues.",
     "cta": "Star on GitHub"
   },
+  "discordCard": {
+    "label": "Community",
+    "subtitle": "Discord",
+    "title": "Ask. Share. Ship together.",
+    "description": "Join the Yantr Discord for app requests, deploy troubleshooting, and setup help from people running Yantr on real hardware.",
+    "cta": "Join Discord",
+    "repo": "Repo",
+    "footer": "Open now"
+  },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",
     "notInstalled": "Not Installed",

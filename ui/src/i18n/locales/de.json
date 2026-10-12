@@ -623,6 +623,15 @@
     "description": "Der Quellcode ist öffentlich. Kostenlos für privat und Homelab — nicht für kommerzielle Nutzung. Repository markieren, beitragen oder Probleme melden.",
     "cta": "Star on GitHub"
   },
+  "discordCard": {
+    "label": "Community",
+    "subtitle": "Discord",
+    "title": "Fragen. Teilen. Gemeinsam umsetzen.",
+    "description": "Tritt dem Yantr-Discord bei — App-Wünsche, Fehlersuche bei Deployments und Setup-Hilfe von Leuten, die Yantr auf echter Hardware betreiben.",
+    "cta": "Discord beitreten",
+    "repo": "Repo",
+    "footer": "Jetzt offen"
+  },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",
     "notInstalled": "Not Installed",
