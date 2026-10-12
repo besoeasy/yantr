@@ -334,6 +334,16 @@ func handleNetworkIdentity(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{"success": true, "identity": identity})
 }
 
+func handleGitHubStats(w http.ResponseWriter, r *http.Request) {
+	force := r.URL.Query().Get("force") == "true"
+	stats, err := system.GetRepoStatsCached(force)
+	if err != nil {
+		jsonErr(w, 500, "GITHUB_FETCH_FAILED", err.Error())
+		return
+	}
+	jsonResp(w, 200, map[string]interface{}{"success": true, "stats": stats})
+}
+
 func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		ContainerIDs []string `json:"containerIds"`

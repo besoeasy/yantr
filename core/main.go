@@ -505,6 +505,7 @@ func main() {
 	r.Get("/api/ports/used", handlePortsUsed)
 	r.Post("/api/ports/suggest", handlePortsSuggest)
 	r.Get("/api/network/identity", handleNetworkIdentity)
+	r.Get("/api/github/stats", handleGitHubStats)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/telemetry/stats", handleTelemetryStats)
 	r.Get("/api/jobs", handleJobsList)
