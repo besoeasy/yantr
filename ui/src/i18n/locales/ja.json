@@ -541,7 +541,10 @@
       "network": "ネットワーク",
       "rxTx": "受信 · 送信",
       "temperature": "温度",
-      "unavailable": "利用不可"
+      "unavailable": "利用不可",
+      "performance": "パフォーマンス",
+      "storageNetwork": "ストレージとネットワーク",
+      "live": "リアルタイム"
     },
     "machineIdentity": {
       "title": "識別情報",

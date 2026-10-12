@@ -541,7 +541,10 @@
       "network": "网络",
       "rxTx": "接收 · 发送",
       "temperature": "温度",
-      "unavailable": "不可用"
+      "unavailable": "不可用",
+      "performance": "性能",
+      "storageNetwork": "存储和网络",
+      "live": "实时"
     },
     "machineIdentity": {
       "title": "身份信息",

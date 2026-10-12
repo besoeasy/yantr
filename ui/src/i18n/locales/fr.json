@@ -541,7 +541,10 @@
       "network": "Réseau",
       "rxTx": "rx · tx",
       "temperature": "Température",
-      "unavailable": "Indisponible"
+      "unavailable": "Indisponible",
+      "performance": "Performances",
+      "storageNetwork": "Stockage et réseau",
+      "live": "En direct"
     },
     "machineIdentity": {
       "title": "Identité",

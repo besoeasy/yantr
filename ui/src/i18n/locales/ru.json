@@ -541,7 +541,10 @@
       "network": "Сеть",
       "rxTx": "приём · передача",
       "temperature": "Температура",
-      "unavailable": "Недоступно"
+      "unavailable": "Недоступно",
+      "performance": "Производительность",
+      "storageNetwork": "Хранилище и сеть",
+      "live": "В реальном времени"
     },
     "machineIdentity": {
       "title": "Идентификатор",
