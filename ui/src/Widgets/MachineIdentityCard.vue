@@ -165,7 +165,7 @@ const displayLocation = computed(() => {
            <!-- Location Card -->
            <button
               type="button"
-              class="group/location flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              class="flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
               :aria-pressed="!isLocationHovered"
               @mouseenter="isLocationHovered = true"
               @mouseleave="isLocationHovered = false"

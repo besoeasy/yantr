@@ -1,6 +1,6 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { ArrowUpRight, GitBranch, ExternalLink } from "@lucide/vue";
+import { ArrowUpRight, GitBranch, ExternalLink, Heart } from "@lucide/vue";
 import { h } from 'vue';
 
 const Github = (props, context) => h('svg', {
