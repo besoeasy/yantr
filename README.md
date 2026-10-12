@@ -55,7 +55,7 @@ Most homelab platforms and container managers rely on Docker running as a root-l
 |---|---|---|
 | **Daemon Privilege** | Runs as `root` (`dockerd` background daemon) | **Rootless** — runs in user namespaces with an unprivileged UID |
 | **Security Blast Radius** | `docker` group = passwordless root on host (`docker run -v /:/host`) | **True isolation** — container breakout cannot compromise host root |
-| **Engine Architecture** | Monolithic background daemon (single point of failure) | **Daemonless** — fork/exec model (`conmon`); no daemon crash kills apps |
+| **Engine Architecture** | Monolithic background daemon (single point of failure) | **Daemonless** — fork/exec model (`conmon`); no daemon to crash and kill apps |
 | **System Service Manager** | Proprietary daemon supervision | **Native systemd Quadlet** (`systemctl --user`, auto-starts on boot) |
 | **Logging & Monitoring** | Custom Docker logging drivers | **Native `journalctl --user`** and Linux cgroups v2 resource accounting |
 | **Host Firewall Impact** | Modifies root `iptables`/`nftables` directly (silently bypasses UFW) | **Zero host firewall tampering** — isolated user network (pasta/slirp4netns) |
@@ -105,6 +105,18 @@ curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
 ```
 
 The script is also in the repo root as [`install.sh`](install.sh). The one-liner above resolves `@latest` to the newest tagged release via jsDelivr, so users always get a released installer — never whatever is sitting on `main`.
+
+<div align="center">
+
+[![Fedora](https://img.shields.io/badge/Fedora-dnf-51A2DA?style=flat-square&logo=fedora&logoColor=white)](https://fedoraproject.org)
+[![Debian](https://img.shields.io/badge/Debian-apt-A81D33?style=flat-square&logo=debian&logoColor=white)](https://www.debian.org)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-apt-E95420?style=flat-square&logo=ubuntu&logoColor=white)](https://ubuntu.com)
+[![Arch](https://img.shields.io/badge/Arch-pacman-1793D1?style=flat-square&logo=archlinux&logoColor=white)](https://archlinux.org)
+[![openSUSE](https://img.shields.io/badge/openSUSE-zypper-73BA25?style=flat-square&logo=opensuse&logoColor=white)](https://www.opensuse.org)
+
+</div>
+
+The installer detects your package manager (`dnf`, `apt`, `pacman`, `zypper`) and sets up rootless Podman and the systemd Quadlet service automatically. Any other Linux with Podman and systemd installed works via the manual command below. Alpine is deliberately not listed: the installer can install Podman there, but the whole service model rides on systemd Quadlet, which Alpine does not ship.
 
 > **Run as your normal user — never with `sudo`.** Yantr is rootless-only by design. Installed as root it would attach to a rootful Podman service, so every app it deploys would hold full host root — exactly what the architecture above exists to prevent. The installer refuses to run as root.
 
@@ -166,7 +178,7 @@ A curated app catalog, one-click deploy.
 
 **Volume browser** — Inspect and manage your app data directly from the browser.
 
-**REST API** — Every action (install, update, remove, logs) is a JSON endpoint. Scriptable and CLI-friendly.
+**REST API** — Every action (installing, updating, removing, logging) is a JSON endpoint. Scriptable and CLI-friendly.
 
 ---
 
