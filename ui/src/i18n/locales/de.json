@@ -620,20 +620,21 @@
     "pin": "Numerische PIN",
     "pinConfirm": "PIN bestätigen"
   },
-  "openSourceCard": {
-    "label": "Quelloffen",
-    "title": "Öffentlich entwickelt.",
-    "description": "Der Quellcode ist öffentlich. Kostenlos für privat und Homelab — nicht für kommerzielle Nutzung. Repository markieren, beitragen oder Probleme melden.",
-    "cta": "Star on GitHub"
-  },
   "discordCard": {
     "label": "Community",
     "subtitle": "Discord",
     "title": "Fragen. Teilen. Gemeinsam umsetzen.",
     "description": "Tritt dem Yantr-Discord bei — App-Wünsche, Fehlersuche bei Deployments und Setup-Hilfe von Leuten, die Yantr auf echter Hardware betreiben.",
     "cta": "Discord beitreten",
-    "repo": "Repo",
     "footer": "Jetzt offen"
+  },
+  "githubCard": {
+    "label": "GitHub",
+    "subtitle": "Repository",
+    "title": "Sterne. Bugs melden.",
+    "description": "Der Quellcode ist öffentlich und für Privat- und Homelab-Nutzung kostenlos. Ein Stern hilft anderen, das Projekt zu finden; Issues sind der schnellste Weg, einen Fehler zu beheben.",
+    "starCta": "Yantr sternen",
+    "issueCta": "Problem melden"
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

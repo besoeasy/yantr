@@ -614,20 +614,21 @@
     "pin": "PIN numérique",
     "pinConfirm": "Confirmer le PIN"
   },
-  "openSourceCard": {
-    "label": "Code public",
-    "title": "Fait au grand jour.",
-    "description": "Le code est public. Gratuit pour un usage personnel et homelab — pas d'usage commercial. Mettez une étoile, contribuez ou signalez un problème.",
-    "cta": "Star on GitHub"
-  },
   "discordCard": {
     "label": "Communauté",
     "subtitle": "Discord",
     "title": "Demandez. Partagez. Créez ensemble.",
     "description": "Rejoignez le Discord Yantr pour demander des apps, dépanner vos déploiements et obtenir de l'aide de personnes qui utilisent Yantr sur du vrai matériel.",
     "cta": "Rejoindre Discord",
-    "repo": "Dépôt",
     "footer": "Ouvert maintenant"
+  },
+  "githubCard": {
+    "label": "GitHub",
+    "subtitle": "Dépôt",
+    "title": "Mettez une étoile. Signalez un bug.",
+    "description": "Le code est public et gratuit pour un usage personnel ou homelab. Une étoile aide les autres à trouver le projet ; les issues sont le moyen le plus rapide de corriger un bug.",
+    "starCta": "Mettre une étoile",
+    "issueCta": "Signaler un problème"
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

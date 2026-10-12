@@ -614,20 +614,21 @@
     "pin": "数字PIN",
     "pinConfirm": "PINの確認"
   },
-  "openSourceCard": {
-    "label": "ソース公開",
-    "title": "公開して作っています。",
-    "description": "ソースは公開。個人・ホームラボは無料。商用利用は不可。スター、貢献、Issue 歓迎。",
-    "cta": "Star on GitHub"
-  },
   "discordCard": {
     "label": "コミュニティ",
     "subtitle": "Discord",
     "title": "質問。共有。共に作成。",
     "description": "Yantr の Discord に参加して、アプリの要望、デプロイのトラブルシューティング、実際のマシンで運用している人からのサポートを受けましょう。",
     "cta": "Discord に参加",
-    "repo": "リポジトリ",
     "footer": "今すぐ参加可能"
+  },
+  "githubCard": {
+    "label": "GitHub",
+    "subtitle": "リポジトリ",
+    "title": "スターを。バグを報告。",
+    "description": "ソースは公開されており、個人利用・ホームラボ利用は無料です。スターはプロジェクトの存在を知らせる助けになります。不具合は Issue での報告が最も早く直ります。",
+    "starCta": "スターする",
+    "issueCta": "問題を報告"
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",
