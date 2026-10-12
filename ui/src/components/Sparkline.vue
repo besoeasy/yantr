@@ -12,6 +12,10 @@ const props = defineProps({
   points: { type: Array, default: () => [] },
   max: { type: Number, default: 100 },
   label: { type: String, default: '' },
+  // Accent tone. main.css is a hand-curated utility layer, so each tone needs
+  // its own stroke/stop-color rules present there — adding a tone means adding
+  // the four matching classes, not just this string.
+  tone: { type: String, default: 'sky' },
 })
 
 const W = 100
@@ -53,8 +57,8 @@ const areaPath = computed(() => {
   >
     <defs>
       <linearGradient :id="gradientId" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" class="stop-color-sky-500/25" />
-        <stop offset="100%" class="stop-color-sky-500/0" />
+        <stop offset="0%" :class="`stop-color-${tone}-500/25`" />
+        <stop offset="100%" :class="`stop-color-${tone}-500/0`" />
       </linearGradient>
     </defs>
 
@@ -63,7 +67,7 @@ const areaPath = computed(() => {
       v-if="linePath"
       :d="linePath"
       fill="none"
-      class="stroke-sky-500 dark:stroke-sky-400"
+      :class="`stroke-${tone}-500 dark:stroke-${tone}-400`"
       stroke-width="1.5"
       stroke-linejoin="round"
       stroke-linecap="round"
