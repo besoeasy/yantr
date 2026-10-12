@@ -1,0 +1,40 @@
+x-yantr:
+  name: SolidPing
+  tags: [ monitoring, network, tools, dashboard ]
+  short_description: Open-source uptime monitoring with status pages,
+    incidents, and 40+ check types.
+  description: >
+    SolidPing monitors websites, APIs and infrastructure with 40+ check
+    types: HTTP, TCP, ping, DNS, TLS expiry, databases, MQTT, game servers,
+    headless browser and more. It keeps history, opens incidents, sends
+    alerts and publishes status pages. One Go binary on SQLite.
+  usecases:
+    [
+      "Monitor your self-hosted services and get alerted on Discord, Slack,
+        ntfy or email when they go down.",
+      Publish a status page for your family or users.,
+      Track TLS certificate and domain expiry before they lapse.,
+      "Check databases, MQTT brokers and game servers, not only websites."
+    ]
+  website: https://www.solidping.io
+  notes:
+    [
+      "First login is admin@solidping.io / solidpass, and you must change the
+        password on first sign-in",
+      Data is stored in SQLite in the named volume
+    ]
+
+  ports:
+    - {port: 4000, protocol: HTTP, show: true, label: "Web UI", service: solidping}
+
+services:
+  solidping:
+    image: ghcr.io/fclairamb/solidping:latest
+    ports:
+      - "4000"
+    volumes:
+      - solidping_data:/data
+    restart: unless-stopped
+
+volumes:
+  solidping_data: null
