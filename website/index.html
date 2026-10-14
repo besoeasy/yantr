@@ -398,178 +398,246 @@
             </p>
           </div>
 
-          <!-- Architecture at a glance: daemon vs daemonless -->
-          <div class="arch-diagram" aria-hidden="true">
-            <div class="arch-col arch-col-docker">
-              <p class="arch-col-label">Traditional Docker</p>
-              <svg viewBox="0 0 220 128" class="arch-svg" fill="none">
-                <rect class="arch-daemon" x="62" y="6" width="96" height="30" rx="8" />
-                <text class="arch-node-text" x="110" y="25" text-anchor="middle">dockerd · root</text>
-                <path class="arch-wire arch-wire-bad" d="M110 36 L110 62" />
-                <path class="arch-wire arch-wire-bad" d="M46 62 L174 62" />
-                <path class="arch-wire arch-wire-bad" d="M46 62 L46 86" />
-                <path class="arch-wire arch-wire-bad" d="M110 62 L110 86" />
-                <path class="arch-wire arch-wire-bad" d="M174 62 L174 86" />
-                <rect class="arch-box arch-box-bad" x="16" y="86" width="60" height="30" rx="8" />
-                <rect class="arch-box arch-box-bad" x="80" y="86" width="60" height="30" rx="8" />
-                <rect class="arch-box arch-box-bad" x="144" y="86" width="60" height="30" rx="8" />
-                <text class="arch-node-text" x="46" y="105" text-anchor="middle">app</text>
-                <text class="arch-node-text" x="110" y="105" text-anchor="middle">app</text>
-                <text class="arch-node-text" x="174" y="105" text-anchor="middle">app</text>
-              </svg>
-              <p class="arch-col-note">One privileged daemon sits between you and every container.</p>
+<!-- Interactive threat model: simulator (sticky) + capability rows -->
+          <div class="pv-split">
+            <div class="pv-left">
+              <div class="pv-console pv-reveal">
+                <div class="pv-switch" role="group" aria-label="Choose the container runtime to simulate">
+                  <button type="button" class="pv-switch-btn is-active" data-mode="docker" aria-pressed="true">
+                    Traditional Docker
+                  </button>
+                  <button type="button" class="pv-switch-btn" data-mode="podman" aria-pressed="false">
+                    Yantr + Rootless Podman
+                  </button>
+                  <span class="pv-switch-thumb" aria-hidden="true"></span>
+                </div>
+
+                <div class="pv-stage">
+                  <svg class="pv-svg" viewBox="0 0 360 250" fill="none" role="img" aria-label="Container architecture diagram">
+                    <rect class="pv-host" x="8" y="8" width="344" height="234" rx="18" />
+                    <text class="pv-host-tag" x="26" y="30">host OS</text>
+
+                    <!-- Docker: one root daemon in front of every app -->
+                    <g class="pv-mode pv-mode-docker">
+                      <rect class="pv-daemon" x="116" y="46" width="128" height="34" rx="10" />
+                      <text class="pv-t pv-t-bad" x="180" y="67" text-anchor="middle">dockerd · root</text>
+                      <path class="pv-wire" d="M180 80 L180 100" />
+                      <path class="pv-wire" d="M70 100 L290 100" />
+                      <path class="pv-wire" d="M70 100 L70 128" />
+                      <path class="pv-wire" d="M180 100 L180 128" />
+                      <path class="pv-wire" d="M290 100 L290 128" />
+                      <text class="pv-mode-tag pv-mode-tag-bad" x="180" y="226" text-anchor="middle">every container shares host root</text>
+                    </g>
+
+                    <!-- Podman: apps sit inside an unprivileged namespace -->
+                    <g class="pv-mode pv-mode-podman">
+                      <rect class="pv-ns" x="26" y="42" width="308" height="158" rx="16" />
+                      <text class="pv-ns-tag" x="42" y="64">user namespace · unprivileged</text>
+                      <rect class="pv-systemd" x="104" y="76" width="152" height="32" rx="10" />
+                      <text class="pv-t pv-t-onfill" x="180" y="96" text-anchor="middle">systemd --user · conmon</text>
+                      <path class="pv-wire pv-wire-good" d="M70 128 L70 108" />
+                      <path class="pv-wire pv-wire-good" d="M180 128 L180 108" />
+                      <path class="pv-wire pv-wire-good" d="M290 128 L290 108" />
+                      <text class="pv-mode-tag pv-mode-tag-good" x="180" y="226" text-anchor="middle">a breakout stays inside the sandbox</text>
+                    </g>
+
+                    <!-- Apps sit at identical coordinates in both modes -->
+                    <g class="pv-app" data-app="0">
+                      <rect class="pv-box" x="28" y="128" width="84" height="46" rx="11" />
+                      <text class="pv-t" x="70" y="156" text-anchor="middle">app</text>
+                    </g>
+                    <g class="pv-app" data-app="1">
+                      <rect class="pv-box" x="138" y="128" width="84" height="46" rx="11" />
+                      <text class="pv-t" x="180" y="156" text-anchor="middle">app</text>
+                    </g>
+                    <g class="pv-app" data-app="2">
+                      <rect class="pv-box" x="248" y="128" width="84" height="46" rx="11" />
+                      <text class="pv-t" x="290" y="156" text-anchor="middle">app</text>
+                    </g>
+
+                    <rect class="pv-breach" x="8" y="8" width="344" height="234" rx="18" />
+                    <circle class="pv-pulse" cx="70" cy="151" r="6" />
+                  </svg>
+
+                  <p class="pv-readout" id="pv-readout" role="status" aria-live="polite">
+                    Pick a runtime, then simulate an escape from any app.
+                  </p>
+
+                  <div class="pv-meter" aria-hidden="true">
+                    <div class="pv-meter-track"><span class="pv-meter-fill" id="pv-meter-fill"></span></div>
+                    <div class="pv-meter-meta">
+                      <span class="pv-meter-label">Blast radius</span>
+                      <span class="pv-meter-value" id="pv-meter-value">—</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pv-controls">
+                  <button type="button" class="pv-btn pv-btn-sim" id="pv-sim">
+                    Simulate container escape
+                  </button>
+                  <div class="pv-targets" role="group" aria-label="Choose the compromised app">
+                    <span class="pv-targets-label">Compromise</span>
+                    <button type="button" class="pv-target is-active" data-app="0" aria-pressed="true">App 1</button>
+                    <button type="button" class="pv-target" data-app="1" aria-pressed="false">App 2</button>
+                    <button type="button" class="pv-target" data-app="2" aria-pressed="false">App 3</button>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div class="arch-divider"><span>vs</span></div>
+            <div class="pv-right">
+              <p class="pv-right-lead">
+                Eight capabilities, two runtimes. Tap any row to see how it changes under attack.
+              </p>
 
-            <div class="arch-col arch-col-yantr">
-              <p class="arch-col-label">Yantr + Rootless Podman</p>
-              <svg viewBox="0 0 220 128" class="arch-svg" fill="none">
-                <rect class="arch-box arch-box-good arch-box-hero" x="16" y="86" width="60" height="30" rx="8" />
-                <rect class="arch-box arch-box-good arch-box-hero" x="80" y="86" width="60" height="30" rx="8" />
-                <rect class="arch-box arch-box-good arch-box-hero" x="144" y="86" width="60" height="30" rx="8" />
-                <text class="arch-node-text arch-text-good" x="46" y="105" text-anchor="middle">app</text>
-                <text class="arch-node-text arch-text-good" x="110" y="105" text-anchor="middle">app</text>
-                <text class="arch-node-text arch-text-good" x="174" y="105" text-anchor="middle">app</text>
-                <path class="arch-wire arch-wire-good" d="M46 80 L46 62" />
-                <path class="arch-wire arch-wire-good" d="M110 80 L110 62" />
-                <path class="arch-wire arch-wire-good" d="M174 80 L174 62" />
-                <rect class="arch-systemd" x="40" y="32" width="140" height="30" rx="8" />
-                <text class="arch-node-text arch-text-good" x="110" y="51" text-anchor="middle">systemd --user · conmon</text>
-                <path class="arch-wire arch-wire-good" d="M110 32 L110 12" />
-                <text class="arch-node-text arch-text-good arch-text-top" x="110" y="8" text-anchor="middle">your unprivileged user</text>
-              </svg>
-              <p class="arch-col-note">No daemon. Apps are just native processes under your own user.</p>
+              <div class="pv-rows" id="pv-rows">
+                <button type="button" class="pv-row" data-focus="daemon" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a3 3 0 013-3h6a3 3 0 013 3v2a3 3 0 00-1.5 2.6L24 18h-6v-3a3 3 0 00-3-3H8V7z" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Privilege Model</span>
+                    <span class="pv-row-sub">Execution context &amp; permissions</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Runs as root</span>
+                      <span class="pv-verdict pv-verdict-good">100% Rootless</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    The <code>docker</code> group grants passwordless root host access, so a single escape is a full host compromise. Yantr runs every container inside user namespaces with unprivileged UIDs.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="host" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Security Blast Radius</span>
+                    <span class="pv-row-sub">Impact of container escape / zero-day</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Host Root Compromise</span>
+                      <span class="pv-verdict pv-verdict-good">Zero Host Root</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    Docker breakout grants full root control of the host OS and its files. Under Yantr the attacker is trapped in an unprivileged sandbox and cannot touch host root.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="daemon" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" rx="1" /><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3m6-3v3M9 20v3m6-3v3M1 9h3m-3 6h3m16-6h3m-3 6h3" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Engine Architecture</span>
+                    <span class="pv-row-sub">Process management model</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Monolithic Daemon</span>
+                      <span class="pv-verdict pv-verdict-good">Daemonless (fork / exec)</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    If <code>dockerd</code> crashes or restarts for updates, every container can die with it. Podman executes directly through <code>conmon</code>, so there is no central single point of failure.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="systemd" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-3-6.7" /><path stroke-linecap="round" stroke-linejoin="round" d="M21 3v6h-6" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Service Management</span>
+                    <span class="pv-row-sub">Boot, restarts, and supervision</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Proprietary Supervision</span>
+                      <span class="pv-verdict pv-verdict-good">Native Quadlet</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    Docker bypasses systemd and handles its own restarts. Yantr containers are first-class systemd user units (<code>systemctl --user</code>, lingering) that survive Yantr updates.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="host" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 7v5c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V7l-8-4Z" /><path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Host Firewall &amp; Network</span>
+                    <span class="pv-row-sub">iptables / nftables interaction</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Bypasses UFW Rules</span>
+                      <span class="pv-verdict pv-verdict-good">Zero Tampering</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    Docker directly modifies root iptables, often silently exposing internal ports past UFW. Rootless Podman keeps networking inside user namespaces (pasta / slirp4netns) and never touches host rules.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="host" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Host Filesystem Impact</span>
+                    <span class="pv-row-sub">Storage location &amp; permissions</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Root-owned Storage</span>
+                      <span class="pv-verdict pv-verdict-good">User-Space Volumes</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    Docker pollutes the root filesystem at <code>/var/lib/docker</code> and needs <code>sudo</code> for any inspection or cleanup. Yantr keeps named volumes in <code>~/.local/share/containers/</code> with SELinux <code>:z</code> labeling.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="daemon" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3 8 4-16 3 8h4" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Idle Resource Overhead</span>
+                    <span class="pv-row-sub">Memory &amp; CPU consumption</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Always-On Daemon</span>
+                      <span class="pv-verdict pv-verdict-good">Zero Overhead</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    The Docker daemon burns CPU and RAM constantly, even with zero apps running. With no background process at all, hardware resources go strictly to your apps.
+                  </span>
+                </button>
+
+                <button type="button" class="pv-row" data-focus="ns" aria-expanded="false">
+                  <span class="pv-row-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8" /></svg>
+                  </span>
+                  <span class="pv-row-main">
+                    <span class="pv-row-title">Docker Socket Emulation</span>
+                    <span class="pv-row-sub">For Glances, Portainer, Beszel</span>
+                    <span class="pv-verdicts">
+                      <span class="pv-verdict pv-verdict-bad">Root Socket Risk</span>
+                      <span class="pv-verdict pv-verdict-good">Safe Translation</span>
+                    </span>
+                  </span>
+                  <svg class="pv-chevron" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" /></svg>
+                  <span class="pv-row-detail">
+                    Mounting <code>docker.sock</code> hands a container unrestricted root host takeover. Yantr translates the request to the unprivileged user <code>podman.sock</code> — full compatibility, zero root risk.
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
-
-          <!-- Zero-privilege tiles -->
-          <div class="zero-strip">
-            <div class="zero-tile">
-              <span class="zero-value">0</span>
-              <span class="zero-label">Host root privileges</span>
-            </div>
-            <div class="zero-tile">
-              <span class="zero-value">0</span>
-              <span class="zero-label">Background daemons</span>
-            </div>
-            <div class="zero-tile">
-              <span class="zero-value">0</span>
-              <span class="zero-label">Firewall rules touched</span>
-            </div>
-          </div>
-
-          <!-- Comparison cards -->
-          <div class="versus-legend">
-            <span class="versus-pill versus-pill-docker"><span class="versus-dot"></span>Traditional Docker</span>
-            <span class="versus-vs">vs</span>
-            <span class="versus-pill versus-pill-yantr"><span class="versus-dot"></span>Yantr + Rootless Podman</span>
-          </div>
-
-          <div class="versus-grid">
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a3 3 0 013-3h6a3 3 0 013 3v2a3 3 0 00-1.5 2.6L24 18h-6v-3a3 3 0 00-3-3H8V7z"/></svg></span><h3>Privilege Model</h3></div>
-              <p class="versus-sub">Execution context &amp; permissions</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Runs as root (dockerd)</span>
-                <p>The <code>docker</code> group grants passwordless root host access.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">100% Rootless</span>
-                <p>Containers run inside user namespaces with unprivileged UIDs.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg></span><h3>Security Blast Radius</h3></div>
-              <p class="versus-sub">Impact of container escape / zero-day</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Host Root Compromise</span>
-                <p>Container breakout grants full root control of the host OS and files.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Zero Host Root Permissions</span>
-                <p>Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3m6-3v3M9 20v3m6-3v3M1 9h3m-3 6h3m16-6h3m-3 6h3"/></svg></span><h3>Engine Architecture</h3></div>
-              <p class="versus-sub">Process management model</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Monolithic Daemon</span>
-                <p>If <code>dockerd</code> crashes or restarts for updates, all containers can die.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Daemonless (fork / exec)</span>
-                <p>Direct execution via <code>conmon</code>; no central daemon single point of failure.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-3-6.7"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 3v6h-6"/></svg></span><h3>Service Management</h3></div>
-              <p class="versus-sub">Boot, restarts, and supervision</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Proprietary Supervision</span>
-                <p>Docker bypasses systemd; handles its own restarts and process monitoring.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Native systemd Quadlet</span>
-                <p>Containers are first-class systemd user units (<code>systemctl --user</code>, lingering).</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 7v5c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V7l-8-4Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"/></svg></span><h3>Host Firewall &amp; Network</h3></div>
-              <p class="versus-sub">iptables / nftables interaction</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Bypasses UFW Rules</span>
-                <p>Directly modifies root iptables, often silently exposing internal ports publicly.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Zero Firewall Tampering</span>
-                <p>Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></span><h3>Host Filesystem Impact</h3></div>
-              <p class="versus-sub">Storage location &amp; permissions</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Root-owned storage</span>
-                <p>Pollutes root filesystem at <code>/var/lib/docker</code>; requires <code>sudo</code> to inspect, manage, or clean.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">100% User-Space Storage</span>
-                <p>Named volumes in <code>~/.local/share/containers/</code> with SELinux (<code>:z</code>) labeling.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3 8 4-16 3 8h4"/></svg></span><h3>Idle Resource Overhead</h3></div>
-              <p class="versus-sub">Memory &amp; CPU consumption</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Always-On Daemon</span>
-                <p>Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Zero Daemon Overhead</span>
-                <p>No background daemon process. Hardware resources go strictly to your apps.</p>
-              </div>
-            </div>
-
-            <div class="versus-card reveal">
-              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8"/><circle cx="12" cy="12" r="9"/></svg></span><h3>Docker Socket Emulation</h3></div>
-              <p class="versus-sub">For Glances, Portainer, Beszel</p>
-              <div class="versus-side versus-docker">
-                <span class="badge badge-red">Dangerous Root Socket</span>
-                <p>Mounting <code>docker.sock</code> hands containers unrestricted root host takeover.</p>
-              </div>
-              <div class="versus-side versus-yantr">
-                <span class="badge badge-green">Safe User Socket Translation</span>
-                <p>Automatically translates to user <code>podman.sock</code> — full compatibility, zero root risk.</p>
-              </div>
-            </div>
           </div>
 
           <!-- Feature Cards Grid -->
@@ -1705,6 +1773,161 @@
         const fleetRefresh = document.getElementById("fleet-refresh");
         if (fleetRefresh) fleetRefresh.addEventListener("click", () => loadFleet({ live: true }));
       });
+
+      // ── Interactive threat model ────────────────────────
+      // Simulator for the Podman vs Docker section: switch runtime, pick the
+      // compromised app, run the escape. Capability rows expand on click and
+      // light up the matching layer in the diagram while hovered.
+      (function threatModel() {
+        const consoleEl = document.querySelector(".pv-console");
+        const simBtn = document.getElementById("pv-sim");
+        if (!consoleEl || !simBtn) return;
+
+        const readout = document.getElementById("pv-readout");
+        const meterFill = document.getElementById("pv-meter-fill");
+        const meterValue = document.getElementById("pv-meter-value");
+        const thumb = consoleEl.querySelector(".pv-switch-thumb");
+        const switchBtns = Array.from(consoleEl.querySelectorAll(".pv-switch-btn"));
+        const targetBtns = Array.from(consoleEl.querySelectorAll(".pv-target"));
+        const appGroups = Array.from(consoleEl.querySelectorAll(".pv-app"));
+        const pulse = consoleEl.querySelector(".pv-pulse");
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        const OUTCOMES = {
+          docker: {
+            radius: 100,
+            label: "100% — full host",
+            text: "The escape climbs straight to host root: every app, your files, and your SSH keys are in reach.",
+          },
+          podman: {
+            radius: 4,
+            label: "4% — contained",
+            text: "The escape is trapped by the user namespace. Only that app's own files are affected — the host is untouched.",
+          },
+        };
+
+        let mode = "docker";
+        let target = 0;
+        let resetTimer = null;
+
+        const APP_CENTERS = { 0: { x: 70, y: 151 }, 1: { x: 180, y: 151 }, 2: { x: 290, y: 151 } };
+
+        function setMode(next) {
+          mode = next;
+          switchBtns.forEach((btn) => {
+            const active = btn.dataset.mode === next;
+            btn.classList.toggle("is-active", active);
+            btn.setAttribute("aria-pressed", String(active));
+          });
+          if (thumb) {
+            thumb.classList.toggle("is-podman", next === "podman");
+            thumb.classList.toggle("is-docker", next === "docker");
+          }
+          // Reset any in-flight breach state so the switch reads instantly.
+          clearTimeout(resetTimer);
+          consoleEl.classList.remove("is-breached", "is-breached-docker", "is-breached-podman");
+          appGroups.forEach((g) => g.classList.remove("is-breached"));
+          if (readout) {
+            readout.className = "pv-readout";
+            readout.textContent = "Pick a runtime, then simulate an escape from any app.";
+          }
+          if (meterFill) {
+            meterFill.style.width = "0%";
+            meterFill.classList.remove("is-bad");
+          }
+          if (meterValue) meterValue.textContent = "—";
+          simBtn.disabled = false;
+        }
+
+        function simulate() {
+          clearTimeout(resetTimer);
+          const outcome = OUTCOMES[mode];
+          const center = APP_CENTERS[target];
+
+          if (pulse && center) {
+            pulse.setAttribute("cx", center.x);
+            pulse.setAttribute("cy", center.y);
+          }
+          appGroups.forEach((g, i) => g.classList.toggle("is-breached", i === target));
+          consoleEl.classList.add("is-breached", mode === "docker" ? "is-breached-docker" : "is-breached-podman");
+
+          if (readout) {
+            readout.className = `pv-readout ${mode === "docker" ? "is-bad" : "is-good"}`;
+            readout.textContent = outcome.text;
+          }
+          if (meterFill) {
+            // Nudge a paint so the width transition always replays.
+            meterFill.style.width = "0%";
+            requestAnimationFrame(() => {
+              meterFill.style.width = `${outcome.radius}%`;
+              meterFill.classList.toggle("is-bad", mode === "docker");
+            });
+          }
+          if (meterValue) meterValue.textContent = outcome.label;
+          simBtn.disabled = true;
+
+          resetTimer = setTimeout(() => {
+            consoleEl.classList.remove("is-breached", "is-breached-docker", "is-breached-podman");
+            appGroups.forEach((g) => g.classList.remove("is-breached"));
+            simBtn.disabled = false;
+          }, reduce ? 1800 : 3400);
+        }
+
+        switchBtns.forEach((btn) => btn.addEventListener("click", () => setMode(btn.dataset.mode)));
+        simBtn.addEventListener("click", simulate);
+
+        targetBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            target = Number(btn.dataset.app) || 0;
+            targetBtns.forEach((b) => {
+              const active = b === btn;
+              b.classList.toggle("is-active", active);
+              b.setAttribute("aria-pressed", String(active));
+            });
+            appGroups.forEach((g, i) => g.classList.toggle("is-target", i === target));
+          });
+        });
+
+        // Capability rows: expand, and highlight the matching diagram layer.
+        const rows = Array.from(document.querySelectorAll(".pv-row"));
+        const LAYERS = {
+          daemon: ".pv-daemon",
+          systemd: ".pv-systemd",
+          ns: ".pv-ns",
+          host: ".pv-host",
+        };
+
+        function clearFocus() {
+          consoleEl.classList.remove("is-focusing");
+          consoleEl.querySelectorAll(".is-focus").forEach((el) => el.classList.remove("is-focus"));
+        }
+
+        rows.forEach((row) => {
+          row.addEventListener("click", () => {
+            const open = row.classList.toggle("is-open");
+            row.setAttribute("aria-expanded", String(open));
+          });
+          row.addEventListener("mouseenter", () => {
+            const sel = LAYERS[row.dataset.focus];
+            if (!sel) return;
+            consoleEl.classList.add("is-focusing");
+            const target_ = consoleEl.querySelector(sel);
+            if (target_) target_.classList.add("is-focus");
+          });
+          row.addEventListener("mouseleave", clearFocus);
+          row.addEventListener("focus", () => {
+            const sel = LAYERS[row.dataset.focus];
+            if (!sel) return;
+            consoleEl.classList.add("is-focusing");
+            const target_ = consoleEl.querySelector(sel);
+            if (target_) target_.classList.add("is-focus");
+          });
+          row.addEventListener("blur", clearFocus);
+        });
+
+        // Initial paint: mark the first app as the selected target.
+        appGroups[0] && appGroups[0].classList.add("is-target");
+      })();
 
       // ── Scroll reveal ──────────────────────────────────
       // Staggered entry animation for .reveal elements. Content stays
