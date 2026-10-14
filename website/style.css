@@ -561,156 +561,144 @@ code, pre { font-family: var(--font-mono); }
 /* ── App of the Day ────────────────────────────── */
 /* One quiet line: logo, name, one-sentence blurb, arrow. The whole
    thing is a single link, so there is no card and no second CTA. */
-/* Own section, below the app marquee. The row spans the wrap so it reads
-   as a wide banner rather than a stranded card. The polish is in the
-   accent bar, the badge and the date stamp, not in more elements. */
-.aotd-block { max-width: 56rem; }
-.aotd-label {
+/* ── App of the Day ────────────────────────────── */
+/* Vercel language: a bordered card on a blueprint grid, a mono kicker
+   row separated by a hairline, and one black CTA. Structure carries the
+   hierarchy — no gradients, no glows. */
+.aotd-block { max-width: 58rem; }
+
+/* Blueprint grid behind the card. */
+#app-of-the-day {
+  background-color: var(--white);
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center;
+}
+/* Fade the grid out at the edges so it reads as texture, not a table. */
+#app-of-the-day .wrap { position: relative; }
+#app-of-the-day .wrap::before {
+  content: "";
+  position: absolute;
+  inset: -5rem -1rem;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, var(--white) 30%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+.aotd-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  margin-bottom: 1rem;
+}
+
+.aotd-card {
+  position: relative;
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  background: var(--white);
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.aotd-card:hover {
+  border-color: var(--gray-400);
+  box-shadow: var(--shadow-md);
+}
+
+/* Kicker row: mono label left, date right, hairline under. */
+.aotd-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--gray-400);
-  margin-bottom: 0.9rem;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.25rem;
+  border-bottom: 1px solid var(--gray-200);
+  background: var(--gray-50);
 }
-.aotd-label-dot {
+.aotd-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--gray-700);
+}
+.aotd-dot {
   width: 0.4rem;
   height: 0.4rem;
   border-radius: var(--radius-full);
   background: var(--emerald-500);
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
   animation: aotdPulse 2.4s ease-in-out infinite;
 }
 @keyframes aotdPulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14); }
-  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.06); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.05); }
 }
-
-.aotd-pick {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  border-radius: var(--radius-2xl);
-  padding: 0.85rem 1.25rem 0.85rem 0.85rem;
-  border: 1px solid var(--gray-200);
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-/* Emerald accent bar that wipes in on hover. */
-.aotd-pick::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: linear-gradient(180deg, var(--emerald-400), var(--emerald-600));
-  transform: scaleY(0);
-  transform-origin: center;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.aotd-pick:hover {
-  border-color: var(--gray-300);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
-}
-.aotd-pick:hover::before { transform: scaleY(1); }
-
-.aotd-pick-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  flex-shrink: 0;
-  order: -1;
-  padding: 0.25rem 0.55rem;
-  border-radius: var(--radius-full);
-  background: var(--emerald-50);
-  border: 1px solid var(--emerald-200);
-  color: var(--emerald-700);
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
-  transition: background 0.25s ease, border-color 0.25s ease;
-}
-.aotd-pick-badge svg { width: 0.7rem; height: 0.7rem; }
-.aotd-pick:hover .aotd-pick-badge {
-  background: var(--emerald-100);
-  border-color: var(--emerald-400);
-}
-
-.aotd-pick-logo {
-  width: 3.25rem;
-  height: 3.25rem;
-  flex-shrink: 0;
-  border-radius: var(--radius-lg);
-  object-fit: cover;
-  border: 1px solid var(--gray-100);
-  background: var(--white);
-  box-shadow: var(--shadow-xs);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-.aotd-pick:hover .aotd-pick-logo {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.4);
-}
-
-.aotd-pick-body { min-width: 0; flex: 1; }
-.aotd-pick-name {
-  display: block;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--gray-900);
-  letter-spacing: -0.015em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.2s ease;
-}
-.aotd-pick:hover .aotd-pick-name { color: var(--black); }
-/* Clamp to one line: a full-width row leaves the description free to run
-   to the edge, and a second line would unbalance the row. */
-.aotd-pick-desc {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--gray-500);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.aotd-pick-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  flex-shrink: 0;
-  margin-left: auto;
-}
-.aotd-pick-date {
+.aotd-date {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--gray-400);
   white-space: nowrap;
 }
-.aotd-pick-arrow {
-  color: var(--gray-300);
-  font-size: 1.05rem;
-  transition: color 0.2s ease, transform 0.2s ease;
+
+/* Body: logo, copy, CTA. */
+.aotd-body {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.75rem 1.25rem;
 }
-.aotd-pick:hover .aotd-pick-arrow {
-  color: var(--emerald-600);
-  transform: translateX(4px);
+.aotd-logo {
+  width: 5.5rem;
+  height: 5.5rem;
+  flex-shrink: 0;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--gray-200);
+  background: var(--white);
 }
+.aotd-copy { flex: 1; min-width: 0; }
+.aotd-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--black);
+}
+.aotd-name a { color: inherit; }
+.aotd-name a:hover { color: var(--gray-600); }
+.aotd-desc {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--gray-500);
+  max-width: 34rem;
+}
+
+/* Vercel-style black CTA. */
+.aotd-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.55rem 1rem;
+  border-radius: 6px;
+  background: var(--black);
+  color: var(--white);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s ease, gap 0.2s ease;
+}
+.aotd-cta svg { width: 0.95rem; height: 0.95rem; }
+.aotd-cta:hover { background: var(--gray-800); gap: 0.6rem; }
 
 /* ── Why Yantr vs Umbrel ────────────────────────────── */
 .split {
@@ -2796,11 +2784,12 @@ p code, li code, td code, .spec-sub code {
 }
 
 @media (max-width: 639px) {
-  /* Spotlight: the badge would eat the whole row on mobile, so drop it and
-     let the name + description keep the single-line shape. */
-  .aotd-pick { padding: 0.75rem 1rem 0.75rem 0.75rem; gap: 0.85rem; }
-  .aotd-pick-badge { display: none; }
-  .aotd-pick-meta { margin-left: auto; }
+  /* Spotlight: stack the body and let the CTA span the full width. */
+  .aotd-body { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.25rem; }
+  .aotd-logo { width: 4rem; height: 4rem; }
+  .aotd-name { font-size: 1.25rem; }
+  .aotd-desc { font-size: 0.85rem; }
+  .aotd-cta { width: 100%; justify-content: center; }
 
   /* Comparison table stacks: label on top, then the two verdicts. */
   .pv-thead { display: none; }

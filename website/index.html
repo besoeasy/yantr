@@ -242,10 +242,7 @@
       <section id="app-of-the-day" class="full-bleed section section-white">
         <div class="wrap">
           <div class="aotd-block">
-            <p class="aotd-label">
-              <span class="aotd-label-dot" aria-hidden="true"></span>
-              Daily Spotlight
-            </p>
+            <p class="aotd-eyebrow">Daily Spotlight</p>
             <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
           </div>
         </div>
@@ -1071,21 +1068,29 @@
           });
 
           container.innerHTML = `
-            <a href="./apps/${app.id}/" class="aotd-pick">
-              <span class="aotd-pick-badge">
-                <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9L12 2.5z"/></svg>
-                App of the day
-              </span>
-              <img src="${logoUrl}" alt="" class="aotd-pick-logo" width="56" height="56" loading="lazy" />
-              <span class="aotd-pick-body">
-                <span class="aotd-pick-name">${app.name}</span>
-                <span class="aotd-pick-desc">${desc}</span>
-              </span>
-              <span class="aotd-pick-meta">
-                <span class="aotd-pick-date">${today}</span>
-                <span class="aotd-pick-arrow" aria-hidden="true">→</span>
-              </span>
-            </a>
+            <article class="aotd-card">
+              <header class="aotd-bar">
+                <span class="aotd-kicker">
+                  <span class="aotd-dot" aria-hidden="true"></span>
+                  App of the Day
+                </span>
+                <span class="aotd-date">${today}</span>
+              </header>
+
+              <div class="aotd-body">
+                <img src="${logoUrl}" alt="" class="aotd-logo" width="88" height="88" loading="lazy" />
+                <div class="aotd-copy">
+                  <h3 class="aotd-name">
+                    <a href="./apps/${app.id}/">${app.name}</a>
+                  </h3>
+                  <p class="aotd-desc">${desc}</p>
+                </div>
+                <a href="./apps/${app.id}/" class="aotd-cta">
+                  View app
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>
+                </a>
+              </div>
+            </article>
           `;
         } catch (error) {
           console.error("Failed to load app of the day:", error);
