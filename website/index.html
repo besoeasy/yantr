@@ -1514,16 +1514,26 @@
         if (osEl) osEl.innerHTML = barList(osList, maxOf(osList), "fleet-bar-green", (i) => i.name);
         const appsEl = document.getElementById("fleet-apps");
         if (appsEl) {
-          const withLogos = apps.map((a) => {
+          // Top 5 by installs, names only — no counts, no bars.
+          const topApps = apps.slice(0, 5).map((a) => {
             const known = fleetAppIndex && fleetAppIndex[a.id];
             return {
-              ...a,
+              name: a.name,
               logo: known && known.hasLogo
                 ? `./apps/${a.id}/logo.svg`
                 : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random&color=fff&bold=true`,
             };
           });
-          appsEl.innerHTML = barList(withLogos, maxOf(apps), "fleet-bar-violet", (i) => i.name);
+          appsEl.innerHTML = topApps.map((a) => `
+            <li class="fleet-row">
+              <img src="${fleetEsc(a.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />
+              <span class="fleet-row-body">
+                <span class="fleet-row-top">
+                  <span class="fleet-row-name">${fleetEsc(a.name)}</span>
+                </span>
+              </span>
+            </li>
+          `).join("");
         }
 
         show("fleet-countries-empty", countries.length === 0);
