@@ -26,6 +26,7 @@ website/tailwind.css
 website/apps.json
 website/apps
 website/github-data.json
+website/telemetry.json
 website/catalog
 
 # Binaries & test artifacts

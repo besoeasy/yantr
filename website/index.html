@@ -798,6 +798,72 @@
         </div>
       </section>
 
+      <!-- Live Fleet Telemetry Section -->
+      <section id="fleet" class="full-bleed section section-gray">
+        <div class="wrap">
+          <div class="center fleet-head">
+            <p class="eyebrow eyebrow-green">Live Fleet · Telemetry</p>
+            <h2 class="h2">
+              Real homelabs, running Yantr.
+              <span class="muted">Anonymous presence feed.</span>
+            </h2>
+            <p class="lead">
+              The same fleet stats shown in the app's Fleet page — anonymous nodes reporting country, OS, RAM, and installed apps. No accounts, no tracking. Disable anytime with <code>YANTR_TELEMETRY=false</code>.
+            </p>
+          </div>
+
+          <div id="fleet-loading" class="fleet-loading">
+            <div class="fleet-spinner" aria-hidden="true"></div>
+            <p>Loading live fleet stats…</p>
+          </div>
+
+          <div id="fleet-content" class="hidden">
+            <!-- Stat cards: Nodes · RAM lowest / highest / average -->
+            <div class="fleet-stats">
+              <div class="fleet-stat">
+                <span class="fleet-stat-label">Nodes</span>
+                <span class="fleet-stat-value"><span id="fleet-nodes">0</span></span>
+              </div>
+              <div class="fleet-stat">
+                <span class="fleet-stat-label">RAM lowest</span>
+                <span class="fleet-stat-value"><span id="fleet-ram-min">—</span> <span class="fleet-stat-unit" id="fleet-ram-min-unit">GB</span></span>
+              </div>
+              <div class="fleet-stat">
+                <span class="fleet-stat-label">RAM highest</span>
+                <span class="fleet-stat-value"><span id="fleet-ram-max">—</span> <span class="fleet-stat-unit" id="fleet-ram-max-unit">GB</span></span>
+              </div>
+              <div class="fleet-stat">
+                <span class="fleet-stat-label">RAM average</span>
+                <span class="fleet-stat-value"><span id="fleet-ram-avg">—</span> <span class="fleet-stat-unit" id="fleet-ram-avg-unit">GB</span></span>
+              </div>
+            </div>
+
+            <div class="fleet-grid">
+              <div class="fleet-panel">
+                <h3>Countries</h3>
+                <div id="fleet-countries-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
+                <ul id="fleet-countries" class="fleet-list"></ul>
+              </div>
+              <div class="fleet-panel">
+                <h3>Operating systems</h3>
+                <div id="fleet-os-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
+                <ul id="fleet-os" class="fleet-list"></ul>
+              </div>
+              <div class="fleet-panel">
+                <h3>Most installed apps</h3>
+                <div id="fleet-apps-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
+                <ul id="fleet-apps" class="fleet-list"></ul>
+              </div>
+            </div>
+
+            <p class="fleet-foot">
+              <span id="fleet-footnote"></span>
+              <button id="fleet-refresh" class="fleet-refresh" type="button">Refresh live</button>
+            </p>
+          </div>
+        </div>
+      </section>
+
       <!-- FAQ Section -->
       <section class="full-bleed section-dark" id="faq">
         <!-- Dot-grid decoration matching community section -->
@@ -1276,12 +1342,244 @@
         render();
       }
 
+      // ── Live Fleet Telemetry ──────────────────────────
+      // Same stats as the app UI Fleet page (ui/src/views/Telemetry.vue):
+      // nodes, RAM min/max/avg, countries, OS, most installed apps.
+      // Renders the build-time ./telemetry.json snapshot instantly, then
+      // refreshes live from the public ntfy presence feed in the browser.
+      const FLEET_NTFY_URL = "https://ntfy.sh/yantr/json?poll=1&since=all";
+      let fleetAppIndex = null;
+      // Code → display name from the build-time snapshot (resolved with the
+      // same table as LookupCountry in core/telemetry/countries.go).
+      let fleetCountryNames = {};
+
+      function fleetEsc(s) {
+        return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+        })[c]);
+      }
+
+      function fleetCountryName(code) {
+        code = String(code || "").trim().toUpperCase();
+        if (!code || code === "??") return "Unknown";
+        if (fleetCountryNames[code]) return fleetCountryNames[code];
+        try {
+          const name = new Intl.DisplayNames(["en"], { type: "region" }).of(code);
+          if (name && name !== code) return name;
+        } catch { /* fall through */ }
+        return code;
+      }
+
+      async function fleetAppIndexLoad() {
+        if (fleetAppIndex) return fleetAppIndex;
+        fleetAppIndex = {};
+        try {
+          const res = await fetch("./apps.json");
+          const data = await res.json();
+          for (const app of data.apps || []) {
+            if (app && app.id) fleetAppIndex[app.id] = app;
+          }
+        } catch { /* catalog optional — fall back to raw ids */ }
+        return fleetAppIndex;
+      }
+
+      // Mirrors Aggregate in core/telemetry/stats.go: latest presence wins.
+      function aggregateFleetEvents(rawEvents, appIndex) {
+        const nodes = new Map();
+        const installs = {};
+        for (const evt of rawEvents) {
+          if (evt.event === "presence") {
+            const id = evt.node ||
+              `fp:${evt.country || ""}|${evt.os || ""}|${evt.arch || ""}|${evt.cores || 0}|${evt.ram_gb || 0}|${evt.v || ""}`;
+            const prev = nodes.get(id);
+            if (!prev || (evt.ts || 0) >= prev.ts) nodes.set(id, { evt, ts: evt.ts || 0 });
+          } else if (evt.event === "install" && evt.app) {
+            installs[evt.app] = (installs[evt.app] || 0) + 1;
+          }
+        }
+
+        const countryCounts = {};
+        const osCounts = {};
+        const appCounts = {};
+        const ramValues = [];
+        for (const { evt } of nodes.values()) {
+          const country = (evt.country || "??").toUpperCase();
+          countryCounts[country] = (countryCounts[country] || 0) + 1;
+          const os = evt.os || "unknown";
+          osCounts[os] = (osCounts[os] || 0) + 1;
+          if (evt.ram_gb > 0) ramValues.push(evt.ram_gb);
+          for (const app of evt.apps || []) {
+            if (app) appCounts[app] = (appCounts[app] || 0) + 1;
+          }
+        }
+        for (const [app, n] of Object.entries(installs)) {
+          if (!appCounts[app]) appCounts[app] = n;
+        }
+
+        const byCountDesc = (entries) =>
+          entries.sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
+        const ram = { min: 0, max: 0, avg: 0, unit: "GB", count: ramValues.length };
+        if (ramValues.length > 0) {
+          ram.min = Math.min(...ramValues);
+          ram.max = Math.max(...ramValues);
+          ram.avg = ramValues.reduce((s, v) => s + v, 0) / ramValues.length;
+        }
+
+        return {
+          nodes: nodes.size,
+          events: rawEvents.length,
+          countries: byCountDesc(Object.entries(countryCounts)).map(([code, count]) => ({
+            code, name: fleetCountryName(code), count,
+          })),
+          os: byCountDesc(Object.entries(osCounts)).slice(0, 12).map(([name, count]) => ({ name, count })),
+          ram,
+          apps: byCountDesc(Object.entries(appCounts)).slice(0, 12).map(([id, count]) => ({
+            id, name: (appIndex && appIndex[id] && appIndex[id].name) || id, count,
+          })),
+          window: "ntfy cache",
+          fetchedAt: new Date().toISOString(),
+        };
+      }
+
+      async function fetchFleetLive(appIndex) {
+        const res = await fetch(FLEET_NTFY_URL, { headers: { Accept: "application/x-ndjson" } });
+        if (!res.ok) throw new Error(`ntfy status ${res.status}`);
+        const text = await res.text();
+        const events = [];
+        for (const line of text.split("\n")) {
+          const trimmed = line.trim();
+          if (!trimmed) continue;
+          let msg;
+          try { msg = JSON.parse(trimmed); } catch { continue; }
+          if (msg.event && msg.event !== "message") continue;
+          let evt;
+          try { evt = JSON.parse(msg.message); } catch { continue; }
+          if (!evt || !evt.event) continue;
+          if (!evt.ts && msg.time) evt.ts = msg.time;
+          if (!evt.node && msg.id) evt.node = msg.id;
+          if (evt.country) evt.country = String(evt.country).trim().toUpperCase();
+          events.push(evt);
+        }
+        return aggregateFleetEvents(events, appIndex);
+      }
+
+      function renderFleet(stats) {
+        if (!stats) return;
+        const show = (id, visible) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.toggle("hidden", !visible);
+        };
+        show("fleet-loading", false);
+        show("fleet-content", true);
+
+        const setText = (id, value) => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = value;
+        };
+        setText("fleet-nodes", stats.nodes ?? 0);
+        const ram = stats.ram || {};
+        setText("fleet-ram-min", ram.min || "—");
+        setText("fleet-ram-max", ram.max || "—");
+        setText("fleet-ram-avg", ram.avg != null && !Number.isNaN(Number(ram.avg)) && ram.count > 0
+          ? Number(ram.avg).toFixed(1)
+          : "—");
+        for (const suffix of ["min", "max", "avg"]) {
+          setText(`fleet-ram-${suffix}-unit`, ram.unit || "GB");
+        }
+
+        const barList = (items, max, barClass, label) => {
+          if (!items || items.length === 0) return "";
+          return items.map((item) => `
+            <li class="fleet-row">
+              ${item.logo ? `<img src="${fleetEsc(item.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
+              <span class="fleet-row-body">
+                <span class="fleet-row-top">
+                  <span class="fleet-row-name">${fleetEsc(label(item))}</span>
+                  <span class="fleet-row-count">${item.count}</span>
+                </span>
+                <span class="fleet-bar ${barClass}"><span style="width:${((item.count / max) * 100).toFixed(1)}%"></span></span>
+              </span>
+            </li>
+          `).join("");
+        };
+
+        const countries = stats.countries || [];
+        const osList = stats.os || [];
+        const apps = stats.apps || [];
+        const maxOf = (items) => items.reduce((m, i) => Math.max(m, i.count || 0), 0) || 1;
+
+        const countriesEl = document.getElementById("fleet-countries");
+        if (countriesEl) countriesEl.innerHTML = barList(countries, maxOf(countries), "fleet-bar-blue", (i) => i.name);
+        const osEl = document.getElementById("fleet-os");
+        if (osEl) osEl.innerHTML = barList(osList, maxOf(osList), "fleet-bar-green", (i) => i.name);
+        const appsEl = document.getElementById("fleet-apps");
+        if (appsEl) {
+          const withLogos = apps.map((a) => {
+            const known = fleetAppIndex && fleetAppIndex[a.id];
+            return {
+              ...a,
+              logo: known && known.hasLogo
+                ? `./apps/${a.id}/logo.svg`
+                : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random&color=fff&bold=true`,
+            };
+          });
+          appsEl.innerHTML = barList(withLogos, maxOf(apps), "fleet-bar-violet", (i) => i.name);
+        }
+
+        show("fleet-countries-empty", countries.length === 0);
+        show("fleet-os-empty", osList.length === 0);
+        show("fleet-apps-empty", apps.length === 0);
+
+        const when = stats.fetchedAt ? new Date(stats.fetchedAt).toLocaleString("en-US") : "just now";
+        setText("fleet-footnote", `Window: ${stats.window || "ntfy cache"}. Parsed ${stats.events ?? 0} events. Updated ${when}.`);
+      }
+
+      async function loadFleet({ live = false } = {}) {
+        const btn = document.getElementById("fleet-refresh");
+        if (!document.getElementById("fleet-countries")) return;
+        if (btn) btn.disabled = true;
+        try {
+          const appIndex = await fleetAppIndexLoad();
+          if (live) {
+            try {
+              renderFleet(await fetchFleetLive(appIndex));
+              return;
+            } catch (e) {
+              console.warn("Live fleet fetch failed, keeping snapshot:", e);
+            }
+          }
+          // Build-time snapshot: instant first paint + offline fallback.
+          const res = await fetch("./telemetry.json");
+          if (!res.ok) throw new Error("telemetry snapshot missing");
+          const data = await res.json();
+          for (const c of (data.stats && data.stats.countries) || []) {
+            if (c && c.code && c.name) fleetCountryNames[c.code] = c.name;
+          }
+          renderFleet(data.stats || data);
+          // Upgrade to live data in the background when possible.
+          if (!live) {
+            try {
+              renderFleet(await fetchFleetLive(appIndex));
+            } catch (e) {
+              console.warn("Live fleet refresh failed, keeping snapshot:", e);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to load fleet stats:", error);
+          const loading = document.getElementById("fleet-loading");
+          if (loading) loading.innerHTML = "<p>No fleet data available right now — check back soon.</p>";
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", () => {
         loadHeroAppShowcase();
         loadAppOfTheDay();
         loadStars();
         loadContributors();
         initHeroAnimation();
+        loadFleet();
 
         let heroResizeTimer;
         window.addEventListener("resize", () => {
@@ -1292,6 +1590,9 @@
         });
 
         loadAllApps();
+
+        const fleetRefresh = document.getElementById("fleet-refresh");
+        if (fleetRefresh) fleetRefresh.addEventListener("click", () => loadFleet({ live: true }));
       });
 
       // ── Hero Features Scroller ──────────────────────────────────────
