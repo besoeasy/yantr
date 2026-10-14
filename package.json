@@ -1,10 +1,7 @@
 {
-  "name": "yantr-website-builder",
+  "name": "yantr",
   "private": true,
   "type": "module",
-  "scripts": {
-    "build": "node website-build.js"
-  },
   "dependencies": {
     "nunjucks": "^3.2.4",
     "yaml": "^2.9.0"

@@ -128,4 +128,4 @@ cd core && go build ./... && go vet ./... && go test ./...
 ```
 `gofmt -l .` shows pre-existing drift in `apps/catalog.go`, `handlers_apps.go`, `handlers_images.go`, `main.go` — don't mass-reformat those.
 
-The root `package.json` belongs to the website builder (`website-build.js`), not the app UI — `ui/` has its own. Rebuild yantr.org locally with `npm ci && npm run build` from the repo root; output (`website/apps.json`, `website/apps/`, …) is gitignored and deployed by `.github/workflows/website.yml`.
+The root `package.json` belongs to the website builder (`website-build.js`), not the app UI — `ui/` has its own. Rebuild yantr.org locally with `npm i && node website-build.js` from the repo root; output (`website/apps.json`, `website/apps/`, …) is gitignored and deployed by `.github/workflows/website.yml`.
