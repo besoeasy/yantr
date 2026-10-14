@@ -1630,13 +1630,13 @@ p code, li code, td code, .spec-sub code {
   gap: 1rem;
   border-radius: var(--radius-2xl);
   border: 1px solid transparent;
-  background: var(--gray-50);
+  background: transparent;
   padding: 1rem 1.25rem;
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .app-card:hover {
   transform: translateY(-2px);
-  background: var(--gray-100);
+  background: var(--gray-50);
   box-shadow: var(--shadow-sm);
 }
 .app-card img {
@@ -2574,13 +2574,13 @@ p code, li code, td code, .spec-sub code {
   gap: 1rem;
   padding: 1.15rem 1.25rem;
   border: 1px solid transparent;
-  background: var(--gray-50);
+  background: transparent;
   border-radius: var(--radius-2xl);
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .related-card:hover {
   transform: translateY(-2px);
-  background: var(--gray-100);
+  background: var(--gray-50);
   box-shadow: var(--shadow-sm);
 }
 .related-card img {
