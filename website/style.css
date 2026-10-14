@@ -1479,32 +1479,59 @@ p code, li code, td code, .spec-sub code {
 .spec-card.dark .spec-row .v { color: var(--white); }
 
 .tested { margin-top: 4rem; text-align: center; }
-.tested .tested-list {
+.tested-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+}
+.tested-card {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem 1.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--gray-700);
-}
-.tested .tested-list span {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  background: var(--gray-50);
+  text-align: center;
+  gap: 0.35rem;
+  padding: 1.5rem 1rem;
+  border-radius: var(--radius-2xl);
   border: 1px solid var(--gray-200);
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-full);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
-.tested-list .swatch {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: var(--radius-full);
-  background: var(--emerald-500);
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
-  flex-shrink: 0;
+.tested-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--gray-300);
 }
+.tested-icon {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.6rem;
+  border-radius: var(--radius-lg);
+  background: var(--gray-100);
+  color: var(--gray-900);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.tested-icon svg { width: 1.3rem; height: 1.3rem; }
+.tested-card:hover .tested-icon {
+  transform: scale(1.08) rotate(-4deg);
+  background: var(--black);
+  color: var(--white);
+}
+.tested-card h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--gray-900);
+}
+.tested-spec {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--gray-400);
+}
+.tested-card:hover .tested-spec { color: var(--emerald-600); }
 
 /* ── FAQ ───────────────────────────────────────────── */
 .faq-grid {
@@ -2894,6 +2921,7 @@ p code, li code, td code, .spec-sub code {
   .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .versus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .zero-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .tested-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fleet-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-head-row { flex-direction: row; align-items: flex-end; justify-content: space-between; }
@@ -2933,6 +2961,7 @@ p code, li code, td code, .spec-sub code {
   .apps-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .contrib-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .arch-diagram { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .tested-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .hero-pillar { width: 360px; }
   .app-pill { min-width: 380px; max-width: 460px; }
 }
