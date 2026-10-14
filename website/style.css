@@ -727,7 +727,9 @@ p code, li code, td code, .spec-sub code {
 .pv-dark { background: var(--black); padding: 6rem 0; }
 .pv-wrap { position: relative; }
 
-.pv-head { max-width: 46rem; margin-bottom: 3rem; }
+/* 6rem above the table matches the 6rem below it, so the table sits
+   centered in the space between the intro and the feature cards. */
+.pv-head { max-width: 46rem; margin-bottom: 6rem; }
 .pv-head .h2 { color: var(--white); letter-spacing: -0.03em; }
 .pv-head .h2 .muted { color: rgba(255, 255, 255, 0.4); }
 .pv-head .lead { color: rgba(255, 255, 255, 0.6); font-size: 1rem; line-height: 1.7; }
