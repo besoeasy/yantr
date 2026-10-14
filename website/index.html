@@ -239,18 +239,9 @@
       </div>
 
       <!-- App of the Day Section -->
-      <section id="app-of-the-day" class="full-bleed section section-white">
+      <section id="app-of-the-day" class="full-bleed section section-white aotd-section">
         <div class="wrap">
-          <div class="center aotd-head">
-            <p class="eyebrow">Daily Spotlight</p>
-            <h2 class="h2">
-              App of the Day
-              <span class="muted">A new pick, every day.</span>
-            </h2>
-            <p class="lead">
-              One self-hosted app, chosen by the date. Come back tomorrow and discover the next one.
-            </p>
-          </div>
+          <p class="aotd-label">Daily Spotlight</p>
           <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
         </div>
       </section>
@@ -1247,34 +1238,16 @@
 
           const logoUrl = getLogoUrl(app);
           const desc = app.short_description || app.description || "";
-          const tags = (app.tags || []).slice(0, 5)
-            .map((t) => `<span class="aotd-tag">${t}</span>`)
-            .join("");
-          const usecases = (app.usecases || []).slice(0, 2)
-            .map((u) => `<span class="aotd-usecase">${u}</span>`)
-            .join("");
-          const today = new Date().toLocaleDateString("en-US", {
-            weekday: "long", year: "numeric", month: "long", day: "numeric",
-          });
 
           container.innerHTML = `
-            <div class="aotd-card">
-              <span class="aotd-glow" aria-hidden="true"></span>
-              <div class="aotd-card-top">
-                <img src="${logoUrl}" alt="${app.name}" class="aotd-logo" />
-                <div>
-                  <p class="aotd-kicker">★ App of the Day · ${today}</p>
-                  <h3 class="aotd-name"><a href="./apps/${app.id}/">${app.name}</a></h3>
-                  <div class="aotd-tags">${tags}</div>
-                </div>
-              </div>
-              <p class="aotd-desc">${desc}</p>
-              <div class="aotd-usecases">${usecases}</div>
-              <div class="aotd-actions">
-                <a href="./apps/${app.id}/" class="aotd-btn">View ${app.name} →</a>
-                <a href="#all-apps" class="aotd-btn aotd-btn-ghost">Browse all apps</a>
-              </div>
-            </div>
+            <a href="./apps/${app.id}/" class="aotd-pick">
+              <img src="${logoUrl}" alt="" class="aotd-pick-logo" width="56" height="56" loading="lazy" />
+              <span class="aotd-pick-body">
+                <span class="aotd-pick-name">${app.name}</span>
+                <span class="aotd-pick-desc clamp-2">${desc}</span>
+              </span>
+              <span class="aotd-pick-arrow" aria-hidden="true">→</span>
+            </a>
           `;
         } catch (error) {
           console.error("Failed to load app of the day:", error);

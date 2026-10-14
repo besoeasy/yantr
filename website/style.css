@@ -559,145 +559,68 @@ code, pre { font-family: var(--font-mono); }
 @keyframes marquee-right { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 
 /* ── App of the Day ────────────────────────────── */
-/* Alignment comes from .center, which every other section heading uses.
-   All this class still needs to say is the gap down to the card. */
-.aotd-head { margin-bottom: 3rem; }
-
-.aotd-card {
-  position: relative;
-  overflow: hidden;
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 1.75rem 1.5rem;
-  border-radius: var(--radius-2xl);
-  border: 1px solid #1f2937;
-  background: linear-gradient(180deg, #111827 0%, #030712 100%);
-  color: var(--white);
-  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-}
-.aotd-glow {
-  position: absolute;
-  right: -3rem;
-  bottom: -3rem;
-  width: 18rem;
-  height: 18rem;
-  border-radius: var(--radius-full);
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.18), rgba(124, 58, 237, 0.1), transparent 70%);
-  filter: blur(50px);
-  pointer-events: none;
-}
-.aotd-card-top {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-.aotd-logo {
-  width: 5.25rem;
-  height: 5.25rem;
-  object-fit: cover;
-  flex-shrink: 0;
-  border-radius: var(--radius-xl);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: var(--white);
-  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
-}
-.aotd-kicker {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--emerald-400);
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-.aotd-name {
-  font-size: 1.6rem;
+/* One quiet line: logo, name, one-sentence blurb, arrow. The whole
+   thing is a single link, so there is no card and no second CTA. */
+.aotd-section { padding: 3.5rem 0; }
+.aotd-label {
+  font-size: 0.7rem;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--white);
-}
-.aotd-name a { color: inherit; }
-.aotd-name a:hover { color: var(--emerald-400); }
-.aotd-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.75rem;
-}
-.aotd-tag {
-  font-size: 0.68rem;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 700;
-  padding: 0.22rem 0.6rem;
-  border-radius: var(--radius-full);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.85);
-}
-.aotd-desc {
-  position: relative;
-  margin-top: 1.25rem;
-  font-size: 0.95rem;
-  line-height: 1.7;
+  letter-spacing: 0.2em;
   color: var(--gray-400);
-  max-width: 44rem;
+  margin-bottom: 1rem;
 }
-.aotd-usecases {
-  position: relative;
-  margin-top: 1rem;
+.aotd-pick {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.aotd-usecase {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.5;
-}
-.aotd-usecase::before {
-  content: "✦";
-  color: var(--emerald-400);
-  flex-shrink: 0;
-}
-.aotd-actions {
-  position: relative;
-  margin-top: 1.75rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.85rem;
-}
-.aotd-btn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.4rem;
+  gap: 1rem;
+  max-width: 34rem;
   border-radius: var(--radius-full);
-  font-size: 0.875rem;
-  font-weight: 800;
+  padding: 0.75rem 1.25rem 0.75rem 0.75rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.aotd-pick:hover {
+  background: var(--gray-50);
+  transform: translateX(4px);
+}
+.aotd-pick-logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg);
+  object-fit: cover;
+  border: 1px solid var(--gray-100);
   background: var(--white);
-  color: var(--black);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-xs);
 }
-.aotd-btn:hover {
-  background: rgba(255, 255, 255, 0.92);
-  transform: translateY(-2px);
+.aotd-pick-body { min-width: 0; flex: 1; }
+.aotd-pick-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.aotd-btn-ghost {
-  background: transparent;
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: none;
+.aotd-pick:hover .aotd-pick-name { color: var(--black); }
+.aotd-pick-desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--gray-500);
 }
-.aotd-btn-ghost:hover {
-  border-color: rgba(255, 255, 255, 0.45);
-  color: var(--white);
-  background: rgba(255, 255, 255, 0.06);
+.aotd-pick-arrow {
+  flex-shrink: 0;
+  color: var(--gray-300);
+  font-size: 1.05rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.aotd-pick:hover .aotd-pick-arrow {
+  color: var(--gray-900);
+  transform: translateX(3px);
 }
 
 /* ── Why Yantr vs Umbrel ────────────────────────────── */
@@ -3123,10 +3046,7 @@ p code, li code, td code, .spec-sub code {
   .install-header h1 { font-size: 3.25rem; }
   .ram-panel { padding: 2.5rem; }
   .spec-card { padding: 2.5rem; }
-  .aotd-card { padding: 2.5rem 2.75rem; }
-  .aotd-logo { width: 6.5rem; height: 6.5rem; }
-  .aotd-name { font-size: 1.9rem; }
-}
+  }
 
 @media (min-width: 768px) {
   .ram-flex { flex-direction: row; align-items: center; justify-content: space-between; }
@@ -3192,9 +3112,6 @@ p code, li code, td code, .spec-sub code {
   .spec-card { padding: 1.5rem 1.25rem; }
   .install-header h1 { font-size: 2.25rem; }
   .app-hero h1 { font-size: 2.1rem; }
-  /* App of the Day: stack logo above text */
-  .aotd-card-top { flex-direction: column; align-items: flex-start; }
-  .aotd-actions .aotd-btn { flex: 1 1 100%; }
   /* Stats + spec rows: wrap instead of squeezing */
   .app-stats { flex-wrap: wrap; gap: 1rem 1.5rem; width: 100%; }
   .spec-row { flex-wrap: wrap; gap: 0.15rem; }
