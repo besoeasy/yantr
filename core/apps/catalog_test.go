@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestParseXyPortsShowDefaultsToWorkPort(t *testing.T) {
@@ -169,6 +171,48 @@ func TestDiagnosticPortsStayWorkPorts(t *testing.T) {
 			case "Metrics / pprof", "Postgres client", "gRPC service":
 				t.Errorf("app %q port %d %q is protocol plumbing and must not be "+
 					"marked show: true", app.ID, p.Port, p.Label)
+			}
+		}
+	}
+}
+
+// Rule 5 — prebuilt images only. A service declaring `build:` makes
+// podman-compose compile the image on the host through Yantr's mounted socket,
+// which is the remote-build path that needed a seccomp workaround no longer in
+// the image. Nothing in the catalog exercises it, so the rule is enforced here
+// rather than left to a hand-written Dockerfile that rule 5 also forbids.
+func TestNoServiceDeclaresABuildStep(t *testing.T) {
+	dir := appsDirForTest(t)
+
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatalf("read apps dir: %v", err)
+	}
+
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		composePath := filepath.Join(dir, entry.Name(), "compose.yml")
+		content, err := os.ReadFile(composePath)
+		if err != nil {
+			t.Errorf("app %q: read compose.yml: %v", entry.Name(), err)
+			continue
+		}
+		var doc composeFile
+		if err := yaml.Unmarshal(content, &doc); err != nil {
+			t.Errorf("app %q: parse compose.yml: %v", entry.Name(), err)
+			continue
+		}
+		for service, raw := range doc.Services {
+			svc, ok := raw.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			if _, found := svc["build"]; found {
+				t.Errorf("app %q service %q declares build: — the catalog ships "+
+					"prebuilt images only (AGENTS.md rule 5); a Dockerfile in the "+
+					"app folder is not part of the format", entry.Name(), service)
 			}
 		}
 	}
