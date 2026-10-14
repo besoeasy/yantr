@@ -799,6 +799,145 @@ p code, li code, td code, .spec-sub code {
 }
 
 /* ── Versus cards (podman vs docker) ─────────────── */
+/* Architecture diagram: daemon (left) vs daemonless (right). */
+.arch-diagram {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: stretch;
+  max-width: 58rem;
+  margin: 3rem auto 1.5rem;
+}
+.arch-col {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  padding: 1.5rem 1.25rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.arch-col-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.5rem;
+}
+.arch-col-docker .arch-col-label { color: var(--red-600); }
+.arch-col-yantr .arch-col-label { color: var(--emerald-600); }
+.arch-svg { width: 100%; height: auto; overflow: visible; }
+.arch-node-text {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  fill: var(--gray-500);
+}
+.arch-text-good { fill: var(--emerald-700); }
+.arch-text-top { font-size: 9px; }
+.arch-daemon {
+  fill: var(--red-50);
+  stroke: var(--red-200);
+  stroke-width: 1.5;
+}
+.arch-box {
+  fill: var(--white);
+  stroke: var(--gray-300);
+  stroke-width: 1.5;
+  animation: archBoxBob 3.6s ease-in-out infinite;
+}
+.arch-box-bad { fill: var(--gray-50); stroke: var(--gray-300); }
+.arch-box-good { fill: var(--emerald-50); stroke: var(--emerald-200); }
+.arch-box-hero { animation-delay: 0.35s; }
+.arch-systemd {
+  fill: var(--emerald-500);
+  stroke: none;
+  filter: drop-shadow(0 4px 10px rgba(16, 185, 129, 0.35));
+}
+.arch-wire {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 4 5;
+  animation: archFlow 1.4s linear infinite;
+}
+.arch-wire-bad { stroke: var(--gray-300); }
+.arch-wire-good { stroke: var(--emerald-400); }
+.arch-col-note {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--gray-500);
+}
+.arch-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arch-divider span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  color: var(--gray-400);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  box-shadow: var(--shadow-xs);
+}
+@keyframes archFlow {
+  to { stroke-dashoffset: -18; }
+}
+@keyframes archBoxBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Zero-privilege tiles */
+.zero-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  max-width: 58rem;
+  margin: 0 auto 2.5rem;
+}
+.zero-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--emerald-200);
+  background: linear-gradient(180deg, var(--emerald-50) 0%, var(--white) 100%);
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.zero-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.zero-value {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--emerald-600);
+  font-variant-numeric: tabular-nums;
+}
+.zero-label {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--gray-500);
+}
+
 .versus-legend {
   display: flex;
   flex-wrap: wrap;
@@ -856,6 +995,29 @@ p code, li code, td code, .spec-sub code {
   transform: translateY(-4px);
   box-shadow: var(--shadow-lg);
   border-color: var(--gray-300);
+}
+.versus-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.versus-card-icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  background: var(--gray-100);
+  color: var(--gray-900);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.versus-card-icon svg { width: 1.2rem; height: 1.2rem; }
+.versus-card:hover .versus-card-icon {
+  transform: scale(1.08) rotate(-3deg);
+  background: var(--black);
+  color: var(--white);
 }
 .versus-card h3 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.015em; color: var(--gray-900); }
 .versus-sub { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.2rem; }
@@ -2731,6 +2893,7 @@ p code, li code, td code, .spec-sub code {
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .versus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zero-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fleet-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-head-row { flex-direction: row; align-items: flex-end; justify-content: space-between; }
@@ -2769,6 +2932,7 @@ p code, li code, td code, .spec-sub code {
   .fleet-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .apps-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .contrib-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .arch-diagram { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
   .hero-pillar { width: 360px; }
   .app-pill { min-width: 380px; max-width: 460px; }
 }
@@ -2828,6 +2992,18 @@ p code, li code, td code, .spec-sub code {
 /* Very small screens: 2-column contributors keeps avatars legible */
 @media (max-width: 479px) {
   .contrib-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ── Scroll reveal ───────────────────────────────── */
+/* Elements start visible, so a failed/disabled observer can never hide
+   content. The observer adds .reveal-in, which replays the entry motion. */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(22px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.reveal.reveal-in {
+  animation: revealUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
 }
 
 /* ── Reduced motion accessibility ─────────────────── */

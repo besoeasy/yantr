@@ -398,6 +398,67 @@
             </p>
           </div>
 
+          <!-- Architecture at a glance: daemon vs daemonless -->
+          <div class="arch-diagram" aria-hidden="true">
+            <div class="arch-col arch-col-docker">
+              <p class="arch-col-label">Traditional Docker</p>
+              <svg viewBox="0 0 220 128" class="arch-svg" fill="none">
+                <rect class="arch-daemon" x="62" y="6" width="96" height="30" rx="8" />
+                <text class="arch-node-text" x="110" y="25" text-anchor="middle">dockerd · root</text>
+                <path class="arch-wire arch-wire-bad" d="M110 36 L110 62" />
+                <path class="arch-wire arch-wire-bad" d="M46 62 L174 62" />
+                <path class="arch-wire arch-wire-bad" d="M46 62 L46 86" />
+                <path class="arch-wire arch-wire-bad" d="M110 62 L110 86" />
+                <path class="arch-wire arch-wire-bad" d="M174 62 L174 86" />
+                <rect class="arch-box arch-box-bad" x="16" y="86" width="60" height="30" rx="8" />
+                <rect class="arch-box arch-box-bad" x="80" y="86" width="60" height="30" rx="8" />
+                <rect class="arch-box arch-box-bad" x="144" y="86" width="60" height="30" rx="8" />
+                <text class="arch-node-text" x="46" y="105" text-anchor="middle">app</text>
+                <text class="arch-node-text" x="110" y="105" text-anchor="middle">app</text>
+                <text class="arch-node-text" x="174" y="105" text-anchor="middle">app</text>
+              </svg>
+              <p class="arch-col-note">One privileged daemon sits between you and every container.</p>
+            </div>
+
+            <div class="arch-divider"><span>vs</span></div>
+
+            <div class="arch-col arch-col-yantr">
+              <p class="arch-col-label">Yantr + Rootless Podman</p>
+              <svg viewBox="0 0 220 128" class="arch-svg" fill="none">
+                <rect class="arch-box arch-box-good arch-box-hero" x="16" y="86" width="60" height="30" rx="8" />
+                <rect class="arch-box arch-box-good arch-box-hero" x="80" y="86" width="60" height="30" rx="8" />
+                <rect class="arch-box arch-box-good arch-box-hero" x="144" y="86" width="60" height="30" rx="8" />
+                <text class="arch-node-text arch-text-good" x="46" y="105" text-anchor="middle">app</text>
+                <text class="arch-node-text arch-text-good" x="110" y="105" text-anchor="middle">app</text>
+                <text class="arch-node-text arch-text-good" x="174" y="105" text-anchor="middle">app</text>
+                <path class="arch-wire arch-wire-good" d="M46 80 L46 62" />
+                <path class="arch-wire arch-wire-good" d="M110 80 L110 62" />
+                <path class="arch-wire arch-wire-good" d="M174 80 L174 62" />
+                <rect class="arch-systemd" x="40" y="32" width="140" height="30" rx="8" />
+                <text class="arch-node-text arch-text-good" x="110" y="51" text-anchor="middle">systemd --user · conmon</text>
+                <path class="arch-wire arch-wire-good" d="M110 32 L110 12" />
+                <text class="arch-node-text arch-text-good arch-text-top" x="110" y="8" text-anchor="middle">your unprivileged user</text>
+              </svg>
+              <p class="arch-col-note">No daemon. Apps are just native processes under your own user.</p>
+            </div>
+          </div>
+
+          <!-- Zero-privilege tiles -->
+          <div class="zero-strip">
+            <div class="zero-tile">
+              <span class="zero-value">0</span>
+              <span class="zero-label">Host root privileges</span>
+            </div>
+            <div class="zero-tile">
+              <span class="zero-value">0</span>
+              <span class="zero-label">Background daemons</span>
+            </div>
+            <div class="zero-tile">
+              <span class="zero-value">0</span>
+              <span class="zero-label">Firewall rules touched</span>
+            </div>
+          </div>
+
           <!-- Comparison cards -->
           <div class="versus-legend">
             <span class="versus-pill versus-pill-docker"><span class="versus-dot"></span>Traditional Docker</span>
@@ -406,8 +467,8 @@
           </div>
 
           <div class="versus-grid">
-            <div class="versus-card">
-              <h3>Privilege Model</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a3 3 0 013-3h6a3 3 0 013 3v2a3 3 0 00-1.5 2.6L24 18h-6v-3a3 3 0 00-3-3H8V7z"/></svg></span><h3>Privilege Model</h3></div>
               <p class="versus-sub">Execution context &amp; permissions</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Runs as root (dockerd)</span>
@@ -419,8 +480,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Security Blast Radius</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01"/></svg></span><h3>Security Blast Radius</h3></div>
               <p class="versus-sub">Impact of container escape / zero-day</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Host Root Compromise</span>
@@ -432,8 +493,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Engine Architecture</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 1v3m6-3v3M9 20v3m6-3v3M1 9h3m-3 6h3m16-6h3m-3 6h3"/></svg></span><h3>Engine Architecture</h3></div>
               <p class="versus-sub">Process management model</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Monolithic Daemon</span>
@@ -445,8 +506,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Service Management</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-3-6.7"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 3v6h-6"/></svg></span><h3>Service Management</h3></div>
               <p class="versus-sub">Boot, restarts, and supervision</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Proprietary Supervision</span>
@@ -458,8 +519,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Host Firewall &amp; Network</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3 4 7v5c0 5 3.4 8.5 8 9 4.6-.5 8-4 8-9V7l-8-4Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 12 2 2 4-4"/></svg></span><h3>Host Firewall &amp; Network</h3></div>
               <p class="versus-sub">iptables / nftables interaction</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Bypasses UFW Rules</span>
@@ -471,8 +532,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Host Filesystem Impact</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></span><h3>Host Filesystem Impact</h3></div>
               <p class="versus-sub">Storage location &amp; permissions</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Root-owned storage</span>
@@ -484,8 +545,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Idle Resource Overhead</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12h4l3 8 4-16 3 8h4"/></svg></span><h3>Idle Resource Overhead</h3></div>
               <p class="versus-sub">Memory &amp; CPU consumption</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Always-On Daemon</span>
@@ -497,8 +558,8 @@
               </div>
             </div>
 
-            <div class="versus-card">
-              <h3>Docker Socket Emulation</h3>
+            <div class="versus-card reveal">
+              <div class="versus-card-head"><span class="versus-card-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8m-4-4v8"/><circle cx="12" cy="12" r="9"/></svg></span><h3>Docker Socket Emulation</h3></div>
               <p class="versus-sub">For Glances, Portainer, Beszel</p>
               <div class="versus-side versus-docker">
                 <span class="badge badge-red">Dangerous Root Socket</span>
@@ -1581,6 +1642,34 @@
         const fleetRefresh = document.getElementById("fleet-refresh");
         if (fleetRefresh) fleetRefresh.addEventListener("click", () => loadFleet({ live: true }));
       });
+
+      // ── Scroll reveal ──────────────────────────────────
+      // Staggered entry animation for .reveal elements. Content stays
+      // visible by default; this only replays the motion when the element
+      // scrolls into view, so a blocked observer hides nothing.
+      (function scrollReveal() {
+        const items = Array.from(document.querySelectorAll(".reveal"));
+        if (!items.length) return;
+        if (!("IntersectionObserver" in window)) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.style.setProperty("--reveal-delay", `${entry.target.dataset.revealIndex * 70}ms`);
+              entry.target.classList.add("reveal-in");
+              io.unobserve(entry.target);
+            }
+          },
+          { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+        );
+
+        items.forEach((el, i) => {
+          el.dataset.revealIndex = String(i);
+          io.observe(el);
+        });
+      })();
 
       // ── Hero Features Scroller ──────────────────────────────────────
       (function heroFeaturesCarousel() {
