@@ -561,10 +561,10 @@ code, pre { font-family: var(--font-mono); }
 /* ── App of the Day ────────────────────────────── */
 /* One quiet line: logo, name, one-sentence blurb, arrow. The whole
    thing is a single link, so there is no card and no second CTA. */
-/* Lives inside the App Catalog section now, above the tag filters. */
-/* Still one quiet row — the polish is in the accent bar, the glow on the
-   logo, and a date stamp, not in adding more elements. */
-.aotd-block { margin-bottom: 2.75rem; }
+/* Own section, below the app marquee. The row spans the wrap so it reads
+   as a wide banner rather than a stranded card. The polish is in the
+   accent bar, the badge and the date stamp, not in more elements. */
+.aotd-block { max-width: 56rem; }
 .aotd-label {
   display: flex;
   align-items: center;
@@ -594,8 +594,6 @@ code, pre { font-family: var(--font-mono); }
   display: flex;
   align-items: center;
   gap: 1rem;
-  /* Full width of the catalog grid below it — a spotlight that stops at
-     38rem reads as a leftover box instead of part of the catalog. */
   width: 100%;
   border-radius: var(--radius-2xl);
   padding: 0.85rem 1.25rem 0.85rem 0.85rem;
