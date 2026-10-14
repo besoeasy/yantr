@@ -744,6 +744,9 @@ p code, li code, td code, .spec-sub code {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   overflow: hidden;
+  /* The feature cards that follow are a separate block, not a continuation
+     of the table, so the table needs to breathe before them. */
+  margin-bottom: 4.5rem;
 }
 .pv-thead {
   display: grid;
