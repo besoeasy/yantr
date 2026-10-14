@@ -562,48 +562,118 @@ code, pre { font-family: var(--font-mono); }
 /* One quiet line: logo, name, one-sentence blurb, arrow. The whole
    thing is a single link, so there is no card and no second CTA. */
 /* Lives inside the App Catalog section now, above the tag filters. */
-.aotd-block { margin-bottom: 2.5rem; }
+/* Still one quiet row — the polish is in the accent bar, the glow on the
+   logo, and a date stamp, not in adding more elements. */
+.aotd-block { margin-bottom: 2.75rem; }
 .aotd-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.2em;
   color: var(--gray-400);
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
+.aotd-label-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: var(--radius-full);
+  background: var(--emerald-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14);
+  animation: aotdPulse 2.4s ease-in-out infinite;
+}
+@keyframes aotdPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.14); }
+  50% { box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.06); }
+}
+
 .aotd-pick {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
-  max-width: 34rem;
-  border-radius: var(--radius-full);
-  padding: 0.75rem 1.25rem 0.75rem 0.75rem;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  max-width: 38rem;
+  border-radius: var(--radius-2xl);
+  padding: 0.85rem 1.25rem 0.85rem 0.85rem;
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+/* Emerald accent bar that wipes in on hover. */
+.aotd-pick::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--emerald-400), var(--emerald-600));
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .aotd-pick:hover {
-  background: var(--gray-50);
-  transform: translateX(4px);
+  border-color: var(--gray-300);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
+.aotd-pick:hover::before { transform: scaleY(1); }
+
+.aotd-pick-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  order: -1;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--emerald-50);
+  border: 1px solid var(--emerald-200);
+  color: var(--emerald-700);
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.aotd-pick-badge svg { width: 0.7rem; height: 0.7rem; }
+.aotd-pick:hover .aotd-pick-badge {
+  background: var(--emerald-100);
+  border-color: var(--emerald-400);
+}
+
 .aotd-pick-logo {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 3.25rem;
+  height: 3.25rem;
   flex-shrink: 0;
   border-radius: var(--radius-lg);
   object-fit: cover;
   border: 1px solid var(--gray-100);
   background: var(--white);
   box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
+.aotd-pick:hover .aotd-pick-logo {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px -4px rgba(16, 185, 129, 0.4);
+}
+
 .aotd-pick-body { min-width: 0; flex: 1; }
 .aotd-pick-name {
   display: block;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--gray-900);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: color 0.2s ease;
 }
 .aotd-pick:hover .aotd-pick-name { color: var(--black); }
 .aotd-pick-desc {
@@ -613,15 +683,28 @@ code, pre { font-family: var(--font-mono); }
   line-height: 1.4;
   color: var(--gray-500);
 }
-.aotd-pick-arrow {
+
+.aotd-pick-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
   flex-shrink: 0;
+  margin-left: auto;
+}
+.aotd-pick-date {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+.aotd-pick-arrow {
   color: var(--gray-300);
   font-size: 1.05rem;
   transition: color 0.2s ease, transform 0.2s ease;
 }
 .aotd-pick:hover .aotd-pick-arrow {
-  color: var(--gray-900);
-  transform: translateX(3px);
+  color: var(--emerald-600);
+  transform: translateX(4px);
 }
 
 /* ── Why Yantr vs Umbrel ────────────────────────────── */
@@ -2708,6 +2791,14 @@ p code, li code, td code, .spec-sub code {
 }
 
 @media (max-width: 639px) {
+  /* Spotlight: let the row wrap so the badge and date never squeeze the
+     app name into ellipsis on narrow screens. */
+  .aotd-pick { flex-wrap: wrap; gap: 0.75rem; }
+  .aotd-pick-badge { order: -1; margin-right: auto; }
+  .aotd-pick-body { flex-basis: 100%; order: 1; }
+  .aotd-pick-meta { order: 2; margin-left: 0; }
+  .aotd-pick-arrow { display: none; }
+
   /* Comparison table stacks: label on top, then the two verdicts. */
   .pv-thead { display: none; }
   .pv-row {

@@ -932,7 +932,10 @@
 
           <!-- Daily spotlight: app of the day -->
           <div class="aotd-block">
-            <p class="aotd-label">Daily Spotlight</p>
+            <p class="aotd-label">
+              <span class="aotd-label-dot" aria-hidden="true"></span>
+              Daily Spotlight
+            </p>
             <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
           </div>
 
@@ -1058,15 +1061,26 @@
 
           const logoUrl = getLogoUrl(app);
           const desc = app.short_description || app.description || "";
+          const today = new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          });
 
           container.innerHTML = `
             <a href="./apps/${app.id}/" class="aotd-pick">
+              <span class="aotd-pick-badge">
+                <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9L12 2.5z"/></svg>
+                App of the day
+              </span>
               <img src="${logoUrl}" alt="" class="aotd-pick-logo" width="56" height="56" loading="lazy" />
               <span class="aotd-pick-body">
                 <span class="aotd-pick-name">${app.name}</span>
                 <span class="aotd-pick-desc clamp-2">${desc}</span>
               </span>
-              <span class="aotd-pick-arrow" aria-hidden="true">→</span>
+              <span class="aotd-pick-meta">
+                <span class="aotd-pick-date">${today}</span>
+                <span class="aotd-pick-arrow" aria-hidden="true">→</span>
+              </span>
             </a>
           `;
         } catch (error) {
