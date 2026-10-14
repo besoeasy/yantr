@@ -1,0 +1,27 @@
+x-yantr:
+  name: "Beszel"
+  tags: [monitoring, network, dashboard, self-hosted, tools]
+  short_description: "Lightweight server monitoring with alerts and history."
+  description: >
+    Beszel is a lightweight monitoring hub that records CPU, memory, disk,
+    network, and temperature history for the machines it watches, with
+    configurable alerts. Add a system from the hub, then run the matching agent
+    container on that machine, using the key and token the dialog shows you.
+  usecases: ["Watch CPU, memory, disk, and network history for machines on your network.", "Add a system from the hub and run its agent on that host.", "Get alerts when a metric crosses a threshold."]
+  website: "https://beszel.dev/"
+  notes: ["Create the admin account on first visit, then add a system from the dashboard.", "The hub prints a ready-to-run agent command with its key and token; run that container on the machine you want to watch.", "Container metrics need the Podman socket on the agent side; host metrics work without it.", "Yantr already draws host metrics on its dashboard; Beszel adds history, alerts, and other machines."]
+
+  ports:
+    - {port: 8090, protocol: HTTP, show: true, label: "Hub UI", service: beszel}
+
+services:
+  beszel:
+    image: docker.io/henrygd/beszel:latest
+    ports:
+      - "8090"
+    volumes:
+      - beszel_data:/beszel_data
+    restart: unless-stopped
+
+volumes:
+  beszel_data:

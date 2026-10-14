@@ -1,0 +1,39 @@
+x-yantr:
+  name: "Semaphore UI"
+  tags: [automation, devops, ansible, self-hosted, tools]
+  short_description: "Web UI for Ansible, Terraform, OpenTofu, and script runs."
+  description: >
+    Semaphore UI is a self-hosted web interface for infrastructure automation.
+    Connect Git repositories holding Ansible playbooks or Terraform plans,
+    keep credentials encrypted, define inventories, and run tasks on demand or
+    on a schedule with live output and a full run history.
+  usecases: ["Run Ansible playbooks from a browser and watch the live output.", "Schedule Terraform or OpenTofu plans and keep a run history.", "Store SSH keys and inventory credentials encrypted."]
+  website: "https://semaphoreui.com/"
+  env_generators:
+    SEMAPHORE_ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
+  notes: ["Log in as admin with the generated password; the admin account is only created on first start.", "Point repositories at playbooks you already host in Git."]
+
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: semaphore}
+
+services:
+  semaphore:
+    image: docker.io/semaphoreui/semaphore:latest
+    environment:
+      SEMAPHORE_DB_DIALECT: sqlite
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_ADMIN_PASSWORD}
+      SEMAPHORE_ADMIN_NAME: Admin
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+    ports:
+      - "3000"
+    volumes:
+      - semaphore_config:/etc/semaphore
+      - semaphore_db:/var/lib/semaphore
+      - semaphore_repos:/tmp/semaphore
+    restart: unless-stopped
+
+volumes:
+  semaphore_config:
+  semaphore_db:
+  semaphore_repos:

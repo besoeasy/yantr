@@ -1,0 +1,34 @@
+x-yantr:
+  name: "Shelfmark"
+  tags: [ebooks, audiobooks, downloader, self-hosted, media]
+  short_description: "Search for, download, and queue ebooks and audiobooks."
+  description: >
+    Shelfmark is a self-hosted web app for finding and fetching ebooks and
+    audiobooks. Search the metadata providers you enable, queue titles from
+    several download sources, and keep every download in one place, ready to
+    import into a library app such as Calibre-Web or Audiobookshelf.
+  usecases: ["Search for an ebook or audiobook and download it to a single queue.", "Organize requests and downloads before importing them into a library.", "Fill a books volume that Calibre-Web or Audiobookshelf can read."]
+  website: "https://github.com/calibrain/shelfmark"
+  notes: ["Configure sources and download clients in the settings after the first visit.", "Add a download client before queueing anything; download sources alone cannot fetch files.", "Only download content you have the right to use."]
+
+  ports:
+    - {port: 8084, protocol: HTTP, show: true, label: "Web UI", service: shelfmark}
+
+services:
+  shelfmark:
+    image: ghcr.io/calibrain/shelfmark:latest
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-UTC}
+      FLASK_PORT: "8084"
+    ports:
+      - "8084"
+    volumes:
+      - shelfmark_config:/config
+      - shelfmark_books:/books
+    restart: unless-stopped
+
+volumes:
+  shelfmark_config:
+  shelfmark_books:

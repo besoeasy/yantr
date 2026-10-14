@@ -1,0 +1,35 @@
+x-yantr:
+  name: "Komga"
+  tags: [media, comics, manga, reading, self-hosted]
+  short_description: "Self-hosted server for comics, manga, magazines, and ebooks."
+  description: >
+    Komga turns a folder of comics, manga, magazines, and ebooks into browsable
+    libraries, series, and collections with automatic metadata and cover
+    scraping. Read them in a browser web reader, or connect other apps and
+    e-readers over OPDS and the REST API.
+  usecases: ["Read comics and manga in a browser with a full webtoon-capable reader.", "Connect OPDS readers and e-readers to one library.", "Scrape metadata and cover art automatically for a folder of files."]
+  website: "https://komga.org/"
+  notes: ["Add files to the library volume through the volume browser before adding a library in the UI.", "Java caps its heap by default; very large libraries may need a higher -Xmx."]
+
+  ports:
+    - {port: 25600, protocol: HTTP, show: true, label: "Web UI", service: komga}
+
+services:
+  komga:
+    image: ghcr.io/gotson/komga:latest
+    environment:
+      TZ: ${TZ:-UTC}
+    ports:
+      - "25600"
+    volumes:
+      - komga_config:/config
+      - komga_series:/data
+      - komga_library:/library
+      - komga_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  komga_config:
+  komga_series:
+  komga_library:
+  komga_downloads:

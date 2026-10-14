@@ -1,0 +1,45 @@
+x-yantr:
+  name: "ROMarr"
+  tags: [media, games, roms, automation, self-hosted]
+  short_description: "The *arr for games: searches, downloads, and files ROMs."
+  description: >
+    ROMarr is a game library manager in the *arr family. Request a title and it
+    searches your indexers, scores every release with the reasoning shown,
+    hands the winner to your download client, and files the result into a ROM
+    library laid out by platform, which is what emulators read.
+  usecases: ["Request a game and let it find, download, and file the best release.", "Keep a platform-organized ROM tree that emulators read directly.", "Compare scored release candidates and grab the one you want."]
+  website: "https://github.com/blizzhacker/romarr"
+  env_generators:
+    ROMARR_PASSWORD: {length: 20, charset: alnum_symbols}
+  notes: ["Requires Prowlarr for searching and a download client for fetching; neither is deployed for you, so add both on the Settings page.", "Defaults to folder library mode, which needs no library service; the ROMs volume is the library path.", "Add ROM files to the roms volume through the volume browser.", "Unofficial project, not affiliated with RomM, Gaseous, or Retrom."]
+
+  ports:
+    - {port: 6868, protocol: HTTP, show: true, label: "Web UI", service: romarr}
+
+services:
+  romarr:
+    image: ghcr.io/blizzhacker/romarr:latest
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      UMASK: "002"
+      TZ: ${TZ:-UTC}
+      # Claims the install at first start, so there is no window in which an
+      # unclaimed ROMarr is reachable.
+      ROMARR_PASSWORD: ${ROMARR_PASSWORD}
+      # Folder mode writes a plain tree laid out by platform and needs no
+      # library service or account, unlike the romm, gaseous and retrom kinds.
+      LIBRARY_KIND: folder
+      LIBRARY_PATH: /roms
+    ports:
+      - "6868"
+    volumes:
+      - romarr_config:/config
+      - romarr_roms:/roms
+      - romarr_downloads:/downloads
+    restart: unless-stopped
+
+volumes:
+  romarr_config:
+  romarr_roms:
+  romarr_downloads:
