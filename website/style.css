@@ -561,7 +561,8 @@ code, pre { font-family: var(--font-mono); }
 /* ── App of the Day ────────────────────────────── */
 /* One quiet line: logo, name, one-sentence blurb, arrow. The whole
    thing is a single link, so there is no card and no second CTA. */
-.aotd-section { padding: 3.5rem 0; }
+/* Lives inside the App Catalog section now, above the tag filters. */
+.aotd-block { margin-bottom: 2.5rem; }
 .aotd-label {
   font-size: 0.7rem;
   font-weight: 800;

@@ -238,14 +238,6 @@
         </div>
       </div>
 
-      <!-- App of the Day Section -->
-      <section id="app-of-the-day" class="full-bleed section section-white aotd-section">
-        <div class="wrap">
-          <p class="aotd-label">Daily Spotlight</p>
-          <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
-        </div>
-      </section>
-
       <!-- Why Yantr Over Umbrel Section -->
       <section id="why-yantr-over-umbrel" class="full-bleed section section-gray">
         <div class="wrap">
@@ -938,6 +930,12 @@
             </div>
           </div>
 
+          <!-- Daily spotlight: app of the day -->
+          <div class="aotd-block">
+            <p class="aotd-label">Daily Spotlight</p>
+            <div id="aotd-render"><!-- Populated by loadAppOfTheDay() --></div>
+          </div>
+
           <!-- Tag filters -->
           <div id="all-apps-tags" class="tag-bar">
             <!-- Populated by loadAllApps() -->
@@ -1052,8 +1050,9 @@
           const apps = Array.isArray(data.apps) ? data.apps : [];
           const app = pickAppOfTheDay(apps);
           if (!app) {
-            const section = document.getElementById("app-of-the-day");
-            if (section) section.style.display = "none";
+            // No pick available — drop the whole block, label included.
+            const block = container.closest(".aotd-block");
+            if (block) block.remove();
             return;
           }
 
