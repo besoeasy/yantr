@@ -798,62 +798,82 @@ p code, li code, td code, .spec-sub code {
   border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* ── Comparison table ──────────────────────────────── */
-.compare-wrap {
-  margin-bottom: 3.5rem;
-  overflow: hidden;
-  border-radius: var(--radius-2xl);
-  border: 1px solid var(--gray-200);
-  background: var(--white);
-  box-shadow: var(--shadow-lg);
+/* ── Versus cards (podman vs docker) ─────────────── */
+.versus-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 2.5rem 0 2rem;
 }
-.compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.compare-table {
-  width: 100%;
-  min-width: 620px;
-  text-align: left;
-  font-size: 0.875rem;
-  border-collapse: collapse;
-}
-.compare-table thead tr {
-  border-bottom: 1px solid var(--gray-200);
-  background: #090d16;
-  color: var(--white);
-}
-.compare-table th {
-  padding: 1.15rem 1.5rem;
+.versus-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--gray-200);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
 }
-.compare-table th.th-dim { color: var(--gray-400); }
-.compare-table th.th-bad { color: rgba(248, 113, 113, 0.95); }
-.compare-table th.th-good { color: var(--emerald-400); }
-.compare-table tbody tr {
-  border-bottom: 1px solid var(--gray-100);
-  transition: background 0.15s ease;
+.versus-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
 }
-.compare-table tbody tr:last-child { border-bottom: none; }
-.compare-table tbody tr:hover { background: rgba(249, 250, 251, 0.9); }
-.compare-table td { padding: 1.15rem 1.5rem; vertical-align: top; }
-.compare-table td.row-title { font-weight: 700; color: var(--gray-900); }
-.compare-table td.row-title small,
-.compare-table td.row-title span {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 400;
+.versus-pill-docker { color: var(--red-700); border-color: var(--red-200); background: var(--red-50); }
+.versus-pill-docker .versus-dot { background: var(--red-600); }
+.versus-pill-yantr { color: var(--emerald-800); border-color: var(--emerald-200); background: var(--emerald-50); }
+.versus-pill-yantr .versus-dot { background: var(--emerald-500); box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+.versus-vs {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
   color: var(--gray-400);
 }
-.compare-table td.row-title span { margin-top: 0.2rem; }
-.compare-table td.cell-bad { color: var(--gray-600); }
-.compare-table td.cell-good {
-  color: var(--gray-900);
-  background: rgba(16, 185, 129, 0.04);
+.versus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3.5rem;
 }
-.compare-table td p { font-size: 0.8rem; margin-top: 0.35rem; line-height: 1.5; }
-.compare-table td.cell-bad p { color: var(--gray-500); }
-.compare-table td.cell-good p { color: var(--gray-600); }
+.versus-card {
+  border-radius: var(--radius-2xl);
+  background: var(--white);
+  padding: 1.75rem;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.versus-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--gray-300);
+}
+.versus-card h3 { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.015em; color: var(--gray-900); }
+.versus-sub { font-size: 0.78rem; color: var(--gray-400); margin-top: 0.2rem; }
+.versus-side {
+  margin-top: 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  padding: 0.9rem 1rem;
+}
+.versus-side p { font-size: 0.82rem; margin-top: 0.4rem; line-height: 1.55; }
+.versus-docker { background: var(--gray-50); }
+.versus-docker p { color: var(--gray-500); }
+.versus-yantr {
+  background: var(--emerald-50);
+  border-color: var(--emerald-200);
+  border-left: 3px solid var(--emerald-500);
+}
+.versus-yantr p { color: var(--gray-600); }
 
 .badge {
   display: inline-flex;
@@ -877,10 +897,6 @@ p code, li code, td code, .spec-sub code {
   border-color: var(--emerald-200);
   font-weight: 700;
 }
-.strong-red { font-size: 0.8rem; font-weight: 700; color: var(--red-600); }
-.strong-dark { font-size: 0.8rem; font-weight: 700; color: var(--gray-900); }
-.strong-green { font-size: 0.8rem; font-weight: 700; color: var(--emerald-700); }
-
 /* ── Feature cards (podman) ────────────────────────── */
 .feature-grid {
   display: grid;
@@ -2714,6 +2730,7 @@ p code, li code, td code, .spec-sub code {
   .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .versus-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fleet-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .apps-head-row { flex-direction: row; align-items: flex-end; justify-content: space-between; }

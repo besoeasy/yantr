@@ -398,139 +398,116 @@
             </p>
           </div>
 
-          <!-- Comparison Table -->
-          <div class="compare-wrap">
-            <div class="compare-scroll">
-              <table class="compare-table">
-                <thead>
-                  <tr>
-                    <th scope="col" class="th-dim">Capability / Metric</th>
-                    <th scope="col" class="th-bad">Traditional Docker</th>
-                    <th scope="col" class="th-good">Yantr + Rootless Podman</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="row-title">
-                      Privilege Model
-                      <span>Execution context &amp; permissions</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="badge badge-red">Runs as root (dockerd)</span>
-                      <p>The <code>docker</code> group grants passwordless root host access.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="badge badge-green">100% Rootless</span>
-                      <p>Containers run inside user namespaces with unprivileged UIDs.</p>
-                    </td>
-                  </tr>
+          <!-- Comparison cards -->
+          <div class="versus-legend">
+            <span class="versus-pill versus-pill-docker"><span class="versus-dot"></span>Traditional Docker</span>
+            <span class="versus-vs">vs</span>
+            <span class="versus-pill versus-pill-yantr"><span class="versus-dot"></span>Yantr + Rootless Podman</span>
+          </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Security Blast Radius
-                      <span>Impact of container escape / zero-day</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-red">Host Root Compromise</span>
-                      <p>Container breakout grants full root control of the host OS and files.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Zero Host Root Permissions</span>
-                      <p>Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
-                    </td>
-                  </tr>
+          <div class="versus-grid">
+            <div class="versus-card">
+              <h3>Privilege Model</h3>
+              <p class="versus-sub">Execution context &amp; permissions</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Runs as root (dockerd)</span>
+                <p>The <code>docker</code> group grants passwordless root host access.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">100% Rootless</span>
+                <p>Containers run inside user namespaces with unprivileged UIDs.</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Engine Architecture
-                      <span>Process management model</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-dark">Monolithic Daemon</span>
-                      <p>If <code>dockerd</code> crashes or restarts for updates, all containers can die.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Daemonless (fork / exec)</span>
-                      <p>Direct execution via <code>conmon</code>; no central daemon single point of failure.</p>
-                    </td>
-                  </tr>
+            <div class="versus-card">
+              <h3>Security Blast Radius</h3>
+              <p class="versus-sub">Impact of container escape / zero-day</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Host Root Compromise</span>
+                <p>Container breakout grants full root control of the host OS and files.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Zero Host Root Permissions</span>
+                <p>Breakout is trapped in unprivileged user sandbox; cannot touch host root.</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Service Management
-                      <span>Boot, restarts, and supervision</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-dark">Proprietary Supervision</span>
-                      <p>Docker bypasses systemd; handles its own restarts and process monitoring.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Native systemd Quadlet</span>
-                      <p>Containers are first-class systemd user units (<code>systemctl --user</code>, lingering).</p>
-                    </td>
-                  </tr>
+            <div class="versus-card">
+              <h3>Engine Architecture</h3>
+              <p class="versus-sub">Process management model</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Monolithic Daemon</span>
+                <p>If <code>dockerd</code> crashes or restarts for updates, all containers can die.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Daemonless (fork / exec)</span>
+                <p>Direct execution via <code>conmon</code>; no central daemon single point of failure.</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Host Firewall &amp; Network
-                      <span>iptables / nftables interaction</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-red">Bypasses UFW Rules</span>
-                      <p>Directly modifies root iptables, often silently exposing internal ports publicly.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Zero Firewall Tampering</span>
-                      <p>Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
-                    </td>
-                  </tr>
+            <div class="versus-card">
+              <h3>Service Management</h3>
+              <p class="versus-sub">Boot, restarts, and supervision</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Proprietary Supervision</span>
+                <p>Docker bypasses systemd; handles its own restarts and process monitoring.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Native systemd Quadlet</span>
+                <p>Containers are first-class systemd user units (<code>systemctl --user</code>, lingering).</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Host Filesystem Impact
-                      <span>Storage location &amp; permissions</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-dark">Root-owned <code>/var/lib/docker</code></span>
-                      <p>Pollutes root filesystem; requires <code>sudo</code> to inspect, manage, or clean.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">100% User-Space Storage</span>
-                      <p>Named volumes in <code>~/.local/share/containers/</code> with SELinux (<code>:z</code>) labeling.</p>
-                    </td>
-                  </tr>
+            <div class="versus-card">
+              <h3>Host Firewall &amp; Network</h3>
+              <p class="versus-sub">iptables / nftables interaction</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Bypasses UFW Rules</span>
+                <p>Directly modifies root iptables, often silently exposing internal ports publicly.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Zero Firewall Tampering</span>
+                <p>Isolated user network namespace (pasta / slirp4netns); host firewall stays safe.</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Idle Resource Overhead
-                      <span>Memory &amp; CPU consumption</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-dark">Always-On Daemon</span>
-                      <p>Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Zero Daemon Overhead</span>
-                      <p>No background daemon process. Hardware resources go strictly to your apps.</p>
-                    </td>
-                  </tr>
+            <div class="versus-card">
+              <h3>Host Filesystem Impact</h3>
+              <p class="versus-sub">Storage location &amp; permissions</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Root-owned storage</span>
+                <p>Pollutes root filesystem at <code>/var/lib/docker</code>; requires <code>sudo</code> to inspect, manage, or clean.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">100% User-Space Storage</span>
+                <p>Named volumes in <code>~/.local/share/containers/</code> with SELinux (<code>:z</code>) labeling.</p>
+              </div>
+            </div>
 
-                  <tr>
-                    <td class="row-title">
-                      Docker Socket Emulation
-                      <span>For Glances, Portainer, Beszel</span>
-                    </td>
-                    <td class="cell-bad">
-                      <span class="strong-red">Dangerous Root Socket</span>
-                      <p>Mounting <code>docker.sock</code> hands containers unrestricted root host takeover.</p>
-                    </td>
-                    <td class="cell-good">
-                      <span class="strong-green">Safe User Socket Translation</span>
-                      <p>Automatically translates to user <code>podman.sock</code> — full compatibility, zero root risk.</p>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="versus-card">
+              <h3>Idle Resource Overhead</h3>
+              <p class="versus-sub">Memory &amp; CPU consumption</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Always-On Daemon</span>
+                <p>Monolithic daemon consumes CPU and RAM constantly, even with 0 apps running.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Zero Daemon Overhead</span>
+                <p>No background daemon process. Hardware resources go strictly to your apps.</p>
+              </div>
+            </div>
+
+            <div class="versus-card">
+              <h3>Docker Socket Emulation</h3>
+              <p class="versus-sub">For Glances, Portainer, Beszel</p>
+              <div class="versus-side versus-docker">
+                <span class="badge badge-red">Dangerous Root Socket</span>
+                <p>Mounting <code>docker.sock</code> hands containers unrestricted root host takeover.</p>
+              </div>
+              <div class="versus-side versus-yantr">
+                <span class="badge badge-green">Safe User Socket Translation</span>
+                <p>Automatically translates to user <code>podman.sock</code> — full compatibility, zero root risk.</p>
+              </div>
             </div>
           </div>
 
