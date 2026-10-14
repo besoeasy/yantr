@@ -376,9 +376,10 @@
       </section>
 
       <!-- Why Podman Over Docker Section -->
-      <section id="why-podman-over-docker" class="full-bleed section section-white">
-        <div class="wrap">
-          <div class="center">
+      <section id="why-podman-over-docker" class="full-bleed section section-dark pv-dark">
+        <div class="dot-grid" aria-hidden="true" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
+        <div class="wrap pv-wrap">
+          <div class="pv-head">
             <p class="eyebrow eyebrow-green">Security &amp; Architecture · Podman vs Docker</p>
             <h2 class="h2">
               Rootless by design.
@@ -389,7 +390,7 @@
             </p>
           </div>
 
-<!-- Interactive threat model: simulator (sticky) + capability rows -->
+          <!-- Interactive threat model: simulator (sticky) + capability rows -->
           <div class="pv-split">
             <div class="pv-left">
               <div class="pv-console pv-reveal">
@@ -479,7 +480,7 @@
 
             <div class="pv-right">
               <p class="pv-right-lead">
-                Eight capabilities, two runtimes. Tap any row to see how it changes under attack.
+                Eight capabilities, two runtimes. Expand a row to see what changes under attack.
               </p>
 
               <div class="pv-rows" id="pv-rows">
@@ -628,7 +629,6 @@
                 </button>
               </div>
             </div>
-          </div>
           </div>
 
           <!-- Feature Cards Grid -->
