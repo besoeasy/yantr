@@ -19,6 +19,27 @@
     --text-secondary: #475569;
     --surface: #ffffff;
     --surface-muted: #f1f5f9;
+
+    /* Dashboard card + status tokens. A widget used to spell its own palette
+       out in classes (border-zinc-200 bg-white dark:bg-black border-zinc-800
+       …), so every card carried a second, hardcoded copy of the theme and one
+       could drift out of it without anything failing. These name the colours
+       instead; a card reads them and is themed by whatever :root.dark says.
+       The values below are the ones the cards already rendered, routed through
+       the palette vars, so nothing shifts while the widgets migrate. */
+    --card-bg: var(--color-white);
+    --card-border: var(--color-zinc-200);
+    --card-border-strong: var(--color-zinc-300);
+    --card-inset: var(--color-zinc-50);
+    --card-shadow-hover: 0 8px 30px rgb(0 0 0 / 0.04);
+    --accent: var(--color-sky-600);
+    --accent-soft: var(--color-sky-50);
+    --accent-border: var(--color-sky-200);
+    --ok: var(--color-emerald-500);
+    --ok-text: var(--color-emerald-600);
+    --danger-text: var(--color-red-500);
+    --danger-soft: var(--color-red-50);
+    --danger-border: var(--color-red-200);
 }
 
 :root.dark {
@@ -27,6 +48,20 @@
     --text-secondary: #94a3b8;
     --surface: #0f172a;
     --surface-muted: #111827;
+
+    --card-bg: var(--color-black);
+    --card-border: var(--color-zinc-800);
+    --card-border-strong: var(--color-zinc-700);
+    --card-inset: rgb(24 24 27 / 0.5); /* zinc-900/50 */
+    --card-shadow-hover: 0 8px 30px rgb(255 255 255 / 0.02);
+    --accent: var(--color-sky-400);
+    --accent-soft: rgb(2 74 112 / 0.2); /* sky-900/20 */
+    --accent-border: rgb(2 74 112 / 0.5); /* sky-900/50 */
+    --ok: var(--color-emerald-500);
+    --ok-text: var(--color-emerald-500);
+    --danger-text: var(--color-red-500);
+    --danger-soft: rgb(130 24 26 / 0.2); /* red-900/20 */
+    --danger-border: rgb(130 24 26 / 0.5); /* red-900/50 */
 }
 
 * {
