@@ -40,6 +40,9 @@
     --danger-text: var(--color-red-500);
     --danger-soft: var(--color-red-50);
     --danger-border: var(--color-red-200);
+    --cta-bg: var(--color-sky-600);
+    --cta-bg-hover: var(--color-sky-700);
+    --cta-text: var(--color-white);
 }
 
 :root.dark {
@@ -62,6 +65,9 @@
     --danger-text: var(--color-red-500);
     --danger-soft: rgb(130 24 26 / 0.2); /* red-900/20 */
     --danger-border: rgb(130 24 26 / 0.5); /* red-900/50 */
+    --cta-bg: var(--color-sky-500);
+    --cta-bg-hover: var(--color-sky-400);
+    --cta-text: var(--color-zinc-900);
 }
 
 * {
@@ -82,6 +88,119 @@ body {
 
 .smooth-shadow {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Dashboard card helpers ─────────────────────────────────────────
+   The chrome every widget shares, so a card reads the theme instead of
+   restating the palette in its own classes:
+     .yantra-card   the card surface, with the shared hover lift
+     .yantra-tile   an icon block (—accent / —danger / —round)
+     .yantra-panel  a bordered block of .yantra-row label/value pairs
+     .yantra-text-* the theme's text colours, which the utility layer has
+                    no equivalent for (Tailwind's palette, not the theme's)
+   Layout, type, spacing and radius on the element still come from the
+   utility classes, which load after this block and win on a conflict. */
+.yantra-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    transition:
+        border-color var(--yantra-dur) var(--yantra-ease),
+        box-shadow var(--yantra-dur) var(--yantra-ease),
+        transform var(--yantra-dur) var(--yantra-ease);
+}
+
+.yantra-card:hover {
+    border-color: var(--card-border-strong);
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-4px);
+}
+
+.yantra-tile {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card-inset);
+    color: var(--text-secondary);
+}
+
+.yantra-tile--round {
+    border-radius: var(--radius-2xl);
+}
+
+.yantra-tile--accent {
+    border-color: var(--accent-border);
+    background-color: var(--accent-soft);
+    color: var(--accent);
+}
+
+.yantra-tile--danger {
+    border-color: var(--danger-border);
+    background-color: var(--danger-soft);
+    color: var(--danger-text);
+}
+
+.yantra-panel {
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+}
+
+.yantra-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.625rem 0.875rem;
+}
+
+.yantra-row + .yantra-row {
+    border-top: 1px solid var(--card-border);
+}
+
+.yantra-row__label {
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.yantra-row__value {
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+.yantra-text-primary {
+    color: var(--text-primary);
+}
+
+.yantra-text-secondary {
+    color: var(--text-secondary);
+}
+
+.yantra-text-accent {
+    color: var(--accent);
+}
+
+.yantra-text-ok {
+    color: var(--ok-text);
+}
+
+.yantra-text-danger {
+    color: var(--danger-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .yantra-card,
+    .yantra-card:hover {
+        transform: none;
+        transition: none;
+    }
 }
 
 button,

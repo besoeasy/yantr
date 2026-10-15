@@ -57,32 +57,30 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="yantra-card group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl p-7 text-left">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-300 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
-          <Github class="h-5 w-5 text-sky-600 dark:text-sky-400" />
+        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-300 group-hover:scale-105">
+          <Github class="h-5 w-5" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="yantra-text-primary text-lg font-bold leading-none tracking-tight">
             {{ t("githubCard.label") }}
           </h3>
-          <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-              {{ t("githubCard.subtitle") }}
-            </span>
-          </div>
+          <p class="yantra-text-secondary mt-2 text-[10px] font-semibold uppercase tracking-widest">
+            {{ t("githubCard.subtitle") }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-1 sm:text-5xl dark:text-white">
+      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-500 group-hover:-translate-y-1 sm:text-5xl">
         {{ t("githubCard.title") }}
       </div>
-      <div class="mb-6 text-sm leading-relaxed text-zinc-500 line-clamp-2 dark:text-zinc-400">
+      <div class="yantra-text-secondary mb-6 line-clamp-2 text-sm leading-relaxed">
         {{ t("githubCard.description") }}
       </div>
 
@@ -92,7 +90,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
           href="https://github.com/besoeasy/yantr"
           target="_blank"
           rel="noopener noreferrer"
-          class="group/cta relative flex h-12 w-full items-center justify-between rounded-xl bg-sky-600 px-5 text-white transition-all duration-300 hover:bg-sky-700 active:scale-[0.98] overflow-hidden dark:bg-sky-500 dark:hover:bg-sky-400 dark:text-zinc-900"
+          class="gh-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-all duration-300 active:scale-[0.98]"
         >
           <div class="relative z-10 flex items-center gap-2.5">
             <Github class="h-4 w-4 fill-current" />
@@ -106,23 +104,60 @@ const buildTimeAgo = formatTimeAgo(buildDate);
           href="https://github.com/besoeasy/yantr/issues/new"
           target="_blank"
           rel="noopener noreferrer"
-          class="group/link flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white text-zinc-600 transition-all duration-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-800 dark:bg-black dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-white"
+          class="gh-cta-ghost group/link flex h-12 w-full items-center justify-center gap-2 rounded-xl border transition-all duration-300"
         >
           <Bug class="h-4 w-4" />
           <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('githubCard.issueCta') }}</span>
         </a>
       </div>
 
-      <!-- Build Info -->
-      <div class="mt-4 flex items-center justify-between pt-2">
-        <div class="flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-600">
+      <!-- Build info: a hairline separates the strip from the buttons, and the
+           date sits in a mono chip, so it reads as a footer rather than as
+           stray text. It also uses the theme's secondary colour rather than
+           zinc-300/400, which was around 2:1 on the card at 9px. -->
+      <div class="gh-build mt-4 flex items-center justify-between pt-3">
+        <span class="yantra-text-secondary flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-widest">
           <GitBranch class="h-3 w-3" />
           <span>{{ buildTimeAgo }}</span>
-        </div>
-        <div class="text-[9px] font-mono font-semibold tracking-widest text-zinc-300 dark:text-zinc-700" :title="buildTimestamp">
+        </span>
+        <span class="gh-build__stamp yantra-text-secondary rounded-md px-2 py-0.5 font-mono text-[9px] font-semibold tracking-widest" :title="buildTimestamp">
           {{ rawBuildTimestamp ? rawBuildTimestamp.split('T')[0] : 'DEV' }}
-        </div>
+        </span>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Card chrome, the icon tile and every text colour come from the shared
+   helpers in main.css. A card owns only its own pieces, which here are the
+   two calls to action and the build footer. */
+.gh-cta {
+  background-color: var(--cta-bg);
+  color: var(--cta-text);
+}
+
+.gh-cta:hover {
+  background-color: var(--cta-bg-hover);
+}
+
+.gh-cta-ghost {
+  border-color: var(--card-border);
+  background-color: var(--card-bg);
+  color: var(--text-secondary);
+}
+
+.gh-cta-ghost:hover {
+  border-color: var(--card-border-strong);
+  background-color: var(--card-inset);
+  color: var(--text-primary);
+}
+
+.gh-build {
+  border-top: 1px solid var(--card-border);
+}
+
+.gh-build__stamp {
+  background-color: var(--card-inset);
+}
+</style>
