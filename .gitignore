@@ -49,6 +49,9 @@ Thumbs.db
 .idea
 .vscode
 
+# Agent session artifacts (screenshots and scratch files written by coding agents)
+.openchamber
+
 # Temp files
 tmp
 check_output*.txt
