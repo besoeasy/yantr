@@ -187,7 +187,27 @@
     "noGeneratorForVariable": "未找到此应用的安全生成器规则",
     "removeVar": "移除变量",
     "expiresAfter": "有效期",
-    "hostPortFor": "容器端口 {port} ({protocol}) 对应的主机端口"
+    "hostPortFor": "容器端口 {port} ({protocol}) 对应的主机端口",
+    "developer": "开发者"
+  },
+  "developer": {
+    "loading": "正在加载开发者…",
+    "appsInYantr": "Yantr 中的应用",
+    "appsInYantrHint": "读取自本机的本地目录 — 无需 GitHub。",
+    "appsBy": "{name} 在 Yantr 目录中的应用。",
+    "noApps": "未找到应用。",
+    "otherRepos": "其他仓库",
+    "otherReposHint": "非 Yantr 应用 — 该开发者在 {platform} 上维护的其他项目。",
+    "repositories": "仓库",
+    "followers": "关注者",
+    "yantrApps": "Yantr 应用",
+    "viewOn": "在 {platform} 上查看",
+    "browseCatalog": "浏览目录",
+    "backToApps": "全部应用",
+    "notFound": "Yantr 目录中尚无应用标注此开发者。",
+    "loadFailed": "无法加载该开发者。",
+    "profileUnavailable": "暂时无法获取资料详情 — 改为显示该开发者在本地目录中的 Yantr 应用。",
+    "archived": "已归档"
   },
   "container": {
     "status": "状态",

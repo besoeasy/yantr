@@ -4,6 +4,7 @@ import (
 	"core/apps"
 	"core/system"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -22,10 +23,20 @@ import (
 // developerRef parses a "platform:handle" path segment, defaulting to GitHub so
 // the friendly /#/developer/besoeasy short form works. The second return is
 // false when the reference cannot be interpreted at all.
+//
+// The segment is percent-decoded before splitting. chi routes on the raw path,
+// so a colon the client encoded as "%3A" — which is what the UI does for every
+// route param it builds — arrives still encoded and would otherwise be read as
+// part of the handle.
 func developerRef(raw string) (string, string, bool) {
 	raw = strings.TrimSpace(raw)
 	if raw == "" {
 		return "", "", false
+	}
+	// A malformed escape is not fatal: fall through with the raw value, which
+	// the checks below will reject if it is not a usable reference.
+	if decoded, err := url.PathUnescape(raw); err == nil {
+		raw = decoded
 	}
 
 	platform, handle := "github", raw
@@ -36,6 +47,12 @@ func developerRef(raw string) (string, string, bool) {
 
 	handle = strings.TrimPrefix(handle, "@")
 	if handle == "" {
+		return "", "", false
+	}
+	// Decoding makes these reachable where the raw form could not be: "%2F" is
+	// a path separator to every router upstream of here, and the catalog parser
+	// refuses handles containing one, so a decoded one can never match.
+	if strings.ContainsAny(handle, "/\\?#") {
 		return "", "", false
 	}
 
@@ -128,7 +145,14 @@ func handleGitHubUserRepos(w http.ResponseWriter, r *http.Request) {
 // apps.parseDevelopers, so a request cannot mint a cache entry for an arbitrary
 // GitHub account.
 func catalogGitHubDeveloper(w http.ResponseWriter, r *http.Request) (string, bool) {
-	login := strings.ToLower(strings.TrimSpace(chi.URLParam(r, "login")))
+	// Percent-decoded for the same reason developerRef is: chi hands over the
+	// raw path segment, so an encoded handle would never match the catalogue.
+	raw := chi.URLParam(r, "login")
+	if decoded, err := url.PathUnescape(raw); err == nil {
+		raw = decoded
+	}
+
+	login := strings.ToLower(strings.TrimSpace(raw))
 	if login == "" {
 		jsonErr(w, 400, "INVALID_LOGIN", "A GitHub login is required")
 		return "", false

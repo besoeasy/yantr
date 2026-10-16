@@ -4,6 +4,7 @@ import { useI18n } from "vue-i18n";
 import { Globe, FileCode, Tag, Info, Bug } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
+import { developersOf, developerProfileUrl, developerInitials, developerLabel, developerRouteRef, buildIssueReportUrl } from "../utils/developer";
 
 const props = defineProps({
   app: {
@@ -45,14 +46,25 @@ const chatGptUrl = computed(() => {
   return buildChatGptExplainUrl(props.app.id);
 });
 
-// Prefilled GitHub issue URL — title marks it as pre-install, body is left for the user
-const reportIssueUrl = computed(() => {
-  const base = "https://github.com/besoeasy/yantr/issues/new";
-  if (!props.app) return base;
-  const appName = props.app.name || props.app.id;
-  const title = `[pre-install: ${appName}] `;
-  return `${base}?title=${encodeURIComponent(title)}`;
-});
+// Who writes this app, if the catalog knows. Each entry links to the developer
+// route, which is how someone reading an app page discovers the rest of that
+// person's work without leaving Yantr.
+const developers = computed(() =>
+  developersOf(props.app).map((d) => ({
+    ...d,
+    href: `#/developer/${developerRouteRef(d.platform, d.handle)}`,
+    url: d.url || developerProfileUrl(d.platform, d.handle),
+    initials: developerInitials(d.handle),
+    platformLabel: developerLabel(d.platform),
+  }))
+);
+
+// Prefilled GitHub issue URL — the title marks it as pre-install and the body
+// mentions the app's GitHub authors, so the people who can actually fix it are
+// subscribed the moment the report is filed.
+const reportIssueUrl = computed(() =>
+  buildIssueReportUrl(props.app, { prefix: "pre-install" })
+);
 </script>
 
 <template>
@@ -120,6 +132,24 @@ const reportIssueUrl = computed(() => {
             class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
           >
             <Bug :size="14" /> {{ t('home.externalLinks.reportIssue') }}
+          </a>
+        </div>
+
+        <!-- Who writes this app. Links into the developer route, so a reader can
+             see the rest of that person's apps without leaving Yantr. -->
+        <div v-if="developers.length > 0" class="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-900">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('appDetail.developer') }}</span>
+          <a
+            v-for="dev in developers"
+            :key="`${dev.platform}:${dev.handle}`"
+            :href="dev.href"
+            :title="`${dev.platformLabel}: ${dev.handle}`"
+            class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 py-0.5 pl-0.5 pr-2.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+          >
+            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-black text-white dark:bg-zinc-100 dark:text-zinc-900">
+              {{ dev.initials }}
+            </span>
+            {{ dev.handle }}
           </a>
         </div>
       </div>

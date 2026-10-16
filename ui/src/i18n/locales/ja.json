@@ -187,7 +187,27 @@
     "noGeneratorForVariable": "このアプリに安全なジェネレータールールが見つかりません",
     "removeVar": "変数を削除",
     "expiresAfter": "有効期限",
-    "hostPortFor": "コンテナポート {port} ({protocol}) のホストポート"
+    "hostPortFor": "コンテナポート {port} ({protocol}) のホストポート",
+    "developer": "開発者"
+  },
+  "developer": {
+    "loading": "開発者を読み込み中…",
+    "appsInYantr": "Yantr のアプリ",
+    "appsInYantrHint": "このホストのローカルカタログから取得しています。GitHub は不要です。",
+    "appsBy": "Yantr カタログにある {name} のアプリ。",
+    "noApps": "アプリが見つかりません。",
+    "otherRepos": "その他のリポジトリ",
+    "otherReposHint": "Yantr のアプリではありません。この開発者が {platform} で管理する他のプロジェクトです。",
+    "repositories": "リポジトリ",
+    "followers": "フォロワー",
+    "yantrApps": "Yantr アプリ",
+    "viewOn": "{platform} で見る",
+    "browseCatalog": "カタログを見る",
+    "backToApps": "すべてのアプリ",
+    "notFound": "この開発者を記載したアプリはまだ Yantr カタログにありません。",
+    "loadFailed": "この開発者を読み込めませんでした。",
+    "profileUnavailable": "現在プロフィール情報を取得できません。代わりにローカルカタログからこの開発者の Yantr アプリを表示しています。",
+    "archived": "アーカイブ済み"
   },
   "container": {
     "status": "ステータス",

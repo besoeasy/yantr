@@ -7,6 +7,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
 import { appUrl, isNavigableProtocol } from "../utils/url";
+import { buildIssueReportUrl } from "../utils/developer";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
 import StackServiceList from "../components/StackServiceList.vue";
@@ -219,14 +220,17 @@ const otherMounts = computed(() => allMounts.value.filter((m) => m.type !== "vol
 // copy used to emit a bare `2001:db8::1:8080` on IPv6 hosts, which no browser
 // can parse.
 
-// Prefilled GitHub issue URL — title carries the app name, body is left for the user
-const reportIssueUrl = computed(() => {
-  const base = "https://github.com/besoeasy/yantr/issues/new";
-  if (!stack.value) return base;
-  const appName = stack.value.app?.name || stack.value.appId || projectId.value;
-  const title = `[app: ${appName}] `;
-  return `${base}?title=${encodeURIComponent(title)}`;
-});
+// Prefilled GitHub issue URL — the title carries the app name and the body
+// mentions the app's GitHub authors, so a report filed from a running stack
+// reaches the people who can fix it and not just the Yantr maintainer.
+const reportIssueUrl = computed(() =>
+  buildIssueReportUrl(stack.value?.app, {
+    prefix: "app",
+    // A runtime report is about the deployed instance, which is the useful
+    // thing to pin down before the author reads it.
+    extraLines: projectId.value ? [`Stack: ${projectId.value}`] : [],
+  })
+);
 
 
 // ── helpers ───────────────────────────────────────────────────────────────────

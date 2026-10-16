@@ -197,7 +197,27 @@
     "deploymentStillRunning": "Deployment for {name} is still running in background…",
     "removeVar": "Remove variable",
     "expiresAfter": "Expires after",
-    "hostPortFor": "Host port for container port {port} ({protocol})"
+    "hostPortFor": "Host port for container port {port} ({protocol})",
+    "developer": "Developer"
+  },
+  "developer": {
+    "loading": "Loading developer…",
+    "appsInYantr": "Apps in Yantr",
+    "appsInYantrHint": "Read from the local catalog on this host — no GitHub needed.",
+    "appsBy": "Apps by {name} in the Yantr catalog.",
+    "noApps": "No apps found.",
+    "otherRepos": "Other repositories",
+    "otherReposHint": "Not Yantr apps — other projects this developer maintains on {platform}.",
+    "repositories": "Repositories",
+    "followers": "Followers",
+    "yantrApps": "Yantr apps",
+    "viewOn": "View on {platform}",
+    "browseCatalog": "Browse catalog",
+    "backToApps": "All apps",
+    "notFound": "No app in the Yantr catalog credits this developer yet.",
+    "loadFailed": "Could not load this developer.",
+    "profileUnavailable": "Profile details are unavailable right now — showing this developer's Yantr apps from the local catalog instead.",
+    "archived": "Archived"
   },
   "container": {
     "status": "Status",

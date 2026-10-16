@@ -18,6 +18,7 @@ x-yantr:
         without installing any native app.
     ]
   website: https://gupt.app
+  developers: ["github:besoeasy"]
   notes:
     [
       No backend required — the app connects directly to public or private

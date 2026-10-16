@@ -23,6 +23,14 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "app-install" */ "./views/AppDetail.vue"),
     },
     {
+      // One developer's profile and everything they maintain in the catalog.
+      // :handle accepts either "besoeasy" (GitHub implied) or
+      // "platform:handle" — see utils/developer.js.
+      path: "/developer/:handle",
+      name: "developer",
+      component: () => import(/* webpackChunkName: "developer" */ "./views/DeveloperProfile.vue"),
+    },
+    {
       path: "/containers/:id",
       name: "container-inspect",
       component: () => import(/* webpackChunkName: "container-inspect" */ "./views/ContainerDetail.vue"),

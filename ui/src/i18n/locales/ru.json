@@ -187,7 +187,27 @@
     "noGeneratorForVariable": "Правило безопасной генерации не найдено",
     "removeVar": "Удалить переменную",
     "expiresAfter": "Истекает через",
-    "hostPortFor": "Хост-порт для порта контейнера {port} ({protocol})"
+    "hostPortFor": "Хост-порт для порта контейнера {port} ({protocol})",
+    "developer": "Разработчик"
+  },
+  "developer": {
+    "loading": "Загрузка разработчика…",
+    "appsInYantr": "Приложения в Yantr",
+    "appsInYantrHint": "Читается из локального каталога этого хоста — GitHub не нужен.",
+    "appsBy": "Приложения {name} в каталоге Yantr.",
+    "noApps": "Приложения не найдены.",
+    "otherRepos": "Другие репозитории",
+    "otherReposHint": "Это не приложения Yantr — другие проекты, которые этот разработчик ведёт на {platform}.",
+    "repositories": "Репозитории",
+    "followers": "Подписчики",
+    "yantrApps": "Приложения Yantr",
+    "viewOn": "Открыть на {platform}",
+    "browseCatalog": "Открыть каталог",
+    "backToApps": "Все приложения",
+    "notFound": "Пока ни одно приложение в каталоге Yantr не указывает этого разработчика.",
+    "loadFailed": "Не удалось загрузить этого разработчика.",
+    "profileUnavailable": "Данные профиля сейчас недоступны — вместо них показаны приложения Yantr этого разработчика из локального каталога.",
+    "archived": "В архиве"
   },
   "container": {
     "status": "Статус",

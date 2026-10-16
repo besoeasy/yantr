@@ -187,7 +187,27 @@
     "noGeneratorForVariable": "Aucune règle de générateur trouvée pour cette application",
     "removeVar": "Supprimer la variable",
     "expiresAfter": "Expire après",
-    "hostPortFor": "Port hôte pour le port {port} du conteneur ({protocol})"
+    "hostPortFor": "Port hôte pour le port {port} du conteneur ({protocol})",
+    "developer": "Développeur"
+  },
+  "developer": {
+    "loading": "Chargement du développeur…",
+    "appsInYantr": "Apps dans Yantr",
+    "appsInYantrHint": "Lu depuis le catalogue local de cet hôte — GitHub non requis.",
+    "appsBy": "Apps de {name} dans le catalogue Yantr.",
+    "noApps": "Aucune app trouvée.",
+    "otherRepos": "Autres dépôts",
+    "otherReposHint": "Pas des apps Yantr — d'autres projets que ce développeur maintient sur {platform}.",
+    "repositories": "Dépôts",
+    "followers": "Abonnés",
+    "yantrApps": "Apps Yantr",
+    "viewOn": "Voir sur {platform}",
+    "browseCatalog": "Parcourir le catalogue",
+    "backToApps": "Toutes les apps",
+    "notFound": "Aucune app du catalogue Yantr ne crédite encore ce développeur.",
+    "loadFailed": "Impossible de charger ce développeur.",
+    "profileUnavailable": "Les détails du profil sont indisponibles pour le moment — les apps Yantr de ce développeur sont affichées depuis le catalogue local.",
+    "archived": "Archivé"
   },
   "container": {
     "status": "Statut",

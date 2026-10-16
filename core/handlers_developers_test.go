@@ -45,6 +45,39 @@ func TestDeveloperRefParsesExplicitPlatform(t *testing.T) {
 	}
 }
 
+// The UI percent-encodes the colon when it builds the request path, and chi
+// routes on the raw path, so the encoded form has to decode to the same
+// reference — otherwise every link the UI generates would 404.
+func TestDeveloperRefDecodesPercentEncoding(t *testing.T) {
+	for _, tc := range []struct {
+		raw      string
+		platform string
+		handle   string
+	}{
+		{"github%3Abesoeasy", "github", "besoeasy"},
+		{"gitlab%3Ausername2", "gitlab", "username2"},
+		{"GitLab%3AUpper", "gitlab", "Upper"},
+		{"github%3A%40besoeasy", "github", "besoeasy"},
+		// A bare handle has nothing to decode and must be unaffected.
+		{"besoeasy", "github", "besoeasy"},
+	} {
+		platform, handle, ok := developerRef(tc.raw)
+		if !ok || platform != tc.platform || handle != tc.handle {
+			t.Errorf("developerRef(%q) = %q, %q, %v; want %q, %q, true",
+				tc.raw, platform, handle, ok, tc.platform, tc.handle)
+		}
+	}
+}
+
+// Decoding a reference must not turn a path segment into a path.
+func TestDeveloperRefRejectsEncodedSeparators(t *testing.T) {
+	for _, bad := range []string{"..%2Fetc", "a%2Fb", "%2F", "github%3Aa%2Fb", "a%5Cb"} {
+		if _, _, ok := developerRef(bad); ok {
+			t.Errorf("developerRef(%q) was accepted, want a rejection", bad)
+		}
+	}
+}
+
 func TestDeveloperRefRejectsUnknownPlatformAndEmptyHandle(t *testing.T) {
 	// An unknown platform has no profile URL to derive, so the reference cannot
 	// be served rather than being silently treated as a GitHub login.
@@ -155,6 +188,19 @@ func TestHandleDeveloperAppsMatchesOtherPlatforms(t *testing.T) {
 	writeTempCatalog(t, demoCompose)
 
 	w := developerRequest(t, "gitlab:someone")
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", w.Code, w.Body.String())
+	}
+}
+
+// The encoded form must reach the same handler result, since that is the form
+// the UI actually sends.
+func TestHandleDeveloperAppsAcceptsEncodedColon(t *testing.T) {
+	writeTempCatalog(t, demoCompose)
+
+	// Simulates what chi hands the handler for "?/api/developers/gitlab%3Asomeone":
+	// the raw path segment, still percent-encoded.
+	w := developerRequest(t, "gitlab%3Asomeone")
 	if w.Code != http.StatusOK {
 		t.Fatalf("status = %d, body = %s", w.Code, w.Body.String())
 	}
