@@ -10,6 +10,7 @@ import {
   hasValidId,
   hexToNpub,
   isAppComment,
+  npubToHex,
   sanitizeCommentContent,
 } from "./nostr";
 
@@ -155,6 +156,64 @@ describe("sanitizeCommentContent", () => {
     expect(sanitizeCommentContent("   ")).toBe("");
     expect(sanitizeCommentContent("\u200B\u00AD\u200F")).toBe("");
     expect(sanitizeCommentContent(null)).toBe("");
+  });
+});
+
+describe("npubToHex", () => {
+  // Externally-verified vectors shared with core/nip19.
+  const FIATJAF_NPUB =
+    "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6";
+  const FIATJAF_HEX =
+    "3bf0c63fcb93463407af97a5e5ee64fa883d107ef9e558472c4eb9aaaefa459d";
+  const JACK_NPROFILE =
+    "nprofile1qqsgydql3q4ka27d9wnlrmus4tvkrnc8ftc4h8h5fgyln54gl0a7dgspzemhxue69uhhyetvv9ujuurjd9kkzmpwdejhgw2eqf8";
+  const FIATJAF_NPROFILE =
+    "nprofile1qqsrhuxx8l9ex335q7he0f09aej04zpazpl0ne2cgukyawd24mayt8gpz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsfg70ls";
+
+  it("decodes an npub to the hex relays filter on", () => {
+    expect(npubToHex(JACK_NPUB)).toBe(JACK_HEX);
+    expect(npubToHex(FIATJAF_NPUB)).toBe(FIATJAF_HEX);
+  });
+
+  it("unwraps an nprofile past its relay hints", () => {
+    expect(npubToHex(JACK_NPROFILE)).toBe(JACK_HEX);
+    expect(npubToHex(FIATJAF_NPROFILE)).toBe(FIATJAF_HEX);
+  });
+
+  it("round-trips through the encoder", () => {
+    expect(hexToNpub(npubToHex(JACK_NPUB))).toBe(JACK_NPUB);
+  });
+
+  it("tolerates case and surrounding whitespace, like the catalog allows", () => {
+    expect(npubToHex("  " + JACK_NPUB.toUpperCase() + "  ")).toBe(JACK_HEX);
+  });
+
+  it("returns nothing for anything that is not a profile identifier", () => {
+    expect(npubToHex("")).toBe("");
+    expect(npubToHex("besoeasy")).toBe("");
+    // note1 is an event id, nsec1 a private key: neither names an author.
+    expect(
+      npubToHex(
+        "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn"
+      )
+    ).toBe("");
+    expect(
+      npubToHex(
+        "nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw"
+      )
+    ).toBe("");
+    // Broken checksum, wrong payload sizes, malformed TLV.
+    expect(
+      npubToHex(
+        "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63q"
+      )
+    ).toBe("");
+    expect(
+      npubToHex(
+        "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmucs89urk"
+      )
+    ).toBe("");
+    expect(npubToHex("nprofile1qypkzcnre6e3r9")).toBe("");
   });
 });
 

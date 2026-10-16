@@ -230,6 +230,93 @@ export function hexToNpub(hex) {
   return hrp + "1" + [...data, ...checksum].map((v) => BECH32_CHARSET[v]).join("");
 }
 
+// ─── bech32 (decode side) ──────────────────────────────────────────────────
+// The frontend needs npub/nprofile → hex to recognise an app's own developer
+// among comment authors. A mirror of core/nip19/nip19.go: checksum-verified
+// bech32 plus the nprofile TLV walk, no dependency. Tested against the same
+// externally-verified vectors as the backend.
+
+function convertBits5to8(data) {
+  let acc = 0;
+  let bits = 0;
+  const out = [];
+  for (const v of data) {
+    if ((v >> 5) !== 0) return null;
+    acc = (acc << 5) | v;
+    bits += 5;
+    while (bits >= 8) {
+      bits -= 8;
+      out.push((acc >> bits) & 0xff);
+    }
+  }
+  // Trailing bits that do not compose a whole byte, or a non-zero remainder:
+  // the encoding is not canonical.
+  if (bits >= 5 || ((acc << (8 - bits)) & 0xff) !== 0) return null;
+  return out;
+}
+
+function bech32DecodeToPayload(s) {
+  const lower = String(s ?? "").toLowerCase();
+  const sep = lower.lastIndexOf("1");
+  if (sep < 1 || sep + 7 > lower.length) return null;
+
+  const hrp = lower.slice(0, sep);
+  for (let i = 0; i < hrp.length; i++) {
+    const c = hrp.charCodeAt(i);
+    if (c < 33 || c > 126) return null;
+  }
+
+  const values = [];
+  for (let i = sep + 1; i < lower.length; i++) {
+    const idx = BECH32_CHARSET.indexOf(lower[i]);
+    if (idx < 0) return null;
+    values.push(idx);
+  }
+
+  if (bech32Polymod([...bech32HrpExpand(hrp), ...values]) !== 1) return null;
+
+  const payload = convertBits5to8(values.slice(0, -6));
+  if (!payload) return null;
+  return { hrp, payload };
+}
+
+// nprofilePubkey walks a TLV list for the type-0 entry, which NIP-19 defines
+// as the 32-byte pubkey. Relay hints riding alongside are ignored — the read
+// names its own relays.
+function nprofilePubkey(payload) {
+  for (let i = 0; i + 2 <= payload.length; ) {
+    const type = payload[i];
+    const len = payload[i + 1];
+    if (i + 2 + len > payload.length) return null;
+    if (type === 0) {
+      if (len !== 32) return null;
+      return payload.slice(i + 2, i + 2 + len);
+    }
+    i += 2 + len;
+  }
+  return null;
+}
+
+// npubToHex turns an NIP-19 profile identifier into the hex form relay events
+// carry in `pubkey`. Empty string for anything that is not one — a note id, a
+// private key, a broken checksum — so callers render no badge rather than a
+// wrong one.
+export function npubToHex(key) {
+  const decoded = bech32DecodeToPayload(String(key ?? "").trim());
+  if (!decoded) return "";
+
+  if (decoded.hrp === "npub") {
+    if (decoded.payload.length !== 32) return "";
+    return bytesToHex(decoded.payload);
+  }
+  if (decoded.hrp === "nprofile") {
+    const pubkey = nprofilePubkey(decoded.payload);
+    if (!pubkey) return "";
+    return bytesToHex(pubkey);
+  }
+  return "";
+}
+
 // ─── NIP-01 event id ────────────────────────────────────────────────────────
 // The id is sha256 of the canonical serialisation
 // [0, pubkey, created_at, kind, tags, content]. Recomputed client-side as a

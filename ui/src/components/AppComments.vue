@@ -3,8 +3,8 @@ import { computed, onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { MessageSquare, RefreshCw, Send, KeyRound, AlertCircle, ExternalLink } from "@lucide/vue";
 import { useAppComments } from "../composables/useAppComments";
-import { developerInitials, developerProfileUrl, developerShortKey } from "../utils/developer";
-import { hexToNpub } from "../utils/nostr";
+import { developerInitials, developerProfileUrl, developerShortKey, developersOf } from "../utils/developer";
+import { hexToNpub, npubToHex } from "../utils/nostr";
 
 const props = defineProps({
   app: { type: Object, required: true },
@@ -13,6 +13,28 @@ const props = defineProps({
 const { t } = useI18n();
 
 const appId = computed(() => String(props.app?.id ?? "").trim().toLowerCase());
+
+// The app's credited Nostr keys as relay-hex. A comment whose pubkey lands in
+// this set is the developer speaking, and renders with a badge. Decoded (not
+// shape-checked): a badge on the wrong account is worse than no badge.
+const developerHexes = computed(() => {
+  const set = new Set();
+  for (const d of developersOf(props.app)) {
+    const hex = npubToHex(d.key);
+    if (hex) set.add(hex);
+  }
+  return set;
+});
+
+function isDeveloperComment(event) {
+  return developerHexes.value.has(String(event?.pubkey ?? "").toLowerCase());
+}
+
+// The connected signer is one of the app's developers: posting speaks with
+// the badge.
+const postingAsDeveloper = computed(
+  () => !!pubkeyHex.value && developerHexes.value.has(pubkeyHex.value)
+);
 
 const {
   comments,
@@ -185,6 +207,13 @@ watch(appId, () => {
               <span v-else class="truncate font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
                 {{ authorShortOf(c) }}
               </span>
+              <span
+                v-if="isDeveloperComment(c)"
+                :title="t('appComments.developerBadgeHint')"
+                class="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white dark:bg-zinc-100 dark:text-zinc-900"
+              >
+                {{ t("appComments.developerBadge") }}
+              </span>
               <span class="shrink-0 font-mono text-[10px] text-zinc-400">
                 {{ formatTime(c.created_at) }}
               </span>
@@ -226,6 +255,9 @@ watch(appId, () => {
       <div v-else class="space-y-3">
         <p class="font-mono text-[11px] text-zinc-500">
           {{ t("appComments.connectedAs", { key: shortAuthor }) }}
+        </p>
+        <p v-if="postingAsDeveloper" class="text-[11px] font-semibold leading-relaxed text-zinc-700 dark:text-zinc-300">
+          {{ t("appComments.postingAsDeveloper") }}
         </p>
         <label :for="`comment-${appId}`" class="sr-only">{{ t("appComments.placeholder") }}</label>
         <textarea
