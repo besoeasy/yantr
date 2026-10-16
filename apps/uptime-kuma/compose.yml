@@ -32,7 +32,7 @@ x-yantr:
 
 services:
   uptime-kuma:
-    image: docker.io/louislam/uptime-kuma:latest
+    image: docker.io/louislam/uptime-kuma:2-rootless
     ports:
       - "3001"
     volumes:
