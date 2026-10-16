@@ -208,6 +208,12 @@
     "notFound": "Noch keine App im Yantr-Katalog nennt diesen Entwickler.",
     "loadFailed": "Dieser Entwickler konnte nicht geladen werden.",
     "profileUnavailable": "Profildetails sind derzeit nicht verfügbar — stattdessen werden die Yantr-Apps dieses Entwicklers aus dem lokalen Katalog angezeigt.",
+    "nostrDm": "Auf Nostr anschreiben",
+    "nostrDmHint": "Diesen Code mit einer Nostr-App scannen, um eine Direktnachricht zu öffnen. Ohne Client führt der Link darunter zum selben Ziel.",
+    "nostrOpen": "In einer Nostr-App öffnen",
+    "nostrCopy": "Öffentlichen Schlüssel kopieren",
+    "nostrCopied": "Kopiert",
+    "nostrQrLabel": "QR-Code, der eine Direktnachricht mit {name} auf Nostr öffnet",
     "archived": "Archiviert"
   },
   "container": {

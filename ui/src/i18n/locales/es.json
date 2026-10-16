@@ -207,6 +207,12 @@
     "notFound": "Ninguna app del catálogo de Yantr acredita aún a este desarrollador.",
     "loadFailed": "No se pudo cargar este desarrollador.",
     "profileUnavailable": "Los detalles del perfil no están disponibles ahora mismo: se muestran las apps de Yantr de este desarrollador desde el catálogo local.",
+    "nostrDm": "Escribir en Nostr",
+    "nostrDmHint": "Escanea este código con una aplicación de Nostr para abrir un mensaje directo. Sin cliente, el enlace de abajo lleva al mismo sitio.",
+    "nostrOpen": "Abrir en una aplicación de Nostr",
+    "nostrCopy": "Copiar clave pública",
+    "nostrCopied": "Copiada",
+    "nostrQrLabel": "Código QR que abre un mensaje directo con {name} en Nostr",
     "archived": "Archivado"
   },
   "container": {

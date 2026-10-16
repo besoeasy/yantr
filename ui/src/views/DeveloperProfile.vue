@@ -1,10 +1,11 @@
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
 import AppCard from "../components/AppCard.vue";
+import NostrQrCode from "../components/NostrQrCode.vue";
 import {
   ArrowLeft,
   ExternalLink,
@@ -16,11 +17,15 @@ import {
   Package,
   AlertCircle,
   Code2,
+  AtSign,
+  Copy,
+  Zap,
 } from "@lucide/vue";
 import {
   developerInitials,
   developerLabel,
   developerProfileUrl,
+  nostrDmUri,
 } from "../utils/developer";
 
 const route = useRoute();
@@ -49,6 +54,37 @@ const profileUrl = computed(() => {
 const displayName = computed(() => profile.value?.name?.trim() || handle.value);
 const initials = computed(() => developerInitials(handle.value));
 const avatarUrl = computed(() => profile.value?.avatarUrl ?? "");
+
+// The NIP-21 URI a Nostr client opens to message this developer. Derived from
+// the catalog's own handle rather than from the profile request, so the code is
+// on screen immediately and survives the relay being unreachable — which is the
+// common case for a rootless host on a network that blocks it.
+const nostrDm = computed(() => (platform.value === "nostr" ? nostrDmUri(handle.value) : ""));
+
+// Only the key itself goes in the code's accessible name; the surrounding copy
+// explains it.
+const nostrQrLabel = computed(() =>
+  t("developer.nostrQrLabel", { name: displayName.value })
+);
+
+const copied = ref(false);
+let copiedTimer = null;
+
+async function copyNostrKey() {
+  try {
+    await navigator.clipboard.writeText(handle.value);
+    copied.value = true;
+    // Reset rather than leaving the label stuck on "Copied"; a second copy of
+    // the same value would otherwise look like nothing happened.
+    if (copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch {
+    // Clipboard access needs a secure context and can be refused. The key is
+    // printed next to the button, so there is nothing to recover from.
+  }
+}
 
 // Blog is free text on GitHub and people write it with and without a scheme.
 const blogUrl = computed(() => {
@@ -104,6 +140,13 @@ function viewAppDetail(appId) {
 onMounted(() => {
   load(developerRef.value);
   fetchContainers();
+});
+
+// The copy feedback outlives a fast navigation otherwise, and firing a timer
+// into an unmounted component is the kind of thing that shows up as a console
+// warning in someone else's session.
+onUnmounted(() => {
+  if (copiedTimer) clearTimeout(copiedTimer);
 });
 
 // Navigating between two developer pages reuses this component, so the fetch
@@ -182,22 +225,33 @@ watch(developerRef, (next) => {
               <span v-if="profile.location" class="inline-flex items-center gap-1.5">
                 <MapPin :size="13" /> {{ profile.location }}
               </span>
+              <!-- NIP-05 is the Nostr equivalent of a verified handle, so it is
+                   shown as written rather than linked: verifying it means asking
+                   the domain, which is not this page's job. -->
+              <span v-if="profile.nip05" class="inline-flex items-center gap-1.5">
+                <AtSign :size="13" /> {{ profile.nip05 }}
+              </span>
+              <span v-if="profile.lud16" class="inline-flex items-center gap-1.5">
+                <Zap :size="13" /> {{ profile.lud16 }}
+              </span>
               <a v-if="blogUrl" :href="blogUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">
                 <Link2 :size="13" /> {{ profile.blog }}
               </a>
             </div>
 
-            <!-- Counters -->
+            <!-- Counters. The repository and follower ones are GitHub's; a Nostr
+                 profile has no equivalent, and normaliseNostrProfile leaves them
+                 undefined so they stay hidden rather than reading zero. -->
             <div class="mt-5 flex flex-wrap gap-x-8 gap-y-3">
               <div>
                 <div class="text-base font-bold tabular-nums text-zinc-900 dark:text-white">{{ developerApps.length }}</div>
                 <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.yantrApps') }}</div>
               </div>
-              <div v-if="profile">
+              <div v-if="profile?.publicRepos != null">
                 <div class="text-base font-bold tabular-nums text-zinc-900 dark:text-white">{{ profile.publicRepos }}</div>
                 <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.repositories') }}</div>
               </div>
-              <div v-if="profile">
+              <div v-if="profile?.followers != null">
                 <div class="text-base font-bold tabular-nums text-zinc-900 dark:text-white">{{ profile.followers }}</div>
                 <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.followers') }}</div>
               </div>
@@ -223,7 +277,7 @@ watch(developerRef, (next) => {
           </div>
         </div>
 
-        <!-- GitHub unavailable: the page keeps working, and says why -->
+        <!-- Profile enrichment unavailable: the page keeps working, and says why -->
         <p
           v-if="profileUnavailable"
           class="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-zinc-500"
@@ -231,6 +285,50 @@ watch(developerRef, (next) => {
           <AlertCircle :size="13" class="mt-0.5 shrink-0" />
           {{ t('developer.profileUnavailable') }}
         </p>
+
+        <!-- Direct message on Nostr. The code is built from the catalog's own
+             key, so it is on screen as soon as the page is and stays there when
+             the relay is unreachable — which is the common case for a rootless
+             host on a network that blocks it. -->
+        <section
+          v-if="nostrDm"
+          class="mt-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#0A0A0A]"
+        >
+          <div class="flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center">
+            <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
+              <!-- 180px over a 45-module drawing is four pixels per module, which
+                   is what keeps it readable off a screen at arm's length. -->
+              <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
+              <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
+
+              <p class="mt-3 break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ handle }}</p>
+
+              <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <!-- The non-scanning path, for anyone reading this on a desktop:
+                     njump offers the reader's own client and a message link. -->
+                <a
+                  v-if="profileUrl"
+                  :href="profileUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                >
+                  <ExternalLink :size="14" /> {{ t('developer.nostrOpen') }}
+                </a>
+                <button
+                  @click="copyNostrKey"
+                  class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                >
+                  <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- Apps in Yantr -->
         <section class="mt-10">

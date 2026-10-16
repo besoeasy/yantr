@@ -14,6 +14,7 @@
     "@lucide/vue": "latest",
     "@noble/curves": "^2.2.0",
     "@noble/hashes": "^2.2.0",
+    "qrcode-generator": "^2.0.4",
     "vue": "^3.5.13",
     "vue-i18n": "^11.2.8",
     "vue-router": "^4.5.0"
@@ -25,6 +26,7 @@
     "eslint-plugin-vue": "^10.11.1",
     "eslint-plugin-vuejs-accessibility": "^2.6.0",
     "globals": "^17.12.0",
+    "jsqr": "^1.4.0",
     "vite": "^6.2.4",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vitest": "^3.2.7"

@@ -207,6 +207,12 @@
     "notFound": "Yantr 目录中尚无应用标注此开发者。",
     "loadFailed": "无法加载该开发者。",
     "profileUnavailable": "暂时无法获取资料详情 — 改为显示该开发者在本地目录中的 Yantr 应用。",
+    "nostrDm": "在 Nostr 上发消息",
+    "nostrDmHint": "用 Nostr 应用扫描此二维码即可打开私信。没有客户端时，下方的链接可以到达同一位置。",
+    "nostrOpen": "在 Nostr 应用中打开",
+    "nostrCopy": "复制公钥",
+    "nostrCopied": "已复制",
+    "nostrQrLabel": "用于在 Nostr 上给 {name} 发私信的二维码",
     "archived": "已归档"
   },
   "container": {

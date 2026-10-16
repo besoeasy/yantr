@@ -207,6 +207,12 @@
     "notFound": "この開発者を記載したアプリはまだ Yantr カタログにありません。",
     "loadFailed": "この開発者を読み込めませんでした。",
     "profileUnavailable": "現在プロフィール情報を取得できません。代わりにローカルカタログからこの開発者の Yantr アプリを表示しています。",
+    "nostrDm": "Nostr でメッセージ",
+    "nostrDmHint": "このコードを Nostr アプリで読み取ると、ダイレクトメッセージを開けます。クライアントがない場合は、下のリンクから同じ場所に移動できます。",
+    "nostrOpen": "Nostr アプリで開く",
+    "nostrCopy": "公開鍵をコピー",
+    "nostrCopied": "コピーしました",
+    "nostrQrLabel": "{name} に Nostr でダイレクトメッセージを送る QR コード",
     "archived": "アーカイブ済み"
   },
   "container": {

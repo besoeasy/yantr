@@ -7,13 +7,38 @@ import { canFetchProfile } from "../utils/developer";
 //
 // The half that matters is the catalogue: /api/developers/{handle} answers from
 // the local apps directory and works with no internet at all. The other half is
-// GitHub, and it is deliberately allowed to fail — Yantr is rootless and often
-// runs where api.github.com is unreachable or rate-limited, and a developer page
-// that dies with it would be a page about Yantr's dependencies rather than about
-// the developer.
+// the platform profile — GitHub's API or a Nostr relay — and it is deliberately
+// allowed to fail: Yantr is rootless and often runs where neither is reachable,
+// and a developer page that dies with them would be a page about Yantr's
+// dependencies rather than about the developer.
 //
 // A factory rather than module-level state, unlike useRepoStats: the route param
 // changes on every navigation and two developer pages must not share a cache.
+
+// normaliseNostrProfile maps a kind-0 event onto the same field names a GitHub
+// user has, because the view renders one hero for both platforms. Doing it here
+// rather than with a ternary on every line of the template also puts the two
+// platforms' real differences in one place: Nostr has no repository or follower
+// counts, so those stay undefined and the counters that need them stay hidden.
+function normaliseNostrProfile(raw) {
+  if (!raw) return null;
+
+  const name = String(raw.name ?? "").trim() || String(raw.displayName ?? "").trim();
+
+  return {
+    // Clients disagree about which field holds the human name, and either may
+    // be absent. The handle is the caller's fallback.
+    name,
+    bio: String(raw.about ?? "").trim(),
+    avatarUrl: String(raw.picture ?? "").trim(),
+    blog: String(raw.website ?? "").trim(),
+    nip05: String(raw.nip05 ?? "").trim(),
+    lud16: String(raw.lud16 ?? "").trim(),
+    key: String(raw.key ?? "").trim(),
+    pubkey: String(raw.pubkey ?? "").trim(),
+    source: "nostr",
+  };
+}
 
 export function useDeveloperProfile() {
   const { apiUrl } = useApiUrl();
@@ -26,8 +51,8 @@ export function useDeveloperProfile() {
   const loading = ref(false);
   const notFound = ref(false);
   const failed = ref(false);
-  // Set when the catalogue answered but GitHub did not. The page renders
-  // normally and says so; it is not an error state.
+  // Set when the catalogue answered but the platform profile did not. The page
+  // renders normally and says so; it is not an error state.
   const profileUnavailable = ref(false);
 
   function reset() {
@@ -40,11 +65,38 @@ export function useDeveloperProfile() {
     profileUnavailable.value = false;
   }
 
-  // fetchEnrichment loads the GitHub halves. Both are best-effort: a failure
-  // flips profileUnavailable and nothing else, because the app list below is
-  // already rendered and correct.
+  // fetchNostrProfile loads the kind-0 metadata the server proxy caches. Unlike
+  // GitHub there is only one request, and no repo list to go with it.
+  async function fetchNostrProfile(key) {
+    try {
+      const res = await fetch(`${apiUrl.value}/api/nostr/profile/${encodeURIComponent(key)}`);
+
+      // 404 covers both "the relay has no metadata for this key" and "the
+      // catalog declares no such key". Neither is a failure: there is simply no
+      // profile card, and the QR code is drawn from the catalog regardless.
+      if (res.status === 404) {
+        profileUnavailable.value = true;
+        return;
+      }
+
+      const data = await expectApiSuccess(res, "nostr profile unavailable");
+      profile.value = normaliseNostrProfile(data.profile);
+      profileUnavailable.value = profile.value === null;
+    } catch {
+      profileUnavailable.value = true;
+    }
+  }
+
+  // fetchEnrichment loads whatever profile data the platform offers. It is
+  // best-effort: a failure flips profileUnavailable and nothing else, because
+  // the app list below is already rendered and correct.
   async function fetchEnrichment(platform, handle) {
     if (!canFetchProfile(platform)) return;
+
+    if (platform === "nostr") {
+      await fetchNostrProfile(handle);
+      return;
+    }
 
     const login = encodeURIComponent(handle);
     const [profileResult, reposResult] = await Promise.allSettled([

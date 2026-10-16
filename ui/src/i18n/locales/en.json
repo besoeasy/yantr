@@ -217,6 +217,12 @@
     "notFound": "No app in the Yantr catalog credits this developer yet.",
     "loadFailed": "Could not load this developer.",
     "profileUnavailable": "Profile details are unavailable right now — showing this developer's Yantr apps from the local catalog instead.",
+    "nostrDm": "Message on Nostr",
+    "nostrDmHint": "Scan this code with a Nostr app to open a direct message. Without a client, the link below reaches the same place.",
+    "nostrOpen": "Open in a Nostr app",
+    "nostrCopy": "Copy public key",
+    "nostrCopied": "Copied",
+    "nostrQrLabel": "QR code that opens a direct message with {name} on Nostr",
     "archived": "Archived"
   },
   "container": {

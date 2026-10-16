@@ -8,7 +8,9 @@ import {
   developerProfileUrl,
   developerRouteRef,
   developersOf,
+  isNostrKey,
   ISSUE_BASE,
+  nostrDmUri,
   parseDeveloperRef,
 } from "./developer";
 
@@ -70,10 +72,53 @@ describe("developerLabel and canFetchProfile", () => {
     expect(developerLabel("nostr")).toBe("Nostr");
   });
 
-  it("only claims a profile API for GitHub", () => {
+  // Both have a server-side proxy now: GitHub's API and a Nostr relay. The
+  // forges without one still get the catalog list and a link out.
+  it("claims a profile API only where the server proxies one", () => {
     expect(canFetchProfile("github")).toBe(true);
+    expect(canFetchProfile("nostr")).toBe(true);
     expect(canFetchProfile("gitlab")).toBe(false);
-    expect(canFetchProfile("nostr")).toBe(false);
+    expect(canFetchProfile("codeberg")).toBe(false);
+  });
+});
+
+describe("isNostrKey and nostrDmUri", () => {
+  const NPUB = "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6";
+
+  it("recognises the two profile identifiers", () => {
+    expect(isNostrKey(NPUB)).toBe(true);
+    expect(isNostrKey("nprofile1qqsgydql3q4ka27d9wnlrmus4tvkrnc8ftc4h8h5fgyln54gl0a7dgspzemhxue69uhhyetvv9ujuurjd9kkzmpwdejhgw2eqf8")).toBe(true);
+    expect(isNostrKey(`  ${NPUB}  `)).toBe(true);
+  });
+
+  // `note1` is an event id and `nsec1` a private key. Neither names a person, and
+  // drawing a code for one would send a reader somewhere that cannot work.
+  it("rejects everything that is not a profile identifier", () => {
+    expect(isNostrKey("note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn")).toBe(false);
+    expect(isNostrKey("nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw")).toBe(false);
+    expect(isNostrKey("besoeasy")).toBe(false);
+    expect(isNostrKey("")).toBe(false);
+    expect(isNostrKey(null)).toBe(false);
+    // Bech32 omits the digits 1 and the letters b, i and o, so a key containing
+    // them is not a key however plausible it looks.
+    expect(isNostrKey("npub1" + "b".repeat(58))).toBe(false);
+  });
+
+  it("builds the NIP-21 URI a client opens", () => {
+    expect(nostrDmUri(NPUB)).toBe(`nostr:${NPUB}`);
+  });
+
+  // bech32 is defined lowercase, NIP-19 exchanges it lowercase, and the catalog
+  // is allowed to keep whatever case it was written with.
+  it("lowercases the key so the code carries the canonical form", () => {
+    expect(nostrDmUri(NPUB.toUpperCase())).toBe(`nostr:${NPUB}`);
+  });
+
+  it("returns nothing for a handle it cannot encode", () => {
+    expect(nostrDmUri("besoeasy")).toBe("");
+    expect(nostrDmUri("note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn")).toBe("");
+    expect(nostrDmUri("")).toBe("");
+    expect(nostrDmUri(undefined)).toBe("");
   });
 });
 

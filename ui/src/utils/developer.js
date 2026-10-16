@@ -30,7 +30,9 @@ export const DEVELOPER_PLATFORMS = {
     // particular client, which a bare nostr: link does.
     label: "Nostr",
     profile: (handle) => `https://njump.me/${handle}`,
-    api: false,
+    // The server proxies kind-0 metadata from one relay for a Nostr developer,
+    // cached for a week, the same way it proxies a GitHub profile.
+    api: true,
   },
 };
 
@@ -77,10 +79,36 @@ export function developerLabel(platform) {
   return DEVELOPER_PLATFORMS[platform]?.label ?? platform;
 }
 
-// canFetchProfile reports whether a server proxy exists for this platform. Only
-// GitHub does today; the page is fully usable without it.
+// canFetchProfile reports whether a server proxy exists for this platform. The
+// page is fully usable without one: the catalog half answers either way.
 export function canFetchProfile(platform) {
   return Boolean(DEVELOPER_PLATFORMS[platform]?.api);
+}
+
+// NOSTR_KEY_RE is a shape check, not a validator. Bech32 verification belongs to
+// the backend (core/system/nip19.go), and a catalog key is guarded by a test
+// there. This exists for one narrow purpose: deciding whether to draw a QR code.
+// A code that encodes a handle no client can parse looks perfectly fine and does
+// nothing when scanned, which is the one failure a reader cannot see.
+//
+// The alphabet is bech32's: the digits without 1, and the letters without b, i
+// and o.
+const NOSTR_KEY_RE = /^n(?:pub|profile)1[02-9ac-hj-np-z]+$/i;
+
+// isNostrKey reports whether a handle looks like an npub or nprofile.
+export function isNostrKey(handle) {
+  return NOSTR_KEY_RE.test(String(handle ?? "").trim());
+}
+
+// nostrDmUri is the NIP-21 URI a Nostr client opens to message the developer.
+//
+// Lowercased on the way out: bech32 is defined lowercase, NIP-19 exchanges it
+// lowercase, and the catalog is allowed to keep whatever case it was written
+// with. Returns empty string for a handle that does not look like a key, so the
+// caller renders no code rather than a code that cannot work.
+export function nostrDmUri(handle) {
+  const key = String(handle ?? "").trim().toLowerCase();
+  return isNostrKey(key) ? `nostr:${key}` : "";
 }
 
 // developerInitials gives an avatar fallback that is stable for one developer

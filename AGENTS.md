@@ -35,6 +35,19 @@ the alternative reading makes the field meaningless. Only write a handle you can
 real account: the image namespace (`ghcr.io/<owner>`) or the project's own website is
 evidence; a guess is not. Leaving the field out is the correct choice when unsure.
 
+A `nostr:` handle must be an `npub1…` (or `nprofile1…`) — a profile identifier, never an
+`nsec1…` private key or a `note1…` event id. It buys more than a link: the developer page
+shows the account's kind-0 name, picture and `nip05`, and a QR code of the NIP-21 URI
+(`nostr:npub1…`) so a visitor can scan straight into a direct message. The QR is drawn
+from the catalog's own key, so it is on screen even when nothing can be fetched.
+
+That fetch is the one place Yantr reaches a third party for this field: the server queries
+a single relay, `relay.primal.net`, over a websocket and caches the result for seven days
+(`core/system/nostr.go`). One relay, not a merge of several — a developer page wants one
+account's name, and extra relays would multiply the latency and the failure modes for a
+result that is nearly always identical. Nothing else about a `nostr:` entry depends on the
+network: the app list, the credit and the QR all come from the local catalog.
+
 Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml
 x-yantr:
