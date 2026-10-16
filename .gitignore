@@ -25,6 +25,7 @@ apps/*/.env.*
 website/tailwind.css
 website/apps.json
 website/apps
+website/developer
 website/github-data.json
 website/presence.json
 website/catalog

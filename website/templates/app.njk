@@ -14,20 +14,29 @@
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "{{ app.name }}",
-      "description": "{{ app.description }}",
-      "url": "{{ pageUrl }}",
-      "image": "{{ imageUrl }}",
+      "name": {{ app.name | dump | safe }},
+      "description": {{ app.description | dump | safe }},
+      "url": {{ pageUrl | dump | safe }},
+      "image": {{ imageUrl | dump | safe }},
       "applicationCategory": "{% if app.tags.length %}{{ app.tags[0] | title }}{% else %}Utilities{% endif %}",
-      "keywords": "{% if app.tags.length %}{{ app.tags | join(', ') }}{% endif %}",
+      "keywords": {{ app.tags | join(', ') | dump | safe }},
       "operatingSystem": "Linux, Podman",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       }{% if app.website %},
-      "sameAs": "{{ app.website }}"{% endif %}{% if app.usecases.length %},
-      "featureList": [{% for uc in app.usecases %}"{{ uc }}"{% if not loop.last %}, {% endif %}{% endfor %}]{% endif %}
+      "sameAs": {{ app.website | dump | safe }}{% endif %}{% if app.usecases.length %},
+      "featureList": [{% for uc in app.usecases %}{{ uc | dump | safe }}{% if not loop.last %}, {% endif %}{% endfor %}]{% endif %}{% if app.developers.length %},
+      "author": {% if app.developers.length == 1 %}{
+        "@type": "Person",
+        "name": {{ app.developers[0].handle | dump | safe }},
+        "url": {{ app.developers[0].url | dump | safe }}
+      }{% else %}[{% for dev in app.developers %}{
+        "@type": "Person",
+        "name": {{ dev.handle | dump | safe }},
+        "url": {{ dev.url | dump | safe }}
+      }{% if not loop.last %}, {% endif %}{% endfor %}]{% endif %}{% endif %}
     }
     </script>
 
@@ -45,8 +54,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "{{ app.name }}",
-          "item": "{{ pageUrl }}"
+          "name": {{ app.name | dump | safe }},
+          "item": {{ pageUrl | dump | safe }}
         }
       ]
     }
@@ -56,12 +65,12 @@
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
-      "name": "{{ pageTitle }}",
-      "description": "{{ pageDescription }}",
-      "url": "{{ pageUrl }}",
+      "name": {{ pageTitle | dump | safe }},
+      "description": {{ pageDescription | dump | safe }},
+      "url": {{ pageUrl | dump | safe }},
       "about": {
         "@type": "Thing",
-        "name": "{{ app.name }}"
+        "name": {{ app.name | dump | safe }}
       },
       "isPartOf": {
         "@type": "WebSite",
@@ -156,6 +165,23 @@
           View on GitHub
         </a>
       </div>
+
+      <!-- Who writes it. Links to the developer page so the credit is a route
+           into that person's other apps, not a dead name. -->
+      {% if app.developers.length %}
+        <div class="developer-credit">
+          <p class="lbl">{% if app.developers.length > 1 %}Developers{% else %}Developer{% endif %}</p>
+          <div class="developer-chips">
+            {% for dev in app.developers %}
+              <a href="/developer/{{ dev.ref }}/" class="developer-chip">
+                <span class="developer-chip-dot">{{ dev.initials }}</span>
+                <span>{{ dev.handle }}</span>
+                <span class="developer-chip-platform">{{ dev.platformLabel }}</span>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
 
       <!-- About -->
       {% if app.description %}

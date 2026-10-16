@@ -17,6 +17,60 @@ const siteUrl = 'https://yantr.org';
 
 const DISPLAY_PROTOCOLS = new Set(['HTTP', 'HTTPS', 'TCP', 'UDP']);
 
+// Mirrors validDeveloperPlatforms in core/apps/catalog.go. A closed set keeps a
+// typo out of a profile link; the URL schemes below are the single place a
+// platform's profile shape is defined.
+const DEVELOPER_PLATFORMS = {
+  github: { label: 'GitHub', profile: (h) => `https://github.com/${h}` },
+  gitlab: { label: 'GitLab', profile: (h) => `https://gitlab.com/${h}` },
+  codeberg: { label: 'Codeberg', profile: (h) => `https://codeberg.org/${h}` },
+  nostr: { label: 'Nostr', profile: (h) => `https://njump.me/${h}` },
+};
+
+// Mirrors parseDevelopers in core/apps/catalog.go: "platform:handle", forged
+// handles lowercased, nostr keys preserved, untrustworthy entries dropped rather
+// than rendered as a dead link.
+function parseDevelopers(inList) {
+  const out = [];
+  const seen = new Set();
+  if (!Array.isArray(inList)) return out;
+
+  for (const raw of inList) {
+    const text = String(raw ?? '').trim();
+    const sep = text.indexOf(':');
+    if (sep === -1) continue;
+
+    const platform = text.slice(0, sep).trim().toLowerCase();
+    let handle = text.slice(sep + 1).trim().replace(/^@/, '');
+
+    if (!handle || !DEVELOPER_PLATFORMS[platform]) continue;
+    if (/[\s/?#]/.test(handle)) continue;
+    if (platform !== 'nostr') handle = handle.toLowerCase();
+
+    const key = `${platform}:${handle}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    out.push({
+      platform,
+      handle,
+      url: DEVELOPER_PLATFORMS[platform].profile(handle),
+      platformLabel: DEVELOPER_PLATFORMS[platform].label,
+      initials: (handle.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2) || '?').toUpperCase(),
+      // GitHub is the default platform, so it gets the short, shareable page
+      // path. Everything else is qualified.
+      ref: platform === 'github' ? handle : key,
+    });
+  }
+  return out;
+}
+
+// developerPagePath is the site path for one developer's page. Kept in one place
+// so the app-page credit and the generated page cannot disagree.
+function developerPagePath(ref) {
+  return `/developer/${ref}/`;
+}
+
 function parseXyPorts(metaPorts, services) {
   const out = [];
   const seen = new Set();
@@ -62,6 +116,7 @@ function parseAppFolder(appId, appPath) {
     const serviceName = Object.keys(services)[0] || null;
     const image = serviceName ? (services[serviceName]?.image || null) : null;
     const ports = parseXyPorts(meta?.ports, services);
+    const developers = parseDevelopers(meta?.developers);
     const hasLogo = fs.existsSync(path.join(appPath, 'logo.svg'));
 
     return {
@@ -69,6 +124,7 @@ function parseAppFolder(appId, appPath) {
       name: meta.name,
       tags: Array.isArray(meta.tags) ? meta.tags : [],
       ports,
+      developers,
       short_description: meta.short_description || '',
       description: meta.description || meta.short_description || '',
       usecases: Array.isArray(meta.usecases) ? meta.usecases : [],
@@ -175,6 +231,8 @@ function toAppViewModel(app) {
     name,
     tags,
     notes: Array.isArray(app?.notes) ? app.notes : [],
+    developers: Array.isArray(app?.developers) ? app.developers : [],
+    hasDevelopers: Array.isArray(app?.developers) && app.developers.length > 0,
     short_description: app?.short_description || '',
     description: app?.description || app?.short_description || 'No description available.',
     usecases: Array.isArray(app?.usecases) ? app.usecases : [],
@@ -248,6 +306,55 @@ function buildPages() {
   }
 
   console.log(`✨ Generated ${apps.length} app pages in ${appsOutputDir}`);
+
+  buildDeveloperPages(env, apps, generatedAt);
+}
+
+// buildDeveloperPages writes one page per credited developer, listing the apps
+// they maintain in the catalog.
+//
+// No GitHub call happens here on purpose. The upstream contributors fetch is
+// already the only network dependency in this build, and a developer page that
+// needs a second one would fail the whole build whenever api.github.com is slow
+// or rate-limited. The credit, the profile link and the app list are all in the
+// repository already.
+function buildDeveloperPages(env, apps, generatedAt) {
+  const byRef = new Map();
+
+  for (const app of apps) {
+    for (const dev of app.developers || []) {
+      if (!byRef.has(dev.ref)) {
+        byRef.set(dev.ref, { ...dev, apps: [] });
+      }
+      byRef.get(dev.ref).apps.push(app);
+    }
+  }
+
+  const developerDir = path.join(websiteDir, 'developer');
+  fs.rmSync(developerDir, { recursive: true, force: true });
+
+  for (const developer of byRef.values()) {
+    const dir = path.join(developerDir, developer.ref);
+    fs.mkdirSync(dir, { recursive: true });
+
+    const count = developer.apps.length;
+    const pageTitle = `${developer.handle} — ${count} self-hosted app${count === 1 ? '' : 's'} on Yantr`;
+    const pageDescription = `${count} app${count === 1 ? '' : 's'} by ${developer.handle} (${developer.platformLabel}) in the Yantr catalog: ${developer.apps
+      .map((a) => a.name)
+      .join(', ')}. One-click self-hosting with Podman.`;
+
+    const html = env.render('developer.njk', {
+      developer,
+      nowIso: generatedAt,
+      pageTitle,
+      pageDescription,
+      pageUrl: `${siteUrl}${developerPagePath(developer.ref)}`,
+    });
+
+    fs.writeFileSync(path.join(dir, 'index.html'), html, 'utf8');
+  }
+
+  console.log(`✨ Generated ${byRef.size} developer page(s) in ${developerDir}`);
 }
 
 function httpsGet(url) {

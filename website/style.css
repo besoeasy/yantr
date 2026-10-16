@@ -2880,3 +2880,164 @@ p code, li code, td code, .spec-sub code {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── Developer credit and developer pages ─────────── */
+/* The chip appears on the app page; the hero and app list on the generated
+   /developer/<handle>/ pages. Plain CSS, no Tailwind — same as everything here. */
+.developer-credit {
+  margin-bottom: 3.5rem;
+}
+.developer-credit .lbl {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: var(--gray-400);
+  margin-bottom: 0.75rem;
+}
+.developer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.developer-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.35rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-full);
+  color: var(--gray-800);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.developer-chip:hover {
+  border-color: var(--gray-400);
+  box-shadow: var(--shadow-xs);
+}
+.developer-chip-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-full);
+  background: var(--black);
+  color: var(--white);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.developer-chip-platform {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--gray-400);
+}
+
+.developer-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.developer-hero-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-2xl);
+  background: var(--black);
+  color: var(--white);
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.developer-hero h1 {
+  font-size: 2.1rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.developer-hero .kicker {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--gray-400);
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.developer-hero .short {
+  margin-top: 0.75rem;
+  color: var(--gray-500);
+  line-height: 1.6;
+}
+.developer-ref {
+  margin-top: 0.85rem;
+  font-size: 0.85rem;
+  color: var(--gray-500);
+}
+
+.developer-app-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.75rem;
+}
+.developer-app {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.developer-app:hover {
+  border-color: var(--gray-400);
+  box-shadow: var(--shadow-sm);
+}
+.developer-app img {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-md);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.developer-app > div {
+  flex: 1;
+  min-width: 0;
+}
+.developer-app-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gray-900);
+}
+.developer-app-desc {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+.developer-app-count {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--gray-400);
+}
+
+@media (min-width: 640px) {
+  .developer-hero {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}

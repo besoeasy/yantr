@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ pageTitle }}</title>
+    <meta name="description" content="{{ pageDescription }}" />
+    <meta name="keywords" content="{{ developer.handle }}, {{ developer.platformLabel }}, self-hosted apps, podman compose, homelab, yantr{% for app in developer.apps %}, {{ app.name }}{% endfor %}" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="canonical" href="{{ pageUrl }}" />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfilePage",
+      "name": {{ pageTitle | dump | safe }},
+      "description": {{ pageDescription | dump | safe }},
+      "url": {{ pageUrl | dump | safe }},
+      "mainEntity": {
+        "@type": "Person",
+        "name": {{ developer.handle | dump | safe }},
+        "identifier": {{ developer.handle | dump | safe }},
+        "url": {{ pageUrl | dump | safe }},
+        "sameAs": {{ developer.url | dump | safe }}
+      },
+      "hasPart": [
+        {% for app in developer.apps %}{
+          "@type": "SoftwareApplication",
+          "name": {{ app.name | dump | safe }},
+          "url": "https://yantr.org{{ app.appPagePath }}",
+          "applicationCategory": "{% if app.tags.length %}{{ app.tags[0] | title }}{% else %}Utilities{% endif %}"
+        }{% if not loop.last %},{% endif %}{% endfor %}
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Yantr",
+          "item": "https://yantr.org/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ developer.handle | dump | safe }},
+          "item": {{ pageUrl | dump | safe }}
+        }
+      ]
+    }
+    </script>
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:url" content="{{ pageUrl }}" />
+    <meta property="og:title" content="{{ pageTitle }}" />
+    <meta property="og:description" content="{{ pageDescription }}" />
+    <meta property="og:site_name" content="Yantr" />
+    <meta property="og:locale" content="en_US" />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="{{ pageUrl }}" />
+    <meta name="twitter:title" content="{{ pageTitle }}" />
+    <meta name="twitter:description" content="{{ pageDescription }}" />
+
+    <!-- Vanilla CSS (no Tailwind) -->
+    <link rel="stylesheet" href="../../style.css" />
+  </head>
+
+  <body>
+    <main class="page-narrow">
+
+      <!-- Breadcrumb -->
+      <a href="../../#all-apps" class="crumb">
+        <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        All apps
+      </a>
+
+      <!-- Hero -->
+      <div class="developer-hero">
+        <div class="developer-hero-avatar">{{ developer.initials }}</div>
+        <div class="app-hero-body">
+          <p class="kicker">{{ developer.platformLabel }} developer · Yantr</p>
+          <h1>{{ developer.handle }}</h1>
+          <p class="short">Maintains {{ developer.apps.length }} app{% if developer.apps.length != 1 %}s{% endif %} in the Yantr catalog.</p>
+          <!-- The catalog identifier, in mono. Deliberately not .app-tags: that
+               uppercases, which turns the handle into GITHUB:BESOEASY. -->
+          <p class="developer-ref mono">{{ developer.platform }}:{{ developer.handle }}</p>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="app-stats">
+        <div>
+          <p class="num">{{ developer.apps.length }}</p>
+          <p class="lbl">Apps</p>
+        </div>
+        <div class="vsep"></div>
+        <div>
+          <p class="num">{{ developer.platformLabel }}</p>
+          <p class="lbl">Platform</p>
+        </div>
+      </div>
+
+      <!-- CTAs -->
+      <div class="app-ctas">
+        <a href="{{ developer.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-dark">
+          <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          Profile on {{ developer.platformLabel }}
+        </a>
+        <a href="../../#all-apps" class="btn btn-light">
+          <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          Browse the catalog
+        </a>
+      </div>
+
+      <!-- Apps -->
+      <section class="doc-section">
+        <p class="kicker">Apps</p>
+        <h2>What {{ developer.handle }} maintains</h2>
+        <div>
+          <p>Every app below declares <span class="mono">{{ developer.platform }}:{{ developer.handle }}</span> in its catalog entry, so the credit is part of the app definition rather than a separate list that can drift.</p>
+        </div>
+
+        <div class="developer-app-list">
+          {% for app in developer.apps %}
+            <a href="{{ app.appPagePath }}" class="developer-app">
+              <img src="{{ app.logoUrl }}" alt="{{ app.name }} logo" loading="lazy" />
+              <div>
+                <p class="developer-app-name">{{ app.name }}</p>
+                <p class="developer-app-desc">{{ app.summary }}</p>
+              </div>
+              <span class="developer-app-count">{{ app.ports.length }} port{% if app.ports.length != 1 %}s{% endif %}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- How the credit works -->
+      <section class="doc-section">
+        <p class="kicker">About</p>
+        <h2>How developer credit works</h2>
+        <div>
+          <p>An app author is declared in the app's compose file as a <span class="mono">platform:handle</span> entry under <span class="mono">x-yantr.developers</span>, alongside the app's name, ports and notes. Yantr reads it from the same file it deploys, which is why this page needs no separate account or sign-up.</p>
+          <p>The platforms Yantr recognises are GitHub, GitLab, Codeberg and Nostr. Only GitHub is included in the automatic mentions when an issue is filed from the app page, because an <span class="mono">@mention</span> resolves nowhere else.</p>
+        </div>
+      </section>
+
+      <footer class="site-footer">
+        <p>Generated {{ nowIso }} · <a href="../../">Yantr</a></p>
+      </footer>
+
+    </main>
+  </body>
+</html>

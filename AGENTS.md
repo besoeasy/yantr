@@ -5,12 +5,35 @@ Each app is a single `apps/<app-name>/compose.yml`. No `info.json`, no `Dockerfi
 
 ## `x-yantr` metadata block
 **Required:** `name`, `tags` (3–5), `short_description` (50–100 chars), `description` (200–300 chars, YAML `>` block), `usecases` (≥2), `website`.
-**Optional:** `notes` (list), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`), `ports` (list of `{port, protocol, show, label, service}`; protocol ∈ `HTTP`, `HTTPS`, `TCP`, `UDP`).
+**Optional:** `notes` (list), `developers` (list of `platform:handle`), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`), `ports` (list of `{port, protocol, show, label, service}`; protocol ∈ `HTTP`, `HTTPS`, `TCP`, `UDP`).
 
-Flat arrays (`tags`, `usecases`, `notes`) always use flow sequences:
+Flat arrays (`tags`, `usecases`, `notes`, `developers`) always use flow sequences:
 ```yaml
 tags: [tools, utility, self-hosted, homelab, podman]
 ```
+
+## `developers` — crediting an app's author
+`developers` names who the app is from, as `platform:handle` entries. It is optional and
+changes nothing about deployment; it drives the developer credit on the app page, the
+`#/developer/<handle>` profile route, and the `@mention` in a pre-filled issue body.
+
+```yaml
+x-yantr:
+  developers: ["github:besoeasy", "gitlab:username2"]
+```
+
+The platform set is **closed**: `github`, `gitlab`, `codeberg`, `nostr`. Anything else is
+dropped at parse time rather than rendered, because an entry becomes a profile link and,
+on GitHub, an `@mention` in a filed issue — a wrong handle pings a stranger. An entry with
+no colon, an empty handle, or a handle containing `/`, `?` or `#` is dropped the same way.
+Handles are lowercased on the forge platforms (they are case-insensitive there, so
+`Besoeasy` and `besoeasy` are one developer); Nostr keys keep their case.
+
+Credit the **upstream author of the software** — the person whose project it is — not
+whoever added the recipe. Everyone in the catalog ships a recipe written by somebody, so
+the alternative reading makes the field meaningless. Only write a handle you can tie to a
+real account: the image namespace (`ghcr.io/<owner>`) or the project's own website is
+evidence; a guess is not. Leaving the field out is the correct choice when unsure.
 
 Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml
