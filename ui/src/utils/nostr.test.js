@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
+import { finalizeEvent, getPublicKey } from "nostr-tools";
 import {
   COMMENT_EXPIRY_SECONDS,
   appCommentTag,
   buildCommentTags,
   commentExpiryTimestamp,
   commentFilter,
-  computeEventId,
   expirationOf,
-  hasValidId,
   hexToNpub,
   isAppComment,
+  isAuthentic,
   npubToHex,
   parseKind0Profile,
   profileFilter,
@@ -295,32 +295,64 @@ describe("hexToNpub", () => {
   });
 });
 
-describe("event id", () => {
-  it("is deterministic and 32 bytes of hex", async () => {
-    const fields = {
-      pubkey: JACK_HEX,
-      created_at: 1_700_000_000,
-      kind: 1,
-      tags: [["t", "yantr"]],
-      content: "hello",
-    };
-    const a = await computeEventId(fields);
-    const b = await computeEventId(fields);
-    expect(a).toBe(b);
-    expect(a).toMatch(/^[0-9a-f]{64}$/);
-    expect(await computeEventId({ ...fields, content: "different" })).not.toBe(a);
+describe("isAuthentic", () => {
+  // Events are signed the way a NIP-07 signer signs them, so the verifier
+  // faces genuine schnorr signatures rather than mocks.
+  function signed(seed, overrides = {}) {
+    const sk = new Uint8Array(32).fill(seed);
+    return finalizeEvent(
+      {
+        kind: 1,
+        pubkey: getPublicKey(sk),
+        created_at: 1700000000,
+        tags: [["t", "yantr"]],
+        content: "hello",
+        ...overrides,
+      },
+      sk
+    );
+  }
+
+  // Rebuilt field-by-field on purpose: spreading an event copies nostr-tools'
+  // verification cache symbol, which would make a changed event look verified.
+  const vary = (event, changes) => ({
+    id: event.id,
+    pubkey: event.pubkey,
+    created_at: event.created_at,
+    kind: event.kind,
+    tags: event.tags,
+    content: event.content,
+    sig: event.sig,
+    ...changes,
   });
 
-  it("validates an event against its own fields", async () => {
-    const fields = {
-      pubkey: JACK_HEX,
-      created_at: 1_700_000_000,
-      kind: 1,
-      tags: [["t", "yantr"]],
-      content: "hello",
-    };
-    const id = await computeEventId(fields);
-    expect(await hasValidId({ ...fields, id })).toBe(true);
-    expect(await hasValidId({ ...fields, id, content: "tampered" })).toBe(false);
+  it("accepts an event whose signature matches its id and pubkey", () => {
+    expect(isAuthentic(signed(7))).toBe(true);
+  });
+
+  // The attack the signature exists to stop: a relay keeps the victim's
+  // pubkey, rewrites the content, and recomputes the id to match.
+  it("rejects impersonation with a recomputed id", () => {
+    const event = signed(7);
+    const forged = signed(7, { content: "trust me, this is the author" });
+    const tampered = vary(event, { content: "trust me, this is the author", id: forged.id });
+    expect(isAuthentic(tampered)).toBe(false);
+  });
+
+  it("rejects edited content, a swapped pubkey and a forged id", () => {
+    const event = signed(7);
+    expect(isAuthentic(vary(event, { content: "tampered" }))).toBe(false);
+    expect(isAuthentic(vary(event, { pubkey: getPublicKey(new Uint8Array(32).fill(9)) }))).toBe(false);
+    expect(isAuthentic(vary(event, { id: "00".repeat(32) }))).toBe(false);
+  });
+
+  it("rejects malformed hex, wrong sizes and missing fields", () => {
+    expect(isAuthentic(null)).toBe(false);
+    expect(isAuthentic({})).toBe(false);
+    expect(isAuthentic({ id: "zz", sig: "zz", pubkey: "zz" })).toBe(false);
+    // 31-byte pubkey, 63-byte id, 64-byte signature.
+    expect(isAuthentic({ pubkey: "aa".repeat(31), id: "bb".repeat(32), sig: "cc".repeat(64) })).toBe(false);
+    expect(isAuthentic({ pubkey: "aa".repeat(32), id: "bb".repeat(31), sig: "cc".repeat(64) })).toBe(false);
+    expect(isAuthentic({ pubkey: "aa".repeat(32), id: "bb".repeat(32), sig: "cc".repeat(63) })).toBe(false);
   });
 });

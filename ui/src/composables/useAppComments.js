@@ -7,9 +7,9 @@ import {
   appCommentTag,
   buildCommentTags,
   commentFilter,
-  hasValidId,
   hexToNpub,
   isAppComment,
+  isAuthentic,
   parseKind0Profile,
   profileFilter,
   sanitizeCommentContent,
@@ -236,21 +236,11 @@ export function useAppComments(appId) {
       }
     }
 
-    // Best-effort id check against the RAW event, before sanitising: the id
-    // commits to the exact bytes the signer signed, and sanitising first
-    // would fail every legitimately cleaned-up note. A mismatch drops the one
-    // event, never the list. Skipped when WebCrypto is unavailable.
-    let verified = merged;
-    if (typeof crypto !== "undefined" && crypto.subtle) {
-      verified = [];
-      for (const event of merged) {
-        try {
-          if (await hasValidId(event)) verified.push(event);
-        } catch {
-          // An unverifiable event is dropped, not fatal.
-        }
-      }
-    }
+    // Authorship check on the RAW event, before sanitising: the signature
+    // covers exactly the bytes the author signed, so cleaning first would fail
+    // every legitimately tidied note. A failure drops that one event, never the
+    // list — and a forged comment is exactly what this filters out.
+    const verified = merged.filter((event) => isAuthentic(event));
 
     // Sanitise for display last: strip relay-served controls and spoof
     // characters, truncate overlong backfill, and drop anything with nothing

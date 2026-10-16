@@ -10,6 +10,8 @@
 // This file stays pure and browser-independent so it can be unit-tested: the
 // WebSocket fan-out lives in `composables/useAppComments.js`.
 
+import { verifyEvent } from "nostr-tools";
+
 // NOSTR_COMMENT_RELAYS mirrors the backend's measured relay set
 // (core/system/nostr.go): each of these answered a real query during
 // development, and together they covered every account tested.
@@ -168,10 +170,15 @@ export function sanitizeCommentContent(raw) {
   return text;
 }
 
-// ─── bech32 (encode side) ───────────────────────────────────────────────────
-// The backend (core/nip19) only decodes; displaying a comment author needs the
-// other direction, hex → npub, which is small enough to own: 5-to-8 bit
-// regroup one way plus a BIP-173 checksum.
+// ─── bech32 ────────────────────────────────────────────────────────────────
+// Both directions are here, hand-rolled, because the frontend needs them and
+// they are ~80 lines with no state and no I/O. Encoding (hex → npub) has no
+// backend counterpart: core/nip19 only decodes, yet displaying a comment
+// author needs the identifier readers recognise.
+
+function bytesToHex(bytes) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 const BECH32_CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 const BECH32_GEN = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3];
@@ -393,44 +400,42 @@ export function parseKind0Profile(event) {
   };
 }
 
-// ─── NIP-01 event id ────────────────────────────────────────────────────────
-// The id is sha256 of the canonical serialisation
-// [0, pubkey, created_at, kind, tags, content]. Recomputed client-side as a
-// sanity check on relay-delivered events; signing itself is the NIP-07
-// extension's job.
-
-function bytesToHex(bytes) {
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-async function sha256Hex(text) {
-  // WebCrypto is the zero-dependency path in the browser; the synchronous
-  // noble fallback in crypto.js is the other. SubtleCrypto needs a secure
-  // context, which localhost and https both are.
-  if (typeof crypto !== "undefined" && crypto.subtle) {
-    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-    return bytesToHex(new Uint8Array(digest));
-  }
-  const { sha256 } = await import("@noble/hashes/sha2.js");
-  return bytesToHex(sha256(new TextEncoder().encode(text)));
-}
-
-// computeEventId returns the NIP-01 id the given fields commit to.
-export async function computeEventId({ pubkey, created_at, kind, tags, content }) {
-  const canonical = JSON.stringify([0, pubkey, created_at, kind, tags, content]);
-  return sha256Hex(canonical);
-}
-
-// hasValidId reports whether an event's `id` matches its fields. Best effort:
-// a mismatch means relay backfill corruption, not an attack worth blocking the
-// whole list over — callers drop the one event, not the fetch.
-export async function hasValidId(event) {
-  if (!event || typeof event.id !== "string" || !/^[0-9a-f]{64}$/i.test(event.id)) {
-    return false;
-  }
+// ─── Authenticity ──────────────────────────────────────────────────────────
+// An event's id is a hash of its own fields, which proves only that the event
+// is internally consistent. A hostile relay can forge that freely: keep the
+// victim's pubkey, rewrite the content, recompute the id. Only the schnorr
+// signature over the id stops impersonation, so it is verified here with
+// nostr-tools' verifyEvent, which checks the id and the signature together.
+//
+// The check runs on the RAW event, before display sanitising — the signature
+// covers exactly the bytes the author signed. It is synchronous (nostr-tools
+// bundles its own schnorr), so unlike the WebCrypto path it replaced it is
+// never skipped for want of a secure context.
+//
+// One subtlety worth keeping: the event is rebuilt field-by-field rather than
+// spread. nostr-tools caches a verification verdict on the event under a
+// symbol, and a spread would copy that verdict onto an object whose contents
+// have since changed — an attacker-supplied "already verified" flag.
+export function isAuthentic(event) {
   try {
-    const recomputed = await computeEventId(event);
-    return recomputed.toLowerCase() === event.id.toLowerCase();
+    if (!event || typeof event.id !== "string" || typeof event.sig !== "string") {
+      return false;
+    }
+    if (!/^[0-9a-f]{64}$/i.test(event.id)) return false;
+    if (!/^[0-9a-f]{128}$/i.test(event.sig)) return false;
+    if (!/^[0-9a-f]{64}$/i.test(String(event.pubkey ?? ""))) return false;
+
+    return (
+      verifyEvent({
+        id: event.id,
+        pubkey: event.pubkey,
+        created_at: event.created_at,
+        kind: event.kind,
+        tags: Array.isArray(event.tags) ? event.tags : [],
+        content: typeof event.content === "string" ? event.content : "",
+        sig: event.sig,
+      }) === true
+    );
   } catch {
     return false;
   }
