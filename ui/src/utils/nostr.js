@@ -126,6 +126,48 @@ export function isAppComment(event, appId, nowSec = Math.floor(Date.now() / 1000
   return true;
 }
 
+// ─── Content sanitisation ───────────────────────────────────────────────────
+// Comment bodies render via Vue interpolation (never v-html), so markup is
+// already inert. What interpolation does NOT stop is non-markup abuse from a
+// relay that serves arbitrary bytes: C0/C1 control characters, bidi overrides
+// that reorder displayed text Trojan-Source style (U+202A–U+202E,
+// U+2066–U+2069), zero-width / invisible characters used to spoof one string
+// as another, and multi-megabyte notes that would hang the card. Sanitise in
+// the data layer — before display AND before signing — so what is shown is
+// exactly what was signed, and no code path can render the raw bytes.
+
+// COMMENT_DISPLAY_MAX_LENGTH caps one rendered comment. Publishing enforces
+// COMMENT_MAX_LENGTH; relay backfill predates it, so overlong arrivals are
+// truncated, never rejected (a long note is still a note).
+export const COMMENT_DISPLAY_MAX_LENGTH = COMMENT_MAX_LENGTH;
+
+// Ranges stripped by sanitizeCommentContent: C0/C1 controls except \n and \t
+// (DEL kept out too), bidi controls and isolates, zero-width and invisible
+// format characters including the soft hyphen, and the BOM — none of which a
+// review can need.
+const UNSAFE_CONTENT_RE =
+  // Stripping controls is the entire job of this class, which is what
+  // no-control-regex exists to question.
+  // eslint-disable-next-line no-control-regex
+  /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\u00AD\u061C\u180E\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/gu;
+
+// sanitizeCommentContent reduces relay- or user-supplied text to displayable
+// plain text: normalised, free of controls and spoof characters, collapsed
+// blank runs, and length-capped on code points (never splitting a surrogate
+// pair). Returns "" when nothing displayable remains, which callers treat as
+// "drop the comment".
+export function sanitizeCommentContent(raw) {
+  let text = String(raw ?? "").normalize("NFC");
+  text = text.replace(UNSAFE_CONTENT_RE, "");
+  text = text.replace(/\n{3,}/g, "\n\n").trim();
+  if (!text) return "";
+  const points = [...text];
+  if (points.length > COMMENT_DISPLAY_MAX_LENGTH) {
+    text = points.slice(0, COMMENT_DISPLAY_MAX_LENGTH - 1).join("").trimEnd() + "…";
+  }
+  return text;
+}
+
 // ─── bech32 (encode side) ───────────────────────────────────────────────────
 // The backend (core/nip19) only decodes; displaying a comment author needs the
 // other direction, hex → npub, which is small enough to own: 5-to-8 bit

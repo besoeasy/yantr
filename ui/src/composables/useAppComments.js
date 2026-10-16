@@ -9,6 +9,7 @@ import {
   hasValidId,
   hexToNpub,
   isAppComment,
+  sanitizeCommentContent,
 } from "../utils/nostr";
 import { developerShortKey } from "../utils/developer";
 
@@ -227,10 +228,13 @@ export function useAppComments(appId) {
       }
     }
 
-    // Best-effort id check, one event at a time: a mismatch drops the one
+    // Best-effort id check against the RAW event, before sanitising: the id
+    // commits to the exact bytes the signer signed, and sanitising first
+    // would fail every legitimately cleaned-up note. A mismatch drops the one
     // event, never the list. Skipped when WebCrypto is unavailable.
+    let verified = merged;
     if (typeof crypto !== "undefined" && crypto.subtle) {
-      const verified = [];
+      verified = [];
       for (const event of merged) {
         try {
           if (await hasValidId(event)) verified.push(event);
@@ -238,10 +242,14 @@ export function useAppComments(appId) {
           // An unverifiable event is dropped, not fatal.
         }
       }
-      comments.value = verified;
-    } else {
-      comments.value = merged;
     }
+
+    // Sanitise for display last: strip relay-served controls and spoof
+    // characters, truncate overlong backfill, and drop anything with nothing
+    // displayable left (e.g. a note of only zero-width characters).
+    comments.value = verified
+      .map((event) => ({ ...event, content: sanitizeCommentContent(event.content) }))
+      .filter((event) => event.content);
 
     // No relay reachable is the only hard failure: an empty list with relays
     // answering is a real answer — nobody commented yet.
@@ -289,13 +297,20 @@ export function useAppComments(appId) {
     publishError.value = "";
     justPublishedId.value = "";
 
-    const content = String(text ?? "").trim();
-    if (!content) {
+    // Sanitise before signing, not just before display: what is shown must be
+    // exactly what was signed, and no code path may sign the raw bytes.
+    const raw = String(text ?? "").trim();
+    if (!raw) {
       publishError.value = "empty";
       return false;
     }
-    if (content.length > COMMENT_MAX_LENGTH) {
+    if ([...raw].length > COMMENT_MAX_LENGTH) {
       publishError.value = "too-long";
+      return false;
+    }
+    const content = sanitizeCommentContent(raw);
+    if (!content) {
+      publishError.value = "empty";
       return false;
     }
 

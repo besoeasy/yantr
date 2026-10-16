@@ -10,6 +10,7 @@ import {
   hasValidId,
   hexToNpub,
   isAppComment,
+  sanitizeCommentContent,
 } from "./nostr";
 
 // Externally-verified vector the backend tests use too.
@@ -107,6 +108,53 @@ describe("expirationOf", () => {
   it("reads the first well-formed expiration tag", () => {
     expect(expirationOf(commentEvent())).toBe(NOW + COMMENT_EXPIRY_SECONDS);
     expect(expirationOf(commentEvent({ tags: [["t", "yantr"]] }))).toBe(null);
+  });
+});
+
+describe("sanitizeCommentContent", () => {
+  it("keeps ordinary text, emoji and single newlines", () => {
+    expect(sanitizeCommentContent("Works great \u{1F44D}\nTwo lines.")).toBe(
+      "Works great \u{1F44D}\nTwo lines."
+    );
+  });
+
+  // Markup stays inert one layer up: interpolation escapes it, so the
+  // sanitiser passes it through byte-identical rather than second-guessing
+  // the renderer.
+  it("leaves markup characters alone for the renderer to escape", () => {
+    expect(sanitizeCommentContent('<script>alert("x")</script>')).toBe(
+      '<script>alert("x")</script>'
+    );
+  });
+
+  it("strips control characters but keeps newline and tab", () => {
+    expect(sanitizeCommentContent("a\u0001b\u0002c\td\ne")).toBe("abc\td\ne");
+  });
+
+  it("strips bidi overrides and zero-width spoof characters", () => {
+    expect(sanitizeCommentContent("admin\u202E Steiner")).toBe("admin Steiner");
+    expect(sanitizeCommentContent("a\u200Bb\u00ADc\u200Fd")).toBe("abcd");
+    expect(sanitizeCommentContent("\uFEFFhello")).toBe("hello");
+  });
+
+  it("collapses runs of blank lines", () => {
+    expect(sanitizeCommentContent("a\n\n\n\nb")).toBe("a\n\nb");
+  });
+
+  it("truncates overlong relay payloads without splitting surrogate pairs", () => {
+    const long = "a".repeat(1998) + "\u{1F600}\u{1F600}\u{1F600}";
+    const clean = sanitizeCommentContent(long);
+    expect([...clean].length).toBe(2000);
+    expect(clean.endsWith("\u2026")).toBe(true);
+    // No lone surrogates: every code unit belongs to a complete pair.
+    expect(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/.test(clean)).toBe(false);
+    expect(/(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(clean)).toBe(false);
+  });
+
+  it("returns empty when nothing displayable remains", () => {
+    expect(sanitizeCommentContent("   ")).toBe("");
+    expect(sanitizeCommentContent("\u200B\u00AD\u200F")).toBe("");
+    expect(sanitizeCommentContent(null)).toBe("");
   });
 });
 

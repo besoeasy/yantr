@@ -159,7 +159,9 @@ watch(appId, () => {
       </p>
 
       <!-- Comment list. Content renders as plain text (interpolation escapes),
-           never v-html: a relay can serve any bytes and must not become script. -->
+           never v-html — and it arrives pre-sanitised from useAppComments
+           (controls, bidi spoofing and overlong payloads removed), so a relay
+           serving hostile bytes has no path to script or to visual spoofing. -->
       <ul v-else class="divide-y divide-zinc-100 dark:divide-zinc-800">
         <li v-for="c in comments" :key="c.id" class="flex gap-3 py-4 first:pt-0 last:pb-0">
           <span
