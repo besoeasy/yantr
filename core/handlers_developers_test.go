@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"core/apps"
@@ -247,5 +248,91 @@ func TestCatalogGitHubDeveloperOnlyServesDeclaredHandles(t *testing.T) {
 		if w.Code != http.StatusNotFound {
 			t.Errorf("status for undeclared login %q = %d, want 404", undeclared, w.Code)
 		}
+	}
+}
+
+// ─── /api/nostr/profile/{key} ─────────────────────────────────────────────────
+
+const demoNostrCompose = `x-yantr:
+  name: "Demo Nostr"
+  tags: [tools, utility, self-hosted, homelab, podman]
+  short_description: "A demo app crediting a Nostr developer."
+  description: >
+    A demo app used to prove that the Nostr profile route only serves keys the
+    local catalog declares, and validates them before it tries a relay.
+  usecases: ["Prove the route validates its key.", "Prove undeclared keys 404."]
+  website: "https://example.com"
+  developers: ["nostr:npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: demo}
+
+services:
+  demo:
+    image: ghcr.io/example/demo:latest
+    ports:
+      - "8080"
+`
+
+// A well-formed npub that no app in the fixtures declares. Reaching the handler
+// with it must not contact a relay.
+const undeclaredNpub = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+
+func nostrProfileRequest(t *testing.T, key string) *httptest.ResponseRecorder {
+	t.Helper()
+
+	r := httptest.NewRequest(http.MethodGet, "/api/nostr/profile/"+key, nil)
+	rctx := chi.NewRouteContext()
+	rctx.URLParams.Add("key", key)
+	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
+
+	w := httptest.NewRecorder()
+	handleNostrProfile(w, r)
+	return w
+}
+
+// The relay proxy is not an open relay, for the same reason the GitHub one is
+// not: a key must be declared by some app before it is queried, or the endpoint
+// proxies arbitrary traffic to a public relay and grows an unbounded cache.
+func TestHandleNostrProfileRefusesUndeclaredKeys(t *testing.T) {
+	writeTempCatalog(t, demoNostrCompose)
+
+	w := nostrProfileRequest(t, undeclaredNpub)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("status for an undeclared key = %d, want 404 (body %s)", w.Code, w.Body.String())
+	}
+}
+
+// A key that is not an npub or nprofile is a bad request rather than an upstream
+// failure. It is rejected before the cache is consulted, so it can neither hold
+// a cache slot nor surface as a relay timeout dressed up as a 502.
+func TestHandleNostrProfileRejectsMalformedKeys(t *testing.T) {
+	writeTempCatalog(t, demoNostrCompose)
+
+	for _, tc := range []struct{ name, key string }{
+		{"empty", ""},
+		{"not a bech32 string", "not-a-key"},
+		{"broken checksum", "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63q"},
+		{"a private key", "nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw"},
+		{"an event id", "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			w := nostrProfileRequest(t, tc.key)
+			if w.Code != http.StatusBadRequest {
+				t.Errorf("status = %d, want 400 (body %s)", w.Code, w.Body.String())
+			}
+		})
+	}
+}
+
+// Nostr keys are matched case-sensitively, unlike GitHub logins. bech32 is
+// lowercase by spec and the catalog does not rewrite a key's case, so an
+// uppercased request names a key no app declares — and a 404 is the honest
+// answer rather than silently serving a different string's cache entry.
+func TestHandleNostrProfileMatchesKeysCaseSensitively(t *testing.T) {
+	writeTempCatalog(t, demoNostrCompose)
+
+	w := nostrProfileRequest(t, strings.ToUpper("npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"))
+	if w.Code != http.StatusNotFound {
+		t.Errorf("status for an uppercased key = %d, want 404 (body %s)", w.Code, w.Body.String())
 	}
 }

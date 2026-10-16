@@ -509,6 +509,7 @@ func main() {
 	r.Get("/api/developers/{handle}", handleDeveloperApps)
 	r.Get("/api/github/user/{login}", handleGitHubUser)
 	r.Get("/api/github/user/{login}/repos", handleGitHubUserRepos)
+	r.Get("/api/nostr/profile/{key}", handleNostrProfile)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/presence/stats", handlePresenceStats)
 	r.Get("/api/jobs", handleJobsList)

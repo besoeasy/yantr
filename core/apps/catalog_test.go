@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"core/system"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -205,6 +207,36 @@ func TestEveryCatalogDeveloperHasAProfileURL(t *testing.T) {
 			}
 			if strings.ContainsAny(d.Handle, " \t/:?#") {
 				t.Errorf("app %q developer handle %q contains URL metacharacters", app.ID, d.Handle)
+			}
+		}
+	}
+}
+
+// Every nostr: developer in the real catalog must be a decodable NIP-19 public
+// key. The catalog cannot verify bech32 itself — that is not a YAML parser's
+// job — but the developer page cannot work without it: the profile query needs
+// the hex pubkey and the QR code is drawn from the key, so a typo here would
+// otherwise surface as a page that loads and then quietly shows nothing.
+func TestEveryCatalogNostrDeveloperIsDecodable(t *testing.T) {
+	dir := appsDirForTest(t)
+
+	previous := appsDir
+	appsDir = dir
+	SetAppsDir(dir)
+	t.Cleanup(func() { appsDir = previous })
+
+	cat, err := loadCatalog()
+	if err != nil {
+		t.Fatalf("load catalog: %v", err)
+	}
+
+	for _, app := range cat.Apps {
+		for _, d := range app.Developers {
+			if d.Platform != "nostr" {
+				continue
+			}
+			if _, err := system.NostrPubkeyHex(d.Handle); err != nil {
+				t.Errorf("app %q declares nostr:%s, which is not a usable NIP-19 key: %v", app.ID, d.Handle, err)
 			}
 		}
 	}

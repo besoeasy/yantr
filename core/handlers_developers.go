@@ -3,6 +3,7 @@ package main
 import (
 	"core/apps"
 	"core/system"
+	"errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -163,4 +164,65 @@ func catalogGitHubDeveloper(w http.ResponseWriter, r *http.Request) (string, boo
 		return "", false
 	}
 	return login, true
+}
+
+// handleNostrProfile proxies one developer's kind-0 metadata from the relay.
+//
+// Same shape and the same reasoning as the GitHub proxies: the relay is a third
+// party that may be slow, blocked or rate-limiting, so its answer enriches a
+// page rather than being required by one. The developer page's QR code is drawn
+// from the catalog's own npub and does not consult this at all.
+func handleNostrProfile(w http.ResponseWriter, r *http.Request) {
+	npub, ok := catalogNostrDeveloper(w, r)
+	if !ok {
+		return
+	}
+
+	force := r.URL.Query().Get("force") == "true"
+	profile, err := system.GetNostrProfileCached(npub, force)
+	if err != nil {
+		// An account that has not published a profile is a 404 — a real answer,
+		// and one the UI words differently from an unreachable relay.
+		if errors.Is(err, system.ErrNostrNoProfile) {
+			jsonErr(w, 404, "NOSTR_PROFILE_NOT_FOUND", err.Error())
+			return
+		}
+		jsonErr(w, 502, "NOSTR_PROFILE_UNAVAILABLE", err.Error())
+		return
+	}
+
+	jsonResp(w, 200, map[string]interface{}{"success": true, "profile": profile})
+}
+
+// catalogNostrDeveloper validates the {key} path param against the catalogue.
+//
+// Nostr keys are matched case-sensitively, unlike GitHub logins: bech32 is
+// lowercase by spec, but the catalogue deliberately does not rewrite a key's
+// case, and a key that differs only in case is a different string here.
+func catalogNostrDeveloper(w http.ResponseWriter, r *http.Request) (string, bool) {
+	raw := chi.URLParam(r, "key")
+	if decoded, err := url.PathUnescape(raw); err == nil {
+		raw = decoded
+	}
+
+	key := strings.TrimSpace(raw)
+	if key == "" {
+		jsonErr(w, 400, "INVALID_NOSTR_KEY", "A Nostr public key is required")
+		return "", false
+	}
+
+	// A key that is not an npub or nprofile is a bad request, not an upstream
+	// failure, so it is rejected here rather than surfacing from the cache as a
+	// 502. It also means a nonsense catalog entry produces a clear 400 instead
+	// of a relay timeout.
+	if _, err := system.NostrPubkeyHex(key); err != nil {
+		jsonErr(w, 400, "INVALID_NOSTR_KEY", "Not a Nostr profile key: "+err.Error())
+		return "", false
+	}
+
+	if len(apps.AppsByDeveloper("nostr", key)) == 0 {
+		jsonErr(w, 404, "DEVELOPER_NOT_FOUND", "No app in the catalog declares nostr:"+key)
+		return "", false
+	}
+	return key, true
 }
