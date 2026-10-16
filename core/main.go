@@ -24,9 +24,9 @@ import (
 	"core/apps"
 	"core/auth"
 	"core/podman"
+	"core/presence"
 	"core/shared"
 	"core/supervisor"
-	"core/telemetry"
 )
 
 const serverPort = 5252
@@ -448,7 +448,7 @@ func main() {
 	shared.Log("info", "📂 Apps directory: "+appsPath)
 	shared.Log("info", fmt.Sprintf("🏗️  Architecture: %s/%s", runtime.GOOS, runtime.GOARCH))
 
-	telemetry.StartPresenceScheduler(version)
+	presence.StartPresenceScheduler(version)
 
 	supervisor.Init(appsPath)
 	go supervisor.Resuscitate(appsPath, getComposeCommand)
@@ -507,7 +507,10 @@ func main() {
 	r.Get("/api/network/identity", handleNetworkIdentity)
 	r.Get("/api/github/stats", handleGitHubStats)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
-	r.Get("/api/telemetry/stats", handleTelemetryStats)
+	r.Get("/api/presence/stats", handlePresenceStats)
+	// Deprecated: pre-rename path, kept so existing scripts and bookmarks
+	// keep working. Drop after one release.
+	r.Get("/api/telemetry/stats", handlePresenceStats)
 	r.Get("/api/jobs", handleJobsList)
 	r.Get("/api/jobs/active", handleJobsActive)
 	r.Get("/api/jobs/{id}", handleJobDetail)

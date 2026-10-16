@@ -1,5 +1,7 @@
-// Package telemetry implements ntfy.sh ping tracking for analytics.
-package telemetry
+// Package presence sends the install, update, and daily presence pings that
+// feed the public fleet page. It is a ping, not telemetry: there is no agent,
+// no session tracing, and no identifier derived from the host.
+package presence
 
 import (
 	"bytes"
@@ -23,18 +25,45 @@ import (
 	"github.com/docker/docker/api/types/container"
 )
 
-var telemetryTopic = "https://ntfy.sh/yantr"
+var presenceTopic = "https://ntfy.sh/yantr"
 var isEnabled = true
 
-func init() {
-	if t := os.Getenv("YANTR_TELEMETRY_TOPIC"); t != "" {
-		telemetryTopic = strings.TrimRight(t, "/")
+// resolveConfig picks the topic and the on/off decision from the environment.
+// It is separate from init() so the alias handling can be tested without
+// re-running package initialisation.
+//
+// YANTR_PRESENCE_TOPIC / YANTR_PRESENCE are the current names.
+// YANTR_TELEMETRY_TOPIC / YANTR_TELEMETRY remain honoured as aliases: an
+// install that already opted out under the old name must not silently start
+// reporting again because the variable was renamed. Either spelling of
+// "false" disables, so the old opt-out keeps working verbatim.
+func resolveConfig(getenv func(string) string) (topic string, enabled bool, disabledBy string) {
+	topic = "https://ntfy.sh/yantr"
+
+	t := getenv("YANTR_PRESENCE_TOPIC")
+	if t == "" {
+		t = getenv("YANTR_TELEMETRY_TOPIC")
 	}
-	if os.Getenv("YANTR_TELEMETRY") == "false" {
-		isEnabled = false
-		shared.Log("info", "[telemetry] disabled via YANTR_TELEMETRY=false")
+	if t != "" {
+		topic = strings.TrimRight(t, "/")
+	}
+
+	for _, name := range []string{"YANTR_PRESENCE", "YANTR_TELEMETRY"} {
+		if getenv(name) == "false" {
+			return topic, false, name
+		}
+	}
+	return topic, true, ""
+}
+
+func init() {
+	topic, enabled, disabledBy := resolveConfig(os.Getenv)
+	presenceTopic = topic
+	isEnabled = enabled
+	if !enabled {
+		shared.Log("info", fmt.Sprintf("[presence] disabled via %s=false", disabledBy))
 	} else {
-		shared.Log("info", fmt.Sprintf("[telemetry] enabled → %s", telemetryTopic))
+		shared.Log("info", fmt.Sprintf("[presence] enabled → %s", presenceTopic))
 	}
 }
 
@@ -97,18 +126,18 @@ func NodeID() string {
 
 // TopicURL returns the configured ntfy topic.
 func TopicURL() string {
-	return telemetryTopic
+	return presenceTopic
 }
 
-// Enabled reports whether telemetry is on.
+// Enabled reports whether pings are on.
 func Enabled() bool {
 	return isEnabled
 }
 
-// Ping sends a telemetry event as JSON.
+// Ping sends a presence event as JSON.
 func Ping(event string, fields map[string]interface{}) {
 	if !isEnabled {
-		shared.Log("info", fmt.Sprintf("[telemetry] skipped (disabled): event=%s", event))
+		shared.Log("info", fmt.Sprintf("[presence] skipped (disabled): event=%s", event))
 		return
 	}
 	go func() {
@@ -125,13 +154,13 @@ func Ping(event string, fields map[string]interface{}) {
 		}
 		body, err := json.Marshal(payload)
 		if err != nil {
-			shared.Log("warn", fmt.Sprintf("[telemetry] json encode failed: event=%s err=%v", event, err))
+			shared.Log("warn", fmt.Sprintf("[presence] json encode failed: event=%s err=%v", event, err))
 			return
 		}
 
-		req, err := http.NewRequestWithContext(context.Background(), "POST", telemetryTopic, bytes.NewReader(body))
+		req, err := http.NewRequestWithContext(context.Background(), "POST", presenceTopic, bytes.NewReader(body))
 		if err != nil {
-			shared.Log("warn", fmt.Sprintf("[telemetry] failed to build request: event=%s err=%v", event, err))
+			shared.Log("warn", fmt.Sprintf("[presence] failed to build request: event=%s err=%v", event, err))
 			return
 		}
 		req.Header.Set("Content-Type", "application/json")
@@ -141,17 +170,17 @@ func Ping(event string, fields map[string]interface{}) {
 		client := &http.Client{Timeout: 5 * time.Second}
 		resp, err := client.Do(req)
 		if err != nil {
-			shared.Log("warn", fmt.Sprintf("[telemetry] send failed: event=%s err=%v", event, err))
+			shared.Log("warn", fmt.Sprintf("[presence] send failed: event=%s err=%v", event, err))
 			return
 		}
 		defer resp.Body.Close()
-		shared.Log("info", fmt.Sprintf("[telemetry] sent: %s → %d", string(body), resp.StatusCode))
+		shared.Log("info", fmt.Sprintf("[presence] sent: %s → %d", string(body), resp.StatusCode))
 	}()
 }
 
 // TrackInstall sends an install event.
 func TrackInstall(appID string) {
-	shared.Log("info", fmt.Sprintf("[telemetry] tracking install: app=%s", appID))
+	shared.Log("info", fmt.Sprintf("[presence] tracking install: app=%s", appID))
 	Ping("install", map[string]interface{}{"app": appID})
 }
 
@@ -168,7 +197,7 @@ func TrackUpdatesForContainers(containerNames []string) {
 
 		ctrs, err := podman.ContainerList(context.Background(), container.ListOptions{All: true})
 		if err != nil {
-			shared.Log("warn", "[telemetry] TrackUpdatesForContainers: failed to list containers: "+err.Error())
+			shared.Log("warn", "[presence] TrackUpdatesForContainers: failed to list containers: "+err.Error())
 			return
 		}
 
@@ -189,7 +218,7 @@ func TrackUpdatesForContainers(containerNames []string) {
 		}
 
 		for appID := range appIDs {
-			shared.Log("info", fmt.Sprintf("[telemetry] tracking update: app=%s", appID))
+			shared.Log("info", fmt.Sprintf("[presence] tracking update: app=%s", appID))
 			Ping("update", map[string]interface{}{"app": appID})
 		}
 	}()
@@ -201,10 +230,10 @@ func SendPresence(version string) {
 		return
 	}
 	go func() {
-		shared.Log("info", "[telemetry] sending presence ping")
+		shared.Log("info", "[presence] sending presence ping")
 		info, err := podman.Info(context.Background())
 		if err != nil {
-			shared.Log("warn", "[telemetry] presence: failed to get podman info: "+err.Error())
+			shared.Log("warn", "[presence] presence: failed to get podman info: "+err.Error())
 			return
 		}
 
@@ -229,7 +258,7 @@ func SendPresence(version string) {
 		apps := listYantrApps()
 		stacks := len(apps)
 
-		shared.Log("info", fmt.Sprintf("[telemetry] presence: country=%s os=%s arch=%s cores=%d ram=%dGB stacks=%d apps=%d v=%s",
+		shared.Log("info", fmt.Sprintf("[presence] presence: country=%s os=%s arch=%s cores=%d ram=%dGB stacks=%d apps=%d v=%s",
 			country, osName, info.Architecture, info.NCPU, ramGB, stacks, len(apps), version))
 
 		Ping("presence", map[string]interface{}{
@@ -276,16 +305,16 @@ func listYantrApps() []string {
 // StartPresenceScheduler starts a background task to send presence daily.
 func StartPresenceScheduler(version string) {
 	if !isEnabled {
-		shared.Log("info", "[telemetry] presence scheduler not started (disabled)")
+		shared.Log("info", "[presence] presence scheduler not started (disabled)")
 		return
 	}
-	shared.Log("info", "[telemetry] presence scheduler started (interval=24h)")
+	shared.Log("info", "[presence] presence scheduler started (interval=24h)")
 	SendPresence(version)
 	go func() {
 		ticker := time.NewTicker(24 * time.Hour)
 		defer ticker.Stop()
 		for range ticker.C {
-			shared.Log("info", "[telemetry] presence tick (24h interval)")
+			shared.Log("info", "[presence] presence tick (24h interval)")
 			SendPresence(version)
 		}
 	}()

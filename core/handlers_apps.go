@@ -5,9 +5,9 @@ import (
 	"core/apps"
 	"core/compose"
 	"core/podman"
+	"core/presence"
 	"core/shared"
 	"core/supervisor"
-	"core/telemetry"
 	"fmt"
 	"net/http"
 	"os"
@@ -220,5 +220,5 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		"temporary": body.ExpiresIn > 0,
 	})
 
-	telemetry.TrackInstall(body.AppID)
+	presence.TrackInstall(body.AppID)
 }

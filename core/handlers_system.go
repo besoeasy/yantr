@@ -6,10 +6,10 @@ import (
 	"core/auth"
 	"core/compose"
 	"core/podman"
+	"core/presence"
 	"core/shared"
 	"core/supervisor"
 	"core/system"
-	"core/telemetry"
 	"errors"
 	"fmt"
 	"net/http"
@@ -491,7 +491,7 @@ func handleAutoupdateRun(w http.ResponseWriter, r *http.Request) {
 		if check == updateChanged {
 			updatedCount++
 			shared.Log("info", fmt.Sprintf("[update] stack %s was updated", projectID))
-			telemetry.TrackUpdatesForContainers([]string{projectID})
+			presence.TrackUpdatesForContainers([]string{projectID})
 		} else {
 			shared.Log("info", fmt.Sprintf("[update] stack %s recreated (change inconclusive)", projectID))
 		}

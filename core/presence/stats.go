@@ -1,4 +1,4 @@
-package telemetry
+package presence
 
 import (
 	"bufio"
@@ -64,9 +64,9 @@ var (
 
 func cacheFilePath() string {
 	if d := os.Getenv("YANTR_DATA_DIR"); d != "" {
-		return filepath.Join(d, "telemetry-cache.json")
+		return filepath.Join(d, "presence-cache.json")
 	}
-	return "/data/telemetry-cache.json"
+	return "/data/presence-cache.json"
 }
 
 func loadStatsFromDisk() *FleetStats {
@@ -95,7 +95,7 @@ func saveStatsToDisk(s *FleetStats) {
 	_ = shared.WriteFileAtomic(cacheFilePath(), raw, 0o600)
 }
 
-// GetFleetStatsCached returns aggregated telemetry, cached briefly.
+// GetFleetStatsCached returns the aggregated fleet view, cached briefly.
 func GetFleetStatsCached(force bool) (*FleetStats, error) {
 	statsMu.Lock()
 	defer statsMu.Unlock()
@@ -109,11 +109,11 @@ func GetFleetStatsCached(force bool) (*FleetStats, error) {
 		// Serve the last known stats when the upstream feed is unreachable,
 		// so the dashboard (and map) still render during outages.
 		if stats != nil {
-			shared.Log("warn", "[telemetry] fetch failed, serving cached stats: "+err.Error())
+			shared.Log("warn", "[presence] fetch failed, serving cached stats: "+err.Error())
 			return stats, nil
 		}
 		if disk := loadStatsFromDisk(); disk != nil {
-			shared.Log("warn", "[telemetry] fetch failed, serving disk-cached stats: "+err.Error())
+			shared.Log("warn", "[presence] fetch failed, serving disk-cached stats: "+err.Error())
 			stats = disk
 			return disk, nil
 		}
@@ -173,7 +173,7 @@ func fetchAndAggregate() (*FleetStats, error) {
 		events = append(events, evt)
 	}
 	if err := scanner.Err(); err != nil {
-		shared.Log("warn", "[telemetry] stats scan: "+err.Error())
+		shared.Log("warn", "[presence] stats scan: "+err.Error())
 	}
 
 	return Aggregate(events), nil
