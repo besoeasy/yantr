@@ -58,3 +58,5 @@ tmp
 check_output*.txt
 *.txtn
 .npm-cache
+
+plan.md
