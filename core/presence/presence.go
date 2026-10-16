@@ -29,39 +29,22 @@ var presenceTopic = "https://ntfy.sh/yantr"
 var isEnabled = true
 
 // resolveConfig picks the topic and the on/off decision from the environment.
-// It is separate from init() so the alias handling can be tested without
-// re-running package initialisation.
-//
-// YANTR_PRESENCE_TOPIC / YANTR_PRESENCE are the current names.
-// YANTR_TELEMETRY_TOPIC / YANTR_TELEMETRY remain honoured as aliases: an
-// install that already opted out under the old name must not silently start
-// reporting again because the variable was renamed. Either spelling of
-// "false" disables, so the old opt-out keeps working verbatim.
-func resolveConfig(getenv func(string) string) (topic string, enabled bool, disabledBy string) {
+// It is separate from init() so it can be tested without re-running package
+// initialisation.
+func resolveConfig(getenv func(string) string) (topic string, enabled bool) {
 	topic = "https://ntfy.sh/yantr"
-
-	t := getenv("YANTR_PRESENCE_TOPIC")
-	if t == "" {
-		t = getenv("YANTR_TELEMETRY_TOPIC")
-	}
-	if t != "" {
+	if t := getenv("YANTR_PRESENCE_TOPIC"); t != "" {
 		topic = strings.TrimRight(t, "/")
 	}
-
-	for _, name := range []string{"YANTR_PRESENCE", "YANTR_TELEMETRY"} {
-		if getenv(name) == "false" {
-			return topic, false, name
-		}
-	}
-	return topic, true, ""
+	return topic, getenv("YANTR_PRESENCE") != "false"
 }
 
 func init() {
-	topic, enabled, disabledBy := resolveConfig(os.Getenv)
+	topic, enabled := resolveConfig(os.Getenv)
 	presenceTopic = topic
 	isEnabled = enabled
 	if !enabled {
-		shared.Log("info", fmt.Sprintf("[presence] disabled via %s=false", disabledBy))
+		shared.Log("info", "[presence] disabled via YANTR_PRESENCE=false")
 	} else {
 		shared.Log("info", fmt.Sprintf("[presence] enabled → %s", presenceTopic))
 	}

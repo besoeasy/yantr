@@ -47,11 +47,6 @@ const router = createRouter({
       name: "presence",
       component: () => import(/* webpackChunkName: "presence" */ "./views/Presence.vue"),
     },
-    {
-      // Old path, kept so bookmarks and in-app links survive the rename.
-      path: "/telemetry",
-      redirect: "/presence",
-    },
   ],
 });
 

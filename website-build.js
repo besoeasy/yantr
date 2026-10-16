@@ -326,11 +326,8 @@ async function fetchGitHubData() {
 // The snapshot is written to website/presence.json so yantr.org renders
 // instantly; the page then refreshes live from ntfy in the browser.
 const presenceJsonPath = path.join(websiteDir, 'presence.json');
-// YANTR_PRESENCE_TOPIC is current; YANTR_TELEMETRY_TOPIC is the pre-rename
-// name and stays honoured so existing build environments keep working.
 const PRESENCE_TOPIC = (
   process.env.YANTR_PRESENCE_TOPIC ||
-  process.env.YANTR_TELEMETRY_TOPIC ||
   'https://ntfy.sh/yantr'
 ).replace(/\/+$/, '');
 

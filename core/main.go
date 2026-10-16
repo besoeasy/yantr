@@ -508,9 +508,6 @@ func main() {
 	r.Get("/api/github/stats", handleGitHubStats)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/presence/stats", handlePresenceStats)
-	// Deprecated: pre-rename path, kept so existing scripts and bookmarks
-	// keep working. Drop after one release.
-	r.Get("/api/telemetry/stats", handlePresenceStats)
 	r.Get("/api/jobs", handleJobsList)
 	r.Get("/api/jobs/active", handleJobsActive)
 	r.Get("/api/jobs/{id}", handleJobDetail)
