@@ -317,6 +317,82 @@ export function npubToHex(key) {
   return "";
 }
 
+// ─── Kind-0 author profiles ─────────────────────────────────────────────────
+// Comment authors are arbitrary accounts, not catalog developers, so the
+// backend profile proxy (catalog keys only, by design) cannot serve them. The
+// browser asks the relays directly instead — the same direct path the
+// comments themselves already take, and nothing new for the server to proxy.
+
+export const PROFILE_KIND = 0;
+
+// profileFilter fetches kind-0 metadata for a batch of authors in one REQ.
+// Deduplicated, hex-validated and capped: a busy thread must not become a
+// thousand-author filter.
+export function profileFilter(pubkeys, limit = 100) {
+  const authors = [
+    ...new Set(
+      (Array.isArray(pubkeys) ? pubkeys : []).map((p) =>
+        String(p ?? "").trim().toLowerCase()
+      )
+    ),
+  ]
+    .filter((h) => /^[0-9a-f]{64}$/.test(h))
+    .slice(0, 100);
+  return {
+    kinds: [PROFILE_KIND],
+    authors,
+    limit: Math.min(Math.max(Number(limit) || 100, 1), 500),
+  };
+}
+
+// safeHttpUrl keeps only fetchable avatar URLs. A relay can serve any string
+// as `picture`, including schemes an <img> must never be handed.
+function safeHttpUrl(raw, maxLen = 500) {
+  const s = String(raw ?? "").trim();
+  if (!s || s.length > maxLen) return "";
+  try {
+    const u = new URL(s);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return "";
+    return u.href;
+  } catch {
+    return "";
+  }
+}
+
+function shortDisplayText(raw, maxPoints = 80) {
+  const points = [...sanitizeCommentContent(raw)];
+  if (points.length <= maxPoints) return points.join("");
+  return points.slice(0, maxPoints - 1).join("").trimEnd() + "…";
+}
+
+// parseKind0Profile maps a kind-0 event onto the display fields a comment
+// header reads. Text gets the same sanitiser as comment bodies — a hostile
+// name is the same attack through a shorter string — and the picture must be
+// http(s) or there is no picture.
+export function parseKind0Profile(event) {
+  if (!event || event.kind !== PROFILE_KIND) return null;
+  const pubkey = String(event.pubkey ?? "").trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(pubkey)) return null;
+
+  let meta = {};
+  try {
+    const parsed = JSON.parse(event.content);
+    if (parsed && typeof parsed === "object") meta = parsed;
+  } catch {
+    meta = {};
+  }
+
+  const created = Number(event.created_at);
+  return {
+    pubkey,
+    name: shortDisplayText(meta.name || meta.display_name || ""),
+    about: shortDisplayText(meta.about || "", 160),
+    picture: safeHttpUrl(meta.picture),
+    nip05: shortDisplayText(meta.nip05 || ""),
+    created_at: Number.isFinite(created) ? Math.floor(created) : 0,
+  };
+}
+
 // ─── NIP-01 event id ────────────────────────────────────────────────────────
 // The id is sha256 of the canonical serialisation
 // [0, pubkey, created_at, kind, tags, content]. Recomputed client-side as a

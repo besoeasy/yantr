@@ -51,6 +51,7 @@ const {
   load,
   connect,
   publish,
+  profileOf,
   eventTag,
 } = useAppComments(appId.value);
 
@@ -101,6 +102,36 @@ function authorUrlOf(event) {
   return developerProfileUrl(authorNpubOf(event));
 }
 
+// Author identity, progressively enriched: the relay's kind-0 name once it
+// arrives, the abbreviated npub until then. Avatar likewise, with a
+// per-author fallback to initials when the picture is missing or fails to
+// load — a relay-supplied URL owes nothing.
+const brokenAvatars = ref(new Set());
+
+function displayNameOf(event) {
+  const name = profileOf(event)?.name;
+  if (name) return name;
+  return authorShortOf(event);
+}
+
+function avatarOf(event) {
+  const url = profileOf(event)?.picture || "";
+  if (!url) return "";
+  if (brokenAvatars.value.has(String(event?.pubkey ?? "").toLowerCase())) return "";
+  return url;
+}
+
+function markAvatarBroken(event) {
+  brokenAvatars.value = new Set([
+    ...brokenAvatars.value,
+    String(event?.pubkey ?? "").toLowerCase(),
+  ]);
+}
+
+function nip05Of(event) {
+  return profileOf(event)?.nip05 || "";
+}
+
 async function submit() {
   published.value = false;
   const ok = await publish(draft.value);
@@ -120,6 +151,7 @@ watch(appId, () => {
   draft.value = "";
   published.value = false;
   pubkeyHex.value = null;
+  brokenAvatars.value = new Set();
   if (appId.value) load();
 });
 </script>
@@ -186,10 +218,20 @@ watch(appId, () => {
            serving hostile bytes has no path to script or to visual spoofing. -->
       <ul v-else class="divide-y divide-zinc-100 dark:divide-zinc-800">
         <li v-for="c in comments" :key="c.id" class="flex gap-3 py-4 first:pt-0 last:pb-0">
+          <img
+            v-if="avatarOf(c)"
+            :src="avatarOf(c)"
+            :alt="displayNameOf(c)"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            @error="markAvatarBroken(c)"
+            class="h-8 w-8 shrink-0 rounded-full border border-zinc-200 object-cover dark:border-zinc-800"
+          />
           <span
+            v-else
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-black text-white dark:bg-zinc-100 dark:text-zinc-900"
           >
-            {{ developerInitials(authorNpubOf(c) || c.pubkey) }}
+            {{ developerInitials(displayNameOf(c)) }}
           </span>
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-baseline gap-x-2">
@@ -199,13 +241,13 @@ watch(appId, () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 :title="authorNpubOf(c)"
-                class="inline-flex items-center gap-1 truncate font-mono text-[11px] font-semibold text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
+                class="inline-flex max-w-full items-center gap-1 truncate text-[12px] font-semibold text-zinc-700 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-100"
               >
-                {{ authorShortOf(c) }}
+                <span class="truncate">{{ displayNameOf(c) }}</span>
                 <ExternalLink :size="11" class="shrink-0 opacity-50" />
               </a>
-              <span v-else class="truncate font-mono text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
-                {{ authorShortOf(c) }}
+              <span v-else class="truncate text-[12px] font-semibold text-zinc-700 dark:text-zinc-300">
+                {{ displayNameOf(c) }}
               </span>
               <span
                 v-if="isDeveloperComment(c)"
@@ -213,6 +255,9 @@ watch(appId, () => {
                 class="shrink-0 rounded-md bg-zinc-900 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white dark:bg-zinc-100 dark:text-zinc-900"
               >
                 {{ t("appComments.developerBadge") }}
+              </span>
+              <span v-if="nip05Of(c)" class="truncate font-mono text-[10px] text-zinc-400">
+                {{ nip05Of(c) }}
               </span>
               <span class="shrink-0 font-mono text-[10px] text-zinc-400">
                 {{ formatTime(c.created_at) }}

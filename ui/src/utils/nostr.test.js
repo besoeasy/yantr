@@ -11,6 +11,8 @@ import {
   hexToNpub,
   isAppComment,
   npubToHex,
+  parseKind0Profile,
+  profileFilter,
   sanitizeCommentContent,
 } from "./nostr";
 
@@ -214,6 +216,70 @@ describe("npubToHex", () => {
       )
     ).toBe("");
     expect(npubToHex("nprofile1qypkzcnre6e3r9")).toBe("");
+  });
+});
+
+describe("profileFilter", () => {
+  it("batches authors into one kind-0 filter", () => {
+    const filter = profileFilter([JACK_HEX, JACK_HEX.toUpperCase(), "nope"]);
+    expect(filter.kinds).toEqual([0]);
+    expect(filter["#t"]).toBeUndefined();
+    expect(filter.authors).toEqual([JACK_HEX]);
+  });
+});
+
+describe("parseKind0Profile", () => {
+  const JACK_PROFILE = {
+    kind: 0,
+    pubkey: JACK_HEX,
+    created_at: 1700000000,
+    content: JSON.stringify({
+      name: "jack",
+      display_name: "Jack",
+      about: "no state is the best state",
+      picture: "https://example.test/j.jpg",
+      nip05: "jack@primal.net",
+    }),
+  };
+
+  it("maps a kind-0 event onto display fields", () => {
+    const p = parseKind0Profile(JACK_PROFILE);
+    expect(p.pubkey).toBe(JACK_HEX);
+    expect(p.name).toBe("jack");
+    expect(p.picture).toBe("https://example.test/j.jpg");
+    expect(p.nip05).toBe("jack@primal.net");
+    expect(p.created_at).toBe(1700000000);
+  });
+
+  it("falls back to display_name and sanitises hostile text", () => {
+    const p = parseKind0Profile({
+      ...JACK_PROFILE,
+      content: JSON.stringify({ display_name: "admin\u202e x" }),
+    });
+    expect(p.name).toBe("admin x");
+  });
+
+  it("refuses non-http avatar schemes and oversized URLs", () => {
+    for (const picture of [
+      "javascript:alert(1)",
+      "data:image/png;base64,aaaa",
+      "ftp://example.test/j.jpg",
+      "https://" + "a".repeat(600),
+    ]) {
+      const p = parseKind0Profile({
+        ...JACK_PROFILE,
+        content: JSON.stringify({ name: "j", picture }),
+      });
+      expect(p.picture).toBe("");
+    }
+  });
+
+  it("returns null for the wrong kind, a bad pubkey or non-JSON content", () => {
+    expect(parseKind0Profile({ ...JACK_PROFILE, kind: 1 })).toBe(null);
+    expect(parseKind0Profile({ ...JACK_PROFILE, pubkey: "xyz" })).toBe(null);
+    const p = parseKind0Profile({ ...JACK_PROFILE, content: "not json" });
+    expect(p.name).toBe("");
+    expect(p.picture).toBe("");
   });
 });
 

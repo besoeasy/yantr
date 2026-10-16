@@ -3,12 +3,15 @@ import {
   COMMENT_KIND,
   COMMENT_MAX_LENGTH,
   NOSTR_COMMENT_RELAYS,
+  PROFILE_KIND,
   appCommentTag,
   buildCommentTags,
   commentFilter,
   hasValidId,
   hexToNpub,
   isAppComment,
+  parseKind0Profile,
+  profileFilter,
   sanitizeCommentContent,
 } from "../utils/nostr";
 import { developerShortKey } from "../utils/developer";
@@ -30,9 +33,9 @@ import { developerShortKey } from "../utils/developer";
 const QUERY_TIMEOUT_MS = 8000;
 
 // queryOneRelay runs a single REQ/EVENT/EOSE exchange against one relay and
-// resolves with whatever comment-shaped events arrived. It never rejects: an
-// unreachable relay means fewer comments, not a failed page.
-function queryOneRelay(relay, filter, subId) {
+// resolves with whatever events of the expected kind arrived. It never
+// rejects: an unreachable relay means fewer results, not a failed page.
+function queryOneRelay(relay, filter, subId, kind = COMMENT_KIND) {
   return new Promise((resolve) => {
     const found = [];
     let settled = false;
@@ -80,7 +83,7 @@ function queryOneRelay(relay, filter, subId) {
       if (!Array.isArray(msg) || msg.length === 0) return;
 
       const [verb, ...rest] = msg;
-      if (verb === "EVENT" && rest[0] === subId && rest[1]?.kind === COMMENT_KIND) {
+      if (verb === "EVENT" && rest[0] === subId && rest[1]?.kind === kind) {
         found.push(rest[1]);
       } else if (verb === "EOSE" && rest[0] === subId) {
         // Unsubscribe before leaving, so a relay that keeps subscriptions
@@ -175,6 +178,11 @@ export function useAppComments(appId) {
   const relaysReached = ref(0);
   const relaysTotal = ref(NOSTR_COMMENT_RELAYS.length);
 
+  // Kind-0 author profiles by lowercase hex pubkey. Filled after the comments
+  // render, so names pop in progressively; cached per session so navigating
+  // between apps never refetches an author twice.
+  const profiles = ref({});
+
   const publishing = ref(false);
   const publishError = ref("");
   const justPublishedId = ref("");
@@ -255,6 +263,49 @@ export function useAppComments(appId) {
     // answering is a real answer — nobody commented yet.
     loadFailed.value = relaysReached.value === 0;
     loading.value = false;
+
+    // Author names resolve after the thread paints.
+    fetchProfiles();
+  }
+
+  function profileOf(event) {
+    return profiles.value[String(event?.pubkey ?? "").toLowerCase()] || null;
+  }
+
+  // fetchProfiles resolves display names for the thread's authors. One batched
+  // kind-0 REQ per relay, newest event per pubkey wins (kind-0 replaces rather
+  // than chains). Fire-and-forget from load(): names pop in after the thread
+  // renders, and a slow relay never holds the comments hostage.
+  async function fetchProfiles() {
+    const wanted = [
+      ...new Set(
+        comments.value.map((c) => String(c.pubkey || "").toLowerCase())
+      ),
+    ].filter(
+      (h) => /^[0-9a-f]{64}$/.test(h) && !profiles.value[h]
+    );
+    if (wanted.length === 0) return;
+
+    const subId = `yantr-profiles-${Date.now().toString(36)}`;
+    const perRelay = await Promise.all(
+      NOSTR_COMMENT_RELAYS.map((relay) =>
+        queryOneRelay(relay, profileFilter(wanted), subId, PROFILE_KIND)
+      )
+    );
+
+    const newest = {};
+    for (const { events } of perRelay) {
+      for (const ev of events || []) {
+        const p = parseKind0Profile(ev);
+        if (!p) continue;
+        if (!newest[p.pubkey] || p.created_at > newest[p.pubkey].created_at) {
+          newest[p.pubkey] = p;
+        }
+      }
+    }
+    if (Object.keys(newest).length > 0) {
+      profiles.value = { ...profiles.value, ...newest };
+    }
   }
 
   function hasSigner() {
@@ -386,6 +437,7 @@ export function useAppComments(appId) {
     load,
     connect,
     publish,
+    profileOf,
     authorNpub,
     eventTag,
   };
