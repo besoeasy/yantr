@@ -23,10 +23,9 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "app-install" */ "./views/AppDetail.vue"),
     },
     {
-      // One developer's profile and everything they maintain in the catalog.
-      // :handle accepts either "besoeasy" (GitHub implied) or
-      // "platform:handle" — see utils/developer.js.
-      path: "/developer/:handle",
+      // One developer's profile and every app they are credited on. The param is
+      // a Nostr public key — see utils/developer.js.
+      path: "/developer/:key",
       name: "developer",
       component: () => import(/* webpackChunkName: "developer" */ "./views/DeveloperProfile.vue"),
     },
