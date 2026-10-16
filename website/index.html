@@ -781,17 +781,17 @@
         </div>
       </section>
 
-      <!-- Live Fleet Telemetry Section -->
+      <!-- Live Fleet Presence Section -->
       <section id="fleet" class="full-bleed section section-gray">
         <div class="wrap">
           <div class="center fleet-head">
-            <p class="eyebrow eyebrow-green">Live Fleet · Telemetry</p>
+            <p class="eyebrow eyebrow-green">Live Fleet · Presence</p>
             <h2 class="h2">
               Real homelabs, running Yantr.
               <span class="muted">Anonymous presence feed.</span>
             </h2>
             <p class="lead">
-              The same fleet stats shown in the app's Fleet page — anonymous nodes reporting country, OS, RAM, and installed apps. No accounts, no tracking. Disable anytime with <code>YANTR_TELEMETRY=false</code>.
+              The same fleet stats shown in the app's Fleet page — anonymous nodes reporting country, OS, RAM, and installed apps. No accounts, no tracking. Disable anytime with <code>YANTR_PRESENCE=false</code> (the older <code>YANTR_TELEMETRY=false</code> still works).
             </p>
           </div>
 
@@ -1327,15 +1327,15 @@
         render();
       }
 
-      // ── Live Fleet Telemetry ──────────────────────────
-      // Same stats as the app UI Fleet page (ui/src/views/Telemetry.vue):
+      // ── Live Fleet Presence ──────────────────────────
+      // Same stats as the app UI Fleet page (ui/src/views/Presence.vue):
       // nodes, RAM min/max/avg, countries, OS, most installed apps.
-      // Renders the build-time ./telemetry.json snapshot instantly, then
+      // Renders the build-time ./presence.json snapshot instantly, then
       // refreshes live from the public ntfy presence feed in the browser.
       const FLEET_NTFY_URL = "https://ntfy.sh/yantr/json?poll=1&since=all";
       let fleetAppIndex = null;
       // Code → display name from the build-time snapshot (resolved with the
-      // same table as LookupCountry in core/telemetry/countries.go).
+      // same table as LookupCountry in core/presence/countries.go).
       let fleetCountryNames = {};
 
       function fleetEsc(s) {
@@ -1368,7 +1368,7 @@
         return fleetAppIndex;
       }
 
-      // Mirrors Aggregate in core/telemetry/stats.go: latest presence wins.
+      // Mirrors Aggregate in core/presence/stats.go: latest presence wins.
       function aggregateFleetEvents(rawEvents, appIndex) {
         const nodes = new Map();
         const installs = {};
@@ -1544,8 +1544,8 @@
             }
           }
           // Build-time snapshot: instant first paint + offline fallback.
-          const res = await fetch("./telemetry.json");
-          if (!res.ok) throw new Error("telemetry snapshot missing");
+          const res = await fetch("./presence.json");
+          if (!res.ok) throw new Error("presence snapshot missing");
           const data = await res.json();
           for (const c of (data.stats && data.stats.countries) || []) {
             if (c && c.code && c.name) fleetCountryNames[c.code] = c.name;

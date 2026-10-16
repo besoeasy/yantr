@@ -32,8 +32,8 @@ func TestResolveConfigLegacyOptOutStillHonoured(t *testing.T) {
 		{"current name", map[string]string{"YANTR_PRESENCE": "false"}},
 		{"both names", map[string]string{"YANTR_TELEMETRY": "false", "YANTR_PRESENCE": "false"}},
 		{"legacy name alongside a topic", map[string]string{
-			"YANTR_TELEMETRY":       "false",
-			"YANTR_PRESENCE_TOPIC":  "https://example.test/topic",
+			"YANTR_TELEMETRY":      "false",
+			"YANTR_PRESENCE_TOPIC": "https://example.test/topic",
 		}},
 	}
 

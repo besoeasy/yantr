@@ -320,13 +320,19 @@ async function fetchGitHubData() {
   }
 }
 
-// ── Fleet telemetry snapshot ──────────────────────────────────────
-// Same feed the app UI shows on its Fleet page (core/telemetry/stats.go):
+// ── Fleet presence snapshot ──────────────────────────────────────
+// Same feed the app UI shows on its Fleet page (core/presence/stats.go):
 // anonymous presence/install pings aggregated from the public ntfy topic.
-// The snapshot is written to website/telemetry.json so yantr.org renders
+// The snapshot is written to website/presence.json so yantr.org renders
 // instantly; the page then refreshes live from ntfy in the browser.
-const telemetryJsonPath = path.join(websiteDir, 'telemetry.json');
-const TELEMETRY_TOPIC = (process.env.YANTR_TELEMETRY_TOPIC || 'https://ntfy.sh/yantr').replace(/\/+$/, '');
+const presenceJsonPath = path.join(websiteDir, 'presence.json');
+// YANTR_PRESENCE_TOPIC is current; YANTR_TELEMETRY_TOPIC is the pre-rename
+// name and stays honoured so existing build environments keep working.
+const PRESENCE_TOPIC = (
+  process.env.YANTR_PRESENCE_TOPIC ||
+  process.env.YANTR_TELEMETRY_TOPIC ||
+  'https://ntfy.sh/yantr'
+).replace(/\/+$/, '');
 
 function httpsGetText(url, timeoutMs = 15000) {
   return new Promise((resolve, reject) => {
@@ -352,7 +358,7 @@ function httpsGetText(url, timeoutMs = 15000) {
   });
 }
 
-const TELEMETRY_COUNTRIES = {
+const PRESENCE_COUNTRIES = {
   AD: 'Andorra',
   AE: 'United Arab Emirates',
   AF: 'Afghanistan',
@@ -459,15 +465,15 @@ const TELEMETRY_COUNTRIES = {
   ZA: 'South Africa',
   '??': 'Unknown',
 };
-// Same names as LookupCountry in core/telemetry/countries.go.
-function telemetryCountryName(code) {
+// Same names as LookupCountry in core/presence/countries.go.
+function presenceCountryName(code) {
   code = String(code || '').trim().toUpperCase();
   if (!code || code === '??') return 'Unknown';
-  return TELEMETRY_COUNTRIES[code] || code;
+  return PRESENCE_COUNTRIES[code] || code;
 }
 
-// Mirrors ParseEvent + fetchAndAggregate in core/telemetry/stats.go.
-function parseTelemetryMessages(ndjson) {
+// Mirrors ParseEvent + fetchAndAggregate in core/presence/stats.go.
+function parsePresenceMessages(ndjson) {
   const events = [];
   for (const line of String(ndjson || '').split('\n')) {
     const trimmed = line.trim();
@@ -494,14 +500,14 @@ function parseTelemetryMessages(ndjson) {
   return events;
 }
 
-function sortedTelemetryList(counts, limit, toEntry) {
+function sortedPresenceList(counts, limit, toEntry) {
   const out = Object.entries(counts).map(([key, count]) => toEntry(key, count));
   out.sort((a, b) => (b.count - a.count) || (String(a.name).localeCompare(String(b.name))));
   return limit > 0 ? out.slice(0, limit) : out;
 }
 
-// Mirrors Aggregate in core/telemetry/stats.go: latest presence wins per node.
-function aggregateTelemetry(events, appNames) {
+// Mirrors Aggregate in core/presence/stats.go: latest presence wins per node.
+function aggregatePresence(events, appNames) {
   const nodes = new Map();
   const installs = {};
   for (const evt of events) {
@@ -546,14 +552,14 @@ function aggregateTelemetry(events, appNames) {
   return {
     nodes: nodes.size,
     events: events.length,
-    countries: sortedTelemetryList(countryCounts, 0, (code, count) => ({
+    countries: sortedPresenceList(countryCounts, 0, (code, count) => ({
       code,
-      name: telemetryCountryName(code),
+      name: presenceCountryName(code),
       count,
     })),
-    os: sortedTelemetryList(osCounts, 12, (name, count) => ({ name, count })),
+    os: sortedPresenceList(osCounts, 12, (name, count) => ({ name, count })),
     ram,
-    apps: sortedTelemetryList(appCounts, 12, (id, count) => ({
+    apps: sortedPresenceList(appCounts, 12, (id, count) => ({
       id,
       name: (appNames && appNames[id]) || id,
       count,
@@ -563,7 +569,7 @@ function aggregateTelemetry(events, appNames) {
   };
 }
 
-function emptyTelemetryStats() {
+function emptyPresenceStats() {
   return {
     nodes: 0,
     events: 0,
@@ -576,8 +582,8 @@ function emptyTelemetryStats() {
   };
 }
 
-async function fetchTelemetrySnapshot() {
-  console.log('\n📡 Fetching fleet telemetry snapshot...');
+async function fetchPresenceSnapshot() {
+  console.log('\n📡 Fetching fleet presence snapshot...');
   let appNames = {};
   try {
     const catalog = JSON.parse(fs.readFileSync(appsJsonPath, 'utf8'));
@@ -585,20 +591,20 @@ async function fetchTelemetrySnapshot() {
       if (app?.id) appNames[app.id] = app.name || app.id;
     }
   } catch (error) {
-    console.warn(`⚠️  Could not read apps.json for telemetry names: ${error.message}`);
+    console.warn(`⚠️  Could not read apps.json for presence names: ${error.message}`);
   }
 
   try {
-    const ndjson = await httpsGetText(`${TELEMETRY_TOPIC}/json?poll=1&since=all`);
-    const stats = aggregateTelemetry(parseTelemetryMessages(ndjson), appNames);
-    fs.writeFileSync(telemetryJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
-    console.log(`✅ Telemetry snapshot saved (${stats.nodes} nodes, ${stats.events} events)`);
+    const ndjson = await httpsGetText(`${PRESENCE_TOPIC}/json?poll=1&since=all`);
+    const stats = aggregatePresence(parsePresenceMessages(ndjson), appNames);
+    fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
+    console.log(`✅ Presence snapshot saved (${stats.nodes} nodes, ${stats.events} events)`);
   } catch (error) {
-    console.warn(`⚠️  Could not fetch telemetry: ${error.message}`);
+    console.warn(`⚠️  Could not fetch presence: ${error.message}`);
     // Snapshot fallback so the Fleet section still renders its empty state.
-    if (!fs.existsSync(telemetryJsonPath)) {
-      const stats = emptyTelemetryStats();
-      fs.writeFileSync(telemetryJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
+    if (!fs.existsSync(presenceJsonPath)) {
+      const stats = emptyPresenceStats();
+      fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
     }
   }
 }
@@ -606,7 +612,7 @@ async function fetchTelemetrySnapshot() {
 try {
   await fetchGitHubData();
   buildPages();
-  await fetchTelemetrySnapshot();
+  await fetchPresenceSnapshot();
 } catch (error) {
   console.error('❌ Failed to generate app pages:', error.message);
   process.exit(1);
