@@ -30,11 +30,13 @@
       "featureList": [{% for uc in app.usecases %}{{ uc | dump | safe }}{% if not loop.last %}, {% endif %}{% endfor %}]{% endif %}{% if app.developers.length %},
       "author": {% if app.developers.length == 1 %}{
         "@type": "Person",
-        "name": {{ app.developers[0].handle | dump | safe }},
+        "name": {{ app.developers[0].key | dump | safe }},
+        "identifier": {{ app.developers[0].key | dump | safe }},
         "url": {{ app.developers[0].url | dump | safe }}
       }{% else %}[{% for dev in app.developers %}{
         "@type": "Person",
-        "name": {{ dev.handle | dump | safe }},
+        "name": {{ dev.key | dump | safe }},
+        "identifier": {{ dev.key | dump | safe }},
         "url": {{ dev.url | dump | safe }}
       }{% if not loop.last %}, {% endif %}{% endfor %}]{% endif %}{% endif %}
     }
@@ -175,7 +177,7 @@
             {% for dev in app.developers %}
               <a href="/developer/{{ dev.ref }}/" class="developer-chip">
                 <span class="developer-chip-dot">{{ dev.initials }}</span>
-                <span>{{ dev.handle }}</span>
+                <span>{{ dev.shortKey }}</span>
                 <span class="developer-chip-platform">{{ dev.platformLabel }}</span>
               </a>
             {% endfor %}

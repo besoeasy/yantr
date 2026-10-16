@@ -8,7 +8,7 @@ x-yantr:
     Stateless single container with nothing to configure.
   usecases: ["Take daily notes with Markdown and instant search.", "Capture quick ideas in a clean editor.", "Self-host a tiny notes app with zero setup."]
   website: "https://github.com/besoeasy/ZeroNote"
-  developers: ["github:besoeasy"]
+  developers: ["npub1hznmntyj254kqhr079a5gt2wvhyll6rz6q67pyjres4lfkql22kq5ml6zh"]
   notes: ["Stateless app with no volumes.", "Notes stay in the browser session."]
   ports:
     - {port: 8000, protocol: HTTP, show: true, label: "Web UI", service: zeronote}

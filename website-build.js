@@ -17,19 +17,17 @@ const siteUrl = 'https://yantr.org';
 
 const DISPLAY_PROTOCOLS = new Set(['HTTP', 'HTTPS', 'TCP', 'UDP']);
 
-// Mirrors validDeveloperPlatforms in core/apps/catalog.go. A closed set keeps a
-// typo out of a profile link; the URL schemes below are the single place a
-// platform's profile shape is defined.
-const DEVELOPER_PLATFORMS = {
-  github: { label: 'GitHub', profile: (h) => `https://github.com/${h}` },
-  gitlab: { label: 'GitLab', profile: (h) => `https://gitlab.com/${h}` },
-  codeberg: { label: 'Codeberg', profile: (h) => `https://codeberg.org/${h}` },
-  nostr: { label: 'Nostr', profile: (h) => `https://njump.me/${h}` },
-};
-
-// Mirrors parseDevelopers in core/apps/catalog.go: "platform:handle", forged
-// handles lowercased, nostr keys preserved, untrustworthy entries dropped rather
+// Mirrors parseDevelopers in core/apps/catalog.go: entries are Nostr public keys,
+// deduplicated case-insensitively, with anything that is not one dropped rather
 // than rendered as a dead link.
+//
+// The shape check is not the checksum. core/nip19 verifies bech32 and the Go
+// catalog drops what fails before it ever serialises, so by the time this runs
+// every entry already passed. Re-verifying here would mean carrying a bech32
+// decoder in the site builder to guard a page whose worst outcome is one dead
+// njump link — and njump does not notify anyone the way a wrong @mention did.
+const NOSTR_KEY_RE = /^n(?:pub|profile)1[02-9ac-hj-np-z]+$/i;
+
 function parseDevelopers(inList) {
   const out = [];
   const seen = new Set();
@@ -37,29 +35,24 @@ function parseDevelopers(inList) {
 
   for (const raw of inList) {
     const text = String(raw ?? '').trim();
-    const sep = text.indexOf(':');
-    if (sep === -1) continue;
+    if (!NOSTR_KEY_RE.test(text)) continue;
 
-    const platform = text.slice(0, sep).trim().toLowerCase();
-    let handle = text.slice(sep + 1).trim().replace(/^@/, '');
-
-    if (!handle || !DEVELOPER_PLATFORMS[platform]) continue;
-    if (/[\s/?#]/.test(handle)) continue;
-    if (platform !== 'nostr') handle = handle.toLowerCase();
-
-    const key = `${platform}:${handle}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    // bech32 forbids rewriting a key, so the catalog may hold one in any case
+    // while the page path is lowercased to keep URLs tidy.
+    const folded = text.toLowerCase();
+    if (seen.has(folded)) continue;
+    seen.add(folded);
 
     out.push({
-      platform,
-      handle,
-      url: DEVELOPER_PLATFORMS[platform].profile(handle),
-      platformLabel: DEVELOPER_PLATFORMS[platform].label,
-      initials: (handle.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2) || '?').toUpperCase(),
-      // GitHub is the default platform, so it gets the short, shareable page
-      // path. Everything else is qualified.
-      ref: platform === 'github' ? handle : key,
+      key: text,
+      // 63 characters is not a page title.
+      shortKey: text.length <= 20 ? text : `${text.slice(0, 11)}…${text.slice(-4)}`,
+      // njump resolves any NIP-19 identifier and hands the reader to whichever
+      // client they have, which a bare nostr: link cannot do.
+      url: `https://njump.me/${text}`,
+      platformLabel: 'Nostr',
+      initials: (text.replace(/[^\p{L}\p{N}]/gu, '').slice(0, 2) || '?').toUpperCase(),
+      ref: folded,
     });
   }
   return out;
@@ -338,8 +331,8 @@ function buildDeveloperPages(env, apps, generatedAt) {
     fs.mkdirSync(dir, { recursive: true });
 
     const count = developer.apps.length;
-    const pageTitle = `${developer.handle} — ${count} self-hosted app${count === 1 ? '' : 's'} on Yantr`;
-    const pageDescription = `${count} app${count === 1 ? '' : 's'} by ${developer.handle} (${developer.platformLabel}) in the Yantr catalog: ${developer.apps
+    const pageTitle = `Nostr developer ${developer.shortKey} — ${count} self-hosted app${count === 1 ? '' : 's'} on Yantr`;
+    const pageDescription = `${count} app${count === 1 ? '' : 's'} credited to one Nostr account (${developer.platformLabel}) in the Yantr catalog: ${developer.apps
       .map((a) => a.name)
       .join(', ')}. One-click self-hosting with Podman.`;
 

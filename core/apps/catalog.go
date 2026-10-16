@@ -216,7 +216,7 @@ type xyPort struct {
 
 // composeFile is a minimal representation of the top-level compose.yml structure.
 type composeFile struct {
-	XYantr   xYantr                 `yaml:"x-yantr"`
+	XYantr   xYantr                  `yaml:"x-yantr"`
 	Services map[string]interface{} `yaml:"services"`
 }
 
@@ -294,9 +294,9 @@ func loadCatalog() (*Catalog, error) {
 				ShortDescription: meta.ShortDescription,
 				Description:      coalesce(meta.Description, meta.ShortDescription),
 				Usecases:         usecases,
-				Website:          meta.Website,
-				Notes:            meta.Notes,
-				Developers:       developers,
+			Website:          meta.Website,
+			Notes:            meta.Notes,
+			Developers:       developers,
 				Path:             appPath,
 				ComposePath:      composePath,
 				Environment:      envVars,

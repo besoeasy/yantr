@@ -4,7 +4,15 @@ import { useI18n } from "vue-i18n";
 import { Globe, FileCode, Tag, Info, Bug } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
-import { developersOf, developerProfileUrl, developerInitials, developerLabel, developerRouteRef, buildIssueReportUrl } from "../utils/developer";
+import {
+  DEVELOPER_LABEL,
+  developersOf,
+  developerProfileUrl,
+  developerInitials,
+  developerRouteRef,
+  developerShortKey,
+  buildIssueReportUrl,
+} from "../utils/developer";
 
 const props = defineProps({
   app: {
@@ -52,16 +60,18 @@ const chatGptUrl = computed(() => {
 const developers = computed(() =>
   developersOf(props.app).map((d) => ({
     ...d,
-    href: `#/developer/${developerRouteRef(d.platform, d.handle)}`,
-    url: d.url || developerProfileUrl(d.platform, d.handle),
-    initials: developerInitials(d.handle),
-    platformLabel: developerLabel(d.platform),
+    href: `#/developer/${developerRouteRef(d.key)}`,
+    url: d.url || developerProfileUrl(d.key),
+    initials: developerInitials(d.key),
+    shortKey: developerShortKey(d.key),
+    platformLabel: DEVELOPER_LABEL,
   }))
 );
 
 // Prefilled GitHub issue URL — the title marks it as pre-install and the body
-// mentions the app's GitHub authors, so the people who can actually fix it are
-// subscribed the moment the report is filed.
+// names the app's Nostr keys, so a reader can tell whose recipe this is. It no
+// longer @mentions anyone: a GitHub issue cannot mention a Nostr account, and the
+// forge logins it used to ping are no longer part of the field.
 const reportIssueUrl = computed(() =>
   buildIssueReportUrl(props.app, { prefix: "pre-install" })
 );
@@ -141,15 +151,15 @@ const reportIssueUrl = computed(() =>
           <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('appDetail.developer') }}</span>
           <a
             v-for="dev in developers"
-            :key="`${dev.platform}:${dev.handle}`"
+            :key="dev.key"
             :href="dev.href"
-            :title="`${dev.platformLabel}: ${dev.handle}`"
+            :title="`${dev.platformLabel}: ${dev.key}`"
             class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 py-0.5 pl-0.5 pr-2.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
           >
             <span class="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-black text-white dark:bg-zinc-100 dark:text-zinc-900">
               {{ dev.initials }}
             </span>
-            {{ dev.handle }}
+            {{ dev.shortKey }}
           </a>
         </div>
       </div>

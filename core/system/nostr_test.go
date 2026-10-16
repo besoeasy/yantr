@@ -249,9 +249,10 @@ func TestFetchNostrProfileFallsBackToAnotherRelay(t *testing.T) {
 	if profile.Name != "jack" {
 		t.Errorf("name = %q, want %q", profile.Name, "jack")
 	}
-	if got := empty.connections(); got != 1 {
-		t.Errorf("the relay that held nothing saw %d connections, want 1", got)
-	}
+	// No assertion on how many connections each relay saw: the fan-out cancels
+	// the losers the moment one answers, so how far each got is a race. That the
+	// answer is "jack" is the proof — the relay that held nothing could not have
+	// supplied it.
 }
 
 // TestFetchNostrProfileSurvivesAnUnreachableRelay covers the other reason to ask

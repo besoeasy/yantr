@@ -5,7 +5,7 @@ Each app is a single `apps/<app-name>/compose.yml`. No `info.json`, no `Dockerfi
 
 ## `x-yantr` metadata block
 **Required:** `name`, `tags` (3–5), `short_description` (50–100 chars), `description` (200–300 chars, YAML `>` block), `usecases` (≥2), `website`.
-**Optional:** `notes` (list), `developers` (list of `platform:handle`), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`), `ports` (list of `{port, protocol, show, label, service}`; protocol ∈ `HTTP`, `HTTPS`, `TCP`, `UDP`).
+**Optional:** `notes` (list), `developers` (list of Nostr public keys), `env_generators` (`VAR: {length, charset}`; charset ∈ `alnum`, `hex`, `numeric`, `alpha`, `base64url`, `alnum_symbols`), `ports` (list of `{port, protocol, show, label, service}`; protocol ∈ `HTTP`, `HTTPS`, `TCP`, `UDP`).
 
 Flat arrays (`tags`, `usecases`, `notes`, `developers`) always use flow sequences:
 ```yaml
@@ -13,40 +13,50 @@ tags: [tools, utility, self-hosted, homelab, podman]
 ```
 
 ## `developers` — crediting an app's author
-`developers` names who the app is from, as `platform:handle` entries. It is optional and
-changes nothing about deployment; it drives the developer credit on the app page, the
-`#/developer/<handle>` profile route, and the `@mention` in a pre-filled issue body.
+`developers` names who the app is from, as Nostr public keys. It is optional and changes
+nothing about deployment; it drives the developer credit on the app page and the
+`#/developer/<npub>` profile route.
 
 ```yaml
 x-yantr:
-  developers: ["github:besoeasy", "gitlab:username2"]
+  developers: ["npub1hznmntyj254kqhr079a5gt2wvhyll6rz6q67pyjres4lfkql22kq5ml6zh"]
 ```
 
-The platform set is **closed**: `github`, `gitlab`, `codeberg`, `nostr`. Anything else is
-dropped at parse time rather than rendered, because an entry becomes a profile link and,
-on GitHub, an `@mention` in a filed issue — a wrong handle pings a stranger. An entry with
-no colon, an empty handle, or a handle containing `/`, `?` or `#` is dropped the same way.
-Handles are lowercased on the forge platforms (they are case-insensitive there, so
-`Besoeasy` and `besoeasy` are one developer); Nostr keys keep their case.
+An entry is an `npub1…` or an `nprofile1…`. Never an `nsec1…` private key or a `note1…`
+event id, and no platform prefix — `nostr:` is tolerated on the way in but there is
+nothing left to disambiguate, so do not write it.
+
+Every entry is bech32-decoded and checksum-verified when the catalog loads
+(`core/nip19`), and anything that is not a key is dropped. That is stronger than the
+allow-list this field used to carry for forge logins: a checksum is not a judgement
+call, so there is no class of typo that survives to become a profile link.
+
+Entries are deduplicated on the **decoded** pubkey, not on the spelling. The same key
+written in two cases is one developer, and so is one account written once as an npub and
+once as an nprofile.
 
 Credit the **upstream author of the software** — the person whose project it is — not
 whoever added the recipe. Everyone in the catalog ships a recipe written by somebody, so
-the alternative reading makes the field meaningless. Only write a handle you can tie to a
-real account: the image namespace (`ghcr.io/<owner>`) or the project's own website is
-evidence; a guess is not. Leaving the field out is the correct choice when unsure.
+the alternative reading makes the field meaningless. Only write a key you can tie to a
+real account; leaving the field out is the correct choice when unsure. Be aware of what
+the field does *not* do: an npub written here is a label, not an authentication.
+Granting anyone rights on the strength of it would mean publishing an account's key in a
+git repository and trusting whoever reads it. Anything privileged needs the account to
+sign a server-issued nonce.
 
-A `nostr:` handle must be an `npub1…` (or `nprofile1…`) — a profile identifier, never an
-`nsec1…` private key or a `note1…` event id. It buys more than a link: the developer page
-shows the account's kind-0 name, picture and `nip05`, and a QR code of the NIP-21 URI
-(`nostr:npub1…`) so a visitor can scan straight into a direct message. The QR is drawn
-from the catalog's own key, so it is on screen even when nothing can be fetched.
+A developer's page shows the account's kind-0 name, picture and `nip05`, and a QR
+code of the NIP-21 URI (`nostr:npub1…`) so a visitor can scan straight into a direct
+message. The QR is drawn from the catalog's own key, so it is on screen even when nothing
+can be fetched.
 
 That fetch is the one place Yantr reaches a third party for this field: the server queries
-a single relay, `relay.primal.net`, over a websocket and caches the result for seven days
-(`core/system/nostr.go`). One relay, not a merge of several — a developer page wants one
-account's name, and extra relays would multiply the latency and the failure modes for a
-result that is nearly always identical. Nothing else about a `nostr:` entry depends on the
-network: the app list, the credit and the QR all come from the local catalog.
+a small set of relays over websockets and caches the result for seven days
+(`core/system/nostr.go`). It asks more than one because coverage is per-relay — measured,
+`relay.primal.net` had no kind-0 at all for one real key in this catalog while others did,
+and a relay that holds nothing answers with a clean end-of-stored-events rather than an
+error. Override the set with `YANTR_NOSTR_RELAYS` (comma-separated) for a host that
+cannot reach these. Nothing else about a developer entry depends on the network: the app
+list, the credit and the QR all come from the local catalog.
 
 Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml

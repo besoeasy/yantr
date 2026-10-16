@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ pageTitle }}</title>
     <meta name="description" content="{{ pageDescription }}" />
-    <meta name="keywords" content="{{ developer.handle }}, {{ developer.platformLabel }}, self-hosted apps, podman compose, homelab, yantr{% for app in developer.apps %}, {{ app.name }}{% endfor %}" />
+    <meta name="keywords" content="{{ developer.key }}, {{ developer.platformLabel }}, self-hosted apps, podman compose, homelab, yantr{% for app in developer.apps %}, {{ app.name }}{% endfor %}" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="canonical" href="{{ pageUrl }}" />
     <meta name="robots" content="index,follow,max-image-preview:large" />
@@ -19,8 +19,8 @@
       "url": {{ pageUrl | dump | safe }},
       "mainEntity": {
         "@type": "Person",
-        "name": {{ developer.handle | dump | safe }},
-        "identifier": {{ developer.handle | dump | safe }},
+        "name": {{ developer.key | dump | safe }},
+        "identifier": {{ developer.key | dump | safe }},
         "url": {{ pageUrl | dump | safe }},
         "sameAs": {{ developer.url | dump | safe }}
       },
@@ -49,7 +49,7 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": {{ developer.handle | dump | safe }},
+          "name": {{ developer.key | dump | safe }},
           "item": {{ pageUrl | dump | safe }}
         }
       ]
@@ -86,11 +86,12 @@
         <div class="developer-hero-avatar">{{ developer.initials }}</div>
         <div class="app-hero-body">
           <p class="kicker">{{ developer.platformLabel }} developer · Yantr</p>
-          <h1>{{ developer.handle }}</h1>
+          <h1>{{ developer.shortKey }}</h1>
           <p class="short">Maintains {{ developer.apps.length }} app{% if developer.apps.length != 1 %}s{% endif %} in the Yantr catalog.</p>
-          <!-- The catalog identifier, in mono. Deliberately not .app-tags: that
-               uppercases, which turns the handle into GITHUB:BESOEASY. -->
-          <p class="developer-ref mono">{{ developer.platform }}:{{ developer.handle }}</p>
+          <!-- The full key, in mono, because the heading is abbreviated and this
+               is the thing a reader needs in order to verify it. Deliberately not
+               .app-tags: that uppercases, which bech32 forbids. -->
+          <p class="developer-ref mono">{{ developer.key }}</p>
         </div>
       </div>
 
@@ -111,7 +112,7 @@
       <div class="app-ctas">
         <a href="{{ developer.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-dark">
           <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-          Profile on {{ developer.platformLabel }}
+          Open the Nostr account
         </a>
         <a href="../../#all-apps" class="btn btn-light">
           <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -122,9 +123,9 @@
       <!-- Apps -->
       <section class="doc-section">
         <p class="kicker">Apps</p>
-        <h2>What {{ developer.handle }} maintains</h2>
+        <h2>What this account maintains</h2>
         <div>
-          <p>Every app below declares <span class="mono">{{ developer.platform }}:{{ developer.handle }}</span> in its catalog entry, so the credit is part of the app definition rather than a separate list that can drift.</p>
+          <p>Every app below declares <span class="mono">{{ developer.key }}</span> in its catalog entry, so the credit is part of the app definition rather than a separate list that can drift.</p>
         </div>
 
         <div class="developer-app-list">
@@ -146,8 +147,8 @@
         <p class="kicker">About</p>
         <h2>How developer credit works</h2>
         <div>
-          <p>An app author is declared in the app's compose file as a <span class="mono">platform:handle</span> entry under <span class="mono">x-yantr.developers</span>, alongside the app's name, ports and notes. Yantr reads it from the same file it deploys, which is why this page needs no separate account or sign-up.</p>
-          <p>The platforms Yantr recognises are GitHub, GitLab, Codeberg and Nostr. Only GitHub is included in the automatic mentions when an issue is filed from the app page, because an <span class="mono">@mention</span> resolves nowhere else.</p>
+          <p>An app author is declared in the app's compose file as their Nostr public key — an <span class="mono">npub1…</span> or <span class="mono">nprofile1…</span> — under <span class="mono">x-yantr.developers</span>, alongside the app's name, ports and notes. Yantr reads it from the same file it deploys, which is why this page needs no separate account or sign-up.</p>
+          <p>Every entry is decoded and checksum-verified when the catalog loads, so an app can only credit a key that is a key. An issue filed from an app page names the key but cannot notify the account: a GitHub issue cannot <span class="mono">@mention</span> a Nostr account, so this is information rather than a ping.</p>
         </div>
       </section>
 
