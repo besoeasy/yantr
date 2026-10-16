@@ -3,6 +3,7 @@ package apps
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -89,6 +90,126 @@ func TestShownPortsSplitsAccessFromWork(t *testing.T) {
 
 // appsDirForTest resolves the repository's apps/ directory relative to this
 // package so the audit below reads the real catalog rather than fixtures.
+// ─── Developers ───────────────────────────────────────────────────────────────
+
+func TestParseDevelopersAcceptsKnownPlatforms(t *testing.T) {
+	got := parseDevelopers([]string{
+		"github:besoeasy",
+		"gitlab:username2",
+		"codeberg:someone",
+		"nostr:npub1qqqq",
+	})
+
+	want := []DeveloperInfo{
+		{Platform: "github", Handle: "besoeasy", URL: "https://github.com/besoeasy"},
+		{Platform: "gitlab", Handle: "username2", URL: "https://gitlab.com/username2"},
+		{Platform: "codeberg", Handle: "someone", URL: "https://codeberg.org/someone"},
+		{Platform: "nostr", Handle: "npub1qqqq", URL: "https://njump.me/npub1qqqq"},
+	}
+
+	if len(got) != len(want) {
+		t.Fatalf("got %d developers %+v, want %d", len(got), got, len(want))
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("entry %d = %+v, want %+v", i, got[i], want[i])
+		}
+	}
+}
+
+// An entry that cannot be trusted is dropped, never guessed at: a wrong one
+// becomes a dead link, and on GitHub an @mention of a stranger in every issue
+// filed about the app.
+func TestParseDevelopersDropsUntrustworthyEntries(t *testing.T) {
+	got := parseDevelopers([]string{
+		"besoeasy",             // no platform separator
+		"https://github.com/x", // a URL, not platform:handle
+		"mastodon:someone",     // platform not in the allow-list
+		"github:",              // empty handle
+		":besoeasy",            // empty platform
+		"github:  ",            // whitespace-only handle
+		"github:has space",     // handle cannot contain spaces
+		"github:a/b",           // nor path separators
+	})
+
+	if len(got) != 0 {
+		t.Fatalf("got %+v, want every entry dropped", got)
+	}
+}
+
+func TestParseDevelopersNormalisesHandle(t *testing.T) {
+	got := parseDevelopers([]string{"  GitHub:@Besoeasy  ", "GITHUB:besoeasy"})
+
+	// Case is normalised on the forge platforms (they are case-insensitive), so
+	// the two spellings must collapse to one developer rather than two.
+	if len(got) != 1 {
+		t.Fatalf("got %d developers %+v, want 1 after dedupe", len(got), got)
+	}
+	if got[0].Platform != "github" || got[0].Handle != "besoeasy" {
+		t.Errorf("got %+v, want github:besoeasy", got[0])
+	}
+}
+
+func TestParseDevelopersPreservesNostrKeyCase(t *testing.T) {
+	// bech32 is lowercase by spec, but the field must not silently rewrite a key
+	// it did not author.
+	got := parseDevelopers([]string{"nostr:npub1ABCDEF"})
+	if len(got) != 1 || got[0].Handle != "npub1ABCDEF" {
+		t.Fatalf("got %+v, want the key preserved verbatim", got)
+	}
+}
+
+func TestParseDevelopersNeverReturnsNil(t *testing.T) {
+	// The UI distinguishes "no developers declared" from "field missing" by
+	// shape, and a null would collapse the two.
+	if got := parseDevelopers(nil); got == nil {
+		t.Error("parseDevelopers(nil) returned nil, want an empty slice")
+	}
+}
+
+func TestDevelopersForFiltersByPlatform(t *testing.T) {
+	app := &App{Developers: parseDevelopers([]string{"github:a", "gitlab:a", "github:b"})}
+
+	got := app.DevelopersFor("github")
+	if len(got) != 2 || got[0] != "a" || got[1] != "b" {
+		t.Errorf("DevelopersFor(github) = %v, want [a b]", got)
+	}
+	if got := app.DevelopersFor("nostr"); got != nil {
+		t.Errorf("DevelopersFor(nostr) = %v, want nil", got)
+	}
+}
+
+// Every declared developer in the real catalog must resolve to a profile URL.
+// A platform that survives validation but derives no URL would render a link to
+// nowhere.
+func TestEveryCatalogDeveloperHasAProfileURL(t *testing.T) {
+	dir := appsDirForTest(t)
+
+	previous := appsDir
+	appsDir = dir
+	SetAppsDir(dir)
+	t.Cleanup(func() { appsDir = previous })
+
+	cat, err := loadCatalog()
+	if err != nil {
+		t.Fatalf("load catalog: %v", err)
+	}
+
+	for _, app := range cat.Apps {
+		for _, d := range app.Developers {
+			if !validDeveloperPlatforms[d.Platform] {
+				t.Errorf("app %q declares unknown platform %q", app.ID, d.Platform)
+			}
+			if d.URL == "" {
+				t.Errorf("app %q developer %s:%s has no profile URL", app.ID, d.Platform, d.Handle)
+			}
+			if strings.ContainsAny(d.Handle, " \t/:?#") {
+				t.Errorf("app %q developer handle %q contains URL metacharacters", app.ID, d.Handle)
+			}
+		}
+	}
+}
+
 func appsDirForTest(t *testing.T) string {
 	t.Helper()
 	dir, err := filepath.Abs(filepath.Join("..", "..", "apps"))
