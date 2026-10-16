@@ -4,8 +4,8 @@
     "lightMode": "Light mode",
     "darkMode": "Dark mode"
   },
-  "telemetry": {
-    "eyebrow": "Telemetry",
+  "presence": {
+    "eyebrow": "Presence",
     "title": "Fleet",
     "subtitle": "Anonymous nodes from the public presence feed. Country, OS, RAM, and the apps they run.",
     "nodes": "Nodes",

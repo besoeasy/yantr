@@ -4,8 +4,8 @@
     "lightMode": "ライトモード",
     "darkMode": "ダークモード"
   },
-  "telemetry": {
-    "eyebrow": "テレメトリ",
+  "presence": {
+    "eyebrow": "プレゼンス",
     "title": "フリート",
     "subtitle": "公開プレゼンスの匿名ノード。国、OS、RAM、インストール済みアプリ。",
     "nodes": "ノード",

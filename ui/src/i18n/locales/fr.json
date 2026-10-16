@@ -4,8 +4,8 @@
     "lightMode": "Mode clair",
     "darkMode": "Mode sombre"
   },
-  "telemetry": {
-    "eyebrow": "Télémétrie",
+  "presence": {
+    "eyebrow": "Présence",
     "title": "Flotte",
     "subtitle": "Nœuds anonymes du flux de présence public. Pays, OS, RAM et apps installées.",
     "nodes": "Nœuds",

@@ -43,9 +43,14 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "logs" */ "./views/Logs.vue"),
     },
     {
+      path: "/presence",
+      name: "presence",
+      component: () => import(/* webpackChunkName: "presence" */ "./views/Presence.vue"),
+    },
+    {
+      // Old path, kept so bookmarks and in-app links survive the rename.
       path: "/telemetry",
-      name: "telemetry",
-      component: () => import(/* webpackChunkName: "telemetry" */ "./views/Telemetry.vue"),
+      redirect: "/presence",
     },
   ],
 });

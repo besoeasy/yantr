@@ -4,8 +4,8 @@
     "lightMode": "浅色模式",
     "darkMode": "深色模式"
   },
-  "telemetry": {
-    "eyebrow": "遥测",
+  "presence": {
+    "eyebrow": "在线心跳",
     "title": "集群",
     "subtitle": "来自公开在线心跳的匿名节点。国家、系统、内存和已安装应用。",
     "nodes": "节点",

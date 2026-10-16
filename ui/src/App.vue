@@ -55,7 +55,7 @@ const isActive = (name) => route.name === name;
 const navItems = [
   { name: "home", path: "/home", label: "Home", icon: Home },
   { name: "apps", path: "/apps", label: "Apps", icon: Box },
-  { name: "telemetry", path: "/telemetry", label: "Fleet", icon: Globe },
+  { name: "presence", path: "/presence", label: "Fleet", icon: Globe },
   { name: "logs", path: "/logs", label: "Logs", icon: Terminal },
 ];
 

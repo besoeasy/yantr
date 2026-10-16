@@ -4,8 +4,8 @@
     "lightMode": "Hellmodus",
     "darkMode": "Dunkelmodus"
   },
-  "telemetry": {
-    "eyebrow": "Telemetrie",
+  "presence": {
+    "eyebrow": "Präsenz",
     "title": "Flotte",
     "subtitle": "Anonyme Knoten aus dem öffentlichen Presence-Feed. Land, OS, RAM und installierte Apps.",
     "nodes": "Knoten",
