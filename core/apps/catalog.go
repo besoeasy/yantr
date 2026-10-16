@@ -2,6 +2,7 @@
 package apps
 
 import (
+	"core/nip19"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -55,14 +56,15 @@ type PortInfo struct {
 	Show bool `json:"show"`
 }
 
-// DeveloperInfo identifies one author of an app. Only Platform and Handle are
-// authored in compose.yml: URL is derived here so a platform's URL scheme
-// changes in exactly one place, and display data (name, avatar) is never
-// authored at all — that comes from the platform's API, when it has one.
+// DeveloperInfo identifies one author of an app by their Nostr key.
+//
+// Only Key is authored in compose.yml. URL is derived here so the link scheme
+// lives in one place, and display data — name, picture, about — is never
+// authored at all: it comes from the account's own kind-0 event when a relay
+// has one.
 type DeveloperInfo struct {
-	Platform string `json:"platform"`
-	Handle   string `json:"handle"`
-	URL      string `json:"url"`
+	Key string `json:"key"`
+	URL string `json:"url"`
 }
 
 // ShownPorts returns only the ports the app marked show: true, in catalog
@@ -214,7 +216,7 @@ type xyPort struct {
 
 // composeFile is a minimal representation of the top-level compose.yml structure.
 type composeFile struct {
-	XYantr   xYantr                  `yaml:"x-yantr"`
+	XYantr   xYantr                 `yaml:"x-yantr"`
 	Services map[string]interface{} `yaml:"services"`
 }
 
@@ -292,9 +294,9 @@ func loadCatalog() (*Catalog, error) {
 				ShortDescription: meta.ShortDescription,
 				Description:      coalesce(meta.Description, meta.ShortDescription),
 				Usecases:         usecases,
-			Website:          meta.Website,
-			Notes:            meta.Notes,
-			Developers:       developers,
+				Website:          meta.Website,
+				Notes:            meta.Notes,
+				Developers:       developers,
 				Path:             appPath,
 				ComposePath:      composePath,
 				Environment:      envVars,
@@ -332,127 +334,101 @@ func loadCatalog() (*Catalog, error) {
 
 // ─── Developer parsing (x-yantr.developers) ───────────────────────────────────
 
-// validDeveloperPlatforms is the closed set for x-yantr.developers entries.
+// developerProfileURL is the profile page for one Nostr key.
 //
-// The set is closed for the same reason validDisplayProtocols is: an entry is
-// turned into a profile link on the app page and, for GitHub, an @mention in a
-// pre-filled issue. An unrecognised prefix has no profile URL to derive, so it
-// would render as a dead link or mention the wrong account. Drop it instead.
-var validDeveloperPlatforms = map[string]bool{
-	"github":   true,
-	"gitlab":   true,
-	"codeberg": true,
-	"nostr":    true,
+// njump, because it resolves any NIP-19 identifier and hands the reader to
+// whichever client they use. A bare nostr: scheme link would assume they have
+// one registered.
+func developerProfileURL(key string) string {
+	return "https://njump.me/" + key
 }
 
-// developerProfileURL derives the canonical profile URL for one entry. Kept
-// separate from parseDevelopers so the URL scheme for a platform lives in one
-// place; an empty return means "no profile page", which cannot happen for a
-// platform that survived validation.
-func developerProfileURL(platform, handle string) string {
-	switch platform {
-	case "github":
-		return "https://github.com/" + handle
-	case "gitlab":
-		return "https://gitlab.com/" + handle
-	case "codeberg":
-		return "https://codeberg.org/" + handle
-	case "nostr":
-		// njump routes any NIP-19 identifier without assuming the reader has a
-		// particular client, which a bare nostr: scheme link does.
-		return "https://njump.me/" + handle
-	}
-	return ""
-}
-
-// parseDevelopers normalises x-yantr.developers ("platform:handle") into a
-// deduplicated list of DeveloperInfo, preserving author order.
+// parseDevelopers normalises x-yantr.developers into a deduplicated list of
+// DeveloperInfo, preserving author order.
 //
-// Entries are dropped, never guessed at: a missing separator, an unknown
-// platform, an empty handle, or a handle containing URL metacharacters all mean
-// the entry cannot be trusted, and a wrong entry here is worse than a missing
-// one — on GitHub it subscribes a stranger to every issue filed about the app.
+// Every entry is a Nostr public key — npub1… or nprofile1… — and it is decoded
+// here rather than trusted. That check is stronger than the one the field had
+// while it also accepted forge logins: a bech32 checksum is not a judgement
+// call, so an entry either is a key or is dropped, and there is no class of typo
+// that survives to become a profile link. A `nostr:` prefix is tolerated on the
+// way in for entries written before the platform was the only one.
 //
-// Handles are lowercased on the forge platforms because those are
-// case-insensitive, so `Besoeasy` and `besoeasy` must not both survive as
-// separate developers. Nostr keys keep their case: bech32 is lowercase by
-// spec, but the field should not silently rewrite a key it did not author.
+// A key that fails to decode is dropped, not repaired. Dropping a login on a
+// forge was a judgement about someone else's identity; dropping one here is a
+// statement about a string.
 func parseDevelopers(in []string) []DeveloperInfo {
 	seen := map[string]bool{}
 	out := []DeveloperInfo{}
 
 	for _, raw := range in {
-		platform, handle, ok := strings.Cut(strings.TrimSpace(raw), ":")
-		if !ok {
-			continue
-		}
-		platform = strings.ToLower(strings.TrimSpace(platform))
-		handle = strings.TrimSpace(handle)
-		// Tolerate the "@handle" spelling, which is how people write these.
-		handle = strings.TrimPrefix(handle, "@")
-
-		if handle == "" || !validDeveloperPlatforms[platform] {
-			continue
-		}
-		if strings.ContainsAny(handle, " \t\n/?#") {
-			continue
-		}
-		if platform != "nostr" {
-			handle = strings.ToLower(handle)
+		key := strings.TrimSpace(raw)
+		if strings.HasPrefix(strings.ToLower(key), "nostr:") {
+			key = strings.TrimSpace(key[len("nostr:"):])
 		}
 
-		key := platform + ":" + handle
-		if seen[key] {
+		if _, err := nip19.PubkeyHex(key); err != nil {
 			continue
 		}
-		seen[key] = true
+
+		// Deduplicated on the decoded pubkey rather than the spelling, so a
+		// catalog cannot credit the same person twice by writing their key in
+		// two cases.
+		pubkey, _ := nip19.PubkeyHex(key)
+		if seen[pubkey] {
+			continue
+		}
+		seen[pubkey] = true
 
 		out = append(out, DeveloperInfo{
-			Platform: platform,
-			Handle:   handle,
-			URL:      developerProfileURL(platform, handle),
+			Key: key,
+			URL: developerProfileURL(key),
 		})
 	}
 
 	return out
 }
 
-// DevelopersFor returns the handles this app declares on one platform, in
-// catalog order. Callers that need to test membership (the developer route) or
-// build mentions (the issue body) should use this rather than re-walking
+// DeveloperKeys returns the Nostr keys this app credits, in catalog order.
+// Callers that need to test membership should use this rather than re-walking
 // Developers and re-deciding what counts.
-func (a *App) DevelopersFor(platform string) []string {
+func (a *App) DeveloperKeys() []string {
 	if a == nil {
 		return nil
 	}
 	var out []string
 	for _, d := range a.Developers {
-		if d.Platform == platform {
-			out = append(out, d.Handle)
-		}
+		out = append(out, d.Key)
 	}
 	return out
 }
 
-// AppsByDeveloper returns every catalog app declaring platform:handle, in
+// AppsByDeveloper returns every catalog app crediting this Nostr key, in
 // catalog order (which loadCatalog sorts by ID).
 //
 // It reads only the local catalog on purpose. The developer route enriches the
-// page with GitHub profile data when it can, but the app list must survive
-// GitHub being unreachable, rate-limited or simply not the developer's
-// platform — Yantr is rootless and expected to run against no internet at all.
-func AppsByDeveloper(platform, handle string) []*App {
+// page with the account's kind-0 metadata when it can, but the app list must
+// survive the relays being unreachable, rate-limited, or simply not holding that
+// account's events — Yantr is rootless and expected to run against no internet
+// at all.
+//
+// The key is compared as decoded, so a catalog that spells it in a different
+// case still matches. Case is not rewritten on the way in, so this is where the
+// equivalence is established.
+func AppsByDeveloper(key string) []*App {
 	cat, _ := GetCatalogCached(false)
 	if cat == nil {
 		return []*App{}
 	}
-	if platform != "nostr" {
-		handle = strings.ToLower(handle)
+
+	want, err := nip19.PubkeyHex(key)
+	if err != nil {
+		return []*App{}
 	}
+
 	out := []*App{}
 	for i := range cat.Apps {
 		for _, d := range cat.Apps[i].Developers {
-			if d.Platform == platform && d.Handle == handle {
+			if got, err := nip19.PubkeyHex(d.Key); err == nil && got == want {
 				out = append(out, &cat.Apps[i])
 				break
 			}

@@ -1,4 +1,4 @@
-package system
+package nip19
 
 import (
 	"strings"
@@ -71,12 +71,12 @@ func TestNostrPubkeyHex(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := NostrPubkeyHex(tc.key)
+			got, err := PubkeyHex(tc.key)
 			if err != nil {
-				t.Fatalf("NostrPubkeyHex(%q) returned an error: %v", tc.key, err)
+				t.Fatalf("PubkeyHex(%q) returned an error: %v", tc.key, err)
 			}
 			if got != tc.want {
-				t.Errorf("NostrPubkeyHex(%q) = %q, want %q", tc.key, got, tc.want)
+				t.Errorf("PubkeyHex(%q) = %q, want %q", tc.key, got, tc.want)
 			}
 		})
 	}
@@ -105,12 +105,12 @@ func TestNostrPubkeyHexRejects(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := NostrPubkeyHex(tc.key)
+			got, err := PubkeyHex(tc.key)
 			if err == nil {
-				t.Fatalf("NostrPubkeyHex(%q) = %q, want an error", tc.key, got)
+				t.Fatalf("PubkeyHex(%q) = %q, want an error", tc.key, got)
 			}
 			if got != "" {
-				t.Errorf("NostrPubkeyHex(%q) returned %q alongside an error", tc.key, got)
+				t.Errorf("PubkeyHex(%q) returned %q alongside an error", tc.key, got)
 			}
 		})
 	}

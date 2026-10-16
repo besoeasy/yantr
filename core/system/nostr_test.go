@@ -206,6 +206,124 @@ func writeServerFrame(w io.Writer, payload string) error {
 	return err
 }
 
+// The same externally-verified vectors core/nip19 uses. They are repeated rather
+// than shared because the two are separate packages, and a test vector is cheap
+// to state twice and annoying to export.
+const (
+	jackNpub = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+	jackHex  = "82341f882b6eabcd2ba7f1ef90aad961cf074af15b9ef44a09f9d2a8fbfbe6a2"
+
+	// Well-formed bech32 under a prefix that does not name a profile, and one
+	// whose checksum does not verify.
+	noteKey32          = "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn"
+	nsecKey32          = "nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw"
+	npubBrokenChecksum = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63q"
+	npub31Bytes        = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmucs89urk"
+)
+
+// ─── Relay fan-out ────────────────────────────────────────────────────────────
+//
+// Single-relay coverage is the reason the query fans out at all: a relay that
+// simply does not hold an account's kind-0 answers with a clean EOSE, which is
+// indistinguishable from an account with no profile unless another relay is
+// asked. These tests pin that distinction.
+
+// TestFetchNostrProfileFallsBackToAnotherRelay is the whole reason the fan-out
+// exists: the first relay answers cleanly and holds nothing, the second has the
+// event.
+func TestFetchNostrProfileFallsBackToAnotherRelay(t *testing.T) {
+	isolatedNostrCache(t)
+
+	empty := newNostrStubRelay(t, func(conn net.Conn, _ *bufio.Reader, _ string) error {
+		return writeServerFrame(conn, `["EOSE","yantr-profile"]`)
+	})
+
+	full := newNostrStubRelay(t, serveKind0(t, `{"name":"jack"}`))
+
+	useStubRelay(t, empty.url, full.url)
+
+	profile, err := GetNostrProfileCached(jackNpub, false)
+	if err != nil {
+		t.Fatalf("GetNostrProfileCached: %v", err)
+	}
+	if profile.Name != "jack" {
+		t.Errorf("name = %q, want %q", profile.Name, "jack")
+	}
+	if got := empty.connections(); got != 1 {
+		t.Errorf("the relay that held nothing saw %d connections, want 1", got)
+	}
+}
+
+// TestFetchNostrProfileSurvivesAnUnreachableRelay covers the other reason to ask
+// more than one: a relay that refuses outright must not end the query.
+func TestFetchNostrProfileSurvivesAnUnreachableRelay(t *testing.T) {
+	isolatedNostrCache(t)
+
+	full := newNostrStubRelay(t, serveKind0(t, `{"name":"jack"}`))
+
+	// Port 1 refuses connections immediately.
+	useStubRelay(t, "ws://127.0.0.1:1", full.url)
+
+	profile, err := GetNostrProfileCached(jackNpub, false)
+	if err != nil {
+		t.Fatalf("GetNostrProfileCached: %v", err)
+	}
+	if profile.Name != "jack" {
+		t.Errorf("name = %q, want %q", profile.Name, "jack")
+	}
+}
+
+// TestFetchNostrProfileOnlyReportsAbsenceWhenEveryRelayAnswered is the status
+// mapping the handler depends on. If a relay was unreachable the absence is
+// unproven, so it must surface as a failure rather than as "no profile".
+func TestFetchNostrProfileOnlyReportsAbsenceWhenEveryRelayAnswered(t *testing.T) {
+	t.Run("every relay held nothing", func(t *testing.T) {
+		isolatedNostrCache(t)
+
+		a := newNostrStubRelay(t, func(conn net.Conn, _ *bufio.Reader, _ string) error {
+			return writeServerFrame(conn, `["EOSE","yantr-profile"]`)
+		})
+		b := newNostrStubRelay(t, func(conn net.Conn, _ *bufio.Reader, _ string) error {
+			return writeServerFrame(conn, `["EOSE","yantr-profile"]`)
+		})
+
+		useStubRelay(t, a.url, b.url)
+
+		if _, err := GetNostrProfileCached(jackNpub, false); !errors.Is(err, ErrNostrNoProfile) {
+			t.Fatalf("error = %v, want ErrNostrNoProfile", err)
+		}
+	})
+
+	t.Run("one relay was unreachable", func(t *testing.T) {
+		isolatedNostrCache(t)
+
+		empty := newNostrStubRelay(t, func(conn net.Conn, _ *bufio.Reader, _ string) error {
+			return writeServerFrame(conn, `["EOSE","yantr-profile"]`)
+		})
+
+		useStubRelay(t, empty.url, "ws://127.0.0.1:1")
+
+		_, err := GetNostrProfileCached(jackNpub, false)
+		if err == nil {
+			t.Fatal("no error, want a failure: one relay never answered")
+		}
+		if errors.Is(err, ErrNostrNoProfile) {
+			t.Errorf("error is ErrNostrNoProfile, but one relay was unreachable so the absence is unproven: %v", err)
+		}
+	})
+}
+
+// TestFetchNostrProfileWithNoRelaysConfigured guards the degenerate set. It is
+// reachable: YANTR_NOSTR_RELAYS is user input.
+func TestFetchNostrProfileWithNoRelaysConfigured(t *testing.T) {
+	isolatedNostrCache(t)
+	useStubRelay(t)
+
+	if _, err := GetNostrProfileCached(jackNpub, false); err == nil {
+		t.Error("no error with an empty relay set, want a configuration failure")
+	}
+}
+
 // eventFrame builds the EVENT message a relay sends for a kind-0 match.
 func eventFrame(t *testing.T, createdAt int64, content string) string {
 	t.Helper()
@@ -213,12 +331,13 @@ func eventFrame(t *testing.T, createdAt int64, content string) string {
 		jackHex, createdAt, content)
 }
 
-// useStubRelay points the package at the stub and restores the real relay after.
-func useStubRelay(t *testing.T, url string) {
+// useStubRelay points the package at the stub and restores the real relay set
+// after. Pass several to describe a relay set where every relay behaves the same.
+func useStubRelay(t *testing.T, urls ...string) {
 	t.Helper()
-	previous := nostrRelayURL
-	nostrRelayURL = url
-	t.Cleanup(func() { nostrRelayURL = previous })
+	previous := nostrRelayURLs
+	nostrRelayURLs = urls
+	t.Cleanup(func() { nostrRelayURLs = previous })
 }
 
 // isolatedNostrCache empties the package cache so a test starts from nothing.
@@ -489,7 +608,7 @@ func TestGetNostrProfileCachedKeepsLastGoodProfile(t *testing.T) {
 	}
 
 	// A port nothing is listening on, so the dial fails immediately.
-	nostrRelayURL = "ws://127.0.0.1:1"
+	nostrRelayURLs = []string{"ws://127.0.0.1:1"}
 
 	again, err := GetNostrProfileCached(jackNpub, true)
 	if err != nil {

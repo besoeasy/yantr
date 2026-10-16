@@ -2,16 +2,26 @@ package system
 
 // Nostr developer profiles.
 //
-// An app can credit a Nostr account in `developers` as `nostr:npub1…`. Turning
-// that into something worth showing needs a relay, which is the one place this
-// package talks to a third party over a protocol other than HTTP.
+// An app can credit a Nostr account in `developers` as an `npub1…`. Turning that
+// into something worth showing needs a relay, which is the one place this package
+// talks to a third party over a protocol other than HTTP.
 //
-// It is deliberately a single hard-coded relay. A Nostr client tracks several
-// relays and merges their answers because it is caching a network's view of the
-// world; a developer page wants one account's name and picture, and asking three
-// relays for it would triple the latency and the failure modes to widen a result
-// that is almost always identical. `relay.primal.net` is a long-running public
-// relay that serves kind-0 metadata without a subscription.
+// It asks more than one relay. That was a deliberate simplification first, on the
+// reasoning that one account's name and picture are the same everywhere; measuring
+// it against real accounts showed the reasoning is wrong. Of three accounts
+// checked, `relay.primal.net` served kind-0 for two and had no event at all for
+// the third — a clean end-of-stored-events, not a failure. Nostr has no rule that
+// a relay must hold every event it is asked about, so coverage is per-relay and a
+// single relay is a single point of blindness.
+//
+// So the query fans out to a small set and takes the first profile that arrives.
+// That also makes it resilient: the same run saw one relay refuse a connection
+// outright while another answered. The cost is a handful of sockets, and the
+// seven-day cache means it is paid about once per week per credited developer
+// rather than once per page view.
+//
+// The set is a var so tests can replace it, and overridable with
+// YANTR_NOSTR_RELAYS for a host that cannot reach these.
 
 import (
 	"context"
@@ -19,19 +29,47 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"sync"
 	"time"
+
+	"core/nip19"
 )
 
-// nostrRelayURL is the one relay this package queries. A var so tests can point
-// it at a stub.
-var nostrRelayURL = "wss://relay.primal.net"
+// defaultNostrRelays is the relay set. The order is a preference, not a
+// requirement: the fan-out takes whichever answers first.
+//
+// Chosen by measured coverage rather than reputation — each of these answered a
+// real query during development, and between them they served every account
+// tested. YANTR_NOSTR_RELAYS overrides it as a comma-separated list, for a host
+// behind a network that blocks these or one running its own relay.
+func defaultNostrRelays() []string {
+	if raw := strings.TrimSpace(os.Getenv("YANTR_NOSTR_RELAYS")); raw != "" {
+		var relays []string
+		for _, relay := range strings.Split(raw, ",") {
+			if relay = strings.TrimSpace(relay); relay != "" {
+				relays = append(relays, relay)
+			}
+		}
+		if len(relays) > 0 {
+			return relays
+		}
+	}
+	return []string{
+		"wss://nos.lol",
+		"wss://relay.primal.net",
+		"wss://nostr.mom",
+	}
+}
 
-// nostrQueryTimeout bounds the whole query — dial, REQ, EVENT, EOSE. A relay
-// that accepts the socket and then says nothing is the failure this exists for.
-// A var, like the relay URL, so a test can shorten it rather than wait eight
-// seconds to prove the bound holds.
+// nostrRelayURLs is the set this package queries. A var so tests can replace it.
+var nostrRelayURLs = defaultNostrRelays()
+
+// nostrQueryTimeout bounds the whole fan-out — every dial, REQ, EVENT and EOSE.
+// A relay that accepts the socket and then says nothing is the failure this
+// exists for. A var, like the relay set, so a test can shorten it rather than
+// wait eight seconds to prove the bound holds.
 var nostrQueryTimeout = 8 * time.Second
 
 const (
@@ -118,7 +156,7 @@ func GetNostrProfileCached(npub string, forceRefresh bool) (*NostrProfile, error
 	if key == "" {
 		return nil, fmt.Errorf("empty nostr key")
 	}
-	if _, err := NostrPubkeyHex(key); err != nil {
+	if _, err := nip19.PubkeyHex(key); err != nil {
 		return nil, err
 	}
 
@@ -149,14 +187,88 @@ func GetNostrProfileCached(npub string, forceRefresh bool) (*NostrProfile, error
 	return profile, nil
 }
 
-// fetchNostrProfile runs one REQ/EVENT/EOSE exchange against the relay.
+// fetchNostrProfile asks every relay in parallel and returns the first profile
+// that arrives.
+//
+// The relays are asked concurrently rather than in sequence because a miss is
+// the common case for any given relay, and a sequence would make the wait grow
+// with the number of them. First-answer-wins rather than wait-for-the-newest
+// because the difference is one relay holding a stale kind-0 for an account
+// another relay has current — a name and a picture, both cached for a week.
+//
+// A relay that simply does not have the event is not an error, and neither is one
+// that cannot be reached. Both mean "try the next one". Only when no relay
+// produced a profile does it matter which of those happened: if every relay
+// answered and none had the event, that is a 404 rather than a gateway failure.
 func fetchNostrProfile(ctx context.Context, npub string) (*NostrProfile, error) {
-	pubkey, err := NostrPubkeyHex(npub)
+	pubkey, err := nip19.PubkeyHex(npub)
 	if err != nil {
 		return nil, err
 	}
 
-	conn, err := dialWebSocket(ctx, nostrRelayURL)
+	relays := nostrRelayURLs
+	if len(relays) == 0 {
+		return nil, fmt.Errorf("no nostr relay configured")
+	}
+
+	// Cancelling on return is what stops the relays that lost the race: they
+	// notice through their socket deadline, and the buffered channel means none
+	// of them can block on the way out.
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	type outcome struct {
+		profile *NostrProfile
+		err     error
+	}
+	results := make(chan outcome, len(relays))
+
+	for _, relay := range relays {
+		go func(relay string) {
+			profile, err := fetchNostrProfileFrom(ctx, relay, pubkey, npub)
+			results <- outcome{profile, err}
+		}(relay)
+	}
+
+	var (
+		firstErr error
+		sawNone  bool
+	)
+
+	for range relays {
+		result := <-results
+		switch {
+		case result.profile != nil:
+			return result.profile, nil
+		case result.err == nil:
+			// Nothing is ever both nil and nil: an absent profile is an error.
+			sawNone = true
+		case errors.Is(result.err, ErrNostrNoProfile):
+			sawNone = true
+		default:
+			if firstErr == nil {
+				firstErr = result.err
+			}
+		}
+	}
+
+	// One relay being unreachable means the absence is unproven, so a transport
+	// failure outranks a clean "no events stored" from the others.
+	if firstErr != nil {
+		return nil, firstErr
+	}
+	if sawNone {
+		return nil, fmt.Errorf("%w for %s", ErrNostrNoProfile, npub)
+	}
+	return nil, fmt.Errorf("no nostr relay answered for %s", npub)
+}
+
+// fetchNostrProfileFrom runs one REQ/EVENT/EOSE exchange against one relay.
+//
+// A relay that stores no event for this author returns ErrNostrNoProfile, which
+// the caller treats as "ask the next one" rather than as a failure.
+func fetchNostrProfileFrom(ctx context.Context, relay, pubkey, npub string) (*NostrProfile, error) {
+	conn, err := dialWebSocket(ctx, relay)
 	if err != nil {
 		return nil, err
 	}

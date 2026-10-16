@@ -174,9 +174,9 @@ func getComposeCommand() (string, []string, error) {
 	cachedComposeOnce.Do(func() {
 		env := map[string]string{
 			"CONTAINER_HOST": "unix://" + podman.SocketPath,
-			"PODMAN_HOST":   "unix://" + podman.SocketPath,
-			"DOCKER_HOST":   "unix://" + podman.SocketPath,
-			"PODMAN_SOCKET": podman.SocketPath,
+			"PODMAN_HOST":    "unix://" + podman.SocketPath,
+			"DOCKER_HOST":    "unix://" + podman.SocketPath,
+			"PODMAN_SOCKET":  podman.SocketPath,
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), spawnTimeoutShort)
 		defer cancel()
@@ -507,8 +507,6 @@ func main() {
 	r.Get("/api/network/identity", handleNetworkIdentity)
 	r.Get("/api/github/stats", handleGitHubStats)
 	r.Get("/api/developers/{handle}", handleDeveloperApps)
-	r.Get("/api/github/user/{login}", handleGitHubUser)
-	r.Get("/api/github/user/{login}/repos", handleGitHubUserRepos)
 	r.Get("/api/nostr/profile/{key}", handleNostrProfile)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/presence/stats", handlePresenceStats)

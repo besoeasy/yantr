@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -17,74 +18,48 @@ import (
 
 // ─── Developer references ─────────────────────────────────────────────────────
 
-func TestDeveloperRefDefaultsToGitHub(t *testing.T) {
-	// The short form is the whole point of /#/developer/besoeasy.
-	platform, handle, ok := developerRef("besoeasy")
-	if !ok || platform != "github" || handle != "besoeasy" {
-		t.Fatalf("developerRef(besoeasy) = %q, %q, %v; want github, besoeasy, true", platform, handle, ok)
-	}
-}
+// Externally-verified keys, the same vectors core/nip19 tests against.
+const (
+	fiatjafNpub = "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"
+	jackNpub    = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+)
 
-func TestDeveloperRefParsesExplicitPlatform(t *testing.T) {
-	for _, tc := range []struct {
-		raw      string
-		platform string
-		handle   string
-	}{
-		{"gitlab:username2", "gitlab", "username2"},
-		{"codeberg:someone", "codeberg", "someone"},
-		{"nostr:npub1qqq", "nostr", "npub1qqq"},
-		{"GitLab:Upper", "gitlab", "Upper"},
-		{"github:@besoeasy", "github", "besoeasy"},
-		{"  github:besoeasy  ", "github", "besoeasy"},
+func TestDeveloperKeyAcceptsProfileIdentifiers(t *testing.T) {
+	for _, tc := range []struct{ raw, want string }{
+		{fiatjafNpub, fiatjafNpub},
+		{jackNpub, jackNpub},
+		{"nprofile1qqsrhuxx8l9ex335q7he0f09aej04zpazpl0ne2cgukyawd24mayt8gpz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsfg70ls",
+			"nprofile1qqsrhuxx8l9ex335q7he0f09aej04zpazpl0ne2cgukyawd24mayt8gpz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsfg70ls"},
+		// A mixed-case key still verifies, and bech32 forbids rewriting it here.
+		{strings.ToUpper(jackNpub), strings.ToUpper(jackNpub)},
+		{"  " + jackNpub + "  ", jackNpub},
 	} {
-		platform, handle, ok := developerRef(tc.raw)
-		if !ok || platform != tc.platform || handle != tc.handle {
-			t.Errorf("developerRef(%q) = %q, %q, %v; want %q, %q, true",
-				tc.raw, platform, handle, ok, tc.platform, tc.handle)
+		if got, ok := developerKey(tc.raw); !ok || got != tc.want {
+			t.Errorf("developerKey(%q) = %q, %v; want %q, true", tc.raw, got, ok, tc.want)
 		}
 	}
 }
 
-// The UI percent-encodes the colon when it builds the request path, and chi
-// routes on the raw path, so the encoded form has to decode to the same
-// reference — otherwise every link the UI generates would 404.
-func TestDeveloperRefDecodesPercentEncoding(t *testing.T) {
-	for _, tc := range []struct {
-		raw      string
-		platform string
-		handle   string
-	}{
-		{"github%3Abesoeasy", "github", "besoeasy"},
-		{"gitlab%3Ausername2", "gitlab", "username2"},
-		{"GitLab%3AUpper", "gitlab", "Upper"},
-		{"github%3A%40besoeasy", "github", "besoeasy"},
-		// A bare handle has nothing to decode and must be unaffected.
-		{"besoeasy", "github", "besoeasy"},
+// Anything that is not a profile identifier is refused here rather than looked up
+// and reported as missing: the catalog is not what is wrong with it.
+func TestDeveloperKeyRejectsEverythingElse(t *testing.T) {
+	for _, bad := range []string{
+		"", "   ",
+		// The forge logins the field used to accept. They are no longer
+		// developers, so they must not resolve to anything.
+		"besoeasy",
+		"github:besoeasy",
+		"mastodon:someone",
+		"https://njump.me/" + jackNpub,
+		// Prefix decoding must not turn a path segment into a path.
+		"..%2Fetc",
+		jackNpub + "%2Fmore",
+		"npub1q",
+		"note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn",
+		"nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw",
 	} {
-		platform, handle, ok := developerRef(tc.raw)
-		if !ok || platform != tc.platform || handle != tc.handle {
-			t.Errorf("developerRef(%q) = %q, %q, %v; want %q, %q, true",
-				tc.raw, platform, handle, ok, tc.platform, tc.handle)
-		}
-	}
-}
-
-// Decoding a reference must not turn a path segment into a path.
-func TestDeveloperRefRejectsEncodedSeparators(t *testing.T) {
-	for _, bad := range []string{"..%2Fetc", "a%2Fb", "%2F", "github%3Aa%2Fb", "a%5Cb"} {
-		if _, _, ok := developerRef(bad); ok {
-			t.Errorf("developerRef(%q) was accepted, want a rejection", bad)
-		}
-	}
-}
-
-func TestDeveloperRefRejectsUnknownPlatformAndEmptyHandle(t *testing.T) {
-	// An unknown platform has no profile URL to derive, so the reference cannot
-	// be served rather than being silently treated as a GitHub login.
-	for _, bad := range []string{"", "  ", "mastodon:someone", "github:", "github:@", ":"} {
-		if _, _, ok := developerRef(bad); ok {
-			t.Errorf("developerRef(%q) was accepted, want a rejection", bad)
+		if got, ok := developerKey(bad); ok {
+			t.Errorf("developerKey(%q) was accepted as %q, want a rejection", bad, got)
 		}
 	}
 }
@@ -128,7 +103,7 @@ func developerRequest(t *testing.T, handle string) *httptest.ResponseRecorder {
 	return w
 }
 
-const demoCompose = `x-yantr:
+var demoCompose = fmt.Sprintf(`x-yantr:
   name: "Demo"
   tags: [tools, utility, self-hosted, homelab, podman]
   short_description: "A demo app for the developer route."
@@ -137,7 +112,7 @@ const demoCompose = `x-yantr:
     and needs no third party to answer.
   usecases: ["Prove the route works.", "Prove it needs no network."]
   website: "https://example.com"
-  developers: ["github:besoeasy", "gitlab:someone"]
+  developers: ["%s", "%s"]
   ports:
     - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: demo}
 
@@ -146,7 +121,7 @@ services:
     image: ghcr.io/example/demo:latest
     ports:
       - "8080"
-`
+`, fiatjafNpub, jackNpub)
 
 // The developer route must answer from the local catalog alone. This is what
 // makes it survive GitHub being unreachable, rate-limited, or not the
@@ -154,7 +129,7 @@ services:
 func TestHandleDeveloperAppsServesFromLocalCatalog(t *testing.T) {
 	writeTempCatalog(t, demoCompose)
 
-	w := developerRequest(t, "besoeasy")
+	w := developerRequest(t, fiatjafNpub)
 	if w.Code != http.StatusOK {
 		t.Fatalf("status = %d, body = %s", w.Code, w.Body.String())
 	}
@@ -163,8 +138,8 @@ func TestHandleDeveloperAppsServesFromLocalCatalog(t *testing.T) {
 		Success   bool `json:"success"`
 		Count     int  `json:"count"`
 		Developer struct {
-			Platform string `json:"platform"`
-			Handle   string `json:"handle"`
+			Key   string `json:"key"`
+			Label string `json:"label"`
 		} `json:"developer"`
 		Apps []struct {
 			ID string `json:"id"`
@@ -180,15 +155,15 @@ func TestHandleDeveloperAppsServesFromLocalCatalog(t *testing.T) {
 	if body.Apps[0].ID != "demo" {
 		t.Errorf("app id = %q, want demo", body.Apps[0].ID)
 	}
-	if body.Developer.Platform != "github" || body.Developer.Handle != "besoeasy" {
-		t.Errorf("developer = %+v, want github:besoeasy", body.Developer)
+	if body.Developer.Key != fiatjafNpub || body.Developer.Label != "Nostr" {
+		t.Errorf("developer = %+v, want key %s labelled Nostr", body.Developer, fiatjafNpub)
 	}
 }
 
-func TestHandleDeveloperAppsMatchesOtherPlatforms(t *testing.T) {
+func TestHandleDeveloperAppsServesEveryKeyTheAppCredits(t *testing.T) {
 	writeTempCatalog(t, demoCompose)
 
-	w := developerRequest(t, "gitlab:someone")
+	w := developerRequest(t, jackNpub)
 	if w.Code != http.StatusOK {
 		t.Fatalf("status = %d, body = %s", w.Code, w.Body.String())
 	}
@@ -196,14 +171,15 @@ func TestHandleDeveloperAppsMatchesOtherPlatforms(t *testing.T) {
 
 // The encoded form must reach the same handler result, since that is the form
 // the UI actually sends.
-func TestHandleDeveloperAppsAcceptsEncodedColon(t *testing.T) {
+func TestHandleDeveloperAppsAcceptsPercentEncodedKeys(t *testing.T) {
 	writeTempCatalog(t, demoCompose)
 
-	// Simulates what chi hands the handler for "?/api/developers/gitlab%3Asomeone":
-	// the raw path segment, still percent-encoded.
-	w := developerRequest(t, "gitlab%3Asomeone")
-	if w.Code != http.StatusOK {
-		t.Fatalf("status = %d, body = %s", w.Code, w.Body.String())
+	// Simulates what chi hands the handler for "/api/developers/nprofile1qsp%2Fz":
+	// the raw path segment, still percent-encoded. An encoded separator must not
+	// survive into the key.
+	w := developerRequest(t, "nprofile1qsp%2Fz")
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, body = %s, want the encoded separator rejected", w.Code, w.Body.String())
 	}
 }
 
@@ -212,42 +188,13 @@ func TestHandleDeveloperAppsNotFoundAndBadRef(t *testing.T) {
 
 	// A handle no app declares is a 404, not an empty 200: the UI uses the
 	// difference to decide between "unknown developer" and "no apps yet".
-	if w := developerRequest(t, "nosuchdev"); w.Code != http.StatusNotFound {
-		t.Errorf("status for unknown developer = %d, want 404", w.Code)
+	// A valid key nobody credits is a 404: the catalog simply does not list it.
+	if w := developerRequest(t, undeclaredNpub); w.Code != http.StatusNotFound {
+		t.Errorf("status for an uncredited key = %d, want 404", w.Code)
 	}
-	if w := developerRequest(t, "mastodon:someone"); w.Code != http.StatusBadRequest {
-		t.Errorf("status for unknown platform = %d, want 400", w.Code)
-	}
-}
-
-// The GitHub proxies are not an open relay: a login must be declared by some
-// app in the catalog before it is served. Otherwise the endpoint would proxy
-// arbitrary api.github.com traffic and grow an unbounded cache.
-func TestCatalogGitHubDeveloperOnlyServesDeclaredHandles(t *testing.T) {
-	writeTempCatalog(t, demoCompose)
-
-	r := httptest.NewRequest(http.MethodGet, "/api/github/user/besoeasy", nil)
-	rctx := chi.NewRouteContext()
-	rctx.URLParams.Add("login", "besoeasy")
-	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-
-	if login, ok := catalogGitHubDeveloper(httptest.NewRecorder(), r); !ok || login != "besoeasy" {
-		t.Fatalf("declared login not accepted: %q %v", login, ok)
-	}
-
-	for _, undeclared := range []string{"torvalds", "randomauthor"} {
-		r := httptest.NewRequest(http.MethodGet, "/api/github/user/"+undeclared, nil)
-		rctx := chi.NewRouteContext()
-		rctx.URLParams.Add("login", undeclared)
-		r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-
-		w := httptest.NewRecorder()
-		if _, ok := catalogGitHubDeveloper(w, r); ok {
-			t.Errorf("undeclared login %q was served, want a 404", undeclared)
-		}
-		if w.Code != http.StatusNotFound {
-			t.Errorf("status for undeclared login %q = %d, want 404", undeclared, w.Code)
-		}
+	// Something that is not a key at all is a 400.
+	if w := developerRequest(t, "besoeasy"); w.Code != http.StatusBadRequest {
+		t.Errorf("status for a non-key = %d, want 400", w.Code)
 	}
 }
 
@@ -262,7 +209,7 @@ const demoNostrCompose = `x-yantr:
     local catalog declares, and validates them before it tries a relay.
   usecases: ["Prove the route validates its key.", "Prove undeclared keys 404."]
   website: "https://example.com"
-  developers: ["nostr:npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"]
+  developers: ["npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"]
   ports:
     - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: demo}
 
@@ -275,7 +222,7 @@ services:
 
 // A well-formed npub that no app in the fixtures declares. Reaching the handler
 // with it must not contact a relay.
-const undeclaredNpub = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+const undeclaredNpub = "npub1gwnvhmyryy8wqgfttcgk7adkvfxrynvy556qex4dvf94yptc2r6q0z3p66"
 
 func nostrProfileRequest(t *testing.T, key string) *httptest.ResponseRecorder {
 	t.Helper()
@@ -290,9 +237,9 @@ func nostrProfileRequest(t *testing.T, key string) *httptest.ResponseRecorder {
 	return w
 }
 
-// The relay proxy is not an open relay, for the same reason the GitHub one is
-// not: a key must be declared by some app before it is queried, or the endpoint
-// proxies arbitrary traffic to a public relay and grows an unbounded cache.
+// The relay proxy is not an open relay: a key must be declared by some app
+// before it is queried, or the endpoint proxies arbitrary queries to public
+// relays and grows an unbounded cache behind it.
 func TestHandleNostrProfileRefusesUndeclaredKeys(t *testing.T) {
 	writeTempCatalog(t, demoNostrCompose)
 
@@ -324,15 +271,17 @@ func TestHandleNostrProfileRejectsMalformedKeys(t *testing.T) {
 	}
 }
 
-// Nostr keys are matched case-sensitively, unlike GitHub logins. bech32 is
-// lowercase by spec and the catalog does not rewrite a key's case, so an
-// uppercased request names a key no app declares — and a 404 is the honest
-// answer rather than silently serving a different string's cache entry.
-func TestHandleNostrProfileMatchesKeysCaseSensitively(t *testing.T) {
-	writeTempCatalog(t, demoNostrCompose)
+// Case is an equivalence now, not an identity. bech32 is lowercase by spec, so a
+// key written in any case still decodes to the same pubkey, and the catalog does
+// not rewrite it — which means two spellings of one key have to collapse to one
+// developer. Pinned at the catalog layer because deciding it there is what keeps
+// the relay endpoint from being asked about the same person twice.
+func TestHandleDeveloperAppsTreatsKeyCaseAsTheSameAccount(t *testing.T) {
+	writeTempCatalog(t, demoCompose)
 
-	w := nostrProfileRequest(t, strings.ToUpper("npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"))
-	if w.Code != http.StatusNotFound {
-		t.Errorf("status for an uppercased key = %d, want 404 (body %s)", w.Code, w.Body.String())
+	for _, spelling := range []string{jackNpub, strings.ToUpper(jackNpub)} {
+		if w := developerRequest(t, spelling); w.Code != http.StatusOK {
+			t.Errorf("status for %q = %d, want 200", spelling, w.Code)
+		}
 	}
 }

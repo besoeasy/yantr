@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"core/system"
+	"core/nip19"
 
 	"gopkg.in/yaml.v3"
 )
@@ -94,19 +94,26 @@ func TestShownPortsSplitsAccessFromWork(t *testing.T) {
 // package so the audit below reads the real catalog rather than fixtures.
 // ─── Developers ───────────────────────────────────────────────────────────────
 
-func TestParseDevelopersAcceptsKnownPlatforms(t *testing.T) {
-	got := parseDevelopers([]string{
-		"github:besoeasy",
-		"gitlab:username2",
-		"codeberg:someone",
-		"nostr:npub1qqqq",
-	})
+// Externally-verified keys, the same vectors core/nip19 tests against.
+const (
+	fiatjafNpub = "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"
+	jackNpub    = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+	// A real-world nprofile published by njump.me, relay hints and all.
+	fiatjafNprofile = "nprofile1qqsrhuxx8l9ex335q7he0f09aej04zpazpl0ne2cgukyawd24mayt8gpz3mhxue69uhhyetvv9ujuerpd46hxtnfduqs6amnwvaz7tmwdaejumr0dsfg70ls"
+
+	// Well-formed bech32 that is not a profile key, and one that is a key with a
+	// broken checksum.
+	noteKey32          = "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn"
+	nsecKey32          = "nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw"
+	npubBrokenChecksum = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63q"
+)
+
+func TestParseDevelopersAcceptsNostrKeys(t *testing.T) {
+	got := parseDevelopers([]string{fiatjafNpub, jackNpub})
 
 	want := []DeveloperInfo{
-		{Platform: "github", Handle: "besoeasy", URL: "https://github.com/besoeasy"},
-		{Platform: "gitlab", Handle: "username2", URL: "https://gitlab.com/username2"},
-		{Platform: "codeberg", Handle: "someone", URL: "https://codeberg.org/someone"},
-		{Platform: "nostr", Handle: "npub1qqqq", URL: "https://njump.me/npub1qqqq"},
+		{Key: fiatjafNpub, URL: "https://njump.me/" + fiatjafNpub},
+		{Key: jackNpub, URL: "https://njump.me/" + jackNpub},
 	}
 
 	if len(got) != len(want) {
@@ -119,19 +126,51 @@ func TestParseDevelopersAcceptsKnownPlatforms(t *testing.T) {
 	}
 }
 
-// An entry that cannot be trusted is dropped, never guessed at: a wrong one
-// becomes a dead link, and on GitHub an @mention of a stranger in every issue
-// filed about the app.
-func TestParseDevelopersDropsUntrustworthyEntries(t *testing.T) {
+// An nprofile is a profile identifier too — it is what a client hands out when it
+// wants to suggest where to find someone, and it carries relay hints the field
+// has no use for but no reason to reject.
+func TestParseDevelopersAcceptsAnNprofile(t *testing.T) {
+	got := parseDevelopers([]string{fiatjafNprofile})
+
+	if len(got) != 1 {
+		t.Fatalf("got %+v, want 1 developer", got)
+	}
+	if got[0].Key != fiatjafNprofile || got[0].URL != "https://njump.me/"+fiatjafNprofile {
+		t.Errorf("got %+v, want the nprofile kept with its njump URL", got[0])
+	}
+}
+
+// The same person written as an npub and as an nprofile is one developer, not
+// two. This is the reason deduplication compares the decoded pubkey rather than
+// the string: the two spellings are different strings and the same account, and a
+// catalog containing both would otherwise credit them twice and build two pages.
+func TestParseDevelopersDeduplicatesOneAccountWrittenTwoWays(t *testing.T) {
+	got := parseDevelopers([]string{fiatjafNpub, fiatjafNprofile})
+
+	if len(got) != 1 {
+		t.Fatalf("got %d developers %+v, want 1", len(got), got)
+	}
+	// The first spelling survives: the field does not rewrite what it was given.
+	if got[0].Key != fiatjafNpub {
+		t.Errorf("key = %q, want the first spelling %q kept", got[0].Key, fiatjafNpub)
+	}
+}
+
+// A bech32 checksum is not a judgement call, so this test does not need to reason
+// about trust the way the old forge-logging allow-list did: anything that is not
+// a profile key is dropped, full stop.
+func TestParseDevelopersDropsEverythingThatIsNotAKey(t *testing.T) {
 	got := parseDevelopers([]string{
-		"besoeasy",             // no platform separator
-		"https://github.com/x", // a URL, not platform:handle
-		"mastodon:someone",     // platform not in the allow-list
-		"github:",              // empty handle
-		":besoeasy",            // empty platform
-		"github:  ",            // whitespace-only handle
-		"github:has space",     // handle cannot contain spaces
-		"github:a/b",           // nor path separators
+		"",                     // empty
+		"   ",                  // whitespace only
+		"besoeasy",             // a forge login from before
+		"https://github.com/x", // a URL
+		"mastodon:someone",     // the old platform:handle spelling
+		"npub1q",               // too short to hold a checksum
+		noteKey32,              // an event id
+		nsecKey32,              // a private key
+		npubBrokenChecksum,     // a key with one character changed
+		"npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63b", // 'b' is not bech32
 	})
 
 	if len(got) != 0 {
@@ -139,24 +178,39 @@ func TestParseDevelopersDropsUntrustworthyEntries(t *testing.T) {
 	}
 }
 
-func TestParseDevelopersNormalisesHandle(t *testing.T) {
-	got := parseDevelopers([]string{"  GitHub:@Besoeasy  ", "GITHUB:besoeasy"})
+// Entries written before Nostr was the only platform carry a "nostr:" prefix.
+// Tolerated rather than dropped, so the change did not silently uncredit anyone.
+func TestParseDevelopersToleratesTheNostrPrefix(t *testing.T) {
+	got := parseDevelopers([]string{"nostr:" + fiatjafNpub})
 
-	// Case is normalised on the forge platforms (they are case-insensitive), so
-	// the two spellings must collapse to one developer rather than two.
 	if len(got) != 1 {
-		t.Fatalf("got %d developers %+v, want 1 after dedupe", len(got), got)
+		t.Fatalf("got %+v, want 1 developer", got)
 	}
-	if got[0].Platform != "github" || got[0].Handle != "besoeasy" {
-		t.Errorf("got %+v, want github:besoeasy", got[0])
+	if got[0].Key != fiatjafNpub {
+		t.Errorf("key = %q, want the prefix stripped to %q", got[0].Key, fiatjafNpub)
 	}
 }
 
-func TestParseDevelopersPreservesNostrKeyCase(t *testing.T) {
-	// bech32 is lowercase by spec, but the field must not silently rewrite a key
-	// it did not author.
-	got := parseDevelopers([]string{"nostr:npub1ABCDEF"})
-	if len(got) != 1 || got[0].Handle != "npub1ABCDEF" {
+// Deduplicated on the decoded pubkey, so the same person written in two cases
+// is one developer rather than two.
+func TestParseDevelopersDeduplicatesOnTheDecodedKey(t *testing.T) {
+	got := parseDevelopers([]string{jackNpub, strings.ToUpper(jackNpub)})
+
+	if len(got) != 1 {
+		t.Fatalf("got %d developers %+v, want 1 after dedupe", len(got), got)
+	}
+	// The first spelling survives: the field does not rewrite a key it did not
+	// author.
+	if got[0].Key != jackNpub {
+		t.Errorf("key = %q, want the first spelling %q kept", got[0].Key, jackNpub)
+	}
+}
+
+func TestParseDevelopersPreservesKeyCase(t *testing.T) {
+	// bech32 is lowercase by spec, but a mixed-case key still verifies and the
+	// field must not silently rewrite what it was given.
+	got := parseDevelopers([]string{strings.ToUpper(jackNpub)})
+	if len(got) != 1 || got[0].Key != strings.ToUpper(jackNpub) {
 		t.Fatalf("got %+v, want the key preserved verbatim", got)
 	}
 }
@@ -169,22 +223,23 @@ func TestParseDevelopersNeverReturnsNil(t *testing.T) {
 	}
 }
 
-func TestDevelopersForFiltersByPlatform(t *testing.T) {
-	app := &App{Developers: parseDevelopers([]string{"github:a", "gitlab:a", "github:b"})}
+func TestDeveloperKeysListsThemInCatalogOrder(t *testing.T) {
+	app := &App{Developers: parseDevelopers([]string{fiatjafNpub, jackNpub})}
 
-	got := app.DevelopersFor("github")
-	if len(got) != 2 || got[0] != "a" || got[1] != "b" {
-		t.Errorf("DevelopersFor(github) = %v, want [a b]", got)
+	got := app.DeveloperKeys()
+	if len(got) != 2 || got[0] != fiatjafNpub || got[1] != jackNpub {
+		t.Errorf("DeveloperKeys() = %v, want [%s %s]", got, fiatjafNpub, jackNpub)
 	}
-	if got := app.DevelopersFor("nostr"); got != nil {
-		t.Errorf("DevelopersFor(nostr) = %v, want nil", got)
+	if got := (*App)(nil).DeveloperKeys(); got != nil {
+		t.Errorf("DeveloperKeys() on a nil app = %v, want nil", got)
 	}
 }
 
-// Every declared developer in the real catalog must resolve to a profile URL.
-// A platform that survives validation but derives no URL would render a link to
-// nowhere.
-func TestEveryCatalogDeveloperHasAProfileURL(t *testing.T) {
+// Every declared developer in the real catalog must be a decodable key with a
+// profile URL. parseDevelopers already enforces the first, so this is a guard
+// against that check being weakened — and the second, because a link to nowhere
+// is worse than no link.
+func TestEveryCatalogDeveloperIsAUsableKey(t *testing.T) {
 	dir := appsDirForTest(t)
 
 	previous := appsDir
@@ -199,44 +254,11 @@ func TestEveryCatalogDeveloperHasAProfileURL(t *testing.T) {
 
 	for _, app := range cat.Apps {
 		for _, d := range app.Developers {
-			if !validDeveloperPlatforms[d.Platform] {
-				t.Errorf("app %q declares unknown platform %q", app.ID, d.Platform)
+			if _, err := nip19.PubkeyHex(d.Key); err != nil {
+				t.Errorf("app %q credits %q, which is not a usable NIP-19 key: %v", app.ID, d.Key, err)
 			}
 			if d.URL == "" {
-				t.Errorf("app %q developer %s:%s has no profile URL", app.ID, d.Platform, d.Handle)
-			}
-			if strings.ContainsAny(d.Handle, " \t/:?#") {
-				t.Errorf("app %q developer handle %q contains URL metacharacters", app.ID, d.Handle)
-			}
-		}
-	}
-}
-
-// Every nostr: developer in the real catalog must be a decodable NIP-19 public
-// key. The catalog cannot verify bech32 itself — that is not a YAML parser's
-// job — but the developer page cannot work without it: the profile query needs
-// the hex pubkey and the QR code is drawn from the key, so a typo here would
-// otherwise surface as a page that loads and then quietly shows nothing.
-func TestEveryCatalogNostrDeveloperIsDecodable(t *testing.T) {
-	dir := appsDirForTest(t)
-
-	previous := appsDir
-	appsDir = dir
-	SetAppsDir(dir)
-	t.Cleanup(func() { appsDir = previous })
-
-	cat, err := loadCatalog()
-	if err != nil {
-		t.Fatalf("load catalog: %v", err)
-	}
-
-	for _, app := range cat.Apps {
-		for _, d := range app.Developers {
-			if d.Platform != "nostr" {
-				continue
-			}
-			if _, err := system.NostrPubkeyHex(d.Handle); err != nil {
-				t.Errorf("app %q declares nostr:%s, which is not a usable NIP-19 key: %v", app.ID, d.Handle, err)
+				t.Errorf("app %q developer %s has no profile URL", app.ID, d.Key)
 			}
 		}
 	}

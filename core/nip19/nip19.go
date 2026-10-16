@@ -1,10 +1,13 @@
-package system
+package nip19
 
-// NIP-19 identifier decoding.
+// Package nip19 decodes Nostr's bech32 identifiers.
 //
-// A Nostr profile is stored in `developers` as an `npub1…` (or `nprofile1…`)
-// string, which is bech32. A relay can only be asked about a 32-byte hex pubkey,
-// so the two representations have to be bridged here.
+// A developer is stored in `x-yantr.developers` as an `npub1…` (or `nprofile1…`)
+// string, which is bech32. Two things need that decoded: a relay can only be asked
+// about a 32-byte hex pubkey, and the catalog needs to know a key is a key before
+// it renders it as a profile link. So this sits in its own package — it is pure
+// string handling with no I/O and no dependency on anything else in the tree, and
+// both core/apps and core/system need it.
 //
 // Hand-rolled rather than pulled from a library because this is the whole of the
 // job: BIP-173 checksum verification and a 5-to-8 bit regroup, about a hundred
@@ -129,16 +132,17 @@ func bech32Decode(s string) (string, []byte, error) {
 	return hrp, payload, nil
 }
 
-// NostrPubkeyHex turns an NIP-19 public-key identifier into the hex form a relay
+// PubkeyHex turns an NIP-19 public-key identifier into the hex form a relay
 // filters on.
 //
 // `npub` carries the key directly; `nprofile` wraps it in a TLV list alongside
-// optional relay hints, which are ignored — the query names the relay it uses.
+// optional relay hints, which are ignored — the query names the relays it uses.
 //
-// Exported because the HTTP layer needs to tell a key that is simply not a
-// profile identifier, which is a bad request, from a relay that cannot be
-// reached, which is a bad gateway.
-func NostrPubkeyHex(key string) (string, error) {
+// Exported for two reasons: the catalog has to reject a malformed key before it
+// renders one, and the HTTP layer has to tell a key that is simply not a profile
+// identifier, which is a bad request, from a relay that cannot be reached, which
+// is a bad gateway.
+func PubkeyHex(key string) (string, error) {
 	hrp, payload, err := bech32Decode(strings.TrimSpace(key))
 	if err != nil {
 		return "", err
