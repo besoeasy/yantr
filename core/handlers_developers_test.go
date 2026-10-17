@@ -12,9 +12,14 @@ import (
 	"testing"
 
 	"core/apps"
+	"core/system"
 
 	"github.com/go-chi/chi/v5"
 )
+
+// currentRelays is the configured relay set as the test found it, so a test
+// that replaces it can put it back.
+func currentRelays() []string { return system.NostrRelays() }
 
 // ─── Developer references ─────────────────────────────────────────────────────
 
@@ -22,6 +27,11 @@ import (
 const (
 	fiatjafNpub = "npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"
 	jackNpub    = "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63m"
+
+	// undeclaredNpub decodes cleanly and is credited by no app, which is the
+	// state that separates "the catalog does not list this key" from "this is
+	// not a key".
+	undeclaredNpub = "npub1gwnvhmyryy8wqgfttcgk7adkvfxrynvy556qex4dvf94yptc2r6q0z3p66"
 )
 
 func TestDeveloperKeyAcceptsProfileIdentifiers(t *testing.T) {
@@ -198,78 +208,55 @@ func TestHandleDeveloperAppsNotFoundAndBadRef(t *testing.T) {
 	}
 }
 
-// ─── /api/nostr/profile/{key} ─────────────────────────────────────────────────
+// ─── /api/nostr/relays ───────────────────────────────────────────────────────
 
-const demoNostrCompose = `x-yantr:
-  name: "Demo Nostr"
-  tags: [tools, utility, self-hosted, homelab, podman]
-  short_description: "A demo app crediting a Nostr developer."
-  description: >
-    A demo app used to prove that the Nostr profile route only serves keys the
-    local catalog declares, and validates them before it tries a relay.
-  usecases: ["Prove the route validates its key.", "Prove undeclared keys 404."]
-  website: "https://example.com"
-  developers: ["npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6"]
-  ports:
-    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: demo}
-
-services:
-  demo:
-    image: ghcr.io/example/demo:latest
-    ports:
-      - "8080"
-`
-
-// A well-formed npub that no app in the fixtures declares. Reaching the handler
-// with it must not contact a relay.
-const undeclaredNpub = "npub1gwnvhmyryy8wqgfttcgk7adkvfxrynvy556qex4dvf94yptc2r6q0z3p66"
-
-func nostrProfileRequest(t *testing.T, key string) *httptest.ResponseRecorder {
-	t.Helper()
-
-	r := httptest.NewRequest(http.MethodGet, "/api/nostr/profile/"+key, nil)
-	rctx := chi.NewRouteContext()
-	rctx.URLParams.Add("key", key)
-	r = r.WithContext(context.WithValue(r.Context(), chi.RouteCtxKey, rctx))
-
+// The endpoint that replaced the relay proxy carries configuration, not data, so
+// it needs no key and no catalogue gate — there is no query to forward and no
+// cache behind it. What it must never do is answer with an empty list: the UI
+// reads that as “ask no relays”, which would stop every Nostr feature rather than
+// falling back to its built-in set.
+func TestHandleNostrRelaysServesTheConfiguredSet(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "/api/nostr/relays", nil)
 	w := httptest.NewRecorder()
-	handleNostrProfile(w, r)
-	return w
-}
+	handleNostrRelays(w, r)
 
-// The relay proxy is not an open relay: a key must be declared by some app
-// before it is queried, or the endpoint proxies arbitrary queries to public
-// relays and grows an unbounded cache behind it.
-func TestHandleNostrProfileRefusesUndeclaredKeys(t *testing.T) {
-	writeTempCatalog(t, demoNostrCompose)
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s, want 200", w.Code, w.Body.String())
+	}
 
-	w := nostrProfileRequest(t, undeclaredNpub)
-	if w.Code != http.StatusNotFound {
-		t.Errorf("status for an undeclared key = %d, want 404 (body %s)", w.Code, w.Body.String())
+	var payload struct {
+		Success bool     `json:"success"`
+		Relays  []string `json:"relays"`
+	}
+	if err := json.NewDecoder(w.Body).Decode(&payload); err != nil {
+		t.Fatalf("decode: %v", err)
+	}
+	if !payload.Success || len(payload.Relays) == 0 {
+		t.Errorf("payload = %+v, want success and at least one relay", payload)
+	}
+	for _, relay := range payload.Relays {
+		if !strings.HasPrefix(relay, "ws") {
+			t.Errorf("relay %q is not a websocket URL", relay)
+		}
 	}
 }
 
-// A key that is not an npub or nprofile is a bad request rather than an upstream
-// failure. It is rejected before the cache is consulted, so it can neither hold
-// a cache slot nor surface as a relay timeout dressed up as a 502.
-func TestHandleNostrProfileRejectsMalformedKeys(t *testing.T) {
-	writeTempCatalog(t, demoNostrCompose)
+// An empty configured set is a server-side mistake, and saying so beats serving
+// a list that would quietly disable the reader.
+func TestHandleNostrRelaysRefusesAnEmptySet(t *testing.T) {
+	previous := currentRelays()
+	system.SetNostrRelays([]string{})
+	t.Cleanup(func() { system.SetNostrRelays(previous) })
 
-	for _, tc := range []struct{ name, key string }{
-		{"empty", ""},
-		{"not a bech32 string", "not-a-key"},
-		{"broken checksum", "npub1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q0uf63q"},
-		{"a private key", "nsec1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63qr2zmhw"},
-		{"an event id", "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn"},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			w := nostrProfileRequest(t, tc.key)
-			if w.Code != http.StatusBadRequest {
-				t.Errorf("status = %d, want 400 (body %s)", w.Code, w.Body.String())
-			}
-		})
+	r := httptest.NewRequest(http.MethodGet, "/api/nostr/relays", nil)
+	w := httptest.NewRecorder()
+	handleNostrRelays(w, r)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Errorf("status = %d, want 500 for an empty set (body %s)", w.Code, w.Body.String())
 	}
 }
+
 
 // Case is an equivalence now, not an identity. bech32 is lowercase by spec, so a
 // key written in any case still decodes to the same pubkey, and the catalog does

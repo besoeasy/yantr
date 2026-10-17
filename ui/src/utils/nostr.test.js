@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { finalizeEvent, getPublicKey } from "nostr-tools";
+import { finalizeEvent, generateSecretKey, getPublicKey } from "nostr-tools";
 import {
   COMMENT_EXPIRY_SECONDS,
   appCommentTag,
@@ -10,6 +10,7 @@ import {
   hexToNpub,
   isAppComment,
   isAuthentic,
+  newestKind0Profiles,
   npubToHex,
   parseKind0Profile,
   profileFilter,
@@ -280,6 +281,54 @@ describe("parseKind0Profile", () => {
     const p = parseKind0Profile({ ...JACK_PROFILE, content: "not json" });
     expect(p.name).toBe("");
     expect(p.picture).toBe("");
+  });
+});
+
+describe("newestKind0Profiles", () => {
+  // Real signatures. This merge decides which name, picture and NIP-05 the UI
+  // prints beside a comment or on a developer page, so an unsigned fixture
+  // would be testing nothing at all.
+  it("keeps the newest event per account", () => {
+    const sk = generateSecretKey();
+    const older = finalizeEvent(
+      { kind: 0, created_at: 1700000000, tags: [], content: JSON.stringify({ name: "old" }) },
+      sk
+    );
+    const newer = finalizeEvent(
+      { kind: 0, created_at: 1700009999, tags: [], content: JSON.stringify({ name: "new" }) },
+      sk
+    );
+
+    // Deliberately out of order: a relay may answer in any order, so "newest
+    // wins" has to be decided by created_at rather than by arrival.
+    const merged = newestKind0Profiles([newer, older]);
+    expect(Object.keys(merged)).toEqual([older.pubkey]);
+    expect(merged[older.pubkey].name).toBe("new");
+  });
+
+  it("drops an event whose signature does not verify", () => {
+    const sk = generateSecretKey();
+    const event = finalizeEvent(
+      { kind: 0, created_at: 1700000000, tags: [], content: JSON.stringify({ name: "jack" }) },
+      sk
+    );
+    expect(Object.keys(newestKind0Profiles([event]))).toEqual([event.pubkey]);
+
+    // A relay impersonating an account is the whole threat: keep the victim's
+    // pubkey, rewrite the content — but the signature no longer covers it.
+    const forged = { ...event, content: JSON.stringify({ name: "admin" }) };
+    expect(newestKind0Profiles([forged])).toEqual({});
+  });
+
+  it("ignores events of another kind and anything that is not an event", () => {
+    const sk = generateSecretKey();
+    const note = finalizeEvent(
+      { kind: 1, created_at: 1700000000, tags: [], content: "hello" },
+      sk
+    );
+    expect(newestKind0Profiles([note])).toEqual({});
+    expect(newestKind0Profiles([null, undefined, {}, 42])).toEqual({});
+    expect(newestKind0Profiles(undefined)).toEqual({});
   });
 });
 

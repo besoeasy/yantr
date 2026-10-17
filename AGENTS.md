@@ -49,14 +49,20 @@ code of the NIP-21 URI (`nostr:npub1…`) so a visitor can scan straight into a 
 message. The QR is drawn from the catalog's own key, so it is on screen even when nothing
 can be fetched.
 
-That fetch is the one place Yantr reaches a third party for this field: the server queries
-a small set of relays over websockets and caches the result for seven days
-(`core/system/nostr.go`). It asks more than one because coverage is per-relay — measured,
-`relay.primal.net` had no kind-0 at all for one real key in this catalog while others did,
-and a relay that holds nothing answers with a clean end-of-stored-events rather than an
-error. Override the set with `YANTR_NOSTR_RELAYS` (comma-separated) for a host that
-cannot reach these. Nothing else about a developer entry depends on the network: the app
-list, the credit and the QR all come from the local catalog.
+That kind-0 is fetched by the reader's own browser, not by Yantr: it asks a small set of
+relays over websockets, merges what answers and keeps the newest event per account for the
+session (`ui/src/utils/relay.js`, `ui/src/composables/useDeveloperProfile.js`). It asks
+more than one because coverage is per-relay — measured, `relay.primal.net` had no kind-0
+at all for one real key in this catalog while others did, and a relay that holds nothing
+answers with a clean end-of-stored-events rather than an error. Every event is signature-
+verified before a name, picture or `nip05` is shown, so a hostile relay cannot speak for a
+credited account; an account with no reachable kind-0 simply gets no profile card.
+
+`core` keeps the relay *set* and nothing else (`core/system/nostr.go`,
+`/api/nostr/relays`): which relays Yantr talks to is configuration, so `YANTR_NOSTR_RELAYS`
+(comma-separated) redirects every Nostr read and publish in one variable. Override it for a
+host that cannot reach the defaults. Nothing else about a developer entry depends on the
+network: the app list, the credit and the QR all come from the local catalog.
 
 Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml

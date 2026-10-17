@@ -2,7 +2,6 @@ import { computed, ref } from "vue";
 import {
   COMMENT_KIND,
   COMMENT_MAX_LENGTH,
-  NOSTR_COMMENT_RELAYS,
   PROFILE_KIND,
   appCommentTag,
   buildCommentTags,
@@ -10,10 +9,12 @@ import {
   hexToNpub,
   isAppComment,
   isAuthentic,
-  parseKind0Profile,
+  newestKind0Profiles,
   profileFilter,
   sanitizeCommentContent,
 } from "../utils/nostr";
+import { publishToRelay, queryRelays } from "../utils/relay";
+import { useNostrRelays } from "./useNostrRelays";
 import { developerShortKey } from "../utils/developer";
 
 // Everything the comments section needs: one relay fan-out for reading, and
@@ -30,156 +31,17 @@ import { developerShortKey } from "../utils/developer";
 // id changes on every navigation and two mounted sections must not share a
 // list.
 
-// QUERY_TIMEOUT bounds one relay read: dial, REQ, EVENTs and EOSE. A relay
-// that accepts the socket and then says nothing is the failure this exists
-// for.
-const QUERY_TIMEOUT_MS = 8000;
-
-// queryOneRelay runs a single REQ/EVENT/EOSE exchange against one relay and
-// resolves with whatever events of the expected kind arrived. It never
-// rejects: an unreachable relay means fewer results, not a failed page.
-function queryOneRelay(relay, filter, subId, kind = COMMENT_KIND) {
-  return new Promise((resolve) => {
-    const found = [];
-    let settled = false;
-    let reached = false;
-
-    const done = () => {
-      if (!settled) {
-        settled = true;
-        try {
-          ws.close();
-        } catch {
-          // Already gone; the events collected so far still count.
-        }
-        resolve({ events: found, reached });
-      }
-    };
-
-    let ws;
-    try {
-      ws = new WebSocket(relay);
-    } catch {
-      resolve(found);
-      return;
-    }
-
-    const timer = setTimeout(done, QUERY_TIMEOUT_MS);
-
-    ws.onopen = () => {
-      reached = true;
-      try {
-        ws.send(JSON.stringify(["REQ", subId, filter]));
-      } catch {
-        clearTimeout(timer);
-        done();
-      }
-    };
-
-    ws.onmessage = (ev) => {
-      let msg;
-      try {
-        msg = JSON.parse(ev.data);
-      } catch {
-        return;
-      }
-      if (!Array.isArray(msg) || msg.length === 0) return;
-
-      const [verb, ...rest] = msg;
-      if (verb === "EVENT" && rest[0] === subId && rest[1]?.kind === kind) {
-        found.push(rest[1]);
-      } else if (verb === "EOSE" && rest[0] === subId) {
-        // Unsubscribe before leaving, so a relay that keeps subscriptions
-        // alive does not hold resources for a socket we drop anyway.
-        try {
-          ws.send(JSON.stringify(["CLOSE", subId]));
-        } catch {
-          // Closing anyway; the events already delivered still count.
-        }
-        clearTimeout(timer);
-        done();
-      }
-      // NOTICE / CLOSED / AUTH frames carry no comments and need no handling.
-    };
-
-    ws.onerror = () => {
-      clearTimeout(timer);
-      done();
-    };
-    ws.onclose = () => {
-      clearTimeout(timer);
-      done();
-    };
-  });
-}
-
-// publishToRelay broadcasts one signed event and resolves true on a positive
-// NIP-20 OK. Auth-gated relays answer with AUTH or a false OK; both are a
-// "no" from this relay rather than a failure of the publish.
-function publishToRelay(relay, signedEvent) {
-  return new Promise((resolve) => {
-    let settled = false;
-    const done = (ok) => {
-      if (!settled) {
-        settled = true;
-        try {
-          ws.close();
-        } catch {
-          // The verdict is already recorded; a close failure changes nothing.
-        }
-        resolve(ok);
-      }
-    };
-
-    let ws;
-    try {
-      ws = new WebSocket(relay);
-    } catch {
-      resolve(false);
-      return;
-    }
-
-    const timer = setTimeout(() => done(false), QUERY_TIMEOUT_MS);
-
-    ws.onopen = () => {
-      try {
-        ws.send(JSON.stringify(["EVENT", signedEvent]));
-      } catch {
-        clearTimeout(timer);
-        done(false);
-      }
-    };
-    ws.onmessage = (ev) => {
-      let msg;
-      try {
-        msg = JSON.parse(ev.data);
-      } catch {
-        return;
-      }
-      if (Array.isArray(msg) && msg[0] === "OK" && msg[1] === signedEvent.id) {
-        clearTimeout(timer);
-        done(msg[2] === true);
-      }
-    };
-    ws.onerror = () => {
-      clearTimeout(timer);
-      done(false);
-    };
-    ws.onclose = () => {
-      clearTimeout(timer);
-      done(false);
-    };
-  });
-}
-
 export function useAppComments(appId) {
   const id = computed(() => String(appId ?? "").trim().toLowerCase());
+  const { relays, load: loadRelays } = useNostrRelays();
 
   const comments = ref([]);
   const loading = ref(false);
   const loadFailed = ref(false);
   const relaysReached = ref(0);
-  const relaysTotal = ref(NOSTR_COMMENT_RELAYS.length);
+  // How many relays were asked, which is whatever the host is configured with
+  // (useNostrRelays) rather than a number baked into the bundle.
+  const relaysTotal = ref(relays.value.length);
 
   // Kind-0 author profiles by lowercase hex pubkey. Filled after the comments
   // render, so names pop in progressively; cached per session so navigating
@@ -219,24 +81,23 @@ export function useAppComments(appId) {
     reset();
     loading.value = true;
 
-    const subId = `yantr-comments-${id.value}-${Date.now().toString(36)}`;
     const filter = commentFilter(id.value);
     const nowSec = Math.floor(Date.now() / 1000);
 
-    const perRelay = await Promise.all(
-      NOSTR_COMMENT_RELAYS.map((relay) => queryOneRelay(relay, filter, subId))
-    );
+    const asked = await loadRelays();
+    const { events, reached, total } = await queryRelays(asked, filter, COMMENT_KIND, {
+      subIdPrefix: "yantr-comments",
+    });
 
-    relaysReached.value = perRelay.filter((r) => r.reached).length;
+    relaysReached.value = reached;
+    relaysTotal.value = total;
 
-    const seen = new Set();
+    // Filter before verifying: a relay may hold any note at all under the tag,
+    // and only one that is a comment for this app belongs in the list.
     const merged = [];
-    for (const { events } of perRelay) {
-      for (const event of events || []) {
-        if (!event || typeof event.id !== "string" || seen.has(event.id)) continue;
-        seen.add(event.id);
-        if (isAppComment(event, id.value, nowSec)) merged.push(event);
-      }
+    for (const event of events) {
+      if (!event || typeof event.id !== "string") continue;
+      if (isAppComment(event, id.value, nowSec)) merged.push(event);
     }
 
     // Authorship check on the RAW event, before sanitising: the signature
@@ -267,8 +128,10 @@ export function useAppComments(appId) {
 
   // fetchProfiles resolves display names for the thread's authors. One batched
   // kind-0 REQ per relay, newest event per pubkey wins (kind-0 replaces rather
-  // than chains). Fire-and-forget from load(): names pop in after the thread
-  // renders, and a slow relay never holds the comments hostage.
+  // than chains) and unverified events are dropped — a forged name is the same
+  // impersonation a forged comment would be, just cheaper to pull off.
+  // Fire-and-forget from load(): names pop in after the thread renders, and a
+  // slow relay never holds the comments hostage.
   async function fetchProfiles() {
     const wanted = [
       ...new Set(
@@ -279,23 +142,14 @@ export function useAppComments(appId) {
     );
     if (wanted.length === 0) return;
 
-    const subId = `yantr-profiles-${Date.now().toString(36)}`;
-    const perRelay = await Promise.all(
-      NOSTR_COMMENT_RELAYS.map((relay) =>
-        queryOneRelay(relay, profileFilter(wanted), subId, PROFILE_KIND)
-      )
+    const { events } = await queryRelays(
+      relays.value,
+      profileFilter(wanted),
+      PROFILE_KIND,
+      { subIdPrefix: "yantr-profiles" }
     );
 
-    const newest = {};
-    for (const { events } of perRelay) {
-      for (const ev of events || []) {
-        const p = parseKind0Profile(ev);
-        if (!p) continue;
-        if (!newest[p.pubkey] || p.created_at > newest[p.pubkey].created_at) {
-          newest[p.pubkey] = p;
-        }
-      }
-    }
+    const newest = newestKind0Profiles(events);
     if (Object.keys(newest).length > 0) {
       profiles.value = { ...profiles.value, ...newest };
     }
@@ -387,7 +241,7 @@ export function useAppComments(appId) {
       }
 
       const oks = await Promise.all(
-        NOSTR_COMMENT_RELAYS.map((relay) => publishToRelay(relay, signed))
+        relays.value.map((relay) => publishToRelay(relay, signed))
       );
       if (!oks.some(Boolean)) {
         publishError.value = "publish-failed";

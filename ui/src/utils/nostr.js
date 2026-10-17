@@ -8,14 +8,16 @@
 // material ever touches Yantr.
 //
 // This file stays pure and browser-independent so it can be unit-tested: the
-// WebSocket fan-out lives in `composables/useAppComments.js`.
+// WebSocket fan-out lives in `utils/relay.js`.
 
 import { verifyEvent } from "nostr-tools";
 
-// NOSTR_COMMENT_RELAYS mirrors the backend's measured relay set
-// (core/system/nostr.go): each of these answered a real query during
-// development, and together they covered every account tested.
-export const NOSTR_COMMENT_RELAYS = [
+// NOSTR_RELAYS is the fallback relay set, used until the backend answers with
+// its own (composables/useNostrRelays.js) and if that request fails. Each relay
+// here answered a real query during development, and together they covered
+// every account tested. YANTR_NOSTR_RELAYS on the host overrides the backend's
+// copy; these three are what an unreachable backend falls back to.
+export const NOSTR_RELAYS = [
   "wss://nos.lol",
   "wss://relay.primal.net",
   "wss://nostr.mom",
@@ -439,4 +441,31 @@ export function isAuthentic(event) {
   } catch {
     return false;
   }
+}
+
+// ─── Kind-0 merge ──────────────────────────────────────────────────────────
+// newestKind0Profiles reduces relay answer sets to one profile per author,
+// newest event winning: kind-0 replaces rather than chains, so the newest
+// event an account published is the profile it means.
+//
+// Every candidate is verified first. A kind-0 is the closest thing Nostr has
+// to a profile card, so an unverified one is not a cosmetic risk like a forged
+// comment author: it is a relay impersonating the account whose name, picture
+// and NIP-05 the UI is about to print. Verification happens before parsing, so
+// the signature covers the bytes the account actually signed.
+//
+// Unverified events are dropped silently: one bad relay answer is not an error
+// worth failing a page over, and another relay may hold the real one.
+export function newestKind0Profiles(events) {
+  const newest = {};
+  for (const event of Array.isArray(events) ? events : []) {
+    if (!isAuthentic(event)) continue;
+    const profile = parseKind0Profile(event);
+    if (!profile) continue;
+    const seen = newest[profile.pubkey];
+    if (!seen || profile.created_at > seen.created_at) {
+      newest[profile.pubkey] = profile;
+    }
+  }
+  return newest;
 }

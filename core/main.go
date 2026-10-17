@@ -507,7 +507,7 @@ func main() {
 	r.Get("/api/network/identity", handleNetworkIdentity)
 	r.Get("/api/github/stats", handleGitHubStats)
 	r.Get("/api/developers/{handle}", handleDeveloperApps)
-	r.Get("/api/nostr/profile/{key}", handleNostrProfile)
+	r.Get("/api/nostr/relays", handleNostrRelays)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
 	r.Get("/api/presence/stats", handlePresenceStats)
 	r.Get("/api/jobs", handleJobsList)
