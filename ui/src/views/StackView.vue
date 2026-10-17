@@ -14,6 +14,7 @@ import AppComments from "../components/AppComments.vue";
 import AppLogo from "../components/AppLogo.vue";
 import DeveloperCredit from "../components/DeveloperCredit.vue";
 import StackServiceList from "../components/StackServiceList.vue";
+import AppLayout from "../components/AppLayout.vue";
 import {
   Globe,
   ExternalLink,
@@ -475,16 +476,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white pb-20 font-sans text-zinc-900 selection:bg-blue-500/30 dark:bg-[#0A0A0A] dark:text-zinc-100">
+  <AppLayout width="reading" gap="none">
 
     <!-- Loading -->
-    <div v-if="loading" class="mx-auto flex max-w-7xl justify-center p-8 py-32">
+    <div v-if="loading" class="flex justify-center py-32">
       <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
     </div>
 
     <!-- Load failure: the page body is gated on `stack`, so without this the whole
          view rendered as a blank screen with only a transient toast. -->
-    <div v-else-if="loadFailed" class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-32 text-center">
+    <div v-else-if="loadFailed" class="flex flex-col items-center gap-4 py-32 text-center">
       <AlertTriangle :size="28" class="yantra-text-danger" />
       <p class="text-sm font-semibold yantra-text-primary">{{ t("stackView.loadFailedTitle") }}</p>
       <p class="max-w-md text-xs yantra-text-secondary">{{ t("stackView.loadFailedHint", { id: projectId }) }}</p>
@@ -494,7 +495,7 @@ onMounted(() => {
     </div>
 
     <!-- Content -->
-    <main v-else-if="stack" class="mx-auto max-w-7xl animate-fadeIn space-y-8 px-6 py-8">
+    <main v-else-if="stack" class="animate-fadeIn space-y-8">
       <!-- Drift: the catalog definition changed after this stack was deployed.
            Update only refreshes images, so point at the app page for a redeploy. -->
       <div
@@ -831,5 +832,5 @@ onMounted(() => {
            tag a comment with, and nothing to show. -->
       <AppComments v-if="stack.app" :app="stack.app" />
     </main>
-  </div>
+  </AppLayout>
 </template>

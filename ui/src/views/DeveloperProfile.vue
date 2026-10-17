@@ -6,6 +6,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
 import AppCard from "../components/AppCard.vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
+import AppLayout from "../components/AppLayout.vue";
 import {
   ArrowLeft,
   ExternalLink,
@@ -150,9 +151,7 @@ watch(developerRef, (next) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white text-gray-900 dark:bg-[#0A0A0A] dark:text-zinc-100 font-sans">
-    <div class="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-
+  <AppLayout width="narrow" gap="none">
       <!-- Back -->
       <button
         @click="router.push(appsRoute())"
@@ -328,6 +327,5 @@ watch(developerRef, (next) => {
           </div>
         </section>
       </template>
-    </div>
-  </div>
+  </AppLayout>
 </template>

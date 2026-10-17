@@ -15,6 +15,7 @@ import StatCard from '../components/StatCard.vue'
 import SizeDistributionChart from '../components/SizeDistributionChart.vue'
 import SearchInput from '../components/SearchInput.vue'
 import UnderlineTabBar from '../components/UnderlineTabBar.vue'
+import AppLayout from '../components/AppLayout.vue'
 import { ROUTE } from '../utils/routes.js'
 
 const { t } = useI18n()
@@ -325,7 +326,10 @@ onMounted(startPolling)
 </script>
 
 <template>
-  <div class="min-h-screen bg-white pb-20 font-sans text-zinc-900 dark:bg-[#0A0A0A] dark:text-white">
+  <!-- The header is deliberately full-bleed and sticky, so this page takes the
+       shell without a container: AppLayout's padding would inset the header and
+       break that. Each of header and main brings its own max-w-7xl. -->
+  <AppLayout width="bare" gap="none">
     <!-- Header -->
     <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-[#0A0A0A]/80">
       <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
@@ -627,7 +631,7 @@ onMounted(startPolling)
         </transition>
       </div>
     </main>
-  </div>
+  </AppLayout>
 </template>
 
 <style scoped>

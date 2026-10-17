@@ -12,6 +12,7 @@ import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
+import AppLayout from '../components/AppLayout.vue'
 import { appUrl, isNavigableProtocol } from '../utils/url'
 import { dashboard } from '../utils/routes.js'
 
@@ -361,12 +362,12 @@ watch(activeTab, (tab) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-zinc-100 font-sans selection:bg-blue-500/30">
-    <div v-if="!selectedContainer" class="max-w-7xl mx-auto p-8 flex justify-center py-32">
+  <AppLayout width="reading" gap="none">
+    <div v-if="!selectedContainer" class="flex justify-center py-32">
        <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin"></div>
     </div>
 
-    <main v-else class="max-w-7xl mx-auto px-6 py-8 space-y-6">
+    <main v-else class="space-y-6">
         
         <div class="group relative bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
            <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -645,7 +646,7 @@ watch(activeTab, (tab) => {
         </div>
 
     </main>
-  </div>
+  </AppLayout>
 </template>
 
 <style scoped>

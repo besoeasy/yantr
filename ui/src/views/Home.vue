@@ -25,6 +25,7 @@ import { useI18n } from "vue-i18n";
 import YantraContainersGrid from "../components/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/OtherContainersGrid.vue";
+import AppLayout from "../components/AppLayout.vue";
 import { apps, containerDetail } from "../utils/routes.js";
 
 const { apiUrl } = useApiUrl();
@@ -121,10 +122,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-white font-sans">
-    <!-- Main Content -->
-    <div class="p-3 sm:p-4 lg:p-8 max-w-400 mx-auto">
-      <div class="space-y-8">
+  <AppLayout width="wide">
+      <!-- Main Content -->
         <!-- Loading State -->
         <div v-if="loading" class="flex flex-col items-center justify-center py-32">
           <div class="w-8 h-8 border-2 border-gray-200 dark:border-zinc-800 border-t-blue-500 rounded-full animate-spin mb-4"></div>
@@ -239,9 +238,7 @@ onMounted(() => {
             </template>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+  </AppLayout>
 </template>
 
 <style scoped>

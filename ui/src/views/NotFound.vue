@@ -8,6 +8,7 @@
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { AlertTriangle, LayoutGrid } from "@lucide/vue";
+import AppLayout from "../components/AppLayout.vue";
 import { dashboard } from "../utils/routes.js";
 
 const route = useRoute();
@@ -15,14 +16,16 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <main class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-32 text-center">
-    <AlertTriangle :size="28" class="yantra-text-danger" />
-    <p class="text-sm font-semibold yantra-text-primary">{{ t("notFound.title") }}</p>
-    <p class="max-w-md break-all text-xs yantra-text-secondary">
-      {{ t("notFound.hint", { path: route.fullPath }) }}
-    </p>
-    <router-link :to="dashboard()" class="yantra-btn yantra-btn--primary mt-1">
-      <LayoutGrid :size="13" />{{ t("notFound.backToDashboard") }}
-    </router-link>
-  </main>
+  <AppLayout width="reading" gap="none">
+    <main class="flex flex-col items-center gap-4 py-32 text-center">
+      <AlertTriangle :size="28" class="yantra-text-danger" />
+      <p class="text-sm font-semibold yantra-text-primary">{{ t("notFound.title") }}</p>
+      <p class="max-w-md break-all text-xs yantra-text-secondary">
+        {{ t("notFound.hint", { path: route.fullPath }) }}
+      </p>
+      <router-link :to="dashboard()" class="yantra-btn yantra-btn--primary mt-1">
+        <LayoutGrid :size="13" />{{ t("notFound.backToDashboard") }}
+      </router-link>
+    </main>
+  </AppLayout>
 </template>

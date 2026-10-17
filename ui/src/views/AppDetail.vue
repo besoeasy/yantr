@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n";
 import AppMetadata from "../components/AppMetadata.vue";
 import AppDeployForm from "../components/AppDeployForm.vue";
 import AppComments from "../components/AppComments.vue";
+import AppLayout from "../components/AppLayout.vue";
 import { apps } from "../utils/routes.js";
 
 const route = useRoute();
@@ -96,15 +97,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-white pb-20 font-sans text-zinc-900 selection:bg-blue-500/30 dark:bg-[#0A0A0A] dark:text-zinc-100">
-    
+  <AppLayout width="reading" gap="none">
+
     <!-- Loading State -->
     <div v-if="loading" class="flex min-h-[60vh] flex-col items-center justify-center">
       <div class="mb-6 h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
       <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t('appDetail.retrievingManifest') }}</div>
     </div>
 
-    <div v-else-if="app" class="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 sm:py-8">
+    <div v-else-if="app" class="space-y-6">
 
         <!-- App Information & Specs -->
         <AppMetadata :app="app" :imageDetails="imageDetails" />
@@ -116,7 +117,7 @@ onMounted(async () => {
         <AppComments :app="app" :key="app.id" />
 
       </div>
-    </div>
+  </AppLayout>
   </template>
 
 <style scoped></style>
