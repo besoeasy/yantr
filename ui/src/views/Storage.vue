@@ -15,6 +15,7 @@ import StatCard from '../components/StatCard.vue'
 import SizeDistributionChart from '../components/SizeDistributionChart.vue'
 import SearchInput from '../components/SearchInput.vue'
 import UnderlineTabBar from '../components/UnderlineTabBar.vue'
+import { ROUTE } from '../utils/routes.js'
 
 const { t } = useI18n()
 const toast = useNotification()
@@ -48,7 +49,9 @@ const currentTab = ref(TABS.includes(route.query.tab) ? route.query.tab : TABS[0
 // reload lands back where the user was.
 watch(currentTab, (tab) => {
   if (route.query.tab !== tab) {
-    router.replace({ path: route.path, query: { ...route.query, tab } })
+    // By name rather than by path: the guard here is the tab, and the URL
+    // Storage lives at is not this component's business.
+    router.replace({ name: ROUTE.STORAGE, query: { ...route.query, tab } })
   }
 })
 
