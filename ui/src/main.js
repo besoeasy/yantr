@@ -1,4 +1,5 @@
 import './assets/main.css'
+import './assets/motion.css'
 
 import { createApp } from 'vue'
 

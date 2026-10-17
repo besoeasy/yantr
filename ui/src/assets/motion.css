@@ -1,0 +1,189 @@
+/* ====================================================================
+   Yantr UI — motion (Section 9b).
+
+   One place for how the app moves, so no component re-decides timing and
+   easing. Mirrors the Page/Card idiom: the tokens below are the contract,
+   everything else consumes them.
+
+   The rule the rest of the file encodes: motion exists to connect what the
+   eye just saw to where it went — a route change, a list arriving, a dialog
+   opening. Everything else stays still.
+
+   prefers-reduced-motion turns the entire file off at the top. The design
+   must not depend on its animations being seen.
+   ==================================================================== */
+
+/* ── Motion tokens ───────────────────────────────────────────────────
+   Durations sit in the 120–220ms band: fast enough that navigation never
+   waits on a transition, long enough to be seen at all. Negotiating slower
+   than --yantra-dur-enter by hand is almost always a bug in the design, so
+   don't: lengthen the easing instead. */
+:root {
+    --yantra-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --yantra-dur-fast: 120ms;
+    --yantra-dur: 160ms;
+    --yantra-dur-enter: 220ms;
+
+    /* Per-item offset the stagger ramps through for an entering list. */
+    --yantra-stagger: 28ms;
+
+    /* The one transform the design lifts with. 3px is above the threshold the
+       eye can't see and below where anything appears to float. */
+    --yantra-lift: translateY(-3px);
+}
+
+/* The user's motion preference wins against everything below: any .anim-*
+   class, any inline transition, any keyframes a component adds tomorrow. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ── Enter: how anything arrives ─────────────────────────────────────
+   An element arrives by fading and settling 6px up. One keyframe for
+   everything keeps the arrival language the same on a card, a chip and a
+   dialog. */
+@keyframes yantr-enter {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+}
+
+.anim-enter {
+    animation: yantr-enter var(--yantra-dur-enter) var(--yantra-ease) both;
+}
+
+/* ── Stagger: how a list arrives ─────────────────────────────────────
+   Put .anim-stagger on the container; nothing needs to know indices.
+   The first 12 items cascade --yantra-stagger apart; from 13 on an item
+   stops being an arrival and becomes a queue, so the tail appears with the
+   group and no animation is applied at all. */
+.anim-stagger > * {
+    animation: yantr-enter var(--yantra-dur-enter) var(--yantra-ease) both;
+}
+.anim-stagger > :nth-child(2) { animation-delay: calc(1 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(3) { animation-delay: calc(2 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(4) { animation-delay: calc(3 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(5) { animation-delay: calc(4 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(6) { animation-delay: calc(5 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(7) { animation-delay: calc(6 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(8) { animation-delay: calc(7 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(9) { animation-delay: calc(8 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(10) { animation-delay: calc(9 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(11) { animation-delay: calc(10 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(12) { animation-delay: calc(11 * var(--yantra-stagger)); }
+.anim-stagger > :nth-child(n + 13) {
+    animation: none;
+}
+
+/* ── Route: how a page turns over ────────────────────────────────────
+   out-in reads one soft fade out, the new view rising in. No transform on
+   the way out: the leaving page must not travel while dying, it must just
+   stop. Class names are fixed by Vue's <Transition name="route">. */
+.route-enter-active {
+    transition: opacity var(--yantra-dur-enter) var(--yantra-ease),
+        transform var(--yantra-dur-enter) var(--yantra-ease);
+}
+.route-leave-active {
+    transition: opacity var(--yantra-dur-fast) var(--yantra-ease);
+}
+.route-enter-from {
+    opacity: 0;
+    transform: translateY(6px);
+}
+.route-leave-to {
+    opacity: 0;
+    transform: none;
+}
+
+/* ── Dialog: how an overlay opens ────────────────────────────────────
+   The same arrival, scaled to the 0.97 card scale. Closing falls out a
+   touch faster than it entered — disconnect should feel decisive. */
+.dialog-enter-active {
+    transition: opacity var(--yantra-dur-enter) var(--yantra-ease),
+        transform var(--yantra-dur-enter) var(--yantra-ease);
+}
+.dialog-leave-active {
+    transition: opacity var(--yantra-dur-fast) var(--yantra-ease),
+        transform var(--yantra-dur-fast) var(--yantra-ease);
+}
+.dialog-enter-from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+}
+.dialog-leave-to {
+    opacity: 0;
+    transform: scale(0.97);
+}
+.dialog-enter-active,
+.dialog-leave-active {
+    transform-origin: center center;
+}
+
+/* ── Collapse: how a section opens downward ──────────────────────────
+   Only for small disclosures (a form, a filter row). Whole routes grow too
+   much layout at a time for this to survive on them. Also do not use for
+   anything longer than ~15rem: revealing is worth it, waiting is not. */
+.collapse-enter-active,
+.collapse-leave-active {
+    transition: opacity var(--yantra-dur) var(--yantra-ease);
+    overflow: hidden;
+}
+.collapse-enter-from,
+.collapse-leave-to {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.collapse-enter-to,
+.collapse-leave-from {
+    max-height: 15rem;
+}
+
+/* ── Skeleton: what a fetch surface holds its shape with ─────────────
+   Shimmers once per second and a half on the muted surface; data arriving
+   replaces it, both states the same footprint so there is no jump. Use the
+   three named sizes instead of re-picking one each time. */
+@keyframes yantr-skeleton-wave {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+.yantr-skeleton {
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    background: linear-gradient(
+        100deg,
+        var(--surface-muted) 40%,
+        color-mix(in srgb, var(--text-primary) 7%, var(--surface-muted)) 50%,
+        var(--surface-muted) 60%
+    );
+    background-size: 200% 100%;
+    animation: yantr-skeleton-wave 1.4s ease infinite;
+}
+.yantr-skeleton--sm { height: 0.75rem; }
+.yantr-skeleton--md { height: 1rem; }
+.yantr-skeleton--lg { height: 1.5rem; }
+
+/* ── Focus: the most important ring in the app ────────────────────────
+   Keyboard focus gets one visible, token-coloured ring; pointer focus gets
+   none, because a click is its own pointer. One rule for every control
+   means the ring lives where attention really is, and a component can stop
+   restating it. */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+:focus:not(:focus-visible) {
+    outline: none;
+}

@@ -5,8 +5,14 @@
    Section 2: utility layer — a hand-curated, self-contained equivalent
    previously provided by Tailwind: preflight-equivalent base, theme tokens,
    keyframes/@property internals and the classes actually used by the SPA.
-   ==================================================================== */
+   Section 9b, in motion.css: how the app moves.
 
+   The architecture rule that keeps this file honest: main.css owns what a
+   thing is (cards, chips, buttons, panels); each SFC owns what that
+   instance of it looks like where it sits. A colour, a radius, a duration
+   or an easing named here must never be retyped in an SFC, and an SFC must
+   never publish a value another component would need.
+   ==================================================================== */
 /* ── Section 1 · design tokens & base ─────────────────────────── */
 :root {
     --yantra-ease: cubic-bezier(0.16, 1, 0.3, 1);
