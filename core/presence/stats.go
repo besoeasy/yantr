@@ -202,6 +202,11 @@ func ParseEvent(raw string) (Event, bool) {
 	return evt, true
 }
 
+// fleetListLimit is how many OSes and apps the fleet view lists. The website
+// lists the same number, as FLEET_LIST_LIMIT in website/fleet.js;
+// website_mirror_test.go fails when the two drift apart.
+const fleetListLimit = 12
+
 // Aggregate reduces events into dashboard stats. Latest presence wins per node.
 func Aggregate(events []Event) *FleetStats {
 	type nodeSnap struct {
@@ -287,9 +292,9 @@ func Aggregate(events []Event) *FleetStats {
 		Nodes:     len(nodes),
 		Events:    len(events),
 		Countries: countryList(countryCounts),
-		OS:        namedList(osCounts, 12),
+		OS:        namedList(osCounts, fleetListLimit),
 		RAM:       ram,
-		Apps:      appList(appCounts, 12),
+		Apps:      appList(appCounts, fleetListLimit),
 		Window:    "ntfy cache",
 		FetchedAt: time.Now().UTC().Format(time.RFC3339),
 	}
