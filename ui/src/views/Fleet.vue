@@ -36,7 +36,7 @@ async function fetchStats(force = false) {
   loading.value = true;
   try {
     const qs = force ? "?refresh=1" : "";
-    const response = await fetch(`${apiUrl.value}/api/presence/stats${qs}`);
+    const response = await fetch(`${apiUrl.value}/api/fleet/stats${qs}`);
     const data = await expectApiSuccess(response, t("fleet.loadFailed"));
     stats.value = data.stats || null;
   } catch (error) {

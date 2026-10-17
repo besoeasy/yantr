@@ -509,7 +509,7 @@ func main() {
 	r.Get("/api/developers/{handle}", handleDeveloperApps)
 	r.Get("/api/nostr/relays", handleNostrRelays)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
-	r.Get("/api/presence/stats", handlePresenceStats)
+	r.Get("/api/fleet/stats", handleFleetStats)
 	r.Get("/api/jobs", handleJobsList)
 	r.Get("/api/jobs/active", handleJobsActive)
 	r.Get("/api/jobs/{id}", handleJobDetail)

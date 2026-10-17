@@ -1,3 +1,12 @@
+// This file is the read side of the presence package. It fetches the topic that
+// presence.go posts to and reduces it to the Fleet view.
+//
+// It lives here rather than in a package of its own because it reads exactly
+// what this package writes — the aggregate cannot be fetched without knowing
+// the topic, the event shape and the opt-out. So the package keeps the feed's
+// name and the vocabulary that goes with it. What gets named "fleet" is the
+// view built from it: the API endpoint, the page, and the types below.
+
 package presence
 
 import (
