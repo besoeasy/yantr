@@ -10,6 +10,7 @@ import { appUrl, isNavigableProtocol } from "../utils/url";
 import { buildIssueReportUrl } from "../utils/developer";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
+import DeveloperCredit from "../components/DeveloperCredit.vue";
 import StackServiceList from "../components/StackServiceList.vue";
 import {
   Globe,
@@ -553,6 +554,10 @@ onMounted(() => {
                 class="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
               >{{ tag }}</span>
             </div>
+
+            <!-- Who writes this app. A running stack is somebody's app, and the
+                 catalog knows whose — the same credit the app page shows. -->
+            <DeveloperCredit v-if="stack.app" :app="stack.app" />
 
             <!-- Actions -->
             <div class="flex flex-wrap items-center gap-2 pt-2">

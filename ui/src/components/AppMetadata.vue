@@ -3,16 +3,9 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Globe, FileCode, Tag, Info, Bug } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
+import DeveloperCredit from "./DeveloperCredit.vue";
 import { buildChatGptExplainUrl } from "../utils/chatgpt";
-import {
-  DEVELOPER_LABEL,
-  developersOf,
-  developerProfileUrl,
-  developerInitials,
-  developerRouteRef,
-  developerShortKey,
-  buildIssueReportUrl,
-} from "../utils/developer";
+import { buildIssueReportUrl } from "../utils/developer";
 
 const props = defineProps({
   app: {
@@ -53,20 +46,6 @@ const chatGptUrl = computed(() => {
   if (!props.app) return "";
   return buildChatGptExplainUrl(props.app.id);
 });
-
-// Who writes this app, if the catalog knows. Each entry links to the developer
-// route, which is how someone reading an app page discovers the rest of that
-// person's work without leaving Yantr.
-const developers = computed(() =>
-  developersOf(props.app).map((d) => ({
-    ...d,
-    href: `#/developer/${developerRouteRef(d.key)}`,
-    url: d.url || developerProfileUrl(d.key),
-    initials: developerInitials(d.key),
-    shortKey: developerShortKey(d.key),
-    platformLabel: DEVELOPER_LABEL,
-  }))
-);
 
 // Prefilled GitHub issue URL — the title marks it as pre-install and the body
 // names the app's Nostr keys, so a reader can tell whose recipe this is. It no
@@ -145,23 +124,9 @@ const reportIssueUrl = computed(() =>
           </a>
         </div>
 
-        <!-- Who writes this app. Links into the developer route, so a reader can
-             see the rest of that person's apps without leaving Yantr. -->
-        <div v-if="developers.length > 0" class="mt-4 flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-900">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('appDetail.developer') }}</span>
-          <a
-            v-for="dev in developers"
-            :key="dev.key"
-            :href="dev.href"
-            :title="`${dev.platformLabel}: ${dev.key}`"
-            class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 py-0.5 pl-0.5 pr-2.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
-          >
-            <span class="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-[9px] font-black text-white dark:bg-zinc-100 dark:text-zinc-900">
-              {{ dev.initials }}
-            </span>
-            {{ dev.shortKey }}
-          </a>
-        </div>
+        <!-- Who writes this app: the shared credit, so the app page and a
+             stack's page cannot drift apart on it. -->
+        <DeveloperCredit :app="app" class="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-900" />
       </div>
     </div>
 

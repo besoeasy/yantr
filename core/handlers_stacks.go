@@ -230,12 +230,16 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	sortServices(services)
 
+	// Catalog identity for the stack's app. A stack page is an app page with a
+	// runtime attached, so it answers the same questions the app page does:
+	// whose app this is (developers) and which catalog entry it came from (id,
+	// which the page's pre-filled issue report also needs to name the app).
 	var appInfo interface{}
 	if entry != nil {
 		appInfo = map[string]interface{}{
-			"name": entry.Name, "logo": entry.Logo, "tags": entry.Tags,
+			"id": entry.ID, "name": entry.Name, "logo": entry.Logo, "tags": entry.Tags,
 			"ports": entry.Ports, "short_description": entry.ShortDescription,
-			"website": entry.Website,
+			"website": entry.Website, "developers": entry.Developers,
 		}
 	}
 
