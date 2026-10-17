@@ -26,6 +26,7 @@ export const ROUTE = Object.freeze({
   DASHBOARD: "dashboard",
   APPS: "apps",
   APP_DETAIL: "app-detail",
+  STACKS: "stacks",
   STACK_DETAIL: "stack-detail",
   CONTAINER_DETAIL: "container-detail",
   DEVELOPER_DETAIL: "developer-detail",
@@ -54,6 +55,21 @@ export const NAV = Object.freeze({
   FLEET: "fleet",
 });
 
+/**
+ * The sidebar, in order. `id` is what a route's `meta.nav` is matched against
+ * and must be a NAV value; `labelKey` names a key under the `nav` i18n
+ * namespace. Adding an entry here is all it takes to add a nav item — the shell
+ * builds itself from this list and no longer holds its own copy.
+ */
+export const NAV_ITEMS = [
+  { id: NAV.DASHBOARD, labelKey: "nav.dashboard" },
+  { id: NAV.APPS, labelKey: "nav.apps" },
+  { id: NAV.STACKS, labelKey: "nav.stacks" },
+  { id: NAV.FLEET, labelKey: "nav.fleet" },
+  { id: NAV.STORAGE, labelKey: "nav.storage" },
+  { id: NAV.LOGS, labelKey: "nav.logs" },
+];
+
 // ─── Builders ───────────────────────────────────────────────────────────────
 // Every builder returns a vue-router location object, so `router.push` and
 // `<router-link :to>` both take it unchanged.
@@ -71,6 +87,11 @@ export function apps() {
 /** One app's page in the catalog: what it is, and the form that installs it. */
 export function appDetail(appId) {
   return { name: ROUTE.APP_DETAIL, params: { appId } };
+}
+
+/** Every deployed stack. */
+export function stacks() {
+  return { name: ROUTE.STACKS };
 }
 
 /** One deployed stack, addressed by its compose project. */
@@ -138,6 +159,12 @@ export const routes = [
     meta: { title: "App", nav: NAV.APPS },
   },
   {
+    path: "/stacks",
+    name: ROUTE.STACKS,
+    component: () => import("../views/Stacks.vue"),
+    meta: { title: "Stacks", nav: NAV.STACKS },
+  },
+  {
     path: "/stacks/:projectId",
     name: ROUTE.STACK_DETAIL,
     component: () => import("../views/StackView.vue"),
@@ -171,7 +198,7 @@ export const routes = [
   {
     path: "/fleet",
     name: ROUTE.FLEET,
-    component: () => import("../views/Presence.vue"),
+    component: () => import("../views/Fleet.vue"),
     meta: { title: "Fleet", nav: NAV.FLEET },
   },
 

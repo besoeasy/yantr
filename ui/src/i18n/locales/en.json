@@ -2,10 +2,16 @@
   "nav": {
     "language": "Language",
     "lightMode": "Light mode",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "dashboard": "Home",
+    "apps": "Apps",
+    "stacks": "Stacks",
+    "fleet": "Fleet",
+    "storage": "Storage",
+    "logs": "Logs"
   },
-  "presence": {
-    "eyebrow": "Presence",
+  "fleet": {
+    "eyebrow": "Network",
     "title": "Fleet",
     "subtitle": "Anonymous nodes from the public presence feed. Country, OS, RAM, and the apps they run.",
     "nodes": "Nodes",
@@ -18,6 +24,15 @@
     "empty": "No recent pings in the ntfy cache yet.",
     "loadFailed": "Failed to load fleet stats",
     "footnote": "Window: {window}. Parsed {events} events."
+  },
+  "stacks": {
+    "eyebrow": "Deployed",
+    "title": "Stacks",
+    "subtitle": "Every app running on this host, grouped by its compose project.",
+    "empty": "No stacks running",
+    "emptyHint": "Install an app from the catalog and its stack appears here.",
+    "browseCatalog": "Browse the catalog",
+    "loadFailed": "Failed to load stacks"
   },
   "common": {
     "loading": "Loading...",

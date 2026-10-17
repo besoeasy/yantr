@@ -2,10 +2,16 @@
   "nav": {
     "language": "言語",
     "lightMode": "ライトモード",
-    "darkMode": "ダークモード"
+    "darkMode": "ダークモード",
+    "dashboard": "ホーム",
+    "apps": "アプリ",
+    "stacks": "スタック",
+    "fleet": "フリート",
+    "storage": "ストレージ",
+    "logs": "ログ"
   },
-  "presence": {
-    "eyebrow": "プレゼンス",
+  "fleet": {
+    "eyebrow": "ネットワーク",
     "title": "フリート",
     "subtitle": "公開プレゼンスの匿名ノード。国、OS、RAM、インストール済みアプリ。",
     "nodes": "ノード",
@@ -18,6 +24,15 @@
     "empty": "ntfy キャッシュに最近の ping がまだありません。",
     "loadFailed": "フリート統計を読み込めませんでした",
     "footnote": "期間: {window}。{events} 件のイベント。"
+  },
+  "stacks": {
+    "eyebrow": "デプロイ済み",
+    "title": "スタック",
+    "subtitle": "このホストで実行中のすべてのアプリを compose プロジェクトごとにまとめたものです。",
+    "empty": "実行中のスタックはありません",
+    "emptyHint": "カタログからアプリをインストールすると、そのスタックがここに表示されます。",
+    "browseCatalog": "カタログを見る",
+    "loadFailed": "スタックの読み込みに失敗しました"
   },
   "common": {
     "loading": "読み込み中...",

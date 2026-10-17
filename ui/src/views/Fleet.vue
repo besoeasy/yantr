@@ -7,6 +7,7 @@ import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
 import AppLogo from "../components/AppLogo.vue";
 import StatCard from "../components/StatCard.vue";
+import AppLayout from "../components/AppLayout.vue";
 
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
@@ -36,10 +37,10 @@ async function fetchStats(force = false) {
   try {
     const qs = force ? "?refresh=1" : "";
     const response = await fetch(`${apiUrl.value}/api/presence/stats${qs}`);
-    const data = await expectApiSuccess(response, t("presence.loadFailed"));
+    const data = await expectApiSuccess(response, t("fleet.loadFailed"));
     stats.value = data.stats || null;
   } catch (error) {
-    toast.error(error.message || t("presence.loadFailed"));
+    toast.error(error.message || t("fleet.loadFailed"));
   } finally {
     loading.value = false;
   }
@@ -49,13 +50,12 @@ onMounted(() => fetchStats(false));
 </script>
 
 <template>
-  <div class="min-h-screen bg-white dark:bg-[#0A0A0A] text-gray-900 dark:text-white font-sans">
-    <div class="p-3 sm:p-4 lg:p-8 max-w-400 mx-auto space-y-8">
+  <AppLayout width="wide">
       <div class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p class="text-[10px] font-black uppercase tracking-[0.24em] text-gray-400 dark:text-zinc-500">{{ t("presence.eyebrow") }}</p>
-          <h1 class="mt-2 text-3xl font-semibold tracking-tight">{{ t("presence.title") }}</h1>
-          <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-zinc-400">{{ t("presence.subtitle") }}</p>
+          <p class="text-[10px] font-black uppercase tracking-[0.24em] text-gray-400 dark:text-zinc-500">{{ t("fleet.eyebrow") }}</p>
+          <h1 class="mt-2 text-3xl font-semibold tracking-tight">{{ t("fleet.title") }}</h1>
+          <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-zinc-400">{{ t("fleet.subtitle") }}</p>
         </div>
         <button
           type="button"
@@ -74,19 +74,19 @@ onMounted(() => fetchStats(false));
 
       <template v-else-if="stats">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard :label="t('presence.nodes')" :value="stats.nodes ?? 0" :icon="Globe" accent="blue" />
-          <StatCard :label="t('presence.ramLow')" :value="stats.ram?.min || '—'" :unit="stats.ram?.unit" :icon="MemoryStick" accent="green" />
-          <StatCard :label="t('presence.ramHigh')" :value="stats.ram?.max || '—'" :unit="stats.ram?.unit" :icon="MemoryStick" accent="amber" />
-          <StatCard :label="t('presence.ramAvg')" :value="ramAvg" :unit="stats.ram?.unit" :icon="Activity" accent="purple" />
+          <StatCard :label="t('fleet.nodes')" :value="stats.nodes ?? 0" :icon="Globe" accent="blue" />
+          <StatCard :label="t('fleet.ramLow')" :value="stats.ram?.min || '—'" :unit="stats.ram?.unit" :icon="MemoryStick" accent="green" />
+          <StatCard :label="t('fleet.ramHigh')" :value="stats.ram?.max || '—'" :unit="stats.ram?.unit" :icon="MemoryStick" accent="amber" />
+          <StatCard :label="t('fleet.ramAvg')" :value="ramAvg" :unit="stats.ram?.unit" :icon="Activity" accent="purple" />
         </div>
 
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <section class="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
             <div class="mb-4 flex items-center gap-2">
               <Globe :size="16" class="text-zinc-400" />
-              <h2 class="text-sm font-semibold">{{ t("presence.countries") }}</h2>
+              <h2 class="text-sm font-semibold">{{ t("fleet.countries") }}</h2>
             </div>
-            <div v-if="!stats.countries?.length" class="text-sm text-zinc-500">{{ t("presence.empty") }}</div>
+            <div v-if="!stats.countries?.length" class="text-sm text-zinc-500">{{ t("fleet.empty") }}</div>
             <ul v-else class="space-y-3">
               <li v-for="item in stats.countries" :key="item.code" class="space-y-1">
                 <div class="flex items-baseline justify-between gap-3 text-sm">
@@ -103,9 +103,9 @@ onMounted(() => fetchStats(false));
           <section class="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
             <div class="mb-4 flex items-center gap-2">
               <Monitor :size="16" class="text-zinc-400" />
-              <h2 class="text-sm font-semibold">{{ t("presence.os") }}</h2>
+              <h2 class="text-sm font-semibold">{{ t("fleet.os") }}</h2>
             </div>
-            <div v-if="!stats.os?.length" class="text-sm text-zinc-500">{{ t("presence.empty") }}</div>
+            <div v-if="!stats.os?.length" class="text-sm text-zinc-500">{{ t("fleet.empty") }}</div>
             <ul v-else class="space-y-3">
               <li v-for="item in stats.os" :key="item.name" class="space-y-1">
                 <div class="flex items-baseline justify-between gap-3 text-sm">
@@ -122,9 +122,9 @@ onMounted(() => fetchStats(false));
           <section class="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
             <div class="mb-4 flex items-center gap-2">
               <Activity :size="16" class="text-zinc-400" />
-              <h2 class="text-sm font-semibold">{{ t("presence.apps") }}</h2>
+              <h2 class="text-sm font-semibold">{{ t("fleet.apps") }}</h2>
             </div>
-            <div v-if="!stats.apps?.length" class="text-sm text-zinc-500">{{ t("presence.empty") }}</div>
+            <div v-if="!stats.apps?.length" class="text-sm text-zinc-500">{{ t("fleet.empty") }}</div>
             <ul v-else class="space-y-3">
               <li v-for="item in stats.apps" :key="item.id || item.name" class="flex items-center gap-3">
                 <div class="h-8 w-8 shrink-0">
@@ -151,9 +151,8 @@ onMounted(() => fetchStats(false));
         </div>
 
         <p class="text-[11px] text-zinc-400 dark:text-zinc-600">
-          {{ t("presence.footnote", { window: stats.window, events: stats.events }) }}
+          {{ t("fleet.footnote", { window: stats.window, events: stats.events }) }}
         </p>
       </template>
-    </div>
-  </div>
+  </AppLayout>
 </template>

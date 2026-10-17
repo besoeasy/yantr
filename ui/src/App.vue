@@ -1,15 +1,15 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { 
-  Box, Home, Moon, Sun, Check, Shield, 
-  HardDrive, Terminal, Network, Lock, Sparkles, Globe
+  Box, Home, Moon, Sun, Check, Layers,
+  HardDrive, Terminal, Lock, Globe
 } from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
 import { onMounted, onUnmounted, ref, computed, h } from "vue";
 import { useI18n } from "vue-i18n";
 import { useYantrAuth } from './composables/useYantrAuth';
-import { ROUTE, apps, dashboard, fleet, logs } from './utils/routes.js';
+import { NAV, NAV_ITEMS, dashboard } from './utils/routes.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -45,20 +45,38 @@ const GithubIcon = brandIcon(GITHUB_PATH, { "fill-rule": "evenodd", "clip-rule":
 const DiscordIcon = brandIcon(DISCORD_PATH, { fill: "currentColor" });
 
 // Both names are proper nouns, identical in every locale, so they are not
-// routed through i18n — same reasoning as the hardcoded "Lock Session" below.
+// routed through i18n — unlike the nav labels, which now are. Same reasoning as
+// the hardcoded "Lock Session" below.
 const communityLinks = [
   { name: "GitHub", href: "https://github.com/besoeasy/yantr", icon: GithubIcon },
   { name: "Discord", href: "https://discord.gg/YZG5NVUcAt", icon: DiscordIcon },
 ];
 
-const isActive = (name) => route.name === name;
+// Icons live here, not in the route table: routes.js holds what a page is and
+// which nav item owns it, the shell holds what that item looks like.
+const NAV_ICONS = {
+  [NAV.DASHBOARD]: Home,
+  [NAV.APPS]: Box,
+  [NAV.STACKS]: Layers,
+  [NAV.FLEET]: Globe,
+  [NAV.STORAGE]: HardDrive,
+  [NAV.LOGS]: Terminal,
+};
 
-const navItems = [
-  { name: ROUTE.DASHBOARD, to: dashboard(), label: "Home", icon: Home },
-  { name: ROUTE.APPS, to: apps(), label: "Apps", icon: Box },
-  { name: ROUTE.FLEET, to: fleet(), label: "Fleet", icon: Globe },
-  { name: ROUTE.LOGS, to: logs(), label: "Logs", icon: Terminal },
-];
+// Built from the route table's nav list, so a route can no longer name an owner
+// that has no item, and adding an item stops meaning "edit this file too".
+// Every nav id is also the name of the list route it opens, which
+// utils/routes.test.js asserts.
+const navItems = NAV_ITEMS.map((item) => ({
+  ...item,
+  icon: NAV_ICONS[item.id],
+  to: { name: item.id },
+}));
+
+// Ownership, not equality. The old `route.name === item.name` matched only the
+// six list routes, so on /apps/x, /stacks/x or a container page nothing was
+// highlighted and the sidebar looked lost.
+const isActive = (item) => route.meta?.nav === item.id;
 
 const setTheme = (nextTheme) => {
   theme.value = nextTheme;
@@ -141,11 +159,11 @@ onUnmounted(() => {
       <nav class="flex flex-col items-center gap-3 pt-2">
         <router-link
           v-for="item in navItems"
-          :key="item.name"
+          :key="item.id"
           :to="item.to"
           :class="[
             'group relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
-            isActive(item.name)
+            isActive(item)
               ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md shadow-slate-900/10 dark:shadow-white/10'
               : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/60'
           ]"
@@ -154,7 +172,7 @@ onUnmounted(() => {
           
           <!-- Tooltip on hover -->
           <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
-            {{ item.label }}
+            {{ t(item.labelKey) }}
           </span>
         </router-link>
       </nav>
@@ -260,11 +278,11 @@ onUnmounted(() => {
       <nav class="flex items-center gap-1">
         <router-link
           v-for="item in navItems"
-          :key="item.name"
+          :key="item.id"
           :to="item.to"
           :class="[
             'p-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center',
-            isActive(item.name)
+            isActive(item)
               ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm'
               : 'text-slate-500 dark:text-zinc-400'
           ]"
@@ -290,7 +308,11 @@ onUnmounted(() => {
 
     <!-- Main Content Area with Desktop Sidebar Offset -->
     <main class="flex-1 min-h-screen md:pl-20">
-      <router-view :key="route.fullPath" />
+      <!-- Keyed on the path, not the full path. A param change must rebuild the
+           view — AppDetail only fetches in onMounted — but a query-only change
+           must not: Storage keeps its tab in ?tab=, so keying on fullPath tore
+           the page down and refetched it on every tab click. -->
+      <router-view :key="route.path" />
     </main>
 
     </template>

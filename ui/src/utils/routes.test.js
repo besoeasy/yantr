@@ -10,6 +10,7 @@
 import { describe, expect, it } from "vitest";
 import {
   NAV,
+  NAV_ITEMS,
   ROUTE,
   appDetail,
   apps,
@@ -20,8 +21,18 @@ import {
   logs,
   routes,
   stackDetail,
+  stacks,
   storageTab,
 } from "./routes.js";
+import de from "../i18n/locales/de.json";
+import en from "../i18n/locales/en.json";
+import es from "../i18n/locales/es.json";
+import fr from "../i18n/locales/fr.json";
+import ja from "../i18n/locales/ja.json";
+import ru from "../i18n/locales/ru.json";
+import zh from "../i18n/locales/zh.json";
+
+const LOCALES = { en, zh, es, de, fr, ja, ru };
 
 // The `:param` tokens a path declares, in the order they appear.
 function declaredParams(path) {
@@ -131,6 +142,7 @@ describe("builders", () => {
   const plain = [
     { label: "dashboard", build: dashboard, name: ROUTE.DASHBOARD },
     { label: "apps", build: apps, name: ROUTE.APPS },
+    { label: "stacks", build: stacks, name: ROUTE.STACKS },
     { label: "logs", build: logs, name: ROUTE.LOGS },
     { label: "fleet", build: fleet, name: ROUTE.FLEET },
   ];
@@ -147,5 +159,47 @@ describe("builders", () => {
       name: ROUTE.STORAGE,
       query: { tab: "volumes-unused" },
     });
+  });
+});
+
+describe("sidebar", () => {
+  it("lists each nav id once", () => {
+    const ids = NAV_ITEMS.map((item) => item.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("covers every NAV id, so no declared owner is missing an item", () => {
+    const listed = new Set(NAV_ITEMS.map((item) => item.id));
+    for (const id of Object.values(NAV)) {
+      expect(listed.has(id), `NAV.${id} has no sidebar item`).toBe(true);
+    }
+  });
+
+  it("names a route for each item, so the shell can link by name", () => {
+    // The shell builds `{ name: item.id }` from this list, so an id that is not
+    // a route name would render an item that goes nowhere.
+    for (const item of NAV_ITEMS) {
+      expect(byName.has(item.id), `sidebar item "${item.id}" is not a route`).toBe(true);
+    }
+  });
+
+  it("owns every page: no route names a nav id with no item", () => {
+    const listed = new Set(NAV_ITEMS.map((item) => item.id));
+    for (const route of named) {
+      const nav = route.meta?.nav;
+      if (nav === undefined) continue;
+      expect(listed.has(nav), `${route.name} is owned by "${nav}", which has no item`).toBe(true);
+    }
+  });
+
+  it("labels each item in every locale", () => {
+    for (const item of NAV_ITEMS) {
+      const key = item.labelKey.split(".");
+      expect(key[0], `${item.labelKey} is not under the nav namespace`).toBe("nav");
+      for (const [locale, messages] of Object.entries(LOCALES)) {
+        const value = messages?.[key[0]]?.[key[1]];
+        expect(value, `${locale} is missing ${item.labelKey}`).toBeTruthy();
+      }
+    }
   });
 });
