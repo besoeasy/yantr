@@ -687,5 +687,10 @@
     "version": "Version",
     "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein.",
     "tunnelToken": "Tunnel-Token"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "hint": "Unter {path} gibt es nichts.",
+    "backToDashboard": "Zurück zum Dashboard"
   }
 }

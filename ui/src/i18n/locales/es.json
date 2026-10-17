@@ -681,5 +681,10 @@
     "version": "Version",
     "invalidToken": "Eso no parece un token de túnel — pega el token completo de dash.cloudflare.com.",
     "tunnelToken": "Token del túnel"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "hint": "No hay nada en {path}.",
+    "backToDashboard": "Volver al panel"
   }
 }

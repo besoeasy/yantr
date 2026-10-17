@@ -681,5 +681,10 @@
     "version": "Version",
     "invalidToken": "Cela ne ressemble pas à un jeton de tunnel — collez le jeton complet depuis dash.cloudflare.com.",
     "tunnelToken": "Jeton du tunnel"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "hint": "Il n'y a rien à {path}.",
+    "backToDashboard": "Retour au tableau de bord"
   }
 }

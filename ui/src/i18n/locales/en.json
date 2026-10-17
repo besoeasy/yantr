@@ -744,5 +744,10 @@
     "version": "Version",
     "invalidToken": "That doesn't look like a tunnel token — paste the full token from dash.cloudflare.com.",
     "tunnelToken": "Tunnel token"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "hint": "There is nothing at {path}.",
+    "backToDashboard": "Back to dashboard"
   }
 }

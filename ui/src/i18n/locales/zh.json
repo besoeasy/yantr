@@ -681,5 +681,10 @@
     "version": "Version",
     "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。",
     "tunnelToken": "隧道令牌"
+  },
+  "notFound": {
+    "title": "未找到页面",
+    "hint": "{path} 处没有任何内容。",
+    "backToDashboard": "返回仪表板"
   }
 }

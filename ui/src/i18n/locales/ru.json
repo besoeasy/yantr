@@ -681,5 +681,10 @@
     "version": "Version",
     "invalidToken": "Это не похоже на токен туннеля — вставьте полный токен из dash.cloudflare.com.",
     "tunnelToken": "Токен туннеля"
+  },
+  "notFound": {
+    "title": "Страница не найдена",
+    "hint": "По адресу {path} ничего нет.",
+    "backToDashboard": "Вернуться к панели"
   }
 }
