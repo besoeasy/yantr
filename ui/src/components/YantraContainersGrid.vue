@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { Layers, ArrowRight } from "@lucide/vue";
 import AppLogo from "./AppLogo.vue";
+import { stackDetail } from "../utils/routes.js";
 
 const { t } = useI18n();
 const props = defineProps({
@@ -44,7 +45,7 @@ function hasTemporary(group) {
 }
 
 function navigate(group) {
-  router.push(`/stacks/${group.projectId}`);
+  router.push(stackDetail(group.projectId));
 }
 </script>
 
