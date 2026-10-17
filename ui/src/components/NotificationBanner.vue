@@ -50,7 +50,7 @@ const colorMap = {
       <div
         :class="[
           'relative flex items-center gap-3 border-b px-4 py-3 shadow-lg shadow-black/5 dark:shadow-black/20 backdrop-blur-md sm:px-6',
-          'bg-white/95 dark:bg-[#0A0A0A]/95',
+          'bg-white/95 dark:bg-(--page-bg)/95',
           colorMap[notificationState.type].border,
         ]"
       >

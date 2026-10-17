@@ -424,7 +424,7 @@ async function deployApp() {
 <template>
   <div class="space-y-6">
     <!-- Target instance: fresh deploy or edit an existing install in place -->
-    <div v-if="appInstances.length > 0" class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
+    <div v-if="appInstances.length > 0" class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-(--page-bg)">
       <label for="target-instance" class="mb-1 block text-[10px] font-bold uppercase tracking-widest text-zinc-700 dark:text-zinc-300">
         {{ t('appDetail.targetInstance') }}
       </label>
@@ -433,7 +433,7 @@ async function deployApp() {
         v-model="editProjectId"
         @change="onInstanceChange"
         :disabled="deploying || loadingEnv"
-        class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white"
+        class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-(--page-bg) dark:text-white dark:focus:border-white"
       >
         <option value="">{{ t('appDetail.newInstance') }} (#{{ nextInstanceNumber }})</option>
         <option v-for="pid in appInstances" :key="pid" :value="pid">{{ t('appDetail.editInstance') }} #{{ instanceNumber(pid) }} — {{ pid }}</option>
@@ -442,7 +442,7 @@ async function deployApp() {
     </div>
 
     <!-- Configuration -->
-    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-[#0A0A0A]">
+    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-(--page-bg)">
       <div class="mb-5 flex items-center justify-between">
         <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
           {{ t('appDetail.configuration') }}
@@ -537,7 +537,7 @@ async function deployApp() {
               
               <div v-if="temporaryInstall" class="mt-4 pl-7">
                   <label :for="'expiry-hours'" class="mb-1 block text-[10px] font-bold uppercase tracking-wider text-zinc-500">{{ t('appDetail.expiresAfter') }}</label>
-                  <select id="expiry-hours" v-model.number="expirationHours" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-[#0A0A0A] dark:text-white dark:focus:border-white">
+                  <select id="expiry-hours" v-model.number="expirationHours" class="w-full cursor-pointer rounded-xl border border-zinc-200 bg-white p-2.5 text-[11px] font-bold uppercase tracking-wider text-zinc-900 transition-colors focus:border-zinc-900 focus:outline-none dark:border-zinc-800 dark:bg-(--page-bg) dark:text-white dark:focus:border-white">
                       <option :value="1">{{ t('appDetail.1hour') }}</option>
                       <option :value="6">{{ t('appDetail.6hours') }}</option>
                       <option :value="12">{{ t('appDetail.12hours') }}</option>
@@ -573,7 +573,7 @@ async function deployApp() {
                           v-model="customPortMappings[port.hostPort + '/' + port.protocol]"
                           type="number"
                           :placeholder="port.hostPort"
-                          class="flex-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-2 font-mono text-xs transition-colors focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:focus:border-white dark:focus:ring-white"
+                          class="flex-1 rounded-xl border border-zinc-200 bg-white px-2.5 py-2 font-mono text-xs transition-colors focus:border-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:border-zinc-800 dark:bg-(--page-bg) dark:focus:border-white dark:focus:ring-white"
                           />
                       </div>
                       <!-- Port Status -->

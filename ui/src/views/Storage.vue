@@ -331,7 +331,7 @@ onMounted(startPolling)
        break that. Each of header and main brings its own max-w-7xl. -->
   <AppLayout width="bare">
     <!-- Header -->
-    <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-[#0A0A0A]/80">
+    <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-(--page-bg)/80">
       <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div class="flex items-center gap-4">
@@ -346,7 +346,7 @@ onMounted(startPolling)
 
           <div class="flex items-center gap-3">
             <SearchInput v-model="searchQuery" :placeholder="t('storage.searchPlaceholder')" />
-            <button @click="refresh" :aria-label="t('storage.refresh')" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:bg-zinc-900/50">
+            <button @click="refresh" :aria-label="t('storage.refresh')" class="group flex shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-white p-2.5 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:bg-zinc-900/50">
               <RefreshCw class="h-4 w-4 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white" :class="{ 'animate-spin': loading }" />
             </button>
           </div>

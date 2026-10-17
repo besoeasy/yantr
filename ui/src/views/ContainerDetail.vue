@@ -369,7 +369,7 @@ watch(activeTab, (tab) => {
 
     <main v-else class="space-y-6 anim-stagger">
         
-        <div class="group relative bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
+        <div class="group relative bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
            <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
            <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
@@ -399,7 +399,7 @@ watch(activeTab, (tab) => {
            </div>
         </div>
 
-        <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-3">
+        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-3">
           <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
             <Terminal :size="14" />
             {{ t('containerDetail.shellAccess') }}
@@ -451,7 +451,7 @@ watch(activeTab, (tab) => {
            </div>
            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
              <div v-for="(mapping, i) in filteredPortMappings" :key="i" 
-                  class="group bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
+                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
                
                <div class="flex items-start justify-between mb-4">
                  <div class="flex items-start gap-3.5 flex-1 min-w-0">
@@ -509,7 +509,7 @@ watch(activeTab, (tab) => {
 
            <div class="grid gap-4">
                <div v-for="volume in containerVolumes" :key="volume.name" 
-                  class="group bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
+                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
                    
                  <div class="flex items-start justify-between gap-4 mb-5">
                   <div class="flex items-start gap-4 min-w-0 flex-1">
@@ -550,7 +550,7 @@ watch(activeTab, (tab) => {
              </div>
         </div>
 
-        <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
           <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-zinc-800">
             <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
               <ShieldCheck :size="14" />
@@ -601,7 +601,7 @@ watch(activeTab, (tab) => {
           </div>
         </div>
 
-        <div class="bg-white dark:bg-[#0A0A0A] rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
+        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
            <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.control') }}</h3>
            
            <div class="grid grid-cols-3 gap-2">
@@ -634,7 +634,7 @@ watch(activeTab, (tab) => {
            <button 
               @click="deleteContainer"
               :disabled="deleting"
-              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-[#0A0A0A] border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-wider"
+              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-(--page-bg) border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-wider"
            >
               <Trash2 :size="14" />
               {{ deleting ? t('containerDetail.terminating') : t('containerDetail.terminateContainer') }}

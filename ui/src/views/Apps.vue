@@ -287,7 +287,7 @@ onUnmounted(() => {
     <!-- Main Content -->
     <main class="flex-1 min-w-0 order-2 lg:order-1">
         <!-- Top Bar -->
-        <div class="sticky top-0 z-30 bg-white/80 dark:bg-[#0A0A0A]/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 px-6 py-4">
+        <div class="sticky top-0 z-30 bg-white/80 dark:bg-(--page-bg)/80 backdrop-blur-md border-b border-gray-200 dark:border-zinc-800 px-6 py-4">
 
           <!-- Search input -->
           <div class="relative group w-full">

@@ -202,7 +202,7 @@ onMounted(() => {
           <!-- Empty State -->
           <div
             v-if="containers.length === 0"
-            class="text-center py-32 bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 rounded-xl mb-6 flex flex-col items-center"
+            class="text-center py-32 bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl mb-6 flex flex-col items-center"
           >
             <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 rounded-2xl flex items-center justify-center mb-6">
               <Store :size="32" class="text-gray-400 dark:text-zinc-500" />

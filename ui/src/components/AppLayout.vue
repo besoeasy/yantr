@@ -8,7 +8,7 @@
  * container width with one padding scale.
  *
  * Before this, eight views each opened with a near-identical
- * `min-h-screen bg-white dark:bg-[#0A0A0A] … font-sans` wrapper and then picked
+ * `min-h-screen bg-white dark:bg-(--page-bg) … font-sans` wrapper and then picked
  * their own max-width — max-w-400 on the dashboards, max-w-7xl on the detail
  * pages, max-w-6xl on the developer profile — from three different padding
  * scales. The widths are still three deliberate choices, but they are now named
@@ -50,7 +50,7 @@ const props = defineProps({
 
 <template>
   <div
-    class="min-h-screen bg-white font-sans text-gray-900 selection:bg-blue-500/30 dark:bg-[#0A0A0A] dark:text-zinc-100"
+    class="min-h-screen bg-white font-sans text-gray-900 selection:bg-blue-500/30 dark:bg-(--page-bg) dark:text-zinc-100"
   >
     <!-- `bare` adds nothing at all — not even a wrapper div. A page that uses it
          is bringing its own body, and it may be relying on this root being the

@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-  <div v-if="items.length > 0" class="bg-white dark:bg-[#0A0A0A] rounded-xl p-6">
+  <div v-if="items.length > 0" class="bg-white dark:bg-(--page-bg) rounded-xl p-6">
     <div class="flex items-center justify-between mb-5">
       <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white">{{ title }}</h3>
       <div class="flex items-center gap-4 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500 dark:text-zinc-500">

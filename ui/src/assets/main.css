@@ -76,6 +76,16 @@
     --cta-text: var(--color-zinc-900);
 }
 
+/* The page's own canvas — a card's --card-bg against it, not a second card
+   colour. Twelve SFCs used to pin `dark:bg-[#0A0A0A]` by hand to get this
+   exact near-black, and `dark:bg-[#050505]` for the darker log well, which is
+   --card-inset in everything else. Both are named here now; nothing pins a
+   hex to mean "the dark background" any more. */
+:root.dark {
+    --page-bg: #0a0a0a;
+    --well-bg: #050505;
+}
+
 * {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -224,6 +234,11 @@ body {
    either way (--card-bg is white and #0A0A0A, --card-border is zinc-200 and
    zinc-800), so a page that moves onto these does not change how it looks; it
    changes how many places a colour is defined in.
+
+   That migration is now finished for the page background: --page-bg and
+   --well-bg name the two near-blacks the zinc spelling had been pinning as
+   literals in 30 places, so the last hex that meant "the dark background" is
+   a token too.
 
    Layout, type scale, spacing and radius still come from the utility classes. */
 
@@ -954,6 +969,8 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .border-t-transparent{border-top-color:#0000;}
 .border-t-zinc-900{border-top-color:var(--color-zinc-900);}
 .bg-\(--surface-muted\){background-color:var(--surface-muted);}
+.dark\:bg-\(--page-bg\):is(.dark *){background-color:var(--page-bg);}
+.dark\:bg-\(--well-bg\):is(.dark *){background-color:var(--well-bg);}
 .bg-amber-50{background-color:var(--color-amber-50);}
 .bg-amber-50\/50{background-color:#fffbeb80;}
 .bg-violet-500\/70{background-color:#8b5cf6b3;}

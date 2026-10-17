@@ -81,7 +81,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-4rem)] flex flex-col bg-white dark:bg-[#0A0A0A] text-gray-800 dark:text-gray-300 font-mono text-[13px] overflow-hidden border border-gray-200 dark:border-zinc-800 rounded-xl mx-4 my-4 shadow-sm">
+  <div class="h-[calc(100vh-4rem)] flex flex-col bg-white dark:bg-(--page-bg) text-gray-800 dark:text-gray-300 font-mono text-[13px] overflow-hidden border border-gray-200 dark:border-zinc-800 rounded-xl mx-4 my-4 shadow-sm">
     <!-- Toolbar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 bg-gray-50 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800 shrink-0 gap-3">
        <div class="flex items-center gap-4">
@@ -91,7 +91,7 @@ onMounted(() => {
           </div>
           <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-zinc-700"></div>
           
-          <div class="flex bg-white dark:bg-[#0A0A0A] rounded-md border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+          <div class="flex bg-white dark:bg-(--page-bg) rounded-md border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
              <button @click="logFilter = 'all'; fetchLogs()" 
                 :class="logFilter === 'all' ? 'bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white font-medium' : 'text-gray-500 dark:text-zinc-500 hover:text-gray-700 dark:hover:text-zinc-300'"
                 class="px-3 py-1.5 text-xs transition-colors">
@@ -114,7 +114,7 @@ onMounted(() => {
 
        <div class="flex items-center gap-2">
           <div class="relative group">
-             <input v-model="searchQuery" type="text" :aria-label="t('logs.filterLogs')" :placeholder="t('logs.filterLogs')" class="bg-white dark:bg-[#0A0A0A] border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
+             <input v-model="searchQuery" type="text" :aria-label="t('logs.filterLogs')" :placeholder="t('logs.filterLogs')" class="bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 text-gray-900 dark:text-white px-3 py-1.5 rounded-md text-xs w-36 sm:w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder-gray-400 dark:placeholder-zinc-600 shadow-sm" />
           </div>
           
           <div class="hidden sm:block h-4 w-px bg-gray-300 dark:bg-zinc-700 mx-2"></div>
@@ -134,7 +134,7 @@ onMounted(() => {
     </div>
 
     <!-- Log Viewer -->
-    <div ref="logContainer" class="flex-1 overflow-y-auto p-2 scrollbar-thin bg-gray-50/50 dark:bg-[#050505]">
+    <div ref="logContainer" class="flex-1 overflow-y-auto p-2 scrollbar-thin bg-gray-50/50 dark:bg-(--well-bg)">
        <div v-if="loading && !logsData.logs" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600 gap-3">
           <RefreshCw class="w-6 h-6 animate-spin" />
           <span class="text-xs font-semibold uppercase tracking-widest">{{ t('logs.connectingStream') }}</span>
