@@ -25,6 +25,7 @@ import { useI18n } from "vue-i18n";
 import YantraContainersGrid from "../components/YantraContainersGrid.vue";
 import VolumeContainersGrid from "../components/VolumeContainersGrid.vue";
 import OtherContainersGrid from "../components/OtherContainersGrid.vue";
+import { apps, containerDetail } from "../utils/routes.js";
 
 const { apiUrl } = useApiUrl();
 const { t } = useI18n();
@@ -102,7 +103,7 @@ async function stopBrowser(volumeName) {
 }
 
 function viewContainerDetail(container) {
-  router.push(`/containers/${container.id}`);
+  router.push(containerDetail(container.id));
 }
 
 async function refreshAll() {
@@ -210,7 +211,7 @@ onMounted(() => {
             <h3 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white mb-2">{{ t("home.noAppsRunning") }}</h3>
             <p class="text-sm font-medium text-gray-500 dark:text-zinc-400 max-w-md mx-auto mb-8">{{ t("home.dashboardEmpty") }}</p>
             <router-link
-              to="/apps"
+              :to="apps()"
               class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white dark:bg-white dark:text-gray-900 rounded-lg text-xs font-bold uppercase tracking-wider transition-all hover:-translate-y-0.5 shadow-sm"
             >
               <Store :size="16" />
