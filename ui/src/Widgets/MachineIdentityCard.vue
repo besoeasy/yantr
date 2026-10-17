@@ -82,13 +82,13 @@ const displayLocation = computed(() => {
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <!-- Header -->
     <div class="relative z-10 flex flex-col gap-4">
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-300 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
             <Globe class="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
@@ -114,9 +114,9 @@ const displayLocation = computed(() => {
         
         <button 
            @click="loadIdentity({ force: true })"
-           class="group/btn z-20 flex cursor-pointer items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors duration-500 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800"
+           class="group/btn z-20 flex cursor-pointer items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800"
         >
-           <RefreshCw class="h-3.5 w-3.5 text-zinc-500 transition-transform duration-500 group-hover/btn:rotate-180 dark:text-zinc-400" :class="{ 'animate-spin': loading }" />
+           <RefreshCw class="h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 group-hover/btn:rotate-180 dark:text-zinc-400" :class="{ 'animate-spin': loading }" />
         </button>
       </div>
     </div>
@@ -155,7 +155,7 @@ const displayLocation = computed(() => {
            </div>
            
            <div v-if="loading && !identity" class="h-10 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-           <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-300 group-hover/ip:text-black sm:text-5xl dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
+           <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-200 group-hover/ip:text-black sm:text-5xl dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
              {{ displayIp }}
            </div>
          </button>
@@ -165,7 +165,7 @@ const displayLocation = computed(() => {
            <!-- Location Card -->
            <button
               type="button"
-              class="flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-all duration-300 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              class="flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-[border-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
               :aria-pressed="!isLocationHovered"
               @mouseenter="isLocationHovered = true"
               @mouseleave="isLocationHovered = false"
@@ -180,13 +180,13 @@ const displayLocation = computed(() => {
                  </div>
               </div>
               <div v-if="loading && !identity" class="h-4 w-20 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-              <div v-else class="truncate text-sm font-black text-zinc-900 transition-colors duration-300 dark:text-white" :title="locationText">
+              <div v-else class="truncate text-sm font-black text-zinc-900 transition-colors duration-200 dark:text-white" :title="locationText">
                 {{ displayLocation }}
               </div>
            </button>
            
            <!-- Provider Card -->
-           <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">
+           <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
               <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Server class="h-3.5 w-3.5" />
                 <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.provider') }}</span>

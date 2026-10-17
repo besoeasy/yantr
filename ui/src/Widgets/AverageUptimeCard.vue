@@ -57,11 +57,11 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 transition-transform duration-300 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 transition-transform duration-200 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
           <Clock class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
@@ -84,14 +84,14 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         {{ t('quickMetrics.averageUptime.timeActive') }}
       </div>
       
-      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-1 sm:text-5xl dark:text-white">
+      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
         {{ stats.formatted }}
       </div>
 
       <!-- Nested Minimal Container for details -->
       <div class="grid grid-cols-5 gap-3">
         <!-- Stats Card -->
-        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
             <Zap class="h-3.5 w-3.5" />
             <span class="text-[9px] font-semibold uppercase tracking-widest">Active</span>
@@ -102,12 +102,12 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         </div>
         
         <!-- Mini Bar Chart -->
-        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
            <div class="absolute inset-0 flex items-end justify-between px-4 pb-2">
               <div
                 v-for="(h, i) in bars"
                 :key="i"
-                class="w-2.5 rounded-t-md bg-emerald-200 transition-all duration-500 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
+                class="w-2.5 rounded-t-md bg-emerald-200 transition-all duration-200 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
                 :style="{ 
                   height: `${h * 100}%`, 
                   transitionDelay: `${i * 30}ms` 

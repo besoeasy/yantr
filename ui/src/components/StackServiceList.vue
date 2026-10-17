@@ -145,7 +145,7 @@ function goToContainer(svcId) {
 </script>
 
 <template>
-  <div class="space-y-3 animate-fadeIn">
+  <div class="space-y-3 anim-enter">
     <div class="flex items-center gap-2">
       <div class="yantra-label">{{ t('stackView.containers') }}</div>
       <span class="yantra-chip">{{ services.length }}</span>

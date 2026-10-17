@@ -115,12 +115,12 @@ async function deploy() {
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
 
     <!-- Setup state: no cloudflared container found -->
     <div v-if="!cloudflaredContainer" class="relative z-10 flex h-full flex-col gap-4">
       <transition
-        enter-active-class="transition-all duration-300 ease-out"
+        enter-active-class="transition-[border-color,box-shadow,transform] duration-200 ease-out"
         enter-from-class="opacity-0 scale-95"
         enter-to-class="opacity-100 scale-100"
       >
@@ -139,7 +139,7 @@ async function deploy() {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-300 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
@@ -157,7 +157,7 @@ async function deploy() {
 
       <!-- Main content -->
       <div class="relative z-10 mt-auto flex flex-col pt-6">
-        <div class="mb-2 line-clamp-1 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
+        <div class="mb-2 line-clamp-1 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
           {{ t('cloudflaredCard.secureTunnel') }}
         </div>
         <div class="mb-5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
@@ -173,7 +173,7 @@ async function deploy() {
               placeholder="eyJhIjoiY…"
               autocomplete="off"
               spellcheck="false"
-              class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 font-mono text-sm text-zinc-900 outline-none transition-all duration-300 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400/20 dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:focus:ring-zinc-600/20"
+              class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 font-mono text-sm text-zinc-900 outline-none transition-[border-color,box-shadow,transform] duration-200 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400/20 dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:focus:ring-zinc-600/20"
               :class="tunnelToken.trim() === ''
                 ? ''
                 : isValidToken
@@ -195,7 +195,7 @@ async function deploy() {
         </div>
 
         <transition
-          enter-active-class="transition-all duration-300 ease-out"
+          enter-active-class="transition-[border-color,box-shadow,transform] duration-200 ease-out"
           enter-from-class="translate-y-1 opacity-0"
           enter-to-class="translate-y-0 opacity-100"
           leave-active-class="transition-all duration-150 ease-in"
@@ -213,17 +213,17 @@ async function deploy() {
             href="https://one.dash.cloudflare.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all duration-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+            class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
           >
             <Key class="h-3.5 w-3.5" />
             <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
-            <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-300 group-hover/link:translate-x-0.5" />
+            <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover/link:translate-x-0.5" />
           </a>
 
           <button
             @click="deploy"
             :disabled="!isValidToken || deploying"
-            class="group/cta relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border transition-all duration-300"
+            class="group/cta relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border transition-[border-color,box-shadow,transform] duration-200"
             :class="isValidToken && !deploying
               ? 'border-zinc-900 bg-zinc-900 text-white hover:bg-black active:scale-[0.98] dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white'
               : 'cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600'"
@@ -244,7 +244,7 @@ async function deploy() {
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-300 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
@@ -254,7 +254,7 @@ async function deploy() {
         </div>
         
         <!-- Status Pill -->
-        <div class="flex items-center gap-2 rounded-full border px-3 py-1.5 transition-colors duration-300" :class="isRunning ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900/30 dark:bg-emerald-900/20' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/20'">
+        <div class="flex items-center gap-2 rounded-full border px-3 py-1.5 transition-colors duration-200" :class="isRunning ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900/30 dark:bg-emerald-900/20' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/20'">
            <div class="relative h-2 w-2 rounded-full">
               <div class="absolute inset-0 rounded-full animate-ping opacity-75" :class="isRunning ? 'bg-emerald-400' : 'bg-red-400'"></div>
               <div class="relative h-full w-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
@@ -271,13 +271,13 @@ async function deploy() {
         <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
           {{ t('cloudflaredCard.connectionStatus') }}
         </div>
-        <div class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-500 group-hover:-translate-y-1 dark:text-white">
+        <div class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
           {{ t('cloudflaredCard.secureTunnel') }}
         </div>
 
         <!-- Nested Containers for details -->
         <div class="grid grid-cols-2 gap-2">
-          <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
+          <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
               <CloudOff v-else class="h-3.5 w-3.5 text-red-500" />
@@ -288,7 +288,7 @@ async function deploy() {
             </div>
           </div>
           
-          <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
+          <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Globe class="h-3.5 w-3.5" />
               <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('cloudflaredCard.version') }}</span>

@@ -89,7 +89,7 @@ const hasContext = computed(() => contextRows.value.length > 0);
   <div class="yantra-card group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl p-7 text-left">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
-        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-300 group-hover:scale-105">
+        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-200 group-hover:scale-105">
           <Bug class="h-5 w-5" />
         </div>
         <div>
@@ -104,7 +104,7 @@ const hasContext = computed(() => contextRows.value.length > 0);
     </div>
 
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-500 group-hover:-translate-y-1 sm:text-5xl">
+      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
         {{ t("issueCard.title") }}
       </div>
       <div class="yantra-text-secondary mb-5 line-clamp-3 text-sm leading-relaxed">
@@ -137,13 +137,13 @@ const hasContext = computed(() => contextRows.value.length > 0);
         :href="issueUrl"
         target="_blank"
         rel="noopener noreferrer"
-        class="issue-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-all duration-300 active:scale-[0.98]"
+        class="issue-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
       >
         <div class="relative z-10 flex items-center gap-2.5">
           <Bug class="h-4 w-4" />
           <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
         </div>
-        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-300 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
       </a>
 
       <p class="issue-note yantra-text-secondary mt-4 flex items-center gap-2 text-[10px] leading-relaxed">

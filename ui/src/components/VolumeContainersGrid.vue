@@ -62,7 +62,7 @@ function getExpirationInfo(browser) {
       v-for="(browser, index) in containers"
       :key="browser.volumeName"
       :style="{ animationDelay: `${index * 50}ms` }"
-      class="group relative flex h-full w-full min-h-72 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fadeIn dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+      class="group relative flex h-full w-full min-h-72 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] anim-enter dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
     >
       <div class="relative z-10 flex h-full flex-col gap-4">
         <!-- header -->
@@ -78,7 +78,7 @@ function getExpirationInfo(browser) {
               </div>
             </div>
           </div>
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-50 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 dark:bg-zinc-900/50">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-50 opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover:translate-x-1 group-hover:opacity-100 dark:bg-zinc-900/50">
              <ArrowRight class="h-4 w-4 text-zinc-400 group-hover:text-zinc-900 dark:text-zinc-500 dark:group-hover:text-white" />
           </div>
         </div>
@@ -121,7 +121,7 @@ function getExpirationInfo(browser) {
           <div class="mt-2 grid grid-cols-2 gap-2.5">
             <button
               @click="openBrowser($event, browser)"
-              class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-all duration-300 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+              class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
             >
               <ExternalLink class="h-3.5 w-3.5" />
               <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("home.volumeContainersGrid.browse") }}</span>
@@ -129,7 +129,7 @@ function getExpirationInfo(browser) {
 
             <button
               @click.stop="emit('stop-browser', browser.volumeName)"
-              class="group/cta relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-red-200 bg-red-50 text-red-600 transition-all duration-300 hover:border-red-500 hover:bg-red-500 hover:text-white active:scale-[0.98] dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-500 dark:hover:bg-red-500 dark:hover:text-white"
+              class="group/cta relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border border-red-200 bg-red-50 text-red-600 transition-[border-color,box-shadow,transform] duration-200 hover:border-red-500 hover:bg-red-500 hover:text-white active:scale-[0.98] dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-500 dark:hover:bg-red-500 dark:hover:text-white"
             >
               <div class="relative z-10 flex items-center gap-2">
                 <EyeOff class="h-4 w-4" />

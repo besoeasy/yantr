@@ -75,7 +75,7 @@ const workloadStats = computed(() => [
     <div v-else class="flex h-full flex-col gap-4">
       <!-- Header -->
       <div class="flex items-center gap-4">
-        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-300 group-hover:scale-105">
+        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-200 group-hover:scale-105">
           <Server class="h-5 w-5" />
         </div>
         <div>
@@ -94,7 +94,7 @@ const workloadStats = computed(() => [
            card in the grid lines up whatever its content. -->
       <div class="mt-auto flex flex-col gap-4 pt-4">
         <div>
-          <div class="yantra-text-primary line-clamp-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-500 group-hover:-translate-y-1 sm:text-5xl">
+          <div class="yantra-text-primary line-clamp-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
             {{ osInfo.name }}
           </div>
           <div class="yantra-text-secondary mt-2 truncate text-[11px] font-semibold uppercase tracking-widest">

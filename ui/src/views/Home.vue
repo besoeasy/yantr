@@ -131,7 +131,7 @@ onMounted(() => {
         </div>
 
         <!-- Content -->
-        <div v-else class="animate-fadeIn">
+        <div v-else class="anim-enter">
           <!-- Filter Tabs -->
           <div v-if="containers.length > 0" class="flex flex-wrap items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
             <button

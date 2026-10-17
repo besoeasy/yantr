@@ -29,7 +29,7 @@ const emit = defineEmits(["select"]);
       @keydown.space.prevent="emit('select', container)"
       role="button"
       tabindex="0"
-      class="group relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+      class="group relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] anim-enter focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
     >
       <div class="relative z-10 flex h-full flex-col gap-4">
         <!-- header -->
@@ -47,7 +47,7 @@ const emit = defineEmits(["select"]);
               </div>
             </div>
           </div>
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-50 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 dark:bg-zinc-900/50">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-zinc-50 opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover:translate-x-1 group-hover:opacity-100 dark:bg-zinc-900/50">
              <ArrowRight class="h-4 w-4 text-zinc-400 group-hover:text-zinc-900 dark:text-zinc-500 dark:group-hover:text-white" />
           </div>
         </div>

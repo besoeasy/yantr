@@ -61,7 +61,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-300 group-hover:scale-105">
+        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-200 group-hover:scale-105">
           <Github class="h-5 w-5" />
         </div>
         <div>
@@ -77,7 +77,7 @@ const buildTimeAgo = formatTimeAgo(buildDate);
 
     <!-- Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-500 group-hover:-translate-y-1 sm:text-5xl">
+      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
         {{ t("githubCard.title") }}
       </div>
       <div class="yantra-text-secondary mb-6 line-clamp-2 text-sm leading-relaxed">
@@ -90,13 +90,13 @@ const buildTimeAgo = formatTimeAgo(buildDate);
           href="https://github.com/besoeasy/yantr"
           target="_blank"
           rel="noopener noreferrer"
-          class="gh-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-all duration-300 active:scale-[0.98]"
+          class="gh-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
         >
           <div class="relative z-10 flex items-center gap-2.5">
             <Github class="h-4 w-4 fill-current" />
             <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('githubCard.starCta') }}</span>
           </div>
-          <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-300 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+          <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
         </a>
       </div>
 

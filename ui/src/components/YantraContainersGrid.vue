@@ -66,7 +66,7 @@ function navigate(group) {
       @keydown.space.prevent="navigate(group)"
       role="button"
       tabindex="0"
-      class="group relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)] animate-fadeIn focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+      class="group relative flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-6 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)] anim-enter focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
     >
       <div class="flex w-full items-start justify-between gap-3">
         <div class="flex items-center gap-4 min-w-0">
@@ -97,14 +97,14 @@ function navigate(group) {
           </div>
         </div>
         
-        <div class="flex h-8 w-8 shrink-0 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <div class="flex h-8 w-8 shrink-0 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100">
            <ArrowRight class="h-5 w-5 text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-600 dark:hover:text-white" />
         </div>
       </div>
 
       <!-- Name at bottom + services -->
       <div class="relative z-10 mt-auto flex flex-col pt-6">
-        <div class="mb-4 text-3xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-1 sm:text-4xl dark:text-white line-clamp-2">
+        <div class="mb-4 text-3xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-[3px] sm:text-4xl dark:text-white line-clamp-2">
            {{ group.name }} 
         </div>
         <div class="flex flex-col gap-2">

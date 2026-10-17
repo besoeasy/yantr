@@ -495,7 +495,7 @@ onMounted(() => {
     </div>
 
     <!-- Content -->
-    <main v-else-if="stack" class="animate-fadeIn space-y-8">
+    <main v-else-if="stack" class="anim-enter space-y-8">
       <!-- Drift: the catalog definition changed after this stack was deployed.
            Update only refreshes images, so point at the app page for a redeploy. -->
       <div
