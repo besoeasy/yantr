@@ -4,6 +4,7 @@ import path from 'path';
 import nunjucks from 'nunjucks';
 import { parse } from 'yaml';
 import { fileURLToPath } from 'url';
+import { parseFleetEvents, aggregateFleet, emptyFleetStats } from './website/fleet.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -425,6 +426,8 @@ async function fetchGitHubData() {
 // anonymous presence/install pings aggregated from the public ntfy topic.
 // The snapshot is written to website/presence.json so yantr.org renders
 // instantly; the page then refreshes live from ntfy in the browser.
+//
+// The aggregation itself is in website/fleet.js, which the page imports too.
 const presenceJsonPath = path.join(websiteDir, 'presence.json');
 const PRESENCE_TOPIC = (
   process.env.YANTR_PRESENCE_TOPIC ||
@@ -455,230 +458,6 @@ function httpsGetText(url, timeoutMs = 15000) {
   });
 }
 
-const PRESENCE_COUNTRIES = {
-  AD: 'Andorra',
-  AE: 'United Arab Emirates',
-  AF: 'Afghanistan',
-  AL: 'Albania',
-  AM: 'Armenia',
-  AR: 'Argentina',
-  AT: 'Austria',
-  AU: 'Australia',
-  AZ: 'Azerbaijan',
-  BA: 'Bosnia and Herzegovina',
-  BD: 'Bangladesh',
-  BE: 'Belgium',
-  BG: 'Bulgaria',
-  BH: 'Bahrain',
-  BO: 'Bolivia',
-  BR: 'Brazil',
-  BY: 'Belarus',
-  CA: 'Canada',
-  CH: 'Switzerland',
-  CL: 'Chile',
-  CN: 'China',
-  CO: 'Colombia',
-  CR: 'Costa Rica',
-  CY: 'Cyprus',
-  CZ: 'Czechia',
-  DE: 'Germany',
-  DK: 'Denmark',
-  DO: 'Dominican Republic',
-  DZ: 'Algeria',
-  EC: 'Ecuador',
-  EE: 'Estonia',
-  EG: 'Egypt',
-  ES: 'Spain',
-  FI: 'Finland',
-  FR: 'France',
-  GB: 'United Kingdom',
-  GE: 'Georgia',
-  GR: 'Greece',
-  GT: 'Guatemala',
-  HK: 'Hong Kong',
-  HR: 'Croatia',
-  HU: 'Hungary',
-  ID: 'Indonesia',
-  IE: 'Ireland',
-  IL: 'Israel',
-  IN: 'India',
-  IQ: 'Iraq',
-  IR: 'Iran',
-  IS: 'Iceland',
-  IT: 'Italy',
-  JO: 'Jordan',
-  JP: 'Japan',
-  KE: 'Kenya',
-  KR: 'South Korea',
-  KW: 'Kuwait',
-  KZ: 'Kazakhstan',
-  LB: 'Lebanon',
-  LK: 'Sri Lanka',
-  LT: 'Lithuania',
-  LU: 'Luxembourg',
-  LV: 'Latvia',
-  MA: 'Morocco',
-  MD: 'Moldova',
-  ME: 'Montenegro',
-  MK: 'North Macedonia',
-  MM: 'Myanmar',
-  MX: 'Mexico',
-  MY: 'Malaysia',
-  NG: 'Nigeria',
-  NL: 'Netherlands',
-  NO: 'Norway',
-  NP: 'Nepal',
-  NZ: 'New Zealand',
-  OM: 'Oman',
-  PA: 'Panama',
-  PE: 'Peru',
-  PH: 'Philippines',
-  PK: 'Pakistan',
-  PL: 'Poland',
-  PR: 'Puerto Rico',
-  PT: 'Portugal',
-  PY: 'Paraguay',
-  QA: 'Qatar',
-  RO: 'Romania',
-  RS: 'Serbia',
-  RU: 'Russia',
-  SA: 'Saudi Arabia',
-  SE: 'Sweden',
-  SG: 'Singapore',
-  SI: 'Slovenia',
-  SK: 'Slovakia',
-  SV: 'El Salvador',
-  TH: 'Thailand',
-  TN: 'Tunisia',
-  TR: 'Turkey',
-  TW: 'Taiwan',
-  UA: 'Ukraine',
-  UG: 'Uganda',
-  US: 'United States',
-  UY: 'Uruguay',
-  UZ: 'Uzbekistan',
-  VE: 'Venezuela',
-  VN: 'Vietnam',
-  ZA: 'South Africa',
-  '??': 'Unknown',
-};
-// Same names as LookupCountry in core/presence/countries.go.
-function presenceCountryName(code) {
-  code = String(code || '').trim().toUpperCase();
-  if (!code || code === '??') return 'Unknown';
-  return PRESENCE_COUNTRIES[code] || code;
-}
-
-// Mirrors ParseEvent + fetchAndAggregate in core/presence/stats.go.
-function parsePresenceMessages(ndjson) {
-  const events = [];
-  for (const line of String(ndjson || '').split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    let msg;
-    try {
-      msg = JSON.parse(trimmed);
-    } catch {
-      continue;
-    }
-    if (msg.event && msg.event !== 'message') continue;
-    let evt;
-    try {
-      evt = JSON.parse(msg.message);
-    } catch {
-      continue;
-    }
-    if (!evt || !evt.event) continue;
-    if (!evt.ts && msg.time) evt.ts = msg.time;
-    if (!evt.node && msg.id) evt.node = msg.id;
-    if (evt.country) evt.country = String(evt.country).trim().toUpperCase();
-    events.push(evt);
-  }
-  return events;
-}
-
-function sortedPresenceList(counts, limit, toEntry) {
-  const out = Object.entries(counts).map(([key, count]) => toEntry(key, count));
-  out.sort((a, b) => (b.count - a.count) || (String(a.name).localeCompare(String(b.name))));
-  return limit > 0 ? out.slice(0, limit) : out;
-}
-
-// Mirrors Aggregate in core/presence/stats.go: latest presence wins per node.
-function aggregatePresence(events, appNames) {
-  const nodes = new Map();
-  const installs = {};
-  for (const evt of events) {
-    if (evt.event === 'presence') {
-      const id =
-        evt.node ||
-        `fp:${evt.country || ''}|${evt.os || ''}|${evt.arch || ''}|${evt.cores || 0}|${evt.ram_gb || 0}|${evt.v || ''}`;
-      const prev = nodes.get(id);
-      if (!prev || (evt.ts || 0) >= prev.ts) nodes.set(id, { evt, ts: evt.ts || 0 });
-    } else if (evt.event === 'install' && evt.app) {
-      installs[evt.app] = (installs[evt.app] || 0) + 1;
-    }
-  }
-
-  const countryCounts = {};
-  const osCounts = {};
-  const appCounts = {};
-  const ramValues = [];
-  for (const { evt } of nodes.values()) {
-    const country = evt.country || '??';
-    countryCounts[country] = (countryCounts[country] || 0) + 1;
-    const os = evt.os || 'unknown';
-    osCounts[os] = (osCounts[os] || 0) + 1;
-    if (evt.ram_gb > 0) ramValues.push(evt.ram_gb);
-    for (const app of evt.apps || []) {
-      if (app) appCounts[app] = (appCounts[app] || 0) + 1;
-    }
-  }
-  // Install pings still count when a node has not sent presence yet.
-  for (const [app, n] of Object.entries(installs)) {
-    if (!appCounts[app]) appCounts[app] = n;
-  }
-
-  const ram = { min: 0, max: 0, avg: 0, unit: 'GB', count: ramValues.length };
-  if (ramValues.length > 0) {
-    ram.min = Math.min(...ramValues);
-    ram.max = Math.max(...ramValues);
-    ram.avg = ramValues.reduce((s, v) => s + v, 0) / ramValues.length;
-    ram.count = ramValues.length;
-  }
-
-  return {
-    nodes: nodes.size,
-    events: events.length,
-    countries: sortedPresenceList(countryCounts, 0, (code, count) => ({
-      code,
-      name: presenceCountryName(code),
-      count,
-    })),
-    os: sortedPresenceList(osCounts, 12, (name, count) => ({ name, count })),
-    ram,
-    apps: sortedPresenceList(appCounts, 12, (id, count) => ({
-      id,
-      name: (appNames && appNames[id]) || id,
-      count,
-    })),
-    window: 'ntfy cache',
-    fetchedAt: new Date().toISOString(),
-  };
-}
-
-function emptyPresenceStats() {
-  return {
-    nodes: 0,
-    events: 0,
-    countries: [],
-    os: [],
-    ram: { min: 0, max: 0, avg: 0, unit: 'GB', count: 0 },
-    apps: [],
-    window: 'ntfy cache',
-    fetchedAt: new Date().toISOString(),
-  };
-}
-
 async function fetchPresenceSnapshot() {
   console.log('\n📡 Fetching fleet presence snapshot...');
   let appNames = {};
@@ -693,14 +472,14 @@ async function fetchPresenceSnapshot() {
 
   try {
     const ndjson = await httpsGetText(`${PRESENCE_TOPIC}/json?poll=1&since=all`);
-    const stats = aggregatePresence(parsePresenceMessages(ndjson), appNames);
+    const stats = aggregateFleet(parseFleetEvents(ndjson), appNames);
     fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
     console.log(`✅ Presence snapshot saved (${stats.nodes} nodes, ${stats.events} events)`);
   } catch (error) {
     console.warn(`⚠️  Could not fetch presence: ${error.message}`);
     // Snapshot fallback so the Fleet section still renders its empty state.
     if (!fs.existsSync(presenceJsonPath)) {
-      const stats = emptyPresenceStats();
+      const stats = emptyFleetStats();
       fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
     }
   }

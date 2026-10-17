@@ -954,7 +954,10 @@
       </section>
     </main>
 
-    <script>
+    <script type="module">
+      // The fleet aggregation is shared with the build: see website/fleet.js.
+      import { parseFleetEvents, aggregateFleet } from "./fleet.js";
+
       function getRandomUniqueItems(items, count) {
         if (!Array.isArray(items) || items.length === 0 || count <= 0) return [];
 
@@ -1327,32 +1330,25 @@
         render();
       }
 
-      // ── Live Fleet Presence ──────────────────────────
+      // ── Live Fleet ───────────────────────────────────
       // Same stats as the app UI Fleet page (ui/src/views/Fleet.vue):
       // nodes, RAM min/max/avg, countries, OS, most installed apps.
       // Renders the build-time ./presence.json snapshot instantly, then
       // refreshes live from the public ntfy presence feed in the browser.
+      //
+      // The parsing, the aggregation and the country names all come from
+      // website/fleet.js — the same module website-build.js writes the snapshot
+      // with, so the page cannot disagree with the file it was built from.
       const FLEET_NTFY_URL = "https://ntfy.sh/yantr/json?poll=1&since=all";
       let fleetAppIndex = null;
-      // Code → display name from the build-time snapshot (resolved with the
-      // same table as LookupCountry in core/presence/countries.go).
-      let fleetCountryNames = {};
+      // The aggregation wants display names, the rows want the catalog entry
+      // (for its logo), so the index is reduced to a name map alongside it.
+      let fleetAppNames = {};
 
       function fleetEsc(s) {
         return String(s ?? "").replace(/[&<>"']/g, (c) => ({
           "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
         })[c]);
-      }
-
-      function fleetCountryName(code) {
-        code = String(code || "").trim().toUpperCase();
-        if (!code || code === "??") return "Unknown";
-        if (fleetCountryNames[code]) return fleetCountryNames[code];
-        try {
-          const name = new Intl.DisplayNames(["en"], { type: "region" }).of(code);
-          if (name && name !== code) return name;
-        } catch { /* fall through */ }
-        return code;
       }
 
       async function fleetAppIndexLoad() {
@@ -1365,87 +1361,17 @@
             if (app && app.id) fleetAppIndex[app.id] = app;
           }
         } catch { /* catalog optional — fall back to raw ids */ }
+        fleetAppNames = {};
+        for (const [id, app] of Object.entries(fleetAppIndex)) {
+          if (app && app.name) fleetAppNames[id] = app.name;
+        }
         return fleetAppIndex;
       }
 
-      // Mirrors Aggregate in core/presence/stats.go: latest presence wins.
-      function aggregateFleetEvents(rawEvents, appIndex) {
-        const nodes = new Map();
-        const installs = {};
-        for (const evt of rawEvents) {
-          if (evt.event === "presence") {
-            const id = evt.node ||
-              `fp:${evt.country || ""}|${evt.os || ""}|${evt.arch || ""}|${evt.cores || 0}|${evt.ram_gb || 0}|${evt.v || ""}`;
-            const prev = nodes.get(id);
-            if (!prev || (evt.ts || 0) >= prev.ts) nodes.set(id, { evt, ts: evt.ts || 0 });
-          } else if (evt.event === "install" && evt.app) {
-            installs[evt.app] = (installs[evt.app] || 0) + 1;
-          }
-        }
-
-        const countryCounts = {};
-        const osCounts = {};
-        const appCounts = {};
-        const ramValues = [];
-        for (const { evt } of nodes.values()) {
-          const country = (evt.country || "??").toUpperCase();
-          countryCounts[country] = (countryCounts[country] || 0) + 1;
-          const os = evt.os || "unknown";
-          osCounts[os] = (osCounts[os] || 0) + 1;
-          if (evt.ram_gb > 0) ramValues.push(evt.ram_gb);
-          for (const app of evt.apps || []) {
-            if (app) appCounts[app] = (appCounts[app] || 0) + 1;
-          }
-        }
-        for (const [app, n] of Object.entries(installs)) {
-          if (!appCounts[app]) appCounts[app] = n;
-        }
-
-        const byCountDesc = (entries) =>
-          entries.sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
-        const ram = { min: 0, max: 0, avg: 0, unit: "GB", count: ramValues.length };
-        if (ramValues.length > 0) {
-          ram.min = Math.min(...ramValues);
-          ram.max = Math.max(...ramValues);
-          ram.avg = ramValues.reduce((s, v) => s + v, 0) / ramValues.length;
-        }
-
-        return {
-          nodes: nodes.size,
-          events: rawEvents.length,
-          countries: byCountDesc(Object.entries(countryCounts)).map(([code, count]) => ({
-            code, name: fleetCountryName(code), count,
-          })),
-          os: byCountDesc(Object.entries(osCounts)).slice(0, 12).map(([name, count]) => ({ name, count })),
-          ram,
-          apps: byCountDesc(Object.entries(appCounts)).slice(0, 12).map(([id, count]) => ({
-            id, name: (appIndex && appIndex[id] && appIndex[id].name) || id, count,
-          })),
-          window: "ntfy cache",
-          fetchedAt: new Date().toISOString(),
-        };
-      }
-
-      async function fetchFleetLive(appIndex) {
+      async function fetchFleetLive() {
         const res = await fetch(FLEET_NTFY_URL, { headers: { Accept: "application/x-ndjson" } });
         if (!res.ok) throw new Error(`ntfy status ${res.status}`);
-        const text = await res.text();
-        const events = [];
-        for (const line of text.split("\n")) {
-          const trimmed = line.trim();
-          if (!trimmed) continue;
-          let msg;
-          try { msg = JSON.parse(trimmed); } catch { continue; }
-          if (msg.event && msg.event !== "message") continue;
-          let evt;
-          try { evt = JSON.parse(msg.message); } catch { continue; }
-          if (!evt || !evt.event) continue;
-          if (!evt.ts && msg.time) evt.ts = msg.time;
-          if (!evt.node && msg.id) evt.node = msg.id;
-          if (evt.country) evt.country = String(evt.country).trim().toUpperCase();
-          events.push(evt);
-        }
-        return aggregateFleetEvents(events, appIndex);
+        return aggregateFleet(parseFleetEvents(await res.text()), fleetAppNames);
       }
 
       function renderFleet(stats) {
@@ -1534,10 +1460,12 @@
         if (!document.getElementById("fleet-countries")) return;
         if (btn) btn.disabled = true;
         try {
-          const appIndex = await fleetAppIndexLoad();
+          // Fills fleetAppNames, which the aggregation needs and the snapshot
+          // upgrade below relies on.
+          await fleetAppIndexLoad();
           if (live) {
             try {
-              renderFleet(await fetchFleetLive(appIndex));
+              renderFleet(await fetchFleetLive());
               return;
             } catch (e) {
               console.warn("Live fleet fetch failed, keeping snapshot:", e);
@@ -1547,14 +1475,11 @@
           const res = await fetch("./presence.json");
           if (!res.ok) throw new Error("presence snapshot missing");
           const data = await res.json();
-          for (const c of (data.stats && data.stats.countries) || []) {
-            if (c && c.code && c.name) fleetCountryNames[c.code] = c.name;
-          }
           renderFleet(data.stats || data);
           // Upgrade to live data in the background when possible.
           if (!live) {
             try {
-              renderFleet(await fetchFleetLive(appIndex));
+              renderFleet(await fetchFleetLive());
             } catch (e) {
               console.warn("Live fleet refresh failed, keeping snapshot:", e);
             }
