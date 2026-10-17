@@ -220,7 +220,7 @@ onUnmounted(() => {
   <!-- The catalog is the one page that is not a single column: a filter rail
        beside a list. `bare` keeps AppLayout's container out of the way, and the
        flex layout rides on the shell itself. -->
-  <AppLayout width="bare" gap="none" class="flex flex-col lg:flex-row">
+  <AppLayout width="bare" class="flex flex-col lg:flex-row">
     
     <!-- Sidebar / Filters — appears ABOVE main content on mobile, right panel on desktop -->
     <aside class="w-full lg:w-72 shrink-0 border-b lg:border-b-0 lg:border-l border-gray-200/80 dark:border-zinc-800/80 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-1 lg:order-2 scrollbar-none">

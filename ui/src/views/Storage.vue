@@ -329,7 +329,7 @@ onMounted(startPolling)
   <!-- The header is deliberately full-bleed and sticky, so this page takes the
        shell without a container: AppLayout's padding would inset the header and
        break that. Each of header and main brings its own max-w-7xl. -->
-  <AppLayout width="bare" gap="none">
+  <AppLayout width="bare">
     <!-- Header -->
     <header class="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-[#0A0A0A]/80">
       <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">

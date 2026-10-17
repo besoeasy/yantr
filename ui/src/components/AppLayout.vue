@@ -21,7 +21,7 @@ const WIDTHS = {
   reading: "max-w-7xl",
   /** The developer profile, whose two-column header wants a tighter measure. */
   narrow: "max-w-6xl",
-  /** No container. For a view that brings its own full-height body. */
+  /** No container at all. For a view that brings its own body. */
   bare: "",
 };
 
@@ -39,6 +39,7 @@ const props = defineProps({
     // cannot reference the map itself.
     validator: (value) => ["wide", "reading", "narrow", "bare"].includes(value),
   },
+  /** Vertical rhythm between this page's sections. Ignored when width is bare. */
   gap: {
     type: String,
     default: "loose",
@@ -51,14 +52,13 @@ const props = defineProps({
   <div
     class="min-h-screen bg-white font-sans text-gray-900 selection:bg-blue-500/30 dark:bg-[#0A0A0A] dark:text-zinc-100"
   >
-    <!-- `bare` gets no width and no padding: the app catalog's filter rail is a
-         full-height column that any container here would fight. -->
-    <div
-      v-if="props.width === 'bare'"
-      :class="GAPS[props.gap]"
-    >
-      <slot />
-    </div>
+    <!-- `bare` adds nothing at all — not even a wrapper div. A page that uses it
+         is bringing its own body, and it may be relying on this root being the
+         flex container: the catalog puts `flex lg:flex-row` on this element via
+         class fallthrough, so an extra div in between would stack its filter
+         rail on top of its grid instead of beside it. That is exactly what a
+         first version of this component did. -->
+    <slot v-if="props.width === 'bare'" />
     <div
       v-else
       class="mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
