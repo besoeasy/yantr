@@ -8,6 +8,7 @@ import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useNotification } from '../composables/useNotification'
 import { usePolling } from '../composables/usePolling'
+import { storageTab } from '../utils/routes.js'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -105,10 +106,7 @@ async function freeCurrent() {
 function goToManage() {
   const item = current.value
   if (!item) return
-  router.push({
-    path: '/storage',
-    query: { tab: item.kind === 'image' ? 'images-unused' : 'volumes-unused' },
-  })
+  router.push(storageTab(item.kind === 'image' ? 'images-unused' : 'volumes-unused'))
 }
 
 const { start: startBiggestUnusedCardPolling } = usePolling(fetchUnused, 30000)
