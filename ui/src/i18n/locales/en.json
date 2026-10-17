@@ -13,7 +13,7 @@
   "fleet": {
     "eyebrow": "Network",
     "title": "Fleet",
-    "subtitle": "Anonymous nodes from the public presence feed. Country, OS, RAM, and the apps they run.",
+    "subtitle": "Anonymous nodes reporting their country, OS, RAM, and the apps they run.",
     "nodes": "Nodes",
     "ramLow": "RAM lowest",
     "ramHigh": "RAM highest",

@@ -13,7 +13,7 @@
   "fleet": {
     "eyebrow": "Netzwerk",
     "title": "Flotte",
-    "subtitle": "Anonyme Knoten aus dem öffentlichen Presence-Feed. Land, OS, RAM und installierte Apps.",
+    "subtitle": "Anonyme Knoten, die Land, OS, RAM und installierte Apps melden.",
     "nodes": "Knoten",
     "ramLow": "RAM niedrigst",
     "ramHigh": "RAM höchst",

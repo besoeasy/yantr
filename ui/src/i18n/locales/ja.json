@@ -13,7 +13,7 @@
   "fleet": {
     "eyebrow": "ネットワーク",
     "title": "フリート",
-    "subtitle": "公開プレゼンスの匿名ノード。国、OS、RAM、インストール済みアプリ。",
+    "subtitle": "国・OS・RAM・インストール済みアプリを報告する匿名ノード。",
     "nodes": "ノード",
     "ramLow": "RAM 最小",
     "ramHigh": "RAM 最大",

@@ -13,7 +13,7 @@
   "fleet": {
     "eyebrow": "Réseau",
     "title": "Flotte",
-    "subtitle": "Nœuds anonymes du flux de présence public. Pays, OS, RAM et apps installées.",
+    "subtitle": "Nœuds anonymes qui déclarent leur pays, OS, RAM et apps installées.",
     "nodes": "Nœuds",
     "ramLow": "RAM min",
     "ramHigh": "RAM max",
