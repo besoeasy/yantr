@@ -8,6 +8,7 @@ import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
 import { appUrl, isNavigableProtocol } from "../utils/url";
 import { buildIssueReportUrl } from "../utils/developer";
+import { appDetail, dashboard } from "../utils/routes.js";
 import { useYantrAuth } from "../composables/useYantrAuth";
 import AppComments from "../components/AppComments.vue";
 import AppLogo from "../components/AppLogo.vue";
@@ -266,7 +267,7 @@ async function fetchStack() {
     } else if (res.status === 404) {
       // A stack that is genuinely gone should send the user back to the grid.
       toast.error(t("stackView.stackNotFound"));
-      router.push("/");
+      router.push(dashboard());
       return;
     } else {
       // Report a malformed-but-present response without ejecting the user.
@@ -316,7 +317,7 @@ async function removeStack() {
 
     if (data.success && data.removed) {
       toast.success(t("stackView.stackRemoved", { name }));
-      router.push("/");
+      router.push(dashboard());
     } else if (data.success) {
       // Defensive: the endpoint sets `removed`. Without it, treat as incomplete.
       throw new Error(t("stackView.removalFailed"));
@@ -331,7 +332,7 @@ async function removeStack() {
         const pollResult = await pollJobUntilDone(active.id);
         if (pollResult.success) {
           toast.success(t("stackView.stackRemoved", { name }));
-          router.push("/");
+          router.push(dashboard());
           return;
         } else if (pollResult.error) {
           toast.error(t("stackView.failedToRemove", { error: pollResult.error }));
@@ -508,7 +509,7 @@ onMounted(() => {
           </div>
         </div>
         <button
-          @click="router.push(`/apps/${stack.appname || stack.appId}`)"
+          @click="router.push(appDetail(stack.appId))"
           class="yantra-btn yantra-btn--warn shrink-0"
         >
           <ExternalLink :size="13" />{{ t("stackView.appPage") }}
@@ -579,7 +580,7 @@ onMounted(() => {
                 <Square :size="13" />{{ t("stackView.stopStack") }}
               </button>
 
-              <button v-if="stack.app" @click="router.push(`/apps/${stack.appname || stack.appId}`)" class="yantra-btn">
+              <button v-if="stack.app" @click="router.push(appDetail(stack.appId))" class="yantra-btn">
                 <ExternalLink :size="13" />{{ t("stackView.appPage") }}
               </button>
 
