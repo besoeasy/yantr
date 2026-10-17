@@ -8,6 +8,7 @@ import { useI18n } from "vue-i18n";
 import AppMetadata from "../components/AppMetadata.vue";
 import AppDeployForm from "../components/AppDeployForm.vue";
 import AppComments from "../components/AppComments.vue";
+import { apps } from "../utils/routes.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -45,11 +46,11 @@ async function fetchApp() {
     const data = await expectApiSuccess(response, t('appDetail.failedToLoadApps'));
 
     if (data.apps) {
-      app.value = data.apps.find((a) => a.id === route.params.appname);
+      app.value = data.apps.find((a) => a.id === route.params.appId);
 
       if (!app.value) {
         toast.error(t('appDetail.appNotFound'));
-        router.push("/apps");
+        router.push(apps());
       }
       clearLoadError('app');
     }
