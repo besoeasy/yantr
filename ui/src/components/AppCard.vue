@@ -56,10 +56,11 @@ function handleClick() {
     @keydown.enter.prevent="handleClick"
     @keydown.space.prevent="handleClick"
     :class="[
-      'group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white dark:bg-black p-6 border transition-all duration-300',
-      'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700',
+      'group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white dark:bg-black p-6 border',
+      'border-zinc-200 dark:border-zinc-800 transition-[border-color,box-shadow,transform]',
+      'duration-200 hover:border-zinc-300 dark:hover:border-zinc-700',
       isInteractive
-        ? 'cursor-pointer hover:shadow-lg hover:-translate-y-1'
+        ? 'cursor-pointer hover:shadow-lg hover:-translate-y-[3px]'
         : 'cursor-default opacity-80'
     ]"
     role="button"
@@ -67,13 +68,13 @@ function handleClick() {
     :aria-label="`Open ${app?.name ?? 'app'} details`"
   >
     <div class="flex items-start justify-between gap-4">
-      <div class="w-14 h-14 shrink-0 transition-transform duration-300 group-hover:scale-105">
+      <div class="w-14 h-14 shrink-0 transition-transform duration-200 group-hover:scale-105">
         <AppLogo
           :logo="app?.logo"
           :name="app?.name"
           :seed="app?.id || app?.name"
           img-class="h-full w-full object-contain"
-          icon-class="h-full w-full text-zinc-300 dark:text-zinc-700 transition-colors duration-300 group-hover:text-zinc-600 dark:group-hover:text-zinc-400"
+          icon-class="h-full w-full text-zinc-300 dark:text-zinc-700 transition-colors duration-200 group-hover:text-zinc-600 dark:group-hover:text-zinc-400"
         />
       </div>
 
@@ -99,7 +100,7 @@ function handleClick() {
     </div>
 
     <div class="mt-6 flex flex-1 flex-col">
-      <h3 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors duration-300">
+      <h3 class="text-lg font-bold tracking-tight text-zinc-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors duration-200">
         {{ app?.name || t('appCard.unknownApp') }}
       </h3>
 
@@ -108,7 +109,7 @@ function handleClick() {
       </p>
 
       <div class="mt-auto pt-6 flex items-center gap-2">
-        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 transition-colors duration-300 group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
+        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 transition-colors duration-200 group-hover:border-zinc-200 dark:group-hover:border-zinc-700">
           <Layers :size="12" />
           <span class="text-[10px] font-medium tracking-wide">
             {{ randomTag || t('appCard.application') }}
