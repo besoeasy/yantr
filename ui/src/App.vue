@@ -9,6 +9,7 @@ import AuthGate from './components/AuthGate.vue';
 import { onMounted, onUnmounted, ref, computed, h } from "vue";
 import { useI18n } from "vue-i18n";
 import { useYantrAuth } from './composables/useYantrAuth';
+import { ROUTE, apps, dashboard, fleet, logs } from './utils/routes.js';
 
 const route = useRoute();
 const router = useRouter();
@@ -53,10 +54,10 @@ const communityLinks = [
 const isActive = (name) => route.name === name;
 
 const navItems = [
-  { name: "home", path: "/home", label: "Home", icon: Home },
-  { name: "apps", path: "/apps", label: "Apps", icon: Box },
-  { name: "presence", path: "/presence", label: "Fleet", icon: Globe },
-  { name: "logs", path: "/logs", label: "Logs", icon: Terminal },
+  { name: ROUTE.DASHBOARD, to: dashboard(), label: "Home", icon: Home },
+  { name: ROUTE.APPS, to: apps(), label: "Apps", icon: Box },
+  { name: ROUTE.FLEET, to: fleet(), label: "Fleet", icon: Globe },
+  { name: ROUTE.LOGS, to: logs(), label: "Logs", icon: Terminal },
 ];
 
 const setTheme = (nextTheme) => {
@@ -86,7 +87,7 @@ const setLocale = (newLocale) => {
 
 function handleLockSession() {
   logoutYantr();
-  router.push("/");
+  router.push(dashboard());
 }
 
 const languages = [
@@ -141,7 +142,7 @@ onUnmounted(() => {
         <router-link
           v-for="item in navItems"
           :key="item.name"
-          :to="item.path"
+          :to="item.to"
           :class="[
             'group relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
             isActive(item.name)
@@ -253,14 +254,14 @@ onUnmounted(() => {
 
     <!-- Mobile Header (md:hidden) -->
     <header class="flex md:hidden sticky top-0 h-14 z-50 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800 px-4 items-center justify-between">
-      <router-link to="/home" class="text-sm font-black tracking-wider uppercase text-slate-900 dark:text-white">
+      <router-link :to="dashboard()" class="text-sm font-black tracking-wider uppercase text-slate-900 dark:text-white">
         YANTR
       </router-link>
       <nav class="flex items-center gap-1">
         <router-link
           v-for="item in navItems"
           :key="item.name"
-          :to="item.path"
+          :to="item.to"
           :class="[
             'p-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center',
             isActive(item.name)
