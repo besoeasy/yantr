@@ -49,7 +49,7 @@ Not allowed: `info.json`, `Dockerfile`, `entrypoint.sh`, or any build context.
 | Key | Type | Rule |
 | --- | --- | --- |
 | `notes` | list | Post-deploy hints shown to the user. |
-| `developers` | list | Nostr public keys — see below. |
+| `developers` | list | Nostr `npub1…` public keys — see below. |
 | `env_generators` | map | `VAR: {length, charset}`, charset ∈ `alnum` `hex` `numeric` `alpha` `base64url` `alnum_symbols`. |
 | `ports` | list | `{port, protocol, show, label, service}`, protocol ∈ `HTTP` `HTTPS` `TCP` `UDP`. |
 
@@ -88,11 +88,12 @@ x-yantr:
   developers: ["npub1hznmntyj254kqhr079a5gt2wvhyll6rz6q67pyjres4lfkql22kq5ml6zh"]
 ```
 
-- An entry is an `npub1…` or an `nprofile1…` key.
-- Never an `nsec1…` private key, a `note1…` event id, or a `nostr:` prefix.
+- An entry is strictly an `npub1…` key.
+- Never an `nsec1…` private key, a `note1…` event id, an `nprofile1…`, or a
+  `nostr:` prefix.
 - Anything that is not a valid key is dropped when the catalog loads.
-- Entries are deduplicated on the **decoded** pubkey, not the spelling — one
-  account written as an npub and again as an nprofile is one developer.
+- Entries are deduplicated on the **decoded** pubkey, not the spelling — the
+  same key written in two cases is one developer.
 - Credit the **upstream author of the software**, not whoever wrote the recipe.
   Leave the field out when you cannot tie a key to a real account.
 
