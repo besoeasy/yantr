@@ -7,6 +7,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
 import AppCard from "../components/AppCard.vue";
+import { appDetail } from "../utils/routes.js";
 import { Tag, Search, LayoutGrid, X, Command } from "@lucide/vue";
 
 const { t } = useI18n();
@@ -183,7 +184,7 @@ async function fetchContainers() {
 }
 
 function viewAppDetail(appId) {
-  router.push(`/apps/${appId}`);
+  router.push(appDetail(appId));
 }
 
 // Lifecycle
