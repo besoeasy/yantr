@@ -9,6 +9,7 @@ import { useJobs } from "../composables/useJobs";
 import { appUrl, isNavigableProtocol } from "../utils/url";
 import { buildIssueReportUrl } from "../utils/developer";
 import { useYantrAuth } from "../composables/useYantrAuth";
+import AppComments from "../components/AppComments.vue";
 import AppLogo from "../components/AppLogo.vue";
 import DeveloperCredit from "../components/DeveloperCredit.vue";
 import StackServiceList from "../components/StackServiceList.vue";
@@ -902,6 +903,13 @@ onMounted(() => {
       <div class="space-y-4">
         <StackServiceList :services="stack.services" />
       </div>
+
+      <!-- ── Reviews & comments ─────────────────────────────────────────────────────── -->
+      <!-- The same section the app page ends with, on the same catalog tag, so
+           notes written before or after a deploy are the same notes on both
+           pages. Needs the catalog entry: without one there is no app id to
+           tag a comment with, and nothing to show. -->
+      <AppComments v-if="stack.app" :app="stack.app" />
     </main>
   </div>
 </template>

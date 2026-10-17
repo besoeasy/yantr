@@ -16,8 +16,10 @@ import {
 } from "../utils/nostr";
 import { developerShortKey } from "../utils/developer";
 
-// Everything the app-page comments section needs: one relay fan-out for
-// reading, and the reader's own NIP-07 signer for writing.
+// Everything the comments section needs: one relay fan-out for reading, and
+// the reader's own NIP-07 signer for writing. The section shows at the foot of
+// an app's page and at the foot of a running stack's page; both address the
+// same app by the same tag, so both see the same notes.
 //
 // Comments live on public relays, never on this host. Reading opens one
 // NIP-01 REQ per relay and merges what arrives; publishing signs locally
@@ -25,7 +27,8 @@ import { developerShortKey } from "../utils/developer";
 // No key material touches Yantr either way.
 //
 // A factory rather than module-level state, like useDeveloperProfile: the app
-// id changes on every navigation and two app pages must not share a list.
+// id changes on every navigation and two mounted sections must not share a
+// list.
 
 // QUERY_TIMEOUT bounds one relay read: dial, REQ, EVENTs and EOSE. A relay
 // that accepts the socket and then says nothing is the failure this exists
