@@ -311,8 +311,14 @@ onUnmounted(() => {
       <!-- Keyed on the path, not the full path. A param change must rebuild the
            view — AppDetail only fetches in onMounted — but a query-only change
            must not: Storage keeps its tab in ?tab=, so keying on fullPath tore
-           the page down and refetched it on every tab click. -->
-      <router-view :key="route.path" />
+           the page down and refetched it on every tab click.
+           out-in sees one leave, then one enter — two pages cannot be dying and
+           arriving over each other, and the timing lives in motion.css. -->
+      <router-view v-slot="{ Component }">
+        <Transition name="route" mode="out-in">
+          <component :is="Component" :key="route.path" />
+        </Transition>
+      </router-view>
     </main>
 
     </template>
