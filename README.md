@@ -184,17 +184,11 @@ A curated app catalog, one-click deploy.
 
 ## 💬 Community
 
-[![Discord](https://img.shields.io/badge/Discord-Join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/YZG5NVUcAt)
-[![Discord Members](https://img.shields.io/badge/chat-yantr-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/YZG5NVUcAt)
-
-Stuck on a deploy, or want an app that isn't in the catalog yet? Come say hi on [discord.gg/YZG5NVUcAt](https://discord.gg/YZG5NVUcAt).
+Issues and bug reports belong on [GitHub](https://github.com/besoeasy/yantr/issues) so they stay searchable and trackable — that is where they get fixed.
 
 - **App requests** — vote and discuss what lands in the catalog next.
-- **Troubleshooting** — paste logs, get help from people running Yantr on real hardware.
-- **Setup help** — rootless Podman, Quadlet, SELinux, port conflicts.
+- **Troubleshooting** — paste logs, and open a report that already says which version ran and on what host.
 - **Show and tell** — what you're self-hosting.
-
-Issues and bug reports still belong on [GitHub](https://github.com/besoeasy/yantr/issues) so they stay searchable and trackable.
 
 ---
 
@@ -225,5 +219,5 @@ The source stays public. The short version is at the top of [`LICENSE`](LICENSE)
 
 <div align="center">
   <sub>Vue 3 · Go · Podman · Custom CSS</sub><br/><br/>
-  <a href="https://yantr.org">yantr.org</a> · <a href="https://discord.gg/YZG5NVUcAt">Discord</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
+  <a href="https://yantr.org">yantr.org</a> · <a href="https://github.com/besoeasy/yantr/issues">Issues</a> · <a href="AGENTS.md">App Format Guide</a>
 </div>
