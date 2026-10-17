@@ -6,6 +6,7 @@ import { Sparkles, ArrowUpRight, AlertCircle } from "@lucide/vue";
 import AppLogo from "../components/AppLogo.vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
+import { appDetail } from "../utils/routes.js";
 
 const { t } = useI18n();
 const router = useRouter();
@@ -86,7 +87,7 @@ async function fetchData() {
 
 function handleSelect() {
   if (!dailyApp.value?.id) return;
-  router.push(`/apps/${dailyApp.value.id}`);
+  router.push(appDetail(dailyApp.value.id));
 }
 
 onMounted(fetchData);
