@@ -65,8 +65,10 @@ onMounted(async () => {
         <h1 class="mt-2 text-3xl font-semibold tracking-tight">{{ t("stacks.title") }}</h1>
         <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-zinc-400">{{ t("stacks.subtitle") }}</p>
       </div>
+      <!-- The noun comes from the nav label rather than a new string: it is the
+           same word, and it is already translated everywhere. -->
       <p class="text-[11px] font-semibold tabular-nums text-gray-400 dark:text-zinc-500">
-        {{ stackCount }} {{ stackCount === 1 ? t("apps.app") : t("apps.apps") }}
+        {{ stackCount }} {{ t("nav.stacks") }}
       </p>
     </div>
 
