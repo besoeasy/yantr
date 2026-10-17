@@ -3,6 +3,7 @@ import { useApiUrl } from "./useApiUrl";
 import { expectApiSuccess } from "./useApiResponse";
 import { useNostrRelays } from "./useNostrRelays";
 import { queryRelays } from "../utils/relay";
+import { kvGet, kvIsFresh, kvSet } from "../utils/kv";
 import { npubToHex, profileFilter, newestKind0Profiles, PROFILE_KIND } from "../utils/nostr";
 
 // Everything the #/developer/<key> route needs, in two independent halves.
@@ -25,19 +26,24 @@ import { npubToHex, profileFilter, newestKind0Profiles, PROFILE_KIND } from "../
 // A factory rather than module-level state, unlike useRepoStats: the route param
 // changes on every navigation and two developer pages must not share a cache.
 
-// PROFILE_CACHE_TTL and PROFILE_MISS_TTL mirror the rules the backend's cache
-// used, so moving the fetch did not change what a reader sees. Kind-0 is
-// reference data — a name, a picture, an about line — so a week is right; a miss
-// is cached far shorter because an account that publishes a profile this
-// afternoon should not wait a week to show it.
+// The kind-0 lives in IndexedDB, not in memory (utils/kv.js), because it is
+// reference data about an account rather than about a page: a week-old name is
+// still the right name to show, and re-opening three relays on every visit to
+// see whether it changed is a poor trade for a page most people open once.
+//
+// PROFILE_CACHE_TTL and PROFILE_MISS_TTL are the rules the backend's cache used,
+// so moving the fetch did not change what a reader sees. Kind-0 is reference
+// data — a name, a picture, an about line — so a week is right; a miss is
+// cached far shorter because an account that publishes a profile this afternoon
+// should not wait a week to show it.
 const PROFILE_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const PROFILE_MISS_TTL_MS = 60 * 60 * 1000;
 
-// Session-wide, not per-factory: the cache is reference data about an account,
-// not about a page, so two developer pages in one session share it while a
-// fresh load starts over. That is the same lifetime the backend's in-process
-// cache had from the reader's point of view.
-const profileCache = new Map();
+// CACHE_STORE is one object store for this data, and CACHE_VERSION is its shape.
+// A record written by an older build is ignored rather than misread: the fields
+// a page prints must never come from a layout this version does not know.
+const CACHE_STORE = "nostr-profiles";
+const CACHE_VERSION = 1;
 
 // normaliseNostrProfile maps a kind-0 event onto the field names the view reads,
 // because the view should not care where the metadata came from. Name falls back
@@ -60,14 +66,22 @@ function normaliseNostrProfile(raw) {
   };
 }
 
-// cachedProfile returns a cached kind-0 for one pubkey, if the entry is still
-// fresh. A cached failure counts as fresh too, so a relay that was unreachable
-// an hour ago is asked again now rather than remembered as "no profile".
-function cachedProfile(pubkey) {
-  const entry = profileCache.get(pubkey);
-  if (!entry) return null;
-  if (Date.now() >= entry.expires) return null;
-  return entry.profile;
+// cachedProfile reads the stored kind-0 for one pubkey, and reports whether it
+// was found at all. The three states are kept apart deliberately:
+//
+//   { hit: true }   a fresh record — use it, ask no relay
+//   { hit: false }  a fresh record of nothing, or a miss that has not been
+//                   retried yet — do not ask the relays again this visit
+//   null            no record, an expired one, one from an older shape, or a
+//                   store that would not answer — ask the relays
+//
+// A record of "no profile" is worth storing: without it, an account nobody has
+// ever queried would be asked on every visit for as long as the account exists.
+async function cachedProfile(pubkey) {
+  const entry = await kvGet(CACHE_STORE, pubkey);
+  if (!entry || entry.v !== CACHE_VERSION) return null;
+  if (!kvIsFresh(entry)) return null;
+  return { hit: true, profile: entry.profile || null };
 }
 
 export function useDeveloperProfile() {
@@ -106,10 +120,13 @@ export function useDeveloperProfile() {
       return;
     }
 
-    const hit = cachedProfile(pubkey);
-    if (hit) {
-      profile.value = normaliseNostrProfile(hit);
-      profileUnavailable.value = hit === null;
+    // The cache is asked first and its answer is trusted: a fresh record was
+    // verified before it was written, so re-verifying it would cost nothing
+    // gained.
+    const cached = await cachedProfile(pubkey);
+    if (cached) {
+      profile.value = normaliseNostrProfile(cached.profile);
+      profileUnavailable.value = cached.profile === null;
       return;
     }
 
@@ -124,10 +141,18 @@ export function useDeveloperProfile() {
       // a relay must not be able to speak for the account.
       const found = newestKind0Profiles(events)[pubkey] || null;
 
-      profileCache.set(pubkey, {
-        profile: found,
-        expires: Date.now() + (found ? PROFILE_CACHE_TTL_MS : PROFILE_MISS_TTL_MS),
-      });
+      // Written even when nothing was found, and even when the relays could not
+      // be reached: an empty record shortens the next attempt to an hour, and a
+      // record of a failed attempt is not written at all, so the next visit
+      // tries again rather than believing a transport failure was an answer.
+      if (events.length > 0 || relays.length > 0) {
+        await kvSet(CACHE_STORE, pubkey, {
+          v: CACHE_VERSION,
+          pubkey,
+          profile: found,
+          expires: Date.now() + (found ? PROFILE_CACHE_TTL_MS : PROFILE_MISS_TTL_MS),
+        });
+      }
 
       profile.value = normaliseNostrProfile(found);
       profileUnavailable.value = !found;
