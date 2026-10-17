@@ -22,6 +22,9 @@ import {
   developerProfileUrl,
   nostrDmUri,
 } from "../utils/developer";
+// `apps` is already the list of apps this developer is credited on, so the
+// catalog route builder is aliased rather than shadowing it.
+import { appDetail, apps as appsRoute } from "../utils/routes.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -35,7 +38,7 @@ const { developer, apps, profile, loading, notFound, failed, profileUnavailable,
 // catalog instead of a second, subtly different grid.
 const containers = ref([]);
 
-const developerRef = computed(() => String(route.params.key ?? ""));
+const developerRef = computed(() => String(route.params.npub ?? ""));
 
 const key = computed(() => developer.value?.key ?? developerRef.value);
 
@@ -124,7 +127,7 @@ async function fetchContainers() {
 }
 
 function viewAppDetail(appId) {
-  router.push(`/apps/${appId}`);
+  router.push(appDetail(appId));
 }
 
 onMounted(() => {
@@ -152,7 +155,7 @@ watch(developerRef, (next) => {
 
       <!-- Back -->
       <button
-        @click="router.push('/apps')"
+        @click="router.push(appsRoute())"
         class="mb-6 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-gray-900 dark:text-zinc-500 dark:hover:text-zinc-200"
       >
         <ArrowLeft :size="13" />
@@ -172,7 +175,7 @@ watch(developerRef, (next) => {
         </div>
         <h3 class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ key }}</h3>
         <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-zinc-400">{{ t('developer.notFound') }}</p>
-        <button @click="router.push('/apps')" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+        <button @click="router.push(appsRoute())" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
           {{ t('developer.backToApps') }}
         </button>
       </div>
@@ -241,7 +244,7 @@ watch(developerRef, (next) => {
                 <ExternalLink :size="14" /> {{ t('developer.viewOn') }}
               </a>
               <button
-                @click="router.push('/apps')"
+                @click="router.push(appsRoute())"
                 class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
               >
                 <Package :size="14" /> {{ t('developer.browseCatalog') }}
