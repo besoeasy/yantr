@@ -1,0 +1,86 @@
+name: ui
+
+# The UI's own gates: lint, tests, build, and the two invariants that keep the
+# design system from eroding. Without this the SPA only got checked when
+# someone happened to run it locally, which is how 20 duration constants and
+# three spellings of the same hover gesture survived a design sweep unnoticed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ui/**"
+      - ".github/workflows/ui.yml"
+  pull_request:
+    paths:
+      - "ui/**"
+      - ".github/workflows/ui.yml"
+
+# One run per push; a new commit supersedes an in-flight one.
+concurrency:
+  group: ui-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      # ── The design system's own gates ──────────────────────────────────────
+      # Tokens and motion are conventions, and conventions rot silently: a
+      # colour retyped into an SFC, a third bezier, a card that forgot to
+      # animate all look fine in review and all break "one design". These two
+      # checks are the reason the sweep holds.
+
+      - name: Check the motion system is what every component imports
+        run: |
+          set -euo pipefail
+          test -f src/assets/motion.css
+          grep -q "import './assets/motion.css'" src/main.js
+          # Every surface that moves must move through motion.css, not through
+          # a constant it wrote itself. The two Tailwind duration steps and the
+          # hand-copied fade-in are exactly what this sweep removed.
+          if grep -rn "duration-300\|duration-500\|duration-700" src --include='*.vue'; then
+            echo "::error::off-token durations in SFCs; use the --yantra-dur-* band (motion.css)"
+            exit 1
+          fi
+          if grep -rn "animate-fadeIn" src --include='*.vue'; then
+            echo "::error::animate-fadeIn is the old hand-copied arrival; use .anim-enter"
+            exit 1
+          fi
+
+      - name: Check the dark background is named, not pinned
+        run: |
+          set -euo pipefail
+          # --page-bg / --well-bg / --inset-bg replaced 30 hand-written
+          # dark:bg-[#0A0A0A]-style literals. A new one means the theme has a
+          # second place to be changed.
+          if grep -rn "dark:bg-\[#" src --include='*.vue'; then
+            echo "::error::a dark background is pinned as a hex; use a --* token from main.css"
+            exit 1
+          fi

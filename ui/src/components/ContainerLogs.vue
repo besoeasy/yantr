@@ -39,7 +39,7 @@ const { t } = useI18n()
     
     <div 
       id="terminal-logs"
-      class="h-96 overflow-y-auto p-4 font-mono text-[11px] leading-5 text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent"
+      class="h-96 overflow-y-auto p-4 font-mono text-[11px] leading-5 text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-(--inset-bg) border border-gray-200 dark:border-zinc-800 rounded-xl scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent"
     >
       <div v-if="logs.length === 0" class="flex flex-col items-center justify-center h-full text-gray-400 dark:text-zinc-600">
         <div class="mb-2 text-[10px] font-bold uppercase tracking-widest">{{ t('containerDetail.noOutputLogs') }}</div>

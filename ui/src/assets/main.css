@@ -83,7 +83,13 @@
    hex to mean "the dark background" any more. */
 :root.dark {
     --page-bg: #0a0a0a;
+    /* The shell chrome — sidebar, mobile header — sits under a backdrop blur,
+       so it wants its own near-black rather than the page's. */
+    --chrome-bg: #09090b;
     --well-bg: #050505;
+    /* An inset surface inside a card: the log well and the env editor sit in
+       one shade up from the page so the card edge still reads. */
+    --inset-bg: #111111;
 }
 
 * {
@@ -970,7 +976,10 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .border-t-zinc-900{border-top-color:var(--color-zinc-900);}
 .bg-\(--surface-muted\){background-color:var(--surface-muted);}
 .dark\:bg-\(--page-bg\):is(.dark *){background-color:var(--page-bg);}
+.dark\:bg-\(--chrome-bg\):is(.dark *){background-color:var(--chrome-bg);}
+.dark\:bg-\(--chrome-bg\)\/90:is(.dark *){background-color:color-mix(in srgb, var(--chrome-bg) 90%, transparent);}
 .dark\:bg-\(--well-bg\):is(.dark *){background-color:var(--well-bg);}
+.dark\:bg-\(--inset-bg\):is(.dark *){background-color:var(--inset-bg);}
 .bg-amber-50{background-color:var(--color-amber-50);}
 .bg-amber-50\/50{background-color:#fffbeb80;}
 .bg-violet-500\/70{background-color:#8b5cf6b3;}
@@ -1252,6 +1261,15 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .transition-opacity{transition-property:opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
 .transition-\[width\]{transition-property:width;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
 .transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
+
+/* The card gesture, named once. A card that lifts on hover changes exactly
+   three properties; saying so beats transition-all, which also animates
+   layout-affecting properties and makes the card feel heavier than it is.
+   Two lists exist because two gestures do: border+shadow (a panel that
+   tightens) and border+shadow+transform (the -3px lift). */
+.transition-\[border-color\,box-shadow\]{transition-property:border-color,box-shadow;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
+.transition-\[border-color\,box-shadow\,transform\]{transition-property:border-color,box-shadow,transform;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
+.transition-\[border-color\,box-shadow\,transform\,opacity\]{transition-property:border-color,box-shadow,transform,opacity;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration));}
 .duration-150{--tw-duration:.15s;transition-duration:.15s;}
 .duration-200{--tw-duration:.2s;transition-duration:.2s;}
 .duration-300{--tw-duration:.3s;transition-duration:.3s;}

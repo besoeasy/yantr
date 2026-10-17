@@ -179,7 +179,7 @@ const stateLabel = computed(() => {
       </p>
       
       <!-- Arrow indicator at bottom right -->
-      <div class="absolute bottom-0 right-0 -translate-x-4 translate-y-4 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
+      <div class="absolute bottom-0 right-0 -translate-x-4 translate-y-4 opacity-0 transition-[border-color,box-shadow,transform,opacity] duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
         <div class="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-sm transition-colors duration-200 hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white dark:hover:bg-zinc-700">
            <ArrowUpRight class="h-5 w-5" />
         </div>

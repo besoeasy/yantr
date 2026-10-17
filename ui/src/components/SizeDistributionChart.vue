@@ -23,7 +23,7 @@ defineProps({
       <div v-for="item in items" :key="item.name" class="flex items-center gap-3">
         <div class="w-36 shrink-0 text-xs font-mono text-gray-500 dark:text-zinc-400 truncate text-right" :title="item.name">{{ item.name }}</div>
         <div class="flex-1 bg-gray-100 dark:bg-zinc-900 rounded-full h-1.5 overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-500" :style="{ width: item.pct + '%', backgroundColor: item.color }"></div>
+          <div class="h-full rounded-full transition-[border-color,box-shadow,transform,opacity] duration-200" :style="{ width: item.pct + '%', backgroundColor: item.color }"></div>
         </div>
         <div class="w-16 shrink-0 text-xs tabular-nums text-gray-500 dark:text-zinc-500 text-right">{{ item.size }} {{ unit }}</div>
       </div>

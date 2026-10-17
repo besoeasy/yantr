@@ -17,7 +17,7 @@ const { t } = useI18n()
     <div class="flex items-center gap-2 text-[10px] font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-widest">
       <Lock :size="12" /> {{ t('containerDetail.environmentVariables') }}
     </div>
-    <div v-if="env && env.length > 0" class="bg-gray-50 dark:bg-[#111] border border-gray-200 dark:border-zinc-800 rounded-xl p-5 max-h-80 overflow-y-auto custom-scrollbar">
+    <div v-if="env && env.length > 0" class="bg-gray-50 dark:bg-(--inset-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 max-h-80 overflow-y-auto custom-scrollbar">
       <div v-for="(envVar, i) in env" :key="i" class="font-mono text-[11px] mb-3 last:mb-0 break-all flex flex-col sm:flex-row gap-1 sm:gap-4">
         <div class="text-gray-500 dark:text-zinc-500 font-bold shrink-0 sm:w-1/3">{{ envVar.split('=')[0] }}</div>
         <div class="text-gray-900 dark:text-zinc-300 flex-1">{{ envVar.split('=').slice(1).join('=') }}</div>

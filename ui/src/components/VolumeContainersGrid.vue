@@ -68,7 +68,7 @@ function getExpirationInfo(browser) {
         <!-- header -->
         <div class="flex items-start justify-between">
           <div class="flex items-center gap-4">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
               <FolderOpen class="h-5 w-5 text-zinc-900 dark:text-zinc-100" />
             </div>
             <div>

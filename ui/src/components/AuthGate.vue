@@ -430,7 +430,7 @@ onUnmounted(() => {
 
       <!-- Main Card: Pure White with Soft Elevation & No Harsh Borders -->
       <div
-        class="relative rounded-3xl bg-white/95 shadow-2xl shadow-indigo-100/60 p-7 sm:p-8 transition-all duration-300 backdrop-blur-md"
+        class="relative rounded-3xl bg-white/95 shadow-2xl shadow-indigo-100/60 p-7 sm:p-8 transition-[border-color,box-shadow,transform,opacity] duration-200 backdrop-blur-md"
         :class="{ 'opacity-60 pointer-events-none': authState.booting }"
       >
         <!-- Booting Spinner -->
@@ -465,7 +465,7 @@ onUnmounted(() => {
                 :key="step.id"
                 type="button"
                 @click="goToStep(step.id)"
-                class="h-2 rounded-full transition-all duration-300"
+                class="h-2 rounded-full transition-[border-color,box-shadow,transform,opacity] duration-200"
                 :class="activeTab >= step.id ? 'bg-indigo-600 shadow-sm shadow-indigo-200' : 'bg-slate-100'"
               />
             </div>
@@ -653,7 +653,7 @@ onUnmounted(() => {
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <div 
-                    class="h-9 w-9 rounded-xl shadow-xs transition-all duration-500" 
+                    class="h-9 w-9 rounded-xl shadow-xs transition-[border-color,box-shadow,transform,opacity] duration-200" 
                     :style="{ background: keyAvatarGradient }"
                   />
                   <div>

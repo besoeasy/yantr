@@ -147,13 +147,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-white text-slate-900 dark:bg-[#09090b] dark:text-zinc-100 font-sans antialiased">
+  <div class="min-h-screen flex flex-col bg-white text-slate-900 dark:bg-(--chrome-bg) dark:text-zinc-100 font-sans antialiased">
     <NotificationBanner />
     <AuthGate v-if="authState.booting || !authState.authenticated" />
     <template v-else>
 
     <!-- Desktop Vertical Sidebar -->
-    <aside class="hidden md:flex fixed top-0 bottom-0 left-0 w-20 flex-col items-center justify-between py-6 px-3 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl z-50 transition-colors">
+    <aside class="hidden md:flex fixed top-0 bottom-0 left-0 w-20 flex-col items-center justify-between py-6 px-3 bg-white/90 dark:bg-(--chrome-bg)/90 backdrop-blur-xl z-50 transition-colors">
       
       <!-- Center Navigation Items (Top-aligned) -->
       <nav class="flex flex-col items-center gap-3 pt-2">
@@ -162,16 +162,16 @@ onUnmounted(() => {
           :key="item.id"
           :to="item.to"
           :class="[
-            'group relative w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300',
+            'group relative w-12 h-12 rounded-2xl flex items-center justify-center transition-[border-color,box-shadow,transform,opacity] duration-200',
             isActive(item)
               ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md shadow-slate-900/10 dark:shadow-white/10'
               : 'text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/60'
           ]"
         >
-          <component :is="item.icon" :size="20" class="transition-transform duration-300 group-hover:scale-110" />
+          <component :is="item.icon" :size="20" class="transition-transform duration-200 group-hover:scale-110" />
           
           <!-- Tooltip on hover -->
-          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
+          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
             {{ t(item.labelKey) }}
           </span>
         </router-link>
@@ -187,12 +187,12 @@ onUnmounted(() => {
           :href="link.href"
           target="_blank"
           rel="noopener noreferrer"
-          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
+          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white transition-[border-color,box-shadow,transform,opacity] duration-200"
           :title="link.name"
           @click="showLanguageMenu = false"
         >
-          <component :is="link.icon" :size="18" class="transition-transform duration-300 group-hover:scale-110" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
+          <component :is="link.icon" :size="18" class="transition-transform duration-200 group-hover:scale-110" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
             {{ link.name }}
           </span>
         </a>
@@ -202,18 +202,18 @@ onUnmounted(() => {
           <button
             type="button"
             @click="toggleLanguageMenu"
-            class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 transition-all duration-200"
+            class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 transition-[border-color,box-shadow,transform,opacity] duration-200"
             :title="t('nav.language')"
           >
             <span class="text-base select-none">{{ activeLanguage.flag }}</span>
-            <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
+            <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
               {{ activeLanguage.name }}
             </span>
           </button>
 
           <!-- Language Dropdown Popover -->
           <transition
-            enter-active-class="transition-all duration-200 ease-out"
+            enter-active-class="transition-[border-color,box-shadow,transform,opacity] duration-200 ease-out"
             enter-from-class="opacity-0 scale-95 translate-x-2"
             enter-to-class="opacity-100 scale-100 translate-x-0"
             leave-active-class="transition-all duration-150 ease-in"
@@ -246,11 +246,11 @@ onUnmounted(() => {
         <button
           type="button"
           @click="toggleTheme"
-          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white transition-all duration-200"
+          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white transition-[border-color,box-shadow,transform,opacity] duration-200"
           :title="theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')"
         >
-          <component :is="theme === 'dark' ? Sun : Moon" :size="18" class="transition-transform duration-300 group-hover:scale-110" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
+          <component :is="theme === 'dark' ? Sun : Moon" :size="18" class="transition-transform duration-200 group-hover:scale-110" />
+          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
             {{ theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode') }}
           </span>
         </button>
@@ -259,11 +259,11 @@ onUnmounted(() => {
         <button
           type="button"
           @click="handleLockSession"
-          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all duration-200"
+          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-[border-color,box-shadow,transform,opacity] duration-200"
           title="Lock Session"
         >
           <Lock :size="18" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 shadow-xl whitespace-nowrap z-50">
+          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
             Lock Session
           </span>
         </button>
@@ -271,7 +271,7 @@ onUnmounted(() => {
     </aside>
 
     <!-- Mobile Header (md:hidden) -->
-    <header class="flex md:hidden sticky top-0 h-14 z-50 bg-white/90 dark:bg-[#09090b]/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800 px-4 items-center justify-between">
+    <header class="flex md:hidden sticky top-0 h-14 z-50 bg-white/90 dark:bg-(--chrome-bg)/90 backdrop-blur-xl border-b border-slate-200 dark:border-zinc-800 px-4 items-center justify-between">
       <router-link :to="dashboard()" class="text-sm font-black tracking-wider uppercase text-slate-900 dark:text-white">
         YANTR
       </router-link>

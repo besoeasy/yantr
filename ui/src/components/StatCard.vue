@@ -23,8 +23,8 @@ const ac = computed(() => accentMap[props.accent] ?? accentMap.blue)
 </script>
 
 <template>
-  <div class="group relative overflow-hidden bg-white dark:bg-(--page-bg) p-5 rounded-xl flex flex-col justify-between h-32 transition-all duration-300">
-    <div :class="['absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500', ac.gradient]"></div>
+  <div class="group relative overflow-hidden bg-white dark:bg-(--page-bg) p-5 rounded-xl flex flex-col justify-between h-32 transition-[border-color,box-shadow,transform,opacity] duration-200">
+    <div :class="['absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200', ac.gradient]"></div>
     <div class="flex justify-between items-start z-10">
       <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-zinc-500">{{ label }}</span>
       <component v-if="icon" :is="icon" :class="['w-4 h-4 text-gray-400 dark:text-zinc-500 transition-colors', ac.icon]" />

@@ -369,10 +369,10 @@ watch(activeTab, (tab) => {
 
     <main v-else class="space-y-6 anim-stagger">
         
-        <div class="group relative bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-all duration-300">
-           <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="group relative bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-[border-color,box-shadow,transform,opacity] duration-200">
+           <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
 
-           <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-500">
+           <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-200">
           <AppLogo
            :logo="selectedContainer.app.logo"
            :name="selectedContainer.app?.name || selectedContainer.name"
@@ -451,7 +451,7 @@ watch(activeTab, (tab) => {
            </div>
            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
              <div v-for="(mapping, i) in filteredPortMappings" :key="i" 
-                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
+                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-[border-color,box-shadow,transform,opacity] duration-200">
                
                <div class="flex items-start justify-between mb-4">
                  <div class="flex items-start gap-3.5 flex-1 min-w-0">
@@ -509,7 +509,7 @@ watch(activeTab, (tab) => {
 
            <div class="grid gap-4">
                <div v-for="volume in containerVolumes" :key="volume.name" 
-                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-all duration-300">
+                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-[border-color,box-shadow,transform,opacity] duration-200">
                    
                  <div class="flex items-start justify-between gap-4 mb-5">
                   <div class="flex items-start gap-4 min-w-0 flex-1">

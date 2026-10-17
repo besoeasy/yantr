@@ -59,8 +59,8 @@ const reportIssueUrl = computed(() =>
 <template>
   <div class="space-y-6">
     <!-- Identity Card -->
-    <div class="group flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
-      <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-transform duration-500 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+    <div class="group flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-[border-color,box-shadow,transform,opacity] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+      <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
         <AppLogo
           :logo="app.logo"
           :name="app.name"
@@ -169,7 +169,7 @@ const reportIssueUrl = computed(() =>
        </div>
 
        <div class="grid grid-cols-1 gap-3">
-          <div v-for="img in imageDetails" :key="img.id" class="group rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+          <div v-for="img in imageDetails" :key="img.id" class="group rounded-2xl border border-zinc-200 bg-white p-5 transition-[border-color,box-shadow,transform,opacity] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
              <div class="mb-4 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                  <div class="flex flex-wrap gap-2">
                    <div v-for="tag in img.tags" :key="tag" class="flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-[10px] text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-100">

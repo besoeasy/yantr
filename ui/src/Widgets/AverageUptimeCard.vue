@@ -107,7 +107,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
               <div
                 v-for="(h, i) in bars"
                 :key="i"
-                class="w-2.5 rounded-t-md bg-emerald-200 transition-all duration-200 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
+                class="w-2.5 rounded-t-md bg-emerald-200 transition-[border-color,box-shadow,transform,opacity] duration-200 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
                 :style="{ 
                   height: `${h * 100}%`, 
                   transitionDelay: `${i * 30}ms` 

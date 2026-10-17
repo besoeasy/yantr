@@ -70,7 +70,7 @@ function navigate(group) {
     >
       <div class="flex w-full items-start justify-between gap-3">
         <div class="flex items-center gap-4 min-w-0">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
             <AppLogo
               :logo="group.logo"
               :name="group.name"
@@ -104,7 +104,7 @@ function navigate(group) {
 
       <!-- Name at bottom + services -->
       <div class="relative z-10 mt-auto flex flex-col pt-6">
-        <div class="mb-4 text-3xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-500 group-hover:-translate-y-[3px] sm:text-4xl dark:text-white line-clamp-2">
+        <div class="mb-4 text-3xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-4xl dark:text-white line-clamp-2">
            {{ group.name }} 
         </div>
         <div class="flex flex-col gap-2">
