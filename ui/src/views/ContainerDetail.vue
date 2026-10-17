@@ -13,6 +13,7 @@ import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
 import { appUrl, isNavigableProtocol } from '../utils/url'
+import { dashboard } from '../utils/routes.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -165,7 +166,7 @@ const filteredPortMappings = computed(() => {
 
 async function fetchContainerDetail() {
   try {
-    const response = await fetch(`${apiUrl.value}/api/containers/${route.params.id}`)
+    const response = await fetch(`${apiUrl.value}/api/containers/${route.params.containerId}`)
     const data = await expectApiSuccess(response, t('containerDetail.error.containerNotFound'))
     selectedContainer.value = data.container
     shellPath.value = ''
@@ -173,7 +174,7 @@ async function fetchContainerDetail() {
     if (data.container.state === 'running') fetchContainerShell(data.container.id)
   } catch (error) {
     toast.error(error.message || t('containerDetail.error.failedToLoadDetails'))
-    router.push('/')
+    router.push(dashboard())
   }
 }
 
@@ -257,7 +258,7 @@ const busyAction = ref(null)
 
 async function lifecycleAction(action) {
   if (busyAction.value) return;
-  const id = route.params.id;
+  const id = route.params.containerId;
   if (!id) return;
 
   busyAction.value = action;
@@ -298,7 +299,7 @@ async function deleteContainer() {
       // the branch was unreachable. It was a leftover from a removed
       // "remove volumes" option.
       toast.success(t('containerDetail.success.deletedSuccessfully', { name: selectedContainer.value.name }))
-      router.push('/home')
+      router.push(dashboard())
     } else {
       throw new Error(getApiErrorMessage(data, t('containerDetail.error.deletionFailed', { error: t('common.error') })))
     }
