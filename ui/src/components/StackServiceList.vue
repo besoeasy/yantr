@@ -10,6 +10,7 @@ import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import ContainerLogs from './ContainerLogs.vue'
 import ContainerResources from './ContainerResources.vue'
+import { containerDetail } from '../utils/routes.js'
 
 defineProps({
   services: {
@@ -139,7 +140,7 @@ function clearStatsInterval() {
 }
 
 function goToContainer(svcId) {
-  router.push(`/containers/${svcId}`)
+  router.push(containerDetail(svcId))
 }
 </script>
 
