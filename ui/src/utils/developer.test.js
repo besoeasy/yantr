@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   appsByDeveloper,
   buildIssueReportUrl,
+  buildYantrIssueReportUrl,
   DEVELOPER_LABEL,
   developerInitials,
   developerProfileUrl,
@@ -190,5 +191,70 @@ describe("buildIssueReportUrl", () => {
     );
     expect(decodeURIComponent(url)).toContain("[app: GUPT]");
     expect(decodeURIComponent(url.split("body=")[1])).toContain("Stack: 7");
+  });
+});
+describe("buildYantrIssueReportUrl", () => {
+  it("fills in the facts a maintainer would otherwise have to ask for", () => {
+    const url = buildYantrIssueReportUrl({
+      version: "20261017",
+      build: "2026-10-17",
+      host: "Fedora · linux/amd64 · 24 cores",
+      podman: "5.4.1",
+      stacks: "2",
+    });
+
+    expect(url.startsWith(ISSUE_BASE)).toBe(true);
+    const body = decodeURIComponent(url.split("body=")[1]);
+    expect(body).toContain("Yantr: 20261017");
+    expect(body).toContain("Build: 2026-10-17");
+    expect(body).toContain("Host: Fedora · linux/amd64 · 24 cores");
+    expect(body).toContain("Podman: 5.4.1");
+    expect(body).toContain("Stacks running: 2");
+    expect(body).toContain("<describe what happened>");
+  });
+
+  // A card that fills itself in must not carry the machine it came from. These
+  // are the fields a report has no business having, and a future caller must not
+  // be able to add them by passing something extra.
+  it("carries no hostname, address or user", () => {
+    const body = decodeURIComponent(
+      buildYantrIssueReportUrl({
+        version: "20261017",
+        host: "Fedora",
+        hostname: "nas-in-the-attic",
+        ip: "203.0.113.9",
+        user: "alice",
+      }).split("body=")[1]
+    );
+
+    expect(body).not.toContain("nas-in-the-attic");
+    expect(body).not.toContain("203.0.113.9");
+    expect(body).not.toContain("alice");
+  });
+
+  it("skips what it does not know instead of printing empty fields", () => {
+    const body = decodeURIComponent(
+      buildYantrIssueReportUrl({ version: "20261017", host: "  ", podman: null }).split("body=")[1]
+    );
+
+    expect(body).toContain("Yantr: 20261017");
+    expect(body).not.toContain("Host:");
+    expect(body).not.toContain("Podman:");
+    expect(body).not.toContain("Build:");
+  });
+
+  // A zero is a real answer — no stacks running is a fact worth having in a bug
+  // report — so only genuinely absent values are dropped.
+  it("keeps a zero", () => {
+    const body = decodeURIComponent(
+      buildYantrIssueReportUrl({ version: "20261017", stacks: "0" }).split("body=")[1]
+    );
+    expect(body).toContain("Stacks running: 0");
+  });
+
+  it("still produces a usable report with nothing to say", () => {
+    const url = buildYantrIssueReportUrl();
+    expect(url.startsWith(ISSUE_BASE)).toBe(true);
+    expect(decodeURIComponent(url.split("body=")[1])).toContain("<describe what happened>");
   });
 });

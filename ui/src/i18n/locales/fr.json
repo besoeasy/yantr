@@ -646,10 +646,22 @@
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Dépôt",
-    "title": "Mettez une étoile. Signalez un bug.",
-    "description": "Le code est public et gratuit pour un usage personnel ou homelab. Une étoile aide les autres à trouver le projet ; les issues sont le moyen le plus rapide de corriger un bug.",
-    "starCta": "Mettre une étoile",
-    "issueCta": "Signaler un problème"
+    "title": "Libre, open source, sans contrepartie.",
+    "description": "Le code est public et gratuit pour un usage personnel ou sur une machine maison. Une étoile est le moyen le plus simple de le faire connaître.",
+    "starCta": "Mettre une étoile"
+  },
+  "issueCard": {
+    "label": "Rapport de bug",
+    "subtitle": "Assistance",
+    "title": "Un truc ne marche pas ?",
+    "description": "Un rapport qui indique la version, l’hôte et le nombre de stacks en cours est exploitable. Tout est déjà rempli.",
+    "contextLabel": "Joint au rapport",
+    "version": "Yantr",
+    "host": "Hôte",
+    "podman": "Podman",
+    "stacks": "Stacks",
+    "cta": "Signaler un problème",
+    "footnote": "Rien n’est envoyé tant que vous ne signalez pas."
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

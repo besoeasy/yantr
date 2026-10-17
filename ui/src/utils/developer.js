@@ -124,3 +124,42 @@ export function buildIssueReportUrl(app, { prefix = "app", extraLines = [] } = {
 
   return `${ISSUE_BASE}?title=${encodeURIComponent(`[${prefix}: ${appName}] `)}&body=${encodeURIComponent(lines.join("\n"))}`;
 }
+
+// buildYantrIssueReportUrl is the same link for a report about Yantr itself
+// rather than about one app, which is what a dashboard reader has: "this install
+// is doing something wrong".
+//
+// The body carries what a maintainer would otherwise have to ask for. It is
+// built from facts already on the dashboard and nothing that identifies the
+// host: no hostname, no IP, no user, no app list — a bug report that leaks the
+// machine it came from is a bug report nobody should send from a homelab. What
+// goes in is the version and build, the OS and architecture, Podman's own
+// version, and how many stacks are running, because those are what "it broke on
+// my box" is missing.
+//
+// Every line is filtered for emptiness rather than formatted optimistically, so
+// a caller that knows nothing about the host still gets a valid report.
+export function buildYantrIssueReportUrl(details = {}) {
+  const lines = [];
+
+  const add = (label, value) => {
+    const v = String(value ?? "").trim();
+    if (v) lines.push(`${label}: ${v}`);
+  };
+
+  add("Yantr", details.version);
+  add("Build", details.build);
+  add("Host", details.host);
+  add("Podman", details.podman);
+  add("Stacks running", details.stacks);
+
+  // A shape worth keeping in view: the same field twice reads as a typo in the
+  // report, and "Yantr: / Fedora:" alone leaves a reader guessing.
+  if (details.stacks !== undefined && details.stacks !== null && String(details.stacks).trim() === "") {
+    lines.push("Stacks running: unknown");
+  }
+
+  lines.push("", "<describe what happened>");
+
+  return `${ISSUE_BASE}?title=${encodeURIComponent("[yantr] ")}&body=${encodeURIComponent(lines.join("\n"))}`;
+}

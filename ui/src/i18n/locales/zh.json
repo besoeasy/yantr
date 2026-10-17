@@ -646,10 +646,22 @@
   "githubCard": {
     "label": "GitHub",
     "subtitle": "仓库",
-    "title": "点个星，报告问题。",
-    "description": "源码公开，个人与homelab 使用免费。点星能让更多人找到这个项目；提交 issue 是修复缺陷最快的方式。",
-    "starCta": "点个星",
-    "issueCta": "报告问题"
+    "title": "免费、开源、无套路。",
+    "description": "源码公开，个人与 homelab 使用免费。一个 star 是让别人找到它最简单的方式。",
+    "starCta": "点个星"
+  },
+  "issueCard": {
+    "label": "问题报告",
+    "subtitle": "支持",
+    "title": "发现什么问题了吗？",
+    "description": "写明版本、主机和正在运行的 stack 数量的报告才好处理。这些内容已经填好了。",
+    "contextLabel": "随报告附带",
+    "version": "Yantr",
+    "host": "主机",
+    "podman": "Podman",
+    "stacks": "Stacks",
+    "cta": "报告问题",
+    "footnote": "在你提交之前不会发送任何内容。"
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

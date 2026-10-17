@@ -709,10 +709,22 @@
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Repository",
-    "title": "Star it. Report a bug.",
-    "description": "The source is public and free for personal and homelab use. A star helps others find the project; issues are the fastest way to get a bug fixed.",
-    "starCta": "Star Yantr",
-    "issueCta": "Report an issue"
+    "title": "Free, open source, no strings.",
+    "description": "The source is public and free for personal and homelab use. A star is the simplest way for other people to find it.",
+    "starCta": "Star Yantr"
+  },
+  "issueCard": {
+    "label": "Issue report",
+    "subtitle": "Support",
+    "title": "Found something broken?",
+    "description": "A report that names the version, the host and how many stacks are running is one someone can act on. This fills all of it in.",
+    "contextLabel": "Attached to the report",
+    "version": "Yantr",
+    "host": "Host",
+    "podman": "Podman",
+    "stacks": "Stacks",
+    "cta": "Report an issue",
+    "footnote": "Nothing is sent until you report."
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

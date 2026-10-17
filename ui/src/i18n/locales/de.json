@@ -652,10 +652,22 @@
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Repository",
-    "title": "Sterne. Bugs melden.",
-    "description": "Der Quellcode ist öffentlich und für Privat- und Homelab-Nutzung kostenlos. Ein Stern hilft anderen, das Projekt zu finden; Issues sind der schnellste Weg, einen Fehler zu beheben.",
-    "starCta": "Yantr sternen",
-    "issueCta": "Problem melden"
+    "title": "Frei, quelloffen, ohne Haken.",
+    "description": "Der Quellcode ist öffentlich und für den privaten Gebrauch und auf Heimservern kostenlos. Ein Stern ist der einfachste Weg, ihn zu finden.",
+    "starCta": "Yantr sternen"
+  },
+  "issueCard": {
+    "label": "Fehlerbericht",
+    "subtitle": "Support",
+    "title": "Etwas kaputtgefunden?",
+    "description": "Ein Bericht mit Version, Host und Zahl der laufenden Stacks lässt sich bearbeiten. Diese Angaben stehen schon drin.",
+    "contextLabel": "Wird an den Bericht angehängt",
+    "version": "Yantr",
+    "host": "Host",
+    "podman": "Podman",
+    "stacks": "Stacks",
+    "cta": "Fehler melden",
+    "footnote": "Es wird nichts gesendet, bis du meldest."
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",

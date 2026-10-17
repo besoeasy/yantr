@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";
-import { ArrowUpRight, GitBranch, Bug } from "@lucide/vue";
+import { ArrowUpRight, GitBranch } from "@lucide/vue";
 import { h } from 'vue';
 import { useRepoStats } from "../composables/useRepoStats";
 
@@ -97,17 +97,6 @@ const buildTimeAgo = formatTimeAgo(buildDate);
             <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('githubCard.starCta') }}</span>
           </div>
           <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-300 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
-        </a>
-
-        <!-- Report a problem -->
-        <a
-          href="https://github.com/besoeasy/yantr/issues/new"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="gh-cta-ghost group/link flex h-12 w-full items-center justify-center gap-2 rounded-xl border transition-all duration-300"
-        >
-          <Bug class="h-4 w-4" />
-          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('githubCard.issueCta') }}</span>
         </a>
       </div>
 

@@ -646,10 +646,22 @@
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Repositorio",
-    "title": "Dale una estrella. Informa un error.",
-    "description": "El código es público y gratuito para uso personal y de homelab. Una estrella ayuda a que otros encuentren el proyecto; los issues son la forma más rápida de corregir un fallo.",
-    "starCta": "Dar estrella",
-    "issueCta": "Informar de un error"
+    "title": "Libre, de código abierto, sin atajos.",
+    "description": "El código es público y gratuito para uso personal y de homelab. Una estrella es la forma más sencilla de que otros lo encuentren.",
+    "starCta": "Dar estrella"
+  },
+  "issueCard": {
+    "label": "Informe de error",
+    "subtitle": "Soporte",
+    "title": "¿Has encontrado algo roto?",
+    "description": "Un informe con la versión, el host y cuántos stacks hay en marcha es el que alguien puede resolver. Todo eso va puesto.",
+    "contextLabel": "Se adjunta al informe",
+    "version": "Yantr",
+    "host": "Host",
+    "podman": "Podman",
+    "stacks": "Stacks",
+    "cta": "Informar de un error",
+    "footnote": "No se envía nada hasta que lo informes."
   },
   "cloudflaredCard": {
     "secureTunnel": "Secure Tunnel",
