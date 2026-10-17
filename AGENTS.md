@@ -14,8 +14,7 @@ tags: [tools, utility, self-hosted, homelab, podman]
 
 ## `developers` — crediting an app's author
 `developers` names who the app is from, as Nostr public keys. It is optional and changes
-nothing about deployment; it drives the developer credit on the app page and the
-`#/developer/<npub>` profile route.
+nothing about deployment; it drives the developer credit on the app page.
 
 ```yaml
 x-yantr:
@@ -24,45 +23,16 @@ x-yantr:
 
 An entry is an `npub1…` or an `nprofile1…`. Never an `nsec1…` private key or a `note1…`
 event id, and no platform prefix — `nostr:` is tolerated on the way in but there is
-nothing left to disambiguate, so do not write it.
-
-Every entry is bech32-decoded and checksum-verified when the catalog loads
-(`core/nip19`), and anything that is not a key is dropped. That is stronger than the
-allow-list this field used to carry for forge logins: a checksum is not a judgement
-call, so there is no class of typo that survives to become a profile link.
+nothing left to disambiguate, so do not write it. Anything that is not a valid key is
+dropped when the catalog loads.
 
 Entries are deduplicated on the **decoded** pubkey, not on the spelling. The same key
 written in two cases is one developer, and so is one account written once as an npub and
 once as an nprofile.
 
 Credit the **upstream author of the software** — the person whose project it is — not
-whoever added the recipe. Everyone in the catalog ships a recipe written by somebody, so
-the alternative reading makes the field meaningless. Only write a key you can tie to a
-real account; leaving the field out is the correct choice when unsure. Be aware of what
-the field does *not* do: an npub written here is a label, not an authentication.
-Granting anyone rights on the strength of it would mean publishing an account's key in a
-git repository and trusting whoever reads it. Anything privileged needs the account to
-sign a server-issued nonce.
-
-A developer's page shows the account's kind-0 name, picture and `nip05`, and a QR
-code of the NIP-21 URI (`nostr:npub1…`) so a visitor can scan straight into a direct
-message. The QR is drawn from the catalog's own key, so it is on screen even when nothing
-can be fetched.
-
-That kind-0 is fetched by the reader's own browser, not by Yantr: it asks a small set of
-relays over websockets, merges what answers and keeps the newest event per account for the
-session (`ui/src/utils/relay.js`, `ui/src/composables/useDeveloperProfile.js`). It asks
-more than one because coverage is per-relay — measured, `relay.primal.net` had no kind-0
-at all for one real key in this catalog while others did, and a relay that holds nothing
-answers with a clean end-of-stored-events rather than an error. Every event is signature-
-verified before a name, picture or `nip05` is shown, so a hostile relay cannot speak for a
-credited account; an account with no reachable kind-0 simply gets no profile card.
-
-`core` keeps the relay *set* and nothing else (`core/system/nostr.go`,
-`/api/nostr/relays`): which relays Yantr talks to is configuration, so `YANTR_NOSTR_RELAYS`
-(comma-separated) redirects every Nostr read and publish in one variable. Override it for a
-host that cannot reach the defaults. Nothing else about a developer entry depends on the
-network: the app list, the credit and the QR all come from the local catalog.
+whoever added the recipe. Only write a key you can tie to a real account; leaving the
+field out is the correct choice when unsure.
 
 Port/display metadata lives only in `x-yantr.ports` — never in labels:
 ```yaml
@@ -105,20 +75,7 @@ An app may legitimately have zero access ports — a database or a file share ha
 ## Service labels
 Do not add `yantr.app` / `yantr.service.N` / `yantr.port.N` labels. Identity comes from the app folder + native compose project/service labels (`core/compose/compose.go:ComposeProjectLabel`). Runtime-only labels (`yantr.expireAt`, `yantr.temporary`, `yantr.system`) are injected by the backend.
 
-## Installer
-`install.sh` lives at the repo root and is **not** published on the website. The documented one-liner fetches it from jsDelivr, which resolves `@latest` to the newest tagged release:
-
-```
-curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
-```
-
-That is deliberate: users get a released installer, never an unreviewed commit off `main`. Keep the URL as the `INSTALL_URL` variable at the top of the script and reference it everywhere the script prints its own usage (help text, the uninstall hint) — do not hardcode a second copy. If you add a self-referencing URL, use a tag (`@v1.2.3`) rather than a branch (`@main`), or the installer stops being release-pinned.
-
-The generated Quadlet also mounts `/:/host:ro` and `/sys:/sys:ro` for the host metrics dashboard. Those are Yantr's *own* binds and do not relax rule 1 — apps still use named volumes only. They are host-path binds, which normally need `:z` relabeling and would break on Fedora without it; they work only because the same Quadlet sets `SecurityLabelDisable=true`. Treat the two lines as a pair.
-
 ## Critical rules
-Yantr is **rootless-only**, and that is a load-bearing constraint rather than a default. `install.sh` refuses to run as root, and no part of the stack supports rootful Podman. A root-mode install would attach Yantr to a rootful Podman service, so every app it deployed would hold real host root — exactly what the rootless architecture exists to prevent. Do not reintroduce a root code path, and do not assume `/run/podman/podman.sock` or `/var/run/podman/podman.sock` ever exists: the host socket is always the per-user `%t/podman/podman.sock`.
-
 1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling requires it).
 2. **`:latest` only** — never pin a version tag.
 3. **Logo** — local `logo.svg`, square, ≥256×256, auto-detected. No URLs; omit if none.
@@ -173,47 +130,3 @@ Manual — no linter exists:
 - Every `${VAR}` without a default has a matching `env_generators` entry — otherwise it deploys empty (`core/apps/catalog.go:parseEnvVars`).
 - Flat arrays use flow sequences, not block sequences.
 - `x-yantr.ports[].service` names a service that exists in the same file (a dangling one is dropped at parse time).
-
-## The UI's visual pattern
-
-Every colour the UI draws with is a token in `ui/src/assets/main.css` (Section 1), and the
-recurring shapes are classes next to them. New UI uses these, not the utilities they
-replace:
-
-| Class | What it is |
-| --- | --- |
-| `yantra-surface` | a page panel: background, hairline border, radius. No hover lift |
-| `yantra-card` | a dashboard card: the same, plus the lift and shadow, for tiles in the Home grid |
-| `yantra-panel` + `yantra-row` / `yantra-fact` | a bordered block of label/value rows separated by hairlines — the alternative to a box inside a box |
-| `yantra-label` | the section heading: small, bold, uppercase, tracked out, secondary |
-| `yantra-chip` | a fact, a count, a filter. `--active` `--accent` `--ok` `--warn` `--danger` |
-| `yantra-btn` | a button, ghost by default. `--primary` `--danger` `--warn` |
-| `yantra-segment` | a segmented control: `.yantra-chip` children, the selected one `--active` |
-| `yantra-tile` | an icon block. `--accent` `--ok` `--warn` `--danger` `--round` |
-| `yantra-empty` | an empty section: one dashed surface, one quiet line |
-| `yantra-text-primary` / `-secondary` / `-accent` / `-ok` / `-danger` | text colours |
-
-Layout, type scale, spacing and radius still come from the utility classes. What must not
-come from them is a colour: `bg-white dark:bg-[#0A0A0A] border-zinc-200 dark:border-zinc-800`
-written out in a template is the old spelling, it is what made the UI read as two visual
-languages, and the tokens hold the same values (`--card-bg` is white and #0A0A0A,
-`--card-border` is zinc-200 and zinc-800), so moving onto them changes no colour.
-
-The utility layer is hand-curated: a class that is not in `main.css` does nothing, silently.
-That includes `!important` variants — `hover:!text-zinc-900` is not defined and renders as
-no hover state at all. When a template needs something the layer lacks, add it to Section 1
-next to the token it belongs to, or use one of the helpers above.
-
-Migrated: `views/Home.vue` and the widgets, `views/StackView.vue` and
-`components/StackServiceList.vue`. Still on the old spelling, each worth the same pass:
-`ContainerDetail`, `AppDetail`, `AppDeployForm`, `AppMetadata`, `Apps`, `Storage`, `Logs`,
-`Presence`, `DeveloperProfile`, `StatCard`, `ContainerEnv`, `ContainerLogs`,
-`NotificationBanner`, `YantraContainersGrid`, `VolumeContainersGrid`.
-
-Go core changes:
-```sh
-cd core && go build ./... && go vet ./... && go test ./...
-```
-`gofmt -l .` shows pre-existing drift in `apps/catalog.go`, `handlers_apps.go`, `handlers_images.go`, `main.go` — don't mass-reformat those.
-
-The root `package.json` belongs to the website builder (`website-build.js`), not the app UI — `ui/` has its own. Rebuild yantr.org locally with `npm i && node website-build.js` from the repo root; output (`website/apps.json`, `website/apps/`, …) is gitignored and deployed by `.github/workflows/website.yml`.
