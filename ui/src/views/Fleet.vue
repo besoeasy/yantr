@@ -80,7 +80,7 @@ onMounted(() => fetchStats(false));
           <StatCard :label="t('fleet.ramAvg')" :value="ramAvg" :unit="stats.ram?.unit" :icon="Activity" accent="purple" />
         </div>
 
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 anim-stagger">
           <section class="rounded-2xl border border-zinc-200 p-5 dark:border-zinc-800">
             <div class="mb-4 flex items-center gap-2">
               <Globe :size="16" class="text-zinc-400" />

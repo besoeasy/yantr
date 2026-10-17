@@ -377,7 +377,7 @@ onMounted(startPolling)
 
       <!-- Active browser sessions, independent of the selected list -->
       <transition name="fade">
-        <div v-if="browsingVolumes.length > 0" class="space-y-4">
+        <div v-if="browsingVolumes.length > 0" class="space-y-4 anim-stagger">
           <div class="flex items-center gap-2 text-blue-600 dark:text-blue-500">
             <div class="h-2 w-2 animate-pulse rounded-full bg-blue-500"></div>
             <h3 class="text-sm font-bold uppercase tracking-wider">{{ t('volumes.activeSessions') }}</h3>
@@ -409,7 +409,7 @@ onMounted(startPolling)
       </transition>
 
       <!-- Lists -->
-      <div class="space-y-4">
+      <div class="space-y-4 anim-stagger">
         <UnderlineTabBar v-model="currentTab" :tabs="tabs">
           <template #action>
             <button v-if="isUnusedTab"

@@ -105,7 +105,7 @@ onMounted(async () => {
       <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t('appDetail.retrievingManifest') }}</div>
     </div>
 
-    <div v-else-if="app" class="space-y-6">
+    <div v-else-if="app" class="space-y-6 anim-stagger">
 
         <!-- App Information & Specs -->
         <AppMetadata :app="app" :imageDetails="imageDetails" />

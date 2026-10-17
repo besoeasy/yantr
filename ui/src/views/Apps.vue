@@ -351,7 +351,7 @@ onUnmounted(() => {
                 <button @click="appSearch = ''; selectedTag = null" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">{{ t('apps.clearAllFilters') }}</button>
             </div>
 
-            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 anim-stagger">
                 <AppCard
                   v-for="app in combinedApps"
                   :key="app.id"
