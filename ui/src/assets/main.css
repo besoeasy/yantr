@@ -266,6 +266,13 @@ textarea:focus {
     overflow: hidden;
 }
 
+/* Comment bodies and any other pre-wrapped prose: `whitespace-pre-wrap` breaks
+   at spaces, so an unbroken run (a long URL, a pasted key) needs this or it
+   pushes the text out of the column. */
+.break-words {
+    overflow-wrap: break-word;
+}
+
 svg.lucide {
     stroke-width: 1.75;
     stroke-linecap: round;
