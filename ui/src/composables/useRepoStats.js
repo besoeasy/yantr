@@ -17,11 +17,16 @@ const failed = ref(false);
 
 let inFlight = null;
 
-const { apiUrl } = useApiUrl();
-
 function fetchStats() {
   if (stats.value) return Promise.resolve(stats.value);
   if (inFlight) return inFlight;
+
+  // Resolved here rather than at module scope. useApiUrl() reads
+  // window.VITE_API_URL, so a module-level call made this file — and every
+  // module that imports it, which is every widget Home.vue globs eagerly —
+  // unimportable anywhere without a browser. That is also what stopped the
+  // router test from navigating to the dashboard.
+  const { apiUrl } = useApiUrl();
 
   loading.value = true;
   inFlight = (async () => {

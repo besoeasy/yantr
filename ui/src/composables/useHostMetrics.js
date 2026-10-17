@@ -49,13 +49,16 @@ let systemInFlight = false;
 let metricsInFlight = false;
 let hidden = typeof document !== "undefined" ? document.hidden : false;
 
-const { apiUrl } = useApiUrl();
-
+// apiUrl is resolved inside each fetch rather than at module scope: useApiUrl()
+// reads window.VITE_API_URL, and Home.vue globs every widget eagerly, so a
+// module-level call here made the whole dashboard unimportable outside a
+// browser. Same fix as useRepoStats.js.
 async function fetchSystem() {
   // Never let two ticks overlap: a slow endpoint would otherwise queue requests
   // and deliver them out of order.
   if (systemInFlight) return;
   systemInFlight = true;
+  const { apiUrl } = useApiUrl();
   try {
     // /api/volumes walks every volume on the host and is far slower than the
     // few reads /api/system/info does, which is why the metrics poll below runs
@@ -84,6 +87,7 @@ async function fetchSystem() {
 async function fetchMetrics() {
   if (metricsInFlight) return;
   metricsInFlight = true;
+  const { apiUrl } = useApiUrl();
   try {
     const res = await fetch(`${apiUrl.value}/api/system/metrics`);
     const data = await expectApiSuccess(res, "Failed to fetch host metrics");
