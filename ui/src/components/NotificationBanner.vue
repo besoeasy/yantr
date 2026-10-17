@@ -95,11 +95,16 @@ const colorMap = {
 </template>
 
 <style scoped>
+/* The banner is an overlay, but the dialog timing is wrong for it: a slide from
+   the top edge is where it lives, so it enters by sliding, not by scaling, and
+   it owns that one gesture. Durations are still the tokens', scaled through the
+   same ease — a banner may take longer than a dialog because it is holding its
+   own timer, and 0.5s here is that, not drift. */
 .banner-enter-active {
-  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.5s var(--yantra-ease), transform 0.5s var(--yantra-ease);
 }
 .banner-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 1, 1);
+  transition: opacity 0.4s var(--yantra-ease), transform 0.4s cubic-bezier(0.4, 0, 1, 1);
 }
 .banner-enter-from,
 .banner-leave-to {
