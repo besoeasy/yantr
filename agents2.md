@@ -42,7 +42,7 @@ Not allowed: `info.json`, `Dockerfile`, `entrypoint.sh`, or any build context.
 | `short_description` | string | 50–100 chars. |
 | `description` | string | 200–300 chars, written as a YAML `>` block. |
 | `usecases` | list | At least 2. |
-| `website` | string | Project or docs URL. |
+| `website` | string | Prefer the project's source code repo; second preference is its website. |
 
 ### Optional
 
@@ -173,7 +173,7 @@ x-yantr:
     A self-hosted note-taking service that lets you capture, organize,
     and share notes with your team. Runs entirely on your own hardware.
   usecases: ["Capture notes.", "Organize docs.", "Share with team."]
-  website: "https://example.com/docs"
+  website: "https://github.com/example/my-app"
   env_generators:
     ADMIN_PASSWORD: {length: 20, charset: alnum_symbols}
   notes: ["Set admin email in the deploy form if the app requires one."]
