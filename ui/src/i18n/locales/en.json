@@ -521,7 +521,8 @@
     "stackStopped": "All services stopped",
     "serviceActionFailed": "{failed} of {total} services did not respond",
     "internalAddresses": "Internal Addresses",
-    "internalAddressesHint": "Reachable from other containers in this stack."
+    "internalAddressesHint": "Reachable from other containers in this stack.",
+    "serviceDetails": "Details"
   },
   "appCard": {
     "active": "Active ({count})",

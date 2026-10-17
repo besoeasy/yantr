@@ -174,6 +174,42 @@ Manual — no linter exists:
 - Flat arrays use flow sequences, not block sequences.
 - `x-yantr.ports[].service` names a service that exists in the same file (a dangling one is dropped at parse time).
 
+## The UI's visual pattern
+
+Every colour the UI draws with is a token in `ui/src/assets/main.css` (Section 1), and the
+recurring shapes are classes next to them. New UI uses these, not the utilities they
+replace:
+
+| Class | What it is |
+| --- | --- |
+| `yantra-surface` | a page panel: background, hairline border, radius. No hover lift |
+| `yantra-card` | a dashboard card: the same, plus the lift and shadow, for tiles in the Home grid |
+| `yantra-panel` + `yantra-row` / `yantra-fact` | a bordered block of label/value rows separated by hairlines — the alternative to a box inside a box |
+| `yantra-label` | the section heading: small, bold, uppercase, tracked out, secondary |
+| `yantra-chip` | a fact, a count, a filter. `--active` `--accent` `--ok` `--warn` `--danger` |
+| `yantra-btn` | a button, ghost by default. `--primary` `--danger` `--warn` |
+| `yantra-segment` | a segmented control: `.yantra-chip` children, the selected one `--active` |
+| `yantra-tile` | an icon block. `--accent` `--ok` `--warn` `--danger` `--round` |
+| `yantra-empty` | an empty section: one dashed surface, one quiet line |
+| `yantra-text-primary` / `-secondary` / `-accent` / `-ok` / `-danger` | text colours |
+
+Layout, type scale, spacing and radius still come from the utility classes. What must not
+come from them is a colour: `bg-white dark:bg-[#0A0A0A] border-zinc-200 dark:border-zinc-800`
+written out in a template is the old spelling, it is what made the UI read as two visual
+languages, and the tokens hold the same values (`--card-bg` is white and #0A0A0A,
+`--card-border` is zinc-200 and zinc-800), so moving onto them changes no colour.
+
+The utility layer is hand-curated: a class that is not in `main.css` does nothing, silently.
+That includes `!important` variants — `hover:!text-zinc-900` is not defined and renders as
+no hover state at all. When a template needs something the layer lacks, add it to Section 1
+next to the token it belongs to, or use one of the helpers above.
+
+Migrated: `views/Home.vue` and the widgets, `views/StackView.vue` and
+`components/StackServiceList.vue`. Still on the old spelling, each worth the same pass:
+`ContainerDetail`, `AppDetail`, `AppDeployForm`, `AppMetadata`, `Apps`, `Storage`, `Logs`,
+`Presence`, `DeveloperProfile`, `StatCard`, `ContainerEnv`, `ContainerLogs`,
+`NotificationBanner`, `YantraContainersGrid`, `VolumeContainersGrid`.
+
 Go core changes:
 ```sh
 cd core && go build ./... && go vet ./... && go test ./...

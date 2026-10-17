@@ -458,7 +458,8 @@
     "stackStopped": "すべてのサービスを停止しました",
     "serviceActionFailed": "{total} 個中 {failed} 個のサービスが応答しませんでした",
     "internalAddresses": "内部アドレス",
-    "internalAddressesHint": "このスタックの他のコンテナからアクセス可能です。"
+    "internalAddressesHint": "このスタックの他のコンテナからアクセス可能です。",
+    "serviceDetails": "詳細"
   },
   "appCard": {
     "active": "アクティブ ({count})",

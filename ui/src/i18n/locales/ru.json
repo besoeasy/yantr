@@ -458,7 +458,8 @@
     "stackStopped": "Все службы остановлены",
     "serviceActionFailed": "{failed} из {total} служб не ответили",
     "internalAddresses": "Внутренние адреса",
-    "internalAddressesHint": "Доступны с других контейнеров в этом стеке."
+    "internalAddressesHint": "Доступны с других контейнеров в этом стеке.",
+    "serviceDetails": "Подробнее"
   },
   "appCard": {
     "active": "Активно ({count})",

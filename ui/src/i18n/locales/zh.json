@@ -458,7 +458,8 @@
     "stackStopped": "所有服务已停止",
     "serviceActionFailed": "{total} 个服务中有 {failed} 个未响应",
     "internalAddresses": "内部地址",
-    "internalAddressesHint": "此堆栈中的其他容器可以访问。"
+    "internalAddressesHint": "此堆栈中的其他容器可以访问。",
+    "serviceDetails": "详情"
   },
   "appCard": {
     "active": "活动 ({count})",

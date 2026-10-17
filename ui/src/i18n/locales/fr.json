@@ -458,7 +458,8 @@
     "stackStopped": "Tous les services arrêtés",
     "serviceActionFailed": "{failed} services sur {total} n'ont pas répondu",
     "internalAddresses": "Adresses internes",
-    "internalAddressesHint": "Accessible depuis les autres conteneurs de ce stack."
+    "internalAddressesHint": "Accessible depuis les autres conteneurs de ce stack.",
+    "serviceDetails": "Détails"
   },
   "appCard": {
     "active": "Actif ({count})",

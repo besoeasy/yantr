@@ -145,21 +145,16 @@ function goToContainer(svcId) {
 
 <template>
   <div class="space-y-3 animate-fadeIn">
-    <div class="flex items-center justify-between mb-1">
-      <div class="text-xs font-bold uppercase tracking-widest" style="color: var(--text-secondary)">
-        {{ t('stackView.containers') }}
-      </div>
-      <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg" style="background: var(--surface-muted); color: var(--text-secondary)">
-        {{ services.length }}
-      </span>
+    <div class="flex items-center gap-2">
+      <div class="yantra-label">{{ t('stackView.containers') }}</div>
+      <span class="yantra-chip">{{ services.length }}</span>
     </div>
 
     <div class="grid gap-3">
       <div
         v-for="svc in services"
         :key="svc.id"
-        class="group rounded-2xl border border-gray-100 dark:border-zinc-800 smooth-shadow transition-all duration-300 overflow-hidden"
-        style="background: var(--surface)"
+        class="yantra-surface overflow-hidden"
       >
         <!-- Header
              Keyboard reachable. The expanded panel holds the Resources/Output
@@ -179,47 +174,40 @@ function goToContainer(svcId) {
         >
           <div class="flex items-start gap-4">
             <div
-              class="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative border transition-all group-hover:scale-110"
-              :class="svc.state === 'running'
-                ? 'bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20'
-                : 'bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800'"
+              class="yantra-tile relative h-11 w-11 shrink-0"
+              :class="{ 'yantra-tile--ok': svc.state === 'running' }"
             >
-              <Server :size="18" :class="svc.state === 'running' ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-zinc-600'" />
+              <Server :size="17" />
               <span v-if="svc.state === 'running'" class="absolute -top-1 -right-1 flex h-3 w-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
               </span>
             </div>
             <div class="flex-1 min-w-0">
-              <div class="flex items-center flex-wrap gap-2 mb-1">
-                <span class="font-bold text-base transition-colors" style="color: var(--text-primary)">{{ svc.service }}</span>
-                <span
-                  class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border"
-                  :class="svc.state === 'running'
-                    ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20'
-                    : 'bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 border-gray-200 dark:border-zinc-700'"
-                >{{ svc.state }}</span>
-                <span v-if="svc.hasYantrLabel" class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md border bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20">{{ t('stackView.primary') }}</span>
+              <div class="mb-1 flex flex-wrap items-center gap-2">
+                <span class="truncate text-sm font-bold yantra-text-primary">{{ svc.service }}</span>
+                <span class="yantra-chip" :class="{ 'yantra-chip--ok': svc.state === 'running' }">{{ svc.state }}</span>
+                <span v-if="svc.hasYantrLabel" class="yantra-chip yantra-chip--accent">{{ t('stackView.primary') }}</span>
               </div>
-              <div class="font-mono text-xs truncate" style="color: var(--text-secondary)" :title="svc.image">{{ svc.image }}</div>
+              <div class="truncate font-mono text-[11px] yantra-text-secondary" :title="svc.image">{{ svc.image }}</div>
             </div>
             <div class="flex items-center gap-3 shrink-0">
               <div v-if="formatUptime(svc)" class="text-right hidden sm:block">
-                <div class="text-[10px] font-bold uppercase tracking-widest mb-0.5" style="color: var(--text-secondary)">{{ t('stackView.uptime') }}</div>
-                <div class="font-mono text-xs font-bold tabular-nums" style="color: var(--text-primary)">{{ formatUptime(svc) }}</div>
+                <div class="yantra-fact__label mb-0.5">{{ t('stackView.uptime') }}</div>
+                <div class="yantra-text-primary font-mono text-xs font-bold tabular-nums">{{ formatUptime(svc) }}</div>
               </div>
-              <div class="w-8 h-8 rounded-full flex items-center justify-center border border-gray-100 dark:border-zinc-800 transition-all" style="background: var(--surface-muted)">
-                <ChevronDown v-if="expandedServiceId === svc.id" :size="15" class="text-gray-400 dark:text-zinc-500" />
-                <ChevronRight v-else :size="15" class="text-gray-400 dark:text-zinc-500" />
+              <div class="yantra-tile h-8 w-8 rounded-full">
+                <ChevronDown v-if="expandedServiceId === svc.id" :size="14" />
+                <ChevronRight v-else :size="14" />
               </div>
             </div>
           </div>
-          <div v-if="svc.rawPorts && svc.rawPorts.length > 0" class="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800">
+          <div v-if="svc.rawPorts && svc.rawPorts.length > 0" class="mt-3 flex flex-wrap items-center gap-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
             <template v-if="svc.rawPorts.filter((p) => p.PublicPort).length > 0">
               <span
                 v-for="p in [...new Map(svc.rawPorts.filter((rp) => rp.PublicPort).map((rp) => [`${rp.PublicPort}:${rp.PrivatePort}:${rp.Type}`, rp])).values()]"
                 :key="`${p.PublicPort}-${p.Type}`"
-                class="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20 hover:scale-105 transition-transform"
+                class="yantra-chip yantra-chip--ok font-mono normal-case"
               >
                 <Network :size="11" />:{{ p.PublicPort }} → {{ p.PrivatePort }}
               </span>
@@ -228,8 +216,7 @@ function goToContainer(svcId) {
               <span
                 v-for="p in [...new Map(svc.rawPorts.map((rp) => [`${rp.PrivatePort}:${rp.Type}`, rp])).values()]"
                 :key="`internal-${p.PrivatePort}-${p.Type}`"
-                class="inline-flex items-center gap-1.5 text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border border-gray-200 dark:border-zinc-800 hover:scale-105 transition-transform"
-                style="color: var(--text-secondary)"
+                class="yantra-chip font-mono normal-case"
               >
                 <Network :size="11" />{{ p.PrivatePort }}/{{ p.Type }}
               </span>
@@ -238,30 +225,29 @@ function goToContainer(svcId) {
         </div>
         
         <!-- Expanded Details -->
-        <div v-if="expandedServiceId === svc.id" class="border-t border-gray-100 dark:border-zinc-800 p-5 bg-gray-50 dark:bg-[#0A0A0A]">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex gap-2">
-              <button 
+        <div v-if="expandedServiceId === svc.id" class="border-t border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="yantra-segment">
+              <button
+                type="button"
+                class="yantra-chip"
+                :class="{ 'yantra-chip--active': activeTab === 'resources' }"
                 @click="selectTab(svc.id, 'resources')"
-                :class="activeTab === 'resources' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all"
               >
-                <Activity :size="14" /> {{ t('containerDetail.resources') }}
+                <Activity :size="13" /> {{ t('containerDetail.resources') }}
               </button>
-              <button 
+              <button
+                type="button"
+                class="yantra-chip"
+                :class="{ 'yantra-chip--active': activeTab === 'output' }"
                 @click="selectTab(svc.id, 'output')"
-                :class="activeTab === 'output' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all"
               >
-                <Terminal :size="14" /> {{ t('containerDetail.output') }}
+                <Terminal :size="13" /> {{ t('containerDetail.output') }}
               </button>
             </div>
-            
-            <button 
-              @click.stop="goToContainer(svc.id)"
-              class="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-gray-900 dark:bg-zinc-100 text-white dark:text-gray-900 rounded-lg transition-all hover:opacity-90"
-            >
-              <ExternalLink :size="14" /> Details
+
+            <button type="button" @click.stop="goToContainer(svc.id)" class="yantra-btn yantra-btn--primary">
+              <ExternalLink :size="13" /> {{ t('stackView.serviceDetails') }}
             </button>
           </div>
           

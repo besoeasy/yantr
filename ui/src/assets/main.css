@@ -142,6 +142,18 @@ body {
     color: var(--danger-text);
 }
 
+/* Amber: the tone for storage, and for a stack that has fallen behind its
+   catalog entry. */
+.yantra-tile--warn {
+    border-color: rgb(245 158 11 / 0.35);
+    background-color: rgb(245 158 11 / 0.12);
+    color: #b45309;
+}
+
+:root.dark .yantra-tile--warn {
+    color: var(--color-amber-400);
+}
+
 .yantra-panel {
     overflow: hidden;
     border: 1px solid var(--card-border);
@@ -193,6 +205,222 @@ body {
 
 .yantra-text-danger {
     color: var(--danger-text);
+}
+
+/* ── The page idiom ──────────────────────────────────────────────────────────
+   The four things every page draws over and over: a panel, a section label,
+   a chip and a button. They live here so a page spells them once.
+
+   Before this block each page wrote them out in utilities — `bg-white
+   dark:bg-[#0A0A0A] border-zinc-200 dark:border-zinc-800`, a few dozen times
+   — which is why the UI read as two visual languages: this one, and the zinc
+   spelling nobody had to keep in step with anything. The colours are the same
+   either way (--card-bg is white and #0A0A0A, --card-border is zinc-200 and
+   zinc-800), so a page that moves onto these does not change how it looks; it
+   changes how many places a colour is defined in.
+
+   Layout, type scale, spacing and radius still come from the utility classes. */
+
+/* A panel: the surface a section's content sits on. No hover lift — .yantra-card
+   has that, and on a page it made every block look like something to click. */
+.yantra-surface {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+}
+
+/* The heading above a section. */
+.yantra-label {
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* A chip: a fact, a count, a filter. Quiet by default. */
+.yantra-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-md);
+    background-color: var(--card-inset);
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+}
+
+/* The chip that is currently on: a selected filter, the state of a service. */
+.yantra-chip--active {
+    background-color: var(--card-bg);
+    border-color: var(--card-border-strong);
+    color: var(--text-primary);
+}
+
+.yantra-chip--accent {
+    border-color: var(--accent-border);
+    background-color: var(--accent-soft);
+    color: var(--accent);
+}
+
+.yantra-chip--ok {
+    border-color: rgb(16 185 129 / 0.3);
+    background-color: rgb(16 185 129 / 0.1);
+    color: var(--ok-text);
+}
+
+.yantra-chip--warn {
+    border-color: rgb(245 158 11 / 0.35);
+    background-color: rgb(245 158 11 / 0.12);
+    color: #b45309;
+}
+
+:root.dark .yantra-chip--warn {
+    color: var(--color-amber-400);
+}
+
+.yantra-chip--danger {
+    border-color: var(--danger-border);
+    background-color: var(--danger-soft);
+    color: var(--danger-text);
+}
+
+/* A button. Ghost by default, so a row of actions reads as one strong action
+   with the rest not competing with it. */
+.yantra-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.875rem;
+    transition:
+        background-color var(--yantra-dur-fast) var(--yantra-ease),
+        border-color var(--yantra-dur-fast) var(--yantra-ease),
+        color var(--yantra-dur-fast) var(--yantra-ease);
+}
+
+.yantra-btn:hover {
+    border-color: var(--card-border-strong);
+    background-color: var(--card-inset);
+}
+
+.yantra-btn--primary {
+    background-color: var(--cta-bg);
+    border-color: var(--cta-bg);
+    color: var(--cta-text);
+}
+
+.yantra-btn--primary:hover {
+    background-color: var(--cta-bg-hover);
+    border-color: var(--cta-bg-hover);
+}
+
+.yantra-btn--danger {
+    background-color: var(--danger-soft);
+    border-color: var(--danger-border);
+    color: var(--danger-text);
+}
+
+.yantra-btn--warn {
+    background-color: rgb(245 158 11 / 0.12);
+    border-color: rgb(245 158 11 / 0.35);
+    color: #b45309;
+}
+
+:root.dark .yantra-btn--warn {
+    color: var(--color-amber-400);
+}
+
+.yantra-btn:disabled,
+.yantra-btn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* A filter row: the selected chip sits on the page surface and the others on
+   the inset, which is what a segmented control is. */
+.yantra-segment {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--card-inset);
+    padding: 0.25rem;
+}
+
+.yantra-segment > .yantra-chip {
+    border-color: transparent;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.yantra-segment > .yantra-chip:hover {
+    color: var(--text-primary);
+}
+
+.yantra-segment > .yantra-chip--active {
+    background-color: var(--card-bg);
+    border-color: var(--card-border);
+}
+
+/* The quiet way to say something: a label and its value on one hairline row
+   inside a panel. The alternative is a box inside a box, which is what the
+   internal-addresses list used to be. */
+.yantra-fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.875rem;
+    font-size: 11px;
+}
+
+.yantra-fact + .yantra-fact {
+    border-top: 1px solid var(--card-border);
+}
+
+.yantra-fact__label {
+    color: var(--text-secondary);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.yantra-fact__value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-weight: 500;
+}
+
+/* An empty section: one dashed surface, one quiet line, no card. */
+.yantra-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border: 1px dashed var(--card-border);
+    border-radius: var(--radius-xl);
+    padding: 2.5rem;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 @media (prefers-reduced-motion: reduce) {

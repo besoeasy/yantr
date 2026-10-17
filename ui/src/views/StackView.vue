@@ -246,10 +246,12 @@ const overallState = computed(() => {
   return t("stackView.stopped");
 });
 
+// stateClass is a chip modifier rather than a palette: the colours live with the
+// rest of the theme, so a state chip is one class and light and dark follow it.
 const stateClass = computed(() => {
-  if (overallState.value === "running") return "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20";
-  if (overallState.value === "partial") return "bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20";
-  return "bg-gray-100 dark:bg-zinc-900 text-gray-600 dark:text-zinc-400 border-gray-200 dark:border-zinc-800";
+  if (overallState.value === "running") return "yantra-chip--ok";
+  if (overallState.value === "partial") return "yantra-chip--warn";
+  return "";
 });
 
 // ── API ────────────────────────────────────────────────────────────────────────
@@ -476,29 +478,28 @@ onMounted(() => {
 
     <!-- Loading -->
     <div v-if="loading" class="mx-auto flex max-w-7xl justify-center p-8 py-32">
-       <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>    </div>
+      <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
+    </div>
 
-    <!-- Load failure: the page body is gated on `stack`, so without this the
-         whole view rendered as a blank screen with only a transient toast. -->
+    <!-- Load failure: the page body is gated on `stack`, so without this the whole
+         view rendered as a blank screen with only a transient toast. -->
     <div v-else-if="loadFailed" class="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-32 text-center">
-      <AlertTriangle :size="32" class="text-amber-500" />
-      <p class="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-        {{ t("stackView.loadFailedTitle") }}
-      </p>
-      <p class="max-w-md text-xs text-zinc-500">{{ t("stackView.loadFailedHint", { id: projectId }) }}</p>
-      <button
-        @click="retryLoad"
-        class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900"
-      >
+      <AlertTriangle :size="28" class="yantra-text-danger" />
+      <p class="text-sm font-semibold yantra-text-primary">{{ t("stackView.loadFailedTitle") }}</p>
+      <p class="max-w-md text-xs yantra-text-secondary">{{ t("stackView.loadFailedHint", { id: projectId }) }}</p>
+      <button @click="retryLoad" class="yantra-btn yantra-btn--primary mt-1">
         <RotateCcw :size="13" />{{ t("stackView.retry") }}
       </button>
     </div>
 
     <!-- Content -->
-    <main v-else-if="stack" class="mx-auto max-w-7xl animate-fadeIn space-y-6 px-6 py-8">
+    <main v-else-if="stack" class="mx-auto max-w-7xl animate-fadeIn space-y-8 px-6 py-8">
       <!-- Drift: the catalog definition changed after this stack was deployed.
            Update only refreshes images, so point at the app page for a redeploy. -->
-      <div v-if="drifted" class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center dark:border-amber-500/20 dark:bg-amber-500/10">
+      <div
+        v-if="drifted"
+        class="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center dark:border-amber-500/20 dark:bg-amber-500/10"
+      >
         <div class="flex flex-1 items-start gap-2.5">
           <AlertTriangle :size="16" class="mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
           <div>
@@ -508,51 +509,47 @@ onMounted(() => {
         </div>
         <button
           @click="router.push(`/apps/${stack.appname || stack.appId}`)"
-          class="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-amber-300 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-amber-800 transition-all hover:bg-amber-100 dark:border-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/10"
+          class="yantra-btn yantra-btn--warn shrink-0"
         >
           <ExternalLink :size="13" />{{ t("stackView.appPage") }}
         </button>
       </div>
 
-      <!-- ── App Header ───────────────────────────────────────────────────────────── -->
-      <div class="group relative flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
-         <!-- Logo -->
-         <div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-transform duration-500 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-           <AppLogo
-             :logo="stack.app?.logo"
-             :name="stack.app?.name || stack.appId"
-             :seed="stack.app?.id || stack.projectId || stack.appId"
-             img-class="h-full w-full object-contain filter transition-all dark:brightness-90 group-hover:brightness-100"
-             icon-class="h-full w-full text-zinc-900 dark:text-zinc-100"
-           />
-         </div>
+      <!-- ── App Header ─────────────────────────────────────────────────────────────
+           One panel for the whole identity: who it is, what state it is in, what
+           it runs, who writes it, and the four things you can do about it. The
+           actions are one strong button and three ghosts, with remove last and
+           coloured as the thing it is. -->
+      <div class="yantra-surface p-6">
+        <div class="flex flex-col gap-6 sm:flex-row">
+          <div class="yantra-tile h-20 w-20 shrink-0 p-4">
+            <AppLogo
+              :logo="stack.app?.logo"
+              :name="stack.app?.name || stack.appId"
+              :seed="stack.app?.id || stack.projectId || stack.appId"
+              img-class="h-full w-full object-contain filter dark:brightness-90"
+              icon-class="h-full w-full yantra-text-primary"
+            />
+          </div>
 
-         <!-- Info -->
-         <div class="flex-1 space-y-3">
-            <div class="mb-1 flex flex-wrap items-center gap-2">
-              <h1 class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <div class="min-w-0 flex-1 space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="text-2xl font-bold tracking-tight yantra-text-primary">
                 {{ stack.app?.name || stack.appId }}
               </h1>
-              <span
-                class="rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest"
-                :class="stateClass"
-              >{{ overallState }}</span>
-              <span
-                class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
-              >{{ stack.projectId }}</span>
+              <span class="yantra-chip" :class="stateClass">{{ overallState }}</span>
+              <span class="yantra-chip font-mono normal-case tracking-normal">{{ stack.projectId }}</span>
             </div>
 
-            <!-- Description -->
-            <p v-if="stack.app?.short_description" class="max-w-2xl text-sm leading-relaxed text-zinc-500">
+            <p v-if="stack.app?.short_description" class="max-w-2xl text-sm leading-relaxed yantra-text-secondary">
               {{ stack.app.short_description }}
             </p>
 
-            <!-- Tags -->
-            <div v-if="stack.app?.tags?.length" class="flex flex-wrap gap-2 pt-2">
+            <div v-if="stack.app?.tags?.length" class="flex flex-wrap gap-1.5">
               <span
                 v-for="tag in (stack.app.tags).slice(0, 6)"
                 :key="tag"
-                class="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+                class="yantra-chip"
               >{{ tag }}</span>
             </div>
 
@@ -560,133 +557,116 @@ onMounted(() => {
                  catalog knows whose — the same credit the app page shows. -->
             <DeveloperCredit v-if="stack.app" :app="stack.app" />
 
-            <!-- Actions -->
-            <div class="flex flex-wrap items-center gap-2 pt-2">
-              <button
-                v-if="stack.app"
-                @click="router.push(`/apps/${stack.appname || stack.appId}`)"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
-              >
-                <ExternalLink :size="13" />{{ t("stackView.appPage") }}
-              </button>
-
-              <!-- Restart (server endpoint, previously unreachable from the UI) -->
-              <button
-                @click="restartStack"
-                :disabled="restarting"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
-              >
-                <RotateCcw :size="13" :class="restarting ? 'animate-spin' : ''" />
-                {{ restarting ? t("stackView.restarting") : t("stackView.restartStack") }}
-              </button>
-
-              <!-- Start / Stop every service of the stack -->
-              <button
-                v-if="overallState !== 'running'"
-                @click="setStackServices('running')"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
-              >
-                <Play :size="13" />{{ t("stackView.startStack") }}
-              </button>
-              <button
-                v-else
-                @click="setStackServices('stopped')"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
-              >
-                <Square :size="13" />{{ t("stackView.stopStack") }}
-              </button>
-
-              <!-- Update -->
+            <div class="flex flex-wrap items-center gap-2 pt-1">
               <button
                 @click="updateStack"
                 :disabled="updating"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black disabled:cursor-not-allowed disabled:opacity-50 dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+                class="yantra-btn yantra-btn--primary"
               >
                 <RotateCcw :size="13" :class="updating ? 'animate-spin' : ''" />
                 {{ updating ? t("stackView.updating") : t("stackView.updateStack") }}
               </button>
 
-              <!-- Remove -->
+              <button @click="restartStack" :disabled="restarting" class="yantra-btn">
+                <RotateCcw :size="13" :class="restarting ? 'animate-spin' : ''" />
+                {{ restarting ? t("stackView.restarting") : t("stackView.restartStack") }}
+              </button>
+
+              <button v-if="overallState !== 'running'" @click="setStackServices('running')" class="yantra-btn">
+                <Play :size="13" />{{ t("stackView.startStack") }}
+              </button>
+              <button v-else @click="setStackServices('stopped')" class="yantra-btn">
+                <Square :size="13" />{{ t("stackView.stopStack") }}
+              </button>
+
+              <button v-if="stack.app" @click="router.push(`/apps/${stack.appname || stack.appId}`)" class="yantra-btn">
+                <ExternalLink :size="13" />{{ t("stackView.appPage") }}
+              </button>
+
+              <!-- Remove sits apart from the rest: same weight as an update is a
+                   lie about what it does. -->
               <button
                 @click="removeStack"
                 :disabled="removing"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-red-600 transition-all hover:border-red-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900/30 dark:bg-red-900/10 dark:text-red-500 dark:hover:border-red-900/50 dark:hover:bg-red-900/20"
+                class="yantra-btn yantra-btn--danger sm:ml-auto"
               >
                 <Trash2 :size="13" />{{ removing ? t("stackView.removing") : t("stackView.removeStack") }}
               </button>
-
-              <!-- Report Issue -->
-              <a
-                :href="reportIssueUrl"
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-900/50"
-              >
-                <Bug :size="13" />{{ t("home.externalLinks.reportIssue") }}
-              </a>
             </div>
-         </div>
+
+            <!-- A report is a link, not an action on the stack, so it reads like
+                 one — the way the app page lists its own links. -->
+            <a
+              :href="reportIssueUrl"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors hover:text-zinc-900 dark:hover:text-white"
+            >
+              <Bug :size="12" />{{ t("home.externalLinks.reportIssue") }}
+            </a>
+          </div>
+        </div>
       </div>
 
-      <!-- ── Ports Overview ─────────────────────────────────────────────────────────── -->
+      <!-- ── Network access ────────────────────────────────────────────────────────
+           The same shape the container page uses for its ports: a label with a
+           count, a filter, and one card per port. -->
       <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-              {{ t("stackView.networkAccess") }}
-            </h3>
+            <h3 class="yantra-label">{{ t("stackView.networkAccess") }}</h3>
             <span
               v-if="enrichedPorts.length > 0"
-              class="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              class="yantra-chip"
               :title="accessPorts.length < enrichedPorts.length ? t('stackView.portsWithWorkCount', { access: accessPorts.length, total: enrichedPorts.length }) : ''"
             >
-              <template v-if="showAccessPorts && accessPorts.length < enrichedPorts.length">
-                {{ accessPorts.length }}/{{ enrichedPorts.length }}
-              </template>
-              <template v-else>{{ visiblePorts.length }}</template>
+              {{ showAccessPorts && accessPorts.length < enrichedPorts.length ? `${accessPorts.length}/${enrichedPorts.length}` : visiblePorts.length }}
             </span>
           </div>
-          <div v-if="hasAccessPorts" class="flex items-center gap-1 rounded-lg bg-zinc-50 p-1 dark:bg-zinc-900">
-            <button @click="showAccessPorts = false" :class="!showAccessPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.allPorts") }}</button>
-            <button @click="showAccessPorts = true" :class="showAccessPorts ? 'bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-white' : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'" class="rounded-md px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all">{{ t("stackView.access") }}</button>
+          <div v-if="hasAccessPorts" class="yantra-segment">
+            <button
+              type="button"
+              class="yantra-chip"
+              :class="{ 'yantra-chip--active': !showAccessPorts }"
+              @click="showAccessPorts = false"
+            >{{ t("stackView.allPorts") }}</button>
+            <button
+              type="button"
+              class="yantra-chip"
+              :class="{ 'yantra-chip--active': showAccessPorts }"
+              @click="showAccessPorts = true"
+            >{{ t("stackView.access") }}</button>
           </div>
         </div>
 
         <div v-if="enrichedPorts.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="(p, i) in visiblePorts"
-            :key="i"
-            class="group flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
-          >
-            <div class="mb-4 flex items-start justify-between">
-              <div class="flex min-w-0 flex-1 items-start gap-4">
-                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-900 transition-transform duration-300 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
-                  <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="18" />
-                  <Network v-else :size="18" />
+          <div v-for="(p, i) in visiblePorts" :key="i" class="yantra-surface flex h-full flex-col p-5">
+            <div class="mb-4 flex items-start gap-4">
+              <div class="yantra-tile h-10 w-10">
+                <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="17" />
+                <Network v-else :size="17" />
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="mb-1 flex items-center gap-2">
+                  <span class="font-mono text-[10px] font-bold uppercase yantra-text-primary">{{ p.protocol }}</span>
+                  <span v-if="p.labeledProtocol" class="yantra-chip yantra-chip--accent">{{ p.labeledProtocol }}</span>
                 </div>
-                <div class="min-w-0 flex-1">
-                  <div class="mb-1.5 flex items-center gap-2">
-                    <span class="font-mono text-[10px] font-bold uppercase text-zinc-900 dark:text-white">{{ p.protocol }}</span>
-                    <span v-if="p.labeledProtocol" class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
-                      {{ p.labeledProtocol }}
-                    </span>
-                  </div>
-                  <div class="truncate text-[11px] text-zinc-500" :title="p.label || p.service">
-                    {{ p.label || p.service }}
-                  </div>
+                <div class="truncate text-[11px] yantra-text-secondary" :title="p.label || p.service">
+                  {{ p.label || p.service }}
                 </div>
               </div>
             </div>
 
-            <div class="mb-5 space-y-2">
-              <div class="flex items-center justify-between text-[11px]">
-                <span class="font-bold uppercase tracking-wider text-zinc-500">Host Port</span>
-                <span v-if="p.hostPort" class="font-mono font-bold text-zinc-900 dark:text-white">:{{ p.hostPort }}</span>
-                <span v-else class="italic text-zinc-400">Internal</span>
+            <!-- Two facts, on hairlines rather than in a second box. -->
+            <div class="yantra-panel mb-4">
+              <div class="yantra-fact">
+                <span class="yantra-fact__label">{{ t("containerDetail.hostPort") }}</span>
+                <span v-if="p.hostPort" class="yantra-fact__value">:{{ p.hostPort }}</span>
+                <span v-else class="yantra-text-secondary italic">—</span>
               </div>
-              <div class="flex items-center justify-between text-[11px]">
-                <span class="font-bold uppercase tracking-wider text-zinc-500">Container Port</span>
-                <span class="font-mono font-medium text-zinc-700 dark:text-zinc-300">{{ p.containerPort }}</span>
+              <div class="yantra-fact">
+                <span class="yantra-fact__label">{{ t("containerDetail.containerPort") }}</span>
+                <span class="yantra-fact__value">{{ p.containerPort }}</span>
               </div>
             </div>
 
@@ -695,205 +675,144 @@ onMounted(() => {
                 v-if="p.show && p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
                 :href="appUrl(p.hostPort, p.labeledProtocol)"
                 target="_blank"
-                class="flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-900 bg-zinc-900 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-white transition-colors hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+                rel="noopener noreferrer"
+                class="yantra-btn yantra-btn--primary w-full"
               >
                 <ExternalLink :size="12" />{{ t("stackView.open") }}
               </a>
+              <!-- A work port is protocol plumbing with nothing to open, so it
+                   says so rather than offering a link that would fail. -->
               <div
                 v-else-if="!p.show"
-                class="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900/30 dark:text-zinc-600"
+                class="yantra-btn w-full cursor-default justify-between opacity-100"
                 :title="t('stackView.workPortHint')"
               >
-                <Wrench :size="12" />{{ t("stackView.workPort") }}
+                <span class="inline-flex items-center gap-2"><Wrench :size="12" />{{ t("stackView.workPort") }}</span>
               </div>
-              <div
-                v-else
-                class="flex w-full items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
-              >
-                {{ p.protocol.toUpperCase() }}
+              <div v-else class="yantra-btn w-full cursor-default justify-between opacity-100">
+                <span>{{ p.protocol.toUpperCase() }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div v-else class="group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-zinc-200 bg-white p-10 dark:border-zinc-800 dark:bg-[#0A0A0A]">
-          <Network :size="28" class="text-zinc-300 dark:text-zinc-700" />
-          <span class="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t("stackView.noPortsPublished") }}</span>
+        <div v-else class="yantra-empty">
+          <Network :size="24" />
+          <span>{{ t("stackView.noPortsPublished") }}</span>
         </div>
       </div>
 
-      <!-- ── Internal Addresses Overview ─────────────────────────────────────────────── -->
+      <!-- ── Internal addresses ─────────────────────────────────────────────────────
+           One panel per service, one hairline row per network. This used to be a
+           card inside a card inside a card. -->
       <div class="space-y-4">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-              {{ t("stackView.internalAddresses") }}
-            </h3>
-            <span
-              v-if="servicesWithNetworks.length > 0"
-              class="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
-            >
-              {{ servicesWithNetworks.length }}
-            </span>
+            <h3 class="yantra-label">{{ t("stackView.internalAddresses") }}</h3>
+            <span v-if="servicesWithNetworks.length > 0" class="yantra-chip">{{ servicesWithNetworks.length }}</span>
           </div>
-          <div class="text-[11px] font-medium text-zinc-500">
-            {{ t("stackView.internalAddressesHint") }}
-          </div>
+          <p class="text-[11px] yantra-text-secondary">{{ t("stackView.internalAddressesHint") }}</p>
         </div>
 
         <div v-if="servicesWithNetworks.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="svc in servicesWithNetworks"
-            :key="`${svc.id}-networks`"
-            class="group rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
-          >
-            <div class="mb-4 flex items-start justify-between gap-3">
-              <div>
-                <div class="text-sm font-bold text-zinc-900 dark:text-white">
-                  {{ svc.service }}
-                </div>
-                <div class="mt-1 text-[11px] font-bold uppercase tracking-widest text-zinc-500">
+          <div v-for="svc in servicesWithNetworks" :key="`${svc.id}-networks`" class="yantra-surface p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <div class="min-w-0">
+                <div class="truncate text-sm font-bold yantra-text-primary">{{ svc.service }}</div>
+                <div class="mt-1 truncate text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
                   {{ svc.composeService || svc.name }}
                 </div>
               </div>
-              <span class="inline-flex items-center rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">
-                {{ svc.networks.length }}
-              </span>
+              <span class="yantra-chip">{{ svc.networks.length }}</span>
             </div>
 
-            <div class="space-y-2.5">
-              <div
-                v-for="network in svc.networks"
-                :key="`${svc.id}-${network.name}`"
-                class="rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-3 dark:border-zinc-800 dark:bg-zinc-900/50"
-              >
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                    {{ network.name }}
-                  </span>
-                  <span class="font-mono text-[11px] font-bold text-zinc-900 dark:text-white">
-                    {{ network.ipAddress }}
-                  </span>
-                </div>
-                <div v-if="network.aliases?.length" class="mt-2 text-[10px] text-zinc-500">
-                  {{ t("stackView.networkAliases") }} {{ network.aliases.join(", ") }}
-                </div>
+            <div class="yantra-panel">
+              <div v-for="network in svc.networks" :key="`${svc.id}-${network.name}`" class="yantra-fact">
+                <span class="yantra-fact__label">{{ network.name }}</span>
+                <span class="yantra-fact__value" :title="network.aliases?.join(', ')">{{ network.ipAddress }}</span>
+              </div>
+              <div v-if="svc.networks.some((n) => n.aliases?.length)" class="yantra-fact">
+                <span class="yantra-fact__label">{{ t("stackView.networkAliases") }}</span>
+                <span class="truncate yantra-text-secondary">{{ svc.networks.flatMap((n) => n.aliases || []).join(", ") }}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div v-else class="group flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-zinc-200 bg-white p-10 dark:border-zinc-800 dark:bg-[#0A0A0A]">
-          <Network :size="28" class="text-zinc-300 dark:text-zinc-700" />
-          <span class="text-xs font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ t("stackView.noInternalAddresses") }}</span>
+        <div v-else class="yantra-empty">
+          <Network :size="24" />
+          <span>{{ t("stackView.noInternalAddresses") }}</span>
         </div>
       </div>
 
-      <!-- ── Volumes ─────────────────────────────────────────────────────────────────── -->
+      <!-- ── Storage ────────────────────────────────────────────────────────────────
+           Named volumes as cards, because they carry actions; the bind and tmpfs
+           mounts as one panel of rows, because they carry nothing but text. -->
       <div v-if="namedVolumes.length > 0 || otherMounts.length > 0" class="space-y-4">
         <div class="flex items-center gap-2">
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-            {{ t("stackView.storageVolumes") }}
-          </h3>
-          <span
-            v-if="namedVolumes.length > 0"
-            class="inline-flex items-center rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400"
-          >
-            {{ namedVolumes.length }}
-          </span>
+          <h3 class="yantra-label">{{ t("stackView.storageVolumes") }}</h3>
+          <span v-if="namedVolumes.length > 0" class="yantra-chip yantra-chip--warn">{{ namedVolumes.length }}</span>
         </div>
 
         <div v-if="namedVolumes.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="vol in namedVolumes"
-            :key="vol.name"
-            class="group flex h-full flex-col rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-300 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-[#0A0A0A] dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
-          >
+          <div v-for="vol in namedVolumes" :key="vol.name" class="yantra-surface flex h-full flex-col p-5">
             <div class="mb-4 flex items-start gap-4">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 text-amber-600 transition-transform duration-300 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400">
-                <HardDrive :size="18" />
+              <div class="yantra-tile yantra-tile--warn h-10 w-10">
+                <HardDrive :size="17" />
               </div>
               <div class="min-w-0 flex-1">
-                <div class="truncate text-sm font-bold tracking-tight text-zinc-900 dark:text-white" :title="vol.name">
-                  {{ vol.name }}
-                </div>
-                <div class="mt-1 truncate font-mono text-[11px] text-zinc-500" :title="vol.destination">
-                  {{ vol.destination }}
-                </div>
-                <div class="mt-2">
-                  <span class="rounded-md border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                    {{ vol.svcName }}
-                  </span>
-                </div>
+                <div class="truncate text-sm font-bold tracking-tight yantra-text-primary" :title="vol.name">{{ vol.name }}</div>
+                <div class="mt-1 truncate font-mono text-[11px] yantra-text-secondary" :title="vol.destination">{{ vol.destination }}</div>
+                <div class="mt-2"><span class="yantra-chip">{{ vol.svcName }}</span></div>
               </div>
             </div>
 
             <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
               <div
                 v-if="browsingVolume[vol.name]"
-                class="animate-pulse rounded-lg border border-amber-600 bg-amber-600 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white"
+                class="yantra-btn yantra-btn--warn cursor-default"
               >
                 {{ t("stackView.startingWebDAV") }}
               </div>
               <template v-else-if="!showVolumeMenu[vol.name]">
-                <button
-                  @click="showVolumeMenu[vol.name] = true"
-                  class="rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-amber-700 transition-all hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30"
-                >
+                <button @click="showVolumeMenu[vol.name] = true" class="yantra-btn">
                   {{ t("stackView.browseFiles") }}
                 </button>
               </template>
               <template v-else>
                 <button
                   @click="browseVolume(vol.name, 60)"
-                  class="rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white transition-all hover:bg-black dark:border-white dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
+                  class="yantra-btn"
                   :title="t('stackView.oneHourAccess')"
-                >
-                  1H
-                </button>
+                >1H</button>
                 <button
                   @click="browseVolume(vol.name, 0)"
-                  class="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-800 transition-all hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                  class="yantra-btn"
                   :title="t('stackView.permanentAccess')"
-                >
-                  Perm
-                </button>
+                >{{ t("stackView.permanentAccess") }}</button>
               </template>
               <button
                 @click="exportVolume(vol.name)"
                 :disabled="exportingVolume[vol.name]"
-                class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 bg-zinc-50 px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-700 transition-all hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
+                class="yantra-btn ml-auto"
                 :title="t('stackView.backupVolume')"
               >
-                <Loader2 v-if="exportingVolume[vol.name]" class="h-3 w-3 animate-spin text-amber-500" />
+                <Loader2 v-if="exportingVolume[vol.name]" class="h-3 w-3 animate-spin" />
                 <Download v-else class="h-3 w-3" />
-                {{ t('stackView.backupVolume') }}
+                {{ t("stackView.backupVolume") }}
               </button>
             </div>
           </div>
         </div>
 
         <div v-if="otherMounts.length > 0" class="space-y-3">
-          <h4 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-            {{ t("stackView.bindMounts") }}
-          </h4>
-          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div
-              v-for="(m, i) in otherMounts"
-              :key="i"
-              class="rounded-2xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-[#0A0A0A]"
-            >
-              <div class="mb-2">
-                <span class="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-400">
-                  {{ m.type }}
-                </span>
-              </div>
-              <div class="break-all font-mono text-[11px] font-bold text-zinc-900 dark:text-white">
-                {{ m.source || "—" }}
-              </div>
-              <div class="mt-1 break-all font-mono text-[11px] text-zinc-500">
-                {{ m.destination }}
-              </div>
+          <h4 class="yantra-label">{{ t("stackView.bindMounts") }}</h4>
+          <div class="yantra-panel">
+            <div v-for="(m, i) in otherMounts" :key="i" class="yantra-fact">
+              <span class="yantra-chip shrink-0">{{ m.type }}</span>
+              <span class="min-w-0 truncate yantra-fact__value" :title="`${m.source} → ${m.destination}`">
+                {{ m.source || "—" }} <span class="yantra-text-secondary">→</span> {{ m.destination }}
+              </span>
             </div>
           </div>
         </div>

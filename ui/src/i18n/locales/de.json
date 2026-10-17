@@ -464,7 +464,8 @@
     "stackStopped": "Alle Dienste gestoppt",
     "serviceActionFailed": "{failed} von {total} Diensten haben nicht reagiert",
     "internalAddresses": "Interne Adressen",
-    "internalAddressesHint": "Von anderen Containern in diesem Stack erreichbar."
+    "internalAddressesHint": "Von anderen Containern in diesem Stack erreichbar.",
+    "serviceDetails": "Details"
   },
   "appCard": {
     "active": "Aktiv ({count})",
