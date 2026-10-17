@@ -7,6 +7,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useJobs } from "../composables/useJobs";
 import { getApiErrorMessage, readJsonResponse } from "../composables/useApiResponse";
 import { usePortConflict } from "../composables/usePortConflict";
+import { dashboard } from "../utils/routes.js";
 import { AlertTriangle, Check, Play, Plus, X } from "@lucide/vue";
 
 const props = defineProps({
@@ -36,7 +37,7 @@ onMounted(async () => {
       deploying.value = false;
       if (pollRes.success) {
         toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
-        setTimeout(() => router.push("/"), 1500);
+        setTimeout(() => router.push(dashboard()), 1500);
       }
     }
   } catch (err) {
@@ -379,7 +380,7 @@ async function deployApp() {
       }
 
       setTimeout(() => {
-        router.push("/");
+        router.push(dashboard());
       }, 1500);
     } else {
       throw new Error(getApiErrorMessage(result, t('appDetail.deploymentFailed')));
@@ -398,7 +399,7 @@ async function deployApp() {
           } else {
             toast.success(t('appDetail.installedSuccessfully', { name: props.app.name }));
           }
-          setTimeout(() => router.push("/"), 1500);
+          setTimeout(() => router.push(dashboard()), 1500);
           return;
         } else if (pollResult.error) {
           toast.error(t('appDetail.deploymentFailedMessage', { message: pollResult.error }));
