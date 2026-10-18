@@ -36,13 +36,16 @@ const { t } = useI18n();
       </div>
     </div>
 
-    <!-- Content -->
-    <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
-        {{ t("sponsorCard.title") }}
-      </div>
-      <div class="mb-6 text-sm leading-relaxed text-zinc-500 line-clamp-2 dark:text-zinc-400">
-        {{ t("sponsorCard.description") }}
+    <!-- Content: the ask sits left, the CTA right, so a half-width card does
+         not turn into one long ribbon of text. -->
+    <div class="relative z-10 mt-auto flex flex-col gap-6 pt-6 sm:flex-row sm:items-end">
+      <div class="min-w-0 flex-1">
+        <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+          {{ t("sponsorCard.title") }}
+        </div>
+        <div class="text-sm leading-relaxed text-zinc-500 line-clamp-3 dark:text-zinc-400">
+          {{ t("sponsorCard.description") }}
+        </div>
       </div>
 
       <!-- Main CTA -->
@@ -50,13 +53,13 @@ const { t } = useI18n();
         href="https://github.com/sponsors/besoeasy"
         target="_blank"
         rel="noopener noreferrer"
-        class="group/cta relative flex h-12 w-full items-center justify-between rounded-xl bg-rose-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98] overflow-hidden"
+        class="group/cta relative flex h-12 shrink-0 items-center justify-between gap-3 rounded-xl bg-rose-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98] overflow-hidden sm:w-56"
       >
         <div class="relative z-10 flex items-center gap-2.5">
-          <Heart class="h-4 w-4 fill-current" />
+          <Heart class="h-4 w-4 shrink-0 fill-current" />
           <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('sponsorCard.cta') }}</span>
         </div>
-        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 shrink-0 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
       </a>
     </div>
   </div>

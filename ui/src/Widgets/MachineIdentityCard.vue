@@ -140,59 +140,60 @@ const displayLocation = computed(() => {
 
       <!-- Success/Loading State -->
       <template v-else>
-         <!-- IP Address -->
-         <!-- A toggle control, so a <button>: it gets native focus, keyboard
-              activation and correct semantics for free. As a div with mouse
-              handlers the masked value was permanently hidden from keyboard
-              and screen-reader users with no way to unmask it. -->
-         <button
+         <!-- Half-width body: the masked endpoint keeps its own space on the
+              left; the location and provider tiles stack on the right instead
+              of sitting under a giant IP as they did in the narrow card. -->
+         <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,14rem)]">
+          <!-- IP Address -->
+          <!-- A toggle control, so a <button>: it gets native focus, keyboard
+               activation and correct semantics for free. As a div with mouse
+               handlers the masked value was permanently hidden from keyboard
+               and screen-reader users with no way to unmask it. -->
+          <button
             type="button"
-            class="group/ip mb-6 w-full cursor-pointer text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
+            class="group/ip flex cursor-pointer flex-col justify-end text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500"
             :aria-pressed="!isIpHovered"
             @mouseenter="isIpHovered = true"
             @mouseleave="isIpHovered = false"
             @focus="isIpHovered = true"
             @blur="isIpHovered = false"
             @click="isIpHovered = !isIpHovered"
-         >
-           <div class="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-             {{ t('quickMetrics.machineIdentity.publicEndpoint') }}
-             <ShieldCheck v-if="identity?.ip" class="h-3.5 w-3.5 text-emerald-500" />
-           </div>
-           
-           <div v-if="loading && !identity" class="h-10 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-           <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-200 group-hover/ip:text-black sm:text-5xl dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
-             {{ displayIp }}
-           </div>
-         </button>
+          >
+            <div class="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+              {{ t('quickMetrics.machineIdentity.publicEndpoint') }}
+              <ShieldCheck v-if="identity?.ip" class="h-3.5 w-3.5 text-emerald-500" />
+            </div>
 
-         <!-- Details Grid -->
-         <div class="grid grid-cols-2 gap-2">
-           <!-- Location Card -->
-           <button
+            <div v-if="loading && !identity" class="h-10 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
+            <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-200 group-hover/ip:text-black dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
+              {{ displayIp }}
+            </div>
+          </button>
+
+          <div class="grid grid-cols-2 gap-2 sm:grid-cols-1">
+            <!-- Location Card -->
+            <button
               type="button"
-              class="flex w-full cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-[border-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
+              class="flex cursor-pointer flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 text-left transition-[border-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50"
               :aria-pressed="!isLocationHovered"
               @mouseenter="isLocationHovered = true"
               @mouseleave="isLocationHovered = false"
               @focus="isLocationHovered = true"
               @blur="isLocationHovered = false"
               @click="isLocationHovered = !isLocationHovered"
-           >
-              <div class="flex items-center justify-between gap-2">
-                 <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
-                   <MapPin class="h-3.5 w-3.5" />
-                   <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.location') }}</span>
-                 </div>
+            >
+              <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                <MapPin class="h-3.5 w-3.5" />
+                <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.location') }}</span>
               </div>
               <div v-if="loading && !identity" class="h-4 w-20 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
               <div v-else class="truncate text-sm font-black text-zinc-900 transition-colors duration-200 dark:text-white" :title="locationText">
                 {{ displayLocation }}
               </div>
-           </button>
-           
-           <!-- Provider Card -->
-           <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
+            </button>
+
+            <!-- Provider Card -->
+            <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
               <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
                 <Server class="h-3.5 w-3.5" />
                 <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.provider') }}</span>
@@ -201,7 +202,8 @@ const displayLocation = computed(() => {
               <div v-else class="truncate text-sm font-black text-zinc-900 dark:text-white" :title="ispText">
                 {{ ispText }}
               </div>
-           </div>
+            </div>
+          </div>
          </div>
       </template>
     </div>

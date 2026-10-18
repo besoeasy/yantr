@@ -97,10 +97,11 @@ const workloadStats = computed(() => [
         </div>
       </div>
 
-      <!-- Identity, then the facts panel, both pinned to the bottom so every
-           card in the grid lines up whatever its content. -->
-      <div class="mt-auto flex flex-col gap-4 pt-4">
-        <div>
+      <!-- Three-quarter body: the OS identity keeps its headline slot on the
+           left, and the counters panel no longer hangs underneath it but
+           stands beside it, reading like the dense panel it is. -->
+      <div class="mt-auto flex flex-col gap-4 pt-4 lg:flex-row lg:items-end lg:gap-8">
+        <div class="min-w-0 lg:flex-1">
           <div class="yantra-text-primary line-clamp-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
             {{ osInfo.name }}
           </div>
@@ -109,7 +110,7 @@ const workloadStats = computed(() => [
           </div>
         </div>
 
-        <div class="yantra-panel">
+        <div class="yantra-panel lg:w-full lg:max-w-[26rem]">
           <div class="grid grid-cols-4">
             <div v-for="stat in workloadStats" :key="stat.key" class="host-count">
               <component :is="stat.icon" class="h-3 w-3" :class="stat.muted ? 'yantra-text-secondary' : 'yantra-text-accent'" />

@@ -109,27 +109,47 @@ const hasContext = computed(() => contextRows.value.length > 0);
       </div>
     </div>
 
-    <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
-        {{ t("issueCard.title") }}
-      </div>
-      <div class="yantra-text-secondary mb-5 line-clamp-3 text-sm leading-relaxed">
-        {{ t("issueCard.description") }}
+    <!-- Half-width body: the ask sits left, the facts the report will carry sit
+         right, so a reader can check what leaves the machine before the CTA. -->
+    <div class="relative z-10 mt-auto grid gap-6 pt-6 sm:grid-cols-1" :class="hasContext ? 'sm:grid-cols-[minmax(0,1fr)_minmax(0,13rem)]' : ''">
+      <div class="flex flex-col">
+        <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
+          {{ t("issueCard.title") }}
+        </div>
+        <div class="yantra-text-secondary mb-5 line-clamp-3 text-sm leading-relaxed">
+          {{ t("issueCard.description") }}
+        </div>
+
+        <a
+          :href="issueUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="issue-cta group/cta relative mt-auto flex h-12 w-full items-center justify-between rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
+        >
+          <div class="relative z-10 flex items-center gap-2.5">
+            <Bug class="h-4 w-4" />
+            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
+          </div>
+          <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+        </a>
+
+        <p class="issue-note yantra-text-secondary mt-4 flex items-center gap-2 text-[10px] leading-relaxed">
+          <ShieldCheck class="h-3 w-3 shrink-0" />
+          <span>{{ t("issueCard.footnote") }}</span>
+        </p>
       </div>
 
       <!-- What the report will carry. Shown rather than implied: a reader who
            does not want their host described should be able to see that before
-           clicking, and these rows are the same facts the report body lists.
-           Four rows, one line each — this card shares a dashboard row with
-           cards that carry far more, and the tallest one sets the height for
-           all of them. -->
-      <div v-if="hasContext" class="issue-context mb-5 rounded-xl px-4 py-3">
+           clicking. Stays a vertical list in its own column, one line per
+           fact, whatever the card's width. -->
+      <div v-if="hasContext" class="issue-context rounded-xl px-4 py-3">
         <p class="yantra-text-secondary mb-2 text-[9px] font-semibold uppercase tracking-widest">
           {{ t("issueCard.contextLabel") }}
         </p>
         <dl class="flex flex-col gap-1.5">
-          <div v-for="row in contextRows" :key="row.label" class="flex items-baseline justify-between gap-3">
-            <dt class="yantra-text-secondary shrink-0 text-[10px] font-semibold uppercase tracking-wider">
+          <div v-for="row in contextRows" :key="row.label" class="flex flex-col gap-0.5">
+            <dt class="yantra-text-secondary text-[9px] font-semibold uppercase tracking-wider">
               {{ row.label }}
             </dt>
             <dd class="yantra-text-primary truncate font-mono text-[11px] font-medium" :title="row.value">
@@ -138,24 +158,6 @@ const hasContext = computed(() => contextRows.value.length > 0);
           </div>
         </dl>
       </div>
-
-      <a
-        :href="issueUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="issue-cta group/cta relative flex h-12 w-full items-center justify-between rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
-      >
-        <div class="relative z-10 flex items-center gap-2.5">
-          <Bug class="h-4 w-4" />
-          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
-        </div>
-        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
-      </a>
-
-      <p class="issue-note yantra-text-secondary mt-4 flex items-center gap-2 text-[10px] leading-relaxed">
-        <ShieldCheck class="h-3 w-3 shrink-0" />
-        <span>{{ t("issueCard.footnote") }}</span>
-      </p>
     </div>
   </div>
 </template>

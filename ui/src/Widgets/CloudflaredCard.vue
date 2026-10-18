@@ -161,15 +161,28 @@ async function deploy() {
         </div>
       </div>
 
-      <!-- Main content -->
-      <div class="relative z-10 mt-auto flex flex-col pt-6">
-        <div class="mb-2 line-clamp-1 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
-          {{ t('cloudflaredCard.secureTunnel') }}
+      <!-- Half-width content: context and token entry get their own columns. -->
+      <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
+        <div>
+          <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
+            {{ t('cloudflaredCard.secureTunnel') }}
+          </div>
+          <div class="text-xs font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
+            {{ t('cloudflaredCard.description') }}
+          </div>
+
+          <a
+            href="https://one.dash.cloudflare.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group/link mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+          >
+            <Key class="h-3.5 w-3.5" />
+            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
+            <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+          </a>
         </div>
-        <div class="mb-5 text-xs font-medium text-zinc-500 dark:text-zinc-400">
-           {{ t('cloudflaredCard.description') }}
-        </div>
-        
+
         <div>
           <div class="relative">
             <input
@@ -198,38 +211,25 @@ async function deploy() {
           <p v-else-if="tunnelToken.trim()" class="mt-2 text-[11px] font-medium text-red-500">
             {{ t('cloudflaredCard.invalidToken') }}
           </p>
-        </div>
 
-        <transition
-          enter-active-class="transition-[border-color,box-shadow,transform] duration-200 ease-out"
-          enter-from-class="translate-y-1 opacity-0"
-          enter-to-class="translate-y-0 opacity-100"
-          leave-active-class="transition-all duration-150 ease-in"
-          leave-from-class="translate-y-0 opacity-100"
-          leave-to-class="translate-y-1 opacity-0"
-        >
-          <div v-if="deployError" class="mt-3 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20">
-            <AlertCircle class="h-4 w-4 shrink-0 text-red-500" />
-            <p class="text-xs font-medium text-red-600 dark:text-red-400">{{ deployError }}</p>
-          </div>
-        </transition>
-
-        <div class="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          <a
-            href="https://one.dash.cloudflare.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group/link flex h-11 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+          <transition
+            enter-active-class="transition-[border-color,box-shadow,transform] duration-200 ease-out"
+            enter-from-class="translate-y-1 opacity-0"
+            enter-to-class="translate-y-0 opacity-100"
+            leave-active-class="transition-all duration-150 ease-in"
+            leave-from-class="translate-y-0 opacity-100"
+            leave-to-class="translate-y-1 opacity-0"
           >
-            <Key class="h-3.5 w-3.5" />
-            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
-            <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover/link:translate-x-0.5" />
-          </a>
+            <div v-if="deployError" class="mt-3 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20">
+              <AlertCircle class="h-4 w-4 shrink-0 text-red-500" />
+              <p class="text-xs font-medium text-red-600 dark:text-red-400">{{ deployError }}</p>
+            </div>
+          </transition>
 
           <button
             @click="deploy"
             :disabled="!isValidToken || deploying"
-            class="group/cta relative flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border transition-[border-color,box-shadow,transform] duration-200"
+            class="group/cta relative mt-3 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border transition-[border-color,box-shadow,transform] duration-200"
             :class="isValidToken && !deploying
               ? 'border-zinc-900 bg-zinc-900 text-white hover:bg-black active:scale-[0.98] dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white'
               : 'cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600'"
@@ -271,18 +271,19 @@ async function deploy() {
         </div>
       </div>
 
-      <!-- Main Body -->
-      <div class="relative z-10 mt-auto flex flex-col pt-6">
-        
-        <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          {{ t('cloudflaredCard.connectionStatus') }}
-        </div>
-        <div class="mb-6 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
-          {{ t('cloudflaredCard.secureTunnel') }}
+      <!-- Half-width body: the reading stays left, the ops facts stack right. -->
+      <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
+        <div>
+          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+            {{ t('cloudflaredCard.connectionStatus') }}
+          </div>
+          <div class="text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
+            {{ t('cloudflaredCard.secureTunnel') }}
+          </div>
         </div>
 
-        <!-- Nested Containers for details -->
-        <div class="grid grid-cols-2 gap-2">
+        <!-- Ops facts: uptime and image version share one column, stacked. -->
+        <div class="flex flex-col gap-2">
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
@@ -293,7 +294,7 @@ async function deploy() {
                {{ isRunning ? formatUptime(uptimeMs) : t('cloudflaredCard.offline') }}
             </div>
           </div>
-          
+
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
             <div class="flex items-center gap-2 text-zinc-500">
               <Globe class="h-3.5 w-3.5" />
@@ -304,7 +305,6 @@ async function deploy() {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>

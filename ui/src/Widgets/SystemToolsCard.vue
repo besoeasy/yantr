@@ -69,44 +69,40 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Main Body -->
-      <div class="relative z-10 mt-auto flex flex-col pt-6 pr-[180px]">
-        
-        <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          System Overview
+      <!-- Half-width body: the explanation stays off the buttons instead of the
+           old corner cluster needing a right-padding hack on the text. -->
+      <div class="mt-auto flex flex-col gap-6 pt-6 sm:flex-row sm:items-end">
+        <div class="min-w-0 flex-1">
+          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+            System Overview
+          </div>
+
+          <div class="mb-2 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+            Active
+          </div>
+          <div class="line-clamp-3 text-xs font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
+            Manage system resources, monitor live logs, and clean up environments.
+          </div>
         </div>
-        
-        <div class="mb-2 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
-          Active
+
+        <!-- Tools: the three shortcuts share one row rather than a corner cluster. -->
+        <div class="pointer-events-auto flex shrink-0 flex-none items-end gap-2">
+          <!-- Logs -->
+          <button type="button" @click.prevent.stop="router.push(logs())" :title="t('home.toolsNavCard.logs')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
+            <ClipboardList class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
+            <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-[10px] font-bold uppercase tracking-widest opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">Live</span>
+          </button>
+          <!-- Images -->
+          <button type="button" @click.prevent.stop="router.push(storageTab('images-active'))" :title="t('home.toolsNavCard.images')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
+            <Layers class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
+            <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ imageCount !== null ? imageCount : '-' }}</span>
+          </button>
+          <!-- Volumes -->
+          <button type="button" @click.prevent.stop="router.push(storageTab('volumes-active'))" :title="t('home.toolsNavCard.volumes')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
+            <HardDrive class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
+            <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ volumeCount !== null ? volumeCount : '-' }}</span>
+          </button>
         </div>
-        <div class="mt-1 line-clamp-3 text-xs font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
-          Manage system resources, monitor live logs, and clean up environments.
-        </div>
-      </div>
-      
-      <!-- Tool Cluster in Right Corner -->
-      <div class="pointer-events-auto absolute bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-         <!-- Top row: 1 item -->
-         <div class="flex gap-2">
-            <!-- Logs -->
-            <button type="button" @click.prevent.stop="router.push(logs())" :title="t('home.toolsNavCard.logs')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
-               <ClipboardList class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
-               <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-[10px] font-bold uppercase tracking-widest opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">Live</span>
-            </button>
-         </div>
-         <!-- Bottom row: 2 items -->
-         <div class="flex gap-2">
-            <!-- Images -->
-            <button type="button" @click.prevent.stop="router.push(storageTab('images-active'))" :title="t('home.toolsNavCard.images')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
-               <Layers class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
-               <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ imageCount !== null ? imageCount : '-' }}</span>
-            </button>
-            <!-- Volumes -->
-            <button type="button" @click.prevent.stop="router.push(storageTab('volumes-active'))" :title="t('home.toolsNavCard.volumes')" class="group/btn relative flex h-16 w-16 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-sky-200/80 bg-sky-50 text-sky-700 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-sky-600 hover:bg-sky-600 hover:text-white dark:border-sky-900/50 dark:bg-sky-900/20 dark:text-sky-400 dark:hover:border-sky-400 dark:hover:bg-sky-400 dark:hover:text-zinc-900">
-               <HardDrive class="h-6 w-6 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:-translate-y-10 group-hover/btn:opacity-0" />
-               <span class="absolute inset-0 flex translate-y-10 items-center justify-center text-xl font-black opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover/btn:translate-y-0 group-hover/btn:opacity-100">{{ volumeCount !== null ? volumeCount : '-' }}</span>
-            </button>
-         </div>
       </div>
     </div>
   </div>
