@@ -1,9 +1,9 @@
 <script>
-// Dashboard engine: two of the desktop grid's four columns — the ask and the
-// CTA share one row, so the card reads as a single decision instead of a page
-// of it. Same shape as the report card beside it; the .w-span-2 utility in
-// main.css clamps it per breakpoint, see Home.vue.
-export const meta = { cols: 2 };
+// Dashboard engine: one of the desktop grid's four columns. The ask and the
+// CTA stack rather than sit side by side — at one column they are a sentence
+// followed by the button that answers it. The .w-span-1 utility in main.css
+// clamps it per breakpoint, see Home.vue.
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { useI18n } from "vue-i18n";
@@ -31,28 +31,24 @@ const { t } = useI18n();
           </div>
         </div>
       </div>
-
-      <div class="flex h-8 w-8 shrink-0 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-        <Heart class="h-5 w-5 text-zinc-400 transition-colors hover:text-red-500 dark:text-zinc-600 dark:hover:text-red-400" />
-      </div>
     </div>
 
-    <!-- Body: the ask left, the CTA right — one decision per glance. -->
-    <div class="relative z-10 mt-auto flex flex-wrap items-end justify-between gap-x-8 gap-y-4 pt-5">
-      <div class="min-w-0 max-w-[38ch] flex-1">
-        <div class="mb-1.5 text-2xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
-          {{ t("sponsorCard.title") }}
-        </div>
-        <div class="line-clamp-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-          {{ t("sponsorCard.description") }}
-        </div>
+    <!-- Body: the ask, then the CTA under it. One column is one reading
+         order, so the button spans the card rather than competing with the
+         title for the same row. -->
+    <div class="relative z-10 mt-auto flex flex-col pt-5">
+      <div class="mb-1.5 text-xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
+        {{ t("sponsorCard.title") }}
+      </div>
+      <div class="line-clamp-3 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+        {{ t("sponsorCard.description") }}
       </div>
 
       <a
         href="https://github.com/sponsors/besoeasy"
         target="_blank"
         rel="noopener noreferrer"
-        class="group/cta relative flex h-11 shrink-0 items-center justify-between gap-3 rounded-xl bg-rose-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98] overflow-hidden"
+        class="group/cta relative mt-5 flex h-11 w-full items-center justify-between gap-3 overflow-hidden rounded-xl bg-rose-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98]"
       >
         <div class="relative z-10 flex items-center gap-2.5">
           <Heart class="h-4 w-4 shrink-0 fill-current" />
