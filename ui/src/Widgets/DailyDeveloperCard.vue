@@ -6,16 +6,15 @@
 export const meta = { cols: 4 };
 </script>
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ArrowUpRight, Check, Copy } from "@lucide/vue";
 import AppLogo from "../components/AppLogo.vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
-import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
 import { usePaymentRails } from "../composables/usePaymentRails";
-import { expectApiSuccess } from "../composables/useApiResponse";
+import { useCatalog } from "../composables/useDashboardData";
 import { appDetail, developerDetail } from "../utils/routes.js";
 import {
   appsByDeveloper,
@@ -34,12 +33,23 @@ import {
 
 const { t } = useI18n();
 const router = useRouter();
-const { apiUrl } = useApiUrl();
 
 const { profile, load: loadDeveloper } = useDeveloperProfile();
 
-const apps = ref([]);
-const pickedKey = ref("");
+// The catalog is shared with the other cards that list it, so the band stops
+// paying for its own copy of /api/apps. The pick is computed rather than
+// fetched: it follows the shared list whenever it lands, which is also what
+// makes a cached catalog re-pick without a second request.
+const { apps, appsLoaded, appsLoadFailed } = useCatalog();
+
+// A read failure is not rendered as an error card: a promo band that silently
+// leaves today's slot to the other widgets is honest about being promotion,
+// where "failed to load" would read as the dashboard being broken. The pick
+// resolves empty and the section renders nothing.
+const pickedKey = computed(() => {
+  if (!appsLoaded.value || appsLoadFailed.value) return "";
+  return dailyDeveloperPick(developerKeysFromApps(apps.value));
+});
 
 const developerApps = computed(() => appsByDeveloper(apps.value, pickedKey.value));
 
@@ -77,21 +87,6 @@ function viewDeveloper() {
   router.push(developerDetail(pickedKey.value));
 }
 
-async function fetchData() {
-  try {
-    const res = await fetch(`${apiUrl.value}/api/apps`);
-    const data = await expectApiSuccess(res, "Failed to load apps");
-    apps.value = Array.isArray(data.apps) ? data.apps : [];
-    // A read failure is not rendered as an error card: a promo band that
-    // silently leaves today's slot to the other widgets is honest about being
-    // promotion, where "failed to load" would read as the dashboard being
-    // broken. The pick resolves empty and the section renders nothing.
-    pickedKey.value = dailyDeveloperPick(developerKeysFromApps(apps.value));
-  } catch {
-    pickedKey.value = "";
-  }
-}
-
 // Profile, only once there is a pick: useDeveloperProfile carries the
 // IndexedDB kind-0 cache and the verified-read fallbacks — nothing here to
 // reimplement, at the cost of one redundant /api/developers request it makes
@@ -100,7 +95,6 @@ watch(pickedKey, (next) => {
   if (next) loadDeveloper(next);
 });
 
-onMounted(fetchData);
 </script>
 
 <template>

@@ -5,46 +5,21 @@
 export const meta = { cols: 2 };
 </script>
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ClipboardList, HardDrive, Layers, Wrench } from "@lucide/vue";
-import { useApiUrl } from "../composables/useApiUrl";
-import { expectApiSuccess } from "../composables/useApiResponse";
-import { usePolling } from '../composables/usePolling'
+import { useStorageCounts } from "../composables/useDashboardData";
 import { logs, storageTab } from '../utils/routes.js'
 
 const router = useRouter();
 const { t } = useI18n();
-const { apiUrl } = useApiUrl();
 
-const imageCount = ref(null);
-const volumeCount = ref(null);
-
-
-async function fetchCounts() {
-  try {
-    const [imgRes, volRes] = await Promise.all([
-      fetch(`${apiUrl.value}/api/images`),
-      fetch(`${apiUrl.value}/api/volumes`),
-    ]);
-    const [imgData, volData] = await Promise.all([
-      expectApiSuccess(imgRes, "images"),
-      expectApiSuccess(volRes, "volumes"),
-    ]);
-    imageCount.value = Array.isArray(imgData.images) ? imgData.images.length : null;
-    volumeCount.value = Array.isArray(volData.volumes) ? volData.volumes.length : null;
-  } catch {
-    // counts stay null — rows still navigate fine
-  }
-}
-
-const { start: startSystemToolsCardPolling } = usePolling(fetchCounts, 30000)
-
-onMounted(() => {
-  fetchCounts();
-  startSystemToolsCardPolling();;
-});
+// The counts pair two endpoints; the shared resource reads both as one
+// logical fetch and keeps them fresh with one ticker for the dashboard.
+const { counts } = useStorageCounts({ live: true });
+const imageCount = computed(() => counts.value?.imageCount ?? null);
+const volumeCount = computed(() => counts.value?.volumeCount ?? null);
 </script>
 
 <template>

@@ -79,7 +79,8 @@
       "openOverview": "Open running app",
       "installed": "Installed",
       "available": "Available",
-      "running": "Active ({count})"
+      "running": "Active ({count})",
+      "loadFailed": "Failed to load"
     },
     "dailyDeveloper": {
       "title": "Developer of the day",
@@ -126,6 +127,12 @@
       "open": "Open",
       "services": "services",
       "service": "service"
+    },
+    "systemToolsCard": {
+      "management": "Management",
+      "systemOverview": "System Overview",
+      "active": "Active",
+      "live": "Live"
     }
   },
   "apps": {
@@ -618,7 +625,9 @@
       "systemStability": "System Stability",
       "timeActive": "Time Active",
       "acrossContainers": "Across {count} containers",
-      "systemIdle": "System Idle"
+      "systemIdle": "System Idle",
+      "active": "Active",
+      "apps": "Apps"
     },
     "expiringContainers": {
       "title": "Expirations",
@@ -785,7 +794,8 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "That doesn't look like a tunnel token — paste the full token from dash.cloudflare.com.",
-    "tunnelToken": "Tunnel token"
+    "tunnelToken": "Tunnel token",
+    "title": "Cloudflared"
   },
   "notFound": {
     "title": "Page not found",

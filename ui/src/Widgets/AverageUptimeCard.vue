@@ -5,38 +5,20 @@
 export const meta = { cols: 1 };
 </script>
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Clock, Activity, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics'
-import { useApiUrl } from '../composables/useApiUrl'
-import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
-import { usePolling } from '../composables/usePolling'
+import { useContainers } from '../composables/useDashboardData'
 
 const { t } = useI18n()
-const { apiUrl } = useApiUrl()
 const { currentTime } = useCurrentTime()
 
-const containers = ref([])
+// The container list is shared with the other three cards that want it — one
+// request at mount and one 15s ticker for the dashboard, not four.
+const { containers } = useContainers({ live: true })
 
-async function fetchContainers() {
-  try {
-    const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await expectApiSuccess(response, 'Failed to load containers')
-    containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {
-    // Intentionally swallowed: the card renders its "no data" state when
-    // `containers` is empty, which is the correct outcome for a failed load
-  }
-}
-
-const { start: startAverageUptimeCardPolling } = usePolling(fetchContainers, 15000)
-
-onMounted(() => {
-  fetchContainers()
-  startAverageUptimeCardPolling();
-})
 
 const stats = computed(() => {
   const runningContainers = containers.value.filter(c => c.state === 'running' && c.created)

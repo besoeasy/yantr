@@ -6,15 +6,14 @@
 export const meta = { cols: 2 };
 </script>
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { MessageSquareQuote, ArrowUpRight } from "@lucide/vue";
 import AppLogo from "../components/AppLogo.vue";
-import { useApiUrl } from "../composables/useApiUrl";
 import { useNostrRelays } from "../composables/useNostrRelays";
-import { expectApiSuccess } from "../composables/useApiResponse";
 import { appDetail, apps as appsRoute } from "../utils/routes.js";
+import { useCatalog } from "../composables/useDashboardData";
 import { developerProfileUrl, developerShortKey } from "../utils/developer";
 import { linesFor, showcaseReviews } from "../utils/reviewShowcase";
 import {
@@ -39,7 +38,7 @@ import { queryRelays } from "../utils/relay";
 
 const { t, locale } = useI18n();
 const router = useRouter();
-const { apiUrl } = useApiUrl();
+const { apps, appsLoaded } = useCatalog();
 const { relays, load: loadRelays } = useNostrRelays();
 
 // Verified displayable reviews, newest first. Ten is enough backfill for the
@@ -148,18 +147,7 @@ async function fetchAuthorProfiles() {
   }
 }
 
-async function fetchData() {
-  let catalogApps;
-  try {
-    const res = await fetch(`${apiUrl.value}/api/apps`);
-    const data = await expectApiSuccess(res, "Failed to load apps");
-    catalogApps = Array.isArray(data.apps) ? data.apps : [];
-  } catch {
-    // Catalog failure hides the card: without it no app id resolves to a
-    // page, so no review could be shown honestly.
-    return;
-  }
-
+async function fetchData(catalogApps) {
   const asked = await loadRelays();
   let { events, reached } = await queryRelays(asked, yantrFeedFilter(200), COMMENT_KIND, {
     subIdPrefix: "yantr-latest-review",
@@ -219,7 +207,17 @@ async function fetchData() {
   fetchAuthorProfiles();
 }
 
-onMounted(fetchData);
+// The catalog is shared (useCatalog) and arrives asynchronously, so the relay
+// query waits for it rather than racing it: without the catalog no app id
+// resolves to a page, and a review could not be shown honestly anyway.
+watch(
+  [appsLoaded, apps],
+  ([isLoaded, catalogApps]) => {
+    if (!isLoaded) return;
+    fetchData(catalogApps);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

@@ -5,39 +5,23 @@
 export const meta = { cols: 2 };
 </script>
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Cloud, CloudOff, ArrowRight, Key, CheckCircle, AlertCircle, Loader, Globe } from '@lucide/vue'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { formatUptime } from '../utils/metrics'
-import { usePolling } from '../composables/usePolling'
+import { useContainers } from '../composables/useDashboardData'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
 const { currentTime } = useCurrentTime()
 
-// --- Container polling ---
-const containers = ref([])
-
-async function fetchContainers() {
-  try {
-    const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await expectApiSuccess(response, 'Failed to load containers')
-    containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {
-    // Intentionally swallowed: with no container list the card shows its
-    // "not installed" state, which is the right answer for a failed load
-  }
-}
-
-const { start: startCloudflaredCardPolling } = usePolling(fetchContainers, 15000)
-
-onMounted(() => {
-  fetchContainers()
-  startCloudflaredCardPolling();
-})
+// --- Container list ---
+// Shared with the other dashboard cards that read it: one request at mount,
+// one ticker for the whole page, and one agreed answer about failure.
+const { containers, refreshContainers } = useContainers({ live: true })
 
 const cloudflaredContainer = computed(() => {
   const list = Array.isArray(containers.value) ? containers.value : []
@@ -111,7 +95,7 @@ async function deploy() {
     })
     await expectApiSuccess(res, 'Deployment failed')
     deploySuccess.value = true
-    setTimeout(fetchContainers, 3000)
+    setTimeout(refreshContainers, 3000)
   } catch (e) {
     deployError.value = e.message || 'Network error'
   } finally {

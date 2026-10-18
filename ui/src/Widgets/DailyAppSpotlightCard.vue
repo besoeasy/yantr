@@ -5,15 +5,14 @@
 export const meta = { cols: 1 };
 </script>
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { Sparkles, AlertCircle, ArrowUpRight } from "@lucide/vue";
 import AppLogo from "../components/AppLogo.vue";
-import { useApiUrl } from "../composables/useApiUrl";
-import { expectApiSuccess } from "../composables/useApiResponse";
 import { appDetail } from "../utils/routes.js";
 import { appOfDay } from "../utils/spotlight";
+import { useCatalog, useContainers } from "../composables/useDashboardData";
 
 // One card, one app, one day. Nothing about the choice is server-driven or
 // personalised: the catalog answers what exists, containers answer whether the
@@ -22,11 +21,14 @@ import { appOfDay } from "../utils/spotlight";
 
 const { t } = useI18n();
 const router = useRouter();
-const { apiUrl } = useApiUrl();
 
-const apps = ref([]);
-const containers = ref([]);
-const loadFailed = ref(false);
+// Both lists are shared with the other dashboard cards that read them, so
+// mounting costs no request of its own and the pick stays in step with the
+// rest of the page.
+const { apps, appsLoadFailed } = useCatalog();
+const { containers, containersLoadFailed } = useContainers({ live: true });
+
+const loadFailed = computed(() => appsLoadFailed.value || containersLoadFailed.value);
 
 const installedAppIds = computed(() => {
   return new Set(containers.value.map((c) => c?.app?.id).filter(Boolean));
@@ -60,25 +62,6 @@ const dailyApp = computed(() => {
   };
 });
 
-async function fetchData() {
-  try {
-    const [appsRes, containersRes] = await Promise.all([
-      fetch(`${apiUrl.value}/api/apps`),
-      fetch(`${apiUrl.value}/api/containers`),
-    ]);
-    const [appsData, containersData] = await Promise.all([
-      expectApiSuccess(appsRes, "{{ t('home.dailyAppCard.loadFailed') }} apps"),
-      expectApiSuccess(containersRes, "Failed to load containers"),
-    ]);
-
-    apps.value = Array.isArray(appsData.apps) ? appsData.apps : [];
-    containers.value = Array.isArray(containersData.containers) ? containersData.containers : [];
-    loadFailed.value = false;
-  } catch {
-    loadFailed.value = true;
-  }
-}
-
 const instanceCount = computed(() => dailyApp.value?.instanceCount ?? 0);
 
 const appState = computed(() => {
@@ -104,7 +87,6 @@ function handleSelect(appId) {
   router.push(appDetail(appId));
 }
 
-onMounted(fetchData);
 </script>
 
 <template>

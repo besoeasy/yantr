@@ -5,38 +5,21 @@
 export const meta = { cols: 1 };
 </script>
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 import { useI18n } from 'vue-i18n'
 import { Timer, Hourglass, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics.js'
-import { useApiUrl } from '../composables/useApiUrl'
-import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
-import { usePolling } from '../composables/usePolling'
+import { useContainers } from '../composables/useDashboardData'
 
 const { t } = useI18n()
-const { apiUrl } = useApiUrl()
 const { currentTime } = useCurrentTime()
 
-const containers = ref([])
+// Shared with the other cards that read the container list: one request at
+// mount, one ticker for the whole dashboard.
+const { containers } = useContainers({ live: true })
 
-async function fetchContainers() {
-  try {
-    const response = await fetch(`${apiUrl.value}/api/containers`)
-    const data = await expectApiSuccess(response, 'Failed to load containers')
-    containers.value = Array.isArray(data.containers) ? data.containers : []
-  } catch {
-    // Intentionally swallowed: an empty list renders nothing, which is the
-    // correct outcome when the fetch fails
-  }
-}
 
-const { start: startExpiringContainersCardPolling } = usePolling(fetchContainers, 15000)
-
-onMounted(() => {
-  fetchContainers()
-  startExpiringContainersCardPolling();
-})
 
 const stats = computed(() => {
   const tempContainers = containers.value
