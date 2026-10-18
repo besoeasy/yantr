@@ -14,12 +14,14 @@ import {
   isAppComment,
   isAuthorYantrComment,
   isAuthentic,
+  isYantrComment,
   lnurlEncode,
   newestKind0Profiles,
   npubToHex,
   parseKind0Profile,
   profileFilter,
   sanitizeCommentContent,
+  yantrFeedFilter,
 } from "./nostr";
 
 // Externally-verified vector the backend tests use too.
@@ -176,6 +178,42 @@ describe("isAuthorYantrComment", () => {
     expect(isAuthorYantrComment(commentEvent({ created_at: NOW + 3600 }), JACK_HEX, NOW)).toBe(false);
     expect(isAuthorYantrComment(commentEvent({ tags: [["t", "yantr"], ["t", "yantr-ollama"], ["expiration", String(NOW - 1)]] }), JACK_HEX, NOW)).toBe(false);
     expect(isAuthorYantrComment(commentEvent({ content: "   " }), JACK_HEX, NOW)).toBe(false);
+  });
+});
+
+describe("isYantrComment", () => {
+  it("accepts any account's well-formed yantr comment — authorship is not a question here", () => {
+    const other = generateSecretKey();
+    expect(isYantrComment(commentEvent(), NOW)).toBe(true);
+    expect(isYantrComment(commentEvent({ pubkey: getPublicKey(other) }), NOW)).toBe(true);
+  });
+
+  it("rejects a note under the bare scope only — the feed-wide REQ catches per-app notes", () => {
+    expect(isYantrComment(commentEvent({ tags: [["t", "yantr"], ["expiration", String(NOW + COMMENT_EXPIRY_SECONDS)]] }), NOW)).toBe(false);
+  });
+
+  it("applies the same freshness, expiry and content rules as isAppComment does", () => {
+    expect(isYantrComment(null, NOW)).toBe(false);
+    expect(isYantrComment(commentEvent({ created_at: NOW + 3600 }), NOW)).toBe(false);
+    expect(isYantrComment(commentEvent({ tags: [["t", "yantr"], ["t", "yantr-ollama"], ["expiration", String(NOW - 1)]] }), NOW)).toBe(false);
+    expect(isYantrComment(commentEvent({ content: "   " }), NOW)).toBe(false);
+  });
+});
+
+describe("yantrFeedFilter", () => {
+  it("queries kind-1 notes on the bare yantr scope, any author", () => {
+    const filter = yantrFeedFilter();
+    expect(filter.kinds).toEqual([1]);
+    expect(filter["#t"]).toEqual(["yantr"]);
+    expect(filter).not.toHaveProperty("authors");
+    expect(filter.limit).toBeGreaterThan(0);
+  });
+
+  it("clamps the limit into what relays answer sanely", () => {
+    expect(yantrFeedFilter(0).limit).toBe(200);
+    expect(yantrFeedFilter(-5).limit).toBe(200);
+    expect(yantrFeedFilter(50).limit).toBe(50);
+    expect(yantrFeedFilter(10_000).limit).toBe(500);
   });
 });
 

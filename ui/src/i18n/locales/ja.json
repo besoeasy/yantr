@@ -121,6 +121,11 @@
       "noAddress": "Lightning アドレスが未公開です。代わりに Nostr でフォローするか、お礼のメッセージを送りましょう。",
       "follow": "Nostr でフォロー",
       "thanks": "お礼を送る"
+    },
+    "latestReview": {
+      "title": "最新のレビュー",
+      "empty": "まだレビューはありません。カタログのアプリを開いて、最初のレビューを残しましょう。",
+      "byAuthor": "投稿者の Nostr プロフィールを見る"
     }
   },
   "apps": {

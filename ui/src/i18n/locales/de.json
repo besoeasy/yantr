@@ -121,6 +121,11 @@
       "noAddress": "Keine Lightning-Adresse veröffentlicht — folge dem Konto und schicke stattdessen einen Dank auf Nostr.",
       "follow": "Auf Nostr folgen",
       "thanks": "Danke senden"
+    },
+    "latestReview": {
+      "title": "Neueste Bewertung",
+      "empty": "Noch keine Bewertungen. Öffne eine App im Katalog und hinterlasse die erste.",
+      "byAuthor": "Das Nostr-Profil der Autorin oder des Autors ansehen"
     }
   },
   "apps": {

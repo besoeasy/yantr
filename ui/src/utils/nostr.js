@@ -170,26 +170,19 @@ export function authorCommentFilter(pubkey, limit = 100) {
   };
 }
 
-// isAuthorYantrComment decides whether a relay-delivered event is a displayable
-// Yantr comment by one account — what the developer page means by "this
-// author's app-store activity". Every check mirrors isAppComment's, with two
-// differences: the event must be signed by the account the page is about, and
-// any per-app tag passes — the page aggregates across the catalog, so the app
-// requirement is "names at least one", not "names this one". A note under the
-// bare `yantr` scope alone is not an app comment and stays out.
-export function isAuthorYantrComment(
-  event,
-  pubkey,
-  nowSec = Math.floor(Date.now() / 1000)
-) {
+// isYantrComment is the author-agnostic core of both comment checks: a kind-1
+// note scoped to `yantr` that names at least one per-app tag, with displayable
+// content, a sane timestamp and an unexpired NIP-40 lifetime. The checks are
+// shared with isAppComment on purpose: the app-pinned check (a thread) and
+// the feed-wide check (a showcase) must never diverge on what counts as a
+// comment, or the two lists would disagree about the same note.
+export function isYantrComment(event, nowSec = Math.floor(Date.now() / 1000)) {
   if (!event || event.kind !== COMMENT_KIND) return false;
-  const author = String(pubkey ?? "").trim().toLowerCase();
-  if (!/^[0-9a-f]{64}$/.test(author)) return false;
-  if (String(event.pubkey ?? "").trim().toLowerCase() !== author) return false;
+  if (typeof event.pubkey !== "string" || !/^[0-9a-fA-F]{64}$/.test(event.pubkey)) {
+    return false;
+  }
   if (!Array.isArray(event.tags)) return false;
 
-  // Spelled out over a loop on hasTag so the walk stops at the first per-app
-  // hit rather than reading every `t` tag of a busy note.
   const perApp = commentAppIds(event);
   if (perApp.length === 0) return false;
   let scopesToYantr = false;
@@ -212,6 +205,42 @@ export function isAuthorYantrComment(
   if (expiry !== null && expiry <= nowSec) return false;
 
   return true;
+}
+
+// yantrFeedFilter is the feed-wide REQ: kind-1 notes under the bare `yantr`
+// scope, any author. Necessarily broad — the per-app tag is where authorship
+// and app pinning are applied client-side (isYantrComment / commentAppIds),
+// because relays AND across keys and no single filter can say "any of 30
+// per-app tags".
+export function yantrFeedFilter(limit = 200) {
+  const raw = Number(limit);
+  // Non-numeric and non-positive limits fall back to the default rather than
+  // clamping to 1 — a typo should not turn a feed read into a one-note read.
+  const capped = Math.min(Math.max(Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 200, 1), 500);
+  return {
+    kinds: [COMMENT_KIND],
+    "#t": [NOSTR_COMMENT_TAG],
+    limit: capped,
+  };
+}
+
+// isAuthorYantrComment decides whether a relay-delivered event is a displayable
+// Yantr comment by one account — what the developer page means by "this
+// author's app-store activity". Every check mirrors isAppComment's, with two
+// differences: the event must be signed by the account the page is about, and
+// any per-app tag passes — the page aggregates across the catalog, so the app
+// requirement is "names at least one", not "names this one". A note under the
+// bare `yantr` scope alone is not an app comment and stays out.
+export function isAuthorYantrComment(
+  event,
+  pubkey,
+  nowSec = Math.floor(Date.now() / 1000)
+) {
+  const author = String(pubkey ?? "").trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(author)) return false;
+  if (String(event?.pubkey ?? "").trim().toLowerCase() !== author) return false;
+
+  return isYantrComment(event, nowSec);
 }
 
 // ─── Content sanitisation ───────────────────────────────────────────────────
