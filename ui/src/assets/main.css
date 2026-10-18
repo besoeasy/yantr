@@ -2058,27 +2058,22 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 
 /* ── Dashboard widget spans ─────────────────────────────────────────
    Each widget in src/Widgets/ declares how many of the desktop
-   dashboard grid's four columns it wants by exporting
-   `meta = { cols: 1|2|3|4 }` from a plain <script> block. Home.vue
-   binds these classes from that declaration; the classes do the
-   responsive work so widgets never restate it:
+   dashboard grid's columns it wants by exporting `meta = { cols: 1|2 }`
+   from a plain <script> block. Home.vue binds this class from that
+   declaration; the class does the responsive work so widgets never
+   restate it:
 
    phones (1 col)   → every widget is a single full-width row,
-   tablets (md: 2)  → all wide widgets clamp to 2,
-   desktop (lg: 4)  → declared span, e.g. .w-span-4 is the full row.
+   tablets (md: 2)  → the wide widget is two columns,
+   desktop (lg: 4)  → still two: AGENTS.md §8 caps a widget at half the
+                      grid, so a dashboard never shows one card per row.
    ================================================================== */
 .w-span-2{grid-column:span 1/span 1;}
-.w-span-3{grid-column:span 1/span 1;}
-.w-span-4{grid-column:span 1/span 1;}
 @media (min-width:48rem){
 .w-span-2{grid-column:span 2/span 2;}
-.w-span-3{grid-column:span 2/span 2;}
-.w-span-4{grid-column:span 2/span 2;}
 }
 @media (min-width:64rem){
 .w-span-2{grid-column:span 2/span 2;}
-.w-span-3{grid-column:span 3/span 3;}
-.w-span-4{grid-column:span 4/span 4;}
 }
 @keyframes pulse{50%{opacity:.5;}
 }

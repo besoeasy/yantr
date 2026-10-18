@@ -16,18 +16,20 @@ function dailyShuffle(arr) {
   }
   return seeded;
 }
-// Every widget declares how wide it wants to be — 1, 2, 3 or all 4 of the
-// desktop grid's four columns — by exporting `meta = { cols: N }` from a
-// plain <script> block next to its <script setup>. Widgets without a
-// declaration default to one column, and undeclared values are clamped to
-// the grid's width so a typo cannot break it. The responsive behaviour
-// (phones 1 col, tablets cap wide widgets at 2) lives in the .w-span-N
-// utilities in main.css, not here.
+// Every widget declares how wide it wants to be — one column or two — by
+// exporting `meta = { cols: N }` from a plain <script> block next to its
+// <script setup>. Two is the ceiling (AGENTS.md §8): a card wider than half
+// the grid is the whole row, and since the order is reshuffled daily, where
+// it lands would move every other card with it. Widgets without a
+// declaration default to one column, and values are clamped rather than
+// trusted so a typo cannot break the grid. The responsive behaviour (phones
+// 1 col, tablets and up 2 for the wide widget) lives in the .w-span-2
+// utility in main.css, not here.
 // Order is shuffled once per day; grid-auto-flow: dense backfills any cell
 // left open ahead of a wide widget with a later narrow one.
 function clampCols(value) {
   const n = Math.round(Number(value));
-  return Number.isFinite(n) ? Math.min(4, Math.max(1, n)) : 1;
+  return Number.isFinite(n) ? Math.min(2, Math.max(1, n)) : 1;
 }
 const widgets = dailyShuffle(
   Object.values(widgetModules).map((m) => ({
@@ -37,7 +39,7 @@ const widgets = dailyShuffle(
 );
 // Class per declared span. Column 1 is the grid default, so it needs no class.
 function widgetSpanClass(cols) {
-  return { 2: "w-span-2", 3: "w-span-3", 4: "w-span-4" }[cols] ?? "";
+  return cols === 2 ? "w-span-2" : "";
 }
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
