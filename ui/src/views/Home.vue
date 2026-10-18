@@ -16,8 +16,28 @@ function dailyShuffle(arr) {
   }
   return seeded;
 }
-// All dashboard cards now use 1 column only.
-const widgets = dailyShuffle(Object.values(widgetModules).map((m) => m.default));
+// Every widget declares how wide it wants to be — 1, 2 or 3 of the desktop
+// grid's three columns — by exporting `meta = { cols: N }` from a plain
+// <script> block next to its <script setup>. Widgets without a declaration
+// default to one column, and undeclared values are clamped so a typo cannot
+// break the grid. The responsive behaviour (phones 1 col, tablets cap wide
+// widgets at 2) lives in the .w-span-N utilities in main.css, not here.
+// Order is shuffled once per day; grid-auto-flow: dense backfills any cell
+// left open ahead of a wide widget with a later narrow one.
+function clampCols(value) {
+  const n = Math.round(Number(value));
+  return Number.isFinite(n) ? Math.min(3, Math.max(1, n)) : 1;
+}
+const widgets = dailyShuffle(
+  Object.values(widgetModules).map((m) => ({
+    component: m.default,
+    cols: clampCols(m.meta?.cols),
+  }))
+);
+// Class per declared span. Column 1 is the grid default, so it needs no class.
+function widgetSpanClass(cols) {
+  return cols === 2 ? "w-span-2" : cols === 3 ? "w-span-3" : "";
+}
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { useNotification } from "../composables/useNotification";
@@ -232,7 +252,8 @@ onMounted(() => {
               <component
                 v-for="(widget, i) in widgets"
                 :key="i"
-                :is="widget"
+                :is="widget.component"
+                :class="widgetSpanClass(widget.cols)"
                 class="h-full"
               />
             </template>
