@@ -203,7 +203,7 @@ onMounted(fetchData);
 
     <!-- The quote itself. whitespace-pre-wrap keeps the author's line breaks;
          the content was sanitised at fetch, before it ever touched the DOM. -->
-    <blockquote class="mt-6 text-lg font-medium leading-snug tracking-tight text-zinc-900 line-clamp-6 dark:text-white">
+    <blockquote class="mt-6 text-lg font-medium leading-snug tracking-tight text-zinc-900 whitespace-pre-wrap line-clamp-3 dark:text-white">
       {{ review.content }}
     </blockquote>
 
@@ -246,7 +246,7 @@ onMounted(fetchData);
             {{ authorInitials }}
           </span>
         </span>
-        <span class="max-w-28 truncate">{{ authorName }}</span>
+        <span class="min-w-0 truncate">{{ authorName }}</span>
         <ArrowUpRight :size="13" class="shrink-0" />
       </a>
     </div>
@@ -267,17 +267,19 @@ onMounted(fetchData);
     </div>
 
     <div class="mt-auto flex flex-col pb-1">
-      <p class="max-w-xs text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+      <p class="max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
         {{ t("home.latestReview.empty") }}
       </p>
-      <button
-        type="button"
-        @click="router.push(appsRoute())"
-        class="mt-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
-      >
-        {{ t("nav.apps") }}
-        <ArrowUpRight :size="13" />
-      </button>
+      <div class="mt-4">
+        <button
+          type="button"
+          @click="router.push(appsRoute())"
+          class="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
+        >
+          {{ t("nav.apps") }}
+          <ArrowUpRight :size="13" />
+        </button>
+      </div>
     </div>
   </section>
 </template>
