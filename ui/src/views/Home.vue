@@ -16,17 +16,18 @@ function dailyShuffle(arr) {
   }
   return seeded;
 }
-// Every widget declares how wide it wants to be — 1, 2 or 3 of the desktop
-// grid's three columns — by exporting `meta = { cols: N }` from a plain
-// <script> block next to its <script setup>. Widgets without a declaration
-// default to one column, and undeclared values are clamped so a typo cannot
-// break the grid. The responsive behaviour (phones 1 col, tablets cap wide
-// widgets at 2) lives in the .w-span-N utilities in main.css, not here.
+// Every widget declares how wide it wants to be — 1, 2, 3 or all 4 of the
+// desktop grid's four columns — by exporting `meta = { cols: N }` from a
+// plain <script> block next to its <script setup>. Widgets without a
+// declaration default to one column, and undeclared values are clamped to
+// the grid's width so a typo cannot break it. The responsive behaviour
+// (phones 1 col, tablets cap wide widgets at 2) lives in the .w-span-N
+// utilities in main.css, not here.
 // Order is shuffled once per day; grid-auto-flow: dense backfills any cell
 // left open ahead of a wide widget with a later narrow one.
 function clampCols(value) {
   const n = Math.round(Number(value));
-  return Number.isFinite(n) ? Math.min(3, Math.max(1, n)) : 1;
+  return Number.isFinite(n) ? Math.min(4, Math.max(1, n)) : 1;
 }
 const widgets = dailyShuffle(
   Object.values(widgetModules).map((m) => ({
@@ -36,7 +37,7 @@ const widgets = dailyShuffle(
 );
 // Class per declared span. Column 1 is the grid default, so it needs no class.
 function widgetSpanClass(cols) {
-  return cols === 2 ? "w-span-2" : cols === 3 ? "w-span-3" : "";
+  return { 2: "w-span-2", 3: "w-span-3", 4: "w-span-4" }[cols] ?? "";
 }
 import { useApiUrl } from "../composables/useApiUrl";
 import { expectApiSuccess } from "../composables/useApiResponse";
@@ -239,7 +240,7 @@ onMounted(() => {
           </div>
 
           <!-- Unified grid: all cards are single-column on mobile, 2 columns on medium, 3 on large -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 grid-flow-dense anim-stagger">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 grid-flow-dense anim-stagger">
             <YantraContainersGrid v-if="showYantrApps && yantrContainers.length > 0" :containers="yantrContainers" :show-header="activeFilter !== 'all'" />
             <VolumeContainersGrid v-if="showVolumeBrowsers && volumeContainers.length > 0" :containers="volumeContainers" :show-header="activeFilter !== 'all'" @stop-browser="stopBrowser" />
             <OtherContainersGrid v-if="showOtherContainers && otherContainers.length > 0" :containers="otherContainers" :show-header="activeFilter !== 'all'" @select="viewContainerDetail" />
