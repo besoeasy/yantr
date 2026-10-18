@@ -1,5 +1,5 @@
 <script>
-// Dashboard engine: two of the desktop grid's three columns so the active-apps
+// Dashboard engine: two of the desktop grid's four columns so the active-apps
 // stat and the mini bar chart sit beside each other instead of under it. The
 // .w-span-2 utility in main.css clamps it per breakpoint; see Home.vue.
 export const meta = { cols: 2 };

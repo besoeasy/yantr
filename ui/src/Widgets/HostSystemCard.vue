@@ -1,6 +1,6 @@
 <script>
 // Dashboard engine: one column — the OS line, the four-counter strip and the
-// rows below it were designed for a third of the grid. See Home.vue for how
+// rows below it were designed for a quarter of the grid. See Home.vue for how
 // meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>

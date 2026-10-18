@@ -1,5 +1,5 @@
 <script>
-// Dashboard engine: two of the desktop grid's three columns — the disk
+// Dashboard engine: two of the desktop grid's four columns — the disk
 // headline plus the memory and network tiles each carry a reading, and one
 // column squeezes all three into truncated labels. .w-span-2 in main.css does
 // the responsive clamping; see Home.vue.
