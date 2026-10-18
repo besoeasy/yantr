@@ -11,6 +11,7 @@
 // WebSocket fan-out lives in `utils/relay.js`.
 
 import { verifyEvent } from "nostr-tools";
+import { bitcoinAddressOf } from "./bitcoin";
 
 // NOSTR_RELAYS is the fallback relay set, used until the backend answers with
 // its own (composables/useNostrRelays.js) and if that request fails. Each relay
@@ -372,12 +373,22 @@ export function hexToNpub(hex) {
 // could abuse as a path — no slashes, no query syntax, no whitespace.
 const LUD16_RE = /^([a-z0-9._%+-]+)@([a-z0-9-]+(?:\.[a-z0-9-]+)+)$/;
 
+// isLightningAddress answers "is this a Lightning address Yantr can turn into
+// a pay-URL", the validation lnurlEncode already does — lifted out so the
+// kind-0 parser can decide whether to publish an address at all, instead of
+// letting the widget discover the truth from an empty LNURL. lud06 is the
+// same `user@domain` shape under LNURL-based resolution, so one rule covers
+// both spellings NIP-57 allows.
+export function isLightningAddress(value) {
+  const clean = String(value ?? "").trim().toLowerCase();
+  return LUD16_RE.test(clean) ? clean : "";
+}
+
 // lnurlEncode turns a lud16 into the `lnurl1…` string for the zap QR. Empty
 // string for anything that is not an address — a QR that encodes prose scans
 // into a dead wallet lookup, which is worse than no QR.
 export function lnurlEncode(lud) {
-  const clean = String(lud ?? "").trim().toLowerCase();
-  const match = LUD16_RE.exec(clean);
+  const match = LUD16_RE.exec(String(lud ?? "").trim().toLowerCase());
   if (!match) return "";
   const [, user, domain] = match;
   const url = `https://${domain}/.well-known/lnurlp/${encodeURIComponent(user)}`;
@@ -520,9 +531,15 @@ function shortDisplayText(raw, maxPoints = 80) {
 }
 
 // parseKind0Profile maps a kind-0 event onto the display fields a comment
-// header reads. Text gets the same sanitiser as comment bodies — a hostile
-// name is the same attack through a shorter string — and the picture must be
-// http(s) or there is no picture.
+// header reads, and the payment fields the developer page shows. Text gets the
+// same sanitiser as comment bodies — a hostile name is the same attack through
+// a shorter string — and the picture must be http(s) or there is no picture.
+//
+// The payment fields are what a donation surface depends on, and both are
+// read from the verified event only: lud16 (falling back to the lud06
+// spelling) for Lightning, and an on-chain Bitcoin address for a native
+// send. Both are validated at this boundary — an unvalidated value would put
+// a QR code in front of a wallet that pays whatever string was published.
 export function parseKind0Profile(event) {
   if (!event || event.kind !== PROFILE_KIND) return null;
   const pubkey = String(event.pubkey ?? "").trim().toLowerCase();
@@ -543,6 +560,8 @@ export function parseKind0Profile(event) {
     about: shortDisplayText(meta.about || "", 160),
     picture: safeHttpUrl(meta.picture),
     nip05: shortDisplayText(meta.nip05 || ""),
+    lud16: isLightningAddress(meta.lud16) || isLightningAddress(meta.lud06),
+    bitcoin: bitcoinAddressOf(meta),
     created_at: Number.isFinite(created) ? Math.floor(created) : 0,
   };
 }

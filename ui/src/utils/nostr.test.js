@@ -14,6 +14,7 @@ import {
   isAppComment,
   isAuthorYantrComment,
   isAuthentic,
+  isLightningAddress,
   isYantrComment,
   lnurlEncode,
   newestKind0Profiles,
@@ -426,6 +427,66 @@ describe("parseKind0Profile", () => {
     const p = parseKind0Profile({ ...JACK_PROFILE, content: "not json" });
     expect(p.name).toBe("");
     expect(p.picture).toBe("");
+  });
+
+  // The regression this parser had: the payment fields were never read, so a
+  // profile that published them showed nothing and the donation QR was dead.
+  it("reads the payment fields a real profile publishes — verbatim from a live kind-0", () => {
+    // Content of the account credited across the catalog, as the relays
+    // served it (kind-0 89f8e11d…, 2026-08-14): NIP-05 and a NIP-57 lud16,
+    // no structured on-chain field.
+    const live = parseKind0Profile({
+      ...JACK_PROFILE,
+      content:
+        '{"name":"besoeasy","display_name":"Aman Singh Kattal","about":"Building and optimizing financial systems.","website":"https://besoeasy.com","nip05":"besoeasy@zaps.lol","picture":"https://besoeasy.com/me.png","banner":"https://picsum.photos/800/600","lud16":"besoeasy@wallet.yakihonne.com"}',
+    });
+    expect(live.lud16).toBe("besoeasy@wallet.yakihonne.com");
+    expect(live.nip05).toBe("besoeasy@zaps.lol");
+    expect(live.bitcoin).toBe("");
+  });
+
+  it("accepts the lud06 spelling when no lud16 is published", () => {
+    const p = parseKind0Profile({
+      ...JACK_PROFILE,
+      content: JSON.stringify({ name: "j", lud06: "Jack@Example.Test" }),
+    });
+    expect(p.lud16).toBe("jack@example.test");
+  });
+
+  it("refuses a Lightning address that would encode into a dead lookup", () => {
+    for (const lud of ["not-an-address", "user@", "user@host", "user@host/path", "user @host.com"]) {
+      const p = parseKind0Profile({ ...JACK_PROFILE, content: JSON.stringify({ lud16: lud }) });
+      expect(p.lud16, lud).toBe("");
+    }
+  });
+
+  it("reads an on-chain address from the metadata field or the profile text", () => {
+    const ADDRESS = "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj0";
+    expect(
+      parseKind0Profile({ ...JACK_PROFILE, content: JSON.stringify({ bitcoin: ADDRESS }) }).bitcoin
+    ).toBe(ADDRESS);
+    expect(
+      parseKind0Profile({ ...JACK_PROFILE, content: JSON.stringify({ about: `sats: ${ADDRESS}` }) })
+        .bitcoin
+    ).toBe(ADDRESS);
+  });
+
+  it("publishes no Bitcoin address for one that fails its checksum", () => {
+    // One character changed from a valid BIP-86 vector: shape is perfect,
+    // checksum is not, and a QR must not be built on it.
+    const broken = "bc1p0xlxvlhemja6c4dqv22uapctqupfhlxm9h8z3k2e72q4k9hcz7vqzk5jj1";
+    const p = parseKind0Profile({ ...JACK_PROFILE, content: JSON.stringify({ bitcoin: broken }) });
+    expect(p.bitcoin).toBe("");
+  });
+});
+
+describe("isLightningAddress", () => {
+  it("normalises a valid address and rejects everything else", () => {
+    expect(isLightningAddress("Besoeasy@Wallet.Yakihonne.COM")).toBe("besoeasy@wallet.yakihonne.com");
+    expect(isLightningAddress("besoeasy@wallet.yakihonne.com")).toBe("besoeasy@wallet.yakihonne.com");
+    expect(isLightningAddress("besoeasy@wallet")).toBe("");
+    expect(isLightningAddress("besoeasy@.com")).toBe("");
+    expect(isLightningAddress("")).toBe("");
   });
 });
 

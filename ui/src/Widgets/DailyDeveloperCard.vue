@@ -25,6 +25,7 @@ import {
   developerShortKey,
 } from "../utils/developer";
 import { lnurlEncode } from "../utils/nostr";
+import { bip21Uri } from "../utils/bitcoin";
 
 // One developer, one day, in full. The catalog answers who exists; the
 // account's kind-0 answers who it is and where its Lightning address lives;
@@ -40,7 +41,7 @@ const { profile, load: loadDeveloper } = useDeveloperProfile();
 
 const apps = ref([]);
 const pickedKey = ref("");
-const copied = ref(false);
+const copiedRail = ref("");
 let copiedTimer = null;
 
 const developerApps = computed(() => appsByDeveloper(apps.value, pickedKey.value));
@@ -59,15 +60,41 @@ const avatarUrl = computed(() => profile.value?.avatarUrl ?? "");
 // reader compares against one they already have.
 const npubShort = computed(() => developerShortKey(pickedKey.value));
 
-// zap resolves the account's published Lightning address into a scannable
-// payload. lud16 comes only from the VERIFIED kind-0 (useDeveloperProfile's
-// pipeline — relay-served prose never reaches here), and is re-validated by
-// lnurlEncode, whose empty answer hides the whole payment block rather than
-// shipping a QR that scans into a dead lookup.
-const zap = computed(() => {
+// The payment rails this account publishes, in the order a reader reaches for
+// them. Both come from the VERIFIED kind-0 (useDeveloperProfile's pipeline —
+// relay-served prose never reaches here) and both are validated again here:
+// the Lightning address must still encode to an LNURL pay-URL, and the
+// Bitcoin address must still pass its checksum. A rail with no valid payload
+// is not in the list at all — a QR that scans into a dead lookup, or worse
+// into a mistyped address, is worse than no QR.
+const payments = computed(() => {
+  const rails = [];
+
   const lud = String(profile.value?.lud16 ?? "").trim();
   const lnurl = lud ? lnurlEncode(lud) : "";
-  return lnurl ? { lud, lnurl } : null;
+  if (lnurl) {
+    rails.push({
+      kind: "lightning",
+      label: t("home.dailyDeveloper.lightning"),
+      address: lud,
+      payload: lnurl,
+      qrLabel: t("home.dailyDeveloper.qrLabel", { name: displayName.value }),
+    });
+  }
+
+  const address = String(profile.value?.bitcoin ?? "").trim();
+  const bip21 = bip21Uri(address);
+  if (bip21) {
+    rails.push({
+      kind: "onchain",
+      label: t("home.dailyDeveloper.onchain"),
+      address,
+      payload: bip21,
+      qrLabel: t("home.dailyDeveloper.onchainQrLabel", { name: displayName.value }),
+    });
+  }
+
+  return rails;
 });
 
 // Follow and thank-you both open the account's page on njump: the profile
@@ -83,13 +110,16 @@ function viewDeveloper() {
   router.push(developerDetail(pickedKey.value));
 }
 
-async function copyZapAddress() {
+// One address at a time is copied, and the confirmation names which rail it
+// was — with two rails side by side, "Copied" alone would leave the reader
+// guessing what landed on the clipboard.
+async function copyAddress(rail) {
   try {
-    await navigator.clipboard.writeText(zap.value?.lud ?? "");
-    copied.value = true;
+    await navigator.clipboard.writeText(rail?.address ?? "");
+    copiedRail.value = rail.kind;
     if (copiedTimer) clearTimeout(copiedTimer);
     copiedTimer = setTimeout(() => {
-      copied.value = false;
+      copiedRail.value = "";
     }, 2000);
   } catch {
     // Clipboard needs a secure context; the address is printed next to the
@@ -213,36 +243,39 @@ onMounted(fetchData);
         </div>
       </div>
 
-      <!-- Zap -->
-      <div class="flex flex-col lg:w-56 lg:shrink-0 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
-        <template v-if="zap">
+      <!-- Payments: every rail the account published, side by side. -->
+      <div class="flex flex-col lg:w-72 lg:shrink-0 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+        <template v-if="payments.length">
           <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
             {{ t("home.dailyDeveloper.zap") }}
           </p>
 
-          <!-- The QR is black on white and stays that way in both colour
-               schemes — a themed code is the classic way to ship one that
-               never scans. -->
-          <div class="mt-4 w-fit self-center rounded-lg border border-zinc-200 bg-white p-2 lg:self-start dark:border-zinc-700">
-            <NostrQrCode
-              :value="zap.lnurl"
-              :label="t('home.dailyDeveloper.qrLabel', { name: displayName })"
-              :size="112"
-            />
-          </div>
-          <p class="mt-3 text-center break-all font-mono text-[11px] leading-relaxed text-zinc-500 lg:text-left">
-            {{ zap.lud }}
-          </p>
+          <div class="mt-4 flex flex-row items-start gap-4">
+            <div v-for="rail in payments" :key="rail.kind" class="flex min-w-0 flex-1 flex-col">
+              <span class="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+                {{ rail.label }}
+              </span>
 
-          <div class="mt-4 flex flex-col gap-2">
-            <button
-              @click="copyZapAddress"
-              class="inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
-            >
-              <Check v-if="copied" :size="13" />
-              <Copy v-else :size="13" />
-              {{ copied ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
-            </button>
+              <!-- The QR is black on white and stays that way in both colour
+                   schemes — a themed code is the classic way to ship one that
+                   never scans. -->
+              <div class="w-fit rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700">
+                <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="104" />
+              </div>
+
+              <p class="mt-2 break-all font-mono text-[11px] leading-relaxed text-zinc-500" :title="rail.address">
+                {{ rail.address }}
+              </p>
+
+              <button
+                @click="copyAddress(rail)"
+                class="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
+              >
+                <Check v-if="copiedRail === rail.kind" :size="13" />
+                <Copy v-else :size="13" />
+                {{ copiedRail === rail.kind ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
+              </button>
+            </div>
           </div>
         </template>
 
@@ -252,7 +285,7 @@ onMounted(fetchData);
           </p>
         </template>
 
-        <!-- Show in both zap/no-zap states: following needs no Lightning -->
+        <!-- Show in both states: following needs no payment address -->
         <div class="mt-4 flex flex-col gap-2">
           <a
             v-if="profileUrl"

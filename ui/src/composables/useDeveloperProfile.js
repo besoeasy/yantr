@@ -61,6 +61,7 @@ function normaliseNostrProfile(raw) {
     blog: String(raw.website ?? "").trim(),
     nip05: String(raw.nip05 ?? "").trim(),
     lud16: String(raw.lud16 ?? "").trim(),
+    bitcoin: String(raw.bitcoin ?? "").trim(),
     key: String(raw.key ?? "").trim(),
     pubkey: String(raw.pubkey ?? "").trim(),
   };

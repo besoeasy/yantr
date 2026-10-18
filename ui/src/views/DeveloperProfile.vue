@@ -10,6 +10,7 @@ import DeveloperComments from "../components/DeveloperComments.vue";
 import AppLayout from "../components/AppLayout.vue";
 import {
   ArrowLeft,
+  Bitcoin,
   ExternalLink,
   Link2,
   Package,
@@ -220,6 +221,11 @@ watch(developerRef, (next) => {
               </span>
               <span v-if="profile.lud16" class="inline-flex items-center gap-1.5">
                 <Zap :size="13" /> {{ profile.lud16 }}
+              </span>
+              <!-- The on-chain rail, when the account published a Bitcoin
+                   address — checksum-validated in the parser, like lud16. -->
+              <span v-if="profile.bitcoin" class="inline-flex items-center gap-1.5">
+                <Bitcoin :size="13" /> {{ profile.bitcoin }}
               </span>
               <a v-if="blogUrl" :href="blogUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">
                 <Link2 :size="13" /> {{ profile.blog }}
