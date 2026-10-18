@@ -1,7 +1,8 @@
 # Yantr App Authoring
 
-How to add or change an app under `apps/`. This file covers the app recipe
-format and the rules for writing one — nothing else.
+How to add or change an app under `apps/`, and the one rule the dashboard
+widgets under `ui/src/Widgets/` live by. This file covers the app recipe
+format, the rules for writing one, and §8 — nothing else.
 
 ---
 
@@ -219,3 +220,41 @@ port. A new one must be added there deliberately, not by accident.
 - Every `${VAR}` without a default has a matching `env_generators` entry.
 - Flat arrays use flow sequences, not block sequences.
 - `x-yantr.ports[].service` names a service that exists in the same file.
+
+---
+
+## 8. Dashboard widgets
+
+One rule: **a widget is one or two columns wide. Never three, never four.**
+
+```vue
+<script>
+// Why two at most: the widgets are shuffled once a day into a dense
+// 4-column grid, so a card that takes three or four columns is the whole
+// row — and where it lands reshuffles every other card from one day to the
+// next. Two columns is the widest that still reads as a card.
+export const meta = { cols: 2 };
+</script>
+```
+
+`Home.vue` clamps the value to 4 and maps it to `.w-span-N`, so nothing stops
+a widget from asking for the full grid. Two things do:
+
+- `ui/src/utils/widgetMeta.test.js` fails the build on `cols > 2`, and on a
+  widget that declares no width at all (a silent widget is a widget at an
+  unknown size).
+- The width itself. A two-column card is **632px** at a 1440px viewport, with
+  576px of content inside its padding. Design for that: if the content does
+  not fit, the content changes — not the span.
+
+The developer band was the counterexample, and the fix is the pattern to copy:
+it was `cols: 4` and built as an editorial row — identity, pitch and payment
+rails side by side with hairline dividers between them. Rebuilt as
+`cols: 2` it stacks, dividers become top borders, and the two QR rails still
+sit two across at the bottom. It reads better than the band did at any width.
+
+Run the UI checks with any widget change:
+
+```sh
+cd ui && npm test && npm run lint && npm run build
+```
