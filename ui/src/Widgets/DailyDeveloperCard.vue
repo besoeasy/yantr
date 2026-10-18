@@ -215,24 +215,24 @@ watch(pickedKey, (next) => {
                 <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="88" />
               </div>
 
-              <!-- The address and the button that copies it share a line. The
-                   code is what you scan, the address is what you copy, and
-                   neither is something you read by eye — so they sit together
-                   rather than each claiming a row of the card. -->
-              <div class="mt-1.5 flex items-end gap-2">
-                <p class="min-w-0 flex-1 break-all font-mono text-[11px] leading-snug yantra-text-secondary" :title="rail.address">
-                  {{ rail.address }}
-                </p>
-
-                <button
-                  @click="copyAddress(rail)"
-                  class="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
-                >
-                  <Check v-if="copiedRail === rail.kind" :size="13" />
-                  <Copy v-else :size="13" />
-                  {{ copiedRail === rail.kind ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
-                </button>
-              </div>
+              <!-- The address is not printed. The code is what you scan and the
+                   button is what you copy, and a rail used to spend a
+                   wrapped row of the card on text nobody reads by eye — the
+                   Lightning address especially, since what the code carries
+                   is an LNURL, not the address. It is still one hover away:
+                   the button's tooltip is the address it will put on your
+                   clipboard, which is also the answer to "what does this QR
+                   actually pay?". -->
+              <button
+                @click="copyAddress(rail)"
+                :title="rail.address"
+                :aria-label="`${copiedRail === rail.kind ? t('home.dailyDeveloper.copied') : t('home.dailyDeveloper.copy')} ${rail.label}`"
+                class="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
+              >
+                <Check v-if="copiedRail === rail.kind" :size="13" />
+                <Copy v-else :size="13" />
+                {{ copiedRail === rail.kind ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
+              </button>
             </div>
           </div>
         </template>

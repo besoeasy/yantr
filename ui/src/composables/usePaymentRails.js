@@ -69,8 +69,9 @@ export function usePaymentRails(profile, prefix) {
         copiedRail.value = "";
       }, 2000);
     } catch {
-      // Clipboard needs a secure context; the address is printed next to the
-      // button, so there is nothing to recover from.
+      // Clipboard needs a secure context. Nothing on screen changes: the
+      // card's surfaces keep the address on the button's tooltip and in
+      // their own copy, so a failed write is recoverable without a toast.
     }
   }
 
