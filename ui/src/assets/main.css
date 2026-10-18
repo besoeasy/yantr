@@ -2030,6 +2030,7 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .hover\:border-blue-700:hover{border-color:var(--color-blue-700);}
 
 /* The sign-in surface's tokens, in their interactive forms. */
+.hover\:text-zinc-700:hover{color:var(--color-zinc-700);}
 .hover\:yantra-text-primary:hover{color:var(--text-primary);}
 .hover\:yantra-text-accent:hover{color:var(--accent);}
 .placeholder\:yantra-text-secondary::placeholder{color:var(--text-secondary);}

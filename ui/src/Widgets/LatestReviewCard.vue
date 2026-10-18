@@ -1,7 +1,8 @@
 <script>
-// Two columns: a quote needs width to breathe but not a full row — three
-// full-width bands already lead the dashboard, and this card sits beside the
-// sibling content slot as testimonial. Promotion, like the spotlight bands.
+// Two columns. The card is a list of quotes, so it is built like one: a label,
+// hairline-separated entries, and nothing else. It shows as many reviews as
+// the line budget allows (utils/reviewShowcase) — short ones pack in, a long
+// one stands alone.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -30,14 +31,11 @@ import {
 } from "../utils/nostr";
 import { queryRelays } from "../utils/relay";
 
-// Latest reviews across the whole catalog: the newest displayable yantr
-// comments on any app, as many as the band's line budget lets them occupy —
-// list enough short ones, showcase a long one nearly alone (utils/
-// reviewShowcase). The feed-wide REQ (bare `yantr` scope, any author) catches
-// the notes; everything the app pages' own threads require is required here
-// too — per-app tag naming a catalog app, verified signature, sanitised
-// content, sane timestamps — so the surfaces can never disagree about the
-// same note.
+// The newest displayable yantr comments on any app in the catalog, as many as
+// fit. The feed-wide REQ (bare `yantr` scope, any author) catches the notes;
+// everything the app pages' own threads require is required here too — per-app
+// tag naming a catalog app, verified signature, sanitised content, sane
+// timestamps — so the surfaces can never disagree about the same note.
 
 const { t, locale } = useI18n();
 const router = useRouter();
@@ -63,17 +61,16 @@ const showcase = computed(() => {
   return candidates.value.filter((r) => picked.has(r.id));
 });
 
-function authorNpubOf(review) {
-  return hexToNpub(review?.pubkey);
-}
-
 function profileKey(review) {
   return String(review?.pubkey ?? "").toLowerCase();
 }
 
+function authorNpubOf(review) {
+  return hexToNpub(review?.pubkey);
+}
+
 function authorNameOf(review) {
-  const profile = profiles.value[profileKey(review)];
-  const name = profile?.name;
+  const name = profiles.value[profileKey(review)]?.name;
   if (name) return name.trim();
   const npub = authorNpubOf(review);
   return npub ? developerShortKey(npub) : t("appComments.anonymous");
@@ -136,17 +133,14 @@ function viewApp(appId) {
 // event per pubkey wins, unverified events dropped by newestKind0Profiles —
 // a forged name is the same impersonation a forged comment would be.
 async function fetchAuthorProfiles() {
-  const wanted = [
-    ...new Set(showcase.value.map(profileKey)),
-  ].filter((hex) => /^[0-9a-f]{64}$/.test(hex) && !profiles.value[hex]);
+  const wanted = [...new Set(showcase.value.map(profileKey))].filter(
+    (hex) => /^[0-9a-f]{64}$/.test(hex) && !profiles.value[hex]
+  );
   if (wanted.length === 0) return;
 
-  const { events } = await queryRelays(
-    relays.value,
-    profileFilter(wanted),
-    PROFILE_KIND,
-    { subIdPrefix: "yantr-latest-review-profiles" }
-  );
+  const { events } = await queryRelays(relays.value, profileFilter(wanted), PROFILE_KIND, {
+    subIdPrefix: "yantr-latest-review-profiles",
+  });
 
   const newest = newestKind0Profiles(events);
   if (Object.keys(newest).length > 0) {
@@ -231,53 +225,57 @@ onMounted(fetchData);
 <template>
   <section
     v-if="showcase.length"
-    class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
-    <!-- Header: what this card is -->
-    <div class="flex w-full items-start justify-between gap-4">
-      <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
-          <MessageSquareQuote class="h-5 w-5 text-sky-600 dark:text-sky-400" />
-        </div>
-        <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-          {{ t("home.latestReview.title") }}
-        </h3>
-      </div>
-    </div>
+    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+      <MessageSquareQuote :size="13" class="text-zinc-400 dark:text-zinc-500" />
+      {{ t("home.latestReview.title") }}
+    </h3>
 
-    <!-- One row per review, sharing the band's height evenly. Hairlines
-         separate the quotes; each keeps the shape from the sketch — app
-         chip first, then the quote, then who said it. -->
-    <div class="flex flex-1 flex-col pt-1">
+    <!-- One entry per review: who said it, where, when — then the words.
+         Hairlines do the separating; there is no card inside the card. -->
+    <div class="mt-4 flex flex-1 flex-col">
       <article
         v-for="(review, i) in showcase"
         :key="review.id"
         class="flex flex-1 flex-col justify-center"
-        :class="i > 0 ? 'mt-5 border-t border-zinc-100 pt-5 dark:border-zinc-900' : ''"
+        :class="i > 0 ? 'border-t border-zinc-100 pt-4 dark:border-zinc-900' : ''"
       >
-        <div class="flex w-full items-center justify-between gap-4">
-          <button
-            type="button"
-            @click="viewApp(review.app.id)"
-            class="inline-flex min-w-0 items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 py-1 pl-1 pr-3 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
-            :title="review.app.name"
-          >
-            <span class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full">
+        <div class="flex items-baseline justify-between gap-3">
+          <div class="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              @click="viewApp(review.app.id)"
+              class="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
+              :title="review.app.name"
+            >
               <AppLogo
                 :logo="review.app.logo"
                 :name="review.app.name"
                 :seed="review.app.id"
                 img-class="h-full w-full object-contain"
-                icon-class="h-4 w-4 text-zinc-300 dark:text-zinc-700"
+                icon-class="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700"
               />
-            </span>
-            <span class="truncate">{{ review.app.name }}</span>
-          </button>
+              <span class="truncate">{{ review.app.name }}</span>
+            </button>
+
+            <span class="h-1 w-1 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+
+            <a
+              :href="authorUrlOf(review)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="min-w-0 truncate text-[11px] text-zinc-400 transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
+              :title="t('home.latestReview.byAuthor')"
+            >
+              {{ authorNameOf(review) }}
+            </a>
+          </div>
 
           <time
             v-if="formatTime(review.created_at)"
             :datetime="new Date(Number(review.created_at) * 1000).toISOString()"
-            class="shrink-0 font-mono text-[11px] text-zinc-400"
+            class="shrink-0 font-mono text-[10px] text-zinc-400"
           >
             {{ formatTime(review.created_at) }}
           </time>
@@ -286,22 +284,11 @@ onMounted(fetchData);
         <!-- The quote. whitespace-pre-wrap keeps the author's line breaks;
              the content was sanitised at fetch, before it touched the DOM. -->
         <blockquote
-          class="mt-3 font-medium tracking-tight text-zinc-900 whitespace-pre-wrap dark:text-white"
-          :class="[showcase.length === 1 ? 'text-lg leading-snug' : 'text-sm leading-relaxed', clampClassFor(review)]"
+          class="mt-2 text-sm font-medium leading-relaxed text-zinc-800 whitespace-pre-wrap dark:text-zinc-200"
+          :class="clampClassFor(review)"
         >
           {{ review.content }}
         </blockquote>
-
-        <a
-          :href="authorUrlOf(review)"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-2 inline-flex w-fit items-center gap-1.5 text-[11px] font-medium text-zinc-500 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-          :title="t('home.latestReview.byAuthor')"
-        >
-          <ArrowUpRight :size="12" class="shrink-0" />
-          {{ authorNameOf(review) }}
-        </a>
       </article>
     </div>
   </section>
@@ -311,29 +298,24 @@ onMounted(fetchData);
     v-else-if="emptyKnown"
     class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-dashed border-zinc-200 bg-white p-7 text-left dark:border-zinc-800 dark:bg-black"
   >
-    <div class="flex items-center gap-4">
-      <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
-        <MessageSquareQuote class="h-5 w-5 text-zinc-400 dark:text-zinc-600" />
-      </div>
-      <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-        {{ t("home.latestReview.title") }}
-      </h3>
-    </div>
+    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+      <MessageSquareQuote :size="13" />
+      {{ t("home.latestReview.title") }}
+    </h3>
 
-    <div class="mt-auto flex flex-col pb-1">
-      <p class="max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-        {{ t("home.latestReview.empty") }}
-      </p>
-      <div class="mt-4">
-        <button
-          type="button"
-          @click="router.push(appsRoute())"
-          class="inline-flex items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
-        >
-          {{ t("nav.apps") }}
-          <ArrowUpRight :size="13" />
-        </button>
-      </div>
+    <p class="mt-auto max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+      {{ t("home.latestReview.empty") }}
+    </p>
+
+    <div class="mt-4">
+      <button
+        type="button"
+        @click="router.push(appsRoute())"
+        class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
+        {{ t("nav.apps") }}
+        <ArrowUpRight :size="13" />
+      </button>
     </div>
   </section>
 </template>
