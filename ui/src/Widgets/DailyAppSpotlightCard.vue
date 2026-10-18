@@ -92,13 +92,13 @@ function handleSelect(appId) {
 <template>
   <section
     v-if="dailyApp"
-    class="group relative flex h-full w-full min-h-[280px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- Header: what this card is, and whether today's app is already
          running on this host. -->
     <div class="flex w-full items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
+        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
           <Sparkles class="h-4 w-4 text-sky-600 dark:text-sky-400" />
         </div>
         <h3 class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
@@ -133,7 +133,7 @@ function handleSelect(appId) {
       @click="handleSelect(dailyApp.id)"
       class="group/app mt-6 flex flex-1 flex-col text-left"
     >
-      <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+      <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
         <AppLogo
           :logo="dailyApp?.logo"
           :name="dailyApp?.name"
@@ -143,7 +143,7 @@ function handleSelect(appId) {
         />
       </div>
 
-      <div class="mt-4 text-3xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px] dark:text-white">
+      <div class="mt-4 text-3xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px] yantra-text-primary">
         {{ dailyApp?.name }}
       </div>
 
@@ -151,7 +151,7 @@ function handleSelect(appId) {
         {{ primaryTag || "App" }}
       </div>
 
-      <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3 dark:text-zinc-400">
+      <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3 yantra-text-secondary">
         {{ dailyApp.short_description }}
       </p>
 
@@ -165,10 +165,10 @@ function handleSelect(appId) {
   <!-- Error State -->
   <div
     v-else-if="loadFailed"
-    class="flex h-full w-full min-h-[280px] flex-col overflow-hidden rounded-2xl border border-red-200 bg-white p-7 text-left dark:border-red-900/50 dark:bg-black"
+    class="flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl border-red-200 p-7 text-left dark:border-red-900/50"
   >
     <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
+      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
         <AlertCircle class="h-4 w-4 text-red-600 dark:text-red-500" />
       </div>
       <h3 class="text-[10px] font-bold uppercase tracking-widest text-red-600 dark:text-red-400">
@@ -180,7 +180,7 @@ function handleSelect(appId) {
       <div class="text-[10px] font-semibold uppercase tracking-widest text-red-500 dark:text-red-400">
         Failed to load
       </div>
-      <div class="mt-2 text-3xl font-black leading-[1.1] tracking-tighter text-red-950 dark:text-white">
+      <div class="mt-2 text-3xl font-black leading-[1.1] tracking-tighter text-red-950 yantra-text-primary">
         {{ t("common.error") }}
       </div>
     </div>

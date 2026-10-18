@@ -45,15 +45,15 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 transition-transform duration-200 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-emerald-200 bg-emerald-50 transition-transform duration-200 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
           <Clock class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
             {{ t('quickMetrics.averageUptime.title') }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
@@ -72,25 +72,25 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         {{ t('quickMetrics.averageUptime.timeActive') }}
       </div>
       
-      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl yantra-text-primary">
         {{ stats.formatted }}
       </div>
 
       <!-- Nested Minimal Container for details -->
       <div class="grid grid-cols-5 gap-3">
         <!-- Stats Card -->
-        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Zap class="h-3.5 w-3.5" />
             <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.averageUptime.active') }}</span>
           </div>
-          <div class="text-2xl font-black leading-none tracking-tight yantra-text-primary tabular-nums dark:text-white">
+          <div class="text-2xl font-black leading-none tracking-tight yantra-text-primary tabular-nums yantra-text-primary">
              {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('quickMetrics.averageUptime.apps') }}</span>
           </div>
         </div>
         
         <!-- Mini Bar Chart -->
-        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl bg-zinc-50 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
            <div class="absolute inset-0 flex items-end justify-between px-4 pb-2">
               <div
                 v-for="(h, i) in bars"

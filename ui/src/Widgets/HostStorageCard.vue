@@ -25,15 +25,15 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <!-- Header -->
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 transition-transform duration-200 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-emerald-200 bg-emerald-50 transition-transform duration-200 group-hover:scale-105 dark:border-emerald-900/50 dark:bg-emerald-900/20">
           <HardDrive class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
             {{ t("quickMetrics.hostMetrics.storage") }}
           </h3>
           <div class="mt-2 flex items-center gap-2">
@@ -52,7 +52,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
            eventually stops an app from running. -->
       <div class="mb-1 flex items-baseline justify-between gap-3">
         <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("quickMetrics.hostMetrics.disk") }}</span>
-        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white sm:text-5xl">
+        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
           {{ primaryDisk && !isDegraded("disk") ? `${Math.round(primaryDisk.usedPct)}%` : "—" }}
         </span>
       </div>
@@ -75,7 +75,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
       <!-- Memory: the second capacity bar. Both fill up, both stop the host
            when they do — that is why they share a card while the interface
            rate lives on its own. -->
-      <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div class="flex flex-col gap-1.5 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
         <div class="flex items-baseline justify-between gap-2">
           <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
             <MemoryStick class="h-3 w-3" />

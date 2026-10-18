@@ -28,15 +28,15 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-indigo-200 bg-indigo-50 transition-transform duration-200 group-hover:scale-105 dark:border-indigo-900/50 dark:bg-indigo-900/20">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-indigo-200 bg-indigo-50 transition-transform duration-200 group-hover:scale-105 dark:border-indigo-900/50 dark:bg-indigo-900/20">
           <Discord class="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
             {{ t("discordCard.label") }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
@@ -54,10 +54,10 @@ const { t } = useI18n();
 
     <!-- Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-2xl font-black leading-[1.2] tracking-tight yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
+      <div class="mb-2 text-2xl font-black leading-[1.2] tracking-tight yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary">
         {{ t("discordCard.title") }}
       </div>
-      <div class="mb-5 text-xs leading-relaxed yantra-text-secondary line-clamp-3 dark:text-zinc-400">
+      <div class="mb-5 text-xs leading-relaxed yantra-text-secondary line-clamp-3 yantra-text-secondary">
         {{ t("discordCard.description") }}
       </div>
 
@@ -67,7 +67,7 @@ const { t } = useI18n();
           :href="DISCORD_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="group/cta relative flex h-11 w-full items-center justify-between rounded-xl bg-indigo-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-indigo-600 active:scale-[0.98] overflow-hidden"
+          class="group/cta relative flex h-11 w-full items-center justify-between rounded-xl bg-indigo-500 px-5 yantra-text-primary transition-[border-color,box-shadow,transform] duration-200 hover:bg-indigo-600 active:scale-[0.98] overflow-hidden"
         >
           <div class="relative z-10 flex items-center gap-2.5">
             <Discord class="h-4 w-4 fill-current" />

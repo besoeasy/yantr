@@ -64,22 +64,22 @@ const urgencyLabel = computed(() => {
 <template>
   <div
     v-if="stats.count > 0"
-    class="group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl border bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-black dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
     :class="isCritical 
         ? 'border-red-200 hover:border-red-300 dark:border-red-900/50 dark:hover:border-red-800' 
         : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'"
   >
     <!-- Header -->
-    <div class="relative z-10 flex flex-col gap-4">
+    <div class="yantra-card yantra-card-min relative z-10 flex flex-col gap-4">
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition-transform duration-200 group-hover:scale-105"
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-105"
                :class="isCritical ? 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/20' : 'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20'">
             <Timer class="h-5 w-5" :class="isCritical ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
               {{ t('quickMetrics.expiringContainers.title') }}
             </h3>
             <div class="mt-2 flex items-center gap-1.5">
@@ -123,10 +123,10 @@ const urgencyLabel = computed(() => {
       </div>
 
       <!-- Mini List Container -->
-      <div class="rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
+      <div class="rounded-xl bg-zinc-50 p-4 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
          <div class="flex flex-col gap-2">
             <div v-for="item in stats.items.slice(0, 3)" :key="item.id" class="group/item flex items-center justify-between text-xs font-semibold">
-               <span class="truncate pr-4 yantra-text-secondary transition-colors duration-200 group-hover/item:text-zinc-900 dark:text-zinc-400 dark:group-hover/item:text-white">
+               <span class="truncate pr-4 yantra-text-secondary transition-colors duration-200 group-hover/item:text-zinc-900 yantra-text-secondary dark:group-hover/item:text-white">
                  {{ item.name }}
                </span>
                <span class="whitespace-nowrap tabular-nums font-bold"

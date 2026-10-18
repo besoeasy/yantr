@@ -150,6 +150,14 @@ body {
     transform: translateY(-4px);
 }
 
+/* One minimum for every dashboard card. Twelve widgets asked for 320px, one
+   for 280px and three for nothing at all, which is how a grid of equal cells
+   ends up with ragged bottoms: the row is as tall as its tallest card, and a
+   card that opts out simply looks unfinished next to one that did not. */
+.yantra-card-min {
+    min-height: 320px;
+}
+
 .yantra-tile {
     display: flex;
     flex-shrink: 0;

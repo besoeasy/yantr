@@ -87,7 +87,7 @@ const factRows = computed(() => [
 
 <template>
   <section
-    class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- The one hairline accent: the online dot is the card's only colour. -->
     <div
@@ -96,7 +96,7 @@ const factRows = computed(() => [
     ></div>
 
     <!-- Loading: skeleton slabs that hold the card's shape -->
-    <div v-if="loading" class="flex flex-1 flex-col gap-5">
+    <div v-if="loading" class="yantra-card yantra-card-min flex flex-1 flex-col gap-5">
       <div class="flex items-center gap-4">
         <span class="h-12 w-12 shrink-0 animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-800"></span>
         <span class="flex flex-1 flex-col gap-2">
@@ -105,7 +105,7 @@ const factRows = computed(() => [
         </span>
       </div>
       <span class="block h-9 w-48 animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800"></span>
-      <div class="grid grid-cols-2 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <div class="grid grid-cols-2 overflow-hidden rounded-lg dark:border-zinc-800">
         <span
           v-for="n in 4"
           :key="n"
@@ -116,7 +116,7 @@ const factRows = computed(() => [
 
     <div v-else-if="error" class="flex flex-1 flex-col gap-4">
       <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
           <Server class="h-5 w-5 text-red-600 dark:text-red-500" />
         </div>
         <div>
@@ -129,7 +129,7 @@ const factRows = computed(() => [
         </div>
       </div>
       <div class="mt-auto flex flex-col pt-6">
-        <div class="text-4xl font-black leading-[1.1] tracking-tighter text-red-950 dark:text-white">
+        <div class="text-4xl font-black leading-[1.1] tracking-tighter text-red-950 yantra-text-primary">
           {{ t("common.error") }}
         </div>
         <div class="mt-2 line-clamp-2 text-sm yantra-text-secondary">{{ error }}</div>
@@ -141,8 +141,8 @@ const factRows = computed(() => [
            sits at the right edge, where a dashboard's eye lands last. -->
       <div class="flex w-full items-start justify-between gap-4">
         <div class="flex items-center gap-4">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-            <Server class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100" />
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-zinc-50 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+            <Server class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-zinc-900 yantra-text-secondary dark:group-hover:text-zinc-100" />
           </div>
           <h3 class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ t("quickMetrics.hostMetrics.hostSystem") }}
@@ -173,11 +173,11 @@ const factRows = computed(() => [
            utility layer has no divide-* helpers, and silent no-op classes
            are how borders go missing here) — container border plus cell
            right/bottom edges, overflow-hidden to clean the corners. -->
-      <div class="mt-6 grid grid-cols-2 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <div class="mt-6 grid grid-cols-2 overflow-hidden rounded-lg dark:border-zinc-800">
         <div
           v-for="stat in workloadStats"
           :key="stat.key"
-          class="flex flex-col items-start gap-1 border-b border-r border-zinc-200 px-4 py-3 dark:border-zinc-800"
+          class="flex flex-col items-start gap-1 border-b border-r px-4 py-3 dark:border-zinc-800"
         >
           <span
             class="text-2xl font-bold leading-none tabular-nums"

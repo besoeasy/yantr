@@ -100,7 +100,7 @@ watch(pickedKey, (next) => {
 <template>
   <section
     v-if="pickedKey"
-    class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- One hairline accent, top edge. The card's colour budget is this line
          and nothing else: the identity and payment data should not have to
@@ -118,7 +118,7 @@ watch(pickedKey, (next) => {
         </p>
 
         <div class="mt-4 flex items-center gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border yantra-tile">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
             <img
               v-if="avatarUrl"
               :src="avatarUrl"
@@ -133,7 +133,7 @@ watch(pickedKey, (next) => {
           <div class="min-w-0">
             <button
               @click="viewDeveloper"
-              class="block max-w-full truncate text-left text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70 dark:text-white"
+              class="block max-w-full truncate text-left text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70 yantra-text-primary"
             >
               {{ displayName }}
             </button>
@@ -155,7 +155,7 @@ watch(pickedKey, (next) => {
 
       <!-- The pitch, backed by the apps -->
       <div class="flex min-w-0 flex-1 flex-col lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
-        <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
           {{ t("home.dailyDeveloper.pitch") }}
         </p>
 
@@ -164,7 +164,7 @@ watch(pickedKey, (next) => {
             v-for="app in showcaseApps"
             :key="app.id"
             @click="viewApp(app.id)"
-            class="inline-flex max-w-full items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 py-1 pl-1 pr-3 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+            class="inline-flex max-w-full items-center gap-2 rounded-full bg-zinc-50 py-1 pl-1 pr-3 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
           >
             <span class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full">
               <AppLogo
@@ -180,7 +180,7 @@ watch(pickedKey, (next) => {
           <span
             v-if="hiddenAppCount > 0"
             :title="t('home.dailyDeveloper.appsCount')"
-            class="rounded-full border border-dashed border-zinc-200 px-3 py-1 text-xs font-medium yantra-text-secondary dark:border-zinc-800"
+            class="rounded-full border-dashed px-3 py-1 text-xs font-medium yantra-text-secondary dark:border-zinc-800"
           >
             {{ t("home.dailyDeveloper.appsMore", { count: hiddenAppCount }) }}
           </span>
@@ -190,7 +190,7 @@ watch(pickedKey, (next) => {
       <!-- Payments: every rail the account published, side by side. -->
       <div class="flex flex-col lg:w-72 lg:shrink-0 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
         <template v-if="payments.length">
-          <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <p class="text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
             {{ t("home.dailyDeveloper.zap") }}
           </p>
 
@@ -203,7 +203,7 @@ watch(pickedKey, (next) => {
               <!-- The QR is black on white and stays that way in both colour
                    schemes — a themed code is the classic way to ship one that
                    never scans. -->
-              <div class="w-fit rounded-lg border border-zinc-200 bg-white p-2 dark:border-zinc-700">
+              <div class="w-fit rounded-lg p-2 dark:border-zinc-700">
                 <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="104" />
               </div>
 
@@ -213,7 +213,7 @@ watch(pickedKey, (next) => {
 
               <button
                 @click="copyAddress(rail)"
-                class="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
+                class="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
               >
                 <Check v-if="copiedRail === rail.kind" :size="13" />
                 <Copy v-else :size="13" />
@@ -224,7 +224,7 @@ watch(pickedKey, (next) => {
         </template>
 
         <template v-else>
-          <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          <p class="text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
             {{ t("home.dailyDeveloper.noAddress") }}
           </p>
         </template>
@@ -236,7 +236,7 @@ watch(pickedKey, (next) => {
             :href="profileUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+            class="inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
           >
             {{ t("home.dailyDeveloper.follow") }}
             <ArrowUpRight :size="13" />
@@ -246,7 +246,7 @@ watch(pickedKey, (next) => {
             :href="profileUrl"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+            class="inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
           >
             {{ t("home.dailyDeveloper.thanks") }}
             <ArrowUpRight :size="13" />

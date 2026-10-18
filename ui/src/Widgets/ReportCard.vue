@@ -93,7 +93,7 @@ const hasFacts = computed(() => facts.value.length > 0);
 </script>
 
 <template>
-  <div class="yantra-card group relative flex h-full w-full min-h-[320px] flex-col overflow-hidden rounded-2xl p-7 text-left">
+  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left">
     <!-- Header: identity only. The ask lives with the CTA below it. -->
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
