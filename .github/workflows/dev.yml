@@ -1,0 +1,87 @@
+name: dev
+
+# Every push to main publishes a dev image: ghcr.io/besoeasy/yantr:dev
+# (plus dev-<sha> so a specific build stays pullable).
+#
+# This is the local loop in CI. test.sh builds and runs yantr:dev on your own
+# machine; this does the same thing from whatever main just received, so you
+# can `podman pull ghcr.io/besoeasy/yantr:dev` and get what CI built rather
+# than what a laptop had cached.
+#
+# What it deliberately does NOT do, unlike ghcr.yml: sign, and cut a GitHub
+# release. A signed image per push spends an OIDC identity and a minute per
+# commit on an artifact nobody installs by tag; releases stay the signed,
+# versioned thing. If dev images should be verifiable too, add the two cosign
+# and release steps from ghcr.yml here.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+# The newest main wins. Unlike a release (where two runs must not claim the
+# same CalVer date and so are serialized), a dev tag is overwritten by design:
+# a superseded build is work nobody will ever pull.
+concurrency:
+  group: dev
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # Push to ghcr. No contents: write (no release is cut) and no id-token
+      # (nothing is signed).
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.0.0
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # dev plus dev-<short-sha>: the rolling tag for "whatever is on main",
+      # the sha tag so a bug report can name the exact build that has it.
+      # Written as two output lines, which is how build-push-action expects a
+      # tag list; a comma-joined value would be taken as one broken tag name.
+      - name: Resolve tags
+        id: tags
+        run: |
+          set -euo pipefail
+          short="$(git rev-parse --short HEAD)"
+          {
+            echo "list<<EOF"
+            echo "${REGISTRY}/${IMAGE_NAME}:dev"
+            echo "${REGISTRY}/${IMAGE_NAME}:dev-${short}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "Publishing :dev and :dev-${short}"
+
+      - name: Build and push dev image
+        uses: docker/build-push-action@v5.0.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.tags.outputs.list }}
+          cache-from: type=gha,scope=dev
+          # mode=min, not ghcr.yml's mode=max: the cache exists to make the
+          # next dev build fast, and uploading every intermediate layer costs
+          # more than the reuse is worth. The release build keeps mode=max,
+          # where the cache is being kept as long as it lives.
+          cache-to: type=gha,mode=min,scope=dev
+          # Both arches, same as ghcr.yml, and for the same reason: most of
+          # the people running this are on a Pi or an Odroid. A dev image that
+          # only builds for amd64 would be useless to most of them.
+          platforms: linux/amd64,linux/arm64

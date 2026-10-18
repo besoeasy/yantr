@@ -142,7 +142,7 @@ onMounted(() => fetchStats(false));
                     <span class="tabular-nums text-zinc-500">{{ item.count }}</span>
                   </div>
                   <div class="h-1.5 overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-900">
-                    <div class="h-full rounded-full bg-violet-500" :style="{ width: `${(item.count / maxApp) * 100}%` }"></div>
+                    <div class="h-full rounded-full bg-sky-500" :style="{ width: `${(item.count / maxApp) * 100}%` }"></div>
                   </div>
                 </div>
               </li>
