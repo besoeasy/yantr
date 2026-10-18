@@ -158,7 +158,12 @@ watch(pickedKey, (next) => {
 
       <!-- The pitch, backed by the apps -->
       <div class="flex min-w-0 flex-1 flex-col border-t border-zinc-100 pt-5 dark:border-zinc-900">
-        <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
+        <!-- Two lines of pitch, and the rest of the card is facts. The full text
+             stays in the tooltip for anyone who wants to read it. -->
+        <p
+          class="line-clamp-2 max-w-2xl text-sm leading-relaxed text-zinc-600 yantra-text-secondary"
+          :title="t('home.dailyDeveloper.pitch')"
+        >
           {{ t("home.dailyDeveloper.pitch") }}
         </p>
 
@@ -210,18 +215,24 @@ watch(pickedKey, (next) => {
                 <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="88" />
               </div>
 
-              <p class="mt-1.5 break-all font-mono text-[11px] leading-snug yantra-text-secondary" :title="rail.address">
-                {{ rail.address }}
-              </p>
+              <!-- The address and the button that copies it share a line. The
+                   code is what you scan, the address is what you copy, and
+                   neither is something you read by eye — so they sit together
+                   rather than each claiming a row of the card. -->
+              <div class="mt-1.5 flex items-end gap-2">
+                <p class="min-w-0 flex-1 break-all font-mono text-[11px] leading-snug yantra-text-secondary" :title="rail.address">
+                  {{ rail.address }}
+                </p>
 
-              <button
-                @click="copyAddress(rail)"
-                class="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
-              >
-                <Check v-if="copiedRail === rail.kind" :size="13" />
-                <Copy v-else :size="13" />
-                {{ copiedRail === rail.kind ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
-              </button>
+                <button
+                  @click="copyAddress(rail)"
+                  class="inline-flex w-fit shrink-0 items-center gap-1.5 rounded-full bg-zinc-900 px-3 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
+                >
+                  <Check v-if="copiedRail === rail.kind" :size="13" />
+                  <Copy v-else :size="13" />
+                  {{ copiedRail === rail.kind ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
+                </button>
+              </div>
             </div>
           </div>
         </template>
