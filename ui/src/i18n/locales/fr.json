@@ -580,6 +580,7 @@
       "temperature": "Température",
       "unavailable": "Indisponible",
       "performance": "Performances",
+      "storage": "Stockage",
       "storageNetwork": "Stockage et réseau",
       "live": "En direct"
     },

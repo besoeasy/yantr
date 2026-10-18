@@ -586,6 +586,7 @@
       "temperature": "Temperatur",
       "unavailable": "Nicht verfügbar",
       "performance": "Leistung",
+      "storage": "Speicher",
       "storageNetwork": "Speicher & Netzwerk",
       "live": "Live"
     },

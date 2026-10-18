@@ -580,6 +580,7 @@
       "temperature": "Температура",
       "unavailable": "Недоступно",
       "performance": "Производительность",
+      "storage": "Хранилище",
       "storageNetwork": "Хранилище и сеть",
       "live": "В реальном времени"
     },

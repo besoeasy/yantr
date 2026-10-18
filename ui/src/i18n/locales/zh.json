@@ -580,6 +580,7 @@
       "temperature": "温度",
       "unavailable": "不可用",
       "performance": "性能",
+      "storage": "存储",
       "storageNetwork": "存储和网络",
       "live": "实时"
     },

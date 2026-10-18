@@ -580,6 +580,7 @@
       "temperature": "温度",
       "unavailable": "利用不可",
       "performance": "パフォーマンス",
+      "storage": "ストレージ",
       "storageNetwork": "ストレージとネットワーク",
       "live": "リアルタイム"
     },
