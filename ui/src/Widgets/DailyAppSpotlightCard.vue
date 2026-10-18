@@ -1,3 +1,10 @@
+<script>
+// Dashboard engine: two of the desktop grid's three columns — this card is
+// promotion for the app store, and the app name and tagline read better with
+// room around them. The .w-span-2 utility in main.css clamps it per
+// breakpoint; see Home.vue.
+export const meta = { cols: 2 };
+</script>
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";

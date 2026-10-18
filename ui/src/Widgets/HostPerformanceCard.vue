@@ -1,3 +1,10 @@
+<script>
+// Dashboard engine: this card takes two of the desktop grid's three columns —
+// the sparkline, the per-core bars and the load/uptime/temperature tiles give
+// each other breathing room, which a single column does not. The .w-span-2
+// utility in main.css clamps it per breakpoint; see Home.vue.
+export const meta = { cols: 2 };
+</script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";

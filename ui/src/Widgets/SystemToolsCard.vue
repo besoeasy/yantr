@@ -1,3 +1,9 @@
+<script>
+// Dashboard engine: one column — the tool cluster is pinned to one corner, so
+// width would only widen dead space around it. See Home.vue for how
+// meta.cols is consumed.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";

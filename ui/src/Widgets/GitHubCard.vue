@@ -1,3 +1,8 @@
+<script>
+// Dashboard engine: one column — a single call to action keeps the dashboard's
+// narrow-card rhythm, and wide CTAs read as banners. See Home.vue.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";

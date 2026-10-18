@@ -1,3 +1,8 @@
+<script>
+// Dashboard engine: one column — a status line and, at most, a token form do
+// not want extra width. See Home.vue for how meta.cols is consumed.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'

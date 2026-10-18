@@ -1,3 +1,8 @@
+<script>
+// Dashboard engine: one column — same single-call-to-action shape as the
+// Discord card. See Home.vue for how meta.cols is consumed.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { useI18n } from "vue-i18n";
 import { ArrowUpRight, Heart } from "@lucide/vue";

@@ -1,3 +1,9 @@
+<script>
+// Dashboard engine: one column — the next-expiry headline and the at-most-
+// three-row list are already a complete card at a third of the grid. See
+// Home.vue for how meta.cols is consumed.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useI18n } from 'vue-i18n'

@@ -1,3 +1,8 @@
+<script>
+// Dashboard engine: one column — a few rows of masked text; width buys
+// nothing here. See Home.vue for how meta.cols is consumed.
+export const meta = { cols: 1 };
+</script>
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { usePolling } from "../composables/usePolling";
