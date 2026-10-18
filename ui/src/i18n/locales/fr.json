@@ -242,7 +242,17 @@
     "activityHint": "Commentaires laissés par ce développeur sur les apps du catalogue, signés sur Nostr.",
     "activityEmpty": "Aucun commentaire enregistré — rien que ce compte ait signé sur les relays accessibles.",
     "activityLoadFailed": "Aucun relay n'a répondu, donc aucune activité à afficher. Vérifiez votre réseau puis réessayez.",
-    "activityUnknownApp": "Absent du catalogue de cet hôte"
+    "activityUnknownApp": "Absent du catalogue de cet hôte",
+    "payments": {
+      "title": "Soutenir",
+      "hint": "Scannez avec votre portefeuille ou copiez l'adresse. Lightning passe par une adresse Lightning ; on-chain paie directement l'adresse Bitcoin.",
+      "lightning": "Lightning",
+      "onchain": "On-chain",
+      "qrLabel": "QR code de paiement Lightning pour {name}",
+      "onchainQrLabel": "QR code de paiement Bitcoin on-chain pour {name}",
+      "copy": "Copier l'adresse",
+      "copied": "Copié"
+    }
   },
   "container": {
     "status": "Statut",

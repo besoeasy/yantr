@@ -242,7 +242,17 @@
     "activityHint": "この開発者がカタログ内のアプリに投稿したコメント。Nostr で署名されたものです。",
     "activityEmpty": "コメントはありません。到達できたリレーにこのアカウントが署名したものはありません。",
     "activityLoadFailed": "どのリレーにも到達できなかったため、活動を表示できません。ネットワークを確認して再試行してください。",
-    "activityUnknownApp": "このホストのカタログにありません"
+    "activityUnknownApp": "このホストのカタログにありません",
+    "payments": {
+      "title": "サポートする",
+      "hint": "ウォレットで読み取るか、アドレスをコピーしてください。Lightning は Lightning アドレス経由、オンチェーンは Bitcoin アドレスへ直接支払います。",
+      "lightning": "ライトニング",
+      "onchain": "オンチェーン",
+      "qrLabel": "{name} への Lightning 支払い用 QR コード",
+      "onchainQrLabel": "{name} への Bitcoin オンチェーン支払い用 QR コード",
+      "copy": "アドレスをコピー",
+      "copied": "コピーしました"
+    }
   },
   "container": {
     "status": "ステータス",

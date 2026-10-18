@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
+import { usePaymentRails } from "../composables/usePaymentRails";
 import AppCard from "../components/AppCard.vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
 import DeveloperComments from "../components/DeveloperComments.vue";
@@ -11,6 +12,7 @@ import AppLayout from "../components/AppLayout.vue";
 import {
   ArrowLeft,
   Bitcoin,
+  Check,
   ExternalLink,
   Link2,
   Package,
@@ -65,6 +67,14 @@ const nostrQrLabel = computed(() =>
 
 const copied = ref(false);
 let copiedTimer = null;
+
+// The payment rails under the identity card: same composable the Developer
+// of the day card renders, so an address that shows up here is one that
+// validated — Lightning address, checksum, and all.
+const { rails: paymentRails, copiedRail, copyAddress } = usePaymentRails(
+  profile,
+  "developer.payments"
+);
 
 async function copyNostrKey() {
   try {
@@ -306,6 +316,50 @@ watch(developerRef, (next) => {
                   class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
                 >
                   <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payment rails the account published: Lightning and on-chain, each
+             with its own scannable code. Same composable the Developer of the
+             day card renders, so what validates here validates there. -->
+        <section
+          v-if="paymentRails.length"
+          class="mt-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
+        >
+          <div class="flex flex-col items-start gap-6 p-6">
+            <div>
+              <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                {{ t('developer.payments.title') }}
+              </h2>
+              <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">
+                {{ t('developer.payments.hint') }}
+              </p>
+            </div>
+
+            <div class="flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
+              <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
+                <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                  {{ rail.label }}
+                </span>
+
+                <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
+                  <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="168" />
+                </div>
+
+                <p class="mt-3 max-w-64 break-all font-mono text-[11px] leading-relaxed text-zinc-500">
+                  {{ rail.address }}
+                </p>
+
+                <button
+                  @click="copyAddress(rail)"
+                  class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                >
+                  <Check v-if="copiedRail === rail.kind" :size="14" />
+                  <Copy v-else :size="14" />
+                  {{ copiedRail === rail.kind ? t('developer.payments.copied') : t('developer.payments.copy') }}
                 </button>
               </div>
             </div>

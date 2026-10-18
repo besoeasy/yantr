@@ -279,7 +279,17 @@
     "activityHint": "Comments this developer has left on apps in the catalog, signed on Nostr.",
     "activityEmpty": "No comments on record — nothing this account has signed on the relays we could reach.",
     "activityLoadFailed": "No relay could be reached, so there is no activity to show. Check your network and try again.",
-    "activityUnknownApp": "Not in this host's catalog"
+    "activityUnknownApp": "Not in this host's catalog",
+    "payments": {
+      "title": "Support",
+      "hint": "Scan with your wallet, or copy the address. Lightning goes through a Lightning address; on-chain pays the Bitcoin address directly.",
+      "lightning": "Lightning",
+      "onchain": "On-chain",
+      "qrLabel": "Lightning payment QR code for {name}",
+      "onchainQrLabel": "Bitcoin on-chain payment QR code for {name}",
+      "copy": "Copy address",
+      "copied": "Copied"
+    }
   },
   "container": {
     "status": "Status",

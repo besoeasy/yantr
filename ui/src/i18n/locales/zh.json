@@ -242,7 +242,17 @@
     "activityHint": "该开发者在目录中应用下留下的评论，已在 Nostr 上签名。",
     "activityEmpty": "暂无评论——在可达的中继上没有此账户签名的记录。",
     "activityLoadFailed": "无法连接任何中继，因此没有动态可显示。请检查网络后重试。",
-    "activityUnknownApp": "不在此主机的目录中"
+    "activityUnknownApp": "不在此主机的目录中",
+    "payments": {
+      "title": "支持",
+      "hint": "用钱包扫码，或复制地址。闪电通过 Lightning 地址支付，链上则直接付到比特币地址。",
+      "lightning": "闪电",
+      "onchain": "链上",
+      "qrLabel": "给 {name} 的闪电支付二维码",
+      "onchainQrLabel": "给 {name} 的比特币链上支付二维码",
+      "copy": "复制地址",
+      "copied": "已复制"
+    }
   },
   "container": {
     "status": "状态",

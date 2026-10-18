@@ -43,7 +43,11 @@ const PROFILE_MISS_TTL_MS = 60 * 60 * 1000;
 // A record written by an older build is ignored rather than misread: the fields
 // a page prints must never come from a layout this version does not know.
 const CACHE_STORE = "nostr-profiles";
-const CACHE_VERSION = 1;
+// Bumped to 2 when the parsed profile gained the payment fields (lud16,
+// bitcoin): a record written by an older build has no such fields, and
+// serving one would leave the page showing an account with no Lightning or
+// Bitcoin address for the whole TTL. Ignored, not misread.
+const CACHE_VERSION = 2;
 
 // normaliseNostrProfile maps a kind-0 event onto the field names the view reads,
 // because the view should not care where the metadata came from. Name falls back
@@ -133,20 +137,23 @@ export function useDeveloperProfile() {
 
     try {
       const relays = await loadRelays();
-      const { events } = await queryRelays(relays, profileFilter([pubkey]), PROFILE_KIND, {
+      const { events, reached } = await queryRelays(relays, profileFilter([pubkey]), PROFILE_KIND, {
         subIdPrefix: "yantr-profile",
       });
 
       // Newest wins and unverified events are dropped inside this merge — a
-      // kind-0 is a name, a picture and a NIP-05 the page is about to print, so
-      // a relay must not be able to speak for the account.
+      // kind-0 is a name, a picture and the payment addresses the page is
+      // about to print, so a relay must not be able to speak for the account.
       const found = newestKind0Profiles(events)[pubkey] || null;
 
-      // Written even when nothing was found, and even when the relays could not
-      // be reached: an empty record shortens the next attempt to an hour, and a
-      // record of a failed attempt is not written at all, so the next visit
-      // tries again rather than believing a transport failure was an answer.
-      if (events.length > 0 || relays.length > 0) {
+      // Written when something actually answered: an empty record shortens the
+      // next attempt to an hour, so only a real answer may write one. A
+      // transport failure must not poison the cache — `reached` is the count
+      // of relays that answered, deliberately not `relays.length`, which is
+      // the configured set and is never empty because of the fallback. A
+      // failed attempt is not written at all, so the next visit tries again
+      // rather than believing a dead socket was an answer.
+      if (events.length > 0 || reached > 0) {
         await kvSet(CACHE_STORE, pubkey, {
           v: CACHE_VERSION,
           pubkey,
@@ -165,6 +172,12 @@ export function useDeveloperProfile() {
   // load resolves one developer key. `key` is the route param; the server is
   // the authority on whether it names an account the catalog credits, so an
   // unknown key comes back as a 4xx rather than being guessed at here.
+  //
+  // The profile itself — name, picture, Lightning and Bitcoin addresses — is
+  // relay data and is read either way. The server decides whether this key is
+  // credited; it does not decide who the account is, and a host whose backend
+  // cannot answer should still show the identity and the payment rails for the
+  // key in the URL rather than a bare npub.
   async function load(ref) {
     reset();
     loading.value = true;
@@ -192,8 +205,9 @@ export function useDeveloperProfile() {
 
     loading.value = false;
 
-    if (developer.value) {
-      await fetchProfile(developer.value.key);
+    const profileKey = developer.value?.key || String(ref ?? "").trim();
+    if (profileKey) {
+      await fetchProfile(profileKey);
     }
   }
 

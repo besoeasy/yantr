@@ -14,6 +14,7 @@ import AppLogo from "../components/AppLogo.vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
+import { usePaymentRails } from "../composables/usePaymentRails";
 import { expectApiSuccess } from "../composables/useApiResponse";
 import { appDetail, developerDetail } from "../utils/routes.js";
 import {
@@ -24,8 +25,6 @@ import {
   developerProfileUrl,
   developerShortKey,
 } from "../utils/developer";
-import { lnurlEncode } from "../utils/nostr";
-import { bip21Uri } from "../utils/bitcoin";
 
 // One developer, one day, in full. The catalog answers who exists; the
 // account's kind-0 answers who it is and where its Lightning address lives;
@@ -41,8 +40,6 @@ const { profile, load: loadDeveloper } = useDeveloperProfile();
 
 const apps = ref([]);
 const pickedKey = ref("");
-const copiedRail = ref("");
-let copiedTimer = null;
 
 const developerApps = computed(() => appsByDeveloper(apps.value, pickedKey.value));
 
@@ -60,42 +57,12 @@ const avatarUrl = computed(() => profile.value?.avatarUrl ?? "");
 // reader compares against one they already have.
 const npubShort = computed(() => developerShortKey(pickedKey.value));
 
-// The payment rails this account publishes, in the order a reader reaches for
-// them. Both come from the VERIFIED kind-0 (useDeveloperProfile's pipeline —
-// relay-served prose never reaches here) and both are validated again here:
-// the Lightning address must still encode to an LNURL pay-URL, and the
-// Bitcoin address must still pass its checksum. A rail with no valid payload
-// is not in the list at all — a QR that scans into a dead lookup, or worse
-// into a mistyped address, is worse than no QR.
-const payments = computed(() => {
-  const rails = [];
-
-  const lud = String(profile.value?.lud16 ?? "").trim();
-  const lnurl = lud ? lnurlEncode(lud) : "";
-  if (lnurl) {
-    rails.push({
-      kind: "lightning",
-      label: t("home.dailyDeveloper.lightning"),
-      address: lud,
-      payload: lnurl,
-      qrLabel: t("home.dailyDeveloper.qrLabel", { name: displayName.value }),
-    });
-  }
-
-  const address = String(profile.value?.bitcoin ?? "").trim();
-  const bip21 = bip21Uri(address);
-  if (bip21) {
-    rails.push({
-      kind: "onchain",
-      label: t("home.dailyDeveloper.onchain"),
-      address,
-      payload: bip21,
-      qrLabel: t("home.dailyDeveloper.onchainQrLabel", { name: displayName.value }),
-    });
-  }
-
-  return rails;
-});
+// The payment rails this account publishes, built by the shared composable
+// the developer page also uses — same validation, same payloads, one place.
+const { rails: payments, copiedRail, copyAddress } = usePaymentRails(
+  profile,
+  "home.dailyDeveloper"
+);
 
 // Follow and thank-you both open the account's page on njump: the profile
 // landing offers every Nostr client the choice to follow or to message, which
@@ -108,23 +75,6 @@ function viewApp(appId) {
 
 function viewDeveloper() {
   router.push(developerDetail(pickedKey.value));
-}
-
-// One address at a time is copied, and the confirmation names which rail it
-// was — with two rails side by side, "Copied" alone would leave the reader
-// guessing what landed on the clipboard.
-async function copyAddress(rail) {
-  try {
-    await navigator.clipboard.writeText(rail?.address ?? "");
-    copiedRail.value = rail.kind;
-    if (copiedTimer) clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => {
-      copiedRail.value = "";
-    }, 2000);
-  } catch {
-    // Clipboard needs a secure context; the address is printed next to the
-    // button, so there is nothing to recover from.
-  }
 }
 
 async function fetchData() {
