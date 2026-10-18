@@ -64,13 +64,15 @@ const urgencyLabel = computed(() => {
 
 <template>
   <WidgetSkeleton v-if="!containersLoaded && !containersLoadFailed" />
-  <div v-elsev-if="stats.count > 0" class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
-    :class="isCritical 
-        ? 'border-red-200 hover:border-red-300 dark:border-red-900/50 dark:hover:border-red-800' 
-        : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'"
+  <!-- This card has one body: it reports the safe state as readily as the
+       critical one, so once the containers have loaded it always renders. -->
+  <div v-else class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    :class="isCritical
+        ? 'border-red-200 hover:border-red-300 dark:border-red-900/50 dark:hover:border-red-800'
+        : ''"
   >
     <!-- Header -->
-    <div class="yantra-card yantra-card-min relative z-10 flex flex-col gap-4">
+    <div class="relative z-10 flex flex-col gap-4">
       <div class="flex items-start justify-between">
         <div class="flex items-center gap-4">
           <!-- Minimal Icon Block -->

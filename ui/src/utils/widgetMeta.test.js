@@ -23,6 +23,10 @@ const MAX_COLS = 2;
 
 const widgetsDir = join(dirname(fileURLToPath(import.meta.url)), "..", "Widgets");
 
+function readSource(name) {
+  return readFileSync(join(widgetsDir, name), "utf8");
+}
+
 function readCols(source) {
   // The declaration lives in the plain <script> block, not <script setup>,
   // which is what makes it a module export rather than component state.
@@ -32,12 +36,29 @@ function readCols(source) {
   return match ? Number(match[1]) : null;
 }
 
+// The card's surface — background, hairline border, hover lift — comes from
+// the .yantra-card token, not from a widget restating zinc steps. Ten roots
+// once lost it: a migration stripped `border-zinc-200 bg-white dark:bg-black`
+// from the root without adding the token back, and those cards rendered
+// transparent with no border, which the dark-mode screenshots did not catch.
+// A widget with no token is a widget with no surface.
+//
+// Note `yantra-card` is a whole token, not a prefix: "yantra-card" is a
+// substring of "yantra-card-min", so matching on text alone passes a root
+// that has only the height. Tokens are compared as tokens here for that
+// reason.
+function rootClasses(source) {
+  const template = source.indexOf("<template>");
+  const root = source.slice(template).match(/<(?:section|div)[^>]*?class="([^"]*)"/);
+  return root ? root[1].split(/\s+/) : [];
+}
+
 const widgets = readdirSync(widgetsDir)
   .filter((name) => name.endsWith(".vue"))
-  .map((name) => ({
-    name,
-    cols: readCols(readFileSync(join(widgetsDir, name), "utf8")),
-  }));
+  .map((name) => {
+    const source = readSource(name);
+    return { name, cols: readCols(source), classes: rootClasses(source) };
+  });
 
 describe("dashboard widgets", () => {
   it("declares a width for every widget", () => {
@@ -48,5 +69,15 @@ describe("dashboard widgets", () => {
   it("never spans more than two columns of the desktop grid", () => {
     const wide = widgets.filter((w) => w.cols > MAX_COLS).map((w) => `${w.name} (cols: ${w.cols})`);
     expect(wide, `widgets wider than ${MAX_COLS} columns — see AGENTS.md §8`).toEqual([]);
+  });
+
+  it("draws its surface from the card token", () => {
+    const bare = widgets.filter((w) => !w.classes.includes("yantra-card")).map((w) => w.name);
+    expect(bare, "widget roots without `yantra-card` — no background, no border").toEqual([]);
+  });
+
+  it("keeps the shared minimum height", () => {
+    const short = widgets.filter((w) => !w.classes.includes("yantra-card-min")).map((w) => w.name);
+    expect(short, "widget roots without `yantra-card-min` — ragged grid rows").toEqual([]);
   });
 });
