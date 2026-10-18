@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { appOfDay, getDateDaySeed, hashString, upNextApps } from "./spotlight";
+import { appOfDay, getDateDaySeed, hashString } from "./spotlight";
 
 // Same ref date for every assertion, so tests do not pass one day and fail
 // the next just for running on a date whose hash changed.
@@ -49,35 +49,9 @@ describe("appOfDay", () => {
     expect(tomorrow).not.toBeNull();
     // With a 4-app small pool a collision is possible, but not for the
     // externally fixed ref date NOR — assert what the rotation does promise:
-    // determinism and distinctness, checked below in upNextApps.
+    // determinism, checked above.
     if (tomorrow.id !== today.id) {
       expect(new Set([today.id, tomorrow.id]).size).toBe(2);
     }
-  });
-});
-
-describe("upNextApps", () => {
-  it("returns the requested count of distinct apps from a catalog that can feed it", () => {
-    const featured = appOfDay(catalog, 0, NOW);
-    const next = upNextApps(catalog, featured, 2);
-    expect(next).toHaveLength(2);
-    expect(new Set([featured.id, ...next.map((a) => a.id)]).size).toBe(3);
-  });
-
-  it("never repeats the featured app", () => {
-    const featured = appOfDay(catalog, 0, NOW);
-    for (const app of upNextApps(catalog, featured, 2)) {
-      expect(app.id).not.toBe(featured.id);
-    }
-  });
-
-  it("shortens honestly when the catalog is too small to fill the shelf", () => {
-    expect(upNextApps([{ id: "ollama", name: "Ollama" }], { id: "ollama" }, 2)).toEqual([]);
-  });
-
-  it("is null-featured safe: still counts from tomorrow", () => {
-    const next = upNextApps(catalog, null, 2);
-    expect(next).toHaveLength(2);
-    expect(new Set(next.map((a) => a.id)).size).toBe(2);
   });
 });

@@ -1,8 +1,7 @@
-// The deterministic daily pick behind the Featured Today card, plus the
-// "up next" rotation the full-width card showcases with it.
+// The deterministic daily pick behind the Featured Today card.
 //
 // One date string in, one app out — no randomness, no server choice, so the
-// same day reads the same on every host and a reload never reshuffles. The
+// same day reads the same on every host and a reload never reshuffles it. The
 // seed keeps its old shape on purpose: a date that hashes differently would
 // silently move "today's" app on hosts that rebuilt mid-day.
 
@@ -37,23 +36,4 @@ export function appOfDay(apps, offsetDays = 0, now = new Date()) {
   if (offsetDays) day.setDate(day.getDate() + offsetDays);
   const index = hashString(getDateDaySeed(day)) % catalog.length;
   return catalog[index];
-}
-
-// upNextApps lists the apps the card will feature after today — the next
-// `count` distinct picks in the rotation, skipping any hash collision with
-// today's app or each other. Capped at a week of look-ahead: a catalog as
-// small as one app has no "up next", which is the honest answer.
-export function upNextApps(apps, featured, count = 2) {
-  const seen = new Set();
-  if (featured?.id) seen.add(featured.id);
-
-  const out = [];
-  for (let i = 1; i <= 7 && out.length < count; i++) {
-    const app = appOfDay(apps, i);
-    if (app && !seen.has(app.id)) {
-      seen.add(app.id);
-      out.push(app);
-    }
-  }
-  return out;
 }

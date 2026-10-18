@@ -79,10 +79,7 @@
       "openOverview": "Open running app",
       "installed": "Installed",
       "available": "Available",
-      "running": "Active ({count})",
-      "upNext": "Up next",
-      "tomorrow": "Tomorrow",
-      "inDays": "In {count} days"
+      "running": "Active ({count})"
     },
     "dailyDeveloper": {
       "title": "Developer of the day",

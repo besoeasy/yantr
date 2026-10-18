@@ -104,10 +104,7 @@
       "openOverview": "Laufende App öffnen",
       "installed": "Installiert",
       "available": "Verfügbar",
-      "running": "Aktiv ({count})",
-      "upNext": "Als Nächstes",
-      "tomorrow": "Morgen",
-      "inDays": "In {count} Tagen"
+      "running": "Aktiv ({count})"
     },
     "dailyDeveloper": {
       "title": "Entwickler des Tages",

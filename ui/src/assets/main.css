@@ -1934,19 +1934,16 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .lg\:border-zinc-200{border-color:var(--color-zinc-200);}
 .dark\:lg\:border-zinc-800:is(.dark *){border-color:var(--color-zinc-800);}
 
-/* Named groups: one per shelf, so hovering a shelf lifts and recolours only
-   that shelf rather than the whole band. */
-.group\/featured,.group\/next{display:group;}
-.group-hover\/featured\:text-zinc-900:is(.group\/featured *){color:var(--color-zinc-900);}
-.dark\:group-hover\/featured\:text-zinc-100:is(.dark *):is(.group\/featured *){color:var(--color-zinc-100);}
-.group-hover\/featured\:-translate-y-\[3px\]:is(.group\/featured *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
-.group-hover\/next\:text-zinc-900:is(.group\/next *){color:var(--color-zinc-900);}
-.group-hover\/next\:text-zinc-300:is(.group\/next *){color:var(--color-zinc-300);}
-.dark\:group-hover\/next\:text-zinc-100:is(.dark *):is(.group\/next *){color:var(--color-zinc-100);}
-.dark\:group-hover\/next\:text-zinc-700:is(.dark *):is(.group\/next *){color:var(--color-zinc-700);}
-.group-hover\/next\:-translate-y-\[3px\]:is(.group\/next *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
-.group-hover\:text-zinc-900:is(.group *){color:var(--color-zinc-900);}
-.dark\:group-hover\:text-zinc-100:is(.dark *):is(.group *){color:var(--color-zinc-100);}
+/* Named groups: a hover scoped to one part of a card rather than the whole
+   card. `:hover` lives in the descendant selector — without it these would be
+   permanently on, which is the opposite of a hover. */
+.group\/app{display:group;}
+.group-hover\/app\:scale-105:is(:where(.group\/app):hover *){--tw-scale-x:105%;--tw-scale-y:105%;--tw-scale-z:105%;scale:var(--tw-scale-x) var(--tw-scale-y);}
+.group-hover\/app\:-translate-y-\[3px\]:is(:where(.group\/app):hover *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
+.group-hover\/app\:text-zinc-900:is(:where(.group\/app):hover *){color:var(--color-zinc-900);}
+.dark\:group-hover\/app\:text-zinc-100:is(.dark *):is(:where(.group\/app):hover *){color:var(--color-zinc-100);}
+.group-hover\:text-zinc-900:is(:where(.group):hover *){color:var(--color-zinc-900);}
+.dark\:group-hover\:text-zinc-100:is(.dark *):is(:where(.group):hover *){color:var(--color-zinc-100);}
 .dark\:hover\:text-zinc-100:is(.dark *):hover{color:var(--color-zinc-100);}
 
 /* Sizing: w-fit keeps a control at its content's width inside a flex column,

@@ -104,10 +104,7 @@
       "openOverview": "打开运行中的应用",
       "installed": "已安装",
       "available": "可用",
-      "running": "运行中 ({count})",
-      "upNext": "接下来推荐",
-      "tomorrow": "明天",
-      "inDays": "{count} 天后"
+      "running": "运行中 ({count})"
     },
     "dailyDeveloper": {
       "title": "今日开发者",
