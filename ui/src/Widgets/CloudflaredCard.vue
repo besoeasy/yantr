@@ -149,7 +149,7 @@ async function deploy() {
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Cloudflared</h3>
+            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
             <div class="mt-2 flex items-center gap-1.5">
               <span class="text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</span>
             </div>
@@ -254,7 +254,7 @@ async function deploy() {
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">Cloudflared</h3>
+            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
             <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</p>
           </div>
         </div>

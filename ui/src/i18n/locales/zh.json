@@ -104,7 +104,8 @@
       "openOverview": "打开运行中的应用",
       "installed": "已安装",
       "available": "可用",
-      "running": "运行中 ({count})"
+      "running": "运行中 ({count})",
+      "loadFailed": "加载失败"
     },
     "dailyDeveloper": {
       "title": "今日开发者",
@@ -126,6 +127,12 @@
       "title": "最新评价",
       "empty": "还没有任何评价。打开目录中的应用，留下第一条吧。",
       "byAuthor": "查看作者的 Nostr 主页"
+    },
+    "systemToolsCard": {
+      "management": "管理",
+      "systemOverview": "系统概览",
+      "active": "运行中",
+      "live": "实时"
     }
   },
   "apps": {
@@ -214,7 +221,17 @@
     "removeVar": "移除变量",
     "expiresAfter": "有效期",
     "hostPortFor": "容器端口 {port} ({protocol}) 对应的主机端口",
-    "developer": "开发者"
+    "developer": "开发者",
+    "deploymentStillRunning": "{name} 的部署仍在后台进行…",
+    "editInstance": "编辑实例",
+    "envLoaded": "已从 {project} 载入保存的设置",
+    "extraVarsEditHint": "只预填了目录中的变量。当前安装的额外变量不会被保存 — 如有需要请在下方重新添加。",
+    "loadEnvFailed": "无法载入保存的设置：{message}",
+    "newInstance": "新建实例",
+    "targetInstance": "目标实例",
+    "updateInstance": "更新实例",
+    "updatedSuccessfully": "{name} 更新成功！",
+    "workPortsHidden": "另有 {count} 个工作端口仅为协议流量发布。"
   },
   "developer": {
     "loading": "正在加载开发者…",
@@ -317,7 +334,19 @@
       "deletedSuccessfully": "{name} 删除成功！",
       "volumeBrowserStarted": "卷浏览器已启动{expiry}"
     },
-    "cpuWarmingUp": "已获取首次采样 — CPU 使用率将在下次轮询时显示"
+    "cpuWarmingUp": "已获取首次采样 — CPU 使用率将在下次轮询时显示",
+    "copyShellCommand": "复制命令",
+    "detectingShell": "正在检测可用的 shell…",
+    "noShell": "此容器中未找到受支持的 shell。",
+    "shellAccess": "容器 Shell",
+    "shellCopied": "已复制 shell 命令",
+    "shellCopyFailed": "无法复制 shell 命令",
+    "shellDetectionFailed": "无法检测 shell。请刷新页面后重试。",
+    "shellHint": "请在主机上以运行 Podman 的用户执行此命令：",
+    "shellStopped": "启动容器后才能检测 shell。",
+    "access": "访问",
+    "workPort": "工作端口",
+    "workPortHint": "仅为协议流量发布 — 没有用户界面。"
   },
   "volumes": {
     "title": "卷",
@@ -356,7 +385,11 @@
     "deleteAllUnused": "删除所有 {count} 个未使用的卷？",
     "mb": "MB",
     "notAvailable": "N/A",
-    "refresh": "刷新卷"
+    "refresh": "刷新卷",
+    "export": "备份",
+    "exportFailed": "备份卷失败：{message}",
+    "exportSuccess": "已下载卷 '{name}' 的备份",
+    "exporting": "备份中…"
   },
   "appOverview": {
     "back": "返回",
@@ -500,7 +533,19 @@
     "serviceActionFailed": "{total} 个服务中有 {failed} 个未响应",
     "internalAddresses": "内部地址",
     "internalAddressesHint": "此堆栈中的其他容器可以访问。",
-    "serviceDetails": "详情"
+    "serviceDetails": "详情",
+    "backingUp": "备份中…",
+    "backupFailed": "备份卷失败：{message}",
+    "backupSuccess": "已下载卷 '{name}' 的备份",
+    "backupVolume": "备份",
+    "definitionChanged": "应用定义已变更",
+    "definitionChangedHint": "自部署以来，该应用在目录中的版本已变化。更新只会刷新镜像 — 如需应用新定义，请从应用页面重新部署。",
+    "removalStillRunning": "堆栈移除仍在后台进行…",
+    "updateStillRunning": "更新仍在后台进行…",
+    "access": "访问",
+    "workPort": "工作端口",
+    "workPortHint": "仅为协议流量发布 — 没有用户界面。",
+    "portsWithWorkCount": "{total} 个端口中有 {access} 个面向用户"
   },
   "appCard": {
     "active": "活动 ({count})",
@@ -555,7 +600,9 @@
       "systemStability": "系统稳定性",
       "timeActive": "活跃时间",
       "acrossContainers": "跨 {count} 个容器",
-      "systemIdle": "系统空闲"
+      "systemIdle": "系统空闲",
+      "active": "运行中",
+      "apps": "应用"
     },
     "expiringContainers": {
       "title": "到期容器",
@@ -722,11 +769,39 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "这看起来不像隧道令牌 — 请粘贴 dash.cloudflare.com 上的完整令牌。",
-    "tunnelToken": "隧道令牌"
+    "tunnelToken": "隧道令牌",
+    "title": "Cloudflared"
   },
   "notFound": {
     "title": "未找到页面",
     "hint": "{path} 处没有任何内容。",
     "backToDashboard": "返回仪表板"
+  },
+  "appComments": {
+    "anonymous": "匿名",
+    "connect": "连接 Nostr 签名器",
+    "connectHint": "评论使用你自己的 Nostr 密钥通过浏览器扩展签名 — 你的密钥不会进入 Yantr。",
+    "connectedAs": "以 {key} 的身份签名",
+    "developerBadge": "开发者",
+    "developerBadgeHint": "这条评论由该应用在目录条目中署名的密钥签名。",
+    "empty": "还没有评论。连接签名器，留下第一条吧。",
+    "emptyComment": "请先写点什么。",
+    "expiryNote": "评论带有 NIP-40 的五年有效期，任何读取这些中继的人都能看到。",
+    "loadFailed": "无法连接任何中继，因此没有评论可显示。请检查网络后重试。",
+    "loading": "正在询问中继…",
+    "noSigner": "未找到 Nostr 签名器。请安装 Alby 或 nos2x 等 NIP-07 扩展后重试。",
+    "placeholder": "这个应用在你这里跑得怎么样？",
+    "post": "发表评论",
+    "posting": "发布中…",
+    "postingAsDeveloper": "你正以该应用开发者的身份发言 — 评论会带上标记。",
+    "publishFailed": "没有中继接受这条评论。请稍后重试。",
+    "published": "已发布。在所有中继上出现可能需要一点时间。",
+    "refresh": "刷新",
+    "relayStatus": "{total} 个中继中有 {reached} 个已响应",
+    "signCancelled": "签名在扩展中被取消。",
+    "signerError": "签名器拒绝了请求。请重新连接后再试。",
+    "subtitle": "在 Nostr 上签名并标记了 {tag} 的社区笔记。它们位于公共中继上，而不是这台主机。",
+    "title": "评价与评论",
+    "tooLong": "请控制在 {max} 个字符以内。"
   }
 }

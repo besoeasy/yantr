@@ -104,7 +104,8 @@
       "openOverview": "Abrir aplicación en ejecución",
       "installed": "Instalado",
       "available": "Disponible",
-      "running": "Activo ({count})"
+      "running": "Activo ({count})",
+      "loadFailed": "Error al cargar"
     },
     "dailyDeveloper": {
       "title": "Desarrollador del día",
@@ -126,6 +127,12 @@
       "title": "Últimas reseñas",
       "empty": "Aún no hay reseñas. Abre una app del catálogo y deja la primera.",
       "byAuthor": "Ver el perfil de Nostr del autor o de la autora"
+    },
+    "systemToolsCard": {
+      "management": "Gestión",
+      "systemOverview": "Resumen del sistema",
+      "active": "Activo",
+      "live": "En vivo"
     }
   },
   "apps": {
@@ -214,7 +221,17 @@
     "removeVar": "Eliminar variable",
     "expiresAfter": "Caduca después de",
     "hostPortFor": "Puerto del host para el puerto {port} del contenedor ({protocol})",
-    "developer": "Desarrollador"
+    "developer": "Desarrollador",
+    "deploymentStillRunning": "El despliegue de {name} sigue ejecutándose en segundo plano…",
+    "editInstance": "Editar instancia",
+    "envLoaded": "Configuración guardada cargada desde {project}",
+    "extraVarsEditHint": "Solo se rellenan las variables del catálogo. Las variables extra de la instalación actual no se guardan: vuelve a añadirlas abajo si hacen falta.",
+    "loadEnvFailed": "No se pudo cargar la configuración guardada: {message}",
+    "newInstance": "Nueva instancia",
+    "targetInstance": "Instancia de destino",
+    "updateInstance": "Actualizar instancia",
+    "updatedSuccessfully": "¡{name} se actualizó correctamente!",
+    "workPortsHidden": "Más {count} puerto(s) de trabajo publicados solo para tráfico de protocolo."
   },
   "developer": {
     "loading": "Cargando desarrollador…",
@@ -317,7 +334,19 @@
       "deletedSuccessfully": "¡{name} eliminado con éxito!",
       "volumeBrowserStarted": "Explorador de volumen iniciado{expiry}"
     },
-    "cpuWarmingUp": "Primera muestra tomada: la tasa de CPU aparece en la siguiente consulta"
+    "cpuWarmingUp": "Primera muestra tomada: la tasa de CPU aparece en la siguiente consulta",
+    "copyShellCommand": "Copiar comando",
+    "detectingShell": "Detectando shell disponible…",
+    "noShell": "No se encontró ningún shell compatible en este contenedor.",
+    "shellAccess": "Shell del contenedor",
+    "shellCopied": "Comando del shell copiado",
+    "shellCopyFailed": "No se pudo copiar el comando del shell",
+    "shellDetectionFailed": "No se pudo detectar un shell. Recarga la página e inténtalo de nuevo.",
+    "shellHint": "Ejecuta este comando en el host como el usuario que ejecuta Podman:",
+    "shellStopped": "Inicia el contenedor para detectar un shell.",
+    "access": "Acceso",
+    "workPort": "Puerto de trabajo",
+    "workPortHint": "Publicado solo para tráfico de protocolo: sin interfaz de usuario."
   },
   "volumes": {
     "title": "Volúmenes",
@@ -356,7 +385,11 @@
     "deleteAllUnused": "¿Eliminar los {count} volúmenes sin usar?",
     "mb": "MB",
     "notAvailable": "N/D",
-    "refresh": "Actualizar volúmenes"
+    "refresh": "Actualizar volúmenes",
+    "export": "Respaldar",
+    "exportFailed": "No se pudo respaldar el volumen: {message}",
+    "exportSuccess": "Copia de seguridad del volumen '{name}' descargada",
+    "exporting": "Respaldando..."
   },
   "appOverview": {
     "back": "Atrás",
@@ -500,7 +533,19 @@
     "serviceActionFailed": "{failed} de {total} servicios no respondieron",
     "internalAddresses": "Direcciones internas",
     "internalAddressesHint": "Accesible desde otros contenedores de este stack.",
-    "serviceDetails": "Detalles"
+    "serviceDetails": "Detalles",
+    "backingUp": "Respaldando…",
+    "backupFailed": "No se pudo respaldar el volumen: {message}",
+    "backupSuccess": "Copia de seguridad del volumen '{name}' descargada",
+    "backupVolume": "Respaldar",
+    "definitionChanged": "La definición de la app cambió",
+    "definitionChangedHint": "La versión del catálogo de esta app cambió desde su despliegue. Actualizar solo refresca las imágenes: vuelve a desplegar desde la página de la app para aplicar la nueva definición.",
+    "removalStillRunning": "La eliminación del stack sigue en segundo plano…",
+    "updateStillRunning": "La actualización sigue en segundo plano…",
+    "access": "Acceso",
+    "workPort": "Puerto de trabajo",
+    "workPortHint": "Publicado solo para tráfico de protocolo: sin interfaz de usuario.",
+    "portsWithWorkCount": "{access} de {total} puertos son accesibles para el usuario"
   },
   "appCard": {
     "active": "Activo ({count})",
@@ -555,7 +600,9 @@
       "systemStability": "Estabilidad del sistema",
       "timeActive": "Tiempo activo",
       "acrossContainers": "En {count} contenedores",
-      "systemIdle": "Sistema inactivo"
+      "systemIdle": "Sistema inactivo",
+      "active": "Activo",
+      "apps": "Apps"
     },
     "expiringContainers": {
       "title": "Expiraciones",
@@ -722,11 +769,39 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "Eso no parece un token de túnel — pega el token completo de dash.cloudflare.com.",
-    "tunnelToken": "Token del túnel"
+    "tunnelToken": "Token del túnel",
+    "title": "Cloudflared"
   },
   "notFound": {
     "title": "Página no encontrada",
     "hint": "No hay nada en {path}.",
     "backToDashboard": "Volver al panel"
+  },
+  "appComments": {
+    "anonymous": "anónimo",
+    "connect": "Conectar firmante Nostr",
+    "connectHint": "Los comentarios se firman con tu propia clave Nostr mediante una extensión del navegador: tu clave nunca llega a Yantr.",
+    "connectedAs": "Firmando como {key}",
+    "developerBadge": "Desarrollador",
+    "developerBadgeHint": "Este comentario está firmado con una clave que esta aplicación acredita en su entrada del catálogo.",
+    "empty": "Aún no hay comentarios. Conecta tu firmante y deja el primero.",
+    "emptyComment": "Escribe algo primero.",
+    "expiryNote": "Los comentarios llevan una caducidad NIP-40 de cinco años y son públicos para cualquiera que lea estos relays.",
+    "loadFailed": "No se pudo alcanzar ningún relay, así que no hay comentarios que mostrar. Revisa tu red e inténtalo de nuevo.",
+    "loading": "Preguntando a los relays…",
+    "noSigner": "No se encontró ningún firmante Nostr. Instala una extensión NIP-07 como Alby o nos2x e inténtalo de nuevo.",
+    "placeholder": "¿Cómo te va esta app?",
+    "post": "Publicar comentario",
+    "posting": "Publicando…",
+    "postingAsDeveloper": "Escribes como desarrollador de esta app: tu comentario llevará la insignia.",
+    "publishFailed": "Ningún relay aceptó el comentario. Inténtalo en un momento.",
+    "published": "Publicado. Puede tardar un momento en aparecer en todos los relays.",
+    "refresh": "Actualizar",
+    "relayStatus": "{reached} de {total} relays respondieron",
+    "signCancelled": "Se canceló la firma en tu extensión.",
+    "signerError": "Tu firmante la rechazó. Vuelve a conectarlo e inténtalo de nuevo.",
+    "subtitle": "Notas de la comunidad firmadas en Nostr y etiquetadas con {tag}. Viven en relays públicos, no en este host.",
+    "title": "Reseñas y comentarios",
+    "tooLong": "Mantenlo por debajo de {max} caracteres."
   }
 }

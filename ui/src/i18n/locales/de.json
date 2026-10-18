@@ -104,7 +104,8 @@
       "openOverview": "Laufende App öffnen",
       "installed": "Installiert",
       "available": "Verfügbar",
-      "running": "Aktiv ({count})"
+      "running": "Aktiv ({count})",
+      "loadFailed": "Laden fehlgeschlagen"
     },
     "dailyDeveloper": {
       "title": "Entwickler des Tages",
@@ -126,6 +127,12 @@
       "title": "Neueste Bewertungen",
       "empty": "Noch keine Bewertungen. Öffne eine App im Katalog und hinterlasse die erste.",
       "byAuthor": "Das Nostr-Profil der Autorin oder des Autors ansehen"
+    },
+    "systemToolsCard": {
+      "management": "Verwaltung",
+      "systemOverview": "Systemübersicht",
+      "active": "Aktiv",
+      "live": "Live"
     }
   },
   "apps": {
@@ -215,7 +222,16 @@
     "removeVar": "Variable entfernen",
     "expiresAfter": "Läuft ab nach",
     "hostPortFor": "Host-Port für Container-Port {port} ({protocol})",
-    "developer": "Entwickler"
+    "developer": "Entwickler",
+    "deploymentStillRunning": "Deployment für {name} läuft noch im Hintergrund …",
+    "editInstance": "Instanz bearbeiten",
+    "envLoaded": "Gespeicherte Einstellungen aus {project} geladen",
+    "extraVarsEditHint": "Nur Katalog-Variablen sind vorbefüllt. Zusätzliche Variablen der aktuellen Installation werden nicht gespeichert — füge sie unten bei Bedarf erneut hinzu.",
+    "loadEnvFailed": "Gespeicherte Einstellungen konnten nicht geladen werden: {message}",
+    "newInstance": "Neue Instanz",
+    "targetInstance": "Ziel-Instanz",
+    "updateInstance": "Instanz aktualisieren",
+    "updatedSuccessfully": "{name} wurde erfolgreich aktualisiert!"
   },
   "developer": {
     "loading": "Entwickler wird geladen…",
@@ -320,7 +336,16 @@
       "deletedSuccessfully": "{name} erfolgreich gelöscht!",
       "volumeBrowserStarted": "Volume-Browser gestartet{expiry}"
     },
-    "cpuWarmingUp": "Erste Messung erfasst — die CPU-Auslastung erscheint beim nächsten Abruf"
+    "cpuWarmingUp": "Erste Messung erfasst — die CPU-Auslastung erscheint beim nächsten Abruf",
+    "copyShellCommand": "Befehl kopieren",
+    "detectingShell": "Verfügbare Shell wird erkannt …",
+    "noShell": "Keine unterstützte Shell in diesem Container gefunden.",
+    "shellAccess": "Container-Shell",
+    "shellCopied": "Shell-Befehl kopiert",
+    "shellCopyFailed": "Shell-Befehl konnte nicht kopiert werden",
+    "shellDetectionFailed": "Shell konnte nicht erkannt werden. Aktualisiere die Seite und versuche es erneut.",
+    "shellHint": "Führe diesen Befehl auf dem Host als der Benutzer aus, der Podman startet:",
+    "shellStopped": "Starte den Container, um eine Shell zu erkennen."
   },
   "volumes": {
     "title": "Volumes",
@@ -359,7 +384,11 @@
     "deleteAllUnused": "Alle {count} ungenutzten Volumes löschen?",
     "mb": "MB",
     "notAvailable": "N/V",
-    "refresh": "Volumes aktualisieren"
+    "refresh": "Volumes aktualisieren",
+    "export": "Sichern",
+    "exportFailed": "Volume konnte nicht gesichert werden: {message}",
+    "exportSuccess": "Backup des Volumes '{name}' heruntergeladen",
+    "exporting": "Sicherung läuft ..."
   },
   "appOverview": {
     "back": "Zurück",
@@ -506,7 +535,15 @@
     "serviceActionFailed": "{failed} von {total} Diensten haben nicht reagiert",
     "internalAddresses": "Interne Adressen",
     "internalAddressesHint": "Von anderen Containern in diesem Stack erreichbar.",
-    "serviceDetails": "Details"
+    "serviceDetails": "Details",
+    "backingUp": "Sicherung läuft …",
+    "backupFailed": "Volume konnte nicht gesichert werden: {message}",
+    "backupSuccess": "Backup des Volumes '{name}' heruntergeladen",
+    "backupVolume": "Sichern",
+    "definitionChanged": "App-Definition geändert",
+    "definitionChangedHint": "Die Katalogversion dieser App hat sich seit der Bereitstellung geändert. Ein Update lädt nur Images neu — für die neue Definition neu bereitstellen.",
+    "removalStillRunning": "Entfernen des Stacks läuft noch im Hintergrund …",
+    "updateStillRunning": "Update läuft noch im Hintergrund …"
   },
   "appCard": {
     "active": "Aktiv ({count})",
@@ -561,7 +598,9 @@
       "systemStability": "Systemstabilität",
       "timeActive": "Aktive Zeit",
       "acrossContainers": "Über {count} Container",
-      "systemIdle": "System inaktiv"
+      "systemIdle": "System inaktiv",
+      "active": "Aktiv",
+      "apps": "Apps"
     },
     "expiringContainers": {
       "title": "Ablaufdaten",
@@ -728,11 +767,39 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "Das sieht nicht wie ein Tunnel-Token aus — füge das vollständige Token von dash.cloudflare.com ein.",
-    "tunnelToken": "Tunnel-Token"
+    "tunnelToken": "Tunnel-Token",
+    "title": "Cloudflared"
   },
   "notFound": {
     "title": "Seite nicht gefunden",
     "hint": "Unter {path} gibt es nichts.",
     "backToDashboard": "Zurück zum Dashboard"
+  },
+  "appComments": {
+    "anonymous": "anonym",
+    "connect": "Nostr-Signierer verbinden",
+    "connectHint": "Kommentare werden mit deinem eigenen Nostr-Schlüssel über eine Browser-Erweiterung signiert — dein Schlüssel erreicht Yantr nie.",
+    "connectedAs": "Signiert als {key}",
+    "developerBadge": "Entwickler",
+    "developerBadgeHint": "Dieser Kommentar ist mit einem Schlüssel signiert, den diese App in ihrem Katalogeintrag nennt.",
+    "empty": "Noch keine Kommentare. Verbinde deinen Signierer und hinterlasse den ersten.",
+    "emptyComment": "Schreibe zuerst etwas.",
+    "expiryNote": "Kommentare tragen einen NIP-40-Ablauf von fünf Jahren und sind für jeden lesbar, der diese Relays abfragt.",
+    "loadFailed": "Kein Relay erreichbar, daher gibt es keine Kommentare zu zeigen. Prüfe dein Netzwerk und versuche es erneut.",
+    "loading": "Relays werden gefragt …",
+    "noSigner": "Kein Nostr-Signierer gefunden. Installiere eine NIP-07-Erweiterung wie Alby oder nos2x und versuche es erneut.",
+    "placeholder": "Wie läuft diese App bei dir?",
+    "post": "Kommentar senden",
+    "posting": "Wird gesendet …",
+    "postingAsDeveloper": "Du schreibst als Entwickler:in dieser App — dein Kommentar trägt das Abzeichen.",
+    "publishFailed": "Kein Relay hat den Kommentar angenommen. Versuche es gleich noch einmal.",
+    "published": "Veröffentlicht. Auf manchen Relays kann es einen Moment dauern.",
+    "refresh": "Aktualisieren",
+    "relayStatus": "{reached} von {total} Relays haben geantwortet",
+    "signCancelled": "Das Signieren wurde in deiner Erweiterung abgebrochen.",
+    "signerError": "Dein Signierer hat abgelehnt. Verbinde erneut und versuche es noch einmal.",
+    "subtitle": "Community-Notizen, auf Nostr signiert und mit {tag} markiert. Sie liegen auf öffentlichen Relays, nicht auf diesem Host.",
+    "title": "Bewertungen & Kommentare",
+    "tooLong": "Höchstens {max} Zeichen."
   }
 }

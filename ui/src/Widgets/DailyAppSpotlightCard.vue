@@ -67,7 +67,7 @@ async function fetchData() {
       fetch(`${apiUrl.value}/api/containers`),
     ]);
     const [appsData, containersData] = await Promise.all([
-      expectApiSuccess(appsRes, "Failed to load apps"),
+      expectApiSuccess(appsRes, "{{ t('home.dailyAppCard.loadFailed') }} apps"),
       expectApiSuccess(containersRes, "Failed to load containers"),
     ]);
 

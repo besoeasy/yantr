@@ -104,7 +104,8 @@
       "openOverview": "アプリを開く",
       "installed": "インストール済み",
       "available": "利用可能",
-      "running": "実行中 ({count})"
+      "running": "実行中 ({count})",
+      "loadFailed": "読み込みに失敗しました"
     },
     "dailyDeveloper": {
       "title": "今日の開発者",
@@ -126,6 +127,12 @@
       "title": "最新のレビュー",
       "empty": "まだレビューはありません。カタログのアプリを開いて、最初のレビューを残しましょう。",
       "byAuthor": "投稿者の Nostr プロフィールを見る"
+    },
+    "systemToolsCard": {
+      "management": "管理",
+      "systemOverview": "システム概要",
+      "active": "稼働中",
+      "live": "ライブ"
     }
   },
   "apps": {
@@ -214,7 +221,17 @@
     "removeVar": "変数を削除",
     "expiresAfter": "有効期限",
     "hostPortFor": "コンテナポート {port} ({protocol}) のホストポート",
-    "developer": "開発者"
+    "developer": "開発者",
+    "deploymentStillRunning": "{name} のデプロイはバックグラウンドで実行中です…",
+    "editInstance": "インスタンスを編集",
+    "envLoaded": "{project} の保存済み設定を読み込みました",
+    "extraVarsEditHint": "カタログの変数のみがプリフィルされます。現在のインストールにある追加変数は保存されないため、必要なら下で再加してください。",
+    "loadEnvFailed": "保存済み設定を読み込めませんでした: {message}",
+    "newInstance": "新しいインスタンス",
+    "targetInstance": "対象のインスタンス",
+    "updateInstance": "インスタンスを更新",
+    "updatedSuccessfully": "{name} を更新しました！",
+    "workPortsHidden": "プロトコル通信専用に {count} 個のワークポートを公開しています。"
   },
   "developer": {
     "loading": "開発者を読み込み中…",
@@ -317,7 +334,19 @@
       "deletedSuccessfully": "{name}を正常に削除しました！",
       "volumeBrowserStarted": "ボリュームブラウザを起動しました{expiry}"
     },
-    "cpuWarmingUp": "初回サンプル取得済み — CPU使用率は次のポーリングで表示されます"
+    "cpuWarmingUp": "初回サンプル取得済み — CPU使用率は次のポーリングで表示されます",
+    "copyShellCommand": "コマンドをコピー",
+    "detectingShell": "利用可能なシェルを検出中…",
+    "noShell": "このコンテナに対応しているシェルが見つかりませんでした。",
+    "shellAccess": "コンテナシェル",
+    "shellCopied": "シェルコマンドをコピーしました",
+    "shellCopyFailed": "シェルコマンドをコピーできませんでした",
+    "shellDetectionFailed": "シェルを検出できませんでした。ページを再読み込みして再試行してください。",
+    "shellHint": "Podman を実行するユーザーとして、ホストで次のコマンドを実行してください:",
+    "shellStopped": "シェルを検出するにはコンテナを起動してください。",
+    "access": "アクセス",
+    "workPort": "ワークポート",
+    "workPortHint": "プロトコル通信専用に公開されています。ユーザー向け画面はありません。"
   },
   "volumes": {
     "title": "ボリューム",
@@ -356,7 +385,11 @@
     "deleteAllUnused": "{count}件の未使用ボリュームをすべて削除しますか？",
     "mb": "MB",
     "notAvailable": "N/A",
-    "refresh": "ボリュームを更新"
+    "refresh": "ボリュームを更新",
+    "export": "バックアップ",
+    "exportFailed": "ボリュームのバックアップに失敗しました: {message}",
+    "exportSuccess": "ボリューム '{name}' のバックアップをダウンロードしました",
+    "exporting": "バックアップ中…"
   },
   "appOverview": {
     "back": "戻る",
@@ -500,7 +533,19 @@
     "serviceActionFailed": "{total} 個中 {failed} 個のサービスが応答しませんでした",
     "internalAddresses": "内部アドレス",
     "internalAddressesHint": "このスタックの他のコンテナからアクセス可能です。",
-    "serviceDetails": "詳細"
+    "serviceDetails": "詳細",
+    "backingUp": "バックアップ中…",
+    "backupFailed": "ボリュームのバックアップに失敗しました: {message}",
+    "backupSuccess": "ボリューム '{name}' のバックアップをダウンロードしました",
+    "backupVolume": "バックアップ",
+    "definitionChanged": "アプリの定義が変更されました",
+    "definitionChangedHint": "このアプリのカタログ版がデプロイ後から変わっています。更新ではイメージの再取得のみが行われます。新しい定義を適用するにはアプリページから再デプロイしてください。",
+    "removalStillRunning": "スタックの削除はバックグラウンドで実行中です…",
+    "updateStillRunning": "更新はバックグラウンドで実行中です…",
+    "access": "アクセス",
+    "workPort": "ワークポート",
+    "workPortHint": "プロトコル通信専用に公開されています。ユーザー向け画面はありません。",
+    "portsWithWorkCount": "{total} 個中 {access} 個のポートがユーザー向けです"
   },
   "appCard": {
     "active": "アクティブ ({count})",
@@ -555,7 +600,9 @@
       "systemStability": "システム安定性",
       "timeActive": "アクティブ時間",
       "acrossContainers": "{count}個のコンテナにわたって",
-      "systemIdle": "システムアイドル"
+      "systemIdle": "システムアイドル",
+      "active": "稼働中",
+      "apps": "アプリ"
     },
     "expiringContainers": {
       "title": "有効期限",
@@ -722,11 +769,39 @@
     "status": "Status",
     "version": "Version",
     "invalidToken": "トンネルトークンではありません — dash.cloudflare.com のトークン全体を貼り付けてください。",
-    "tunnelToken": "トンネルトークン"
+    "tunnelToken": "トンネルトークン",
+    "title": "Cloudflared"
   },
   "notFound": {
     "title": "ページが見つかりません",
     "hint": "{path} に何もありません。",
     "backToDashboard": "ダッシュボードに戻る"
+  },
+  "appComments": {
+    "anonymous": "匿名",
+    "connect": "Nostr 署名機能につなぐ",
+    "connectHint": "コメントはブラウザの署名拡張機能と自分の Nostr 鍵で署名されます。鍵が Yantr に渡ることはありません。",
+    "connectedAs": "{key} として署名",
+    "developerBadge": "開発者",
+    "developerBadgeHint": "このコメントは、このアプリのカタログ項目で開発者として紹介されている鍵で署名されています。",
+    "empty": "まだコメントはありません。署名機能をつないで最初の 1 件を残しましょう。",
+    "emptyComment": "先に本文を入力してください。",
+    "expiryNote": "コメントには NIP-40 の 5 年の有効期限が付きます。これらのリレーを読む人には公開されます。",
+    "loadFailed": "リレーに接続できないため、コメントを表示できません。ネットワークを確認して再試行してください。",
+    "loading": "リレーに問い合わせ中…",
+    "noSigner": "Nostr の署名機能が見つかりません。Alby や nos2x などの NIP-07 拡張機能をインストールして再試行してください。",
+    "placeholder": "このアプリはどうでしょうか？",
+    "post": "コメントを投稿",
+    "posting": "投稿中…",
+    "postingAsDeveloper": "このアプリの開発者として投稿しています。コメントにバッジが付きます。",
+    "publishFailed": "リレーがコメントを受け付けませんでした。しばらくしてから再試行してください。",
+    "published": "投稿しました。リレーすべてに届くまで少し時間がかかることがあります。",
+    "refresh": "更新",
+    "relayStatus": "{total} 中 {reached} 個のリレーが応答しました",
+    "signCancelled": "拡張機能側で署名がキャンセルされました。",
+    "signerError": "署名機能が拒否しました。再接続して再試行してください。",
+    "subtitle": "Nostr で署名され、{tag} タグが付いたコミュニティのメモです。公開リレー上にあり、このホストには保存されません。",
+    "title": "レビューとコメント",
+    "tooLong": "{max} 文字以内にしてください。"
   }
 }

@@ -100,10 +100,10 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
             <Zap class="h-3.5 w-3.5" />
-            <span class="text-[9px] font-semibold uppercase tracking-widest">Active</span>
+            <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.averageUptime.active') }}</span>
           </div>
           <div class="text-2xl font-black leading-none tracking-tight text-zinc-900 tabular-nums dark:text-white">
-             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Apps</span>
+             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{{ t('quickMetrics.averageUptime.apps') }}</span>
           </div>
         </div>
         
