@@ -74,6 +74,34 @@ jobs:
             exit 1
           fi
 
+      - name: Check every surface follows the theme
+        run: |
+          set -euo pipefail
+          # AuthGate was the failure this catches: 51 hard-coded utilities and
+          # not one dark: variant, so a dark install opened on a white panel.
+          # A file that names a surface colour and never says what it is in
+          # dark mode is the same bug waiting to happen; the app's own
+          # vocabulary (yantra-*, --* tokens) carries both modes by itself.
+          # A file counts as theme-aware if it says what the surface is in dark
+          # mode OR spells the colour as a token that already carries both. A
+          # per-file any-match, not per-element: half a file can still be wrong,
+          # but that is what review is for and this is the cheap backstop for
+          # the whole file being light-only, which is what AuthGate was.
+          # git ls-files paths are repo-relative, and this job's default
+          # working-directory is ui/ — so ask for src/... here or the loop
+          # iterates over nothing and passes for the wrong reason.
+          offenders=""
+          for f in $(git ls-files 'src/**/*.vue'); do
+            if grep -qE "bg-(white|slate-[0-9]|gray-[0-9])" "$f" \
+               && ! grep -qE "dark:bg-" "$f"; then
+              offenders="$offenders $f"
+            fi
+          done
+          if [ -n "$offenders" ]; then
+            echo "::error::these files name a light surface with no dark counterpart:$offenders"
+            exit 1
+          fi
+
       - name: Check the dark background is named, not pinned
         run: |
           set -euo pipefail

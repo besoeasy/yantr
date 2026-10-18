@@ -74,6 +74,15 @@
     --cta-bg: var(--color-sky-500);
     --cta-bg-hover: var(--color-sky-400);
     --cta-text: var(--color-zinc-900);
+
+    /* The sign-in canvas. Channels, not colours: AuthGate's particle field is
+       drawn in script and needs rgba(), and a var() that resolves to oklch()
+       cannot be given an alpha in code. Two accents so the field is not one
+       flat hue — the second is the violet the sign-in card already used. */
+    --canvas-particle: 2 132 199;   /* sky-600, the light accent */
+    --canvas-particle-2: 124 58 237; /* violet-600 */
+    --canvas-thread: 2 132 199;     /* the filaments drawn to the cursor */
+    --canvas-page: #ffffff;         /* == --bg-body in light */
 }
 
 /* The page's own canvas — a card's --card-bg against it, not a second card
@@ -83,6 +92,10 @@
    hex to mean "the dark background" any more. */
 :root.dark {
     --page-bg: #0a0a0a;
+    --canvas-particle: 56 189 248;   /* sky-400, the dark accent */
+    --canvas-particle-2: 167 139 250; /* violet-400 */
+    --canvas-thread: 56 189 248;
+    --canvas-page: #0b1220;          /* == --bg-body in dark */
     /* The shell chrome — sidebar, mobile header — sits under a backdrop blur,
        so it wants its own near-black rather than the page's. */
     --chrome-bg: #09090b;
@@ -225,8 +238,123 @@ body {
     color: var(--ok-text);
 }
 
+.yantra-text-warn {
+    color: #b45309;
+}
+
+:root.dark .yantra-text-warn {
+    color: var(--color-amber-400);
+}
+
 .yantra-text-danger {
     color: var(--danger-text);
+}
+
+/* ── The sign-in surface's vocabulary ─────────────────────────────────────────
+   AuthGate was the last screen outside this language: 51 hand-written
+   slate/indigo utilities and zero dark: variants, so a dark install opened on
+   a bright white panel with an indigo gradient. These are the pieces the gate
+   needs, expressed in the tokens the rest of the app already uses. They live
+   here rather than in the SFC because they are a vocabulary, not a layout:
+   the same "a primary action" and "a quiet input" recur on every screen. */
+
+.yantra-cta {
+    background-color: var(--cta-bg);
+    color: var(--cta-text);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+.yantra-cta:hover {
+    background-color: var(--cta-bg-hover);
+}
+
+.yantra-btn--lg {
+    min-height: 3rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.025em;
+    text-transform: none;
+}
+.yantra-btn--lg:hover {
+    background-color: var(--surface-muted);
+}
+
+.yantra-btn-icon {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-secondary);
+}
+.yantra-btn-icon:hover {
+    background-color: var(--surface-muted);
+    color: var(--text-primary);
+}
+
+/* An input that reads as one field in both themes. The gate's fields were
+   slate-50/white pairs — a pair that only exists in light mode. */
+.yantra-input {
+    width: 100%;
+    background-color: var(--surface-muted);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    padding: 0.875rem 2.75rem 0.875rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition:
+        border-color var(--yantra-dur-fast) var(--yantra-ease),
+        background-color var(--yantra-dur-fast) var(--yantra-ease),
+        box-shadow var(--yantra-dur-fast) var(--yantra-ease);
+}
+.yantra-input::placeholder {
+    color: var(--text-secondary);
+}
+.yantra-input:hover {
+    background-color: color-mix(in srgb, var(--surface-muted) 80%, var(--text-primary));
+}
+.yantra-input:focus {
+    outline: none;
+    background-color: var(--card-bg);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.yantra-surface-muted {
+    background-color: var(--surface-muted);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+}
+
+/* A Nostr public key is code, and code sits on a dark well in every editor
+   ever shipped — in both themes here, which is why this is a class and not a
+   dark: variant. The accent is the text; the selection is its soft tone. */
+.yantra-keywell {
+    background-color: #0b1220;
+    border: 1px solid var(--card-border);
+    color: var(--accent);
+}
+.yantra-keywell::selection {
+    background-color: var(--accent-soft);
+}
+
+/* An inline code span inside prose — a flag, a command, a key. A surface like
+   any other, so it themes like any other. */
+.yantra-inline-code {
+    background-color: var(--card-inset);
+    border: 1px solid var(--card-border);
+    color: var(--text-primary);
+}
+
+/* The gate's card lifts out of the particle field on hover, like every other
+   surface in the app — it is the one interactive object on the screen. */
+.authgate-card {
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.04);
+    transition:
+        border-color var(--yantra-dur) var(--yantra-ease),
+        box-shadow var(--yantra-dur) var(--yantra-ease),
+        transform var(--yantra-dur) var(--yantra-ease);
+}
+.authgate-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: var(--yantra-lift);
 }
 
 /* ── The page idiom ──────────────────────────────────────────────────────────
