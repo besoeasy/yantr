@@ -221,7 +221,7 @@ watch(
 
   <section
     v-else-if="candidates.length"
-    class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
       <MessageSquareQuote :size="13" class="yantra-text-secondary" />
@@ -285,7 +285,7 @@ watch(
   <!-- Empty: relays answered, the catalog just has no comments yet -->
   <section
     v-else-if="emptyKnown"
-    class="flex h-full w-full flex-col overflow-hidden rounded-2xl border-dashed p-7 text-left dark:border-zinc-800"
+    class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden border-dashed p-7 text-left"
   >
     <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
       <MessageSquareQuote :size="13" />

@@ -62,7 +62,7 @@ function getExpirationInfo(browser) {
       v-for="(browser, index) in containers"
       :key="browser.volumeName"
       :style="{ animationDelay: `${index * 50}ms` }"
-      class="group relative flex h-full w-full min-h-72 flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] anim-enter dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+      class="yantra-card group relative flex h-full w-full min-h-72 flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] anim-enter dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
     >
       <div class="relative z-10 flex h-full flex-col gap-4">
         <!-- header -->

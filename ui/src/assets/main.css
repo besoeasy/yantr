@@ -34,6 +34,12 @@
        The values below are the ones the cards already rendered, routed through
        the palette vars, so nothing shifts while the widgets migrate. */
     --card-bg: var(--color-white);
+    /* Cards are panels, not tiles. At 16px the corner arc was a tenth of a
+       304px card's width, and a 1px hairline under that much curve reads soft
+       in a grid that is otherwise rectilinear. Six pixels still says
+       "container" — chips, avatars and icon tiles stay rounder than the card
+       that holds them — without the row of floating-tile silhouettes. */
+    --card-radius: 0.375rem;
     --card-border: var(--color-zinc-200);
     --card-border-strong: var(--color-zinc-300);
     --card-inset: var(--color-zinc-50);
@@ -138,6 +144,9 @@ body {
 .yantra-card {
     background-color: var(--card-bg);
     border: 1px solid var(--card-border);
+    /* Declared here, not as rounded-2xl on sixteen roots: a radius that only
+       exists as a utility class is one edit away from sixteen. */
+    border-radius: var(--card-radius);
     transition:
         border-color var(--yantra-dur) var(--yantra-ease),
         box-shadow var(--yantra-dur) var(--yantra-ease),

@@ -36,29 +36,58 @@ function readCols(source) {
   return match ? Number(match[1]) : null;
 }
 
-// The card's surface — background, hairline border, hover lift — comes from
-// the .yantra-card token, not from a widget restating zinc steps. Ten roots
-// once lost it: a migration stripped `border-zinc-200 bg-white dark:bg-black`
-// from the root without adding the token back, and those cards rendered
-// transparent with no border, which the dark-mode screenshots did not catch.
-// A widget with no token is a widget with no surface.
+// The card's surface — background, hairline border, corner radius, hover lift
+// — comes from the .yantra-card token, not from a widget restating zinc steps
+// or its own `rounded-2xl`. Eleven roots once lost it: a migration stripped
+// `border-zinc-200 bg-white dark:bg-black rounded-2xl` without adding the
+// token back, and those cards rendered transparent, unbordered and
+// square-cornered, which the dark-mode screenshots did not catch.
 //
-// Note `yantra-card` is a whole token, not a prefix: "yantra-card" is a
-// substring of "yantra-card-min", so matching on text alone passes a root
-// that has only the height. Tokens are compared as tokens here for that
-// reason.
-function rootClasses(source) {
-  const template = source.indexOf("<template>");
-  const root = source.slice(template).match(/<(?:section|div)[^>]*?class="([^"]*)"/);
-  return root ? root[1].split(/\s+/) : [];
+// Every ROOT is checked, not just the first. A widget that renders an error
+// or an empty state as a sibling <section> is still a card on the dashboard,
+// and two of those had lost the surface while their sibling kept it.
+//
+// Roots are compared as tokens, never as substrings: "yantra-card" is a
+// substring of "yantra-card-min", so text matching passes a root that has
+// only the height.
+function rootClassLists(source) {
+  const template = source.slice(source.indexOf("<template>"));
+  const tag = /<(\/?)([a-z][a-z0-9]*)((?:"[^"]*"|[^>"])*?)(\/?)>/g;
+  const skip = new Set(["template", "style", "script"]);
+  const lists = [];
+  let depth = 0;
+  let match;
+  while ((match = tag.exec(template)) !== null) {
+    const [, closing, name, attrs, selfClose] = match;
+    if (skip.has(name)) continue;
+    if (closing) {
+      depth -= 1;
+      continue;
+    }
+    if (depth === 0) {
+      const cls = attrs.match(/class="([^"]*)"/);
+      lists.push(cls ? cls[1].split(/\s+/) : []);
+    }
+    if (!selfClose) depth += 1;
+  }
+  return lists;
 }
 
 const widgets = readdirSync(widgetsDir)
   .filter((name) => name.endsWith(".vue"))
   .map((name) => {
     const source = readSource(name);
-    return { name, cols: readCols(source), classes: rootClasses(source) };
+    return { name, cols: readCols(source), roots: rootClassLists(source) };
   });
+
+/** Widget names whose roots are all missing `token`. */
+function missing(token) {
+  const names = [];
+  for (const widget of widgets) {
+    if (widget.roots.some((classes) => !classes.includes(token))) names.push(widget.name);
+  }
+  return [...new Set(names)];
+}
 
 describe("dashboard widgets", () => {
   it("declares a width for every widget", () => {
@@ -71,13 +100,23 @@ describe("dashboard widgets", () => {
     expect(wide, `widgets wider than ${MAX_COLS} columns — see AGENTS.md §8`).toEqual([]);
   });
 
-  it("draws its surface from the card token", () => {
-    const bare = widgets.filter((w) => !w.classes.includes("yantra-card")).map((w) => w.name);
-    expect(bare, "widget roots without `yantra-card` — no background, no border").toEqual([]);
+  it("draws every root from the card token", () => {
+    expect(missing("yantra-card"), "roots without `yantra-card` — no background, no border").toEqual([]);
   });
 
-  it("keeps the shared minimum height", () => {
-    const short = widgets.filter((w) => !w.classes.includes("yantra-card-min")).map((w) => w.name);
-    expect(short, "widget roots without `yantra-card-min` — ragged grid rows").toEqual([]);
+  it("keeps the shared minimum height on every root", () => {
+    expect(missing("yantra-card-min"), "roots without `yantra-card-min` — ragged grid rows").toEqual([]);
+  });
+
+  // --card-radius is the token now. A root that also carries a `rounded-*`
+  // utility wins by source order, so the two would disagree silently.
+  it("leaves the corner radius to the token", () => {
+    const loud = [];
+    for (const widget of widgets) {
+      if (widget.roots.some((classes) => classes.some((c) => c.startsWith("rounded-")))) {
+        loud.push(widget.name);
+      }
+    }
+    expect(loud, "roots setting their own radius instead of --card-radius").toEqual([]);
   });
 });

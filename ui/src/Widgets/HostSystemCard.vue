@@ -87,7 +87,7 @@ const factRows = computed(() => [
 
 <template>
   <section
-    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- The one hairline accent: the online dot is the card's only colour. -->
     <div

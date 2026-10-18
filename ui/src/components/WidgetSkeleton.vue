@@ -21,7 +21,7 @@
 
 <template>
   <div
-    class="yantra-card yantra-card-min flex w-full flex-col overflow-hidden rounded-2xl p-7"
+    class="yantra-card yantra-card-min flex w-full flex-col overflow-hidden p-7"
     aria-hidden="true"
   >
     <div class="flex items-center gap-4">

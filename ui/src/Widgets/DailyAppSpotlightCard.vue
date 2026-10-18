@@ -95,7 +95,7 @@ function handleSelect(appId) {
 
   <section
     v-else-if="dailyApp"
-    class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- Header: what this card is, and whether today's app is already
          running on this host. -->
@@ -168,7 +168,7 @@ function handleSelect(appId) {
   <!-- Error State -->
   <div
     v-else-if="loadFailed"
-    class="flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl border-red-200 p-7 text-left dark:border-red-900/50"
+    class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden border-red-200 p-7 text-left dark:border-red-900/50"
   >
     <div class="flex items-center gap-3">
       <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-900/10">
