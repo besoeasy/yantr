@@ -89,9 +89,9 @@ const urgencyLabel = computed(() => {
                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
                  <span class="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
                </div>
-               <div v-else class="h-2 w-2 rounded-full bg-amber-500"></div>
+               <div v-else class="h-2 w-2 rounded-full" :class="stats.count === 0 ? 'bg-zinc-300 dark:bg-zinc-700' : 'bg-amber-500'"></div>
                <span class="text-[10px] font-semibold uppercase tracking-widest"
-                     :class="isCritical ? 'text-red-600 dark:text-red-500' : 'text-amber-600 dark:text-amber-500'">
+                     :class="isCritical ? 'text-red-600 dark:text-red-500' : stats.count === 0 ? 'yantra-text-secondary' : 'text-amber-600 dark:text-amber-500'">
                  {{ urgencyLabel }}
                </span>
             </div>
@@ -107,7 +107,7 @@ const urgencyLabel = computed(() => {
 
     <!-- Main Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      
+      <template v-if="stats.count > 0">
       <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
         {{ stats.next?.isExpired ? t('quickMetrics.expiringContainers.expiredFor') : t('quickMetrics.expiringContainers.expiresIn') }}
       </div>
@@ -141,6 +141,19 @@ const urgencyLabel = computed(() => {
          <div v-if="stats.count > 3" class="mt-3 text-right text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary">
            {{ t('quickMetrics.expiringContainers.more', { count: stats.count - 3 }) }}
          </div>
+      </div>
+      </template>
+
+      <!-- Nothing is expiring. This used to print an empty countdown and an
+           empty list under a zero — three elements all saying "there is
+           nothing here", none of them saying it. -->
+      <div v-else>
+        <p class="text-sm font-semibold yantra-text-primary">
+          {{ t('quickMetrics.expiringContainers.empty') }}
+        </p>
+        <p class="mt-2 text-[11px] leading-relaxed yantra-text-secondary">
+          {{ t('quickMetrics.expiringContainers.emptyHint') }}
+        </p>
       </div>
 
     </div>

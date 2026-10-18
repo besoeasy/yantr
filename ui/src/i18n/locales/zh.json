@@ -614,7 +614,9 @@
       "expiredFor": "已过期",
       "expiresIn": "剩余",
       "next": "下一个：",
-      "more": "还有 {count} 个"
+      "more": "还有 {count} 个",
+      "empty": "没有临时应用",
+      "emptyHint": "这里运行的东西都没有到期时间。设了期限的堆栈会带着剩余时间出现在这张卡片上。"
     },
     "biggestUnused": {
       "title": "回收空间",

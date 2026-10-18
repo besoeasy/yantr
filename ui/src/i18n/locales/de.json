@@ -612,7 +612,9 @@
       "expiredFor": "Abgelaufen seit",
       "expiresIn": "Läuft ab in",
       "next": "Nächster:",
-      "more": "+{count} mehr"
+      "more": "+{count} mehr",
+      "empty": "Keine temporären Apps",
+      "emptyHint": "Nichts hier läuft mit Ablaufdatum ab. Ein Stack mit Ablauf erscheint auf dieser Karte mit der verbleibenden Zeit."
     },
     "biggestUnused": {
       "title": "Speicher freigeben",

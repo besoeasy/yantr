@@ -614,7 +614,9 @@
       "expiredFor": "Expiré depuis",
       "expiresIn": "Expire dans",
       "next": "Suivant :",
-      "more": "+{count} de plus"
+      "more": "+{count} de plus",
+      "empty": "Aucune app temporaire",
+      "emptyHint": "Rien de ce qui tourne ici n'arrive à expiration. Une stack avec expiration apparaît sur cette carte avec le temps qu'il reste."
     },
     "biggestUnused": {
       "title": "Récupérer de l'espace",

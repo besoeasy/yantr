@@ -614,7 +614,9 @@
       "expiredFor": "期限切れから",
       "expiresIn": "有効期限まで",
       "next": "次:",
-      "more": "あと{count}件"
+      "more": "あと{count}件",
+      "empty": "一時的なアプリはありません",
+      "emptyHint": "ここで動いているものに期限はありません。期限を持つスタックは残り時間を添えてこのカードに現れます。"
     },
     "biggestUnused": {
       "title": "容量を回収",

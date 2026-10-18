@@ -639,7 +639,9 @@
       "expiredFor": "Expired For",
       "expiresIn": "Expires In",
       "next": "Next:",
-      "more": "+{count} more"
+      "more": "+{count} more",
+      "empty": "No temporary apps",
+      "emptyHint": "Nothing running here is set to expire. A stack with an expiry shows up on this card with the time it has left."
     },
     "biggestUnused": {
       "title": "Reclaim Space",

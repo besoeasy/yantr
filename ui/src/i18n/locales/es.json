@@ -614,7 +614,9 @@
       "expiredFor": "Expirado hace",
       "expiresIn": "Expira en",
       "next": "Siguiente:",
-      "more": "+{count} más"
+      "more": "+{count} más",
+      "empty": "Sin apps temporales",
+      "emptyHint": "Nada de lo que se ejecuta aquí tiene fecha de caducidad. Un stack con caducidad aparece en esta tarjeta con el tiempo que le queda."
     },
     "biggestUnused": {
       "title": "Recuperar espacio",
