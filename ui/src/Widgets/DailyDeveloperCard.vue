@@ -103,7 +103,7 @@ watch(pickedKey, (next) => {
 
   <section
     v-else-if="pickedKey"
-    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="yantra-card yantra-card-min group relative flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- One hairline accent, top edge. The card's colour budget is this line
          and nothing else: the identity and payment data should not have to

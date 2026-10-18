@@ -31,7 +31,7 @@ const txText = computed(() => netText.value?.split("·")[1]?.trim() || "—");
 </script>
 
 <template>
-  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <!-- Header -->
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-4">
