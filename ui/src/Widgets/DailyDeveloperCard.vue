@@ -232,29 +232,20 @@ watch(pickedKey, (next) => {
           </p>
         </template>
 
-        <!-- Show in both states: following needs no payment address -->
-        <div class="mt-3 flex flex-col gap-2">
-          <a
-            v-if="profileUrl"
-            :href="profileUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
-          >
-            {{ t("home.dailyDeveloper.follow") }}
-            <ArrowUpRight :size="13" />
-          </a>
-          <a
-            v-if="profileUrl"
-            :href="profileUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
-          >
-            {{ t("home.dailyDeveloper.thanks") }}
-            <ArrowUpRight :size="13" />
-          </a>
-        </div>
+        <!-- One link, and it says what it does. This used to be two pills —
+             "Follow on Nostr" and "Send a thank-you" — with the same href
+             behind both, which spent 36px of the card's height saying the
+             same thing twice. -->
+        <a
+          v-if="profileUrl"
+          :href="profileUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-zinc-200 px-3.5 py-2 text-[11px] font-semibold yantra-text-secondary transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+        >
+          {{ t("home.dailyDeveloper.follow") }}
+          <ArrowUpRight :size="13" />
+        </a>
       </div>
     </div>
   </section>

@@ -120,8 +120,7 @@
       "copy": "アドレスをコピー",
       "copied": "コピーしました",
       "noAddress": "Lightning アドレスが未公開です。代わりに Nostr でフォローするか、お礼のメッセージを送りましょう。",
-      "follow": "Nostr でフォロー",
-      "thanks": "お礼を送る"
+      "follow": "Nostr でフォロー"
     },
     "latestReview": {
       "title": "最新のレビュー",

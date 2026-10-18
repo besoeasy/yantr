@@ -95,8 +95,7 @@
       "copy": "Copy address",
       "copied": "Copied",
       "noAddress": "No Lightning address published — follow the account and send a thank-you on Nostr instead.",
-      "follow": "Follow on Nostr",
-      "thanks": "Send a thank-you"
+      "follow": "Follow on Nostr"
     },
     "latestReview": {
       "title": "Latest reviews",

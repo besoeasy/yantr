@@ -120,8 +120,7 @@
       "copy": "Adresse kopieren",
       "copied": "Kopiert",
       "noAddress": "Keine Lightning-Adresse veröffentlicht — folge dem Konto und schicke stattdessen einen Dank auf Nostr.",
-      "follow": "Auf Nostr folgen",
-      "thanks": "Danke senden"
+      "follow": "Auf Nostr folgen"
     },
     "latestReview": {
       "title": "Neueste Bewertungen",

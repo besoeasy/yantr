@@ -120,8 +120,7 @@
       "copy": "复制地址",
       "copied": "已复制",
       "noAddress": "未公开 Lightning 地址——不妨在 Nostr 上关注该账号，并送上一句感谢。",
-      "follow": "在 Nostr 上关注",
-      "thanks": "发送感谢"
+      "follow": "在 Nostr 上关注"
     },
     "latestReview": {
       "title": "最新评价",
