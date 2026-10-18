@@ -81,6 +81,19 @@
       "available": "Available",
       "running": "Active ({count})"
     },
+    "dailyDeveloper": {
+      "title": "Developer of the day",
+      "pitch": "Open-source apps are built by people like you. Every day Yantr features one developer and the apps they built for this catalog.",
+      "appsCount": "Apps in Yantr",
+      "appsMore": "+{count} more",
+      "zap": "Like the apps, or just feel the vibe? A zap keeps open source alive.",
+      "qrLabel": "Lightning payment QR code for {name}",
+      "copy": "Copy zap address",
+      "copied": "Copied",
+      "noAddress": "No Lightning address published — follow the account and send a thank-you on Nostr instead.",
+      "follow": "Follow on Nostr",
+      "thanks": "Send a thank-you"
+    },
     "toolsNavCard": {
       "systemTools": "System Tools",
       "managementLogs": "Management & Logs",

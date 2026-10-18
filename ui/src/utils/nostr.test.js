@@ -4,6 +4,7 @@ import {
   COMMENT_EXPIRY_SECONDS,
   appCommentTag,
   authorCommentFilter,
+  bech32Encode,
   buildCommentTags,
   commentAppIds,
   commentExpiryTimestamp,
@@ -13,6 +14,7 @@ import {
   isAppComment,
   isAuthorYantrComment,
   isAuthentic,
+  lnurlEncode,
   newestKind0Profiles,
   npubToHex,
   parseKind0Profile,
@@ -41,6 +43,43 @@ function commentEvent(overrides = {}) {
     ...overrides,
   };
 }
+
+// ─── bech32 / LNURL ────────────────────────────────────────────────────────
+
+// Fixtures computed with an independent BIP-173 implementation; the same
+// reference that verifies JACK_NPUB below (its npub round-trip is asserted
+// first, so the LNURL vectors are only as good as a checked encoder).
+const LNURL_FIXTURES = [
+  ["user@example.com", "lnurl1dp68gurn8ghj7etcv9khqmr99e3k7mf09emk2mrv944kummhdchkcmn4wfk8qtm4wdjhydu9pn6"],
+  ["jack@cash.app", "lnurl1dp68gurn8ghj7cmpwd5zuctswqhjuam9d3kz66mwdamkutmvde6hymrs9a4xzcmtv8vsm3"],
+  ["portuguese@example.com", "lnurl1dp68gurn8ghj7etcv9khqmr99e3k7mf09emk2mrv944kummhdchkcmn4wfk8qtmsdae8gat8w4jhxegamp8hq"],
+];
+
+describe("bech32Encode", () => {
+  it("agrees with hexToNpub on the externally-verified npub vector", () => {
+    const bytes = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) bytes[i] = parseInt(JACK_HEX.slice(i * 2, i * 2 + 2), 16);
+    expect(bech32Encode("npub", bytes)).toBe(JACK_NPUB);
+  });
+});
+
+describe("lnurlEncode", () => {
+  it("matches fixtures computed independently of this code", () => {
+    for (const [lud, expected] of LNURL_FIXTURES) {
+      expect(lnurlEncode(lud)).toBe(expected);
+      expect(lnurlEncode(lud.toUpperCase())).toBe(expected);
+    }
+  });
+
+  it("rejects anything a wallet lookup could be abused with, returning no QR payload", () => {
+    expect(lnurlEncode("")).toBe("");
+    expect(lnurlEncode("not-an-address")).toBe("");
+    expect(lnurlEncode("user@")).toBe("");
+    // No query syntax, no slashes, no whitespace smuggling into the URL.
+    expect(lnurlEncode("a@b.com/?x")).toBe("");
+    expect(lnurlEncode("a@b.co m")).toBe("");
+  });
+});
 
 describe("appCommentTag", () => {
   it("scopes one catalog id under the yantr namespace", () => {

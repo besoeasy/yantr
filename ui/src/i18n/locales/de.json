@@ -105,6 +105,19 @@
       "installed": "Installiert",
       "available": "Verfügbar",
       "running": "Aktiv ({count})"
+    },
+    "dailyDeveloper": {
+      "title": "Entwickler des Tages",
+      "pitch": "Open-Source-Apps werden von Leuten wie dir gebaut. Jeden Tag stellt Yantr einen Entwickler und die Apps vor, die er für diesen Katalog gebaut hat.",
+      "appsCount": "Apps in Yantr",
+      "appsMore": "+{count} weitere",
+      "zap": "Magst du die Apps — oder einfach die Vibe? Ein Zap hält Open Source am Leben.",
+      "qrLabel": "Lightning-Zahlungs-QR-Code für {name}",
+      "copy": "Zap-Adresse kopieren",
+      "copied": "Kopiert",
+      "noAddress": "Keine Lightning-Adresse veröffentlicht — folge dem Konto und schicke stattdessen einen Dank auf Nostr.",
+      "follow": "Auf Nostr folgen",
+      "thanks": "Danke senden"
     }
   },
   "apps": {

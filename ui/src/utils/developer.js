@@ -92,6 +92,74 @@ export function developerRouteRef(key) {
   return String(key ?? "").trim();
 }
 
+// developerKeysFromApps walks a catalog list and returns every distinct credited
+// Nostr key, sorted. Sorted because the daily pick (below) rotates by index, and
+// a pick that depends on the fetch order would change identity whenever the
+// catalog's app order changed rather than only when the developer set does.
+// Keys are deduplicated on the decoded spelling — the same convention the
+// backend catalog uses — but kept lowercase, which the route and every
+// relay-facing comparison also treat as canonical.
+export function developerKeysFromApps(apps) {
+  const seen = new Set();
+  for (const app of Array.isArray(apps) ? apps : []) {
+    for (const d of developersOf(app)) {
+      const key = String(d.key ?? "").trim().toLowerCase();
+      // Shape-checked locally: a catalog that ever served a malformed key
+      // would otherwise become a dead link in the widget's pick.
+      if (key && isNostrKey(key) && !seen.has(key)) seen.add(key);
+    }
+  }
+  return [...seen].sort();
+}
+
+// fnvSeed hashes one string to a uint32 — not a crypto hash, only a stable
+// seed for shuffling, so a fixed developer set always shuffles the same way no
+// matter the day.
+function fnvSeed(text) {
+  let hash = 0x811c9dc5 >>> 0;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash;
+}
+
+// dailyDeveloperPick names the account the "Developer of the day" widget
+// showcases: a seeded shuffle of the developer set, read by circle index, so
+// every account is featured once per cycle and repeats only when the pool is
+// too small to do better.
+//
+// This is deliberately not the hash-the-date pick the app spotlight uses:
+// hash-then-mod can feature the same account two days running, and it
+// re-picks everyone the moment the catalog changes. Rotation gives a
+// different account each day (dated by whole UTC days — same value for
+// midnight-crossing reloads) and keeps the shuffle stable per catalog
+// generation instead of per date.
+export function dailyDeveloperPick(
+  keys,
+  dayIndex = Math.floor(Date.now() / 86400000)
+) {
+  const unique = [
+    ...new Set(
+      (Array.isArray(keys) ? keys : [])
+        .map((key) => String(key ?? "").trim().toLowerCase())
+        .filter(Boolean)
+    ),
+  ].sort();
+  if (unique.length === 0) return "";
+
+  let h = fnvSeed(unique.join("|"));
+  const order = unique.slice();
+  for (let i = order.length - 1; i > 0; i--) {
+    // LCG step: deterministic and integer-only — order depends on the set,
+    // never on Math.random or on the date.
+    h = (Math.imul(h, 1664525) + 1013904223) >>> 0;
+    const j = h % (i + 1);
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order[((dayIndex % order.length) + order.length) % order.length];
+}
+
 // ISSUE_BASE is the repository every in-app report is filed against. Yantr's
 // own issue tracker, not the app's upstream — the catalog recipe is what the
 // report is about.

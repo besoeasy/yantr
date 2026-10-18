@@ -1,0 +1,281 @@
+<script>
+// Full-width band: all four of the desktop grid's four columns. Like the app
+// spotlight this card is promotion — and the pitch, the credited apps and the
+// zap block only sit right when the width lets them read as one editorial row
+// with hairline dividers, not as three widgets stacked.
+export const meta = { cols: 4 };
+</script>
+<script setup>
+import { computed, onMounted, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+import { ArrowUpRight, Check, Copy } from "@lucide/vue";
+import AppLogo from "../components/AppLogo.vue";
+import NostrQrCode from "../components/NostrQrCode.vue";
+import { useApiUrl } from "../composables/useApiUrl";
+import { useDeveloperProfile } from "../composables/useDeveloperProfile";
+import { expectApiSuccess } from "../composables/useApiResponse";
+import { appDetail, developerDetail } from "../utils/routes.js";
+import {
+  appsByDeveloper,
+  dailyDeveloperPick,
+  developerInitials,
+  developerKeysFromApps,
+  developerProfileUrl,
+  developerShortKey,
+} from "../utils/developer";
+import { lnurlEncode } from "../utils/nostr";
+
+// One developer, one day, in full. The catalog answers who exists; the
+// account's kind-0 answers who it is and where its Lightning address lives;
+// the widget's own logic is only the pick and the layout. Like the app
+// spotlight, nothing is server-chosen and nothing is personalised: the same
+// day reads the same everywhere.
+
+const { t } = useI18n();
+const router = useRouter();
+const { apiUrl } = useApiUrl();
+
+const { profile, load: loadDeveloper } = useDeveloperProfile();
+
+const apps = ref([]);
+const pickedKey = ref("");
+const copied = ref(false);
+let copiedTimer = null;
+
+const developerApps = computed(() => appsByDeveloper(apps.value, pickedKey.value));
+
+// The chips show the account's catalog apps; four, because a line of five or
+// more chips turns a promo band into a shelf.
+const SHOWCASE_APP_LIMIT = 4;
+const showcaseApps = computed(() => developerApps.value.slice(0, SHOWCASE_APP_LIMIT));
+const hiddenAppCount = computed(() => Math.max(0, developerApps.value.length - SHOWCASE_APP_LIMIT));
+
+const displayName = computed(() => profile.value?.name?.trim() || pickedKey.value);
+const initials = computed(() => developerInitials(displayName.value));
+const avatarUrl = computed(() => profile.value?.avatarUrl ?? "");
+
+// The identity row shows the npub, not the hex: the abbreviated form is what a
+// reader compares against one they already have.
+const npubShort = computed(() => developerShortKey(pickedKey.value));
+
+// zap resolves the account's published Lightning address into a scannable
+// payload. lud16 comes only from the VERIFIED kind-0 (useDeveloperProfile's
+// pipeline — relay-served prose never reaches here), and is re-validated by
+// lnurlEncode, whose empty answer hides the whole payment block rather than
+// shipping a QR that scans into a dead lookup.
+const zap = computed(() => {
+  const lud = String(profile.value?.lud16 ?? "").trim();
+  const lnurl = lud ? lnurlEncode(lud) : "";
+  return lnurl ? { lud, lnurl } : null;
+});
+
+// Follow and thank-you both open the account's page on njump: the profile
+// landing offers every Nostr client the choice to follow or to message, which
+// is "the reader's own client" as a URL, and it works on a desktop too.
+const profileUrl = computed(() => developerProfileUrl(pickedKey.value));
+
+function viewApp(appId) {
+  router.push(appDetail(appId));
+}
+
+function viewDeveloper() {
+  router.push(developerDetail(pickedKey.value));
+}
+
+async function copyZapAddress() {
+  try {
+    await navigator.clipboard.writeText(zap.value?.lud ?? "");
+    copied.value = true;
+    if (copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch {
+    // Clipboard needs a secure context; the address is printed next to the
+    // button, so there is nothing to recover from.
+  }
+}
+
+async function fetchData() {
+  try {
+    const res = await fetch(`${apiUrl.value}/api/apps`);
+    const data = await expectApiSuccess(res, "Failed to load apps");
+    apps.value = Array.isArray(data.apps) ? data.apps : [];
+    // A read failure is not rendered as an error card: a promo band that
+    // silently leaves today's slot to the other widgets is honest about being
+    // promotion, where "failed to load" would read as the dashboard being
+    // broken. The pick resolves empty and the section renders nothing.
+    pickedKey.value = dailyDeveloperPick(developerKeysFromApps(apps.value));
+  } catch {
+    pickedKey.value = "";
+  }
+}
+
+// Profile, only once there is a pick: useDeveloperProfile carries the
+// IndexedDB kind-0 cache and the verified-read fallbacks — nothing here to
+// reimplement, at the cost of one redundant /api/developers request it makes
+// itself and which also re-confirms the account really is catalog-credited.
+watch(pickedKey, (next) => {
+  if (next) loadDeveloper(next);
+});
+
+onMounted(fetchData);
+</script>
+
+<template>
+  <section
+    v-if="pickedKey"
+    class="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+  >
+    <!-- One hairline accent, top edge. The card's colour budget is this line
+         and nothing else: the identity and payment data should not have to
+         compete with decoration. -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"
+    ></div>
+
+    <div class="flex flex-1 flex-col gap-8 lg:flex-row lg:gap-0">
+      <!-- Identity -->
+      <div class="shrink-0 lg:w-60 lg:pr-8">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          {{ t("home.dailyDeveloper.title") }}
+        </p>
+
+        <div class="mt-4 flex items-center gap-4">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+            <img
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              :alt="displayName"
+              referrerpolicy="no-referrer"
+              class="h-full w-full object-cover"
+            />
+            <span v-else class="text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+              {{ initials }}
+            </span>
+          </div>
+          <div class="min-w-0">
+            <button
+              @click="viewDeveloper"
+              class="block max-w-full truncate text-left text-xl font-bold tracking-tight text-zinc-900 transition-opacity hover:opacity-70 dark:text-white"
+            >
+              {{ displayName }}
+            </button>
+            <p :title="pickedKey" class="mt-0.5 truncate font-mono text-[11px] text-zinc-400">
+              {{ npubShort }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-5">
+          <div class="text-lg font-bold tabular-nums text-zinc-900 dark:text-white">
+            {{ developerApps.length }}
+          </div>
+          <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            {{ t("home.dailyDeveloper.appsCount") }}
+          </div>
+        </div>
+      </div>
+
+      <!-- The pitch, backed by the apps -->
+      <div class="flex min-w-0 flex-1 flex-col lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+        <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+          {{ t("home.dailyDeveloper.pitch") }}
+        </p>
+
+        <div class="mt-auto flex flex-wrap items-center gap-2 pt-6">
+          <button
+            v-for="app in showcaseApps"
+            :key="app.id"
+            @click="viewApp(app.id)"
+            class="inline-flex max-w-full items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 py-1 pl-1 pr-3 text-xs font-medium text-zinc-700 transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+          >
+            <span class="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full">
+              <AppLogo
+                :logo="app.logo"
+                :name="app.name"
+                :seed="app.id"
+                img-class="h-full w-full object-contain"
+                icon-class="h-4 w-4 text-zinc-300 dark:text-zinc-700"
+              />
+            </span>
+            <span class="truncate">{{ app.name }}</span>
+          </button>
+          <span
+            v-if="hiddenAppCount > 0"
+            :title="t('home.dailyDeveloper.appsCount')"
+            class="rounded-full border border-dashed border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-400 dark:border-zinc-800"
+          >
+            {{ t("home.dailyDeveloper.appsMore", { count: hiddenAppCount }) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Zap -->
+      <div class="flex flex-col lg:w-56 lg:shrink-0 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+        <template v-if="zap">
+          <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {{ t("home.dailyDeveloper.zap") }}
+          </p>
+
+          <!-- The QR is black on white and stays that way in both colour
+               schemes — a themed code is the classic way to ship one that
+               never scans. -->
+          <div class="mt-4 w-fit self-center rounded-lg border border-zinc-200 bg-white p-2 lg:self-start dark:border-zinc-700">
+            <NostrQrCode
+              :value="zap.lnurl"
+              :label="t('home.dailyDeveloper.qrLabel', { name: displayName })"
+              :size="112"
+            />
+          </div>
+          <p class="mt-3 text-center break-all font-mono text-[11px] leading-relaxed text-zinc-500 lg:text-left">
+            {{ zap.lud }}
+          </p>
+
+          <div class="mt-4 flex flex-col gap-2">
+            <button
+              @click="copyZapAddress"
+              class="inline-flex items-center justify-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
+            >
+              <Check v-if="copied" :size="13" />
+              <Copy v-else :size="13" />
+              {{ copied ? t("home.dailyDeveloper.copied") : t("home.dailyDeveloper.copy") }}
+            </button>
+          </div>
+        </template>
+
+        <template v-else>
+          <p class="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            {{ t("home.dailyDeveloper.noAddress") }}
+          </p>
+        </template>
+
+        <!-- Show in both zap/no-zap states: following needs no Lightning -->
+        <div class="mt-4 flex flex-col gap-2">
+          <a
+            v-if="profileUrl"
+            :href="profileUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+          >
+            {{ t("home.dailyDeveloper.follow") }}
+            <ArrowUpRight :size="13" />
+          </a>
+          <a
+            v-if="profileUrl"
+            :href="profileUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-1.5 rounded-full border border-zinc-200 px-3.5 py-1.5 text-[11px] font-semibold text-zinc-600 transition-colors hover:border-zinc-300 hover:text-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-zinc-100"
+          >
+            {{ t("home.dailyDeveloper.thanks") }}
+            <ArrowUpRight :size="13" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>

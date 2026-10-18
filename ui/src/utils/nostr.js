@@ -305,6 +305,19 @@ function convertBits8to5(data) {
   return out;
 }
 
+// bech32Encode is this file's encode side: 8-bit bytes in, a full bech32
+// string out with the BIP-173 checksum. Until now only npub needed encoding
+// (below); LNURL buys its piece of this code — LNURL is bech32 too, just of a
+// pay URL (lnurlEncode) — so the projection lives here once, correct for
+// every HRP.
+export function bech32Encode(hrp, bytes) {
+  const data = convertBits8to5(Array.isArray(bytes) ? bytes : [...(bytes ?? [])]);
+  const mod = bech32Polymod([...bech32HrpExpand(hrp), ...data, 0, 0, 0, 0, 0, 0]) ^ 1;
+  const checksum = [];
+  for (let p = 0; p < 6; p++) checksum.push((mod >> (5 * (5 - p))) & 31);
+  return hrp + "1" + [...data, ...checksum].map((v) => BECH32_CHARSET[v]).join("");
+}
+
 // hexToNpub renders a 32-byte hex pubkey as the `npub1…` identifier readers
 // recognise. Empty string for anything that is not a pubkey — never a link to
 // nowhere.
@@ -314,13 +327,32 @@ export function hexToNpub(hex) {
   const bytes = new Uint8Array(32);
   for (let i = 0; i < 32; i++) bytes[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
 
-  const hrp = "npub";
-  const data = convertBits8to5(bytes);
-  const mod = bech32Polymod([...bech32HrpExpand(hrp), ...data, 0, 0, 0, 0, 0, 0]) ^ 1;
-  const checksum = [];
-  for (let p = 0; p < 6; p++) checksum.push((mod >> (5 * (5 - p))) & 31);
+  return bech32Encode("npub", bytes);
+}
 
-  return hrp + "1" + [...data, ...checksum].map((v) => BECH32_CHARSET[v]).join("");
+// ─── Lightning (lud16 → LNURL) ──────────────────────────────────────────────
+// A Nostr profile can carry a NIP-57 Lightning address in lud16 ("user@host").
+// The payload wallets scan is not the address itself but its LNURL-Pay URL,
+// https://<host>/.well-known/lnurlp/<user>, bech32 encoded. Encoded here, not
+// fetched: the browser asks no one — the wallet that scans the code contacts
+// the domain itself, which is the point of LNURL-Pay and what keeps Yantr out
+// of the donation path entirely.
+
+// No full RFC 5322 quoted-string algebra: NIP-57 practice (and what every
+// wallet in the wild publishes) is the simple form. Reject anything a relay
+// could abuse as a path — no slashes, no query syntax, no whitespace.
+const LUD16_RE = /^([a-z0-9._%+-]+)@([a-z0-9-]+(?:\.[a-z0-9-]+)+)$/;
+
+// lnurlEncode turns a lud16 into the `lnurl1…` string for the zap QR. Empty
+// string for anything that is not an address — a QR that encodes prose scans
+// into a dead wallet lookup, which is worse than no QR.
+export function lnurlEncode(lud) {
+  const clean = String(lud ?? "").trim().toLowerCase();
+  const match = LUD16_RE.exec(clean);
+  if (!match) return "";
+  const [, user, domain] = match;
+  const url = `https://${domain}/.well-known/lnurlp/${encodeURIComponent(user)}`;
+  return bech32Encode("lnurl", new TextEncoder().encode(url));
 }
 
 // ─── bech32 (decode side) ──────────────────────────────────────────────────

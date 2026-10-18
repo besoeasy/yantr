@@ -105,6 +105,19 @@
       "installed": "已安装",
       "available": "可用",
       "running": "运行中 ({count})"
+    },
+    "dailyDeveloper": {
+      "title": "今日开发者",
+      "pitch": "开源应用是由像你这样的人开发的。Yantr 每天介绍一位开发者，以及他为这个目录构建的应用。",
+      "appsCount": "Yantr 中的应用",
+      "appsMore": "还有 {count} 个",
+      "zap": "喜欢这些应用，或者只是欣赏这份气质？一笔 zap 让开源继续活下去。",
+      "qrLabel": "{name} 的 Lightning 支付二维码",
+      "copy": "复制 zap 地址",
+      "copied": "已复制",
+      "noAddress": "未公开 Lightning 地址——不妨在 Nostr 上关注该账号，并送上一句感谢。",
+      "follow": "在 Nostr 上关注",
+      "thanks": "发送感谢"
     }
   },
   "apps": {

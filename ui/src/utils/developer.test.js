@@ -3,8 +3,10 @@ import {
   appsByDeveloper,
   buildIssueReportUrl,
   buildYantrIssueReportUrl,
+  dailyDeveloperPick,
   DEVELOPER_LABEL,
   developerInitials,
+  developerKeysFromApps,
   developerProfileUrl,
   developerRouteRef,
   developerShortKey,
@@ -256,5 +258,61 @@ describe("buildYantrIssueReportUrl", () => {
     const url = buildYantrIssueReportUrl();
     expect(url.startsWith(ISSUE_BASE)).toBe(true);
     expect(decodeURIComponent(url.split("body=")[1])).toContain("<describe what happened>");
+  });
+});
+
+describe("developerKeysFromApps", () => {
+  it("collects distinct credited keys, sorted for a stable rotation", () => {
+    const apps = [
+      { developers: [{ key: JACK }, { key: NPUB }] },
+      { developers: [{ key: ` nostr:${JACK.toUpperCase()} ` }] },
+      { developers: [] },
+    ];
+    expect(developerKeysFromApps(apps)).toEqual([...new Set([JACK, NPUB].map((k) => k.toLowerCase()))].sort());
+  });
+
+  it("drops values that are not profile identifiers — a malformed key would be a dead link in the widget", () => {
+    expect(
+      developerKeysFromApps([{ developers: [{ key: "note1sg6plzptd64u62a878hep2kev88swjh3tw00gjsfl8f237lmu63q7k28gn" }] }])
+    ).toEqual([]);
+    expect(developerKeysFromApps([{ developers: [{ key: "" }] }, {}])).toEqual([]);
+    expect(developerKeysFromApps([])).toEqual([]);
+  });
+});
+
+describe("dailyDeveloperPick", () => {
+  // The rotation is verified against the contract, not against a hardcoded
+  // shuffle: the shuffle is an implementation detail, the cycle is the promise.
+  const three = ["b", "a", "c"].sort();
+
+  it("returns empty for an empty pool, never a crash", () => {
+    expect(dailyDeveloperPick([])).toBe("");
+    expect(dailyDeveloperPick(["", "  "])).toBe("");
+  });
+
+  it("returns a member of the pool, and the same one all day", () => {
+    const pick = dailyDeveloperPick([]);
+    expect(pick).toBe("");
+    const day = 20_700;
+    const first = dailyDeveloperPick(three, day);
+    expect(three).toContain(first);
+    expect(dailyDeveloperPick(three, day)).toBe(first);
+  });
+
+  it("features a different account every day until the whole pool has been shown", () => {
+    const day = 20_700;
+    const picks = Array.from({ length: three.length }, (_, i) => dailyDeveloperPick(three, day + i));
+    expect(new Set(picks).size).toBe(three.length);
+  });
+
+  it("does not reshuffle mid-generation: a catalog app-order change is invisible here", () => {
+    const day = 20_700;
+    expect(dailyDeveloperPick(["a", "b"], day)).toBe(dailyDeveloperPick(["b", "a"], day));
+  });
+
+  it("maps negative day indices back into the pool instead of failing", () => {
+    expect(
+      dailyDeveloperPick(three, -1)
+    ).not.toBe("");
   });
 });
