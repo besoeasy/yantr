@@ -11,13 +11,14 @@ import { Timer, Hourglass, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics.js'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { useContainers } from '../composables/useDashboardData'
+import WidgetSkeleton from '../components/WidgetSkeleton.vue'
 
 const { t } = useI18n()
 const { currentTime } = useCurrentTime()
 
 // Shared with the other cards that read the container list: one request at
 // mount, one ticker for the whole dashboard.
-const { containers } = useContainers({ live: true })
+const { containers, containersLoaded, containersLoadFailed } = useContainers({ live: true })
 
 
 
@@ -62,9 +63,8 @@ const urgencyLabel = computed(() => {
 </script>
 
 <template>
-  <div
-    v-if="stats.count > 0"
-    class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+  <WidgetSkeleton v-if="!containersLoaded && !containersLoadFailed" />
+  <div v-elsev-if="stats.count > 0" class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
     :class="isCritical 
         ? 'border-red-200 hover:border-red-300 dark:border-red-900/50 dark:hover:border-red-800' 
         : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'"

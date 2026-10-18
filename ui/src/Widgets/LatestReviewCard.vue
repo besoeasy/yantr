@@ -14,6 +14,7 @@ import AppLogo from "../components/AppLogo.vue";
 import { useNostrRelays } from "../composables/useNostrRelays";
 import { appDetail, apps as appsRoute } from "../utils/routes.js";
 import { useCatalog } from "../composables/useDashboardData";
+import WidgetSkeleton from "../components/WidgetSkeleton.vue";
 import { developerProfileUrl, developerShortKey } from "../utils/developer";
 import { linesFor, showcaseReviews } from "../utils/reviewShowcase";
 import {
@@ -221,8 +222,10 @@ watch(
 </script>
 
 <template>
+  <WidgetSkeleton v-if="!appsLoaded && !appsLoadFailed" />
+
   <section
-    v-if="showcase.length"
+    v-else-if="showcase.length"
     class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">

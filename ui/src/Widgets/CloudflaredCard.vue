@@ -13,6 +13,7 @@ import { expectApiSuccess } from '../composables/useApiResponse'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { formatUptime } from '../utils/metrics'
 import { useContainers } from '../composables/useDashboardData'
+import WidgetSkeleton from '../components/WidgetSkeleton.vue'
 
 const { t } = useI18n()
 const { apiUrl } = useApiUrl()
@@ -105,7 +106,8 @@ async function deploy() {
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <WidgetSkeleton v-if="!containersLoaded && !containersLoadFailed" />
+  <div v-else class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
 
     <!-- Setup state: no cloudflared container found -->
     <div v-if="!cloudflaredContainer" class="relative z-10 flex h-full flex-col gap-4">

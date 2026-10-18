@@ -9,7 +9,8 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { ClipboardList, HardDrive, Layers, Wrench } from "@lucide/vue";
-import { useStorageCounts } from "../composables/useDashboardData";
+import { useStorageCounts } from "../composables/useDashboardData"
+import WidgetSkeleton from "../components/WidgetSkeleton.vue";
 import { logs, storageTab } from '../utils/routes.js'
 
 const router = useRouter();
@@ -17,13 +18,14 @@ const { t } = useI18n();
 
 // The counts pair two endpoints; the shared resource reads both as one
 // logical fetch and keeps them fresh with one ticker for the dashboard.
-const { counts } = useStorageCounts({ live: true });
+const { counts, countsLoaded, countsLoadFailed } = useStorageCounts({ live: true });
 const imageCount = computed(() => counts.value?.imageCount ?? null);
 const volumeCount = computed(() => counts.value?.volumeCount ?? null);
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <WidgetSkeleton v-if="!countsLoaded && !countsLoadFailed" />
+  <div v-else class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
 
     <div class="pointer-events-none relative z-10 flex h-full flex-col gap-4">
       <!-- Header -->

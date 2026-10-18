@@ -13,6 +13,7 @@ import AppLogo from "../components/AppLogo.vue";
 import { appDetail } from "../utils/routes.js";
 import { appOfDay } from "../utils/spotlight";
 import { useCatalog, useContainers } from "../composables/useDashboardData";
+import WidgetSkeleton from "../components/WidgetSkeleton.vue";
 
 // One card, one app, one day. Nothing about the choice is server-driven or
 // personalised: the catalog answers what exists, containers answer whether the
@@ -25,7 +26,7 @@ const router = useRouter();
 // Both lists are shared with the other dashboard cards that read them, so
 // mounting costs no request of its own and the pick stays in step with the
 // rest of the page.
-const { apps, appsLoadFailed } = useCatalog();
+const { apps, appsLoaded, appsLoadFailed } = useCatalog();
 const { containers, containersLoadFailed } = useContainers({ live: true });
 
 const loadFailed = computed(() => appsLoadFailed.value || containersLoadFailed.value);
@@ -90,8 +91,10 @@ function handleSelect(appId) {
 </script>
 
 <template>
+  <WidgetSkeleton v-if="!appsLoaded && !loadFailed" />
+
   <section
-    v-if="dailyApp"
+    v-else-if="dailyApp"
     class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <!-- Header: what this card is, and whether today's app is already

@@ -11,13 +11,14 @@ import { Clock, Activity, Zap } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { useContainers } from '../composables/useDashboardData'
+import WidgetSkeleton from '../components/WidgetSkeleton.vue'
 
 const { t } = useI18n()
 const { currentTime } = useCurrentTime()
 
 // The container list is shared with the other three cards that want it — one
 // request at mount and one 15s ticker for the dashboard, not four.
-const { containers } = useContainers({ live: true })
+const { containers, containersLoaded, containersLoadFailed } = useContainers({ live: true })
 
 
 const stats = computed(() => {
@@ -45,7 +46,8 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 </script>
 
 <template>
-  <div class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+  <WidgetSkeleton v-if="!containersLoaded && !containersLoadFailed" />
+  <div v-else class="group relative flex h-full w-full yantra-card-min flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
         <!-- Minimal Icon Block -->
