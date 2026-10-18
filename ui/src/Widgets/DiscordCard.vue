@@ -54,10 +54,10 @@ const { t } = useI18n();
 
     <!-- Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+      <div class="mb-2 text-2xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
         {{ t("discordCard.title") }}
       </div>
-      <div class="mb-6 text-sm leading-relaxed text-zinc-500 line-clamp-2 dark:text-zinc-400">
+      <div class="mb-5 text-xs leading-relaxed text-zinc-500 line-clamp-3 dark:text-zinc-400">
         {{ t("discordCard.description") }}
       </div>
 
@@ -67,7 +67,7 @@ const { t } = useI18n();
           :href="DISCORD_URL"
           target="_blank"
           rel="noopener noreferrer"
-          class="group/cta relative flex h-12 w-full items-center justify-between rounded-xl bg-indigo-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-indigo-600 active:scale-[0.98] overflow-hidden"
+          class="group/cta relative flex h-11 w-full items-center justify-between rounded-xl bg-indigo-500 px-5 text-white transition-[border-color,box-shadow,transform] duration-200 hover:bg-indigo-600 active:scale-[0.98] overflow-hidden"
         >
           <div class="relative z-10 flex items-center gap-2.5">
             <Discord class="h-4 w-4 fill-current" />

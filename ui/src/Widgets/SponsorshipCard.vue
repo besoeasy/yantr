@@ -37,7 +37,7 @@ const { t } = useI18n();
          order, so the button spans the card rather than competing with the
          title for the same row. -->
     <div class="relative z-10 mt-auto flex flex-col pt-5">
-      <div class="mb-1.5 text-xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
+      <div class="mb-1.5 text-2xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
         {{ t("sponsorCard.title") }}
       </div>
       <div class="line-clamp-3 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
