@@ -5,7 +5,6 @@
     "darkMode": "Mode sombre",
     "dashboard": "Accueil",
     "apps": "Applications",
-    "stacks": "Stacks",
     "fleet": "Flotte",
     "storage": "Stockage",
     "logs": "Journaux"
@@ -24,15 +23,6 @@
     "empty": "Pas encore de pings récents dans le cache ntfy.",
     "loadFailed": "Impossible de charger les stats de flotte",
     "footnote": "Fenêtre : {window}. {events} événements lus."
-  },
-  "stacks": {
-    "eyebrow": "Déployé",
-    "title": "Stacks",
-    "subtitle": "Chaque application en cours d'exécution sur cet hôte, groupée par son projet compose.",
-    "empty": "Aucun stack en cours d'exécution",
-    "emptyHint": "Installez une application depuis le catalogue et son stack apparaîtra ici.",
-    "browseCatalog": "Parcourir le catalogue",
-    "loadFailed": "Échec du chargement des stacks"
   },
   "common": {
     "loading": "Chargement...",

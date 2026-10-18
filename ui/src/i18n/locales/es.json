@@ -5,7 +5,6 @@
     "darkMode": "Modo oscuro",
     "dashboard": "Inicio",
     "apps": "Aplicaciones",
-    "stacks": "Stacks",
     "fleet": "Flota",
     "storage": "Almacenamiento",
     "logs": "Registros"
@@ -24,15 +23,6 @@
     "empty": "Aún no hay pings recientes en la caché de ntfy.",
     "loadFailed": "No se pudieron cargar las estadísticas",
     "footnote": "Ventana: {window}. {events} eventos leídos."
-  },
-  "stacks": {
-    "eyebrow": "Desplegado",
-    "title": "Stacks",
-    "subtitle": "Cada aplicación en ejecución en este host, agrupada por su proyecto de compose.",
-    "empty": "No hay stacks en ejecución",
-    "emptyHint": "Instala una aplicación desde el catálogo y su stack aparecerá aquí.",
-    "browseCatalog": "Explorar el catálogo",
-    "loadFailed": "No se pudieron cargar los stacks"
   },
   "common": {
     "loading": "Cargando...",

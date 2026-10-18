@@ -21,7 +21,6 @@ import {
   logs,
   routes,
   stackDetail,
-  stacks,
   storageTab,
 } from "./routes.js";
 import de from "../i18n/locales/de.json";
@@ -99,13 +98,15 @@ describe("route table", () => {
 
   it("still answers the paths that were renamed", () => {
     // A hash URL is bookmarkable and users do bookmark their own dashboard, so
-    // these must redirect rather than fall through to the 404.
+    // these must redirect rather than fall through to the 404. /stacks was
+    // removed outright and answers with the dashboard instead.
     const redirecting = new Set(
       routes.filter((route) => route.redirect).map((route) => route.path),
     );
     expect(redirecting.has("/")).toBe(true);
     expect(redirecting.has("/home")).toBe(true);
     expect(redirecting.has("/presence")).toBe(true);
+    expect(redirecting.has("/stacks")).toBe(true);
     expect(redirecting.has("/developer/:npub")).toBe(true);
   });
 });
@@ -142,7 +143,6 @@ describe("builders", () => {
   const plain = [
     { label: "dashboard", build: dashboard, name: ROUTE.DASHBOARD },
     { label: "apps", build: apps, name: ROUTE.APPS },
-    { label: "stacks", build: stacks, name: ROUTE.STACKS },
     { label: "logs", build: logs, name: ROUTE.LOGS },
     { label: "fleet", build: fleet, name: ROUTE.FLEET },
   ];

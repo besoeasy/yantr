@@ -5,7 +5,6 @@
     "darkMode": "Dunkelmodus",
     "dashboard": "Start",
     "apps": "Apps",
-    "stacks": "Stacks",
     "fleet": "Flotte",
     "storage": "Speicher",
     "logs": "Protokolle"
@@ -24,15 +23,6 @@
     "empty": "Noch keine aktuellen Pings im ntfy-Cache.",
     "loadFailed": "Flottenstatistik konnte nicht geladen werden",
     "footnote": "Fenster: {window}. {events} Ereignisse gelesen."
-  },
-  "stacks": {
-    "eyebrow": "Bereitgestellt",
-    "title": "Stacks",
-    "subtitle": "Jede auf diesem Host laufende App, gruppiert nach ihrem Compose-Projekt.",
-    "empty": "Keine laufenden Stacks",
-    "emptyHint": "Installiere eine App aus dem Katalog, dann erscheint ihr Stack hier.",
-    "browseCatalog": "Katalog durchsuchen",
-    "loadFailed": "Stacks konnten nicht geladen werden"
   },
   "common": {
     "loading": "Laden...",

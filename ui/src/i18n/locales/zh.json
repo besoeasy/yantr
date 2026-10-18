@@ -5,7 +5,6 @@
     "darkMode": "深色模式",
     "dashboard": "首页",
     "apps": "应用",
-    "stacks": "堆栈",
     "fleet": "集群",
     "storage": "存储",
     "logs": "日志"
@@ -24,15 +23,6 @@
     "empty": "ntfy 缓存里还没有最近的心跳。",
     "loadFailed": "无法加载集群统计",
     "footnote": "窗口：{window}。已解析 {events} 条事件。"
-  },
-  "stacks": {
-    "eyebrow": "已部署",
-    "title": "堆栈",
-    "subtitle": "此主机上运行的每个应用，按其 compose 项目分组。",
-    "empty": "没有运行中的堆栈",
-    "emptyHint": "从应用目录安装应用后，其堆栈会显示在这里。",
-    "browseCatalog": "浏览应用目录",
-    "loadFailed": "加载堆栈失败"
   },
   "common": {
     "loading": "加载中...",

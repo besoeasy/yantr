@@ -26,7 +26,6 @@ export const ROUTE = Object.freeze({
   DASHBOARD: "dashboard",
   APPS: "apps",
   APP_DETAIL: "app-detail",
-  STACKS: "stacks",
   STACK_DETAIL: "stack-detail",
   CONTAINER_DETAIL: "container-detail",
   DEVELOPER_DETAIL: "developer-detail",
@@ -46,10 +45,6 @@ export const ROUTE = Object.freeze({
 export const NAV = Object.freeze({
   DASHBOARD: "dashboard",
   APPS: "apps",
-  // Declared here ahead of its sidebar item and its /stacks route (both land
-  // with the stacks page): /stacks/:projectId and /containers/:id already
-  // belong to Stacks, and leaving them ownerless is the bug being fixed.
-  STACKS: "stacks",
   STORAGE: "storage",
   LOGS: "logs",
   FLEET: "fleet",
@@ -64,7 +59,6 @@ export const NAV = Object.freeze({
 export const NAV_ITEMS = [
   { id: NAV.DASHBOARD, labelKey: "nav.dashboard" },
   { id: NAV.APPS, labelKey: "nav.apps" },
-  { id: NAV.STACKS, labelKey: "nav.stacks" },
   { id: NAV.FLEET, labelKey: "nav.fleet" },
   { id: NAV.STORAGE, labelKey: "nav.storage" },
   { id: NAV.LOGS, labelKey: "nav.logs" },
@@ -87,11 +81,6 @@ export function apps() {
 /** One app's page in the catalog: what it is, and the form that installs it. */
 export function appDetail(appId) {
   return { name: ROUTE.APP_DETAIL, params: { appId } };
-}
-
-/** Every deployed stack. */
-export function stacks() {
-  return { name: ROUTE.STACKS };
 }
 
 /** One deployed stack, addressed by its compose project. */
@@ -134,10 +123,14 @@ export const routes = [
   { path: "/", redirect: { name: ROUTE.DASHBOARD } },
 
   // Legacy paths. A hash URL is bookmarkable and Yantr users bookmark their own
-  // dashboard, so the two paths that changed keep working instead of dropping
-  // the user on the 404. Param renames are URL-neutral and need no redirect.
+  // dashboard, so the paths that changed or were removed keep working instead
+  // of dropping the user on the 404. Param renames are URL-neutral and need no
+  // redirect. /stacks was removed as a page — the dashboard is the stack list
+  // now — but the bookmark must survive, and stack detail lives on at
+  // /stacks/:projectId below.
   { path: "/home", redirect: { name: ROUTE.DASHBOARD } },
   { path: "/presence", redirect: { name: ROUTE.FLEET } },
+  { path: "/stacks", redirect: { name: ROUTE.DASHBOARD } },
   { path: "/developer/:npub", redirect: (to) => developerDetail(to.params.npub) },
 
   {
@@ -159,22 +152,19 @@ export const routes = [
     meta: { title: "App", nav: NAV.APPS },
   },
   {
-    path: "/stacks",
-    name: ROUTE.STACKS,
-    component: () => import("../views/Stacks.vue"),
-    meta: { title: "Stacks", nav: NAV.STACKS },
-  },
-  {
+    // No /stacks list route: the dashboard's Yantr Apps section is the stack
+    // list. Detail pages keep their own paths and are owned by the dashboard
+    // nav item, since that is where they are reached from.
     path: "/stacks/:projectId",
     name: ROUTE.STACK_DETAIL,
     component: () => import("../views/StackView.vue"),
-    meta: { title: "Stack", nav: NAV.STACKS },
+    meta: { title: "Stack", nav: NAV.DASHBOARD },
   },
   {
     path: "/containers/:containerId",
     name: ROUTE.CONTAINER_DETAIL,
     component: () => import("../views/ContainerDetail.vue"),
-    meta: { title: "Container", nav: NAV.STACKS },
+    meta: { title: "Container", nav: NAV.DASHBOARD },
   },
   {
     // The param is a Nostr public key — see utils/developer.js.

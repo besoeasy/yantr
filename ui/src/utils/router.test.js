@@ -23,6 +23,7 @@ describe("redirects", () => {
     ["/", "/dashboard", ROUTE.DASHBOARD],
     ["/home", "/dashboard", ROUTE.DASHBOARD],
     ["/presence", "/fleet", ROUTE.FLEET],
+    ["/stacks", "/dashboard", ROUTE.DASHBOARD],
     ["/developer/npub1abc", "/developers/npub1abc", ROUTE.DEVELOPER_DETAIL],
   ])("%s lands on %s", async (from, path, name) => {
     const router = makeRouter();
@@ -61,7 +62,7 @@ describe("navigation", () => {
 
   it("titles the route it lands on", async () => {
     const router = makeRouter();
-    await router.push({ name: ROUTE.STACKS });
-    expect(router.currentRoute.value.meta.title).toBe("Stacks");
+    await router.push(stackDetail("yantr-immich"));
+    expect(router.currentRoute.value.meta.title).toBe("Stack");
   });
 });

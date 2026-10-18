@@ -1,7 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { 
-  Box, Home, Moon, Sun, Check, Layers,
+  Box, Home, Moon, Sun, Check,
   HardDrive, Terminal, Lock, Globe
 } from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
@@ -67,7 +67,6 @@ const communityLinks = [
 const NAV_ICONS = {
   [NAV.DASHBOARD]: Home,
   [NAV.APPS]: Box,
-  [NAV.STACKS]: Layers,
   [NAV.FLEET]: Globe,
   [NAV.STORAGE]: HardDrive,
   [NAV.LOGS]: Terminal,
