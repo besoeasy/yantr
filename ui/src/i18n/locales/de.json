@@ -123,7 +123,7 @@
       "thanks": "Danke senden"
     },
     "latestReview": {
-      "title": "Neueste Bewertung",
+      "title": "Neueste Bewertungen",
       "empty": "Noch keine Bewertungen. Öffne eine App im Katalog und hinterlasse die erste.",
       "byAuthor": "Das Nostr-Profil der Autorin oder des Autors ansehen"
     }

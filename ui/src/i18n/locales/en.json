@@ -98,7 +98,7 @@
       "thanks": "Send a thank-you"
     },
     "latestReview": {
-      "title": "Latest review",
+      "title": "Latest reviews",
       "empty": "No reviews on any app yet. Open an app in the catalog and leave the first one.",
       "byAuthor": "Read the author's Nostr profile"
     },
