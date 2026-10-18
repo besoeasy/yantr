@@ -109,14 +109,17 @@ const hasContext = computed(() => contextRows.value.length > 0);
       </div>
     </div>
 
-    <!-- Half-width body: the ask sits left, the facts the report will carry sit
-         right, so a reader can check what leaves the machine before the CTA. -->
-    <div class="relative z-10 mt-auto grid gap-6 pt-6 sm:grid-cols-1" :class="hasContext ? 'sm:grid-cols-[minmax(0,1fr)_minmax(0,13rem)]' : ''">
+    <!-- Half-width body, held deliberately short: a compact headline, a
+         two-line description and the facts as a 2x2 chip grid keep this card
+         at its row's 320px instead of stretching the row taller than every
+         neighbour. The ask sits left, the facts the report will carry sit
+         right, so a reader can still check what leaves the machine. -->
+    <div class="relative z-10 mt-auto grid gap-5 pt-5 sm:grid-cols-1" :class="hasContext ? 'sm:grid-cols-[minmax(0,1fr)_minmax(0,12rem)]' : ''">
       <div class="flex flex-col">
-        <div class="yantra-text-primary mb-2 text-4xl font-black leading-[1.1] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl">
+        <div class="yantra-text-primary mb-1.5 text-3xl font-black leading-[1.15] tracking-tighter transition-transform duration-200 group-hover:-translate-y-[3px]">
           {{ t("issueCard.title") }}
         </div>
-        <div class="yantra-text-secondary mb-5 line-clamp-3 text-sm leading-relaxed">
+        <div class="yantra-text-secondary mb-4 line-clamp-2 text-xs leading-relaxed">
           {{ t("issueCard.description") }}
         </div>
 
@@ -124,7 +127,7 @@ const hasContext = computed(() => contextRows.value.length > 0);
           :href="issueUrl"
           target="_blank"
           rel="noopener noreferrer"
-          class="issue-cta group/cta relative mt-auto flex h-12 w-full items-center justify-between rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
+          class="issue-cta group/cta relative mt-auto flex h-11 w-full items-center justify-between rounded-xl px-4 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
         >
           <div class="relative z-10 flex items-center gap-2.5">
             <Bug class="h-4 w-4" />
@@ -133,7 +136,7 @@ const hasContext = computed(() => contextRows.value.length > 0);
           <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
         </a>
 
-        <p class="issue-note yantra-text-secondary mt-4 flex items-center gap-2 text-[10px] leading-relaxed">
+        <p class="issue-note yantra-text-secondary mt-3 flex items-center gap-2 text-[10px] leading-relaxed">
           <ShieldCheck class="h-3 w-3 shrink-0" />
           <span>{{ t("issueCard.footnote") }}</span>
         </p>
@@ -141,14 +144,14 @@ const hasContext = computed(() => contextRows.value.length > 0);
 
       <!-- What the report will carry. Shown rather than implied: a reader who
            does not want their host described should be able to see that before
-           clicking. Stays a vertical list in its own column, one line per
-           fact, whatever the card's width. -->
-      <div v-if="hasContext" class="issue-context rounded-xl px-4 py-3">
+           clicking. Two chip columns instead of four stacked rows — the facts
+           stay one line each, the panel halves in height. -->
+      <div v-if="hasContext" class="issue-context rounded-xl px-3.5 py-3">
         <p class="yantra-text-secondary mb-2 text-[9px] font-semibold uppercase tracking-widest">
           {{ t("issueCard.contextLabel") }}
         </p>
-        <dl class="flex flex-col gap-1.5">
-          <div v-for="row in contextRows" :key="row.label" class="flex flex-col gap-0.5">
+        <dl class="grid grid-cols-2 gap-x-3 gap-y-2">
+          <div v-for="row in contextRows" :key="row.label" class="flex min-w-0 flex-col gap-0.5">
             <dt class="yantra-text-secondary text-[9px] font-semibold uppercase tracking-wider">
               {{ row.label }}
             </dt>
@@ -164,8 +167,8 @@ const hasContext = computed(() => contextRows.value.length > 0);
 
 <style scoped>
 /* Card chrome, the icon tile and every text colour come from the shared helpers
-   in main.css. This card owns the context panel, the two calls to action and
-   the footnote, and nothing else. */
+   in main.css. This card owns the context panel, the call to action and the
+   footnote, and nothing else. */
 .issue-context {
   background-color: var(--card-inset);
 }
@@ -177,18 +180,6 @@ const hasContext = computed(() => contextRows.value.length > 0);
 
 .issue-cta:hover {
   background-color: var(--cta-bg-hover);
-}
-
-.issue-ghost {
-  border-color: var(--card-border);
-  background-color: var(--card-bg);
-  color: var(--text-secondary);
-}
-
-.issue-ghost:hover {
-  border-color: var(--card-border-strong);
-  background-color: var(--card-inset);
-  color: var(--text-primary);
 }
 
 .issue-note {
