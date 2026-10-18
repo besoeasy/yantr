@@ -3202,3 +3202,67 @@ p code, li code, td code, .spec-sub code {
     gap: 3rem;
   }
 }
+
+/* ── The Ravi, drawn ──────────────────────────────
+   A line plate for the origin section: the river from
+   the Himalaya down onto the plain, its canal, and the
+   town it is named here for. Hand-drawn SVG rather
+   than a photograph — it stays a few kilobytes, it is
+   ours to edit, and it inherits the page's ink tones
+   instead of fighting them. Not to scale, and labelled
+   as such: it is a sketch of a journey, not a map. */
+.river-figure {
+  margin-top: 3.5rem;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 2rem;
+}
+.river-plate {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The plate fades at both ends so it reads as a
+     drawing that runs off the page, not a framed box. */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.river-ridge { fill: none; stroke: var(--gray-200); stroke-width: 1.25; stroke-linejoin: round; stroke-linecap: round; }
+.river-ridge-front { fill: none; stroke: var(--gray-300); stroke-width: 1.25; stroke-linejoin: round; stroke-linecap: round; }
+.river-hatch { fill: none; stroke: var(--gray-200); stroke-width: 1; stroke-linecap: round; }
+.river-water { fill: none; stroke: var(--gray-400); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.river-water-tributary { fill: none; stroke: var(--gray-300); stroke-width: 1.5; stroke-linecap: round; }
+.river-water-confluence { fill: none; stroke: var(--gray-500); stroke-width: 3; stroke-linecap: round; }
+.river-canal { fill: none; stroke: var(--emerald-400); stroke-width: 1.25; stroke-dasharray: 5 6; stroke-linecap: round; }
+.river-field { fill: none; stroke: var(--gray-300); stroke-width: 1; stroke-dasharray: 2 9; stroke-linecap: round; }
+.river-village { fill: var(--gray-300); }
+.river-field-tick { fill: none; stroke: var(--emerald-200, #a7f3d0); stroke-width: 1.25; stroke-linecap: round; }
+.river-label {
+  fill: var(--gray-400);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.river-label-tiny { font-size: 9px; letter-spacing: 0.16em; }
+.river-label-accent { fill: var(--emerald-600); }
+.river-label-place { fill: var(--gray-700); }
+.river-dot { fill: var(--emerald-500); }
+.river-ring { fill: none; stroke: var(--emerald-400); stroke-width: 1.25; }
+.river-figcap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--gray-400);
+}
+.river-figcap .mono { font-family: var(--font-mono); }
+@media (max-width: 768px) {
+  /* The plate pans instead of shrinking — at phone width a 3:1 drawing
+     scaled down is a smudge, and the labels are the whole point. */
+  .river-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .river-plate { width: 720px; max-width: none; }
+  .river-scroll::-webkit-scrollbar { height: 4px; }
+  .river-scroll::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 9999px; }
+}
