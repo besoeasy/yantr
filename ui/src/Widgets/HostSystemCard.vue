@@ -109,7 +109,7 @@ const factRows = computed(() => [
         <span
           v-for="n in 4"
           :key="n"
-          class="h-14 animate-pulse border-b border-r border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900"
+          class="h-14 animate-pulse border-b border-r yantra-tile"
         ></span>
       </div>
     </div>
@@ -132,7 +132,7 @@ const factRows = computed(() => [
         <div class="text-4xl font-black leading-[1.1] tracking-tighter text-red-950 dark:text-white">
           {{ t("common.error") }}
         </div>
-        <div class="mt-2 line-clamp-2 text-sm text-zinc-500 dark:text-zinc-400">{{ error }}</div>
+        <div class="mt-2 line-clamp-2 text-sm yantra-text-secondary">{{ error }}</div>
       </div>
     </div>
 
@@ -144,7 +144,7 @@ const factRows = computed(() => [
           <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-200 bg-zinc-50 transition-transform duration-200 group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
             <Server class="h-5 w-5 text-zinc-600 transition-colors group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100" />
           </div>
-          <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          <h3 class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ t("quickMetrics.hostMetrics.hostSystem") }}
           </h3>
         </div>
@@ -161,10 +161,10 @@ const factRows = computed(() => [
 
       <!-- Identity: the machine by name, then the machine-readable line -->
       <div class="mt-6 flex flex-col">
-        <div class="truncate text-4xl font-black leading-[1.05] tracking-tighter text-zinc-900 dark:text-white">
+        <div class="truncate text-4xl font-black leading-[1.05] tracking-tighter yantra-text-primary">
           {{ osInfo.name }}
         </div>
-        <div class="mt-2 truncate font-mono text-[11px] text-zinc-400" :title="`${osInfo.type} · ${osInfo.arch} · ${osInfo.kernel}`">
+        <div class="mt-2 truncate font-mono text-[11px] yantra-text-secondary" :title="`${osInfo.type} · ${osInfo.arch} · ${osInfo.kernel}`">
           {{ osInfo.type }} · {{ osInfo.arch }} · {{ osInfo.kernel }}
         </div>
       </div>
@@ -181,11 +181,11 @@ const factRows = computed(() => [
         >
           <span
             class="text-2xl font-bold leading-none tabular-nums"
-            :class="stat.muted ? 'text-zinc-400 dark:text-zinc-500' : 'text-zinc-900 dark:text-white'"
+            :class="stat.muted ? 'yantra-text-secondary' : 'yantra-text-primary'"
           >
             {{ stat.value }}
           </span>
-          <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ stat.label }}
           </span>
         </div>
@@ -199,7 +199,7 @@ const factRows = computed(() => [
           class="flex items-baseline justify-between gap-4 py-2"
           :class="i < factRows.length - 1 ? 'border-b border-zinc-100 dark:border-zinc-900' : ''"
         >
-          <span class="shrink-0 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          <span class="shrink-0 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ row.label }}
           </span>
           <span

@@ -33,7 +33,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
           <HardDrive class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t("quickMetrics.hostMetrics.storage") }}
           </h3>
           <div class="mt-2 flex items-center gap-2">
@@ -51,13 +51,13 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
       <!-- Disk gets the headline slot: it is the metric that fills up and
            eventually stops an app from running. -->
       <div class="mb-1 flex items-baseline justify-between gap-3">
-        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t("quickMetrics.hostMetrics.disk") }}</span>
-        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white sm:text-5xl">
+        <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("quickMetrics.hostMetrics.disk") }}</span>
+        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white sm:text-5xl">
           {{ primaryDisk && !isDegraded("disk") ? `${Math.round(primaryDisk.usedPct)}%` : "—" }}
         </span>
       </div>
 
-      <div class="mb-1 truncate text-[9px] font-semibold uppercase tracking-widest text-zinc-500">
+      <div class="mb-1 truncate text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary">
         {{ primaryDisk?.mount ?? "" }}
       </div>
 
@@ -68,7 +68,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
         ></div>
       </div>
 
-      <div class="mb-5 truncate text-[9px] font-semibold text-zinc-500">
+      <div class="mb-5 truncate text-[9px] font-semibold yantra-text-secondary">
         {{ isDegraded("disk") ? unavailable : (diskFreeText ? t("quickMetrics.hostMetrics.free", { size: diskFreeText }) : "") }}
       </div>
 
@@ -77,11 +77,11 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
            rate lives on its own. -->
       <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
         <div class="flex items-baseline justify-between gap-2">
-          <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-zinc-500">
+          <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
             <MemoryStick class="h-3 w-3" />
             {{ t("quickMetrics.hostMetrics.memory") }}
           </span>
-          <span class="text-sm font-black tabular-nums tracking-tight text-zinc-900 dark:text-white">
+          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
             {{ isDegraded("memory") ? unavailable : (memPct !== null ? `${Math.round(memPct)}%` : "—") }}
           </span>
         </div>
@@ -91,7 +91,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
             :style="{ width: `${memPct ?? 0}%` }"
           ></div>
         </div>
-        <span class="truncate text-[9px] font-semibold tabular-nums text-zinc-500">{{ isDegraded("memory") ? "" : (memText ?? "") }}</span>
+        <span class="truncate text-[9px] font-semibold tabular-nums yantra-text-secondary">{{ isDegraded("memory") ? "" : (memText ?? "") }}</span>
       </div>
     </div>
   </div>

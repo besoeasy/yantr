@@ -36,7 +36,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
           <Activity class="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t("quickMetrics.hostMetrics.performance") }}
           </h3>
           <div class="mt-2 flex items-center gap-2">
@@ -56,8 +56,8 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
       <!-- CPU: the headline number gets the full card width because it is the
            one metric here that is a rate, not a static total. -->
       <div class="mb-2 flex items-baseline justify-between gap-3">
-        <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t("quickMetrics.hostMetrics.cpu") }}</span>
-        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white sm:text-5xl">
+        <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("quickMetrics.hostMetrics.cpu") }}</span>
+        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white sm:text-5xl">
           {{ cpuPct !== null ? `${cpuPct}%` : "—" }}
         </span>
       </div>
@@ -79,31 +79,31 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <!-- Load average: 1 / 5 / 15 minute -->
         <div class="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 text-zinc-500">
+          <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Activity class="h-3 w-3" />
             <span class="text-[9px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.load") }}</span>
           </div>
-          <span class="text-sm font-black tabular-nums tracking-tight text-zinc-900 dark:text-white">
+          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
             {{ isDegraded("load") ? unavailable : (loadText ?? "—") }}
           </span>
         </div>
 
         <!-- Uptime -->
         <div class="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 text-zinc-500">
+          <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Timer class="h-3 w-3" />
             <span class="text-[9px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.uptime") }}</span>
           </div>
-          <span class="truncate text-sm font-black tracking-tight text-zinc-900 dark:text-white">{{ uptimeText ?? "—" }}</span>
+          <span class="truncate text-sm font-black tracking-tight yantra-text-primary">{{ uptimeText ?? "—" }}</span>
         </div>
 
         <!-- Temperature: the usual reason to open this card on a homelab box. -->
         <div class="flex flex-col gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 text-zinc-500">
+          <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Thermometer class="h-3 w-3" />
             <span class="text-[9px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.temperature") }}</span>
           </div>
-          <span class="text-sm font-black tabular-nums tracking-tight text-zinc-900 dark:text-white">{{ tempText ?? unavailable }}</span>
+          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">{{ tempText ?? unavailable }}</span>
         </div>
       </div>
     </div>

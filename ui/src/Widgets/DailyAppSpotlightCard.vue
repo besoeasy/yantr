@@ -101,7 +101,7 @@ function handleSelect(appId) {
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
           <Sparkles class="h-4 w-4 text-sky-600 dark:text-sky-400" />
         </div>
-        <h3 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+        <h3 class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
           {{ t("home.dailyAppCard.featuredToday") }}
         </h3>
       </div>
@@ -110,10 +110,10 @@ function handleSelect(appId) {
         :class="[
           'flex shrink-0 items-center gap-2',
           appState === 'running'
-            ? 'text-zinc-900 dark:text-white'
+            ? 'yantra-text-primary'
             : appState === 'installed'
               ? 'text-zinc-700 dark:text-zinc-300'
-              : 'text-zinc-500 dark:text-zinc-400'
+              : 'yantra-text-secondary'
         ]"
       >
         <span v-if="appState === 'running'" class="relative flex h-2 w-2">
@@ -143,19 +143,19 @@ function handleSelect(appId) {
         />
       </div>
 
-      <div class="mt-4 text-3xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-200 group-hover/app:-translate-y-[3px] dark:text-white">
+      <div class="mt-4 text-3xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px] dark:text-white">
         {{ dailyApp?.name }}
       </div>
 
-      <div class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+      <div class="mt-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
         {{ primaryTag || "App" }}
       </div>
 
-      <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed text-zinc-500 line-clamp-3 dark:text-zinc-400">
+      <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3 dark:text-zinc-400">
         {{ dailyApp.short_description }}
       </p>
 
-      <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
+      <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
         {{ t("home.dailyAppCard.viewApp") }}
         <ArrowUpRight :size="14" />
       </span>

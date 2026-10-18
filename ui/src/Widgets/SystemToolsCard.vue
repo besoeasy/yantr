@@ -34,7 +34,7 @@ const volumeCount = computed(() => counts.value?.volumeCount ?? null);
             <Wrench class="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
               {{ t("home.toolsNavCard.systemTools") }}
             </h3>
             <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-sky-600 dark:text-sky-500">
@@ -48,14 +48,14 @@ const volumeCount = computed(() => counts.value?.volumeCount ?? null);
            old corner cluster needing a right-padding hack on the text. -->
       <div class="mt-auto flex flex-col gap-6 pt-6 sm:flex-row sm:items-end">
         <div class="min-w-0 flex-1">
-          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
             {{ t('home.systemToolsCard.systemOverview') }}
           </div>
 
-          <div class="mb-2 text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+          <div class="mb-2 text-4xl font-black tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
             {{ t('home.systemToolsCard.active') }}
           </div>
-          <div class="line-clamp-3 text-xs font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
+          <div class="line-clamp-3 text-xs font-medium leading-relaxed yantra-text-secondary">
             Manage system resources, monitor live logs, and clean up environments.
           </div>
         </div>

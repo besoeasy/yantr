@@ -113,12 +113,12 @@ watch(pickedKey, (next) => {
     <div class="flex flex-1 flex-col gap-8 lg:flex-row lg:gap-0">
       <!-- Identity -->
       <div class="shrink-0 lg:w-60 lg:pr-8">
-        <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+        <p class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
           {{ t("home.dailyDeveloper.title") }}
         </p>
 
         <div class="mt-4 flex items-center gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border yantra-tile">
             <img
               v-if="avatarUrl"
               :src="avatarUrl"
@@ -126,28 +126,28 @@ watch(pickedKey, (next) => {
               referrerpolicy="no-referrer"
               class="h-full w-full object-cover"
             />
-            <span v-else class="text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+            <span v-else class="text-lg font-black tracking-tight yantra-text-primary dark:text-zinc-100">
               {{ initials }}
             </span>
           </div>
           <div class="min-w-0">
             <button
               @click="viewDeveloper"
-              class="block max-w-full truncate text-left text-xl font-bold tracking-tight text-zinc-900 transition-opacity hover:opacity-70 dark:text-white"
+              class="block max-w-full truncate text-left text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70 dark:text-white"
             >
               {{ displayName }}
             </button>
-            <p :title="pickedKey" class="mt-0.5 truncate font-mono text-[11px] text-zinc-400">
+            <p :title="pickedKey" class="mt-0.5 truncate font-mono text-[11px] yantra-text-secondary">
               {{ npubShort }}
             </p>
           </div>
         </div>
 
         <div class="mt-5">
-          <div class="text-lg font-bold tabular-nums text-zinc-900 dark:text-white">
+          <div class="text-lg font-bold tabular-nums yantra-text-primary">
             {{ developerApps.length }}
           </div>
-          <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+          <div class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ t("home.dailyDeveloper.appsCount") }}
           </div>
         </div>
@@ -180,7 +180,7 @@ watch(pickedKey, (next) => {
           <span
             v-if="hiddenAppCount > 0"
             :title="t('home.dailyDeveloper.appsCount')"
-            class="rounded-full border border-dashed border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-400 dark:border-zinc-800"
+            class="rounded-full border border-dashed border-zinc-200 px-3 py-1 text-xs font-medium yantra-text-secondary dark:border-zinc-800"
           >
             {{ t("home.dailyDeveloper.appsMore", { count: hiddenAppCount }) }}
           </span>
@@ -196,7 +196,7 @@ watch(pickedKey, (next) => {
 
           <div class="mt-4 flex flex-row items-start gap-4">
             <div v-for="rail in payments" :key="rail.kind" class="flex min-w-0 flex-1 flex-col">
-              <span class="mb-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+              <span class="mb-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
                 {{ rail.label }}
               </span>
 
@@ -207,7 +207,7 @@ watch(pickedKey, (next) => {
                 <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="104" />
               </div>
 
-              <p class="mt-2 break-all font-mono text-[11px] leading-relaxed text-zinc-500" :title="rail.address">
+              <p class="mt-2 break-all font-mono text-[11px] leading-relaxed yantra-text-secondary" :title="rail.address">
                 {{ rail.address }}
               </p>
 

@@ -98,7 +98,7 @@ const displayLocation = computed(() => {
             <Globe class="h-5 w-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
               {{ t('quickMetrics.machineIdentity.title') }}
             </h3>
             <div class="mt-2 flex items-center gap-2">
@@ -122,7 +122,7 @@ const displayLocation = computed(() => {
            @click="loadIdentity({ force: true })"
            class="group/btn z-20 flex cursor-pointer items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800"
         >
-           <RefreshCw class="h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 group-hover/btn:rotate-180 dark:text-zinc-400" :class="{ 'animate-spin': loading }" />
+           <RefreshCw class="h-3.5 w-3.5 yantra-text-secondary transition-transform duration-200 group-hover/btn:rotate-180 dark:text-zinc-400" :class="{ 'animate-spin': loading }" />
         </button>
       </div>
     </div>
@@ -159,13 +159,13 @@ const displayLocation = computed(() => {
             @blur="isIpHovered = false"
             @click="isIpHovered = !isIpHovered"
           >
-            <div class="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <div class="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
               {{ t('quickMetrics.machineIdentity.publicEndpoint') }}
               <ShieldCheck v-if="identity?.ip" class="h-3.5 w-3.5 text-emerald-500" />
             </div>
 
             <div v-if="loading && !identity" class="h-10 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-            <div v-else class="font-mono text-4xl font-black tracking-tighter text-zinc-900 transition-colors duration-200 group-hover/ip:text-black dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
+            <div v-else class="font-mono text-4xl font-black tracking-tighter yantra-text-primary transition-colors duration-200 group-hover/ip:text-black dark:text-white dark:group-hover/ip:text-zinc-200 break-all">
               {{ displayIp }}
             </div>
           </button>
@@ -182,24 +182,24 @@ const displayLocation = computed(() => {
               @blur="isLocationHovered = false"
               @click="isLocationHovered = !isLocationHovered"
             >
-              <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+              <div class="flex items-center gap-1.5 yantra-text-secondary">
                 <MapPin class="h-3.5 w-3.5" />
                 <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.location') }}</span>
               </div>
               <div v-if="loading && !identity" class="h-4 w-20 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-              <div v-else class="truncate text-sm font-black text-zinc-900 transition-colors duration-200 dark:text-white" :title="locationText">
+              <div v-else class="truncate text-sm font-black yantra-text-primary transition-colors duration-200 dark:text-white" :title="locationText">
                 {{ displayLocation }}
               </div>
             </button>
 
             <!-- Provider Card -->
             <div class="flex flex-col gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
-              <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+              <div class="flex items-center gap-1.5 yantra-text-secondary">
                 <Server class="h-3.5 w-3.5" />
                 <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.machineIdentity.provider') }}</span>
               </div>
               <div v-if="loading && !identity" class="h-4 w-24 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-              <div v-else class="truncate text-sm font-black text-zinc-900 dark:text-white" :title="ispText">
+              <div v-else class="truncate text-sm font-black yantra-text-primary" :title="ispText">
                 {{ ispText }}
               </div>
             </div>

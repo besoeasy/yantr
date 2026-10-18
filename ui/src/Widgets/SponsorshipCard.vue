@@ -21,11 +21,11 @@ const { t } = useI18n();
           <Heart class="h-5 w-5 fill-current text-rose-500" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t("sponsorCard.label") }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
               {{ t("home.externalLinks.resources") }}
             </span>
           </div>
@@ -37,10 +37,10 @@ const { t } = useI18n();
          order, so the button spans the card rather than competing with the
          title for the same row. -->
     <div class="relative z-10 mt-auto flex flex-col pt-5">
-      <div class="mb-1.5 text-2xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
+      <div class="mb-1.5 text-2xl font-black leading-[1.2] tracking-tight yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
         {{ t("sponsorCard.title") }}
       </div>
-      <div class="line-clamp-3 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+      <div class="line-clamp-3 text-xs leading-relaxed yantra-text-secondary">
         {{ t("sponsorCard.description") }}
       </div>
 

@@ -53,7 +53,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
           <Clock class="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t('quickMetrics.averageUptime.title') }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
@@ -68,11 +68,11 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
 
     <!-- Main Body -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+      <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
         {{ t('quickMetrics.averageUptime.timeActive') }}
       </div>
       
-      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
+      <div class="mb-6 text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] sm:text-5xl dark:text-white">
         {{ stats.formatted }}
       </div>
 
@@ -80,12 +80,12 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
       <div class="grid grid-cols-5 gap-3">
         <!-- Stats Card -->
         <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+          <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Zap class="h-3.5 w-3.5" />
             <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.averageUptime.active') }}</span>
           </div>
-          <div class="text-2xl font-black leading-none tracking-tight text-zinc-900 tabular-nums dark:text-white">
-             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{{ t('quickMetrics.averageUptime.apps') }}</span>
+          <div class="text-2xl font-black leading-none tracking-tight yantra-text-primary tabular-nums dark:text-white">
+             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('quickMetrics.averageUptime.apps') }}</span>
           </div>
         </div>
         
@@ -107,7 +107,7 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
                    fill="none" 
                    stroke="currentColor" 
                    stroke-width="2" 
-                   class="text-zinc-900 dark:text-white"
+                   class="yantra-text-primary"
                  />
               </svg>
            </div>

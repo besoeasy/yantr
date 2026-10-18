@@ -225,8 +225,8 @@ watch(
     v-if="showcase.length"
     class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-zinc-200 bg-white p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
-    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
-      <MessageSquareQuote :size="13" class="text-zinc-400 dark:text-zinc-500" />
+    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+      <MessageSquareQuote :size="13" class="yantra-text-secondary" />
       {{ t("home.latestReview.title") }}
     </h3>
 
@@ -263,7 +263,7 @@ watch(
               :href="authorUrlOf(review)"
               target="_blank"
               rel="noopener noreferrer"
-              class="min-w-0 truncate text-[11px] text-zinc-400 transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
+              class="min-w-0 truncate text-[11px] yantra-text-secondary transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
               :title="t('home.latestReview.byAuthor')"
             >
               {{ authorNameOf(review) }}
@@ -273,7 +273,7 @@ watch(
           <time
             v-if="formatTime(review.created_at)"
             :datetime="new Date(Number(review.created_at) * 1000).toISOString()"
-            class="shrink-0 font-mono text-[10px] text-zinc-400"
+            class="shrink-0 font-mono text-[10px] yantra-text-secondary"
           >
             {{ formatTime(review.created_at) }}
           </time>
@@ -296,12 +296,12 @@ watch(
     v-else-if="emptyKnown"
     class="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-dashed border-zinc-200 bg-white p-7 text-left dark:border-zinc-800 dark:bg-black"
   >
-    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+    <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
       <MessageSquareQuote :size="13" />
       {{ t("home.latestReview.title") }}
     </h3>
 
-    <p class="mt-auto max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+    <p class="mt-auto max-w-sm text-sm leading-relaxed yantra-text-secondary">
       {{ t("home.latestReview.empty") }}
     </p>
 
@@ -309,7 +309,7 @@ watch(
       <button
         type="button"
         @click="router.push(appsRoute())"
-        class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
+        class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors hover:text-zinc-900 dark:hover:text-zinc-100"
       >
         {{ t("nav.apps") }}
         <ArrowUpRight :size="13" />

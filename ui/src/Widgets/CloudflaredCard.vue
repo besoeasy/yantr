@@ -119,8 +119,8 @@ async function deploy() {
             <CheckCircle class="h-6 w-6 text-emerald-600 dark:text-emerald-500" />
           </div>
           <div class="text-center">
-            <p class="text-sm font-bold tracking-tight text-zinc-900 dark:text-white">{{ t('cloudflaredCard.tunnelDeployed') }}</p>
-            <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.containerStarting') }}</p>
+            <p class="text-sm font-bold tracking-tight yantra-text-primary">{{ t('cloudflaredCard.tunnelDeployed') }}</p>
+            <p class="mt-1 text-[11px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('cloudflaredCard.containerStarting') }}</p>
           </div>
         </div>
       </transition>
@@ -133,7 +133,7 @@ async function deploy() {
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
+            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
             <div class="mt-2 flex items-center gap-1.5">
               <span class="text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</span>
             </div>
@@ -141,17 +141,17 @@ async function deploy() {
         </div>
         <div class="flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900/50">
            <div class="relative h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500"></div>
-           <span class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{{ t('cloudflaredCard.notInstalled') }}</span>
+           <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t('cloudflaredCard.notInstalled') }}</span>
         </div>
       </div>
 
       <!-- Half-width content: context and token entry get their own columns. -->
       <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
         <div>
-          <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
+          <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
             {{ t('cloudflaredCard.secureTunnel') }}
           </div>
-          <div class="text-xs font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
+          <div class="text-xs font-medium leading-relaxed yantra-text-secondary">
             {{ t('cloudflaredCard.description') }}
           </div>
 
@@ -159,7 +159,7 @@ async function deploy() {
             href="https://one.dash.cloudflare.com/"
             target="_blank"
             rel="noopener noreferrer"
-            class="group/link mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-zinc-500 transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+            class="group/link mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 yantra-text-secondary transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
           >
             <Key class="h-3.5 w-3.5" />
             <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
@@ -176,7 +176,7 @@ async function deploy() {
               placeholder="eyJhIjoiY…"
               autocomplete="off"
               spellcheck="false"
-              class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 font-mono text-sm text-zinc-900 outline-none transition-[border-color,box-shadow,transform] duration-200 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400/20 dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:focus:ring-zinc-600/20"
+              class="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 pr-10 font-mono text-sm yantra-text-primary outline-none transition-[border-color,box-shadow,transform] duration-200 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400/20 dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-zinc-600 dark:focus:ring-zinc-600/20"
               :class="tunnelToken.trim() === ''
                 ? ''
                 : isValidToken
@@ -188,7 +188,7 @@ async function deploy() {
               <AlertCircle v-else-if="tunnelToken.trim()" class="h-4 w-4 text-red-500" />
             </div>
           </div>
-          <div v-if="parsedToken" class="mt-2 space-y-1 font-mono text-[11px] text-zinc-500 dark:text-zinc-400">
+          <div v-if="parsedToken" class="mt-2 space-y-1 font-mono text-[11px] yantra-text-secondary">
             <div class="truncate" :title="parsedToken.accountId">Account: {{ parsedToken.accountId }}</div>
             <div class="truncate" :title="parsedToken.tunnelId">Tunnel: {{ parsedToken.tunnelId }}</div>
           </div>
@@ -216,7 +216,7 @@ async function deploy() {
             class="group/cta relative mt-3 flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-xl border transition-[border-color,box-shadow,transform] duration-200"
             :class="isValidToken && !deploying
               ? 'border-zinc-900 bg-zinc-900 text-white hover:bg-black active:scale-[0.98] dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white'
-              : 'cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600'"
+              : 'cursor-not-allowed border-zinc-200 bg-zinc-100 yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600'"
           >
             <div class="relative z-10 flex items-center gap-2">
               <Loader v-if="deploying" class="h-4 w-4 animate-spin" />
@@ -238,7 +238,7 @@ async function deploy() {
             <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
+            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
             <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</p>
           </div>
         </div>
@@ -258,10 +258,10 @@ async function deploy() {
       <!-- Half-width body: the reading stays left, the ops facts stack right. -->
       <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
         <div>
-          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
             {{ t('cloudflaredCard.connectionStatus') }}
           </div>
-          <div class="text-4xl font-black tracking-tighter text-zinc-900 transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
+          <div class="text-4xl font-black tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px] dark:text-white">
             {{ t('cloudflaredCard.secureTunnel') }}
           </div>
         </div>
@@ -269,22 +269,22 @@ async function deploy() {
         <!-- Ops facts: uptime and image version share one column, stacked. -->
         <div class="flex flex-col gap-2">
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
-            <div class="flex items-center gap-2 text-zinc-500">
+            <div class="flex items-center gap-2 yantra-text-secondary">
               <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
               <CloudOff v-else class="h-3.5 w-3.5 text-red-500" />
               <span class="text-[9px] font-semibold uppercase tracking-widest">{{ isRunning ? t('cloudflaredCard.uptime') : t('cloudflaredCard.status') }}</span>
             </div>
-            <div class="tabular-nums text-sm font-black tracking-tight text-zinc-900 dark:text-white">
+            <div class="tabular-nums text-sm font-black tracking-tight yantra-text-primary">
                {{ isRunning ? formatUptime(uptimeMs) : t('cloudflaredCard.offline') }}
             </div>
           </div>
 
           <div class="flex flex-col gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
-            <div class="flex items-center gap-2 text-zinc-500">
+            <div class="flex items-center gap-2 yantra-text-secondary">
               <Globe class="h-3.5 w-3.5" />
               <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('cloudflaredCard.version') }}</span>
             </div>
-            <div class="truncate font-mono text-sm font-black tracking-tight text-zinc-900 dark:text-white">
+            <div class="truncate font-mono text-sm font-black tracking-tight yantra-text-primary">
                {{ imageVersion }}
             </div>
           </div>

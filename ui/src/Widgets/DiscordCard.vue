@@ -36,11 +36,11 @@ const { t } = useI18n();
           <Discord class="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
         </div>
         <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight text-zinc-900 transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black dark:text-white dark:group-hover:text-white">
             {{ t("discordCard.label") }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
+            <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
               {{ t("discordCard.subtitle") }}
             </span>
           </div>
@@ -48,16 +48,16 @@ const { t } = useI18n();
       </div>
 
       <div class="flex h-8 w-8 shrink-0 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-[border-color,box-shadow,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-        <Users class="h-5 w-5 text-zinc-400 transition-colors group-hover:text-indigo-500 dark:text-zinc-600 dark:group-hover:text-indigo-400" />
+        <Users class="h-5 w-5 yantra-text-secondary transition-colors group-hover:text-indigo-500 dark:text-zinc-600 dark:group-hover:text-indigo-400" />
       </div>
     </div>
 
     <!-- Content -->
     <div class="relative z-10 mt-auto flex flex-col pt-6">
-      <div class="mb-2 text-2xl font-black leading-[1.2] tracking-tight text-zinc-900 transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
+      <div class="mb-2 text-2xl font-black leading-[1.2] tracking-tight yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] dark:text-white">
         {{ t("discordCard.title") }}
       </div>
-      <div class="mb-5 text-xs leading-relaxed text-zinc-500 line-clamp-3 dark:text-zinc-400">
+      <div class="mb-5 text-xs leading-relaxed yantra-text-secondary line-clamp-3 dark:text-zinc-400">
         {{ t("discordCard.description") }}
       </div>
 
@@ -78,7 +78,7 @@ const { t } = useI18n();
       </div>
 
       <!-- Footer note -->
-      <div class="mt-4 flex items-center gap-1.5 border-t border-zinc-100 pt-3 text-[9px] font-semibold uppercase tracking-widest text-zinc-400 dark:border-zinc-900 dark:text-zinc-600">
+      <div class="mt-4 flex items-center gap-1.5 border-t border-zinc-100 pt-3 text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary dark:border-zinc-900 dark:text-zinc-600">
         <span class="relative flex h-1.5 w-1.5">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
