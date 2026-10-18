@@ -214,7 +214,12 @@
     "nostrOpen": "In einer Nostr-App öffnen",
     "nostrCopy": "Öffentlichen Schlüssel kopieren",
     "nostrCopied": "Kopiert",
-    "nostrQrLabel": "QR-Code, der eine Direktnachricht mit {name} auf Nostr öffnet"
+    "nostrQrLabel": "QR-Code, der eine Direktnachricht mit {name} auf Nostr öffnet",
+    "activity": "Aktivität im App-Store",
+    "activityHint": "Kommentare, die dieser Entwickler zu Apps im Katalog hinterlassen hat, auf Nostr signiert.",
+    "activityEmpty": "Keine Kommentare vorhanden — nichts, was dieses Konto auf den erreichbaren Relays signiert hat.",
+    "activityLoadFailed": "Kein Relay erreichbar, daher gibt es nichts zu zeigen. Netzwerk prüfen und erneut versuchen.",
+    "activityUnknownApp": "Nicht im Katalog dieses Hosts"
   },
   "container": {
     "status": "Status",

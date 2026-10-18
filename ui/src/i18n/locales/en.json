@@ -250,7 +250,12 @@
     "nostrOpen": "Open in a Nostr app",
     "nostrCopy": "Copy public key",
     "nostrCopied": "Copied",
-    "nostrQrLabel": "QR code that opens a direct message with {name} on Nostr"
+    "nostrQrLabel": "QR code that opens a direct message with {name} on Nostr",
+    "activity": "App store activity",
+    "activityHint": "Comments this developer has left on apps in the catalog, signed on Nostr.",
+    "activityEmpty": "No comments on record — nothing this account has signed on the relays we could reach.",
+    "activityLoadFailed": "No relay could be reached, so there is no activity to show. Check your network and try again.",
+    "activityUnknownApp": "Not in this host's catalog"
   },
   "container": {
     "status": "Status",

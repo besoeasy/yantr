@@ -213,7 +213,12 @@
     "nostrOpen": "Ouvrir dans une application Nostr",
     "nostrCopy": "Copier la clé publique",
     "nostrCopied": "Copiée",
-    "nostrQrLabel": "Code QR ouvrant un message privé avec {name} sur Nostr"
+    "nostrQrLabel": "Code QR ouvrant un message privé avec {name} sur Nostr",
+    "activity": "Activité sur l'app store",
+    "activityHint": "Commentaires laissés par ce développeur sur les apps du catalogue, signés sur Nostr.",
+    "activityEmpty": "Aucun commentaire enregistré — rien que ce compte ait signé sur les relays accessibles.",
+    "activityLoadFailed": "Aucun relay n'a répondu, donc aucune activité à afficher. Vérifiez votre réseau puis réessayez.",
+    "activityUnknownApp": "Absent du catalogue de cet hôte"
   },
   "container": {
     "status": "Statut",

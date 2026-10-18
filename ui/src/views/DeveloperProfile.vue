@@ -6,6 +6,7 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { useDeveloperProfile } from "../composables/useDeveloperProfile";
 import AppCard from "../components/AppCard.vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
+import DeveloperComments from "../components/DeveloperComments.vue";
 import AppLayout from "../components/AppLayout.vue";
 import {
   ArrowLeft,
@@ -326,6 +327,11 @@ watch(developerRef, (next) => {
             />
           </div>
         </section>
+
+        <!-- Comment activity across the catalog. Below the apps, because the
+             apps are why a reader came; the comments add account context on
+             top of what the local catalog can answer on its own. -->
+        <DeveloperComments :developer-key="developerRef" />
       </template>
   </AppLayout>
 </template>

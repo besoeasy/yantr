@@ -3,12 +3,15 @@ import { finalizeEvent, generateSecretKey, getPublicKey } from "nostr-tools";
 import {
   COMMENT_EXPIRY_SECONDS,
   appCommentTag,
+  authorCommentFilter,
   buildCommentTags,
+  commentAppIds,
   commentExpiryTimestamp,
   commentFilter,
   expirationOf,
   hexToNpub,
   isAppComment,
+  isAuthorYantrComment,
   isAuthentic,
   newestKind0Profiles,
   npubToHex,
@@ -69,6 +72,71 @@ describe("commentFilter", () => {
     expect(filter.kinds).toEqual([1]);
     expect(filter["#t"]).toEqual(["yantr-ollama"]);
     expect(filter.limit).toBeGreaterThan(0);
+  });
+});
+
+describe("authorCommentFilter", () => {
+  it("pins authorship and queries the bare yantr scope", () => {
+    const filter = authorCommentFilter(JACK_NPUB);
+    expect(filter).toBeNull(); // bech32, not hex — relays speak hex
+    const hex = npubToHex(JACK_NPUB);
+    const filterByHex = authorCommentFilter(hex);
+    expect(filterByHex.kinds).toEqual([1]);
+    expect(filterByHex.authors).toEqual([JACK_HEX]);
+    expect(filterByHex["#t"]).toEqual(["yantr"]);
+    expect(filterByHex.limit).toBeGreaterThan(0);
+  });
+
+  it("is null for a value that is not a pubkey, never an author-less filter", () => {
+    expect(authorCommentFilter("")).toBeNull();
+    expect(authorCommentFilter("not-a-key")).toBeNull();
+    expect(authorCommentFilter("z".repeat(64))).toBeNull();
+  });
+});
+
+describe("commentAppIds", () => {
+  it("extracts per-app tags, skipping the bare scope", () => {
+    expect(commentAppIds(commentEvent())).toEqual(["ollama"]);
+    expect(
+      commentAppIds(commentEvent({ tags: [["t", "yantr"], ["t", "yantr-ollama"], ["t", "yantr-open-webui"]] }))
+    ).toEqual(["ollama", "open-webui"]);
+  });
+
+  it("is empty for an event with no per-app tag at all", () => {
+    expect(commentAppIds(commentEvent({ tags: [["t", "yantr"]] }))).toEqual([]);
+    expect(commentAppIds(commentEvent({ tags: [] }))).toEqual([]);
+    expect(commentAppIds(null)).toEqual([]);
+  });
+});
+
+describe("isAuthorYantrComment", () => {
+  it("accepts a well-formed comment by the account", () => {
+    expect(isAuthorYantrComment(commentEvent(), JACK_HEX, NOW)).toBe(true);
+  });
+
+  it("accepts a comment tagged for any app, not just one", () => {
+    expect(isAuthorYantrComment(commentEvent(), JACK_HEX, NOW)).toBe(true);
+    expect(isAuthorYantrComment(commentEvent({ tags: [["t", "yantr"], ["t", "yantr-open-webui"], ["expiration", String(NOW + COMMENT_EXPIRY_SECONDS)]] }), JACK_HEX, NOW)).toBe(
+      true
+    );
+  });
+
+  it("rejects another account's note", () => {
+    const other = generateSecretKey();
+    expect(isAuthorYantrComment(commentEvent({ pubkey: getPublicKey(other) }), JACK_HEX, NOW)).toBe(false);
+  });
+
+  it("rejects notes under the bare scope only — no per-app tag, no app comment", () => {
+    expect(
+      isAuthorYantrComment(commentEvent({ tags: [["t", "yantr"], ["expiration", String(NOW + COMMENT_EXPIRY_SECONDS)]] }), JACK_HEX, NOW)
+    ).toBe(false);
+  });
+
+  it("rejects unsigned-shaped, untimely and expired events like isAppComment does", () => {
+    expect(isAuthorYantrComment(null, JACK_HEX, NOW)).toBe(false);
+    expect(isAuthorYantrComment(commentEvent({ created_at: NOW + 3600 }), JACK_HEX, NOW)).toBe(false);
+    expect(isAuthorYantrComment(commentEvent({ tags: [["t", "yantr"], ["t", "yantr-ollama"], ["expiration", String(NOW - 1)]] }), JACK_HEX, NOW)).toBe(false);
+    expect(isAuthorYantrComment(commentEvent({ content: "   " }), JACK_HEX, NOW)).toBe(false);
   });
 });
 

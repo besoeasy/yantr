@@ -213,7 +213,12 @@
     "nostrOpen": "Abrir en una aplicación de Nostr",
     "nostrCopy": "Copiar clave pública",
     "nostrCopied": "Copiada",
-    "nostrQrLabel": "Código QR que abre un mensaje directo con {name} en Nostr"
+    "nostrQrLabel": "Código QR que abre un mensaje directo con {name} en Nostr",
+    "activity": "Actividad en la tienda",
+    "activityHint": "Comentarios que este desarrollador ha dejado en las apps del catálogo, firmados en Nostr.",
+    "activityEmpty": "No hay comentarios registrados: nada firmado por esta cuenta en los relays que pudimos alcanzar.",
+    "activityLoadFailed": "No se pudo contactar ningún relay, así que no hay actividad que mostrar. Revisa tu red e inténtalo de nuevo.",
+    "activityUnknownApp": "No está en el catálogo de este host"
   },
   "container": {
     "status": "Estado",

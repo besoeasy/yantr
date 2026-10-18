@@ -130,6 +130,90 @@ export function isAppComment(event, appId, nowSec = Math.floor(Date.now() / 1000
   return true;
 }
 
+// commentAppIds lists the catalog ids an event's per-app `t` tags name —
+// values shaped `yantr-<id>` — in tag order, deduplicated. The developer page
+// maps these back onto the catalog to say which app each comment was made on;
+// the ids are whatever the author tagged, so the mapper, not this function,
+// decides what is unknown there. Bare `yantr` is the scope, not an app.
+export function commentAppIds(event) {
+  const ids = [];
+  if (!event || !Array.isArray(event.tags)) return ids;
+  for (const tag of event.tags) {
+    if (!Array.isArray(tag) || tag[0] !== "t") continue;
+    const value = String(tag[1] ?? "");
+    if (!value.startsWith(`${NOSTR_COMMENT_TAG}-`)) continue;
+    const id = value.slice(NOSTR_COMMENT_TAG.length + 1).trim().toLowerCase();
+    if (id && !ids.includes(id)) ids.push(id);
+  }
+  return ids;
+}
+
+// authorCommentFilter is the NIP-01 REQ that finds one account's Yantr
+// comments — the author-shaped twin of commentFilter, which is app-shaped.
+// Relays AND across keys, so "comments by this account under any per-app tag"
+// cannot name the app tag on the relay: query the bare `yantr` scope with
+// authorship pinned, and let isAuthorYantrComment require a per-app tag
+// client-side.
+//
+// Null for a value that is not a valid pubkey, so a caller never sends an
+// author-less filter — an empty `authors` array matches every author, which
+// would turn a broken key into a firehose.
+export function authorCommentFilter(pubkey, limit = 100) {
+  const author = String(pubkey ?? "").trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(author)) return null;
+  const capped = Math.min(Math.max(Number(limit) || 100, 1), 500);
+  return {
+    kinds: [COMMENT_KIND],
+    authors: [author],
+    "#t": [NOSTR_COMMENT_TAG],
+    limit: capped,
+  };
+}
+
+// isAuthorYantrComment decides whether a relay-delivered event is a displayable
+// Yantr comment by one account — what the developer page means by "this
+// author's app-store activity". Every check mirrors isAppComment's, with two
+// differences: the event must be signed by the account the page is about, and
+// any per-app tag passes — the page aggregates across the catalog, so the app
+// requirement is "names at least one", not "names this one". A note under the
+// bare `yantr` scope alone is not an app comment and stays out.
+export function isAuthorYantrComment(
+  event,
+  pubkey,
+  nowSec = Math.floor(Date.now() / 1000)
+) {
+  if (!event || event.kind !== COMMENT_KIND) return false;
+  const author = String(pubkey ?? "").trim().toLowerCase();
+  if (!/^[0-9a-f]{64}$/.test(author)) return false;
+  if (String(event.pubkey ?? "").trim().toLowerCase() !== author) return false;
+  if (!Array.isArray(event.tags)) return false;
+
+  // Spelled out over a loop on hasTag so the walk stops at the first per-app
+  // hit rather than reading every `t` tag of a busy note.
+  const perApp = commentAppIds(event);
+  if (perApp.length === 0) return false;
+  let scopesToYantr = false;
+  for (const tag of event.tags) {
+    if (Array.isArray(tag) && tag[0] === "t" && tag[1] === NOSTR_COMMENT_TAG) {
+      scopesToYantr = true;
+      break;
+    }
+  }
+  if (!scopesToYantr) return false;
+
+  const content = typeof event.content === "string" ? event.content.trim() : "";
+  if (!content) return false;
+
+  const created = Number(event.created_at);
+  if (!Number.isFinite(created)) return false;
+  if (created > nowSec + 5 * 60) return false;
+
+  const expiry = expirationOf(event);
+  if (expiry !== null && expiry <= nowSec) return false;
+
+  return true;
+}
+
 // ─── Content sanitisation ───────────────────────────────────────────────────
 // Comment bodies render via Vue interpolation (never v-html), so markup is
 // already inert. What interpolation does NOT stop is non-markup abuse from a
