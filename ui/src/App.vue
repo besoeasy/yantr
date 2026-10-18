@@ -26,6 +26,10 @@ const GITHUB_PATH = "M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.5
 
 // A functional component so each link can carry its own `size` the way the
 // lucide icons do, instead of a fixed 24px box sitting in a 40px button.
+// fill defaults to currentColor so a brand glyph takes the link's own colour
+// and follows the theme. Without it an SVG paints black, which is invisible on
+// the dark chrome — and it is invisible only there, so it reads as a light-mode
+// pass until someone switches.
 const brandIcon = (path, extra) => (props) => {
   const attrs = { ...(props || {}) };
   const size = Number(attrs.size) || 18;
@@ -35,9 +39,10 @@ const brandIcon = (path, extra) => (props) => {
     viewBox: "0 0 24 24",
     width: size,
     height: size,
+    fill: "currentColor",
     "aria-hidden": "true",
     ...attrs,
-  }, [h("path", { ...extra, d: path })]);
+  }, [h("path", { fill: "currentColor", ...extra, d: path })]);
 };
 
 const GithubIcon = brandIcon(GITHUB_PATH, { "fill-rule": "evenodd", "clip-rule": "evenodd" });
