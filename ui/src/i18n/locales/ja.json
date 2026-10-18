@@ -104,7 +104,10 @@
       "openOverview": "アプリを開く",
       "installed": "インストール済み",
       "available": "利用可能",
-      "running": "実行中 ({count})"
+      "running": "実行中 ({count})",
+      "upNext": "次のおすすめ",
+      "tomorrow": "明日",
+      "inDays": "{count} 日後"
     },
     "dailyDeveloper": {
       "title": "今日の開発者",

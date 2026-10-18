@@ -104,7 +104,10 @@
       "openOverview": "Ouvrir l'application",
       "installed": "Installé",
       "available": "Disponible",
-      "running": "Actif ({count})"
+      "running": "Actif ({count})",
+      "upNext": "À suivre",
+      "tomorrow": "Demain",
+      "inDays": "Dans {count} jours"
     },
     "dailyDeveloper": {
       "title": "Développeur du jour",

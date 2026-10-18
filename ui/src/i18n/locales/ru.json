@@ -104,7 +104,10 @@
       "openOverview": "Открыть приложение",
       "installed": "Установлено",
       "available": "Доступно",
-      "running": "Активно ({count})"
+      "running": "Активно ({count})",
+      "upNext": "Далее",
+      "tomorrow": "Завтра",
+      "inDays": "Через {count} дн."
     },
     "dailyDeveloper": {
       "title": "Разработчик дня",
