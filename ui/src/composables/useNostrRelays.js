@@ -1,6 +1,7 @@
 import { ref } from "vue";
 import { useApiUrl } from "./useApiUrl";
 import { NOSTR_RELAYS } from "../utils/nostr";
+import { NOSTR_SCOPE, readNostrQuery, writeNostrQuery } from "../utils/nostrCache";
 
 // The relay set the backend is configured with, asked once per session.
 //
@@ -16,6 +17,12 @@ import { NOSTR_RELAYS } from "../utils/nostr";
 // The set is memoised at module level for the session: it does not change while
 // Yantr runs, so a second page asking for it costs nothing, and two pages in the
 // same session can never disagree about which relays are in play.
+//
+// Across sessions it is kept in IndexedDB for the same twenty hours as the
+// query answers (utils/nostrCache.js). The host's own configuration is the most
+// stable thing any of these reads depends on, and it used to be refetched on
+// every page load — including every dashboard load, where it gates the relay
+// fan-out for the review card.
 
 // TODO(presence-fanout): if a future feature reads from relays without a
 // backend to ask (the website's static build, for instance), this is the module
@@ -32,28 +39,36 @@ export function useNostrRelays() {
   const relays = ref(sessionRelays || NOSTR_RELAYS);
   const loaded = ref(!!sessionRelays);
 
+  async function fetchRelays() {
+    const data = await fetch(`${apiUrl.value}/api/nostr/relays`)
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    const list = Array.isArray(data?.relays) ? data.relays : [];
+    // An empty or malformed answer is treated as "no override", not as "use no
+    // relays": a broken endpoint must not silently stop every Nostr read.
+    const set = list.filter((r) => typeof r === "string" && /^wss?:\/\//i.test(r));
+    const resolved = set.length > 0 ? set : NOSTR_RELAYS;
+
+    await writeNostrQuery(NOSTR_SCOPE.relaySet, "current", resolved, { answered: 1 });
+    return resolved;
+  }
+
   async function load() {
     if (sessionRelays) {
       relays.value = sessionRelays;
       loaded.value = true;
       return sessionRelays;
     }
+    // The stored set first. It is only a relay list, it cannot be wrong in a
+    // way that matters, and a host that changed YANTR_NOSTR_RELAYS will be
+    // picked up on the next reload after the window passes.
     if (!sessionPromise) {
-      sessionPromise = fetch(`${apiUrl.value}/api/nostr/relays`)
-        .then((res) => (res.ok ? res.json() : null))
-        .then((data) => {
-          const list = Array.isArray(data?.relays) ? data.relays : [];
-          // An empty or malformed answer is treated as "no override", not as
-          // "use no relays": a broken endpoint must not silently stop every
-          // Nostr read in the UI.
-          if (list.length === 0) return NOSTR_RELAYS;
-          return list.filter((r) => typeof r === "string" && /^wss?:\/\//i.test(r));
-        })
-        .catch(() => NOSTR_RELAYS)
-        .then((list) => {
-          sessionRelays = list.length > 0 ? list : NOSTR_RELAYS;
-          return sessionRelays;
-        });
+      sessionPromise = (async () => {
+        const stored = await readNostrQuery(NOSTR_SCOPE.relaySet, "current");
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+        return fetchRelays();
+      })();
     }
 
     try {

@@ -12,6 +12,13 @@ import {
 } from "../utils/nostr";
 import { queryRelays } from "../utils/relay";
 import { useNostrRelays } from "./useNostrRelays";
+import {
+  NOSTR_SCOPE,
+  readNostrQuery,
+  writeCachedProfile,
+  writeNostrFailure,
+  writeNostrQuery,
+} from "../utils/nostrCache";
 
 // One account's app-store comments, for the developer page.
 //
@@ -68,6 +75,26 @@ export function useDeveloperComments(developerKey) {
 
     loading.value = true;
 
+    // The account's own thread, from the reader's own machine. Same contract
+    // as the app thread's cache: verified, sanitised, and written only after a
+    // relay actually answered.
+    const cached = await readNostrQuery(NOSTR_SCOPE.developerComments, keyHex.value);
+    if (cached?.failed) {
+      loadFailed.value = true;
+      loading.value = false;
+      fetchProfile();
+      return;
+    }
+    if (cached) {
+      comments.value = Array.isArray(cached.comments) ? cached.comments : [];
+      relaysReached.value = Number(cached.reached) || 0;
+      relaysTotal.value = Number(cached.total) || relays.value.length;
+      loadFailed.value = relaysReached.value === 0;
+      loading.value = false;
+      fetchProfile();
+      return;
+    }
+
     const asked = await loadRelays();
     const { events, reached, total } = await queryRelays(asked, filter, 1, {
       subIdPrefix: "yantr-developer-comments",
@@ -96,6 +123,19 @@ export function useDeveloperComments(developerKey) {
     loadFailed.value = relaysReached.value === 0;
     loading.value = false;
 
+    if (relaysReached.value === 0) {
+      await writeNostrFailure(NOSTR_SCOPE.developerComments, keyHex.value);
+      fetchProfile();
+      return;
+    }
+
+    await writeNostrQuery(
+      NOSTR_SCOPE.developerComments,
+      keyHex.value,
+      { comments: comments.value, reached: relaysReached.value, total: relaysTotal.value },
+      { answered: relaysReached.value }
+    );
+
     fetchProfile();
   }
 
@@ -105,6 +145,15 @@ export function useDeveloperComments(developerKey) {
   // page already shows the key before the name resolves.
   async function fetchProfile() {
     if (!keyHex.value) return;
+
+    // Same record the comment threads use for their authors, so this page does
+    // not ask for a kind-0 the reader's machine already answered today.
+    const cached = await readNostrQuery(NOSTR_SCOPE.authorProfile, keyHex.value);
+    if (cached) {
+      profile.value = cached;
+      return;
+    }
+
     const { events } = await queryRelays(
       relays.value,
       profileFilter([keyHex.value]),
@@ -114,6 +163,7 @@ export function useDeveloperComments(developerKey) {
     const newest = newestKind0Profiles(events);
     if (newest[keyHex.value]) {
       profile.value = newest[keyHex.value];
+      writeCachedProfile(keyHex.value, newest[keyHex.value], { answered: 1 });
     }
   }
 

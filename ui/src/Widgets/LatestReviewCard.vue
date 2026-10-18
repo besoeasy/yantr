@@ -28,6 +28,14 @@ import {
   yantrFeedFilter,
 } from "../utils/nostr";
 import { queryRelays } from "../utils/relay";
+import {
+  NOSTR_SCOPE,
+  readCachedProfiles,
+  readNostrQuery,
+  writeCachedProfile,
+  writeNostrFailure,
+  writeNostrQuery,
+} from "../utils/nostrCache";
 
 // The newest displayable yantr comments on any app in the catalog, as many as
 // fit. The feed-wide REQ (bare `yantr` scope, any author) catches the notes;
@@ -133,17 +141,85 @@ async function fetchAuthorProfiles() {
   );
   if (wanted.length === 0) return;
 
-  const { events } = await queryRelays(relays.value, profileFilter(wanted), PROFILE_KIND, {
+  // Names are cached per public key by every Nostr surface in the app, so this
+  // card asks for an author only if no thread has already learned their name.
+  const known = await readCachedProfiles(wanted);
+  const unknown = wanted.filter((hex) => !known[hex]);
+  if (Object.keys(known).length > 0) {
+    profiles.value = { ...profiles.value, ...known };
+  }
+  if (unknown.length === 0) return;
+
+  const { events } = await queryRelays(relays.value, profileFilter(unknown), PROFILE_KIND, {
     subIdPrefix: "yantr-latest-review-profiles",
   });
 
   const newest = newestKind0Profiles(events);
   if (Object.keys(newest).length > 0) {
     profiles.value = { ...profiles.value, ...newest };
+    for (const [hex, profile] of Object.entries(newest)) {
+      writeCachedProfile(hex, profile, { answered: 1 });
+    }
   }
 }
 
+// buildCandidates applies every rule a displayed review has to clear: a
+// per-app tag naming an app in today's catalog, a verified signature on the raw
+// event, displayable sanitised content, and one note per author per wording.
+// It takes plain records rather than events, so the cached path and the relay
+// path cannot drift apart.
+function buildCandidates(records, catalogApps) {
+  const appById = new Map(catalogApps.map((app) => [app?.id, app].filter(Boolean)));
+
+  const byId = new Map();
+  const seenByAuthor = new Set();
+  for (const record of records) {
+    if (!record || typeof record.id !== "string") continue;
+    if (byId.has(record.id)) continue;
+
+    const appId = record.appId;
+    if (!appId || !appById.has(appId)) continue;
+    if (record.pubkey && record.signature && !isAuthentic(record)) continue;
+
+    const content = sanitizeCommentContent(record.content);
+    if (!content) continue;
+
+    const sameNote = `${record.pubkey}\u0000${content}`;
+    if (seenByAuthor.has(sameNote)) continue;
+    seenByAuthor.add(sameNote);
+
+    byId.set(record.id, {
+      id: record.id,
+      pubkey: record.pubkey,
+      created_at: record.created_at,
+      sig: record.sig,
+      content,
+      app: appById.get(appId),
+      appId,
+    });
+  }
+  return [...byId.values()].slice(0, SHOWCASE_COUNT);
+}
+
 async function fetchData(catalogApps) {
+  // This list is a broadcast feed: every yantr comment on every app, filtered
+  // down to the newest three. It is also the most expensive read in the UI —
+  // one REQ per relay for 200 events — and it runs on the dashboard, which
+  // people reload. A fresh answer is kept for twenty hours.
+  const cached = await readNostrQuery(NOSTR_SCOPE.reviewFeed, "latest");
+  if (cached?.failed) {
+    // Asked within the last ten minutes and no relay answered. Skipping the
+    // four-second retry is the whole point of the record: the slot stays empty
+    // and silent, as it is for any unreachable relay, instead of shimmering.
+    return;
+  }
+  if (cached && Array.isArray(cached.candidates)) {
+    candidates.value = buildCandidates(cached.candidates, catalogApps);
+    if (candidates.value.length > 0) fetchAuthorProfiles();
+    else emptyKnown.value = true;
+    return;
+  }
+
   const asked = await loadRelays();
   let { events, reached } = await queryRelays(asked, yantrFeedFilter(200), COMMENT_KIND, {
     subIdPrefix: "yantr-latest-review",
@@ -162,38 +238,40 @@ async function fetchData(catalogApps) {
 
   // Nothing reachable is the only hard failure — silent, like the rest of
   // the promo bands. An empty merge with relays answering is a real answer.
-  if (reached === 0) return;
-
-  const appById = new Map(catalogApps.map((app) => [app?.id, app].filter(Boolean)));
-  const nowSec = Math.floor(Date.now() / 1000);
-
-  // Newest first, in display order. The app-pages rules filter each one:
-  // per-app tag naming a catalog app (a note for a removed app has no page
-  // to link its quote to), verified signature on the RAW event, displayable
-  // sanitised content. Duplicates by content per author collapse too — two
-  // relays serving the same repost would otherwise occupy two slots.
-  const candidatesById = new Map();
-  const seenByAuthor = new Set();
-  for (const event of [...events].sort((a, b) => (b.created_at || 0) - (a.created_at || 0))) {
-    if (!event || typeof event.id !== "string") continue;
-    if (candidatesById.has(event.id)) continue;
-
-    const appId = commentAppIds(event).find((id) => appById.has(id));
-    if (!appId) continue;
-    if (!isYantrComment(event, nowSec)) continue;
-    if (!isAuthentic(event)) continue;
-
-    const content = sanitizeCommentContent(event.content);
-    if (!content) continue;
-
-    const sameNote = `${event.pubkey}\u0000${content}`;
-    if (seenByAuthor.has(sameNote)) continue;
-    seenByAuthor.add(sameNote);
-
-    candidatesById.set(event.id, { ...event, content, app: appById.get(appId) });
+  if (reached === 0) {
+    await writeNostrFailure(NOSTR_SCOPE.reviewFeed, "latest");
+    return;
   }
 
-  candidates.value = [...candidatesById.values()].slice(0, SHOWCASE_COUNT);
+  // Newest first, in display order, and only what would survive the rules:
+  // per-app tag naming a catalog app (a note for a removed app has no page to
+  // link its quote to), verified signature on the RAW event, displayable
+  // sanitised content, one note per author per wording.
+  const nowSec = Math.floor(Date.now() / 1000);
+  const appIds = new Set(catalogApps.map((app) => app?.id));
+  const records = [...events]
+    .filter((event) => event && typeof event.id === "string" && isYantrComment(event, nowSec))
+    .map((event) => ({
+      id: event.id,
+      pubkey: event.pubkey,
+      sig: event.sig,
+      created_at: event.created_at,
+      content: event.content,
+      appId: commentAppIds(event).find((id) => appIds.has(id)) || "",
+    }))
+    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
+
+  candidates.value = buildCandidates(records, catalogApps);
+
+  // Stored as the plain records, not the rendered rows: the app objects belong
+  // to the catalog, which is refetched every visit and may have changed.
+  await writeNostrQuery(
+    NOSTR_SCOPE.reviewFeed,
+    "latest",
+    { candidates: candidates.value.map(({ id, pubkey, sig, created_at, content, appId }) =>
+      ({ id, pubkey, sig, created_at, content, appId })), reached },
+    { answered: reached }
+  );
 
   if (candidates.value.length === 0) {
     emptyKnown.value = true;

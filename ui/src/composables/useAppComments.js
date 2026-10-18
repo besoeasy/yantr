@@ -15,6 +15,14 @@ import {
 } from "../utils/nostr";
 import { publishToRelay, queryRelays } from "../utils/relay";
 import { useNostrRelays } from "./useNostrRelays";
+import {
+  NOSTR_SCOPE,
+  readCachedProfiles,
+  readNostrQuery,
+  writeCachedProfile,
+  writeNostrFailure,
+  writeNostrQuery,
+} from "../utils/nostrCache";
 import { developerShortKey } from "../utils/developer";
 
 // Everything the comments section needs: one relay fan-out for reading, and
@@ -81,6 +89,30 @@ export function useAppComments(appId) {
     reset();
     loading.value = true;
 
+    // A fresh record from this reader's own machine is the answer: the notes
+    // were signature-verified and sanitised before they were written, and the
+    // catalogue half of this page is already on screen. Asking three relays
+    // again for it would buy nothing and re-show the composer's skeleton.
+    const cached = await readNostrQuery(NOSTR_SCOPE.appComments, id.value);
+    if (cached?.failed) {
+      // Asked recently, nobody answered. Asking again would only repeat the
+      // wait — the page says the relays are unreachable, which is true.
+      loadFailed.value = true;
+      loading.value = false;
+      return;
+    }
+    if (cached) {
+      comments.value = Array.isArray(cached.comments) ? cached.comments : [];
+      profiles.value = cached.profiles && typeof cached.profiles === "object"
+        ? cached.profiles
+        : {};
+      relaysReached.value = Number(cached.reached) || 0;
+      relaysTotal.value = Number(cached.total) || relays.value.length;
+      loadFailed.value = relaysReached.value === 0;
+      loading.value = false;
+      return;
+    }
+
     const filter = commentFilter(id.value);
     const nowSec = Math.floor(Date.now() / 1000);
 
@@ -118,6 +150,22 @@ export function useAppComments(appId) {
     loadFailed.value = relaysReached.value === 0;
     loading.value = false;
 
+    if (relaysReached.value === 0) {
+      await writeNostrFailure(NOSTR_SCOPE.appComments, id.value);
+      return;
+    }
+
+    // Written only when a relay answered — `reached` is the count that did, and
+    // an empty list from a working relay is an answer worth remembering: it is
+    // what stops this page re-querying every visit for a thread nobody has
+    // commented on.
+    await writeNostrQuery(
+      NOSTR_SCOPE.appComments,
+      id.value,
+      { comments: comments.value, reached: relaysReached.value, total: relaysTotal.value },
+      { answered: relaysReached.value }
+    );
+
     // Author names resolve after the thread paints.
     fetchProfiles();
   }
@@ -142,9 +190,18 @@ export function useAppComments(appId) {
     );
     if (wanted.length === 0) return;
 
+    // A name is a name whoever asked for it: the same author signs notes in
+    // several apps, so one record per public key serves every thread.
+    const known = await readCachedProfiles(wanted);
+    const unknown = wanted.filter((hex) => !known[hex]);
+    if (Object.keys(known).length > 0) {
+      profiles.value = { ...profiles.value, ...known };
+    }
+    if (unknown.length === 0) return;
+
     const { events } = await queryRelays(
       relays.value,
-      profileFilter(wanted),
+      profileFilter(unknown),
       PROFILE_KIND,
       { subIdPrefix: "yantr-profiles" }
     );
@@ -152,6 +209,9 @@ export function useAppComments(appId) {
     const newest = newestKind0Profiles(events);
     if (Object.keys(newest).length > 0) {
       profiles.value = { ...profiles.value, ...newest };
+      for (const [hex, profile] of Object.entries(newest)) {
+        writeCachedProfile(hex, profile, { answered: 1 });
+      }
     }
   }
 
@@ -253,6 +313,14 @@ export function useAppComments(appId) {
         ...comments.value,
       ];
       justPublishedId.value = signed.id;
+      // Keep the stored thread equal to what is on screen, or the next visit
+      // would open a twenty-hour-old copy of a list the reader just extended.
+      writeNostrQuery(
+        NOSTR_SCOPE.appComments,
+        id.value,
+        { comments: comments.value, reached: relaysReached.value, total: relaysTotal.value },
+        { answered: relaysReached.value }
+      );
       return true;
     } finally {
       publishing.value = false;
