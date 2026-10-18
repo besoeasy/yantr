@@ -1104,6 +1104,8 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .border-t-zinc-900{border-top-color:var(--color-zinc-900);}
 .bg-\(--surface-muted\){background-color:var(--surface-muted);}
 .dark\:bg-\(--page-bg\):is(.dark *){background-color:var(--page-bg);}
+.dark\:bg-\(--page-bg\)\/80:is(.dark *){background-color:color-mix(in srgb, var(--page-bg) 80%, transparent);}
+.dark\:bg-\(--page-bg\)\/95:is(.dark *){background-color:color-mix(in srgb, var(--page-bg) 95%, transparent);}
 .dark\:bg-\(--chrome-bg\):is(.dark *){background-color:var(--chrome-bg);}
 .dark\:bg-\(--chrome-bg\)\/90:is(.dark *){background-color:color-mix(in srgb, var(--chrome-bg) 90%, transparent);}
 .dark\:bg-\(--well-bg\):is(.dark *){background-color:var(--well-bg);}
