@@ -113,7 +113,7 @@ watch(pickedKey, (next) => {
       class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"
     ></div>
 
-    <div class="flex flex-1 flex-col gap-6">
+    <div class="flex flex-1 flex-col gap-5">
       <!-- Identity -->
       <div>
         <p class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
@@ -121,7 +121,7 @@ watch(pickedKey, (next) => {
         </p>
 
         <div class="mt-3 flex items-center gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
             <img
               v-if="avatarUrl"
               :src="avatarUrl"
@@ -146,7 +146,7 @@ watch(pickedKey, (next) => {
           </div>
         </div>
 
-        <div class="mt-4 flex items-baseline gap-1.5">
+        <div class="mt-3 flex items-baseline gap-1.5">
           <span class="text-xl font-bold tabular-nums yantra-text-primary">
             {{ developerApps.length }}
           </span>
@@ -157,12 +157,12 @@ watch(pickedKey, (next) => {
       </div>
 
       <!-- The pitch, backed by the apps -->
-      <div class="flex min-w-0 flex-1 flex-col border-t border-zinc-100 pt-6 dark:border-zinc-900">
+      <div class="flex min-w-0 flex-1 flex-col border-t border-zinc-100 pt-5 dark:border-zinc-900">
         <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
           {{ t("home.dailyDeveloper.pitch") }}
         </p>
 
-        <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
+        <div class="mt-auto flex flex-wrap items-center gap-2 pt-4">
           <button
             v-for="app in showcaseApps"
             :key="app.id"
@@ -191,15 +191,15 @@ watch(pickedKey, (next) => {
       </div>
 
       <!-- Payments: every rail the account published, side by side. -->
-      <div class="flex flex-col border-t border-zinc-100 pt-6 dark:border-zinc-900">
+      <div class="flex flex-col border-t border-zinc-100 pt-5 dark:border-zinc-900">
         <template v-if="payments.length">
           <p class="text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
             {{ t("home.dailyDeveloper.zap") }}
           </p>
 
-          <div class="mt-4 flex flex-row items-start gap-4">
+          <div class="mt-3 flex flex-row items-start gap-4">
             <div v-for="rail in payments" :key="rail.kind" class="flex min-w-0 flex-1 flex-col">
-              <span class="mb-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+              <span class="mb-1.5 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
                 {{ rail.label }}
               </span>
 
@@ -207,16 +207,16 @@ watch(pickedKey, (next) => {
                    schemes — a themed code is the classic way to ship one that
                    never scans. -->
               <div class="w-fit rounded-lg p-2 dark:border-zinc-700">
-                <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="104" />
+                <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="88" />
               </div>
 
-              <p class="mt-2 break-all font-mono text-[11px] leading-relaxed yantra-text-secondary" :title="rail.address">
+              <p class="mt-1.5 break-all font-mono text-[11px] leading-snug yantra-text-secondary" :title="rail.address">
                 {{ rail.address }}
               </p>
 
               <button
                 @click="copyAddress(rail)"
-                class="mt-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
+                class="mt-2 inline-flex w-fit items-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-1.5 text-[11px] font-semibold yantra-text-primary transition-opacity hover:opacity-90 dark:bg-zinc-100 yantra-text-primary"
               >
                 <Check v-if="copiedRail === rail.kind" :size="13" />
                 <Copy v-else :size="13" />
@@ -233,7 +233,7 @@ watch(pickedKey, (next) => {
         </template>
 
         <!-- Show in both states: following needs no payment address -->
-        <div class="mt-4 flex flex-col gap-2">
+        <div class="mt-3 flex flex-col gap-2">
           <a
             v-if="profileUrl"
             :href="profileUrl"
