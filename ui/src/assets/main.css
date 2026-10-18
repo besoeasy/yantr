@@ -1904,6 +1904,152 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 }
 @media (min-width:96rem){.\32xl\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr));}
 }
+/* ── Section 2b · the band design language ──────────────────────────────────
+   The dashboard's full-width bands (Featured Today, Developer of the day,
+   Host System, Latest reviews) are built from one visual grammar: a hairline
+   glow along the top edge, hairline dividers between shelves, named-group
+   hover lifts, and quiet padding that only applies once the row is wide
+   enough to lay out in columns.
+
+   These utilities were added when that grammar was introduced. The layer is
+   curated, not generated: a class that is not defined here does not merely
+   fail to style, it silently does nothing — which is how a divider or a
+   hover affordance goes missing without a single warning. `utils.test.js`
+   checks every class in src/ against this file, so a new widget cannot ship
+   a no-op class again. */
+
+/* Hairline accent along a card's top edge. The colour arrives through
+   --yantr-via (set by a via-* utility), so one gradient rule serves every
+   accent the bands use. */
+.bg-gradient-to-r{background-image:linear-gradient(to right,transparent,var(--yantr-via,transparent) 50%,transparent);}
+.via-sky-500\/30{--yantr-via:color-mix(in srgb,var(--color-sky-500) 30%,transparent);}
+.via-zinc-300\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-300) 40%,transparent);}
+.dark\:via-zinc-700\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-700) 40%,transparent);}
+.h-px{height:1px;}
+.inset-x-0{left:0;right:0;}
+
+/* Shelf dividers. The band's columns touch, so the left edge of a shelf is
+   the separator; the colour has to be named explicitly because a border with
+   no colour is not drawn. */
+.lg\:border-zinc-200{border-color:var(--color-zinc-200);}
+.dark\:lg\:border-zinc-800:is(.dark *){border-color:var(--color-zinc-800);}
+
+/* Named groups: one per shelf, so hovering a shelf lifts and recolours only
+   that shelf rather than the whole band. */
+.group\/featured,.group\/next{display:group;}
+.group-hover\/featured\:text-zinc-900:is(.group\/featured *){color:var(--color-zinc-900);}
+.dark\:group-hover\/featured\:text-zinc-100:is(.dark *):is(.group\/featured *){color:var(--color-zinc-100);}
+.group-hover\/featured\:-translate-y-\[3px\]:is(.group\/featured *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
+.group-hover\/next\:text-zinc-900:is(.group\/next *){color:var(--color-zinc-900);}
+.group-hover\/next\:text-zinc-300:is(.group\/next *){color:var(--color-zinc-300);}
+.dark\:group-hover\/next\:text-zinc-100:is(.dark *):is(.group\/next *){color:var(--color-zinc-100);}
+.dark\:group-hover\/next\:text-zinc-700:is(.dark *):is(.group\/next *){color:var(--color-zinc-700);}
+.group-hover\/next\:-translate-y-\[3px\]:is(.group\/next *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
+.group-hover\:text-zinc-900:is(.group *){color:var(--color-zinc-900);}
+.dark\:group-hover\:text-zinc-100:is(.dark *):is(.group *){color:var(--color-zinc-100);}
+.dark\:hover\:text-zinc-100:is(.dark *):hover{color:var(--color-zinc-100);}
+
+/* Sizing: w-fit keeps a control at its content's width inside a flex column,
+   max-w-full lets a long value shrink instead of overflowing, and the w-*
+   values are the column widths the bands' fixed zones are sized in. */
+.w-fit{width:fit-content;}
+.max-w-full{max-width:100%;}
+.w-28{width:calc(var(--spacing) * 28);}
+.w-60{width:calc(var(--spacing) * 60);}
+.max-w-64{max-width:calc(var(--spacing) * 64);}
+.min-h-\[280px\]{min-height:280px;}
+
+/* Layout and spacing the bands share. */
+.flex-row{flex-direction:row;}
+.object-cover{object-fit:cover;}
+.pr-3{padding-inline-end:calc(var(--spacing) * 3);}
+.gap-8{gap:calc(var(--spacing) * 8);}
+.mt-10{margin-top:calc(var(--spacing) * 10);}
+.gap-x-5{gap-inline:calc(var(--spacing) * 5);}
+.gap-x-8{gap-inline:calc(var(--spacing) * 8);}
+.gap-y-2{gap-block:calc(var(--spacing) * 2);}
+.gap-y-3{gap-block:calc(var(--spacing) * 3);}
+.leading-\[1.05\]{line-height:1.05;}
+
+@media (min-width:40rem){.sm\:h-14{height:calc(var(--spacing) * 14);}
+.sm\:w-14{width:calc(var(--spacing) * 14);}
+.sm\:gap-10{gap:calc(var(--spacing) * 10);}
+}
+@media (min-width:64rem){.lg\:gap-0{gap:0;}
+.lg\:pr-8{padding-inline-end:calc(var(--spacing) * 8);}
+.lg\:pl-8{padding-inline-start:calc(var(--spacing) * 8);}
+.lg\:pt-2{padding-top:calc(var(--spacing) * 2);}
+.lg\:w-60{width:calc(var(--spacing) * 60);}
+.lg\:shrink-0{flex-shrink:0;}
+}
+
+/* ── Section 2c · utilities the components ask for by name ───────────────────
+   The classes below were found by `utils/cssClasses.test.js`: markup across
+   the app — the card hover lift on ten widgets, the entrance animations on
+   every page, a grid of small alignments — carried class names the layer
+   never defined. An undefined class is not an error, it is silence: the
+   lift never happened, the stagger never ran, and nothing said so. They are
+   defined here, with the values their names describe. Keep this block and
+   the test together: the test is what stops the layer drifting again. */
+
+/* The hover lift every dashboard card uses. */
+.hover\:-translate-y-\[3px\]:hover{--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
+.group-hover\:-translate-y-\[3px\]:is(.group *){--tw-translate-y:-3px;translate:0 var(--tw-translate-y);}
+
+/* Named groups: a hover scoped to one part of a card (its CTA, its link, a
+   row inside a list) instead of the whole card. */
+.group\/cta,.group\/link,.group\/btn,.group\/ip,.group\/item{display:group;}
+
+/* Entrance animations. `anim-enter` fades the block itself; `anim-stagger`
+   fades a list's children in sequence, which is what a page of cards wants
+   to read as. Both build on the fadeIn keyframes already in this file. */
+.anim-enter{animation:fadeIn var(--yantra-dur-enter) var(--yantra-ease) forwards;}
+.anim-stagger > *{animation:fadeIn var(--yantra-dur-enter) var(--yantra-ease) backwards;}
+.anim-stagger > *:nth-child(1){animation-delay:0ms;}
+.anim-stagger > *:nth-child(2){animation-delay:40ms;}
+.anim-stagger > *:nth-child(3){animation-delay:80ms;}
+.anim-stagger > *:nth-child(4){animation-delay:120ms;}
+.anim-stagger > *:nth-child(5){animation-delay:160ms;}
+.anim-stagger > *:nth-child(n+6){animation-delay:200ms;}
+
+/* Small alignments. */
+.h-1{height:calc(var(--spacing) * 1);}
+.flex-none{flex:none;}
+.normal-case{text-transform:none;}
+.tracking-normal{letter-spacing:0;}
+.pl-0\.5{padding-inline-start:calc(var(--spacing) * .5);}
+.pr-2\.5{padding-inline-end:calc(var(--spacing) * 2.5);}
+.gap-x-4{gap-inline:calc(var(--spacing) * 4);}
+.gap-y-4{gap-block:calc(var(--spacing) * 4);}
+.leading-\[1.2\]{line-height:1.2;}
+.max-w-\[38ch\]{max-width:38ch;}
+
+/* Colours with alpha, expressed the way the rest of this file does it. */
+.bg-gray-50\/40{background-color:color-mix(in srgb,var(--color-gray-50) 40%,transparent);}
+.dark\:bg-zinc-900\/20:is(.dark *){background-color:color-mix(in srgb,var(--color-zinc-900) 20%,transparent);}
+.dark\:bg-zinc-900\/30:is(.dark *){background-color:color-mix(in srgb,var(--color-zinc-900) 30%,transparent);}
+.dark\:text-amber-400\/90:is(.dark *){color:color-mix(in srgb,var(--color-amber-400) 90%,transparent);}
+.hover\:bg-gray-700:hover{background-color:var(--color-gray-700);}
+.hover\:border-blue-700:hover{border-color:var(--color-blue-700);}
+
+/* The sign-in surface's tokens, in their interactive forms. */
+.hover\:yantra-text-primary:hover{color:var(--text-primary);}
+.hover\:yantra-text-accent:hover{color:var(--accent);}
+.placeholder\:yantra-text-secondary::placeholder{color:var(--text-secondary);}
+
+/* A transparent scrollbar track: the log panes keep a visible thumb while
+   the gutter shows nothing until the pointer is over it. */
+.scrollbar-track-transparent{scrollbar-color:var(--color-zinc-400) transparent;}
+
+@media (min-width:40rem){.sm\:items-start{align-items:flex-start;}
+.sm\:items-end{align-items:flex-end;}
+.sm\:ml-auto{margin-left:auto;}
+.sm\:grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr));}
+.sm\:border{border-width:1px;border-style:var(--tw-border-style);}
+.sm\:border-zinc-200{border-color:var(--color-zinc-200);}
+}
+.dark\:sm\:border-zinc-800:is(.dark *){border-color:var(--color-zinc-800);}
+
 /* ── Dashboard widget spans ─────────────────────────────────────────
    Each widget in src/Widgets/ declares how many of the desktop
    dashboard grid's four columns it wants by exporting

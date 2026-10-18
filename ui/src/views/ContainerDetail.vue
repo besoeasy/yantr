@@ -536,7 +536,7 @@ watch(activeTab, (tab) => {
                     {{ t('containerDetail.browseFiles') }}
                   </button>
                        
-                  <div v-else class="flex items-center gap-1.5 animate-in fade-in zoom-in-95 duration-200">
+                  <div v-else class="flex items-center gap-1.5 duration-200">
                     <button @click="browseVolume(volume.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" :title="t('containerDetail.oneHourAccess')">
                       1H
                     </button>
