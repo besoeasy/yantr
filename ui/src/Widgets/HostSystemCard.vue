@@ -1,8 +1,9 @@
 <script>
-// Dashboard engine: one column — the OS line, the four-counter strip and the
-// rows below it were designed for a quarter of the grid. See Home.vue for how
-// meta.cols is consumed.
-export const meta = { cols: 1 };
+// Dashboard engine: three of the desktop grid's four columns — the OS
+// identity and the counters panel sit beside each other, which one column
+// never had the room for. Clamped by main.css per breakpoint like every
+// span; see Home.vue.
+export const meta = { cols: 3 };
 </script>
 <script setup>
 import { computed, ref, watch } from "vue";

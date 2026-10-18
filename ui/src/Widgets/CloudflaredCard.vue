@@ -1,7 +1,8 @@
 <script>
-// Dashboard engine: one column — a status line and, at most, a token form do
-// not want extra width. See Home.vue for how meta.cols is consumed.
-export const meta = { cols: 1 };
+// Dashboard engine: two of the desktop grid's four columns — the tunnel
+// status keeps its reading on the left while the token form earns a column
+// rather than a squeezed stack. See Home.vue for how meta.cols is consumed.
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { ref, computed, onMounted } from "vue";

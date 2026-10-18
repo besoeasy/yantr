@@ -1,7 +1,8 @@
 <script>
-// Dashboard engine: one column — same single-call-to-action shape as the
-// Discord card. See Home.vue for how meta.cols is consumed.
-export const meta = { cols: 1 };
+// Dashboard engine: two of the desktop grid's four columns — the ask and the
+// reasoning sit left, the CTA right, instead of a tall ribbon of text. The
+// .w-span-2 utility in main.css clamps it per breakpoint; see Home.vue.
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { useI18n } from "vue-i18n";

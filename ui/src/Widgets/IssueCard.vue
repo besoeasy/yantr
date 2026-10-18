@@ -1,8 +1,8 @@
 <script>
-// Dashboard engine: one column — it deliberately gets the reader's whole
-// attention as a narrow card, per the note in its <script setup>. See
-// Home.vue for how meta.cols is consumed.
-export const meta = { cols: 1 };
+// Dashboard engine: two of the desktop grid's four columns — the ask lives
+// left and the facts the report will carry live right, so a reader can check
+// what leaves the machine at a glance. See Home.vue for how meta.cols works.
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { computed, onMounted, ref } from "vue";
