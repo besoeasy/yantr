@@ -1,9 +1,9 @@
 <script>
-// Full-width band: all four of the desktop grid's four columns. Like the app
-// spotlight this card is promotion — and the pitch, the credited apps and the
-// zap block only sit right when the width lets them read as one editorial row
-// with hairline dividers, not as three widgets stacked.
-export const meta = { cols: 4 };
+// Two columns, like every other widget on the dashboard. The card was a
+// four-column band built around an editorial row — identity, pitch, payment
+// rails side by side — which at this width no longer reads; stacked vertically
+// it is one column of facts, and the rails sit two across under it.
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { computed, watch } from "vue";
@@ -113,14 +113,14 @@ watch(pickedKey, (next) => {
       class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"
     ></div>
 
-    <div class="flex flex-1 flex-col gap-8 lg:flex-row lg:gap-0">
+    <div class="flex flex-1 flex-col gap-6">
       <!-- Identity -->
-      <div class="shrink-0 lg:w-60 lg:pr-8">
+      <div>
         <p class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
           {{ t("home.dailyDeveloper.title") }}
         </p>
 
-        <div class="mt-4 flex items-center gap-4">
+        <div class="mt-3 flex items-center gap-4">
           <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
             <img
               v-if="avatarUrl"
@@ -146,23 +146,23 @@ watch(pickedKey, (next) => {
           </div>
         </div>
 
-        <div class="mt-5">
-          <div class="text-lg font-bold tabular-nums yantra-text-primary">
+        <div class="mt-4 flex items-baseline gap-1.5">
+          <span class="text-xl font-bold tabular-nums yantra-text-primary">
             {{ developerApps.length }}
-          </div>
-          <div class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+          </span>
+          <span class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ t("home.dailyDeveloper.appsCount") }}
-          </div>
+          </span>
         </div>
       </div>
 
       <!-- The pitch, backed by the apps -->
-      <div class="flex min-w-0 flex-1 flex-col lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+      <div class="flex min-w-0 flex-1 flex-col border-t border-zinc-100 pt-6 dark:border-zinc-900">
         <p class="max-w-2xl text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
           {{ t("home.dailyDeveloper.pitch") }}
         </p>
 
-        <div class="mt-auto flex flex-wrap items-center gap-2 pt-6">
+        <div class="mt-auto flex flex-wrap items-center gap-2 pt-5">
           <button
             v-for="app in showcaseApps"
             :key="app.id"
@@ -191,7 +191,7 @@ watch(pickedKey, (next) => {
       </div>
 
       <!-- Payments: every rail the account published, side by side. -->
-      <div class="flex flex-col lg:w-72 lg:shrink-0 lg:border-l lg:border-zinc-200 lg:pl-8 dark:lg:border-zinc-800">
+      <div class="flex flex-col border-t border-zinc-100 pt-6 dark:border-zinc-900">
         <template v-if="payments.length">
           <p class="text-sm leading-relaxed text-zinc-600 yantra-text-secondary">
             {{ t("home.dailyDeveloper.zap") }}
