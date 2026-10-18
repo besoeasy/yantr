@@ -126,7 +126,8 @@
     "latestReview": {
       "title": "Últimas reseñas",
       "empty": "Aún no hay reseñas. Abre una app del catálogo y deja la primera.",
-      "byAuthor": "Ver el perfil de Nostr del autor o de la autora"
+      "byAuthor": "Ver el perfil de Nostr del autor o de la autora",
+      "by": "por"
     },
     "systemToolsCard": {
       "management": "Gestión",

@@ -126,7 +126,8 @@
     "latestReview": {
       "title": "最新のレビュー",
       "empty": "まだレビューはありません。カタログのアプリを開いて、最初のレビューを残しましょう。",
-      "byAuthor": "投稿者の Nostr プロフィールを見る"
+      "byAuthor": "投稿者の Nostr プロフィールを見る",
+      "by": "by"
     },
     "systemToolsCard": {
       "management": "管理",

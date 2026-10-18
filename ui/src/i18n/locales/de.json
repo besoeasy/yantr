@@ -126,7 +126,8 @@
     "latestReview": {
       "title": "Neueste Bewertungen",
       "empty": "Noch keine Bewertungen. Öffne eine App im Katalog und hinterlasse die erste.",
-      "byAuthor": "Das Nostr-Profil der Autorin oder des Autors ansehen"
+      "byAuthor": "Das Nostr-Profil der Autorin oder des Autors ansehen",
+      "by": "von"
     },
     "systemToolsCard": {
       "management": "Verwaltung",

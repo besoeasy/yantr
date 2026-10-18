@@ -126,7 +126,8 @@
     "latestReview": {
       "title": "Derniers avis",
       "empty": "Aucun avis pour l'instant. Ouvrez une app du catalogue et laissez le premier.",
-      "byAuthor": "Voir le profil Nostr de l'auteur ou de l'autrice"
+      "byAuthor": "Voir le profil Nostr de l'auteur ou de l'autrice",
+      "by": "par"
     },
     "systemToolsCard": {
       "management": "Gestion",

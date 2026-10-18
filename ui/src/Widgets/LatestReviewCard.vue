@@ -1,8 +1,8 @@
 <script>
-// Two columns. The card is a list of quotes, so it is built like one: a label,
-// hairline-separated entries, and nothing else. It shows as many reviews as
-// the line budget allows (utils/reviewShowcase) — short ones pack in, a long
-// one stands alone.
+// Two columns. The card is a list, built like one: a label, hairline-separated
+// entries, nothing else — and no pictures. Every entry is two lines (the app
+// with the words, then who said it and when) and there are three of them, so
+// the card's shape no longer depends on how much a reviewer wrote.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -10,13 +10,11 @@ import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { MessageSquareQuote, ArrowUpRight } from "@lucide/vue";
-import AppLogo from "../components/AppLogo.vue";
 import { useNostrRelays } from "../composables/useNostrRelays";
 import { appDetail, apps as appsRoute } from "../utils/routes.js";
 import { useCatalog } from "../composables/useDashboardData";
 import WidgetSkeleton from "../components/WidgetSkeleton.vue";
 import { developerProfileUrl, developerShortKey } from "../utils/developer";
-import { linesFor, showcaseReviews } from "../utils/reviewShowcase";
 import {
   COMMENT_KIND,
   PROFILE_KIND,
@@ -42,24 +40,21 @@ const router = useRouter();
 const { apps, appsLoaded } = useCatalog();
 const { relays, load: loadRelays } = useNostrRelays();
 
-// Verified displayable reviews, newest first. Ten is enough backfill for the
-// budget packing: the showcase takes at most four, and relays already cap the
-// feed read at 200 — this slice only stops the sort from growing past use.
+// The three newest verified displayable reviews, in order. Three is the
+// card's whole shape — six lines — so there is nothing to pack and nothing to
+// fill: the sort and the slice are the layout.
+const SHOWCASE_COUNT = 3;
 const candidates = ref([]);
 // Relays answered but no comment exists: a real state, worth one line of
 // copy pointing at the catalog — unlike a relay outage, which leaves the
 // promotion slot to the other widgets (silent, same as the developer band).
 const emptyKnown = ref(false);
 
-// Kind-0 author profiles by lowercase hex pubkey, filled after the quotes
-// paint — names pop in progressively, and a slow relay never holds the
-// showcase hostage.
+// Kind-0 author profiles by lowercase hex pubkey, filled after the list
+// paints — names pop in progressively, and a slow relay never holds the
+// reviews hostage. The key itself is always there, so an author stays
+// identifiable even if their profile never arrives.
 const profiles = ref({});
-
-const showcase = computed(() => {
-  const picked = new Set(showcaseReviews(candidates.value));
-  return candidates.value.filter((r) => picked.has(r.id));
-});
 
 function profileKey(review) {
   return String(review?.pubkey ?? "").toLowerCase();
@@ -76,14 +71,14 @@ function authorNameOf(review) {
   return npub ? developerShortKey(npub) : t("appComments.anonymous");
 }
 
-function authorUrlOf(review) {
-  return developerProfileUrl(authorNpubOf(review));
+// The key in the author's own terms: the card names them and shows the key,
+// so a reader can check who signed a note without leaving the page.
+function authorShortKeyOf(review) {
+  return developerShortKey(authorNpubOf(review));
 }
 
-// Every quote is clamped to its measured line count, which is also what the
-// budget counted — display and estimate must agree.
-function clampClassFor(review) {
-  return `line-clamp-${linesFor(review.content)}`;
+function authorUrlOf(review) {
+  return developerProfileUrl(authorNpubOf(review));
 }
 
 const relativeTime = computed(() => {
@@ -133,7 +128,7 @@ function viewApp(appId) {
 // event per pubkey wins, unverified events dropped by newestKind0Profiles —
 // a forged name is the same impersonation a forged comment would be.
 async function fetchAuthorProfiles() {
-  const wanted = [...new Set(showcase.value.map(profileKey))].filter(
+  const wanted = [...new Set(candidates.value.map(profileKey))].filter(
     (hex) => /^[0-9a-f]{64}$/.test(hex) && !profiles.value[hex]
   );
   if (wanted.length === 0) return;
@@ -198,7 +193,7 @@ async function fetchData(catalogApps) {
     candidatesById.set(event.id, { ...event, content, app: appById.get(appId) });
   }
 
-  candidates.value = [...candidatesById.values()].slice(0, 10);
+  candidates.value = [...candidatesById.values()].slice(0, SHOWCASE_COUNT);
 
   if (candidates.value.length === 0) {
     emptyKnown.value = true;
@@ -225,7 +220,7 @@ watch(
   <WidgetSkeleton v-if="!appsLoaded && !appsLoadFailed" />
 
   <section
-    v-else-if="showcase.length"
+    v-else-if="candidates.length"
     class="yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden rounded-2xl p-7 text-left transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
     <h3 class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
@@ -233,63 +228,56 @@ watch(
       {{ t("home.latestReview.title") }}
     </h3>
 
-    <!-- One entry per review: who said it, where, when — then the words.
-         Hairlines do the separating; there is no card inside the card. -->
-    <div class="mt-4 flex flex-1 flex-col">
+    <!-- Two lines per review, and no pictures: the app's name with the words
+         on the first, who said it and when on the second. Three reviews, six
+         lines — the whole list reads in one glance. Hairlines do the
+         separating; there is no card inside the card. -->
+    <div class="mt-4 flex flex-1 flex-col justify-center">
       <article
-        v-for="(review, i) in showcase"
+        v-for="(review, i) in candidates"
         :key="review.id"
-        class="flex flex-1 flex-col justify-center"
-        :class="i > 0 ? 'border-t border-zinc-100 pt-4 dark:border-zinc-900' : ''"
+        class="py-2.5"
+        :class="i > 0 ? 'border-t border-zinc-100 dark:border-zinc-900' : ''"
       >
-        <div class="flex items-baseline justify-between gap-3">
-          <div class="flex min-w-0 items-center gap-2">
-            <button
-              type="button"
-              @click="viewApp(review.app.id)"
-              class="inline-flex min-w-0 items-center gap-1.5 text-[11px] font-semibold text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white"
-              :title="review.app.name"
-            >
-              <AppLogo
-                :logo="review.app.logo"
-                :name="review.app.name"
-                :seed="review.app.id"
-                img-class="h-full w-full object-contain"
-                icon-class="h-3.5 w-3.5 text-zinc-300 dark:text-zinc-700"
-              />
-              <span class="truncate">{{ review.app.name }}</span>
-            </button>
+        <div class="flex min-w-0 items-baseline gap-2">
+          <button
+            type="button"
+            @click="viewApp(review.app.id)"
+            class="shrink-0 text-sm font-semibold yantra-text-primary transition-opacity hover:opacity-70"
+            :title="review.app.name"
+          >
+            {{ review.app.name }}
+          </button>
+          <span class="shrink-0 yantra-text-secondary">-</span>
+          <!-- One line, ellipsised: the shape of the card no longer depends
+               on how long a reviewer wrote. The content was sanitised at
+               fetch, before it touched the DOM. -->
+          <p class="min-w-0 flex-1 truncate text-sm yantra-text-secondary">
+            {{ review.content }}
+          </p>
+        </div>
 
-            <span class="h-1 w-1 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-
-            <a
-              :href="authorUrlOf(review)"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="min-w-0 truncate text-[11px] yantra-text-secondary transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
-              :title="t('home.latestReview.byAuthor')"
-            >
-              {{ authorNameOf(review) }}
-            </a>
-          </div>
-
+        <div class="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] yantra-text-secondary">
           <time
             v-if="formatTime(review.created_at)"
             :datetime="new Date(Number(review.created_at) * 1000).toISOString()"
-            class="shrink-0 font-mono text-[10px] yantra-text-secondary"
+            class="shrink-0"
           >
             {{ formatTime(review.created_at) }}
           </time>
+          <span class="shrink-0">·</span>
+          <span class="shrink-0">{{ t("home.latestReview.by") }}</span>
+          <a
+            :href="authorUrlOf(review)"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="min-w-0 truncate transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
+            :title="t('home.latestReview.byAuthor')"
+          >
+            {{ authorNameOf(review) }}
+            <span v-if="authorShortKeyOf(review)" class="font-mono">({{ authorShortKeyOf(review) }})</span>
+          </a>
         </div>
-
-        <!-- The quote. whitespace-pre-wrap keeps the author's line breaks;
-             the content was sanitised at fetch, before it touched the DOM. -->
-        <blockquote
-          class="mt-2 text-sm font-medium leading-relaxed text-zinc-800 whitespace-pre-wrap dark:text-zinc-200"
-          :class="clampClassFor(review)"
-        >
-          {{ review.content }}
-        </blockquote>
       </article>
     </div>
   </section>
