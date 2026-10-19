@@ -57,8 +57,6 @@ onMounted(() => {
 });
 onUnmounted(() => clearInterval(timer));
 
-const nowMs = ref(Date.now());
-
 // Verb + tone per daemon action. The kernel's verbs are the vocabulary the
 // dashboard translates; anything unmapped keeps its raw spelling with a
 // neutral dot rather than pretending it said nothing.
@@ -88,11 +86,16 @@ const rowFor = (event) => {
 // the six slots stay a summary of what happened instead of a transcript of the
 // loudest container. The age stays the newest event's: the burst started
 // earlier, but "when did I last see it" is the useful reading.
+// Whether a row is a burst is decided from the poll's own list, newest first;
+// the age comes from the clock at poll time, not from a captured `Date.now()`
+// — that snapshot never advanced, so every event after the first poll read
+// "1s" no matter how old it was.
 const rows = computed(() => {
+  const nowMs = Date.now();
   const out = [];
   events.value.forEach((event, i) => {
     const { verb, tone } = rowFor(event);
-    const settled = Math.max(1, Math.round((nowMs.value - event.atMs) / 1000));
+    const settled = Math.max(1, Math.round((nowMs - event.atMs) / 1000));
     const age = settled < 60 ? `${settled}s` : settled < 3600 ? `${Math.round(settled / 60)}m` : `${Math.round(settled / 3600)}h`;
 
     const last = out[out.length - 1];
