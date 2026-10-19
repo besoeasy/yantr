@@ -681,6 +681,7 @@
       "empty": "Keine Container-Ereignisse in der letzten Stunde",
       "more": "+{count} mehr",
       "repeat": "{count} Ereignisse zusammengefasst",
+      "restartBurst": "{count} Neustarts aus einer Absturzschleife zusammengefasst",
       "started": "gestartet",
       "restarted": "neu gestartet",
       "died": "gestoppt",

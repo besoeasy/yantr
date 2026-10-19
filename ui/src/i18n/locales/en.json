@@ -708,6 +708,7 @@
       "empty": "No container events in the last hour",
       "more": "+{count} more",
       "repeat": "{count} events merged",
+      "restartBurst": "{count} restarts merged from a crash loop",
       "started": "started",
       "restarted": "restarted",
       "died": "stopped",

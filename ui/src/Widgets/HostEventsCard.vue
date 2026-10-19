@@ -63,48 +63,111 @@ onUnmounted(() => clearInterval(timer));
 const rowFor = (event) => {
   const action = (event.action ?? "").toLowerCase();
   if (action.startsWith("exec") || action === "output" || action === "attach") {
-    return { verb: t("quickMetrics.events.exec"), tone: "bg-sky-500" };
+    return { kind: "exec", verb: t("quickMetrics.events.exec"), tone: "bg-sky-500" };
   }
   if (action === "restart" || action === "recreate") {
-    return { verb: t("quickMetrics.events.restarted"), tone: "bg-amber-500" };
+    return { kind: "restart", verb: t("quickMetrics.events.restarted"), tone: "bg-amber-500" };
   }
   if (action === "die" || action === "kill" || action === "destroy" || action === "stop" || action === "exit") {
-    return { verb: t("quickMetrics.events.died"), tone: "bg-rose-500" };
+    return { kind: "stop", verb: t("quickMetrics.events.died"), tone: "bg-rose-500" };
   }
   if (action.includes("health_status: unhealthy") || action.includes("unhealthy")) {
-    return { verb: t("quickMetrics.events.unhealthy"), tone: "bg-rose-500" };
+    return { kind: "unhealthy", verb: t("quickMetrics.events.unhealthy"), tone: "bg-rose-500" };
   }
   if (action === "start" || action === "restart_failed" || action.includes("healthy")) {
-    return { verb: t("quickMetrics.events.started"), tone: "bg-emerald-500" };
+    return { kind: "start", verb: t("quickMetrics.events.started"), tone: "bg-emerald-500" };
   }
-  return { verb: event.action, tone: "bg-zinc-400" };
+  return { kind: action, verb: event.action, tone: "bg-zinc-400" };
+};
+
+// A crash-loop run is the same container alternating start/stop with no other
+// event between the beats — one restart per start. Two full cycles is the
+// threshold: a lone start/stop pair is an ordinary run, not a loop, and reads
+// better as the two rows it is.
+const crashLoopAt = (classified, start) => {
+  const name = classified[start].event.name;
+  if (classified[start].kind !== "start" && classified[start].kind !== "stop") return null;
+
+  let end = start;
+  let starts = 0;
+  let stops = 0;
+  let previous = null;
+  while (end < classified.length && classified[end].event.name === name) {
+    const { kind } = classified[end];
+    // Same verb twice is the ordinary burst, handled by the merge below.
+    if ((kind !== "start" && kind !== "stop") || kind === previous) break;
+    if (kind === "start") starts += 1;
+    else stops += 1;
+    previous = kind;
+    end += 1;
+  }
+
+  if (starts < 2 || stops < 2) return null;
+  return { length: end - start, starts };
 };
 
 // A daemon storm — a healthcheck flapping every second, a crash loop — fills
 // the one-hour window with the same line over and over. Collapse consecutive
 // identical rows (same container, same verb) into one carrying a ×N count, so
 // the six slots stay a summary of what happened instead of a transcript of the
-// loudest container. The age stays the newest event's: the burst started
-// earlier, but "when did I last see it" is the useful reading.
-// Whether a row is a burst is decided from the poll's own list, newest first;
-// the age comes from the clock at poll time, not from a captured `Date.now()`
-// — that snapshot never advanced, so every event after the first poll read
-// "1s" no matter how old it was.
+// loudest container. A crash loop never repeats the same verb, so it gets its
+// own pass: start/stop beats become one "restarted ×N" row, N counting starts.
+// The age stays the newest event's: the burst started earlier, but "when did I
+// last see it" is the useful reading. It is read from the clock at poll time,
+// not from a captured `Date.now()` — that snapshot never advanced, so every
+// event after the first poll read "1s" no matter how old it was.
 const rows = computed(() => {
   const nowMs = Date.now();
-  const out = [];
-  events.value.forEach((event, i) => {
-    const { verb, tone } = rowFor(event);
+  const ageOf = (event) => {
     const settled = Math.max(1, Math.round((nowMs - event.atMs) / 1000));
-    const age = settled < 60 ? `${settled}s` : settled < 3600 ? `${Math.round(settled / 60)}m` : `${Math.round(settled / 3600)}h`;
+    return settled < 60 ? `${settled}s` : settled < 3600 ? `${Math.round(settled / 60)}m` : `${Math.round(settled / 3600)}h`;
+  };
 
-    const last = out[out.length - 1];
-    if (last && last.name === event.name && last.verb === verb) {
-      last.count += 1;
-      return;
+  const classified = events.value.map((event, i) => ({
+    event,
+    i,
+    ...rowFor(event),
+    age: ageOf(event),
+  }));
+
+  const out = [];
+  let i = 0;
+  while (i < classified.length) {
+    const head = classified[i];
+    const loop = crashLoopAt(classified, i);
+    if (loop) {
+      out.push({
+        key: `${head.event.atMs}-${head.event.name}-loop-${i}`,
+        name: head.event.name,
+        verb: t("quickMetrics.events.restarted"),
+        tone: "bg-amber-500",
+        age: head.age,
+        count: loop.starts,
+        restartLoop: true,
+      });
+      i += loop.length;
+      continue;
     }
-    out.push({ key: `${event.atMs}-${event.name}-${i}`, name: event.name, verb, tone, age, count: 1 });
-  });
+
+    let end = i + 1;
+    while (
+      end < classified.length &&
+      classified[end].event.name === head.event.name &&
+      classified[end].verb === head.verb
+    ) {
+      end += 1;
+    }
+    out.push({
+      key: `${head.event.atMs}-${head.event.name}-${head.i}`,
+      name: head.event.name,
+      verb: head.verb,
+      tone: head.tone,
+      age: head.age,
+      count: end - i,
+      restartLoop: false,
+    });
+    i = end;
+  }
   return out;
 });
 
@@ -166,7 +229,9 @@ const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
                 <span
                   v-if="row.count > 1"
                   class="shrink-0 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[10px] font-black tabular-nums yantra-text-secondary dark:bg-zinc-800"
-                  :title="t('quickMetrics.events.repeat', { count: row.count })"
+                  :title="row.restartLoop
+                    ? t('quickMetrics.events.restartBurst', { count: row.count })
+                    : t('quickMetrics.events.repeat', { count: row.count })"
                 >×{{ row.count }}</span>
               </span>
             </span>

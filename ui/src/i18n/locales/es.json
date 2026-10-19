@@ -683,6 +683,7 @@
       "empty": "Sin eventos de contenedores en la última hora",
       "more": "+{count} más",
       "repeat": "{count} eventos agrupados",
+      "restartBurst": "{count} reinicios agrupados de un bucle de fallos",
       "started": "iniciado",
       "restarted": "reiniciado",
       "died": "detenido",

@@ -683,6 +683,7 @@
       "empty": "直近1時間のコンテナイベントはありません",
       "more": "あと{count}件",
       "repeat": "{count}件のイベントをまとめました",
+      "restartBurst": "クラッシュループの再起動{count}件をまとめました",
       "started": "開始",
       "restarted": "再起動",
       "died": "停止",
