@@ -5,6 +5,7 @@ import (
 	"io"
 
 	dockertypes "github.com/docker/docker/api/types"
+	dockerevents "github.com/docker/docker/api/types/events"
 	dockerctr "github.com/docker/docker/api/types/container"
 	dockerfilters "github.com/docker/docker/api/types/filters"
 	dockerimage "github.com/docker/docker/api/types/image"
@@ -118,4 +119,12 @@ func VolumeRemove(ctx context.Context, volumeID string, force bool) error {
 
 func DiskUsage(ctx context.Context, options dockertypes.DiskUsageOptions) (dockertypes.DiskUsage, error) {
 	return Client.DiskUsage(ctx, options)
+}
+
+// ContainerEvents replays the daemon's event log between two points. With
+// both Since and Until set the stream is a finite history — the daemon closes
+// it on its own once the replay finishes, so a reader never has to wait on a
+// bell that has not rung yet.
+func ContainerEvents(ctx context.Context, options dockerevents.ListOptions) (<-chan dockerevents.Message, <-chan error) {
+	return Client.Events(ctx, options)
 }

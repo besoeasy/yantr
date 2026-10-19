@@ -12,6 +12,7 @@ import (
 	"core/system"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	dockerevents "github.com/docker/docker/api/types/events"
 	dockerctr "github.com/docker/docker/api/types/container"
 	dockerfilters "github.com/docker/docker/api/types/filters"
 )
@@ -608,4 +610,114 @@ func imageIDsDiffer(refs []string, before, after map[string]string) bool {
 		}
 	}
 	return false
+}
+
+// ------------------------------------------------------------- daemon events
+
+// maxSystemEvents is what the ticker shows; everything older than that reads
+// as history nobody asked to scroll.
+const maxSystemEvents = 20
+
+// maxRawEvents bounds the decode loop. The window is one hour and daemons
+// have shipped bursts of tens of thousands of events in it (a poorly tuned
+// healthcheck is exactly the storm this card exists to catch), so the raw
+// side stops there — the newest maxSystemEvents are the visible tail either
+// way, and everything past the cap is not worth a browser round-trip.
+const maxRawEvents = 500
+
+// eventsWindow is how far back one poll looks. One hour keeps the request a
+// bounded replay while covering "what happened while I was away" for the
+// normal tab-refresh gap.
+const eventsWindow = time.Hour
+
+// eventDTO is one line of the ticker: what happened, where, when. Action is
+// the daemon's own verb ("start", "die", "exec_create: sh …") raw. Which
+// verbs translate and which tones they get is a dashboard question the card
+// answers; the endpoint stays a passthrough of what podman logged.
+type eventDTO struct {
+	AtMs   int64  `json:"atMs"`
+	Name   string `json:"name"`
+	Action string `json:"action"`
+}
+
+// handleSystemEvents serves the last hour of container events, newest first.
+// Socket trouble answers with an empty list plus a degraded key instead of a
+// 500, so the card renders its unavailable state without a retry storm.
+func handleSystemEvents(w http.ResponseWriter, r *http.Request) {
+	events, degraded := recentContainerEvents()
+	resp := map[string]interface{}{"success": true, "events": events}
+	if degraded {
+		resp["degraded"] = []string{"events"}
+	}
+	jsonResp(w, 200, resp)
+}
+
+// recentContainerEvents reads the daemon's event log for the last hour. Both
+// Since and Until are set, so the stream is a finite replay that closes by
+// itself; the context timeout is only a safety net for a socket that never
+// answers.
+func recentContainerEvents() ([]eventDTO, bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	now := time.Now()
+	opts := dockerevents.ListOptions{
+		Since: strconv.FormatInt(now.Add(-eventsWindow).Unix(), 10),
+		Until: strconv.FormatInt(now.Unix(), 10),
+	}
+	messages, errCh := podman.ContainerEvents(ctx, opts)
+
+	raw := make([]dockerevents.Message, 0, maxSystemEvents)
+	degraded := false
+readLoop:
+	for len(raw) < maxRawEvents {
+		select {
+		case msg, ok := <-messages:
+			if !ok {
+				break readLoop
+			}
+			raw = append(raw, msg)
+		case err := <-errCh:
+			if err != nil && err != io.EOF {
+				degraded = true
+			}
+			break readLoop
+		case <-ctx.Done():
+			// A socket that never finishes its replay is degraded, not a
+			// truncated feed: an arbitrary cut of the log would silently
+			// drop the newest events behind a clock nobody set.
+			degraded = true
+			break readLoop
+		}
+	}
+
+	return eventDTOsFrom(raw), degraded
+}
+
+// eventDTOsFrom projects raw daemon events newest-first: containers only,
+// named entries only, the newest maxSystemEvents kept. The mapping works in
+// both worlds the daemon speaks — Action is current, Status is the legacy
+// field old daemons still fill instead.
+func eventDTOsFrom(raw []dockerevents.Message) []eventDTO {
+	out := make([]eventDTO, 0, maxSystemEvents)
+	for i := len(raw) - 1; i >= 0 && len(out) < maxSystemEvents; i-- {
+		m := raw[i]
+		if m.Type != dockerevents.ContainerEventType {
+			continue
+		}
+		name := m.Actor.Attributes["name"]
+		if name == "" {
+			continue
+		}
+		action := string(m.Action)
+		if action == "" {
+			action = m.Status
+		}
+		atMs := m.TimeNano / int64(time.Millisecond)
+		if atMs == 0 {
+			atMs = m.Time * 1000
+		}
+		out = append(out, eventDTO{AtMs: atMs, Name: name, Action: action})
+	}
+	return out
 }
