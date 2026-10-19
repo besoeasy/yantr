@@ -237,6 +237,20 @@ const diskFreeText = computed(() => {
   return disk ? formatBytes(disk.freeBytes) : null;
 });
 
+// The busiest device from the disk I/O array — the backend sorts by total
+// rate, so "primary" again just means index 0. Empty until the second
+// metrics sample, exactly like cpu.ready gates the CPU figure.
+const primaryDiskIO = computed(() => {
+  const io = metrics.value?.diskIO;
+  return Array.isArray(io) && io.length > 0 ? io[0] : null;
+});
+
+const diskIOText = computed(() => {
+  const io = primaryDiskIO.value;
+  if (!io) return null;
+  return `${formatBytes(io.readBps)}/s · ${formatBytes(io.writeBps)}/s`;
+});
+
 const tempText = computed(() => {
   const celsius = metrics.value?.tempC;
   return Number.isFinite(celsius) ? `${Math.round(celsius)}°C` : null;
@@ -292,6 +306,8 @@ export function useHostMetrics() {
     primaryDisk,
     diskText,
     diskFreeText,
+    primaryDiskIO,
+    diskIOText,
     tempText,
   };
 }
