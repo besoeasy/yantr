@@ -3042,29 +3042,28 @@ p code, li code, td code, .spec-sub code {
   }
 }
 
-/* ── Origin: Kathua and the Ravi ───────────────────────
-   The lore section sits between the features band and the
-   community band, so it reads as the turn from what the
-   thing does to where it came from and who carries it.
-   It reuses the page's own vocabulary — .eyebrow, .h2,
-   .lead, .spec-rows/.spec-row, .btn, .dot-grid — and adds
-   only what a two-column editorial block needs. */
+/* ── Origin: made in India ───────────────────────────
+   One statement, one drawing. This used to carry a long
+   essay about the river and a fact card; it now says where
+   the thing is from and lets the plate below carry the
+   rest. */
 .lore-section { position: relative; overflow: hidden; }
 
-/* The river's name, as faint as the "OSS" backdrop behind
-   the community band above it, but ink-toned for a light
-   section. */
+/* The country's name, as faint as the "OSS" backdrop behind
+   the community band below, held behind the headline so it
+   never sits on top of the river plate. */
 .lore-backdrop {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 2rem;
   display: flex;
-  align-items: center;
   justify-content: center;
   pointer-events: none;
   user-select: none;
 }
 .lore-backdrop span {
-  font-size: 21vw;
+  font-size: clamp(4.5rem, 15vw, 15rem);
   font-weight: 900;
   color: rgba(17, 24, 39, 0.028);
   line-height: 1;
@@ -3080,127 +3079,14 @@ p code, li code, td code, .spec-sub code {
 
 .lore-inner { position: relative; }
 
-.lore-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-  margin-top: 3.5rem;
-  align-items: start;
-}
-
-/* The prose reads as prose: one measure, generous leading,
-   and a first line set a little larger than the rest. */
-.lore-copy p {
-  font-size: 1.0625rem;
-  line-height: 1.85;
-  color: var(--gray-600);
-  margin-bottom: 1.25rem;
-  max-width: 34rem;
-}
-.lore-copy p:last-child { margin-bottom: 0; }
-.lore-copy .lore-lede {
-  font-size: 1.1875rem;
-  line-height: 1.75;
-  color: var(--gray-700);
-  font-weight: 500;
-}
-.lore-copy strong { color: var(--gray-900); font-weight: 600; }
-.lore-copy em {
-  font-style: normal;
-  color: var(--gray-900);
-  box-shadow: inset 0 -0.45em 0 rgba(52, 211, 153, 0.28);
-}
-
-/* The field card: the same facts-and-values rows the
-   requirements band uses, so the page keeps one idiom. */
-.lore-card {
-  position: relative;
-  background: var(--white);
-  border: 1px solid var(--gray-200);
-  border-radius: 1rem;
-  padding: 1.75rem;
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
-}
-.lore-card-mark {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid var(--gray-100);
-}
-.lore-card-mark .glyph {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-  background: var(--emerald-50);
-  border: 1px solid var(--emerald-100);
-  color: var(--emerald-600);
-  flex-shrink: 0;
-}
-.lore-card-mark .place {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--gray-900);
-  line-height: 1.3;
-}
-.lore-card-mark .coords {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--gray-400);
-}
-.lore-card .spec-rows { margin-top: 0.5rem; }
-.lore-card .spec-row .v { font-family: var(--font-mono); font-size: 0.8125rem; }
-.lore-card-note {
-  margin-top: 1.25rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--gray-100);
-  font-size: 0.8125rem;
-  line-height: 1.7;
-  color: var(--gray-500);
-}
-
-/* The people band: the river feeds a plain, not one field. */
-.lore-people {
-  margin-top: 4.5rem;
-  padding-top: 3rem;
-  border-top: 1px solid var(--gray-200);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
-  align-items: center;
-}
-.lore-people h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--gray-900);
-  margin-bottom: 0.75rem;
-}
-.lore-people p {
-  font-size: 1rem;
-  line-height: 1.75;
-  color: var(--gray-500);
-  max-width: 40rem;
-}
-.lore-ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-@media (min-width: 900px) {
-  .lore-grid {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-    gap: 4rem;
-  }
-  .lore-people {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 3rem;
-  }
+/* "Made with ♥" then "in India." — the heart does the work
+   of the word, so the line stays short enough for a phone. */
+.lore-heart {
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  color: var(--emerald-500);
+  vertical-align: 0.02em;
 }
 
 /* ── The Ravi, drawn ──────────────────────────────
