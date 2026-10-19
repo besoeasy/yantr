@@ -759,11 +759,6 @@
     "subtitle": "Assistance",
     "title": "Un truc ne marche pas ?",
     "description": "Un rapport qui indique la version, l’hôte et le nombre de stacks en cours est exploitable. Tout est déjà rempli.",
-    "contextLabel": "Joint au rapport",
-    "version": "Yantr",
-    "host": "Hôte",
-    "podman": "Podman",
-    "stacks": "Stacks",
     "cta": "Signaler un problème",
     "footnote": "Rien n’est envoyé tant que vous ne signalez pas."
   },

@@ -1,8 +1,10 @@
 <script>
-// Dashboard engine: two of the desktop grid's four columns — the ask and the
-// CTA share a row, the facts the report carries get one thin strip, so the
-// card never has to spend height on a landing-page stack. The .w-span-2
-// utility in main.css clamps it per breakpoint; see Home.vue.
+// Dashboard engine: two of the desktop grid's four columns, spent entirely on
+// the ask and the CTA. The facts the report carries are not rendered at all —
+// they ride in the button's href, pre-filled into the issue body, so the card
+// spends its pixels on the ask instead of restating what the link already
+// embeds. The .w-span-2 utility in main.css clamps it per breakpoint; see
+// Home.vue.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -13,14 +15,16 @@ import { useApiUrl } from "../composables/useApiUrl";
 import { buildYantrIssueReportUrl } from "../utils/developer";
 
 // A report about Yantr itself, with the facts a maintainer would otherwise
-// have to ask for already in the body: version and build, host OS and
-// architecture, Podman's version, and how many stacks are running. Those are
-// exactly what "it broke on my box" is missing, and they are the same facts
-// the dashboard already shows two cards over.
+// have to ask for already in the body of the issue the button opens: version
+// and build, host OS and architecture, Podman's version, and how many stacks
+// are running. Those are exactly what "it broke on my box" is missing, and
+// the built report is the only place they appear — the card does not restate
+// them, because a list of machine facts is display space the ask deserves.
 //
 // What is deliberately not attached: hostname, public IP, user, app list. A
-// bug report should not carry the machine it came from. The card lists what
-// goes in, because a report that fills itself in should be able to say so.
+// bug report should not carry the machine it came from, and nothing leaves
+// until the reader clicks through — the footnote on the card says so, which
+// is the consent story a filled-in report still has to carry.
 //
 // It is deliberately its own card rather than a button on the repository
 // card: reporting a bug and starring a repository are different intentions,
@@ -35,9 +39,9 @@ const host = ref("");
 const podmanVersion = ref("");
 const stacksRunning = ref("");
 
-// One fetch each, once. The dashboard is not the place for a poll: the numbers
-// here are context for a button, not a live reading, and the cards that do
-// track something already poll it.
+// One fetch each, once, purely so the link can quote them. The dashboard is
+// not the place for a poll: these are context for a report body, not a live
+// reading, and the cards that do track something already poll it.
 onMounted(async () => {
   const [versionResponse, infoResponse] = await Promise.allSettled([
     fetch(`${apiUrl.value}/api/version`),
@@ -76,20 +80,6 @@ const issueUrl = computed(() =>
     stacks: stacksRunning.value,
   })
 );
-
-// One cell per fact. A host we could not describe is left out rather than
-// shown as a dash: an empty field in a list of real ones reads as a fault in
-// the card.
-const facts = computed(() =>
-  [
-    { label: t("issueCard.version"), value: [version.value, buildDate.value && `build ${buildDate.value}`].filter(Boolean).join(" · ") },
-    { label: t("issueCard.host"), value: host.value },
-    { label: t("issueCard.podman"), value: podmanVersion.value },
-    { label: t("issueCard.stacks"), value: stacksRunning.value },
-  ].filter((fact) => fact.value)
-);
-
-const hasFacts = computed(() => facts.value.length > 0);
 </script>
 
 <template>
@@ -111,8 +101,8 @@ const hasFacts = computed(() => facts.value.length > 0);
       </div>
     </div>
 
-    <!-- Body: ask left, act right, evidence underneath. Held short so the row
-         keeps its 320px like every neighbour card. -->
+    <!-- Body: ask left, act right. Held short so the row keeps its 320px
+         like every neighbour card. -->
     <div class="relative z-10 mt-auto flex flex-col gap-4 pt-5">
       <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
         <div class="min-w-0 max-w-[38ch] flex-1">
@@ -138,30 +128,10 @@ const hasFacts = computed(() => facts.value.length > 0);
         </a>
       </div>
 
-      <!-- What the report will carry, as one thin strip of cells: a reader who
-           does not want their host described can check what leaves the machine
-           without the card paying a stacked list for it. -->
-      <div
-        v-if="hasFacts"
-        class="report-facts grid grid-cols-2 gap-x-4 gap-y-2 rounded-xl px-3.5 py-2.5 sm:grid-cols-4"
-      >
-        <div v-for="fact in facts" :key="fact.label" class="flex min-w-0 flex-col gap-0.5">
-          <span class="yantra-text-secondary text-[9px] font-semibold uppercase tracking-wider">
-            {{ fact.label }}
-          </span>
-          <span class="yantra-text-primary truncate font-mono text-[11px] font-medium" :title="fact.value">
-            {{ fact.value }}
-          </span>
-        </div>
-      </div>
-
-      <div class="report-foot yantra-text-secondary flex items-center justify-between gap-4 pt-3 text-[10px] leading-relaxed">
+      <div class="report-foot yantra-text-secondary flex items-center gap-4 pt-3 text-[10px] leading-relaxed">
         <span class="flex min-w-0 items-center gap-2">
           <ShieldCheck class="h-3 w-3 shrink-0" />
           <span class="truncate">{{ t("issueCard.footnote") }}</span>
-        </span>
-        <span v-if="hasFacts" class="yantra-text-secondary shrink-0 text-[9px] font-semibold uppercase tracking-widest">
-          {{ t("issueCard.contextLabel") }}
         </span>
       </div>
     </div>
@@ -170,8 +140,8 @@ const hasFacts = computed(() => facts.value.length > 0);
 
 <style scoped>
 /* Card chrome, the icon tile and every text colour come from the shared
-   helpers in main.css. This card owns its CTA, the facts strip and the
-   hairline footer, and nothing else. */
+   helpers in main.css. This card owns its CTA and the hairline footer, and
+   nothing else. */
 .report-cta {
   background-color: var(--cta-bg);
   color: var(--cta-text);
@@ -179,10 +149,6 @@ const hasFacts = computed(() => facts.value.length > 0);
 
 .report-cta:hover {
   background-color: var(--cta-bg-hover);
-}
-
-.report-facts {
-  background-color: var(--card-inset);
 }
 
 .report-foot {

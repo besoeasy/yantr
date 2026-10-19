@@ -784,11 +784,6 @@
     "subtitle": "Support",
     "title": "Found something broken?",
     "description": "A report that names the version, the host and how many stacks are running is one someone can act on. This fills all of it in.",
-    "contextLabel": "Attached to the report",
-    "version": "Yantr",
-    "host": "Host",
-    "podman": "Podman",
-    "stacks": "Stacks",
     "cta": "Report an issue",
     "footnote": "Nothing is sent until you report."
   },

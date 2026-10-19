@@ -759,11 +759,6 @@
     "subtitle": "Soporte",
     "title": "¿Has encontrado algo roto?",
     "description": "Un informe con la versión, el host y cuántos stacks hay en marcha es el que alguien puede resolver. Todo eso va puesto.",
-    "contextLabel": "Se adjunta al informe",
-    "version": "Yantr",
-    "host": "Host",
-    "podman": "Podman",
-    "stacks": "Stacks",
     "cta": "Informar de un error",
     "footnote": "No se envía nada hasta que lo informes."
   },

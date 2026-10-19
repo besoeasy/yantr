@@ -759,11 +759,6 @@
     "subtitle": "支持",
     "title": "发现什么问题了吗？",
     "description": "写明版本、主机和正在运行的 stack 数量的报告才好处理。这些内容已经填好了。",
-    "contextLabel": "随报告附带",
-    "version": "Yantr",
-    "host": "主机",
-    "podman": "Podman",
-    "stacks": "Stacks",
     "cta": "报告问题",
     "footnote": "在你提交之前不会发送任何内容。"
   },

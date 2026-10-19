@@ -757,11 +757,6 @@
     "subtitle": "Support",
     "title": "Etwas kaputtgefunden?",
     "description": "Ein Bericht mit Version, Host und Zahl der laufenden Stacks lässt sich bearbeiten. Diese Angaben stehen schon drin.",
-    "contextLabel": "Wird an den Bericht angehängt",
-    "version": "Yantr",
-    "host": "Host",
-    "podman": "Podman",
-    "stacks": "Stacks",
     "cta": "Fehler melden",
     "footnote": "Es wird nichts gesendet, bis du meldest."
   },
