@@ -1,6 +1,7 @@
 package system
 
 import (
+	"fmt"
 	"math"
 	"os"
 	"path/filepath"
@@ -320,6 +321,50 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	}
 	if got.TempC != nil {
 		t.Errorf("TempC = %v, want nil when no sensor is readable", *got.TempC)
+	}
+}
+
+func hwmonFan(t *testing.T, dir, chip, file string, rpm int) {
+	chipDir := filepath.Join(dir, "class", "hwmon", chip)
+	if err := os.MkdirAll(chipDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(chipDir, file), []byte(fmt.Sprintf("%d\n", rpm)), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestReadFanSpeedPicksTheFastestPlausibleFan(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFan(t, dir, "hwmon1", "fan1_input", 3036) // acpi_fan, the faster of the two real ones
+	hwmonFan(t, dir, "hwmon2", "fan1_input", 0)    // a stopped fan is a real observation, not a dead sensor
+	hwmonFan(t, dir, "hwmon3", "fan1_input", 15000) // above the ceiling: an unconnected pin, skipped
+
+	got, err := readFanSpeed(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readFanSpeed: %v", err)
+	}
+	if math.Abs(*got-3036) > 0.001 {
+		t.Errorf("fan = %v, want 3036", *got)
+	}
+}
+
+func TestReadFanSpeedAllStoppedIsStillAReading(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFan(t, dir, "hwmon1", "fan1_input", 0)
+
+	got, err := readFanSpeed(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readFanSpeed: %v", err)
+	}
+	if *got != 0 {
+		t.Errorf("fan = %v, want 0 (fans idle at zero on real boards)", *got)
+	}
+}
+
+func TestReadFanSpeedNoSensorIsAnError(t *testing.T) {
+	if _, err := readFanSpeed(sources{sysRoot: t.TempDir()}); err == nil {
+		t.Fatal("expected an error when no fan input exists")
 	}
 }
 

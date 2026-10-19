@@ -45,6 +45,7 @@ type HostMetrics struct {
 	// cannot exist from one reading.
 	DiskIO   []DiskIOStats `json:"diskIO"`
 	TempC    *float64      `json:"tempC"`
+	FanRPM   *float64      `json:"fanRPM"`
 	Degraded []string      `json:"degraded"`
 }
 
@@ -321,6 +322,12 @@ func (c *collector) snapshot() HostMetrics {
 		out.TempC = temp
 	} else {
 		out.Degraded = append(out.Degraded, "temperature")
+	}
+
+	if fan, err := readFanSpeed(s); err == nil {
+		out.FanRPM = fan
+	} else {
+		out.Degraded = append(out.Degraded, "fans")
 	}
 
 	return out
@@ -736,6 +743,44 @@ func diskIORates(prev, cur map[string]diskIOCounters, elapsedSec float64) []Disk
 		out = out[:maxDiskDevices]
 	}
 	return out
+}
+
+// maxPlausibleFanRPM is the sanity ceiling for a hwmon fan reading. Desktop
+// fans top out around 3000 RPM and 1U blowers near 10000; anything above is a
+// sensor reading garbage on an unconnected pin, and reporting it would be
+// worse than reporting no fan at all.
+const maxPlausibleFanRPM = 12000
+
+// readFanSpeed returns the fastest fan attached to the host, in RPM.
+//
+// Unlike temperature, a genuine 0 is a real observation — plenty of boards
+// idle their fans at 0 — so it is reported rather than discarded; the nil
+// return is reserved for "no fan sensor readable", which is the degraded
+// state. Far from every board exposes hwmon fans, so erroring quietly is the
+// expected path on headless servers no less than on fanless SBCs.
+func readFanSpeed(s sources) (*float64, error) {
+	inputs, err := filepath.Glob(s.sysPath("/class/hwmon/hwmon*/fan*_input"))
+	if err != nil || len(inputs) == 0 {
+		return nil, os.ErrNotExist
+	}
+	var best float64 = -1
+	for _, path := range inputs {
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		rpm, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+		if err != nil || rpm < 0 || rpm > maxPlausibleFanRPM {
+			continue
+		}
+		if rpm > best {
+			best = rpm
+		}
+	}
+	if best < 0 {
+		return nil, os.ErrNotExist
+	}
+	return &best, nil
 }
 
 // readTemperature prefers the ACPI thermal zones and falls back to hwmon,
