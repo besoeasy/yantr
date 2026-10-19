@@ -139,16 +139,16 @@ const hasLoad = computed(() => rows.value.length > 0);
     <!-- Header -->
     <div class="flex w-full items-start justify-between">
       <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-orange-200 bg-orange-50 transition-transform duration-200 group-hover:scale-105 dark:border-orange-900/50 dark:bg-orange-900/20">
-          <Flame class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-rose-200 bg-rose-50 transition-transform duration-200 group-hover:scale-105 dark:border-rose-900/50 dark:bg-rose-900/20">
+          <Flame class="h-5 w-5 text-rose-600 dark:text-rose-400" />
         </div>
         <div>
           <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
             {{ t("quickMetrics.topConsumers.title") }}
           </h3>
           <div class="mt-2 flex items-center gap-1.5">
-            <div class="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
-            <span class="text-[10px] font-semibold uppercase tracking-widest text-orange-600 dark:text-orange-500">
+            <div class="h-1.5 w-1.5 rounded-full bg-rose-500"></div>
+            <span class="text-[10px] font-semibold uppercase tracking-widest text-rose-600 dark:text-rose-400">
               {{ t("quickMetrics.topConsumers.subtitle") }}
             </span>
           </div>
@@ -162,12 +162,12 @@ const hasLoad = computed(() => rows.value.length > 0);
         <div v-for="row in rows" :key="row.key" class="rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div class="mb-1.5 flex items-baseline justify-between gap-3">
             <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
-            <span class="shrink-0 text-sm font-black tabular-nums tracking-tight text-orange-600 dark:text-orange-400">
+            <span class="shrink-0 text-sm font-black tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
               {{ row.pct.toFixed(1) }}%
             </span>
           </div>
           <div class="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-            <div class="h-full rounded-full bg-orange-400 transition-[width] duration-500" :style="{ width: `${row.bar}%` }"></div>
+            <div class="h-full rounded-full bg-rose-500 transition-[width] duration-500" :style="{ width: `${row.bar}%` }"></div>
           </div>
           <div class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
             <MemoryStick class="h-3 w-3 shrink-0" />
