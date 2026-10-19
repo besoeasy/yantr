@@ -659,6 +659,7 @@
       "diskIO": "Festplatten-I/O",
       "diskRead": "Lesen",
       "diskWrite": "Schreiben",
+      "diskIOHistory": "Festplatten-I/O der letzten 4 Minuten",
       "environment": "Umgebung",
       "live": "Live"
     },

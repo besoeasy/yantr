@@ -34,6 +34,9 @@ const systemInfo = shallowRef(null);
 const volumes = shallowRef([]);
 const metrics = shallowRef(null);
 const cpuHistory = shallowRef([]);
+// Combined read+write rate of the top disk device — an autoscaled byte rate
+// has no natural ceiling, so the card computes its own max from the window.
+const diskIOHistory = shallowRef([]);
 
 const loading = ref(true);
 const error = ref(null);
@@ -98,6 +101,13 @@ async function fetchMetrics() {
     // started measuring rather than from a fake zero.
     if (data.metrics?.cpu?.ready) {
       cpuHistory.value = [...cpuHistory.value, data.metrics.cpu.totalPct].slice(-HISTORY_POINTS);
+    }
+    // Same gating for disk I/O: the array is empty until the backend's second
+    // sample, and appending nothing keeps the sparkline in its flat-baseline
+    // waiting state instead of drawing a fake dead line.
+    if (Array.isArray(data.metrics?.diskIO) && data.metrics.diskIO.length > 0) {
+      const top = data.metrics.diskIO[0];
+      diskIOHistory.value = [...diskIOHistory.value, top.readBps + top.writeBps].slice(-HISTORY_POINTS);
     }
   } catch {
     // The message is deliberately not surfaced: all this needs to say is "the
@@ -289,6 +299,7 @@ export function useHostMetrics() {
     volumes,
     metrics,
     cpuHistory,
+    diskIOHistory,
     loading,
     error,
     metricsStale,

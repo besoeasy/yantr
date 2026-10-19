@@ -17,6 +17,7 @@ const {
   isDegraded,
   primaryDiskIO,
   diskIOText,
+  diskIOHistory,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
@@ -37,6 +38,14 @@ const iopsText = computed(() => {
   const fmt = (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : Math.round(v).toString());
   return `${fmt(io.readsPerSec)} r/s · ${fmt(io.writesPerSec)} w/s`;
 });
+
+// The sparkline scales itself: byte rates have no natural ceiling to pin to 100
+// like a CPU percentage does, so the max is the busiest moment in the window —
+// the shape is the information, the absolute scale lives in the headline above.
+// The 1 MB/s floor keeps an all-zero window from producing a 0 ceiling, which
+// would divide the next real sample into a spike to the top of the card.
+const sparkMax = computed(() => Math.max(...diskIOHistory.value, 1024 * 1024) * 1.15);
+const sparkLabel = computed(() => t("quickMetrics.hostMetrics.diskIOHistory"));
 </script>
 
 <template>
@@ -73,7 +82,7 @@ const iopsText = computed(() => {
 
       <!-- read is the headline: database and torrent workloads show here
            before writes do, and it is the first number you want to see move. -->
-      <div class="mb-5 flex items-baseline justify-between gap-3">
+      <div class="mb-2 flex items-baseline justify-between gap-3">
         <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <ArrowDown class="h-3 w-3 shrink-0 text-amber-500" />
           {{ t("quickMetrics.hostMetrics.diskRead") }}
@@ -81,6 +90,13 @@ const iopsText = computed(() => {
         <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
           {{ isDegraded("diskio") ? unavailable : readText }}
         </span>
+      </div>
+
+      <!-- 4-minute trend of the top device, read+write combined, autoscaled
+           to the busiest moment in the window — the same shape-over-scale deal
+           the CPU sparkline makes, minus the fixed percent ceiling. -->
+      <div class="mb-5 h-16 w-full">
+        <Sparkline :points="diskIOHistory" :max="sparkMax" :tone="'amber'" :label="sparkLabel" />
       </div>
 
       <!-- write: the other direction, a row rather than a second headline. -->

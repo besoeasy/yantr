@@ -661,6 +661,7 @@
       "diskIO": "E/S disque",
       "diskRead": "Lecture",
       "diskWrite": "Écriture",
+      "diskIOHistory": "E/S disque des 4 dernières minutes",
       "environment": "Environnement",
       "live": "En direct"
     },

@@ -661,6 +661,7 @@
       "diskIO": "I/O диска",
       "diskRead": "Чтение",
       "diskWrite": "Запись",
+      "diskIOHistory": "Диск I/O за последние 4 минуты",
       "environment": "Состояние",
       "live": "В реальном времени"
     },

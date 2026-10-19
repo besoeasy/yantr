@@ -661,6 +661,7 @@
       "diskIO": "磁盘 I/O",
       "diskRead": "读取",
       "diskWrite": "写入",
+      "diskIOHistory": "最近4分钟的磁盘 I/O",
       "environment": "环境",
       "live": "实时"
     },

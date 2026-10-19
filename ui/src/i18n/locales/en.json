@@ -686,6 +686,7 @@
       "diskIO": "Disk I/O",
       "diskRead": "Read",
       "diskWrite": "Write",
+      "diskIOHistory": "Disk I/O over the last 4 minutes",
       "environment": "Environment",
       "live": "Live"
     },
