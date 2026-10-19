@@ -111,19 +111,24 @@ onUnmounted(() => clearInterval(timer));
 
 // version in the dependency chain makes rows recompute after mutations of the
 // plain (non-reactive) maps, without making those maps reactive themselves.
+//
+// The bar is an absolute meter: 100% is one fully used core, not the busiest
+// container of this sample. Scaling to the leader made every leader read full
+// however small its number, which told the eye nothing about the figure beside
+// it; a container over a core saturates the bar and lets the percentage say
+// the rest. The list is still ranked by usage.
 const rows = computed(() => {
   void version.value;
   const ranked = [...samples.values()]
     .filter((s) => typeof s.pct === "number" && s.pct > 0)
     .sort((a, b) => b.pct - a.pct)
     .slice(0, ROW_COUNT);
-  const max = ranked[0]?.pct ?? 0;
   return ranked.map((s, i) => ({
     key: `${s.name}-${i}`,
     name: s.name,
     pct: s.pct,
     memUsage: s.memUsage,
-    bar: max > 0 ? Math.min((s.pct / max) * 100, 100) : 0,
+    bar: Math.min(s.pct, 100),
   }));
 });
 
