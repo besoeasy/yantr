@@ -68,11 +68,6 @@ func Background() context.Context {
 	return ctx
 }
 
-// Ctx returns a plain background context for operations that might take a while.
-func Ctx() context.Context {
-	return context.Background()
-}
-
 var warnHostSocketOnce sync.Once
 
 // HostSocket returns the Podman socket path on the host system.

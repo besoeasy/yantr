@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os/exec"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -209,33 +207,4 @@ func coalesce(vals ...string) string {
 		}
 	}
 	return ""
-}
-
-// SystemArch returns the normalized system architecture (e.g. "amd64", "arm64").
-var systemArch string
-var archOnce sync.Once
-
-func GetSystemArch() string {
-	archOnce.Do(func() {
-		out, err := exec.Command("uname", "-m").Output()
-		if err == nil {
-			arch := strings.TrimSpace(string(out))
-			archMap := map[string]string{
-				"x86_64":  "amd64",
-				"aarch64": "arm64",
-				"armv7l":  "arm/v7",
-				"armv6l":  "arm/v6",
-				"i386":    "386",
-				"i686":    "386",
-			}
-			if mapped, ok := archMap[arch]; ok {
-				systemArch = mapped
-			} else {
-				systemArch = arch
-			}
-			return
-		}
-		systemArch = runtime.GOARCH
-	})
-	return systemArch
 }
