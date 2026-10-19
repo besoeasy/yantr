@@ -140,41 +140,44 @@ const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
          verb, so the dot carries green/red/amber and the row stays quiet.
          Two columns inside the card's two: the width is already paid for, and
          stacking six rows in one column is what made the card taller than the
-         row it sits in. -->
+         row it sits in. A phone is the exception — the card is full-width
+         there, so the feed stacks instead of squeezing two cells into 136px. -->
     <div
-      class="relative z-10 mt-auto grid grid-cols-2 gap-2 pt-6 transition-opacity duration-200"
+      class="relative z-10 mt-auto pt-6 transition-opacity duration-200"
       :class="degraded ? 'opacity-50' : ''"
     >
       <template v-if="rows.length">
-        <div
-          v-for="row in visibleRows"
-          :key="row.key"
-          class="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-zinc-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50"
-        >
-          <span class="flex min-w-0 items-center gap-2">
-            <span class="h-2 w-2 shrink-0 rounded-full" :class="row.tone"></span>
-            <span class="flex min-w-0 items-baseline gap-2">
-              <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
-              <span class="shrink-0 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-                {{ row.verb }}
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div
+            v-for="row in visibleRows"
+            :key="row.key"
+            class="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-zinc-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50"
+          >
+            <span class="flex min-w-0 items-center gap-2">
+              <span class="h-2 w-2 shrink-0 rounded-full" :class="row.tone"></span>
+              <span class="flex min-w-0 items-baseline gap-2">
+                <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
+                <span class="shrink-0 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+                  {{ row.verb }}
+                </span>
+                <span
+                  v-if="row.count > 1"
+                  class="shrink-0 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[10px] font-black tabular-nums yantra-text-secondary dark:bg-zinc-800"
+                  :title="t('quickMetrics.events.repeat', { count: row.count })"
+                >×{{ row.count }}</span>
               </span>
-              <span
-                v-if="row.count > 1"
-                class="shrink-0 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[10px] font-black tabular-nums yantra-text-secondary dark:bg-zinc-800"
-                :title="t('quickMetrics.events.repeat', { count: row.count })"
-              >×{{ row.count }}</span>
             </span>
-          </span>
-          <span class="shrink-0 text-xs font-black tabular-nums tracking-tight yantra-text-secondary">
-            {{ row.age }}
-          </span>
+            <span class="shrink-0 text-xs font-black tabular-nums tracking-tight yantra-text-secondary">
+              {{ row.age }}
+            </span>
+          </div>
         </div>
 
         <!-- The count is the only thing that says the feed continues; without
              it six rows read as the whole hour. -->
         <div
           v-if="hiddenRows"
-          class="col-span-2 text-right text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary"
+          class="mt-2 text-right text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary"
         >
           {{ t("quickMetrics.events.more", { count: hiddenRows }) }}
         </div>
@@ -184,7 +187,7 @@ const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
            is a clean reading of a quiet box, a degraded socket is not. -->
       <div
         v-else
-        class="col-span-2 flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50"
+        class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50"
       >
         <Activity class="h-4 w-4 shrink-0" :class="degraded ? '' : 'animate-pulse'" />
         {{ degraded ? unavailable : emptyText }}
