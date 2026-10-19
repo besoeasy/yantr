@@ -1,14 +1,14 @@
 <script>
-// Dashboard engine: two columns — five ranked rows with bars buckle below
-// half the row, and one column cannot fit a name, two numbers and a bar per
-// line comfortably. Width honours the two-column ceiling every widget lives
-// by; see Home.vue for how meta.cols is consumed.
+// Dashboard engine: two columns — six ranked cells read as three across by
+// two rows; one column would either stack them into a page or squeeze a name,
+// a percentage and a bar into 130px. Width honours the two-column ceiling
+// every widget lives by; see Home.vue for how meta.cols is consumed.
 export const meta = { cols: 2 };
 </script>
 <script setup>
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
-import { Flame, Cpu, MemoryStick } from "@lucide/vue";
+import { Flame, Cpu } from "@lucide/vue";
 import { formatBytes } from "../utils/metrics";
 import { createCpuRateCalculator } from "../utils/cpu";
 import { useApiUrl } from "../composables/useApiUrl";
@@ -23,10 +23,10 @@ const SAMPLE_ROUND_MS = 3000;
 
 // The fan-out is the cost here: one request per running container per round.
 // Twelve bounds the worst case on a busy homelab while covering what a
-// five-row leaderboard can show with margin; the list is newest-first, which
+// six-cell leaderboard can show with margin; the list is newest-first, which
 // is where a stack someone just deployed would appear.
 const MAX_SAMPLED = 12;
-const ROW_COUNT = 5;
+const ROW_COUNT = 6;
 
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
@@ -156,35 +156,35 @@ const hasLoad = computed(() => rows.value.length > 0);
       </div>
     </div>
 
-    <!-- Rows -->
-    <div class="relative z-10 mt-auto flex flex-col gap-2.5 pt-6">
-      <template v-if="hasLoad">
-        <div v-for="row in rows" :key="row.key" class="rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="mb-1.5 flex items-baseline justify-between gap-3">
-            <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
-            <span class="shrink-0 text-sm font-black tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
+    <!-- Rows: a 3×2 board. The name gets its own line so it can use the full
+         cell width; percentage and memory share the second, the bar closes. -->
+    <div class="relative z-10 mt-auto pt-6">
+      <div v-if="hasLoad" class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+        <div v-for="row in rows" :key="row.key" class="flex min-w-0 flex-col rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
+          <div class="mt-1 flex items-baseline justify-between gap-2">
+            <span class="text-lg font-black tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
               {{ row.pct.toFixed(1) }}%
             </span>
+            <span class="shrink-0 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+              {{ formatBytes(row.memUsage) }}
+            </span>
           </div>
-          <div class="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div class="h-full rounded-full bg-rose-500 transition-[width] duration-500" :style="{ width: `${row.bar}%` }"></div>
           </div>
-          <div class="mt-1.5 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-            <MemoryStick class="h-3 w-3 shrink-0" />
-            {{ formatBytes(row.memUsage) }}
-          </div>
         </div>
-      </template>
+      </div>
 
       <!-- Empty states: a dashboard claims nothing it has not measured. No
            running containers, a host still being sampled, and a failed list
            load are different facts — each renders its own line rather than a
            shared "no data". -->
-      <div v-if="!hasLoad && !waiting" class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div v-else-if="!waiting" class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50">
         <Cpu class="h-4 w-4 shrink-0" />
         {{ t("quickMetrics.topConsumers.none") }}
       </div>
-      <div v-else-if="!hasLoad" class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div v-else class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50">
         <Cpu class="h-4 w-4 shrink-0 animate-pulse" />
         {{ t("quickMetrics.topConsumers.sampling") }}
       </div>
