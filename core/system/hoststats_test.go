@@ -316,7 +316,7 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	}
 	// Slices must serialize as [] and never as null, or the UI has to guard
 	// against a null before it can map over anything.
-	if got.Net == nil || got.Disk == nil || got.Degraded == nil || got.CPU.Cores != nil {
+	if got.Net == nil || got.Disk == nil || got.DiskIO == nil || got.Sensors == nil || got.Degraded == nil || got.CPU.Cores != nil {
 		t.Errorf("nil slices would serialize as JSON null: %+v", got)
 	}
 	if got.TempC != nil {
@@ -324,14 +324,20 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	}
 }
 
-func hwmonFan(t *testing.T, dir, chip, file string, rpm int) {
+// hwmonFile drops file content into a hwmon chip directory, creating the chip
+// as needed, and returns its chip root for assertions.
+func hwmonFile(t *testing.T, dir, chip, file, content string) {
 	chipDir := filepath.Join(dir, "class", "hwmon", chip)
 	if err := os.MkdirAll(chipDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(chipDir, file), []byte(fmt.Sprintf("%d\n", rpm)), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(chipDir, file), []byte(content), 0o600); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func hwmonFan(t *testing.T, dir, chip, file string, rpm int) {
+	hwmonFile(t, dir, chip, file, fmt.Sprintf("%d\n", rpm))
 }
 
 func TestReadFanSpeedPicksTheFastestPlausibleFan(t *testing.T) {
@@ -365,6 +371,106 @@ func TestReadFanSpeedAllStoppedIsStillAReading(t *testing.T) {
 func TestReadFanSpeedNoSensorIsAnError(t *testing.T) {
 	if _, err := readFanSpeed(sources{sysRoot: t.TempDir()}); err == nil {
 		t.Fatal("expected an error when no fan input exists")
+	}
+}
+
+func TestReadTemperatureReturnsTheHottest(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFile(t, dir, "hwmon1", "temp1_input", "42500\n")  // 42.5°C: cool, but not the headline
+	hwmonFile(t, dir, "hwmon2", "temp1_input", "62500\n")  // 62.5°C: the reading that can hurt hardware
+	hwmonFile(t, dir, "hwmon3", "temp1_input", "150000\n") // 150°C: implausible, skipped
+
+	got, err := readTemperature(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readTemperature: %v", err)
+	}
+	if math.Abs(*got-62.5) > 0.001 {
+		t.Errorf("temp = %v, want 62.5 (hottest plausible)", *got)
+	}
+}
+
+// A desktop board's Super I/O chip: two temperature slots, one fan slot. Fan 1
+// pairs with temp 1 by index and carries its label; temp 2 stays an unpaired
+// single. A hot NVMe with a stopped fan and a cool CPU with spinning fans must
+// not blur into one value.
+func TestReadSensorsPairsBySlotWithinAChip(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFile(t, dir, "hwmon1", "name", "nct6775\n")
+	hwmonFile(t, dir, "hwmon1", "fan1_input", "1200\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_input", "42500\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_label", "SYSTIN\n")
+	hwmonFile(t, dir, "hwmon1", "temp2_input", "62500\n")
+	hwmonFile(t, dir, "hwmon1", "temp2_label", "CPUTIN\n")
+
+	got, err := readSensors(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readSensors: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("got %+v, want 2 entries", got)
+	}
+	paired := got[0]
+	if paired.Chip != "nct6775" || paired.Label != "SYSTIN" ||
+		paired.FanRPM == nil || *paired.FanRPM != 1200 ||
+		paired.TempC == nil || *paired.TempC != 42.5 {
+		t.Errorf("paired slot = %+v, want nct6775 SYSTIN 42.5°C @ 1200 RPM", paired)
+	}
+	single := got[1]
+	if single.TempC == nil || *single.TempC != 62.5 || single.FanRPM != nil || single.Label != "CPUTIN" {
+		t.Errorf("unpaired temp slot = %+v, want CPUTIN 62.5°C with a null fan", single)
+	}
+}
+
+func TestReadSensorsFanOnlyChip(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFile(t, dir, "hwmon1", "name", "acpi_fan\n")
+	hwmonFile(t, dir, "hwmon1", "fan1_input", "3036\n")
+
+	got, err := readSensors(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readSensors: %v", err)
+	}
+	if len(got) != 1 || got[0].FanRPM == nil || *got[0].FanRPM != 3036 || got[0].TempC != nil {
+		t.Errorf("fan-only chip = %+v, want acpi_fan 3036 RPM with a null temp", got)
+	}
+	_ = got[0].Chip
+}
+
+func TestReadSensorsIncludesThermalZonesAndKeepsOrder(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFile(t, dir, "hwmon1", "name", "k10temp\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_input", "42500\n")
+
+	zone := filepath.Join(dir, "class", "thermal", "thermal_zone0")
+	if err := os.MkdirAll(zone, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "temp"), []byte("52000\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "type"), []byte("acpitz\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := readSensors(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readSensors: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("got %+v, want 2 entries", got)
+	}
+	// Hottest first among singles: the zone at 52 beats k10temp at 42.5.
+	if got[0].Chip != "acpitz" || *got[0].TempC != 52 || got[0].FanRPM != nil {
+		t.Errorf("first = %+v, want acpitz 52°C temp-only", got[0])
+	}
+	if got[1].Chip != "k10temp" || *got[1].TempC != 42.5 {
+		t.Errorf("second = %+v, want k10temp 42.5°C", got[1])
+	}
+}
+
+func TestReadSensorsNoSensorsIsAnError(t *testing.T) {
+	if _, err := readSensors(sources{sysRoot: t.TempDir()}); err == nil {
+		t.Fatal("expected an error when no chip or zone is readable")
 	}
 }
 

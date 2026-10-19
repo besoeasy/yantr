@@ -43,10 +43,31 @@ type HostMetrics struct {
 	// DiskIO is a per-device I/O rate, reported like Net: empty until the
 	// second sample, because a rate derived from cumulative sector counters
 	// cannot exist from one reading.
-	DiskIO   []DiskIOStats `json:"diskIO"`
-	TempC    *float64      `json:"tempC"`
-	FanRPM   *float64      `json:"fanRPM"`
-	Degraded []string      `json:"degraded"`
+	DiskIO []DiskIOStats `json:"diskIO"`
+	// Sensors: one entry per fan/temp slot, paired by slot index within a
+	// chip — the only grouping the kernel itself vouches for. Chips that
+	// expose only a temperature or only a fan still get an entry; the fields
+	// the chip lacks are null rather than zero.
+	Sensors []SensorStats `json:"sensors"`
+	TempC   *float64      `json:"tempC"`
+	FanRPM  *float64      `json:"fanRPM"`
+	Degraded []string     `json:"degraded"`
+}
+
+// SensorStats is one slot on one hwmon chip: fan i and temperature i under the
+// same chip directory are the pairing the kernel documents with its own
+// numbering (fan1_input reads what temp1_input heats). A label file, where the
+// driver ships one, travels with the temperature it labels.
+type SensorStats struct {
+	// Chip is the readable chip name from the name attribute ("nct6775",
+	// "nvme", "acpitz"), falling back to the directory name.
+	Chip string `json:"chip"`
+	// Label is the optional tempN_label text ("Package id 0", "SYSTIN").
+	Label string `json:"label,omitempty"`
+	// TempC and FanRPM: a chip that only measures reports a null fan; a chip
+	// that only spins reports a null temperature.
+	TempC  *float64 `json:"tempC"`
+	FanRPM *float64 `json:"fanRPM"`
 }
 
 type CPUStats struct {
@@ -230,6 +251,7 @@ func (c *collector) snapshot() HostMetrics {
 		Net:      []NetStats{},
 		Disk:     []DiskStats{},
 		DiskIO:   []DiskIOStats{},
+		Sensors:  []SensorStats{},
 		Degraded: []string{},
 	}
 
@@ -329,6 +351,13 @@ func (c *collector) snapshot() HostMetrics {
 	} else {
 		out.Degraded = append(out.Degraded, "fans")
 	}
+
+	if sensors, err := readSensors(s); err == nil {
+		out.Sensors = sensors
+	}
+	// No degraded key here on purpose: the aggregates above already degrade
+	// with the same missing-/sys condition, and an empty sensor list is a
+	// display question the card answers with its existing em-dash rows.
 
 	return out
 }
@@ -783,9 +812,30 @@ func readFanSpeed(s sources) (*float64, error) {
 	return &best, nil
 }
 
-// readTemperature prefers the ACPI thermal zones and falls back to hwmon,
-// skipping implausible readings so a broken sensor reports as missing rather
-// than as a believable-looking 0°C or 1000°C.
+// readCelsius parses one milliCelsius temp file into the plausible window.
+// Everything outside it reports as missing rather than as a believable-looking
+// 0°C or 1000°C, which is the same deal every sensor reader in this file makes.
+func readCelsius(path string) (*float64, bool) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil, false
+	}
+	milli, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+	if err != nil {
+		return nil, false
+	}
+	c := milli / 1000
+	if c <= 0 || c >= 120 {
+		return nil, false
+	}
+	return &c, true
+}
+
+// readTemperature walks the ACPI thermal zones and the hwmon temperature
+// inputs alike and returns the hottest plausible reading. It used to return
+// the first zone it happened to find, which made the dashboard's headline
+// temperature a lottery of enumeration order — the number a human reacts to
+// is the hottest one, since that is the reading that can hurt the hardware.
 func readTemperature(s sources) (*float64, error) {
 	var candidates []string
 	if zones, err := filepath.Glob(s.sysPath("/class/thermal/thermal_zone*/temp")); err == nil {
@@ -794,19 +844,187 @@ func readTemperature(s sources) (*float64, error) {
 	if hwmons, err := filepath.Glob(s.sysPath("/class/hwmon/hwmon*/temp*_input")); err == nil {
 		candidates = append(candidates, hwmons...)
 	}
+	var hottest *float64
 	for _, path := range candidates {
-		raw, err := os.ReadFile(path)
-		if err != nil {
+		c, ok := readCelsius(path)
+		if !ok {
 			continue
 		}
-		milli, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
-		if err != nil {
-			continue
-		}
-		c := milli / 1000
-		if c > 0 && c < 120 {
-			return &c, nil
+		if hottest == nil || *c > *hottest {
+			hottest = c
 		}
 	}
-	return nil, os.ErrNotExist
+	if hottest == nil {
+		return nil, os.ErrNotExist
+	}
+	return hottest, nil
+}
+
+// maxSensorReadings bounds the payload: a many-slot Super I/O chip plus GPU
+// and NVMe sensors can list a dozen entries, and a card reads four at most.
+const maxSensorReadings = 8
+
+// readSensors returns one entry per fan/temp slot, paired by index within the
+// same hwmon chip, plus the ACPI thermal zones as temperature-only entries.
+//
+// Slot-index pairing is a deliberate convention, not an inference from
+// proximity: the kernel numbers fanN_input and tempN_input on a chip in the
+// order the driver registers them, which on multi-slot Super I/O chips is the
+// correlation board designers ship. It is not a physical guarantee — a chip
+// whose fan 1 cools the thing temp 2 measures will pair wrong either way, and
+// inventing cross-slot pairs would claim precision the kernel does not offer.
+// Chips that expose only one side keep their single field and null out the
+// other, so a hot NVMe with a stopped fan is always distinguishable from a
+// cool CPU that is actively being pushed air.
+func readSensors(s sources) ([]SensorStats, error) {
+	out := []SensorStats{}
+
+	chips, _ := filepath.Glob(s.sysPath("/class/hwmon/hwmon*"))
+	for _, chipDir := range chips {
+		chip := filepath.Base(chipDir)
+		if raw, err := os.ReadFile(filepath.Join(chipDir, "name")); err == nil && strings.TrimSpace(string(raw)) != "" {
+			chip = strings.TrimSpace(string(raw))
+		}
+
+		// Slot maps first, pairing second: file enumeration order must not
+		// decide which fan sits next to which temperature.
+		temps := map[int]*float64{}
+		labels := map[int]string{}
+		fans := map[int]*float64{}
+		for _, path := range globSlotPaths(chipDir, "temp*_input") {
+			n := slotIndex(path)
+			if c, ok := readCelsius(path); ok {
+				temps[n] = c
+			}
+			// The path itself ends in _input; the label is its sibling file.
+			if label, ok := readLabel(strings.TrimSuffix(path, "_input") + "_label"); ok {
+				labels[n] = label
+			}
+		}
+		for _, path := range globSlotPaths(chipDir, "fan*_input") {
+			n := slotIndex(path)
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				continue
+			}
+			rpm, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+			if err != nil || rpm < 0 || rpm > maxPlausibleFanRPM {
+				continue
+			}
+			fans[n] = &rpm
+		}
+
+		for n, rpm := range fans {
+			entry := SensorStats{Chip: chip, FanRPM: rpm}
+			if temp, ok := temps[n]; ok {
+				entry.TempC = temp
+				entry.Label = labels[n]
+			}
+			out = append(out, entry)
+		}
+		for n, temp := range temps {
+			if _, paired := fans[n]; paired {
+				continue
+			}
+			out = append(out, SensorStats{Chip: chip, Label: labels[n], TempC: temp})
+		}
+	}
+
+	// ACPI zones have no fans of their own; they project as temperature-only
+	// entries so "acpitz" still shows where its heat sits.
+	if zones, err := filepath.Glob(s.sysPath("/class/thermal/thermal_zone*")); err == nil {
+		for _, zoneDir := range zones {
+			temp, ok := readCelsius(filepath.Join(zoneDir, "temp"))
+			if !ok {
+				continue
+			}
+			name := filepath.Base(zoneDir)
+			if raw, err := os.ReadFile(filepath.Join(zoneDir, "type")); err == nil && strings.TrimSpace(string(raw)) != "" {
+				name = strings.TrimSpace(string(raw))
+			}
+			out = append(out, SensorStats{Chip: name, TempC: temp})
+		}
+	}
+
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+
+	// Paired slots first (the card's reason to exist), then hottest, then the
+	// loudest fan-only chips; name as the deterministic tie-break.
+	sort.SliceStable(out, func(i, j int) bool {
+		pi, pj := out[i].TempC != nil && out[i].FanRPM != nil, out[j].TempC != nil && out[j].FanRPM != nil
+		if pi != pj {
+			return pi
+		}
+		ti, tj := tempKey(out[i]), tempKey(out[j])
+		if ti != tj {
+			return ti > tj
+		}
+		fi, fj := fanKey(out[i]), fanKey(out[j])
+		if fi != fj {
+			return fi > fj
+		}
+		return out[i].Chip < out[j].Chip
+	})
+	if len(out) > maxSensorReadings {
+		out = out[:maxSensorReadings]
+	}
+	return out, nil
+}
+
+// tempKey and fanKey order entries in the sort above, treating a missing
+// reading as the coldest and the slowest respectively so singles never beat
+// a paired slot on their half of the key alone.
+func tempKey(s SensorStats) float64 {
+	if s.TempC == nil {
+		return -1
+	}
+	return *s.TempC
+}
+
+func fanKey(s SensorStats) float64 {
+	if s.FanRPM == nil {
+		return -1
+	}
+	return *s.FanRPM
+}
+
+// globSlotPaths returns the files matching one input pattern in a chip.
+func globSlotPaths(chipDir, pattern string) []string {
+	paths, err := filepath.Glob(filepath.Join(chipDir, pattern))
+	if err != nil {
+		return nil
+	}
+	return paths
+}
+
+// slotIndex extracts the N from a tempN_input / fanN_input path, best-effort:
+// a name that carries no index folds into slot 0 rather than being dropped,
+// since the convention there is still one slot per reading.
+func slotIndex(path string) int {
+	base := strings.TrimSuffix(filepath.Base(path), "_input")
+	digits := strings.Map(func(r rune) rune {
+		if r >= '0' && r <= '9' {
+			return r
+		}
+		return -1
+	}, base)
+	n, _ := strconv.Atoi(digits)
+	return n
+}
+
+// readLabel reads an optional tempN_label. Labels are driver-authored text;
+// anything unreadable just leaves the label empty rather than hinting at a
+// broken measurement.
+func readLabel(path string) (string, bool) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return "", false
+	}
+	label := strings.TrimSpace(string(raw))
+	if label == "" {
+		return "", false
+	}
+	return label, true
 }
