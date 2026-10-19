@@ -4,6 +4,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -360,4 +361,103 @@ func TestHostPathResolution(t *testing.T) {
 	if got := (sources{sysRoot: "/host/sys"}).sysPath("/class/thermal"); !strings.HasPrefix(got, "/host/sys") {
 		t.Errorf("sysPath = %q, want a /host/sys prefix", got)
 	}
+}
+
+const diskstatsFixture = `   8       0 nvme0n1 2821 0 625244 301 189 214 13994 311 0 0 0 0 0 0
+   8       1 nvme0n1p1 2821 0 625244 301 189 214 13994 311 0 0 0 0 0 0
+   7       0 loop0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+   9       0 md0 412 0 100000 200 88 0 2000 40 0 0 0 0 0 0
+ 253       0 dm-0 9000 0 200000 400 1000 0 50000 60 0 0 0 0 0 0
+   1       0 ram0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+   8      16 sda 10 0 100 1 5 0 40 2 0 0 0 0 0 0
+`
+
+func TestReadDiskstatsFiltersToDeviceNames(t *testing.T) {
+	got, err := readDiskstats(writeFixture(t, "diskstats", diskstatsFixture))
+	if err != nil {
+		t.Fatalf("readDiskstats: %v", err)
+	}
+	// Partitions re-count their parent (nvme0n1p1 duplicates nvme0n1), loop and
+	// ram devices are kernel noise. Only whole disks and dm mappings remain.
+	for _, name := range []string{"nvme0n1", "md0", "dm-0", "sda"} {
+		if _, ok := got[name]; !ok {
+			t.Errorf("device %q missing from %+v", name, keysOfDiskIO(got))
+		}
+	}
+	for _, name := range []string{"nvme0n1p1", "loop0", "ram0"} {
+		if _, ok := got[name]; ok {
+			t.Errorf("noise device %q must be filtered out", name)
+		}
+	}
+	if got["nvme0n1"].reads != 2821 || got["nvme0n1"].readSectors != 625244 ||
+		got["nvme0n1"].writes != 189 || got["nvme0n1"].writeSectors != 13994 {
+		t.Errorf("nvme0n1 = %+v", got["nvme0n1"])
+	}
+}
+
+func TestReadDiskstatsRejectsGarbage(t *testing.T) {
+	if _, err := readDiskstats(writeFixture(t, "diskstats", "nothing here\n")); err == nil {
+		t.Fatal("expected an error when no device line parses")
+	}
+}
+
+func TestDiskIORates(t *testing.T) {
+	prev := map[string]diskIOCounters{
+		"nvme0n1": {reads: 1000, readSectors: 20000, writes: 100, writeSectors: 2000},
+		"seen":    {reads: 50, readSectors: 100, writes: 0, writeSectors: 0},
+	}
+	cur := map[string]diskIOCounters{
+		"nvme0n1":   {reads: 2000, readSectors: 30512, writes: 160, writeSectors: 4000},
+		"seen":      {reads: 60, readSectors: 120, writes: 0, writeSectors: 0},
+		"reset":     {reads: 10, readSectors: 99999, writes: 0, writeSectors: 0},
+		"midwindow": {reads: 70, readSectors: 140, writes: 0, writeSectors: 0},
+	}
+	prev["reset"] = diskIOCounters{reads: 5, readSectors: 100000, writes: 0, writeSectors: 0}
+	// "midwindow" deliberately has no prev entry: it appeared between samples.
+
+	got := diskIORates(prev, cur, 2)
+	// "reset" is a backward counter (the device was re-attached) and
+	// "midwindow" has no baseline — both must wait, leaving nvme0n1 and seen.
+	if len(got) != 2 {
+		t.Fatalf("got %+v, want nvme0n1 and seen", got)
+	}
+	var d DiskIOStats
+	for _, g := range got {
+		if g.Device == "nvme0n1" {
+			d = g
+		}
+	}
+	if d.Device != "nvme0n1" {
+		t.Fatalf("nvme0n1 missing from %+v", got)
+	}
+	// 10512 sectors over 2 s at 512 bytes per sector → 2.6 MiB/s.
+	if want := 10512 * 512 / 2; math.Abs(d.ReadBps-float64(want)) > 0.001 {
+		t.Errorf("ReadBps = %v, want %v", d.ReadBps, want)
+	}
+	if want := 2000 * 512 / 2; math.Abs(d.WriteBps-float64(want)) > 0.001 {
+		t.Errorf("WriteBps = %v, want %v", d.WriteBps, want)
+	}
+	if math.Abs(d.ReadsPerSec-500) > 0.001 || math.Abs(d.WritesPerSec-30) > 0.001 {
+		t.Errorf("IOPS = %v/%v, want 500/30", d.ReadsPerSec, d.WritesPerSec)
+	}
+	// The busiest device sorts first: 2.69 MB total against seen's 5 KB/s.
+	if got[0].Device != "nvme0n1" {
+		t.Errorf("sort put %q first, want nvme0n1", got[0].Device)
+	}
+
+	// No elapsed time cannot produce a rate — division by zero would.
+	if got := diskIORates(prev, cur, 0); got != nil {
+		t.Errorf("zero elapsed yielded %+v, want nil", got)
+	}
+}
+
+// keysOfDiskIO exists only so the test above can print the map's keys without
+// pulling in yet another import for one error message.
+func keysOfDiskIO(m map[string]diskIOCounters) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

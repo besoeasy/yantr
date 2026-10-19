@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -37,10 +38,14 @@ type HostMetrics struct {
 	Mem       MemStats    `json:"mem"`
 	Load      LoadStats   `json:"load"`
 	UptimeSec float64     `json:"uptimeSec"`
-	Net       []NetStats  `json:"net"`
-	Disk      []DiskStats `json:"disk"`
-	TempC     *float64    `json:"tempC"`
-	Degraded  []string    `json:"degraded"`
+	Net      []NetStats    `json:"net"`
+	Disk     []DiskStats   `json:"disk"`
+	// DiskIO is a per-device I/O rate, reported like Net: empty until the
+	// second sample, because a rate derived from cumulative sector counters
+	// cannot exist from one reading.
+	DiskIO   []DiskIOStats `json:"diskIO"`
+	TempC    *float64      `json:"tempC"`
+	Degraded []string      `json:"degraded"`
 }
 
 type CPUStats struct {
@@ -95,6 +100,18 @@ type DiskStats struct {
 	UsedPct    float64 `json:"usedPct"`
 	TotalBytes uint64  `json:"totalBytes"`
 	FreeBytes  uint64  `json:"freeBytes"`
+}
+
+type DiskIOStats struct {
+	Device string `json:"device"`
+	// Bps are byte rates, derived from the sector counters at their fixed
+	// 512-byte size — the same convention sysstat and iostat use.
+	ReadBps  float64 `json:"readBps"`
+	WriteBps float64 `json:"writeBps"`
+	// IOPS are the raw completed-operation counters per second, so an NVMe
+	// doing many small reads does not hide behind a headline of bytes.
+	ReadsPerSec  float64 `json:"readsPerSec"`
+	WritesPerSec float64 `json:"writesPerSec"`
 }
 
 // --------------------------------------------------------------- path sources
@@ -173,6 +190,14 @@ type netCounters struct {
 	rx, tx uint64
 }
 
+// diskIOCounters holds the four counters a rate needs from one /proc/diskstats
+// line: completed operation counts (for IOPS) and sector counts (for bytes).
+type diskIOCounters struct {
+	reads, writes uint64
+	readSectors   uint64
+	writeSectors  uint64
+}
+
 // collector holds the previous reading, because CPU and network rates are
 // deltas between two samples and cannot be derived from one.
 type collector struct {
@@ -183,6 +208,11 @@ type collector struct {
 	prevCPUAt time.Time
 	prevNet   map[string]netCounters
 	prevNetAt time.Time
+	// prevDiskIO baseline follows the same rule as prevNet: a device that
+	// exists in cur but not in prev (it appeared mid-window) is skipped for
+	// one tick rather than reported against an unknown baseline.
+	prevDiskIO   map[string]diskIOCounters
+	prevDiskIOAt time.Time
 }
 
 var hostCollector = &collector{sources: detectSources()}
@@ -198,6 +228,7 @@ func (c *collector) snapshot() HostMetrics {
 	out := HostMetrics{
 		Net:      []NetStats{},
 		Disk:     []DiskStats{},
+		DiskIO:   []DiskIOStats{},
 		Degraded: []string{},
 	}
 
@@ -272,6 +303,18 @@ func (c *collector) snapshot() HostMetrics {
 		out.Disk = disks
 	} else {
 		out.Degraded = append(out.Degraded, "disk")
+	}
+
+	diskCounters, diskErr := readDiskstats(s.diskstats)
+	if diskErr != nil {
+		out.Degraded = append(out.Degraded, "diskio")
+	} else {
+		c.mu.Lock()
+		if c.prevDiskIO != nil && now.Sub(c.prevDiskIOAt).Seconds() > 0 {
+			out.DiskIO = diskIORates(c.prevDiskIO, diskCounters, now.Sub(c.prevDiskIOAt).Seconds())
+		}
+		c.prevDiskIO, c.prevDiskIOAt = diskCounters, now
+		c.mu.Unlock()
 	}
 
 	if temp, err := readTemperature(s); err == nil {
@@ -581,6 +624,118 @@ func readDisks(s sources) ([]DiskStats, error) {
 		return nil, os.ErrNotExist
 	}
 	return out, nil
+}
+
+// ---------------------------------------------------------------- I/O rates
+
+// diskIODeviceRe matches the whole-disk device names a dashboard understands,
+// and nothing else: loop and ram devices are kernel noise, partitions carry
+// their parent's counters again (nvme0n1p2 re-counts nvme0n1), and a dm- entry
+// is a real filesystem target (LUKS, LVM) even though it stacks on the disk
+// beneath it. Keeping dm- mirrors what iostat reports.
+var diskIODeviceRe = regexp.MustCompile(
+	`^(nvme[0-9]+n[0-9]+|sd[a-z]+|vd[a-z]+|hd[a-z]+|xvd[a-z]+|mmcblk[0-9]+|md[0-9]+|dm-[0-9]+)$`)
+
+// readDiskstats parses /proc/diskstats into per-device counters, kept only for
+// names the widget can make sense of. It returns an error when nothing usable
+// parsed so the snapshot can mark diskio degraded instead of empty — an empty
+// map and a failed read must not look the same to the rate baseline.
+func readDiskstats(path string) (map[string]diskIOCounters, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	out := map[string]diskIOCounters{}
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		fields := strings.Fields(sc.Text())
+		// "major minor name reads merged sectors ms ..." — 14 fields before
+		// the extra discard/flush columns modern kernels append; 13 is the
+		// minimum that reaches sectors_written (index 9  after reads_merged).
+		if len(fields) < 13 {
+			continue
+		}
+		if !diskIODeviceRe.MatchString(fields[2]) {
+			continue
+		}
+		reads, err1 := strconv.ParseUint(fields[3], 10, 64)
+		readSectors, err2 := strconv.ParseUint(fields[5], 10, 64)
+		writes, err3 := strconv.ParseUint(fields[7], 10, 64)
+		writeSectors, err4 := strconv.ParseUint(fields[9], 10, 64)
+		if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+			continue
+		}
+		out[fields[2]] = diskIOCounters{
+			reads:        reads,
+			readSectors:  readSectors,
+			writes:       writes,
+			writeSectors: writeSectors,
+		}
+	}
+	if err := sc.Err(); err != nil {
+		return nil, err
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// sectorBytes is the kernel's fixed counter unit for /proc/diskstats. It is
+// not the device's logical sector size: sectors are counted in 512-byte units
+// by convention, matching what iostat reports.
+const sectorBytes = 512
+
+// maxDiskDevices bounds the payload: a stacked LVM-on-LUKS setup can report a
+// dozen dm- entries, and a widget reads four at most even on a NAS.
+const maxDiskDevices = 8
+
+// diskIORates turns two counter maps into per-device byte rates and IOPS. It
+// is pure so the arithmetic is pinned by tests, and it follows the net rules:
+// a device missing from prev waited its whole life for this baseline, so it is
+// skipped for one tick, and a counter that went backwards means the device was
+// re-attached — a negative rate is a lie.
+func diskIORates(prev, cur map[string]diskIOCounters, elapsedSec float64) []DiskIOStats {
+	if len(prev) == 0 || elapsedSec <= 0 {
+		return nil
+	}
+	out := make([]DiskIOStats, 0, len(cur))
+	for name, c := range cur {
+		p, seen := prev[name]
+		if !seen {
+			continue
+		}
+		dRead := int64(c.readSectors) - int64(p.readSectors)
+		dWrite := int64(c.writeSectors) - int64(p.writeSectors)
+		dReads := int64(c.reads) - int64(p.reads)
+		dWrites := int64(c.writes) - int64(p.writes)
+		if dRead < 0 || dWrite < 0 || dReads < 0 || dWrites < 0 {
+			continue
+		}
+		out = append(out, DiskIOStats{
+			Device:       name,
+			ReadBps:      float64(dRead) * sectorBytes / elapsedSec,
+			WriteBps:     float64(dWrite) * sectorBytes / elapsedSec,
+			ReadsPerSec:  float64(dReads) / elapsedSec,
+			WritesPerSec: float64(dWrites) / elapsedSec,
+		})
+	}
+	// Busiest first, so a card that shows the top device finds it at index 0
+	// without having to compute what "busiest" means twice.
+	sort.Slice(out, func(i, j int) bool {
+		ti := out[i].ReadBps + out[i].WriteBps
+		tj := out[j].ReadBps + out[j].WriteBps
+		if ti != tj {
+			return ti > tj
+		}
+		return out[i].Device < out[j].Device
+	})
+	if len(out) > maxDiskDevices {
+		out = out[:maxDiskDevices]
+	}
+	return out
 }
 
 // readTemperature prefers the ACPI thermal zones and falls back to hwmon,
