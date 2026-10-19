@@ -707,6 +707,7 @@
       "subtitle": "Container events",
       "empty": "No container events in the last hour",
       "more": "+{count} more",
+      "repeat": "{count} events merged",
       "started": "started",
       "restarted": "restarted",
       "died": "stopped",

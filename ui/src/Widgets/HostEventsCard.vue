@@ -82,14 +82,28 @@ const rowFor = (event) => {
   return { verb: event.action, tone: "bg-zinc-400" };
 };
 
-const rows = computed(() =>
-  events.value.map((event, i) => {
+// A daemon storm — a healthcheck flapping every second, a crash loop — fills
+// the one-hour window with the same line over and over. Collapse consecutive
+// identical rows (same container, same verb) into one carrying a ×N count, so
+// the six slots stay a summary of what happened instead of a transcript of the
+// loudest container. The age stays the newest event's: the burst started
+// earlier, but "when did I last see it" is the useful reading.
+const rows = computed(() => {
+  const out = [];
+  events.value.forEach((event, i) => {
     const { verb, tone } = rowFor(event);
     const settled = Math.max(1, Math.round((nowMs.value - event.atMs) / 1000));
     const age = settled < 60 ? `${settled}s` : settled < 3600 ? `${Math.round(settled / 60)}m` : `${Math.round(settled / 3600)}h`;
-    return { key: `${event.atMs}-${event.name}-${i}`, name: event.name, verb, tone, age };
-  })
-);
+
+    const last = out[out.length - 1];
+    if (last && last.name === event.name && last.verb === verb) {
+      last.count += 1;
+      return;
+    }
+    out.push({ key: `${event.atMs}-${event.name}-${i}`, name: event.name, verb, tone, age, count: 1 });
+  });
+  return out;
+});
 
 const emptyText = computed(() => t("quickMetrics.events.empty"));
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
@@ -144,6 +158,11 @@ const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
               <span class="shrink-0 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
                 {{ row.verb }}
               </span>
+              <span
+                v-if="row.count > 1"
+                class="shrink-0 rounded-full bg-zinc-200 px-1.5 py-0.5 text-[10px] font-black tabular-nums yantra-text-secondary dark:bg-zinc-800"
+                :title="t('quickMetrics.events.repeat', { count: row.count })"
+              >×{{ row.count }}</span>
             </span>
           </span>
           <span class="shrink-0 text-xs font-black tabular-nums tracking-tight yantra-text-secondary">

@@ -682,6 +682,7 @@
       "subtitle": "容器事件",
       "empty": "最近一小时没有容器事件",
       "more": "还有 {count} 个",
+      "repeat": "已合并 {count} 个事件",
       "started": "启动",
       "restarted": "重启",
       "died": "停止",

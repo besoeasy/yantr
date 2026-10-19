@@ -682,6 +682,7 @@
       "subtitle": "コンテナイベント",
       "empty": "直近1時間のコンテナイベントはありません",
       "more": "あと{count}件",
+      "repeat": "{count}件のイベントをまとめました",
       "started": "開始",
       "restarted": "再起動",
       "died": "停止",

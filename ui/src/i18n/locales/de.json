@@ -680,6 +680,7 @@
       "subtitle": "Container-Ereignisse",
       "empty": "Keine Container-Ereignisse in der letzten Stunde",
       "more": "+{count} mehr",
+      "repeat": "{count} Ereignisse zusammengefasst",
       "started": "gestartet",
       "restarted": "neu gestartet",
       "died": "gestoppt",

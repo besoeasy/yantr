@@ -682,6 +682,7 @@
       "subtitle": "Événements de conteneurs",
       "empty": "Aucun événement de conteneur dans la dernière heure",
       "more": "+{count} de plus",
+      "repeat": "{count} événements regroupés",
       "started": "démarré",
       "restarted": "redémarré",
       "died": "arrêté",
