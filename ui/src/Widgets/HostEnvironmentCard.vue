@@ -19,10 +19,28 @@ const {
   isDegraded,
   uptimeText,
   tempText,
-  fanRPM,
+  fanText,
+  sensors,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+
+// Only true pairs get a row: a chip where fan i and temp i are the same slot
+// is the one case the aggregate rows cannot express — the aggregate knows
+// "52°C somewhere and 3000 RPM somewhere", the pair says which is which. A
+// laptop whose fan chips carry no temperature shows no rows here and falls
+// back on the fans row above, which is exactly what that hardware can claim.
+const pairedSensors = computed(() =>
+  sensors.value
+    .filter((s) => s.fanRPM !== null && s.tempC !== null)
+    .slice(0, 2)
+);
+
+// 75°C is where most board guides start saying "check your cooling"; the
+// exact number is less important than the fact that a hot slot looks hot.
+const isHot = (celsius) => celsius >= 75;
+
+const fmtTemp = (celsius) => `${Math.round(celsius)}°C`;
 
 // Temperature is the card's headline: it is the one live number here and the
 // usual reason to look on a homelab box — uptime barely moves. The value came
@@ -77,13 +95,35 @@ const headline = computed(() => (isDegraded("temperature") ? unavailable : (temp
 
       <!-- Fans: the physical response to the temperature above. A card that
            shows heat but not what answers it stops half the story. -->
-      <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-        <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+      <div
+        class="rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50"
+        :class="pairedSensors.length ? 'mb-2' : ''"
+      >
+        <div class="flex items-center justify-between gap-3">
+          <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+            <Fan class="h-3 w-3 shrink-0 text-sky-500" />
+            {{ t("quickMetrics.hostMetrics.fans") }}
+          </span>
+          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+            {{ isDegraded("fans") ? unavailable : (fanText ?? "—") }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Paired slots: chip name left, its own temperature and fan right.
+           The hot tint rides on the temperature, so a burning NVMe reads hot
+           even when its slot's fan is dutifully spinning. -->
+      <div
+        v-for="sensor in pairedSensors"
+        :key="sensor.chip + (sensor.label ?? '')"
+        class="mb-2 flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 last:mb-0 dark:border-zinc-800 dark:bg-zinc-900/50"
+      >
+        <span class="flex min-w-0 items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <Fan class="h-3 w-3 shrink-0 text-sky-500" />
-          {{ t("quickMetrics.hostMetrics.fans") }}
+          <span class="truncate">{{ sensor.label || sensor.chip }}</span>
         </span>
-        <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
-          {{ isDegraded("fans") ? unavailable : (fanText ?? "—") }}
+        <span class="shrink-0 text-sm font-black tabular-nums tracking-tight" :class="isHot(sensor.tempC) ? 'text-rose-600 dark:text-rose-400' : 'yantra-text-primary'">
+          {{ fmtTemp(sensor.tempC) }} · {{ Math.round(sensor.fanRPM) }} RPM
         </span>
       </div>
     </div>

@@ -274,6 +274,13 @@ const fanText = computed(() => {
   return Number.isFinite(rpm) ? `${Math.round(rpm)} RPM` : null;
 });
 
+// Per-chip sensor slots. The card filters to the chips where fan and temp
+// share a slot — the pairing a singles row cannot show.
+const sensors = computed(() => {
+  const list = metrics.value?.sensors;
+  return Array.isArray(list) ? list : [];
+});
+
 export function useHostMetrics() {
   onMounted(() => {
     consumers += 1;
@@ -329,5 +336,6 @@ export function useHostMetrics() {
     diskIOText,
     tempText,
     fanText,
+    sensors,
   };
 }
