@@ -657,7 +657,17 @@
       "performance": "Rendimiento",
       "storage": "Almacenamiento",
       "storageNetwork": "Almacenamiento y red",
+      "diskIO": "E/S de disco",
+      "diskRead": "Lectura",
+      "diskWrite": "Escritura",
+      "environment": "Entorno",
       "live": "En vivo"
+    },
+    "topConsumers": {
+      "title": "Mayores consumidores",
+      "subtitle": "Contenedores más activos",
+      "none": "Sin contenedores en ejecución",
+      "sampling": "Muestreando contenedores ..."
     },
     "machineIdentity": {
       "title": "Identidad",

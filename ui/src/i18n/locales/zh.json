@@ -657,7 +657,17 @@
       "performance": "性能",
       "storage": "存储",
       "storageNetwork": "存储和网络",
+      "diskIO": "磁盘 I/O",
+      "diskRead": "读取",
+      "diskWrite": "写入",
+      "environment": "环境",
       "live": "实时"
+    },
+    "topConsumers": {
+      "title": "资源占用排行",
+      "subtitle": "最活跃的容器",
+      "none": "没有运行中的容器",
+      "sampling": "正在采样容器 ..."
     },
     "machineIdentity": {
       "title": "身份信息",

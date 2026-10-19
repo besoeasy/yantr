@@ -655,7 +655,17 @@
       "performance": "Leistung",
       "storage": "Speicher",
       "storageNetwork": "Speicher & Netzwerk",
+      "diskIO": "Festplatten-I/O",
+      "diskRead": "Lesen",
+      "diskWrite": "Schreiben",
+      "environment": "Umgebung",
       "live": "Live"
+    },
+    "topConsumers": {
+      "title": "Top-Verbraucher",
+      "subtitle": "Aktivste Container",
+      "none": "Keine laufenden Container",
+      "sampling": "Container werden abgetastet ..."
     },
     "machineIdentity": {
       "title": "Identität",

@@ -657,7 +657,17 @@
       "performance": "Производительность",
       "storage": "Хранилище",
       "storageNetwork": "Хранилище и сеть",
+      "diskIO": "I/O диска",
+      "diskRead": "Чтение",
+      "diskWrite": "Запись",
+      "environment": "Состояние",
       "live": "В реальном времени"
+    },
+    "topConsumers": {
+      "title": "Топ потребителей",
+      "subtitle": "Самые активные контейнеры",
+      "none": "Нет запущенных контейнеров",
+      "sampling": "Опрос контейнеров ..."
     },
     "machineIdentity": {
       "title": "Идентификатор",

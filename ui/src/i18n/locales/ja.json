@@ -657,7 +657,17 @@
       "performance": "パフォーマンス",
       "storage": "ストレージ",
       "storageNetwork": "ストレージとネットワーク",
+      "diskIO": "ディスク I/O",
+      "diskRead": "読み取り",
+      "diskWrite": "書き込み",
+      "environment": "環境",
       "live": "リアルタイム"
+    },
+    "topConsumers": {
+      "title": "消費トップ",
+      "subtitle": "最も活動的なコンテナ",
+      "none": "実行中のコンテナはありません",
+      "sampling": "コンテナを計測中 ..."
     },
     "machineIdentity": {
       "title": "識別情報",

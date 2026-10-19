@@ -682,7 +682,17 @@
       "performance": "Performance",
       "storage": "Storage",
       "storageNetwork": "Storage & Network",
+      "diskIO": "Disk I/O",
+      "diskRead": "Read",
+      "diskWrite": "Write",
+      "environment": "Environment",
       "live": "Live"
+    },
+    "topConsumers": {
+      "title": "Top Consumers",
+      "subtitle": "Busiest containers",
+      "none": "No running containers",
+      "sampling": "Sampling containers..."
     },
     "machineIdentity": {
       "title": "Identity",
