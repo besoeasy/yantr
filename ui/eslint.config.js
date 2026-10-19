@@ -77,6 +77,16 @@ export default [
       // and a missing key are not worth failing a build over in this codebase.
       'vue/no-unused-components': 'warn',
       'vue/require-explicit-emits': 'off',
+      // A template identifier that no script declares. This one shipped a whole
+      // dead dashboard card: the shared-skeleton commit added
+      // `v-if="!containersLoaded && !containersLoadFailed"` to CloudflaredCard
+      // and LatestReviewCard without adding either name to their destructuring,
+      // so both names resolved to undefined on the instance proxy, the
+      // condition was permanently true, and the two cards rendered a pulsing
+      // skeleton forever. Nothing failed — no test covered a widget's data
+      // wiring, no rule read the template, and a dev-only Vue warning is easy
+      // to scroll past.
+      'vue/no-undef-properties': 'error',
       'vue/no-v-html': 'off',
       'vue/attributes-order': 'off',
       'vue/html-self-closing': 'off',

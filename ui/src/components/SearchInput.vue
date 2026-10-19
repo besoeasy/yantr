@@ -3,7 +3,8 @@ import { Search } from '@lucide/vue'
 
 defineProps({
   modelValue: { type: String, default: '' },
-  placeholder: { type: String, default: 'Search...' }
+  placeholder: { type: String, default: 'Search...' },
+  ariaLabel: { type: String, default: '' }
 })
 
 defineEmits(['update:modelValue'])

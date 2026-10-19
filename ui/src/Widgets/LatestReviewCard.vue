@@ -45,7 +45,7 @@ import {
 
 const { t, locale } = useI18n();
 const router = useRouter();
-const { apps, appsLoaded } = useCatalog();
+const { apps, appsLoaded, appsLoadFailed } = useCatalog();
 const { relays, load: loadRelays } = useNostrRelays();
 
 // The three newest verified displayable reviews, in order. Three is the

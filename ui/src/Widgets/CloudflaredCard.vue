@@ -22,7 +22,7 @@ const { currentTime } = useCurrentTime()
 // --- Container list ---
 // Shared with the other dashboard cards that read it: one request at mount,
 // one ticker for the whole page, and one agreed answer about failure.
-const { containers, refreshContainers } = useContainers({ live: true })
+const { containers, containersLoaded, containersLoadFailed, refreshContainers } = useContainers({ live: true })
 
 const cloudflaredContainer = computed(() => {
   const list = Array.isArray(containers.value) ? containers.value : []
