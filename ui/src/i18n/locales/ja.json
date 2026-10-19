@@ -677,6 +677,16 @@
       "none": "実行中のコンテナはありません",
       "sampling": "コンテナを計測中 ..."
     },
+    "events": {
+      "label": "アクティビティ",
+      "subtitle": "コンテナイベント",
+      "empty": "直近1時間のコンテナイベントはありません",
+      "started": "開始",
+      "restarted": "再起動",
+      "died": "停止",
+      "exec": "実行",
+      "unhealthy": "異常"
+    },
     "machineIdentity": {
       "title": "識別情報",
       "updating": "更新中",

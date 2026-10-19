@@ -702,6 +702,16 @@
       "none": "No running containers",
       "sampling": "Sampling containers..."
     },
+    "events": {
+      "label": "Activity",
+      "subtitle": "Container events",
+      "empty": "No container events in the last hour",
+      "started": "started",
+      "restarted": "restarted",
+      "died": "stopped",
+      "exec": "exec",
+      "unhealthy": "unhealthy"
+    },
     "machineIdentity": {
       "title": "Identity",
       "updating": "Updating",

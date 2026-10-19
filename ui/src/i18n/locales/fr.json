@@ -677,6 +677,16 @@
       "none": "Aucun conteneur en cours d'exécution",
       "sampling": "Échantillonnage des conteneurs ..."
     },
+    "events": {
+      "label": "Activité",
+      "subtitle": "Événements de conteneurs",
+      "empty": "Aucun événement de conteneur dans la dernière heure",
+      "started": "démarré",
+      "restarted": "redémarré",
+      "died": "arrêté",
+      "exec": "exec",
+      "unhealthy": "malsain"
+    },
     "machineIdentity": {
       "title": "Identité",
       "updating": "Mise à jour",

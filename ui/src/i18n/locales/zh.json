@@ -677,6 +677,16 @@
       "none": "没有运行中的容器",
       "sampling": "正在采样容器 ..."
     },
+    "events": {
+      "label": "活动",
+      "subtitle": "容器事件",
+      "empty": "最近一小时没有容器事件",
+      "started": "启动",
+      "restarted": "重启",
+      "died": "停止",
+      "exec": "执行",
+      "unhealthy": "异常"
+    },
     "machineIdentity": {
       "title": "身份信息",
       "updating": "更新中",

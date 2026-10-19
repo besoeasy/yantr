@@ -675,6 +675,16 @@
       "none": "Keine laufenden Container",
       "sampling": "Container werden abgetastet ..."
     },
+    "events": {
+      "label": "Aktivität",
+      "subtitle": "Container-Ereignisse",
+      "empty": "Keine Container-Ereignisse in der letzten Stunde",
+      "started": "gestartet",
+      "restarted": "neu gestartet",
+      "died": "gestoppt",
+      "exec": "exec",
+      "unhealthy": "fehlerhaft"
+    },
     "machineIdentity": {
       "title": "Identität",
       "updating": "Aktualisierung",
