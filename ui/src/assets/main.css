@@ -1521,6 +1521,7 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .dark\:bg-blue-900\/10:is(.dark *){background-color:#1c398e1a;}
 .dark\:bg-blue-900\/20:is(.dark *){background-color:#1c398e33;}
 .dark\:bg-emerald-400{background-color:var(--color-emerald-400);}
+.dark\:bg-rose-400{background-color:var(--color-rose-400);}
 .dark\:bg-emerald-900\/20:is(.dark *){background-color:#004e3b33;}
 .dark\:bg-violet-400\/70:is(.dark *){background-color:#a78bfa80;}
 .dark\:bg-violet-400\/70:is(.dark *){background-color:color-mix(in oklab,var(--color-violet-400) 70%,transparent);}
@@ -1698,6 +1699,7 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .dark\:bg-red-500\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-red-500) 10%,transparent);}
 .dark\:bg-red-900\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-red-900) 10%,transparent);}
 .dark\:bg-red-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-red-900) 20%,transparent);}
+.dark\:bg-rose-400:is(.dark *){background-color:color-mix(in oklab,var(--color-rose-400) 100%,transparent);}
 .dark\:bg-rose-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-rose-900) 20%,transparent);}
 .dark\:bg-sky-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-sky-900) 20%,transparent);}
 .dark\:bg-violet-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-violet-900) 20%,transparent);}

@@ -104,6 +104,7 @@ MemFree:         1000000 kB
 MemAvailable:   12000000 kB
 Buffers:          200000 kB
 Cached:          3000000 kB
+Slab:             500000 kB
 SwapTotal:       4000000 kB
 SwapFree:        3000000 kB
 `
@@ -128,6 +129,10 @@ func TestReadMeminfo(t *testing.T) {
 	}
 	if got.SwapTotalBytes != 4000000*1024 || got.SwapUsedBytes != 1000000*1024 {
 		t.Errorf("swap = %d/%d, want %d/%d", got.SwapUsedBytes, got.SwapTotalBytes, 1000000*1024, 4000000*1024)
+	}
+	if got.CachedBytes != 3000000*1024 || got.SlabBytes != 500000*1024 || got.BuffersBytes != 200000*1024 {
+		t.Errorf("breakdown = cached %d buffers %d slab %d, want 3M/200k/500k kB ×1024",
+			got.CachedBytes, got.BuffersBytes, got.SlabBytes)
 	}
 }
 

@@ -1,13 +1,14 @@
 <script>
-// Dashboard engine: one column — the disk headline and the memory bar under
-// it were tuned for a single cell; wider would only stretch the bars. See
-// Home.vue for how meta.cols is consumed.
+// Dashboard engine: one column — the disk headline was tuned for a single
+// cell; wider would only stretch the bar. Memory moved to its own card so the
+// breakdown rows it gained would fit; this one stays the fill-up story for
+// disks alone. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { HardDrive, MemoryStick } from "@lucide/vue";
+import { HardDrive } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
 const { t } = useI18n();
@@ -15,8 +16,6 @@ const { t } = useI18n();
 const {
   metricsStale,
   isDegraded,
-  memPct,
-  memText,
   primaryDisk,
   diskFreeText,
 } = useHostMetrics();
@@ -70,28 +69,6 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
 
       <div class="mb-5 truncate text-[9px] font-semibold yantra-text-secondary">
         {{ isDegraded("disk") ? unavailable : (diskFreeText ? t("quickMetrics.hostMetrics.free", { size: diskFreeText }) : "") }}
-      </div>
-
-      <!-- Memory: the second capacity bar. Both fill up, both stop the host
-           when they do — that is why they share a card while the interface
-           rate lives on its own. -->
-      <div class="flex flex-col gap-1.5 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-        <div class="flex items-baseline justify-between gap-2">
-          <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
-            <MemoryStick class="h-3 w-3" />
-            {{ t("quickMetrics.hostMetrics.memory") }}
-          </span>
-          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
-            {{ isDegraded("memory") ? unavailable : (memPct !== null ? `${Math.round(memPct)}%` : "—") }}
-          </span>
-        </div>
-        <div class="h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-          <div
-            class="h-full rounded-full bg-emerald-500 transition-[width] duration-200 dark:bg-emerald-400"
-            :style="{ width: `${memPct ?? 0}%` }"
-          ></div>
-        </div>
-        <span class="truncate text-[9px] font-semibold tabular-nums yantra-text-secondary">{{ isDegraded("memory") ? "" : (memText ?? "") }}</span>
       </div>
     </div>
   </div>

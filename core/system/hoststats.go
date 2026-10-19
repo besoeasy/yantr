@@ -94,6 +94,12 @@ type MemStats struct {
 	UsedPct        float64 `json:"usedPct"`
 	SwapTotalBytes uint64  `json:"swapTotalBytes"`
 	SwapUsedBytes  uint64  `json:"swapUsedBytes"`
+	// The non-working-set pages the kernel accounts for itself. A bar that
+	// reads near-full with a large cache is usually fine; without these the
+	// only story the card can tell is how full, never to where it went.
+	CachedBytes  uint64 `json:"cachedBytes"`
+	BuffersBytes uint64 `json:"buffersBytes"`
+	SlabBytes    uint64 `json:"slabBytes"`
 }
 
 type LoadStats struct {
@@ -472,6 +478,13 @@ func readMeminfo(path string) (MemStats, error) {
 			out.SwapUsedBytes = usedSwap * 1024
 		}
 	}
+	// Cached, Buffers and Slab exist on every kernel the install section names;
+	// a zero means the kernel reported zero, not that the row is unknown,
+	// because these go into rows that already show the em-dash when the whole
+	// meminfo read failed.
+	out.CachedBytes = fields["Cached"] * 1024
+	out.BuffersBytes = fields["Buffers"] * 1024
+	out.SlabBytes = fields["Slab"] * 1024
 	return out, nil
 }
 

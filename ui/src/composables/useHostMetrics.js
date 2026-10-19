@@ -217,6 +217,32 @@ const memText = computed(() => {
   return `${formatBytes(mem.usedBytes)} / ${formatBytes(mem.totalBytes)}`;
 });
 
+// Where the bytes went — the memory card's breakdown rows.swap shows both
+// halves because "1.1 GB used" against an unknown total is a number without a
+// story; the bar already answers how full, these rows answer what for.
+// Swap with a zero total is a configuration, so it returns null and the card
+// renders its own None state rather than an em-dash or a fake 0 / 0.
+const swapText = computed(() => {
+  const mem = metrics.value?.mem;
+  if (!mem?.ready || !mem.swapTotalBytes) return null;
+  return `${formatBytes(mem.swapUsedBytes)} / ${formatBytes(mem.swapTotalBytes)}`;
+});
+
+const cachedText = computed(() => {
+  const mem = metrics.value?.mem;
+  return mem?.ready ? formatBytes(mem.cachedBytes) : null;
+});
+
+const buffersText = computed(() => {
+  const mem = metrics.value?.mem;
+  return mem?.ready ? formatBytes(mem.buffersBytes) : null;
+});
+
+const slabText = computed(() => {
+  const mem = metrics.value?.mem;
+  return mem?.ready ? formatBytes(mem.slabBytes) : null;
+});
+
 const loadText = computed(() => {
   const load = metrics.value?.load;
   if (!load?.ready) return null;
@@ -337,6 +363,10 @@ export function useHostMetrics() {
     coreBars,
     memPct,
     memText,
+    swapText,
+    cachedText,
+    buffersText,
+    slabText,
     loadText,
     uptimeText,
     primaryNet,
