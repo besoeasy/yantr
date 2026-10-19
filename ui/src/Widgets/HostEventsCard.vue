@@ -17,6 +17,13 @@ import { expectApiSuccess } from "../composables/useApiResponse";
 // scans one bounded log slice per tick and closes.
 const POLL_MS = 8000;
 
+// The endpoint can return up to twenty events. A ledger that renders all of
+// them decides the height of its whole grid row, and twenty rows is a page,
+// not a card. The card is two columns wide, so the feed reads as two columns
+// of three: six events, newest left to right, and a count for the older ones
+// it leaves out — same overflow shape the expiring-containers card uses.
+const MAX_ROWS = 6;
+
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 
@@ -86,6 +93,9 @@ const rows = computed(() =>
 
 const emptyText = computed(() => t("quickMetrics.events.empty"));
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+
+const visibleRows = computed(() => rows.value.slice(0, MAX_ROWS));
+const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
 </script>
 
 <template>
@@ -113,13 +123,19 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
 
     <!-- Ledger rows: grey on the wall by design — every measured card already
          has its colour; a feed is the only card where colour belongs to the
-         verb, so the dot carries green/red/amber and the row stays quiet. -->
-    <div class="relative z-10 mt-auto flex flex-col gap-2 pt-6 transition-opacity duration-200" :class="degraded ? 'opacity-50' : ''">
+         verb, so the dot carries green/red/amber and the row stays quiet.
+         Two columns inside the card's two: the width is already paid for, and
+         stacking six rows in one column is what made the card taller than the
+         row it sits in. -->
+    <div
+      class="relative z-10 mt-auto grid grid-cols-2 gap-2 pt-6 transition-opacity duration-200"
+      :class="degraded ? 'opacity-50' : ''"
+    >
       <template v-if="rows.length">
         <div
-          v-for="row in rows"
+          v-for="row in visibleRows"
           :key="row.key"
-          class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50"
+          class="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-zinc-50 px-3 py-2 dark:border-zinc-800 dark:bg-zinc-900/50"
         >
           <span class="flex min-w-0 items-center gap-2">
             <span class="h-2 w-2 shrink-0 rounded-full" :class="row.tone"></span>
@@ -130,9 +146,18 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
               </span>
             </span>
           </span>
-          <span class="shrink-0 text-sm font-black tabular-nums tracking-tight yantra-text-secondary">
+          <span class="shrink-0 text-xs font-black tabular-nums tracking-tight yantra-text-secondary">
             {{ row.age }}
           </span>
+        </div>
+
+        <!-- The count is the only thing that says the feed continues; without
+             it six rows read as the whole hour. -->
+        <div
+          v-if="hiddenRows"
+          class="col-span-2 text-right text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary"
+        >
+          {{ t("quickMetrics.events.more", { count: hiddenRows }) }}
         </div>
       </template>
 
@@ -140,7 +165,7 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
            is a clean reading of a quiet box, a degraded socket is not. -->
       <div
         v-else
-        class="flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50"
+        class="col-span-2 flex items-center gap-2 rounded-xl bg-zinc-50 p-4 text-sm yantra-text-secondary dark:border-zinc-800 dark:bg-zinc-900/50"
       >
         <Activity class="h-4 w-4 shrink-0" :class="degraded ? '' : 'animate-pulse'" />
         {{ degraded ? unavailable : emptyText }}

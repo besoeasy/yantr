@@ -681,6 +681,7 @@
       "label": "Actividad",
       "subtitle": "Eventos de contenedores",
       "empty": "Sin eventos de contenedores en la última hora",
+      "more": "+{count} más",
       "started": "iniciado",
       "restarted": "reiniciado",
       "died": "detenido",

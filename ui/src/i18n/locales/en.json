@@ -706,6 +706,7 @@
       "label": "Activity",
       "subtitle": "Container events",
       "empty": "No container events in the last hour",
+      "more": "+{count} more",
       "started": "started",
       "restarted": "restarted",
       "died": "stopped",
