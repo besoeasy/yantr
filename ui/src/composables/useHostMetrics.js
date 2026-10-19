@@ -256,6 +256,14 @@ const tempText = computed(() => {
   return Number.isFinite(celsius) ? `${Math.round(celsius)}°C` : null;
 });
 
+// The fastest fan, straight from the snapshot. Unlike CPU rates this is
+// point-in-time, so the first sample already has it; null means the board
+// exposes no fan sensor, which the snapshot marks degraded.
+const fanText = computed(() => {
+  const rpm = metrics.value?.fanRPM;
+  return Number.isFinite(rpm) ? `${Math.round(rpm)} RPM` : null;
+});
+
 export function useHostMetrics() {
   onMounted(() => {
     consumers += 1;
@@ -309,5 +317,6 @@ export function useHostMetrics() {
     primaryDiskIO,
     diskIOText,
     tempText,
+    fanText,
   };
 }

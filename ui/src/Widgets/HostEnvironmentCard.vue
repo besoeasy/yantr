@@ -1,15 +1,15 @@
 <script>
-// Dashboard engine: one column — uptime as the slow counter and temperature
-// as the currentState number split naturally at a single cell, and widening
-// would only stretch two short strings. Pulled out of HostPerformanceCard,
-// where they were two of three tiles in a cramped grid. See Home.vue for how
-// meta.cols is consumed.
+// Dashboard engine: one column — temperature as the live headline with
+// uptime and fan speed as rows beneath it. Uptime barely moves and fan speed
+// is one short number each; widening the card would only stretch strings.
+// Split out of HostPerformanceCard, where all three were cramped tiles. See
+// Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Timer, Thermometer } from "@lucide/vue";
+import { Timer, Thermometer, Fan } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
 const { t } = useI18n();
@@ -19,6 +19,7 @@ const {
   isDegraded,
   uptimeText,
   tempText,
+  fanRPM,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
@@ -66,12 +67,24 @@ const headline = computed(() => (isDegraded("temperature") ? unavailable : (temp
       </div>
 
       <!-- Uptime: the slow counter, a row rather than a second headline. -->
-      <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div class="mb-2 flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
         <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <Timer class="h-3 w-3 shrink-0 text-slate-500" />
           {{ t("quickMetrics.hostMetrics.uptime") }}
         </span>
         <span class="text-sm font-black tracking-tight yantra-text-primary">{{ uptimeText ?? "—" }}</span>
+      </div>
+
+      <!-- Fans: the physical response to the temperature above. A card that
+           shows heat but not what answers it stops half the story. -->
+      <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+          <Fan class="h-3 w-3 shrink-0 text-sky-500" />
+          {{ t("quickMetrics.hostMetrics.fans") }}
+        </span>
+        <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+          {{ isDegraded("fans") ? unavailable : (fanText ?? "—") }}
+        </span>
       </div>
     </div>
   </div>

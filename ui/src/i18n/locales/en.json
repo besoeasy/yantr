@@ -678,6 +678,7 @@
       "network": "Network",
       "rxTx": "rx · tx",
       "temperature": "Temperature",
+      "fans": "Fans",
       "unavailable": "Unavailable",
       "performance": "Performance",
       "storage": "Storage",

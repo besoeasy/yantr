@@ -653,6 +653,7 @@
       "network": "网络",
       "rxTx": "接收 · 发送",
       "temperature": "温度",
+      "fans": "风扇",
       "unavailable": "不可用",
       "performance": "性能",
       "storage": "存储",
