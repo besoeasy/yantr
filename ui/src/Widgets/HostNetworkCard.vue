@@ -9,6 +9,7 @@ export const meta = { cols: 1 };
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Network, ArrowDown, ArrowUp } from "@lucide/vue";
+import Sparkline from "../components/Sparkline.vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
 const { t } = useI18n();
@@ -18,9 +19,17 @@ const {
   isDegraded,
   primaryNet,
   netText,
+  netHistory,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+
+// The sparkline scales itself, like the disk I/O line: byte rates have no
+// natural ceiling to pin to 100, so the max is the busiest moment in the
+// window. The 1 MB/s floor keeps an all-zero window from producing a 0
+// ceiling, which would divide the next real sample into a spike to the top.
+const sparkMax = computed(() => Math.max(...netHistory.value, 1024 * 1024) * 1.15);
+const sparkLabel = computed(() => t("quickMetrics.hostMetrics.netHistory"));
 
 // Split the combined "rx · tx" string so each direction gets its own arrow and
 // colour. Kept as two computeds rather than one array destructured once —
@@ -63,7 +72,7 @@ const txText = computed(() => netText.value?.split("·")[1]?.trim() || "—");
 
       <!-- rx is the headline: the volume a homelab pulls is the more telling
            of the two directions and the first thing you want to see move. -->
-      <div class="mb-5 flex items-baseline justify-between gap-3">
+      <div class="mb-2 flex items-baseline justify-between gap-3">
         <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <ArrowDown class="h-3 w-3 shrink-0 text-sky-500" />
           rx
@@ -71,6 +80,13 @@ const txText = computed(() => netText.value?.split("·")[1]?.trim() || "—");
         <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
           {{ isDegraded("network") ? unavailable : rxText }}
         </span>
+      </div>
+
+      <!-- 4-minute trend of the busiest interface, rx+tx combined. Sky stays
+           this card's own accent so the four host tiles read as four tones —
+           line classes and gradient stops already exist in main.css for it. -->
+      <div class="mb-5 h-16 w-full">
+        <Sparkline :points="netHistory" :max="sparkMax" :label="sparkLabel" />
       </div>
 
       <!-- tx: the other direction, a row rather than a second headline. -->

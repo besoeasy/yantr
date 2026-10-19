@@ -662,6 +662,7 @@
       "diskRead": "読み取り",
       "diskWrite": "書き込み",
       "diskIOHistory": "過去4分間のディスク I/O",
+      "netHistory": "過去4分間のネットワークトラフィック",
       "environment": "環境",
       "live": "リアルタイム"
     },

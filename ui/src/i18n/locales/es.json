@@ -662,6 +662,7 @@
       "diskRead": "Lectura",
       "diskWrite": "Escritura",
       "diskIOHistory": "E/S de disco de los últimos 4 minutos",
+      "netHistory": "Tráfico de red de los últimos 4 minutos",
       "environment": "Entorno",
       "live": "En vivo"
     },

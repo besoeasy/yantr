@@ -37,6 +37,10 @@ const cpuHistory = shallowRef([]);
 // Combined read+write rate of the top disk device — an autoscaled byte rate
 // has no natural ceiling, so the card computes its own max from the window.
 const diskIOHistory = shallowRef([]);
+// Combined rx+tx rate of the busiest interface. The network sparkline carries
+// the same shape-over-scale deal as the disk I/O line, so it tracks the same
+// rule each tick: the interface the cards headline, not any single NIC.
+const netHistory = shallowRef([]);
 
 const loading = ref(true);
 const error = ref(null);
@@ -108,6 +112,13 @@ async function fetchMetrics() {
     if (Array.isArray(data.metrics?.diskIO) && data.metrics.diskIO.length > 0) {
       const top = data.metrics.diskIO[0];
       diskIOHistory.value = [...diskIOHistory.value, top.readBps + top.writeBps].slice(-HISTORY_POINTS);
+    }
+    // Same gating as disk I/O: empty until the backend's second sample, and
+    // appending nothing keeps the sparkline in its flat-baseline waiting state
+    // instead of drawing a fake dead line.
+    if (Array.isArray(data.metrics?.net) && data.metrics.net.length > 0) {
+      const busiest = [...data.metrics.net].sort((a, b) => b.rxBps + b.txBps - (a.rxBps + a.txBps))[0];
+      netHistory.value = [...netHistory.value, busiest.rxBps + busiest.txBps].slice(-HISTORY_POINTS);
     }
   } catch {
     // The message is deliberately not surfaced: all this needs to say is "the
@@ -307,6 +318,7 @@ export function useHostMetrics() {
     metrics,
     cpuHistory,
     diskIOHistory,
+    netHistory,
     loading,
     error,
     metricsStale,
