@@ -1,13 +1,16 @@
 <script>
-// Dashboard engine: one column — the CPU headline, sparkline and tiles were
-// designed around a single cell and stay legible there. See Home.vue for how
-// meta.cols is consumed.
+// Dashboard engine: one column — the CPU headline, sparkline and the load
+// tile were designed around a single cell and stay legible there. Uptime and
+// temperature used to ride along as tiles in a three-wide grid; they were
+// pulled out into HostEnvironmentCard, which is why this card no longer
+// imports Timer or Thermometer and the grid below holds a single row. See
+// Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Activity, Thermometer, Timer } from "@lucide/vue";
+import { Activity } from "@lucide/vue";
 import Sparkline from "../components/Sparkline.vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
@@ -20,8 +23,6 @@ const {
   coreBars,
   cpuHistory,
   loadText,
-  uptimeText,
-  tempText,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
@@ -76,8 +77,10 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
       </div>
       <div v-else class="mb-5"></div>
 
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        <!-- Load average: 1 / 5 / 15 minute -->
+      <div class="grid grid-cols-1 gap-2">
+        <!-- Load average: 1 / 5 / 15 minute. Full row now: with uptime and
+             temperature pulled out, the old three-wide grid would leave two
+             empty cells behind. -->
         <div class="flex flex-col gap-1 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
           <div class="flex items-center gap-1.5 yantra-text-secondary">
             <Activity class="h-3 w-3" />
@@ -86,24 +89,6 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
           <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
             {{ isDegraded("load") ? unavailable : (loadText ?? "—") }}
           </span>
-        </div>
-
-        <!-- Uptime -->
-        <div class="flex flex-col gap-1 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 yantra-text-secondary">
-            <Timer class="h-3 w-3" />
-            <span class="text-[9px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.uptime") }}</span>
-          </div>
-          <span class="truncate text-sm font-black tracking-tight yantra-text-primary">{{ uptimeText ?? "—" }}</span>
-        </div>
-
-        <!-- Temperature: the usual reason to open this card on a homelab box. -->
-        <div class="flex flex-col gap-1 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 yantra-text-secondary">
-            <Thermometer class="h-3 w-3" />
-            <span class="text-[9px] font-bold uppercase tracking-widest">{{ t("quickMetrics.hostMetrics.temperature") }}</span>
-          </div>
-          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">{{ tempText ?? unavailable }}</span>
         </div>
       </div>
     </div>
