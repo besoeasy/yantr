@@ -115,12 +115,6 @@ const NO_ACCESS_APPS = new Set(['mariadb', 'mongodb', 'samba']);
 // even when they speak HTTP, so they must stay work ports.
 const DIAGNOSTIC_LABELS = new Set(['Metrics / pprof', 'Postgres client', 'gRPC service']);
 
-// Variables the deploy form asks the user to paste: a tunnel token, a licence
-// key, an API key from a third-party dashboard. They intentionally have no
-// default and no generator — a random value would be wrong — so the
-// missing-generator warning skips them. Add to this list deliberately.
-const USER_PROVIDED_ENV = new Set(['TUNNEL_TOKEN']);
-
 const warnings = [];
 
 class AppError extends Error {
@@ -436,31 +430,21 @@ function checkEnvGenerators(appId, generators, composeSource) {
     }
   }
 
-  // Every ${VAR} with no default would deploy empty without a generator.
-  // HOST_PODMAN_SOCKET is injected by the backend and is never generated;
-  // user-provided values are pasted into the deploy form instead.
+  // A variable is referenced when compose mentions it, which is what makes an
+  // unused generator detectable. A variable with no generator is fine: the
+  // deploy form asks the user for it (a tunnel token, an API key), while a
+  // value the catalog must invent is what a generator is for.
   const referenced = new Set();
-  const missingGenerators = new Set();
   const envRefPattern = /(?<!\$)\$\{([A-Za-z_][A-Za-z0-9_]*)([^}]*)\}/g;
   for (const match of composeSource.matchAll(envRefPattern)) {
-    const [, name, rest] = match;
+    const name = match[1];
     if (name === 'HOST_PODMAN_SOCKET') continue;
-
-    // ${VAR:-x}, ${VAR-x}, ${VAR:=x} and ${VAR=x} supply a default;
-    // ${VAR}, ${VAR:?err}, ${VAR?err} and ${VAR:+x} do not.
-    const hasDefault = rest.startsWith(':-') || rest.startsWith('-') || rest.startsWith(':=') || rest.startsWith('=');
     referenced.add(name);
-    if (!hasDefault && !Object.hasOwn(generators, name) && !USER_PROVIDED_ENV.has(name)) {
-      missingGenerators.add(name);
-    }
-  }
-  for (const name of missingGenerators) {
-    warn(appId, `\${${name}} has no default and no x-yantr.env_generators entry`);
   }
 
   for (const name of Object.keys(generators)) {
     if (!referenced.has(name)) {
-      warn(appId, `x-yantr.env_generators.${name} is not referenced without a default in compose.yml`);
+      warn(appId, `x-yantr.env_generators.${name} is never referenced in compose.yml`);
     }
   }
 }

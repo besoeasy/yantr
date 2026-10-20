@@ -62,14 +62,11 @@ whichever reads better for the entry length.
 
 ### `env_generators`
 
-Every `${VAR}` in the compose file that has no default should have a matching
-`env_generators` entry, or the deploy form has to supply the value. `check.js`
-warns rather than fails, because some values are deliberately typed by the
-user (`TUNNEL_TOKEN`) while a secret that must not be blank (`ADMIN_PASSWORD`)
-needs a generator. A pasted credential is exempt from that warning only when
-the variable is listed in `check.js`'s `USER_PROVIDED_ENV`; add a new one there
-deliberately. An entry that is never referenced is warned about too, so a
-renamed variable does not leave a generator behind.
+`env_generators` is for values the catalog must invent — a secret that must not
+be blank (`ADMIN_PASSWORD`). A value only the user can supply (an API key, a
+tunnel token) has no generator; the deploy form asks for it. A generator that
+compose never references is warned about, so a renamed variable does not leave
+one behind.
 
 ### `ports`
 
@@ -266,8 +263,7 @@ What it enforces:
 
 Warnings cover rules the current catalog still misses. They do not fail a
 normal run: a tag used by no other app (a one-off category or a near-synonym),
-a key outside the `x-yantr` vocabulary, a `${VAR}` with no default, no
-generator and no user-provided exemption, an unused generator, an unquoted
+a key outside the `x-yantr` vocabulary, an unused generator, an unquoted
 numeric compose port, or a logo that declares no dimensions or a non-square
 shape. `--strict` turns each into an error, so a new app should pass that mode.
 
