@@ -1351,6 +1351,79 @@ p code, li code, td code, .spec-sub code {
 }
 .tested-card:hover .tested-spec { color: var(--emerald-600); }
 
+/* ── Weird rigs ────────────────────────────────────── */
+#weird-rigs .lead { color: rgba(255, 255, 255, 0.6); }
+.weird-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-top: 3.5rem;
+  position: relative;
+}
+.weird-card {
+  padding: 1.6rem;
+  border-radius: var(--radius-2xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+.weird-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+.weird-top { display: flex; align-items: center; gap: 0.85rem; }
+.weird-icon {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--emerald-400);
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.weird-icon svg { width: 1.35rem; height: 1.35rem; }
+.weird-card:hover .weird-icon {
+  transform: scale(1.08) rotate(-4deg);
+  background: var(--emerald-400);
+  color: var(--black);
+}
+.weird-card h3 {
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--white);
+}
+.weird-spec {
+  margin-top: 0.2rem;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.45);
+}
+.weird-quote {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+}
+.weird-cta {
+  margin-top: 2.75rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+.weird-cta a {
+  color: var(--emerald-400);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px dashed rgba(52, 211, 153, 0.5);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.weird-cta a:hover { color: var(--emerald-300); border-color: currentColor; }
+
 /* ── FAQ ───────────────────────────────────────────── */
 .faq-grid {
   display: grid;
@@ -3025,6 +3098,7 @@ p code, li code, td code, .spec-sub code {
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tested-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .weird-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fleet-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fleet-stat-ram { grid-column: span 2; }
   .fleet-apps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -3066,6 +3140,7 @@ p code, li code, td code, .spec-sub code {
   .apps-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .contrib-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .tested-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .weird-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   
   .hero-pillar { width: 360px; }
   .app-pill { min-width: 380px; max-width: 460px; }
