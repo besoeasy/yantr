@@ -2,6 +2,10 @@
   "name": "yantr",
   "private": true,
   "type": "module",
+  "scripts": {
+    "check": "node check.js",
+    "check:strict": "node check.js --strict"
+  },
   "dependencies": {
     "nunjucks": "^3.2.4",
     "yaml": "^2.9.0"

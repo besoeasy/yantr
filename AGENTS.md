@@ -15,6 +15,7 @@ format, the rules for writing one, and §8 — nothing else.
 5. Mark every user-facing port `show: true` — see [§4](#4-ports-and-visibility).
 6. Verify:
    ```sh
+   node check.js
    cd core && go build ./... && go vet ./... && go test ./...
    ```
 
@@ -204,6 +205,12 @@ volumes:
 
 ### Automated
 
+`node check.js` checks every app folder in sorted order and stops at the first
+error. It covers the recipe shape, metadata lengths, developers, env
+generators, ports, and the compose rules in §5. `node check.js --strict` also
+fails on catalog debt the current apps predate (pinned images, an unquoted
+port, a hand-supplied token); new apps should pass strict mode.
+
 `core/apps/catalog_test.go` reads the real `apps/` tree and fails on:
 
 - an app that publishes ports but marks none `show: true`;
@@ -215,11 +222,10 @@ volumes:
 Databases and file shares are allow-listed as legitimately having no access
 port. A new one must be added there deliberately, not by accident.
 
-### Manual — no linter exists
+### Manual
 
-- Every `${VAR}` without a default has a matching `env_generators` entry.
 - Flat arrays use flow sequences, not block sequences.
-- `x-yantr.ports[].service` names a service that exists in the same file.
+- `notes` read well in the deploy form.
 
 ---
 
