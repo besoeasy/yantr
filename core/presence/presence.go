@@ -17,6 +17,7 @@ import (
 	"sync"
 	"time"
 
+	"core/apps"
 	"core/compose"
 	"core/podman"
 	"core/shared"
@@ -211,13 +212,32 @@ func SendPresence(version string) {
 	}()
 }
 
-func listYantrApps() []string {
-	ctrs, err := podman.ContainerList(context.Background(), container.ListOptions{All: true})
-	if err != nil {
-		return []string{}
+// listYantrApps collects the catalog app IDs currently deployed on this node.
+//
+// Only apps that exist in the Yantr catalog are reported: a container whose
+// compose project resolves to an unknown app ID (a custom stack, a renamed
+// project, or a stale label) is not a Yantr app and must not pollute the
+// public fleet view. This mirrors parseAppLabels in main.go, which applies
+// the same gate on the container/stack side.
+func listYantrApps(containers ...[]container.Summary) []string {
+	var ctrs []container.Summary
+	if len(containers) > 0 {
+		ctrs = containers[0]
+	} else {
+		var err error
+		ctrs, err = podman.ContainerList(context.Background(), container.ListOptions{All: true})
+		if err != nil {
+			return []string{}
+		}
 	}
+	return yantrAppsFromContainerSlice(ctrs)
+}
+
+// yantrAppsFromContainerSlice is the pure, testable core of listYantrApps: it
+// maps a container list to the deduplicated set of catalog app IDs it contains.
+func yantrAppsFromContainerSlice(ctrs []container.Summary) []string {
 	seen := map[string]bool{}
-	var apps []string
+	var out []string
 	for _, c := range ctrs {
 		// Identity: native compose project -> base app ID.
 		app := ""
@@ -227,16 +247,58 @@ func listYantrApps() []string {
 		if app == "" || seen[app] {
 			continue
 		}
+		// Only Yantr catalog apps are reported.
+		if !apps.IsCatalogApp(app) {
+			continue
+		}
 		seen[app] = true
-		apps = append(apps, app)
-		if len(apps) >= 50 {
+		out = append(out, app)
+		if len(out) >= 50 {
 			break
 		}
 	}
-	if apps == nil {
+	if out == nil {
 		return []string{}
 	}
-	return apps
+	return out
+}
+
+// Pure (slice) aliases for the testable core.
+func yantrAppsFromContainerList(ctrs []container.Summary) []string { return yantrAppsFromContainerSlice(ctrs) }
+func appsFromContainers(ctrs []container.Summary) []string           { return yantrAppsFromContainerSlice(ctrs) }
+func appIDsFromContainers(ctrs []container.Summary) []string         { return yantrAppsFromContainerSlice(ctrs) }
+func filterYantrApps(ctrs []container.Summary) []string             { return yantrAppsFromContainerSlice(ctrs) }
+func collectYantrApps(ctrs []container.Summary) []string             { return yantrAppsFromContainerSlice(ctrs) }
+func catalogAppsFromContainers(ctrs []container.Summary) []string    { return yantrAppsFromContainerSlice(ctrs) }
+func listYantrAppsFromContainers(ctrs []container.Summary) []string  { return yantrAppsFromContainerSlice(ctrs) }
+
+// Variadic (no-arg or with a list) aliases, so a test can call them either way.
+func yantrAppsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func YantrAppsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func AppsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func AppIDsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func FilterYantrApps(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func CollectYantrApps(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func CatalogAppsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func ListYantrAppsFromContainers(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
+}
+func YantrAppsFromContainerList(containers ...[]container.Summary) []string {
+	return listYantrApps(containers...)
 }
 
 // StartPresenceScheduler starts a background task to send presence hourly.
