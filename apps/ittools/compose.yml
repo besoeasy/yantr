@@ -1,6 +1,6 @@
 x-yantr:
   name: "ittools"
-  tags: [developer, utilities, tools, self-hosted, web]
+  tags: [development, utility, tools, self-hosted]
   short_description: "Browser-based collection of developer and system utilities."
   description: >
     IT-Tools is a browser collection of utilities for developers and system

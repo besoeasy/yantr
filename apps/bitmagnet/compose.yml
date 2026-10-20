@@ -1,6 +1,6 @@
 x-yantr:
   name: Bitmagnet
-  tags: [ torrent, dht, indexer, search, crawler ]
+  tags: [ torrent, search, self-hosted ]
   short_description: Self-hosted BitTorrent indexer, DHT crawler, and torrent search engine.
   description: >
     Bitmagnet is a self-hosted BitTorrent indexer, DHT crawler, content

@@ -1,6 +1,6 @@
 x-yantr:
   name: "navidrome"
-  tags: [music, streaming, media, self-hosted, audio]
+  tags: [music, media, self-hosted, audio]
   short_description: "Self-hosted music server for streaming your personal library."
   description: >
     Navidrome is a lightweight music server and web player for organizing and

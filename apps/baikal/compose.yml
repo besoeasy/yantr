@@ -1,6 +1,6 @@
 x-yantr:
   name: "Baikal"
-  tags: [calendar, contacts, sync, self-hosted, productivity]
+  tags: [productivity, sync, self-hosted]
   short_description: "Lightweight CalDAV and CardDAV server for calendars and contacts."
   description: >
     Baikal syncs calendars and address books across phones and desktops via open

@@ -1,6 +1,6 @@
 x-yantr:
   name: "OctoPrint"
-  tags: [3d-printing, printer, hardware, self-hosted]
+  tags: [iot, self-hosted, tools]
   short_description: "A snappy web interface for monitoring and controlling 3D printers."
   description: >
     OctoPrint turns a 3D printer into something you can watch and steer from a

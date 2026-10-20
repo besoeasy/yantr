@@ -1,6 +1,6 @@
 x-yantr:
   name: "Emby"
-  tags: [media, movies, streaming, self-hosted, tv]
+  tags: [media, self-hosted, tv]
   short_description: "Media server for movies, shows, music, and live TV streaming."
   description: >
     Emby organizes movies, shows, music, and photos with metadata, transcoding,

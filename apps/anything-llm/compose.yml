@@ -1,6 +1,6 @@
 x-yantr:
   name: "AnythingLLM"
-  tags: [ai, chat, rag, agents, self-hosted]
+  tags: [ai, chat, self-hosted]
   short_description: "Private AI workspace with chat, RAG, and agent skills."
   description: >
     AnythingLLM chats with docs, connects tools, and runs agents on your own

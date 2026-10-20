@@ -1,6 +1,6 @@
 x-yantr:
   name: "python"
-  tags: [python, programming, scripting, podman, self-hosted]
+  tags: [development, programming, podman, self-hosted]
   short_description: "Python development environment for scripting, automation, and applications."
   description: >
     A Python development environment with the standard interpreter, pip, and

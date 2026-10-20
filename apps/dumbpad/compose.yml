@@ -1,6 +1,6 @@
 x-yantr:
   name: "DumbPad"
-  tags: [notes, notepad, markdown, self-hosted, tools]
+  tags: [notes, markdown, self-hosted, tools]
   short_description: "Minimal notepad with Markdown, sharing, and no accounts needed."
   description: >
     DumbPad is a tiny shared notepad with Markdown, multiple pads, and link

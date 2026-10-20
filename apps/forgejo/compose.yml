@@ -1,6 +1,6 @@
 x-yantr:
   name: Forgejo
-  tags: [ git, developer, self-hosted, code, collaboration ]
+  tags: [ git, development, self-hosted, collaboration ]
   short_description: Lightweight self-hosted Git platform with issues, PRs, CI, and packages.
   description: >
     Forgejo is a lightweight, community-driven Git host forked from Gitea. Run

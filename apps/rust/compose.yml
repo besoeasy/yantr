@@ -1,6 +1,6 @@
 x-yantr:
   name: "rust"
-  tags: [rust, programming, systems, podman, self-hosted]
+  tags: [development, programming, podman, self-hosted]
   short_description: "Rust development environment for systems, WebAssembly, and CLI tools."
   description: >
     A Rust development environment with Cargo, the compiler, and standard utilities

@@ -1,6 +1,6 @@
 x-yantr:
   name: n8n
-  tags: [ productivity, tools, automation, workflow, self-hosted ]
+  tags: [ productivity, tools, automation, self-hosted ]
   short_description: Powerful workflow automation platform with 400+ integrations
     and no-code automation builder.
   description: >

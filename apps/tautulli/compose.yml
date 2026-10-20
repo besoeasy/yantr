@@ -1,6 +1,6 @@
 x-yantr:
   name: "Tautulli"
-  tags: [media, plex, monitoring, stats, self-hosted]
+  tags: [media, monitoring, self-hosted]
   short_description: "Plex monitoring with watch history, stats, and notifications."
   description: >
     Tautulli monitors Plex activity with live dashboards, watch history, library

@@ -1,6 +1,6 @@
 x-yantr:
   name: Gitea Mirror
-  tags: [ git, backup, mirror, gitea, github ]
+  tags: [ git, backup, self-hosted ]
   short_description: Mirror GitHub repositories to a self-hosted Gitea or Forgejo instance.
   description: >
     Gitea Mirror synchronizes GitHub repositories (public and private) to a

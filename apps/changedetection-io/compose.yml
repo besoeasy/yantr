@@ -1,6 +1,6 @@
 x-yantr:
   name: changedetection.io
-  tags: [ monitoring, automation, alerts, web, self-hosted ]
+  tags: [ monitoring, automation, alerts, self-hosted ]
   short_description: Monitor any website for changes and get notified instantly
     via email or webhook.
   description: >

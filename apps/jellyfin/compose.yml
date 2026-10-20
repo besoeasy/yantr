@@ -1,6 +1,6 @@
 x-yantr:
   name: Jellyfin
-  tags: [ media, entertainment, streaming, video, music ]
+  tags: [ media, entertainment, music ]
   short_description: Free and open-source media server for streaming movies, TV
     shows, music, and photos to any device.
   description: >

@@ -1,6 +1,6 @@
 x-yantr:
   name: Snort
-  tags: [ nostr, social, decentralized, web, pwa ]
+  tags: [ nostr, social, network, self-hosted ]
   short_description: Fast, lightweight Nostr client with real-time updates and clean interface.
   description: >
     Snort is a lightweight Nostr web client for reading and publishing on the

@@ -1,6 +1,6 @@
 x-yantr:
   name: "Trip"
-  tags: [travel, planning, maps, self-hosted, tools]
+  tags: [productivity, self-hosted, tools]
   short_description: "Travel planner with itineraries, places, and route maps."
   description: >
     Trip organizes travel with itineraries, saved places, routes, and maps in

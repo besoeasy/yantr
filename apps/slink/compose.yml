@@ -1,6 +1,6 @@
 x-yantr:
   name: "Slink"
-  tags: [images, sharing, photos, files, self-hosted]
+  tags: [media, sharing, photos, files, self-hosted]
   short_description: "Privacy-first image sharing with albums and expiring links."
   description: >
     An image host for people who would rather not upload their photos to a third

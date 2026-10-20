@@ -1,6 +1,6 @@
 x-yantr:
   name: "Databag"
-  tags: [social, fediverse, activitypub, messaging, self-hosted]
+  tags: [social, messaging, self-hosted]
   short_description: "Tiny self-hosted ActivityPub messenger for the decentralized web."
   description: >
     Databag is a deliberately small messenger that speaks ActivityPub, so your

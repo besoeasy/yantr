@@ -1,6 +1,6 @@
 x-yantr:
   name: 8mb.local
-  tags: [video, media, compressor, ffmpeg, tools]
+  tags: [media, converter, ffmpeg, tools]
   short_description: Self-hosted local video compressor with a clean web interface.
   description: >
     8mb.local is a free, self-hosted video compression web UI designed for

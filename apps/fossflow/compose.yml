@@ -1,6 +1,6 @@
 x-yantr:
   name: "FossFLOW"
-  tags: [diagrams, infrastructure, networking, self-hosted]
+  tags: [diagrams, network, self-hosted]
   short_description: "Draw clean isometric infrastructure diagrams right in the browser."
   description: >
     Build clear isometric diagrams of cloud and infrastructure setups by dragging

@@ -1,6 +1,6 @@
 x-yantr:
   name: MeTube
-  tags: [ video, downloads, yt-dlp, media, self-hosted ]
+  tags: [ media, download, self-hosted ]
   short_description: Web UI for yt-dlp to download videos and audio from supported sites.
   description: >
     MeTube is a web frontend for yt-dlp that lets you download videos and

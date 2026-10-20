@@ -1,6 +1,6 @@
 x-yantr:
   name: "Element"
-  tags: [chat, matrix, communication, self-hosted, tools]
+  tags: [chat, communication, self-hosted, tools]
   short_description: "Matrix chat client for encrypted rooms and communities."
   description: >
     Element Web connects to any Matrix homeserver for encrypted chats, rooms,

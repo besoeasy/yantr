@@ -1,6 +1,6 @@
 x-yantr:
   name: "Remmina"
-  tags: [remote-desktop, rdp, vnc, self-hosted, tools]
+  tags: [tools, self-hosted, network]
   short_description: "Remote desktop client for RDP, VNC, and SSH in a browser."
   description: >
     Remmina in a browser connects to Windows, Linux, and macOS hosts over RDP,

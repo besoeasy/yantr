@@ -1,6 +1,6 @@
 x-yantr:
   name: "Stash"
-  tags: [finance, savings, goals, self-hosted, tools]
+  tags: [finance, tracking, self-hosted, tools]
   short_description: "Savings tracker with goals, streaks, and visual progress."
   description: >
     Stash motivates saving with goals, streaks, and visual progress for personal

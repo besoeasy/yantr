@@ -1,6 +1,6 @@
 x-yantr:
   name: "void"
-  tags: [filehosting, storage, self-hosted, podman]
+  tags: [files, storage, self-hosted, podman]
   short_description: "Self-hosted file hosting and sharing service with clean UI."
   description: >
     Void is an ultra-minimalist file hosting and asset sharing service. Drag

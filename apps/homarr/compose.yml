@@ -1,6 +1,6 @@
 x-yantr:
   name: Homarr
-  tags: [ dashboard, tools, monitoring, utility, homepage ]
+  tags: [ dashboard, tools, monitoring, utility ]
   short_description: Customizable dashboard for self-hosted services with
     drag-and-drop widgets and integrations.
   description: >

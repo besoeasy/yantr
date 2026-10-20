@@ -1,6 +1,6 @@
 x-yantr:
   name: "Super Productivity"
-  tags: [tasks, productivity, time-tracking, self-hosted, homelab]
+  tags: [tasks, productivity, tracking, self-hosted, homelab]
   short_description: "Task, time, and project manager with offline-first workflow."
   description: >
     Super Productivity combines tasks, time tracking, and project boards in one

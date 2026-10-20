@@ -1,6 +1,6 @@
 x-yantr:
   name: "GlassHome"
-  tags: [home-assistant, dashboard, automation, self-hosted]
+  tags: [home, dashboard, automation, self-hosted]
   short_description: "A calm, local-first dashboard for your Home Assistant instance."
   description: >
     GlassHome gives Home Assistant a cleaner front door. It reads your entities

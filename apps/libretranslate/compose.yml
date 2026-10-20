@@ -1,6 +1,6 @@
 x-yantr:
   name: "LibreTranslate"
-  tags: [translation, language, api, privacy, self-hosted]
+  tags: [tools, api, privacy, self-hosted]
   short_description: "Free offline translation API supporting many language pairs."
   description: >
     LibreTranslate serves machine translation over a simple API and web UI

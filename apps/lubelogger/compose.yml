@@ -1,6 +1,6 @@
 x-yantr:
   name: "LubeLogger"
-  tags: [vehicles, maintenance, tracking, self-hosted, tools]
+  tags: [tracking, self-hosted, tools]
   short_description: "Vehicle maintenance, fuel, and expense tracking for your cars."
   description: >
     LubeLogger logs services, repairs, fuel fill-ups, and costs per vehicle

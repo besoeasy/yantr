@@ -1,6 +1,6 @@
 x-yantr:
   name: "Zen"
-  tags: [media, tracking, movies, self-hosted, tools]
+  tags: [media, tracking, self-hosted, tools]
   short_description: "Release tracker with watchlists and multi-source search."
   description: >
     Zen tracks movies and shows across sources with watchlists, progress, and

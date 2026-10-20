@@ -1,6 +1,6 @@
 x-yantr:
   name: "Downtify"
-  tags: [music, downloads, playlists, self-hosted, tools]
+  tags: [music, download, self-hosted, tools]
   short_description: "Music downloader for playlists with a clean web dashboard."
   description: >
     Downtify pulls tracks and playlists for offline listening with queue

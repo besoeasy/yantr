@@ -1,6 +1,6 @@
 x-yantr:
   name: "Semaphore UI"
-  tags: [automation, devops, ansible, self-hosted, tools]
+  tags: [automation, devops, self-hosted, tools]
   short_description: "Web UI for Ansible, Terraform, OpenTofu, and script runs."
   description: >
     Semaphore UI is a self-hosted web interface for infrastructure automation.

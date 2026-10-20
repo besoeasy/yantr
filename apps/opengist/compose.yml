@@ -1,6 +1,6 @@
 x-yantr:
   name: "Opengist"
-  tags: [pastebin, snippets, git, self-hosted, productivity]
+  tags: [pastebin, git, self-hosted, productivity]
   short_description: "Self-hosted pastebin powered by Git, like GitHub Gist on your own server."
   description: >
     Opengist is a self-hosted pastebin where every snippet is a Git repository.

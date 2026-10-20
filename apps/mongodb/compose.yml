@@ -1,6 +1,6 @@
 x-yantr:
   name: MongoDB
-  tags: [ database, nosql, documents, backend, self-hosted ]
+  tags: [ database, documents, backend, self-hosted ]
   short_description: Popular NoSQL document database with flexible JSON-like
     documents and powerful querying.
   description: >

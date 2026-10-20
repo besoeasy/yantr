@@ -1,6 +1,6 @@
 x-yantr:
   name: "Overseerr"
-  tags: [media, movies, requests, self-hosted, plex]
+  tags: [media, requests, self-hosted]
   short_description: "Media request manager for Plex and Jellyfin with discovery."
   description: >
     Overseerr lets users request movies and shows with approvals, discovery,

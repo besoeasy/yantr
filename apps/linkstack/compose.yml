@@ -1,6 +1,6 @@
 x-yantr:
   name: "LinkStack"
-  tags: [links, sharing, social, self-hosted, tools]
+  tags: [bookmarks, sharing, social, self-hosted, tools]
   short_description: "Customizable link-in-bio page for sharing all your links."
   description: >
     LinkStack offers a Linktree-style page to collect socials, projects, and

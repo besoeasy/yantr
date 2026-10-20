@@ -1,6 +1,6 @@
 x-yantr:
   name: "Jellyseerr"
-  tags: [media, movies, requests, self-hosted, jellyfin]
+  tags: [media, requests, self-hosted]
   short_description: "Movie and show request hub for Jellyfin, Plex, and Emby."
   description: >
     Jellyseerr (Seerr) collects media requests with discovery, watchlist sync,

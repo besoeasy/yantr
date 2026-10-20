@@ -1,6 +1,6 @@
 x-yantr:
   name: Gitea
-  tags: [ git, devops, version-control, code-hosting, self-hosted ]
+  tags: [ git, devops, self-hosted ]
   short_description: Lightweight self-hosted Git service and code platform.
   description: >
     Gitea is a painless self-hosted all-in-one software development service.

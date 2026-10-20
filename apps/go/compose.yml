@@ -1,6 +1,6 @@
 x-yantr:
   name: "go"
-  tags: [golang, programming, dev, podman, self-hosted]
+  tags: [development, programming, podman, self-hosted]
   short_description: "Go development environment for building and testing modern applications."
   description: >
     A Go development environment with the official toolchain, module support,

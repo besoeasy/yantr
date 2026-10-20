@@ -1,6 +1,6 @@
 x-yantr:
   name: "Lunalytics"
-  tags: [monitoring, uptime, status, self-hosted, tools]
+  tags: [monitoring, self-hosted, tools]
   short_description: "Uptime and status monitoring with alerts and status pages."
   description: >
     Lunalytics watches websites and services with checks, incident alerts, and

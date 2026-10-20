@@ -1,6 +1,6 @@
 x-yantr:
   name: "Ghost"
-  tags: [blogging, publishing, newsletter, self-hosted, cms]
+  tags: [publishing, self-hosted, tools]
   short_description: "Publishing platform for blogs, newsletters, and memberships."
   description: >
     Ghost publishes blogs and newsletters with themes, member subscriptions,

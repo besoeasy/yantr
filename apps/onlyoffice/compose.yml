@@ -1,6 +1,6 @@
 x-yantr:
   name: OnlyOffice
-  tags: [ documents, collaboration, office, productivity, self-hosted ]
+  tags: [ documents, collaboration, productivity, self-hosted ]
   short_description: Self-hosted office suite for creating and editing documents,
     spreadsheets, and presentations.
   description: >

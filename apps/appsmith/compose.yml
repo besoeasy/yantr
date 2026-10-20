@@ -1,6 +1,6 @@
 x-yantr:
   name: "Appsmith"
-  tags: [low-code, development, dashboards, self-hosted, tools]
+  tags: [low-code, development, dashboard, self-hosted, tools]
   short_description: "Low-code builder for admin panels and database CRUD apps."
   description: >
     Appsmith connects to Postgres, MySQL, Mongo, and REST APIs to build admin

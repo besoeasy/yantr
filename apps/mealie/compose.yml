@@ -1,6 +1,6 @@
 x-yantr:
   name: "mealie"
-  tags: [recipes, cooking, meal-planning, self-hosted, productivity]
+  tags: [recipes, self-hosted, productivity]
   short_description: "Self-hosted recipe manager for meal plans, shopping lists, and cooking."
   description: >
     Mealie is a self-hosted recipe manager for saving recipes from the web,

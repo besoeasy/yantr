@@ -1,6 +1,6 @@
 x-yantr:
   name: Portainer
-  tags: [tools, utility, podman, containers, devops]
+  tags: [tools, utility, podman, devops]
   short_description: Manage Podman containers, images, volumes, networks, and stacks through a web UI.
   description: >
     Portainer is a web UI for containers, images, volumes, networks, and Compose

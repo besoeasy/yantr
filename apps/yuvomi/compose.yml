@@ -1,6 +1,6 @@
 x-yantr:
   name: "Yuvomi"
-  tags: [media, tracking, movies, self-hosted, tools]
+  tags: [media, tracking, self-hosted, tools]
   short_description: "Media tracker for movies, shows, and watchlist discovery."
   description: >
     Yuvomi tracks movies and shows with watchlists, progress, and discovery

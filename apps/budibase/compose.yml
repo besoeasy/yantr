@@ -1,6 +1,6 @@
 x-yantr:
   name: "Budibase"
-  tags: [low-code, development, dashboards, self-hosted, tools]
+  tags: [low-code, development, dashboard, self-hosted, tools]
   short_description: "Low-code platform for internal tools, dashboards, and CRUD apps."
   description: >
     Budibase builds internal apps, dashboards, and workflows on Postgres, MySQL,

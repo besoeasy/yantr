@@ -1,6 +1,6 @@
 x-yantr:
   name: Originless
-  tags: [ storage, files, privacy, ipfs, self-hosted ]
+  tags: [ storage, files, privacy, p2p, self-hosted ]
   short_description: Self-hosted anonymous file storage backend built on IPFS.
   description: >
     Originless is a self-hosted IPFS storage API for uploading and retrieving

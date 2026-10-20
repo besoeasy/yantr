@@ -1,6 +1,6 @@
 x-yantr:
   name: openhands
-  tags: [ai, development, agent, self-hosted, canvas]
+  tags: [ai, development, agent, self-hosted]
   short_description: AI coding agent with web-based canvas interface for development projects.
   description: >
     OpenHands is an AI development environment with a web canvas interface for

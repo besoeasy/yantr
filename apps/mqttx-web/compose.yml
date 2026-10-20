@@ -1,6 +1,6 @@
 x-yantr:
   name: "MQTTX Web"
-  tags: [mqtt, iot, messaging, development, tools]
+  tags: [iot, messaging, development, tools]
   short_description: "Browser MQTT client for testing brokers and IoT messaging."
   description: >
     MQTTX Web connects to any MQTT broker over WebSockets to publish, subscribe,

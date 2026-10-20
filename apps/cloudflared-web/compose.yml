@@ -1,6 +1,6 @@
 x-yantr:
   name: "Cloudflared Web"
-  tags: [network, tunnel, utility, cloudflare, proxy]
+  tags: [network, utility, proxy]
   short_description: Cloudflare tunnel client with a web UI for managing secure tunnels.
   description: >
     A Docker image that packages the official Cloudflare tunnel client (cloudflared)

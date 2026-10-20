@@ -1,6 +1,6 @@
 x-yantr:
   name: ntfy
-  tags: [ notifications, alerts, push, messaging, automation ]
+  tags: [ alerts, messaging, automation ]
   short_description: Self-hosted push notification server — send alerts via plain
     HTTP to any device.
   description: >

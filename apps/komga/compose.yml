@@ -1,6 +1,6 @@
 x-yantr:
   name: "Komga"
-  tags: [media, comics, manga, reading, self-hosted]
+  tags: [media, reading, self-hosted]
   short_description: "Self-hosted server for comics, manga, magazines, and ebooks."
   description: >
     Komga turns a folder of comics, manga, magazines, and ebooks into browsable

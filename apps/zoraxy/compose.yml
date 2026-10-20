@@ -1,6 +1,6 @@
 x-yantr:
   name: "Zoraxy"
-  tags: [proxy, networking, ssl, reverse-proxy, self-hosted]
+  tags: [proxy, network, self-hosted]
   short_description: "Reverse proxy manager with automated SSL certificate handling."
   description: >
     Zoraxy puts a web interface in front of reverse proxying: point it at your

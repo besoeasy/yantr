@@ -1,6 +1,6 @@
 x-yantr:
   name: "grafana"
-  tags: [monitoring, observability, dashboards, metrics, self-hosted]
+  tags: [monitoring, dashboard, metrics, self-hosted]
   short_description: "Self-hosted dashboards and visualization for metrics, logs, and traces."
   description: >
     Grafana is a self-hosted observability dashboard for exploring metrics, logs,

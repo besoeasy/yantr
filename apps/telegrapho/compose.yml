@@ -1,6 +1,6 @@
 x-yantr:
   name: "Telegrapho"
-  tags: [publishing, writing, sharing, self-hosted, tools]
+  tags: [publishing, sharing, self-hosted, tools]
   short_description: "Anonymous publishing with instant Telegraph-style pages."
   description: >
     Telegrapho publishes simple rich-text pages with images via shareable

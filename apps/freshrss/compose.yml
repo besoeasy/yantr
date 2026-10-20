@@ -1,6 +1,6 @@
 x-yantr:
   name: FreshRSS
-  tags: [ feed, productivity, rss, news, reader ]
+  tags: [ rss, productivity, self-hosted ]
   short_description: Self-hosted RSS/Atom feed aggregator with multi-user support
     and powerful filtering.
   description: >

@@ -1,6 +1,6 @@
 x-yantr:
   name: "ubuntu"
-  tags: [linux, ubuntu, devbox]
+  tags: [linux, devbox, self-hosted]
   short_description: "Ubuntu LTS Linux container for versatile workloads."
   description: >
     An Ubuntu LTS Linux container providing a versatile and widely-supported

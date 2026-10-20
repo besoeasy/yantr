@@ -1,6 +1,6 @@
 x-yantr:
   name: ConvertX
-  tags: [ conversion, documents, media, ffmpeg, self-hosted ]
+  tags: [ converter, documents, media, ffmpeg, self-hosted ]
   short_description: Self-hosted file converter - audio, video, images, documents, and archives.
   description: >
     ConvertX is a self-hosted file conversion tool for audio, video, images,

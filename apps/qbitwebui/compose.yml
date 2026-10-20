@@ -1,6 +1,6 @@
 x-yantr:
   name: qbitwebui
-  tags: [torrent, download, qbittorrent, media, homelab]
+  tags: [torrent, download, media, homelab]
   short_description: Modern web interface for managing qBittorrent instances.
   description: >
     QbitWebUI is a modern, mobile-friendly web interface for managing qBittorrent

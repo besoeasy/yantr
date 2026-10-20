@@ -1,6 +1,6 @@
 x-yantr:
   name: "Bazarr"
-  tags: [media, subtitles, automation, self-hosted, tools]
+  tags: [media, automation, self-hosted, tools]
   short_description: "Subtitle manager for Sonarr and Radarr with provider search."
   description: >
     Bazarr fetches missing subtitles for movies and series managed by Sonarr

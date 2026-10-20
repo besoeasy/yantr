@@ -1,6 +1,6 @@
 x-yantr:
   name: "Pinchflat"
-  tags: [media, youtube, downloads, self-hosted, automation]
+  tags: [media, download, self-hosted, automation]
   short_description: "YouTube media manager with auto-downloads and Plex setup."
   description: >
     Pinchflat pulls YouTube channels and playlists on schedules with metadata

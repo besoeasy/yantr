@@ -1,6 +1,6 @@
 x-yantr:
   name: Specter Desktop
-  tags: [ security, tools, bitcoin, crypto, blockchain ]
+  tags: [ security, tools, bitcoin, crypto ]
   short_description: Bitcoin wallet with hardware device support, multisig, and
     air-gapped signing.
   description: >

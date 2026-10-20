@@ -1,6 +1,6 @@
 x-yantr:
   name: "Wizarr"
-  tags: [media, invites, plex, jellyfin, self-hosted]
+  tags: [media, sharing, self-hosted]
   short_description: "Invite manager for Plex and Jellyfin with easy onboarding."
   description: >
     Wizarr creates invite links and onboarding flows for media servers, with

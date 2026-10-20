@@ -1,6 +1,6 @@
 x-yantr:
   name: Prometheus
-  tags: [ monitoring, metrics, alerting, devops, self-hosted ]
+  tags: [ monitoring, metrics, devops, self-hosted ]
   short_description: Open-source systems monitoring and alerting toolkit with
     a dimensional data model.
   description: >

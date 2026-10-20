@@ -1,6 +1,6 @@
 x-yantr:
   name: Vaultwarden
-  tags: [ productivity, security, password-manager, privacy, self-hosted ]
+  tags: [ productivity, security, privacy, self-hosted ]
   short_description: Lightweight, open-source Bitwarden-compatible password
     manager server written in Rust.
   description: >

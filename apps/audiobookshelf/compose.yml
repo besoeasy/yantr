@@ -1,6 +1,6 @@
 x-yantr:
   name: "audiobookshelf"
-  tags: [audiobooks, podcasts, media, streaming, self-hosted]
+  tags: [audiobooks, audio, media, self-hosted]
   short_description: "Self-hosted audiobook and podcast server with progress tracking."
   description: >
     Audiobookshelf is a self-hosted server for audiobooks, podcasts, and related

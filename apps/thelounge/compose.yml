@@ -1,6 +1,6 @@
 x-yantr:
   name: "The Lounge"
-  tags: [chat, irc, communication, self-hosted, tools]
+  tags: [chat, communication, self-hosted, tools]
   short_description: "Modern self-hosted web IRC client with always-on connections."
   description: >
     The Lounge stays connected to IRC servers while you are offline, with

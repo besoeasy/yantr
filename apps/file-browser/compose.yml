@@ -1,6 +1,6 @@
 x-yantr:
   name: File Browser
-  tags: [ files, storage, self-hosted, file-manager, web ]
+  tags: [ files, storage, self-hosted ]
   short_description: Self-hosted web file manager with a clean, modern interface.
   description: >
     File Browser provides a web UI for browsing, uploading, downloading,

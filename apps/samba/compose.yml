@@ -1,6 +1,6 @@
 x-yantr:
   name: Samba
-  tags: [ network, file-sharing, storage, smb, self-hosted ]
+  tags: [ network, files, storage, self-hosted ]
   short_description: SMB/CIFS file sharing for Windows, Mac, and Linux to access
     storage on your network.
   description: >

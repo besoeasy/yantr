@@ -1,6 +1,6 @@
 x-yantr:
   name: "nodered"
-  tags: [automation, iot, workflows, development, self-hosted]
+  tags: [automation, iot, development, self-hosted]
   short_description: "Browser-based low-code automation for APIs, devices, and workflows."
   description: >
     Node-RED is a browser flow editor for connecting hardware, APIs, services,

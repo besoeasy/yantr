@@ -1,6 +1,6 @@
 x-yantr:
   name: "Ollama"
-  tags: [ai, llm, models, self-hosted, development]
+  tags: [ai, llm, self-hosted, development]
   short_description: "Run large language models locally with an OpenAI-style API."
   description: >
     Ollama serves open models locally with GPU or CPU, exposing an API for

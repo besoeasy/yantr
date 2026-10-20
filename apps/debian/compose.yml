@@ -1,6 +1,6 @@
 x-yantr:
   name: "debian"
-  tags: [linux, debian, devbox]
+  tags: [linux, devbox, self-hosted]
   short_description: "Stable Debian Linux container for general-purpose workloads."
   description: >
     A stable and reliable Debian Linux container suitable for general-purpose

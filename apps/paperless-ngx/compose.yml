@@ -1,6 +1,6 @@
 x-yantr:
   name: Paperless-ngx
-  tags: [ documents, ocr, scanning, productivity, self-hosted ]
+  tags: [ documents, productivity, self-hosted ]
   short_description: Document management system with OCR, search, and automatic classification.
   description: >
     Paperless-ngx is an open-source document management system that turns your

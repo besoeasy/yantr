@@ -1,6 +1,6 @@
 x-yantr:
   name: "SABnzbd"
-  tags: [downloads, usenet, automation, self-hosted, media]
+  tags: [download, automation, self-hosted, media]
   short_description: "Usenet downloader with queue management and automation APIs."
   description: >
     SABnzbd fetches Usenet articles with queuing, repair, post-processing, and

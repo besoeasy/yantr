@@ -1,6 +1,6 @@
 x-yantr:
   name: code-server
-  tags: [ development, terminal, ide, self-hosted, homelab ]
+  tags: [ development, terminal, self-hosted, homelab ]
   short_description: Self-hosted VS Code in a browser, powered by code-server, with a terminal and extensions.
   description: >
     code-server runs VS Code in a browser on your infrastructure. It provides a

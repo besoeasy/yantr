@@ -1,6 +1,6 @@
 x-yantr:
   name: "Donetick"
-  tags: [tasks, chores, productivity, self-hosted, home]
+  tags: [tasks, productivity, self-hosted, home]
   short_description: "Chore and task manager with recurring schedules and assignments."
   description: >
     Donetick organizes household chores and tasks with recurring schedules,

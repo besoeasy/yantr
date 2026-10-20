@@ -1,6 +1,6 @@
 x-yantr:
   name: "calibreweb"
-  tags: [ebooks, books, reading, self-hosted, library]
+  tags: [ebooks, reading, self-hosted]
   short_description: "Self-hosted ebook library and reader powered by Calibre-Web."
   description: >
     Calibre-Web provides a browser interface for browsing, searching, reading, and

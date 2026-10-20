@@ -1,6 +1,6 @@
 x-yantr:
   name: MoviePilot
-  tags: [ media, automation, downloader, nas, self-hosted ]
+  tags: [ media, automation, download, self-hosted ]
   short_description: NAS media automation for subscribing, downloading, and
     organizing movies and TV shows.
   description: >

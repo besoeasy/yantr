@@ -1,6 +1,6 @@
 x-yantr:
   name: "ROMarr"
-  tags: [media, games, roms, automation, self-hosted]
+  tags: [media, entertainment, automation, self-hosted]
   short_description: "The *arr for games: searches, downloads, and files ROMs."
   description: >
     ROMarr is a game library manager in the *arr family. Request a title and it

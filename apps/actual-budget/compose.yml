@@ -1,6 +1,6 @@
 x-yantr:
   name: "actual-budget"
-  tags: [finance, accounting, budgeting, self-hosted, sync]
+  tags: [finance, budgeting, self-hosted, sync]
   short_description: "Fast, privacy-focused personal finance app with envelope
     budgeting and multi-device sync."
   description: >

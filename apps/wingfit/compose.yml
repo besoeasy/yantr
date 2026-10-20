@@ -1,6 +1,6 @@
 x-yantr:
   name: "WingFit"
-  tags: [fitness, health, tracking, self-hosted, tools]
+  tags: [tracking, self-hosted, tools]
   short_description: "Fitness tracker for workouts, stats, and training streaks."
   description: >
     WingFit logs workouts with stats, streaks, and progress views for strength

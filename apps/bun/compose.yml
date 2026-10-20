@@ -1,6 +1,6 @@
 x-yantr:
   name: "bun"
-  tags: [javascript, bun, runtime, podman, self-hosted]
+  tags: [javascript, development, podman, self-hosted]
   short_description: "Bun JavaScript runtime for fast modern web development."
   description: >
     A Bun container providing a fast JavaScript runtime, bundler, transpiler,

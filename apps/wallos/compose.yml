@@ -1,6 +1,6 @@
 x-yantr:
   name: Wallos
-  tags: [ finance, subscriptions, budgeting, lifestyle, self-hosted ]
+  tags: [ finance, budgeting, self-hosted ]
   short_description: Self-hosted subscription tracker to manage recurring payments.
   description: >
     Wallos is a self-hosted subscription tracker that helps you manage and

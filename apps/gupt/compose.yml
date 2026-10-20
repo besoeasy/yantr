@@ -1,6 +1,6 @@
 x-yantr:
   name: GUPT
-  tags: [ messaging, nostr, privacy, e2e-encrypted, self-hosted ]
+  tags: [ messaging, nostr, privacy, encryption, self-hosted ]
   short_description: Browser-based Nostr messenger with encrypted chat and WebRTC calls.
   description: >
     GUPT is a browser-based, serverless messenger and privacy suite that uses

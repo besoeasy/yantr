@@ -1,6 +1,6 @@
 x-yantr:
   name: "jupyterlab"
-  tags: [development, python, notebooks, data-science, self-hosted]
+  tags: [development, self-hosted, programming]
   short_description: "Browser-based JupyterLab for notebooks, code, and data exploration."
   description: >
     JupyterLab is a browser workspace for notebooks, terminals, code editors, and

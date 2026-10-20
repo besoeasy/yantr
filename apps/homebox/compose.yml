@@ -1,6 +1,6 @@
 x-yantr:
   name: "HomeBox"
-  tags: [inventory, home, organization, self-hosted, homelab]
+  tags: [home, organization, self-hosted, homelab]
   short_description: "Home inventory and organization system for tracking belongings."
   description: >
     HomeBox catalogs devices, tools, and household items with labels, locations,

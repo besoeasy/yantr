@@ -1,6 +1,6 @@
 x-yantr:
   name: "pyLoad"
-  tags: [downloads, manager, automation, self-hosted, tools]
+  tags: [download, automation, self-hosted, tools]
   short_description: "Download manager for one-click hosters and containers."
   description: >
     pyLoad fetches downloads from file hosters and video sites with queuing,

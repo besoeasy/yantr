@@ -1,6 +1,6 @@
 x-yantr:
   name: "Shelfmark"
-  tags: [ebooks, audiobooks, downloader, self-hosted, media]
+  tags: [ebooks, audiobooks, download, self-hosted, media]
   short_description: "Search for, download, and queue ebooks and audiobooks."
   description: >
     Shelfmark is a self-hosted web app for finding and fetching ebooks and

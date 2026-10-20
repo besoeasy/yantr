@@ -1,6 +1,6 @@
 x-yantr:
   name: "Excalidraw"
-  tags: [whiteboard, diagrams, drawing, self-hosted, productivity]
+  tags: [diagrams, self-hosted, productivity]
   short_description: "Hand-drawn style whiteboard for sketches, diagrams, and ideas."
   description: >
     Excalidraw is a virtual whiteboard with a hand-drawn look for diagrams,

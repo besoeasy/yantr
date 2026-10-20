@@ -1,6 +1,6 @@
 x-yantr:
   name: ArchiveBox
-  tags: [ tools, archiving, bookmarks, web, utility ]
+  tags: [ tools, files, bookmarks, self-hosted, utility ]
   short_description: Self-hosted internet archiving solution for saving web pages,
     bookmarks, and content.
   description: >

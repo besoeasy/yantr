@@ -1,6 +1,6 @@
 x-yantr:
   name: "Grocy"
-  tags: [home, groceries, recipes, self-hosted, productivity]
+  tags: [home, recipes, self-hosted, productivity]
   short_description: "Grocery, pantry, recipe, and household chore management hub."
   description: >
     Grocy tracks pantry stock, shopping lists, recipes, batteries, and chores

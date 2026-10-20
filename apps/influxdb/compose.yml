@@ -1,6 +1,6 @@
 x-yantr:
   name: InfluxDB
-  tags: [ database, time-series, metrics, monitoring, self-hosted ]
+  tags: [ database, metrics, monitoring, self-hosted ]
   short_description: Purpose-built time-series database for metrics, events,
     and real-time analytics.
   description: >

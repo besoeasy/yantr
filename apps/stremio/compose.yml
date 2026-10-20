@@ -1,6 +1,6 @@
 x-yantr:
   name: Stremio
-  tags: [ media, streaming, video, self-hosted, homelab ]
+  tags: [ media, self-hosted, homelab ]
   short_description: Self-hosted streaming endpoint for Stremio clients and addons.
   description: >
     Stremio organizes movies, shows, and video content through community addons.
