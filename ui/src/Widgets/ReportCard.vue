@@ -1,11 +1,12 @@
 <script>
-// Dashboard engine: two of the desktop grid's four columns, spent entirely on
+// Dashboard engine: one of the desktop grid's four columns, spent entirely on
 // the ask and the CTA. The facts the report carries are not rendered at all —
 // they ride in the button's href, pre-filled into the issue body, so the card
 // spends its pixels on the ask instead of restating what the link already
-// embeds. The .w-span-2 utility in main.css clamps it per breakpoint; see
+// embeds. The ask and the CTA stack rather than sit side by side — at one
+// column they are a sentence followed by the button that answers it; see
 // Home.vue.
-export const meta = { cols: 2 };
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed, onMounted, ref } from "vue";
@@ -101,32 +102,29 @@ const issueUrl = computed(() =>
       </div>
     </div>
 
-    <!-- Body: ask left, act right. Held short so the row keeps its 320px
-         like every neighbour card. -->
-    <div class="relative z-10 mt-auto flex flex-col gap-4 pt-5">
-      <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
-        <div class="min-w-0 max-w-[38ch] flex-1">
-          <h3 class="yantra-text-primary mb-1.5 text-2xl font-black leading-[1.2] tracking-tight transition-transform duration-200 group-hover:-translate-y-[3px]">
-            {{ t("issueCard.title") }}
-          </h3>
-          <p class="yantra-text-secondary line-clamp-2 text-xs leading-relaxed">
-            {{ t("issueCard.description") }}
-          </p>
-        </div>
+    <!-- Body: the ask, then the CTA under it. One column is one reading
+         order, so the button spans the card rather than competing with the
+         title for the same row. -->
+    <div class="relative z-10 mt-auto flex flex-col pt-5">
+      <h3 class="yantra-text-primary mb-1.5 text-2xl font-black leading-[1.2] tracking-tight transition-transform duration-200 group-hover:-translate-y-[3px]">
+        {{ t("issueCard.title") }}
+      </h3>
+      <p class="yantra-text-secondary line-clamp-3 text-xs leading-relaxed">
+        {{ t("issueCard.description") }}
+      </p>
 
-        <a
-          :href="issueUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="report-cta group/cta relative flex h-11 shrink-0 items-center justify-between gap-3 rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
-        >
-          <div class="relative z-10 flex items-center gap-2.5">
-            <Bug class="h-4 w-4" />
-            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
-          </div>
-          <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
-        </a>
-      </div>
+      <a
+        :href="issueUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="report-cta group/cta relative mt-5 flex h-11 w-full items-center justify-between gap-3 rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
+      >
+        <div class="relative z-10 flex items-center gap-2.5">
+          <Bug class="h-4 w-4" />
+          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
+        </div>
+        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+      </a>
 
       <div class="report-foot yantra-text-secondary flex items-center gap-4 pt-3 text-[10px] leading-relaxed">
         <span class="flex min-w-0 items-center gap-2">
