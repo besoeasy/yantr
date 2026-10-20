@@ -1,4 +1,4 @@
-// Package presence sends the install, update, and daily presence pings that
+// Package presence sends the hourly presence pings that
 // feed the public fleet page. It is a ping, not telemetry: there is no agent,
 // no session tracing, and no identifier derived from the host.
 package presence
@@ -161,7 +161,7 @@ func Ping(event string, fields map[string]interface{}) {
 	}()
 }
 
-// SendPresence sends a daily presence event containing system info.
+// SendPresence sends an hourly presence event containing system info.
 func SendPresence(version string) {
 	if !isEnabled {
 		return
@@ -239,19 +239,19 @@ func listYantrApps() []string {
 	return apps
 }
 
-// StartPresenceScheduler starts a background task to send presence daily.
+// StartPresenceScheduler starts a background task to send presence hourly.
 func StartPresenceScheduler(version string) {
 	if !isEnabled {
 		shared.Log("info", "[presence] presence scheduler not started (disabled)")
 		return
 	}
-	shared.Log("info", "[presence] presence scheduler started (interval=24h)")
+	shared.Log("info", "[presence] presence scheduler started (interval=1h)")
 	SendPresence(version)
 	go func() {
-		ticker := time.NewTicker(24 * time.Hour)
+		ticker := time.NewTicker(1 * time.Hour)
 		defer ticker.Stop()
 		for range ticker.C {
-			shared.Log("info", "[presence] presence tick (24h interval)")
+			shared.Log("info", "[presence] presence tick (1h interval)")
 			SendPresence(version)
 		}
 	}()
