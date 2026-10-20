@@ -11,6 +11,7 @@
 // errors, which is the mode a new app or a CI gate should use.
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 
@@ -18,7 +19,67 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const APPS_DIR = process.env.YANTR_APPS_DIR
   ? path.resolve(process.env.YANTR_APPS_DIR)
   : path.join(HERE, 'apps');
-const STRICT = process.argv.includes('--strict');
+
+const USAGE = `Usage: node check.js [options]
+
+Options:
+  --app <name>     check only this app (repeatable)
+  --changed        check apps touched by uncommitted changes
+  --since <ref>    check apps changed since a git ref
+  --strict         treat warnings as errors
+  -h, --help       show this help
+
+YANTR_APPS_DIR overrides the apps directory (default: ./apps).`;
+
+function usageError(message) {
+  console.error(`${message}\n\n${USAGE}`);
+  process.exit(2);
+}
+
+function parseArgs(argv) {
+  const options = { apps: [], changed: false, since: null, strict: false };
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+
+    if (arg === '--strict') {
+      options.strict = true;
+    } else if (arg === '--changed') {
+      options.changed = true;
+    } else if (arg === '--app' || arg.startsWith('--app=')) {
+      const value = arg === '--app' ? argv[index + 1] : arg.slice('--app='.length);
+      if (!value || value.startsWith('-')) {
+        usageError('--app requires an app name');
+      }
+      if (arg === '--app') index += 1;
+      options.apps.push(value);
+    } else if (arg === '--since' || arg.startsWith('--since=')) {
+      const value = arg === '--since' ? argv[index + 1] : arg.slice('--since='.length);
+      if (!value || value.startsWith('-')) {
+        usageError('--since requires a git ref');
+      }
+      if (arg === '--since') index += 1;
+      options.since = value;
+    } else if (arg === '--help' || arg === '-h') {
+      console.log(USAGE);
+      process.exit(0);
+    } else {
+      usageError(`Unknown option "${arg}"`);
+    }
+  }
+
+  if (options.changed && options.since !== null) {
+    usageError('--changed and --since cannot be combined');
+  }
+  if (options.apps.length > 0 && (options.changed || options.since !== null)) {
+    usageError('--app cannot be combined with --changed or --since');
+  }
+
+  return options;
+}
+
+const OPTIONS = parseArgs(process.argv.slice(2));
+const STRICT = OPTIONS.strict;
 
 const PORT_PROTOCOLS = new Set(['HTTP', 'HTTPS', 'TCP', 'UDP']);
 const ACCESS_PROTOCOLS = new Set(['HTTP', 'HTTPS']);
@@ -491,6 +552,74 @@ function checkServices(appId, services) {
   }
 }
 
+// ─── App selection ───────────────────────────────────────────────────────────
+
+// appsPrefix is the repository-relative path of APPS_DIR, with a trailing
+// slash, or null when the apps directory is outside this checkout.
+function appsPrefix() {
+  const relative = path.relative(HERE, APPS_DIR);
+  if (relative === '' || path.isAbsolute(relative) || relative.startsWith('..')) {
+    return null;
+  }
+  return `${relative.split(path.sep).join('/')}/`;
+}
+
+function gitPaths(args) {
+  const output = execFileSync('git', args, {
+    cwd: HERE,
+    encoding: 'utf8',
+    maxBuffer: 16 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  return output.split('\0').filter(Boolean);
+}
+
+function gitError(error) {
+  const stderr = error.stderr ? String(error.stderr).trim() : '';
+  return stderr || error.message;
+}
+
+// changedAppIds returns the existing app folders touched by uncommitted work
+// (--changed) or by everything since a ref (--since). Untracked files count:
+// a new app is exactly the case this mode is for.
+function changedAppIds(since, knownAppIds) {
+  const prefix = appsPrefix();
+  if (prefix === null) {
+    usageError('--changed and --since require the apps directory to be inside this repository');
+  }
+
+  let files;
+  try {
+    files = since !== null
+      ? gitPaths(['diff', '--name-only', '-z', since])
+      : gitPaths(['diff', '--name-only', '-z', 'HEAD']);
+    files.push(...gitPaths(['ls-files', '--others', '--exclude-standard', '-z']));
+  } catch (error) {
+    if (since === null) {
+      // Unborn branch: there is no HEAD to diff against yet.
+      try {
+        files = [
+          ...gitPaths(['diff', '--name-only', '-z', '--cached']),
+          ...gitPaths(['diff', '--name-only', '-z']),
+          ...gitPaths(['ls-files', '--others', '--exclude-standard', '-z']),
+        ];
+      } catch (fallbackError) {
+        usageError(`Cannot read git changes: ${gitError(fallbackError)}`);
+      }
+    } else {
+      usageError(`Cannot diff against "${since}": ${gitError(error)}`);
+    }
+  }
+
+  const touched = new Set();
+  for (const file of files) {
+    if (!file.startsWith(prefix)) continue;
+    const appId = file.slice(prefix.length).split('/')[0];
+    if (knownAppIds.has(appId)) touched.add(appId);
+  }
+  return [...touched].sort();
+}
+
 // ─── One app ─────────────────────────────────────────────────────────────────
 
 function checkApp(appId) {
@@ -548,23 +677,48 @@ function main() {
     process.exit(1);
   }
 
-  const appIds = entries
+  const knownAppIds = entries
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
-  const strayFiles = entries.filter((entry) => !entry.isDirectory() && !entry.name.startsWith('.'));
+  const known = new Set(knownAppIds);
 
-  if (strayFiles.length > 0) {
-    console.error(`${APPS_DIR} must contain only app folders; found ${strayFiles.map((entry) => entry.name).join(', ')}`);
-    process.exit(1);
+  let appIds;
+  let fullRun = false;
+
+  if (OPTIONS.apps.length > 0) {
+    const unknown = [...new Set(OPTIONS.apps)].filter((appId) => !known.has(appId));
+    if (unknown.length > 0) {
+      usageError(`Unknown app(s): ${unknown.join(', ')}`);
+    }
+    appIds = [...new Set(OPTIONS.apps)].sort();
+  } else if (OPTIONS.changed || OPTIONS.since !== null) {
+    appIds = changedAppIds(OPTIONS.since, known);
+    if (appIds.length === 0) {
+      console.log(OPTIONS.since !== null
+        ? `No apps changed since ${OPTIONS.since}.`
+        : 'No apps changed in the working tree.');
+      return;
+    }
+  } else {
+    fullRun = true;
+    appIds = knownAppIds;
+
+    const strayFiles = entries.filter((entry) => !entry.isDirectory() && !entry.name.startsWith('.'));
+    if (strayFiles.length > 0) {
+      console.error(`${APPS_DIR} must contain only app folders; found ${strayFiles.map((entry) => entry.name).join(', ')}`);
+      process.exit(1);
+    }
   }
+
   if (appIds.length === 0) {
     console.error(`No apps found in ${APPS_DIR}`);
     process.exit(1);
   }
 
   const width = String(appIds.length).length;
-  console.log(`Checking ${appIds.length} app(s) in ${APPS_DIR}${STRICT ? ' (strict)' : ''}\n`);
+  const scope = fullRun ? `${appIds.length} app(s)` : `${appIds.length} selected app(s)`;
+  console.log(`Checking ${scope} in ${APPS_DIR}${STRICT ? ' (strict)' : ''}\n`);
 
   for (const [index, appId] of appIds.entries()) {
     const warningsBefore = warnings.length;

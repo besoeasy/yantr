@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "check": "node check.js",
+    "check:app": "node check.js --app",
+    "check:changed": "node check.js --changed",
     "check:strict": "node check.js --strict"
   },
   "dependencies": {

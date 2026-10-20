@@ -207,9 +207,11 @@ volumes:
 
 `node check.js` checks every app folder in sorted order and stops at the first
 error. It covers the recipe shape, metadata lengths, developers, env
-generators, ports, and the compose rules in §5. `node check.js --strict` also
-fails on catalog debt the current apps predate (pinned images, an unquoted
-port, a hand-supplied token); new apps should pass strict mode.
+generators, ports, and the compose rules in §5. Use `--app <name>` (repeatable)
+for one app, `--changed` for apps touched by uncommitted work, or
+`--since <ref>` for a branch diff. `node check.js --strict` also fails on
+catalog debt the current apps predate (pinned images, an unquoted port, a
+hand-supplied token); new apps should pass strict mode.
 
 `core/apps/catalog_test.go` reads the real `apps/` tree and fails on:
 
