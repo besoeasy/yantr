@@ -915,8 +915,107 @@
             </p>
           </div>
 
+          <!-- The shelf of odd machines, drawn — the same one-stroke
+               grammar as the river plate in Made in India: hand-drawn
+               SVG, ours to edit, ink that belongs to the page. Hover a
+               machine (or its card) and the sketch lights up. -->
+          <figure class="weird-figure">
+            <div class="weird-scroll">
+            <svg
+              class="weird-plate"
+              viewBox="0 0 1240 330"
+              role="img"
+              aria-label="A line sketch of five unlikely machines lined up on the same shelf: a thumb-sized Radxa board, a Synology tower, a Pixel phone, a Raspberry Pi, and a 1U UniFi rack unit, all running off one rootless core."
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <!-- The shelf everything sits on -->
+              <path class="wd-shelf" d="M-20 258 H 1260" />
+
+              <!-- Radxa Zero 3W -->
+              <g class="weird-device" data-rig="radxa">
+                <text class="wd-label" x="115" y="140" text-anchor="middle">Radxa Zero 3W</text>
+                <text class="wd-label wd-label-tiny" x="115" y="156" text-anchor="middle">1 GB · microSD</text>
+                <path class="wd-lead" d="M115 166 V 204" />
+                <rect class="wd-body" x="65" y="208" width="100" height="38" rx="6" />
+                <circle class="wd-hole" cx="74" cy="217" r="2.5" />
+                <circle class="wd-hole" cx="156" cy="217" r="2.5" />
+                <circle class="wd-hole" cx="74" cy="237" r="2.5" />
+                <circle class="wd-hole" cx="156" cy="237" r="2.5" />
+                <rect class="wd-part" x="100" y="222" width="30" height="14" rx="2" />
+                <path class="wd-line" d="M97 229 H 90 M133 229 H 141 M115 222 V 218" />
+                <rect class="wd-part" x="169" y="228" width="11" height="18" rx="2" />
+                <path class="wd-line" d="M173 228 V 233" />
+              </g>
+
+              <!-- Synology NAS -->
+              <g class="weird-device" data-rig="synology">
+                <text class="wd-label" x="330" y="110" text-anchor="middle">Synology NAS</text>
+                <text class="wd-label wd-label-tiny" x="330" y="126" text-anchor="middle">Container Manager</text>
+                <path class="wd-lead" d="M330 136 V 142" />
+                <rect class="wd-body" x="290" y="146" width="80" height="100" rx="8" />
+                <rect class="wd-part" x="300" y="164" width="46" height="9" rx="2" />
+                <rect class="wd-part" x="300" y="182" width="46" height="9" rx="2" />
+                <circle class="wd-pin" cx="356" cy="168.5" r="1.6" />
+                <circle class="wd-pin" cx="356" cy="186.5" r="1.6" />
+                <circle class="wd-led" cx="330" cy="234" r="1.8" />
+              </g>
+
+              <!-- Google Pixel 9 -->
+              <g class="weird-device" data-rig="pixel">
+                <text class="wd-label" x="560" y="132" text-anchor="middle">Google Pixel 9</text>
+                <text class="wd-label wd-label-tiny" x="560" y="148" text-anchor="middle">Android · Termux</text>
+                <path class="wd-lead" d="M560 158 V 164" />
+                <rect class="wd-body" x="536" y="168" width="48" height="78" rx="10" />
+                <path class="wd-line" d="M542 182 H 578" />
+                <circle class="wd-pin" cx="548" cy="182" r="1.5" />
+                <circle class="wd-dot" cx="560" cy="214" r="6" />
+              </g>
+
+              <!-- Raspberry Pi 4B -->
+              <g class="weird-device" data-rig="pi4">
+                <text class="wd-label" x="800" y="110" text-anchor="middle">Raspberry Pi 4B</text>
+                <text class="wd-label wd-label-tiny" x="800" y="126" text-anchor="middle">2 GB RAM</text>
+                <path class="wd-lead" d="M800 136 V 196" />
+                <rect class="wd-body" x="740" y="208" width="120" height="38" rx="6" />
+                <rect class="wd-part" x="748" y="200" width="36" height="8" rx="2" />
+                <path class="wd-line" d="M753 200 V 195 M759 200 V 195 M765 200 V 195 M771 200 V 195 M777 200 V 195 M783 200 V 195" />
+                <rect class="wd-part" x="792" y="202" width="20" height="12" rx="2" />
+                <rect class="wd-part" x="822" y="218" width="14" height="12" rx="2" />
+                <rect class="wd-part" x="840" y="218" width="14" height="12" rx="2" />
+                <circle class="wd-pin" cx="775" cy="231" r="6" />
+              </g>
+
+              <!-- UniFi UDM Pro -->
+              <g class="weird-device" data-rig="udm">
+                <text class="wd-label" x="1040" y="110" text-anchor="middle">UniFi UDM Pro</text>
+                <text class="wd-label wd-label-tiny" x="1040" y="126" text-anchor="middle">UniFi OS · Root shell</text>
+                <path class="wd-lead" d="M1040 136 V 196" />
+                <rect class="wd-body" x="960" y="200" width="160" height="46" rx="4" />
+                <rect class="wd-part" x="970" y="210" width="28" height="16" rx="2" />
+                <path class="wd-line" d="M974 216 H 994 M974 221 H 990" />
+                <circle class="wd-led" cx="1022" cy="212" r="1.5" />
+                <circle class="wd-led" cx="1022" cy="220" r="1.5" />
+                <rect class="wd-part" x="1036" y="209" width="9" height="12" rx="1" />
+                <rect class="wd-part" x="1050" y="209" width="9" height="12" rx="1" />
+                <rect class="wd-part" x="1064" y="209" width="9" height="12" rx="1" />
+                <rect class="wd-part" x="1090" y="209" width="18" height="12" rx="1" />
+              </g>
+
+              <!-- One wire under everything -->
+              <path class="wd-wire" d="M1136 254 C 1096 296 950 302 790 298 C 646 295 470 312 320 306 C 234 302 172 308 112 302" />
+              <path class="wd-tick" d="M700 296 l7 4 l-7 4 M430 308 l7 4 l-7 4" />
+              <text class="wd-wire-label" x="640" y="322" text-anchor="middle" transform="rotate(-2 640 322)">One rootless core</text>
+            </svg>
+            </div>
+
+            <figcaption class="weird-figcap">
+              <span>The strangest shelf in the fleet — hover a machine, or its card.</span>
+              <span class="mono">five real installs · sketch, not to scale</span>
+            </figcaption>
+          </figure>
+
           <div class="weird-grid">
-            <div class="weird-card reveal">
+            <div class="weird-card reveal" data-rig="radxa">
               <div class="weird-top">
                 <span class="weird-icon">
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -933,7 +1032,7 @@
               <p class="weird-quote">The 140&nbsp;MB core on a board the size of a matchbox. My entire homelab weighs less than a chocolate bar.</p>
             </div>
 
-            <div class="weird-card reveal">
+            <div class="weird-card reveal" data-rig="synology">
               <div class="weird-top">
                 <span class="weird-icon">
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -950,7 +1049,7 @@
               <p class="weird-quote">It shipped here as a backup appliance and stayed on as the primary homelab.</p>
             </div>
 
-            <div class="weird-card reveal">
+            <div class="weird-card reveal" data-rig="pixel">
               <div class="weird-top">
                 <span class="weird-icon">
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -967,7 +1066,7 @@
               <p class="weird-quote">Retired from the pocket, promoted to the rack — the phone got a second life as a container host.</p>
             </div>
 
-            <div class="weird-card reveal">
+            <div class="weird-card reveal" data-rig="pi4">
               <div class="weird-top">
                 <span class="weird-icon">
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -983,7 +1082,7 @@
               <p class="weird-quote">The &ldquo;minimum specs&rdquo; card above is basically its biography. It never once asked for more.</p>
             </div>
 
-            <div class="weird-card reveal">
+            <div class="weird-card reveal" data-rig="udm">
               <div class="weird-top">
                 <span class="weird-icon">
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -1849,6 +1948,28 @@
         items.forEach((el, i) => {
           el.dataset.revealIndex = String(i);
           io.observe(el);
+        });
+      })();
+
+      // ── Field Reports sketch ↔ card sync ─────────────────────────
+      // Hovering a machine on the drawn shelf highlights its card, and
+      // hovering the card lights the machine up on the shelf — so the
+      // drawing and the grid behave like one interface.
+      (function weirdSync() {
+        const section = document.getElementById("weird-rigs");
+        if (!section) return;
+        const items = Array.from(section.querySelectorAll("[data-rig]"));
+        if (!items.length) return;
+        const byKey = {};
+        items.forEach((el) => {
+          const key = el.dataset.rig;
+          (byKey[key] = byKey[key] || []).push(el);
+        });
+        const set = (key, on) =>
+          (byKey[key] || []).forEach((el) => el.classList.toggle("is-hot", on));
+        items.forEach((el) => {
+          el.addEventListener("mouseenter", () => set(el.dataset.rig, true));
+          el.addEventListener("mouseleave", () => set(el.dataset.rig, false));
         });
       })();
 

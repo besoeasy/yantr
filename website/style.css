@@ -1357,7 +1357,7 @@ p code, li code, td code, .spec-sub code {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
-  margin-top: 3.5rem;
+  margin-top: 2.75rem;
   position: relative;
 }
 .weird-card {
@@ -1367,7 +1367,8 @@ p code, li code, td code, .spec-sub code {
   background: rgba(255, 255, 255, 0.04);
   transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
 }
-.weird-card:hover {
+.weird-card:hover,
+.weird-card.is-hot {
   transform: translateY(-4px);
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.22);
@@ -1391,6 +1392,150 @@ p code, li code, td code, .spec-sub code {
   background: var(--emerald-400);
   color: var(--black);
 }
+/* The drawn shelf — same grammar as the river plate in Made in
+   India: hand-drawn SVG that inherits the page's ink, fades off
+   both edges, and is labeled "sketch, not to scale". Here the ink
+   is the band's white-on-black instead of graphite-on-paper. */
+.weird-figure {
+  margin-top: 3.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 2.25rem;
+}
+.weird-plate {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Fade both ends so it reads as a drawing running off the page. */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.weird-figcap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+.weird-figcap .mono { font-family: var(--font-mono); }
+
+/* The sketch's ink tones */
+.wd-shelf {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-dasharray: 12 8;
+}
+.wd-body {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: rgba(255, 255, 255, 0.42);
+  stroke-width: 1.5;
+  transition: stroke 0.25s ease, fill 0.25s ease;
+}
+.wd-part {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.36);
+  stroke-width: 1.2;
+  transition: stroke 0.25s ease;
+}
+.wd-line {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.36);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  transition: stroke 0.25s ease;
+}
+.wd-hole { fill: rgba(255, 255, 255, 0.25); transition: fill 0.25s ease; }
+.wd-pin { fill: rgba(255, 255, 255, 0.3); transition: fill 0.25s ease; }
+.wd-led { fill: rgba(255, 255, 255, 0.4); transition: fill 0.25s ease; }
+.wd-dot { fill: var(--emerald-400); opacity: 0.85; }
+.wd-lead {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  transition: stroke 0.25s ease;
+}
+.wd-label {
+  fill: rgba(255, 255, 255, 0.55);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  transition: fill 0.25s ease;
+}
+.wd-label-tiny { font-size: 8.5px; letter-spacing: 0.14em; }
+.wd-wire {
+  fill: none;
+  stroke: rgba(52, 211, 153, 0.35);
+  stroke-width: 1.25;
+  stroke-dasharray: 5 6;
+  stroke-linecap: round;
+}
+.wd-tick {
+  fill: none;
+  stroke: rgba(52, 211, 153, 0.4);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+.wd-wire-label {
+  fill: rgba(52, 211, 153, 0.55);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Hover — in either direction, sketch or card — lifts the machine
+   and warms its ink up, like the river's accent strokes. */
+.weird-device {
+  transition: transform 0.3s ease;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.weird-device:hover,
+.weird-device.is-hot { transform: translateY(-5px); }
+.weird-device:hover .wd-body,
+.weird-device.is-hot .wd-body {
+  stroke: var(--emerald-400);
+  fill: rgba(52, 211, 153, 0.08);
+}
+.weird-device:hover .wd-part,
+.weird-device.is-hot .wd-part { stroke: rgba(255, 255, 255, 0.55); }
+.weird-device:hover .wd-line,
+.weird-device.is-hot .wd-line { stroke: rgba(255, 255, 255, 0.55); }
+.weird-device:hover .wd-hole,
+.weird-device.is-hot .wd-hole { fill: rgba(255, 255, 255, 0.6); }
+.weird-device:hover .wd-pin,
+.weird-device.is-hot .wd-pin { fill: rgba(255, 255, 255, 0.6); }
+.weird-device:hover .wd-led,
+.weird-device.is-hot .wd-led { fill: var(--emerald-400); }
+.weird-device:hover .wd-lead,
+.weird-device.is-hot .wd-lead { stroke: rgba(52, 211, 153, 0.45); }
+.weird-device:hover .wd-label,
+.weird-device.is-hot .wd-label { fill: var(--white); }
+.weird-device:hover .wd-label-tiny,
+.weird-device.is-hot .wd-label-tiny { fill: var(--emerald-300); }
+@media (max-width: 768px) {
+  /* The plate pans sideways instead of shrinking, like the river —
+     the labels are the point of the drawing. */
+  .weird-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; }
+  .weird-plate { width: 880px; max-width: none; }
+  .weird-scroll::-webkit-scrollbar { height: 4px; }
+  .weird-scroll::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 9999px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .weird-device,
+  .weird-device * { transition: none; }
+  .weird-device:hover,
+  .weird-device.is-hot { transform: none; }
+}
+
 .weird-card h3 {
   font-size: 0.98rem;
   font-weight: 800;
