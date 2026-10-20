@@ -27,6 +27,7 @@ website/apps.json
 website/apps
 website/developer
 website/github-data.json
+website/install.sh
 website/presence.json
 website/catalog
 
