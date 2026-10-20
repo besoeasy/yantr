@@ -918,23 +918,39 @@
           </div>
 
           <div id="fleet-content" class="hidden">
-            <!-- Stat cards: Nodes · RAM lowest / highest / average -->
+            <!-- Summary: how many machines, where, and how much RAM they run -->
             <div class="fleet-stats">
-              <div class="fleet-stat">
-                <span class="fleet-stat-label">Nodes</span>
-                <span class="fleet-stat-value"><span id="fleet-nodes">0</span></span>
+              <div class="fleet-stat fleet-stat-nodes">
+                <span class="fleet-stat-label">
+                  <span class="fleet-live-dot" aria-hidden="true"></span>
+                  Nodes
+                </span>
+                <span class="fleet-stat-value" id="fleet-nodes">0</span>
+                <span class="fleet-stat-note">reporting anonymously</span>
               </div>
+
               <div class="fleet-stat">
-                <span class="fleet-stat-label">RAM lowest</span>
-                <span class="fleet-stat-value"><span id="fleet-ram-min">—</span> <span class="fleet-stat-unit" id="fleet-ram-min-unit">GB</span></span>
+                <span class="fleet-stat-label">Countries</span>
+                <span class="fleet-stat-value" id="fleet-countries-count">0</span>
+                <span class="fleet-stat-note">across the map</span>
               </div>
-              <div class="fleet-stat">
-                <span class="fleet-stat-label">RAM highest</span>
-                <span class="fleet-stat-value"><span id="fleet-ram-max">—</span> <span class="fleet-stat-unit" id="fleet-ram-max-unit">GB</span></span>
-              </div>
-              <div class="fleet-stat">
-                <span class="fleet-stat-label">RAM average</span>
-                <span class="fleet-stat-value"><span id="fleet-ram-avg">—</span> <span class="fleet-stat-unit" id="fleet-ram-avg-unit">GB</span></span>
+
+              <div class="fleet-stat fleet-stat-ram">
+                <div class="fleet-stat-top">
+                  <span class="fleet-stat-label">RAM per node</span>
+                  <span class="fleet-stat-avg">
+                    avg <b id="fleet-ram-avg">—</b>
+                    <span id="fleet-ram-avg-unit">GB</span>
+                  </span>
+                </div>
+                <div class="fleet-ram-range">
+                  <span class="fleet-ram-bound"><b id="fleet-ram-min">—</b> <span id="fleet-ram-min-unit">GB</span></span>
+                  <span class="fleet-ram-track" aria-hidden="true">
+                    <span id="fleet-ram-marker" class="fleet-ram-marker"></span>
+                  </span>
+                  <span class="fleet-ram-bound"><b id="fleet-ram-max">—</b> <span id="fleet-ram-max-unit">GB</span></span>
+                </div>
+                <span class="fleet-stat-note">lowest to highest reported</span>
               </div>
             </div>
 
@@ -943,22 +959,34 @@
                 <h3>Countries</h3>
                 <div id="fleet-countries-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
                 <ul id="fleet-countries" class="fleet-list"></ul>
+                <p id="fleet-countries-foot" class="fleet-panel-foot"></p>
               </div>
               <div class="fleet-panel">
                 <h3>Operating systems</h3>
                 <div id="fleet-os-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
                 <ul id="fleet-os" class="fleet-list"></ul>
+                <p id="fleet-os-foot" class="fleet-panel-foot"></p>
               </div>
-              <div class="fleet-panel">
+            </div>
+
+            <div class="fleet-panel fleet-apps-panel">
+              <div class="fleet-panel-head">
                 <h3>Most installed apps</h3>
-                <div id="fleet-apps-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
-                <ul id="fleet-apps" class="fleet-list"></ul>
+                <span class="fleet-panel-tag">Top 5</span>
               </div>
+              <div id="fleet-apps-empty" class="fleet-empty">No recent pings in the ntfy cache yet.</div>
+              <ul id="fleet-apps" class="fleet-apps"></ul>
             </div>
 
             <p class="fleet-foot">
               <span id="fleet-footnote"></span>
-              <button id="fleet-refresh" class="fleet-refresh" type="button">Refresh live</button>
+              <button id="fleet-refresh" class="fleet-refresh" type="button">
+                <svg class="fleet-refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                  <path d="M21 3v6h-6" />
+                </svg>
+                Refresh live
+              </button>
             </p>
           </div>
         </div>
@@ -1505,21 +1533,36 @@
           if (el) el.textContent = value;
         };
         setText("fleet-nodes", stats.nodes ?? 0);
+
+        const countries = stats.countries || [];
+        const osList = stats.os || [];
+        const apps = stats.apps || [];
+        setText("fleet-countries-count", countries.length);
+
         const ram = stats.ram || {};
-        setText("fleet-ram-min", ram.min || "—");
-        setText("fleet-ram-max", ram.max || "—");
-        setText("fleet-ram-avg", ram.avg != null && !Number.isNaN(Number(ram.avg)) && ram.count > 0
-          ? Number(ram.avg).toFixed(1)
-          : "—");
+        const hasRam = ram.count > 0 && Number(ram.max) > 0;
+        const ramAvg = Number(ram.avg);
+        const hasAvg = hasRam && Number.isFinite(ramAvg);
+        setText("fleet-ram-min", hasRam ? ram.min : "—");
+        setText("fleet-ram-max", hasRam ? ram.max : "—");
+        setText("fleet-ram-avg", hasAvg ? ramAvg.toFixed(1) : "—");
         for (const suffix of ["min", "max", "avg"]) {
-          setText(`fleet-ram-${suffix}-unit`, ram.unit || "GB");
+          setText(`fleet-ram-${suffix}-unit`, hasRam ? ram.unit || "GB" : "");
+        }
+        const marker = document.getElementById("fleet-ram-marker");
+        if (marker) {
+          const min = Number(ram.min);
+          const max = Number(ram.max);
+          const spread = max - min;
+          const pct = hasAvg ? (spread > 0 ? ((ramAvg - min) / spread) * 100 : 50) : 50;
+          marker.style.left = `${Math.min(96, Math.max(4, pct))}%`;
         }
 
-        const barList = (items, max, barClass, label) => {
+        const barList = (items, max, barClass, label, leading) => {
           if (!items || items.length === 0) return "";
           return items.map((item) => `
             <li class="fleet-row">
-              ${item.logo ? `<img src="${fleetEsc(item.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ""}
+              ${leading ? leading(item) : ""}
               <span class="fleet-row-body">
                 <span class="fleet-row-top">
                   <span class="fleet-row-name">${fleetEsc(label(item))}</span>
@@ -1531,45 +1574,86 @@
           `).join("");
         };
 
-        const countries = stats.countries || [];
-        const osList = stats.os || [];
-        const apps = stats.apps || [];
         const maxOf = (items) => items.reduce((m, i) => Math.max(m, i.count || 0), 0) || 1;
+        const countryFlag = (code) => {
+          const upper = String(code || "").toUpperCase();
+          if (!/^[A-Z]{2}$/.test(upper) || upper === "??") return "🌐";
+          return String.fromCodePoint(...[...upper].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+        };
+        const osLabel = (name) => {
+          const text = String(name || "");
+          if (!text) return "Unknown";
+          const known = {
+            almalinux: "AlmaLinux",
+            arch: "Arch Linux",
+            archarm: "Arch Linux ARM",
+            bluefin: "Bluefin",
+            centos: "CentOS",
+            fedora: "Fedora",
+            garuda: "Garuda Linux",
+            manjaro: "Manjaro",
+            mint: "Linux Mint",
+            nixos: "NixOS",
+            opensuse: "openSUSE",
+            raspbian: "Raspbian",
+            rocky: "Rocky Linux",
+            ubuntu: "Ubuntu",
+          }[text.toLowerCase()];
+          return known || text.charAt(0).toUpperCase() + text.slice(1);
+        };
 
+        // The panel lists the ten busiest countries; the stat card above
+        // still counts every country in the feed.
+        const countryRows = countries.slice(0, 10);
         const countriesEl = document.getElementById("fleet-countries");
-        if (countriesEl) countriesEl.innerHTML = barList(countries, maxOf(countries), "fleet-bar-blue", (i) => i.name);
+        if (countriesEl) {
+          countriesEl.innerHTML = barList(countryRows, maxOf(countryRows), "fleet-bar-blue",
+            (i) => i.name,
+            (i) => `<span class="fleet-flag" aria-hidden="true">${countryFlag(i.code)}</span>`);
+          if (countries.length > countryRows.length) {
+            countriesEl.insertAdjacentHTML("beforeend",
+              `<li class="fleet-more">+${countries.length - countryRows.length} more</li>`);
+          }
+        }
         const osEl = document.getElementById("fleet-os");
-        if (osEl) osEl.innerHTML = barList(osList, maxOf(osList), "fleet-bar-green", (i) => i.name);
+        if (osEl) osEl.innerHTML = barList(osList, maxOf(osList), "fleet-bar-green", (i) => osLabel(i.name));
+
         const appsEl = document.getElementById("fleet-apps");
         if (appsEl) {
-          // Top 5 by installs, names only — no counts, no bars.
-          const topApps = apps.slice(0, 5).map((a) => {
+          appsEl.innerHTML = apps.slice(0, 5).map((a) => {
             const known = fleetAppIndex && fleetAppIndex[a.id];
-            return {
-              name: a.name,
-              logo: known && known.hasLogo
-                ? `./apps/${a.id}/logo.svg`
-                : `https://ui-avatars.com/api/?name=${encodeURIComponent(a.name)}&background=random&color=fff&bold=true`,
-            };
-          });
-          appsEl.innerHTML = topApps.map((a) => `
-            <li class="fleet-row">
-              <img src="${fleetEsc(a.logo)}" alt="" loading="lazy" onerror="this.style.display='none'" />
-              <span class="fleet-row-body">
-                <span class="fleet-row-top">
-                  <span class="fleet-row-name">${fleetEsc(a.name)}</span>
+            const logo = known && known.hasLogo ? `./apps/${a.id}/logo.svg` : "";
+            const initial = (a.name || "?").trim().charAt(0).toUpperCase() || "?";
+            const nodeWord = a.count === 1 ? "node" : "nodes";
+            return `
+              <li class="fleet-app">
+                <span class="fleet-app-logo">
+                  <span class="fleet-app-mono" aria-hidden="true">${fleetEsc(initial)}</span>
+                  ${logo ? `<img src="${fleetEsc(logo)}" alt="" loading="lazy" onerror="this.remove()" />` : ""}
                 </span>
-              </span>
-            </li>
-          `).join("");
+                <span class="fleet-app-meta">
+                  <span class="fleet-app-name">${fleetEsc(a.name)}</span>
+                  <span class="fleet-app-count">${a.count} ${nodeWord}</span>
+                </span>
+              </li>
+            `;
+          }).join("");
         }
 
         show("fleet-countries-empty", countries.length === 0);
         show("fleet-os-empty", osList.length === 0);
         show("fleet-apps-empty", apps.length === 0);
 
+        const nodeCount = Number(stats.nodes) || 0;
+        const shareNote = nodeCount > 0
+          ? `Share of ${nodeCount} reporting ${nodeCount === 1 ? "node" : "nodes"}.`
+          : "";
+        setText("fleet-countries-foot", shareNote);
+        setText("fleet-os-foot", shareNote);
+
         const when = stats.fetchedAt ? new Date(stats.fetchedAt).toLocaleString("en-US") : "just now";
-        setText("fleet-footnote", `Window: ${stats.window || "ntfy cache"}. Parsed ${stats.events ?? 0} events. Updated ${when}.`);
+        setText("fleet-footnote",
+          `Updated ${when} · ${stats.events ?? 0} events from the ${stats.window || "ntfy cache"}.`);
       }
 
       async function loadFleet({ live = false } = {}) {
