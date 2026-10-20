@@ -1451,6 +1451,13 @@ p code, li code, td code, .spec-sub code {
 .wd-pin { fill: rgba(255, 255, 255, 0.3); transition: fill 0.25s ease; }
 .wd-led { fill: rgba(255, 255, 255, 0.4); transition: fill 0.25s ease; }
 .wd-dot { fill: var(--emerald-400); opacity: 0.85; }
+/* Boot light: a tiny LED under the machine's belly. It stays dark
+   while the shelf is idle and blinks like a power LED while the
+   machine is hovered (or its card is). */
+.wd-boot,
+.wd-boot-glow { opacity: 0; transition: opacity 0.3s ease; }
+.wd-boot { fill: var(--emerald-400); }
+.wd-boot-glow { fill: none; stroke: var(--emerald-400); stroke-width: 1; }
 .wd-lead {
   fill: none;
   stroke: rgba(255, 255, 255, 0.16);
@@ -1521,6 +1528,23 @@ p code, li code, td code, .spec-sub code {
 .weird-device.is-hot .wd-label { fill: var(--white); }
 .weird-device:hover .wd-label-tiny,
 .weird-device.is-hot .wd-label-tiny { fill: var(--emerald-300); }
+.weird-device:hover .wd-boot,
+.weird-device.is-hot .wd-boot {
+  opacity: 1;
+  animation: boot-led 1.2s ease-in-out infinite;
+}
+.weird-device:hover .wd-boot-glow,
+.weird-device.is-hot .wd-boot-glow {
+  animation: boot-glow 1.2s ease-in-out infinite;
+}
+@keyframes boot-led {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+@keyframes boot-glow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.08; }
+}
 @media (max-width: 768px) {
   /* The plate pans sideways instead of shrinking, like the river —
      the labels are the point of the drawing. */
@@ -1534,6 +1558,16 @@ p code, li code, td code, .spec-sub code {
   .weird-device * { transition: none; }
   .weird-device:hover,
   .weird-device.is-hot { transform: none; }
+  .weird-device:hover .wd-boot,
+  .weird-device.is-hot .wd-boot {
+    animation: none;
+    opacity: 1;
+  }
+  .weird-device:hover .wd-boot-glow,
+  .weird-device.is-hot .wd-boot-glow {
+    animation: none;
+    opacity: 0.5;
+  }
 }
 
 .weird-card h3 {
