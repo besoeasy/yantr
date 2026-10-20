@@ -805,29 +805,8 @@
   },
   "appComments": {
     "anonymous": "anonym",
-    "connect": "Nostr-Signierer verbinden",
-    "connectHint": "Kommentare werden mit deinem eigenen Nostr-Schlüssel über eine Browser-Erweiterung signiert — dein Schlüssel erreicht Yantr nie.",
-    "connectedAs": "Signiert als {key}",
-    "developerBadge": "Entwickler",
-    "developerBadgeHint": "Dieser Kommentar ist mit einem Schlüssel signiert, den diese App in ihrem Katalogeintrag nennt.",
-    "empty": "Noch keine Kommentare. Verbinde deinen Signierer und hinterlasse den ersten.",
-    "emptyComment": "Schreibe zuerst etwas.",
-    "expiryNote": "Kommentare tragen einen NIP-40-Ablauf von fünf Jahren und sind für jeden lesbar, der diese Relays abfragt.",
-    "loadFailed": "Kein Relay erreichbar, daher gibt es keine Kommentare zu zeigen. Prüfe dein Netzwerk und versuche es erneut.",
     "loading": "Relays werden gefragt …",
-    "noSigner": "Kein Nostr-Signierer gefunden. Installiere eine NIP-07-Erweiterung wie Alby oder nos2x und versuche es erneut.",
-    "placeholder": "Wie läuft diese App bei dir?",
-    "post": "Kommentar senden",
-    "posting": "Wird gesendet …",
-    "postingAsDeveloper": "Du schreibst als Entwickler:in dieser App — dein Kommentar trägt das Abzeichen.",
-    "publishFailed": "Kein Relay hat den Kommentar angenommen. Versuche es gleich noch einmal.",
-    "published": "Veröffentlicht. Auf manchen Relays kann es einen Moment dauern.",
     "refresh": "Aktualisieren",
-    "relayStatus": "{reached} von {total} Relays haben geantwortet",
-    "signCancelled": "Das Signieren wurde in deiner Erweiterung abgebrochen.",
-    "signerError": "Dein Signierer hat abgelehnt. Verbinde erneut und versuche es noch einmal.",
-    "subtitle": "Community-Notizen, auf Nostr signiert und mit {tag} markiert. Sie liegen auf öffentlichen Relays, nicht auf diesem Host.",
-    "title": "Bewertungen & Kommentare",
-    "tooLong": "Höchstens {max} Zeichen."
+    "relayStatus": "{reached} von {total} Relays haben geantwortet"
   }
 }

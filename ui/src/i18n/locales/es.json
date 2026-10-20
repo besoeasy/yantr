@@ -807,29 +807,8 @@
   },
   "appComments": {
     "anonymous": "anónimo",
-    "connect": "Conectar firmante Nostr",
-    "connectHint": "Los comentarios se firman con tu propia clave Nostr mediante una extensión del navegador: tu clave nunca llega a Yantr.",
-    "connectedAs": "Firmando como {key}",
-    "developerBadge": "Desarrollador",
-    "developerBadgeHint": "Este comentario está firmado con una clave que esta aplicación acredita en su entrada del catálogo.",
-    "empty": "Aún no hay comentarios. Conecta tu firmante y deja el primero.",
-    "emptyComment": "Escribe algo primero.",
-    "expiryNote": "Los comentarios llevan una caducidad NIP-40 de cinco años y son públicos para cualquiera que lea estos relays.",
-    "loadFailed": "No se pudo alcanzar ningún relay, así que no hay comentarios que mostrar. Revisa tu red e inténtalo de nuevo.",
     "loading": "Preguntando a los relays…",
-    "noSigner": "No se encontró ningún firmante Nostr. Instala una extensión NIP-07 como Alby o nos2x e inténtalo de nuevo.",
-    "placeholder": "¿Cómo te va esta app?",
-    "post": "Publicar comentario",
-    "posting": "Publicando…",
-    "postingAsDeveloper": "Escribes como desarrollador de esta app: tu comentario llevará la insignia.",
-    "publishFailed": "Ningún relay aceptó el comentario. Inténtalo en un momento.",
-    "published": "Publicado. Puede tardar un momento en aparecer en todos los relays.",
     "refresh": "Actualizar",
-    "relayStatus": "{reached} de {total} relays respondieron",
-    "signCancelled": "Se canceló la firma en tu extensión.",
-    "signerError": "Tu firmante la rechazó. Vuelve a conectarlo e inténtalo de nuevo.",
-    "subtitle": "Notas de la comunidad firmadas en Nostr y etiquetadas con {tag}. Viven en relays públicos, no en este host.",
-    "title": "Reseñas y comentarios",
-    "tooLong": "Mantenlo por debajo de {max} caracteres."
+    "relayStatus": "{reached} de {total} relays respondieron"
   }
 }

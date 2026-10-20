@@ -234,31 +234,10 @@
     "developer": "Developer"
   },
   "appComments": {
-    "title": "Reviews & comments",
-    "subtitle": "Community notes signed on Nostr and tagged {tag}. They live on public relays, not on this host.",
     "loading": "Asking the relays...",
-    "empty": "No comments yet. Connect your signer and leave the first one.",
     "refresh": "Refresh",
-    "loadFailed": "No relay could be reached, so there are no comments to show. Check your network and try again.",
     "relayStatus": "{reached} of {total} relays answered",
-    "anonymous": "anonymous",
-    "developerBadge": "Developer",
-    "developerBadgeHint": "This comment is signed by a key this app credits in its catalog entry.",
-    "postingAsDeveloper": "You are posting as this app's developer — your comment carries the badge.",
-    "connect": "Connect Nostr signer",
-    "connectHint": "Comments are signed with your own Nostr key through a browser signer extension — your key never touches Yantr.",
-    "noSigner": "No Nostr signer found. Install a NIP-07 extension such as Alby or nos2x, then try again.",
-    "connectedAs": "Signing as {key}",
-    "placeholder": "How is this app running for you?",
-    "post": "Post comment",
-    "posting": "Posting...",
-    "published": "Published. It may take a moment to appear on every relay.",
-    "emptyComment": "Write something first.",
-    "tooLong": "Keep it under {max} characters.",
-    "signCancelled": "Signing was cancelled in your extension.",
-    "signerError": "Your signer refused. Reconnect and try again.",
-    "publishFailed": "No relay accepted the comment. Try again in a moment.",
-    "expiryNote": "Comments carry a NIP-40 expiry of five years and are public to anyone reading these relays."
+    "anonymous": "anonymous"
   },
   "developer": {
     "loading": "Loading developer…",

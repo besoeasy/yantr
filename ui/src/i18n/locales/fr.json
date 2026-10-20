@@ -807,29 +807,8 @@
   },
   "appComments": {
     "anonymous": "anonyme",
-    "connect": "Connecter le signataire Nostr",
-    "connectHint": "Les commentaires sont signés avec votre propre clé Nostr via une extension de navigateur — votre clé ne touche jamais Yantr.",
-    "connectedAs": "Signature en tant que {key}",
-    "developerBadge": "Développeur",
-    "developerBadgeHint": "Ce commentaire est signé par une clé que cette application crédite dans sa fiche catalogue.",
-    "empty": "Aucun commentaire pour l'instant. Connectez votre signataire et laissez le premier.",
-    "emptyComment": "Écrivez d'abord quelque chose.",
-    "expiryNote": "Les commentaires portent une expiration NIP-40 de cinq ans et sont publics pour quiconque interroge ces relais.",
-    "loadFailed": "Aucun relais n'a répondu, il n'y a donc aucun commentaire à afficher. Vérifiez votre réseau et réessayez.",
     "loading": "Interrogation des relais…",
-    "noSigner": "Aucun signataire Nostr trouvé. Installez une extension NIP-07 comme Alby ou nos2x, puis réessayez.",
-    "placeholder": "Comment cette application tourne-t-elle chez vous ?",
-    "post": "Publier le commentaire",
-    "posting": "Publication…",
-    "postingAsDeveloper": "Vous publiez en tant que développeur de cette application — votre commentaire porte le badge.",
-    "publishFailed": "Aucun relais n'a accepté le commentaire. Réessayez dans un instant.",
-    "published": "Publié. Cela peut mettre un moment à apparaître sur tous les relais.",
     "refresh": "Actualiser",
-    "relayStatus": "{reached} relais sur {total} ont répondu",
-    "signCancelled": "La signature a été annulée dans votre extension.",
-    "signerError": "Votre signataire a refusé. Reconnectez-vous et réessayez.",
-    "subtitle": "Notes de la communauté signées sur Nostr et étiquetées {tag}. Elles vivent sur des relais publics, pas sur cet hôte.",
-    "title": "Avis et commentaires",
-    "tooLong": "Restez sous {max} caractères."
+    "relayStatus": "{reached} relais sur {total} ont répondu"
   }
 }

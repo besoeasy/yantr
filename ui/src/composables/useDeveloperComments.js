@@ -22,9 +22,8 @@ import {
 
 // One account's app-store comments, for the developer page.
 //
-// The app's own thread (useAppComments) is app-shaped: it asks the relays for
-// notes on one per-app tag and trusts no author. This is author-shaped: it
-// asks for the account's kind-1 notes under the bare `yantr` scope and keeps
+// This one is author-shaped rather than app-shaped: it asks for the account's
+// kind-1 notes under the bare `yantr` scope and keeps
 // only the ones that name a per-app tag — so the list is every comment the
 // account left anywhere in the catalog, with the app id each one carries read
 // back out of the event for the page to map onto the catalog.
@@ -139,8 +138,8 @@ export function useDeveloperComments(developerKey) {
     fetchProfile();
   }
 
-  // One account, so a single-author kind-0 REQ — the same batched shape
-  // useAppComments uses for a whole thread's authors, just asked once. Fire
+  // One account, so a single-author kind-0 REQ — the batched shape the relay
+  // fan-out already uses, just asked once. Fire
   // and forget: a slow relay must never hold the comments hostage, and the
   // page already shows the key before the name resolves.
   async function fetchProfile() {

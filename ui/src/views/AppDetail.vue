@@ -7,9 +7,8 @@ import { expectApiSuccess } from "../composables/useApiResponse";
 import { useI18n } from "vue-i18n";
 import AppMetadata from "../components/AppMetadata.vue";
 import AppDeployForm from "../components/AppDeployForm.vue";
-import AppComments from "../components/AppComments.vue";
-import AppLayout from "../components/AppLayout.vue";
 import { apps } from "../utils/routes.js";
+import AppLayout from "../components/AppLayout.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -112,9 +111,6 @@ onMounted(async () => {
 
         <!-- Deployment Configuration -->
         <AppDeployForm :app="app" :containers="containers" />
-
-        <!-- Community reviews, signed on Nostr -->
-        <AppComments :app="app" :key="app.id" />
 
       </div>
   </AppLayout>

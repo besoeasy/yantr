@@ -807,29 +807,8 @@
   },
   "appComments": {
     "anonymous": "匿名",
-    "connect": "连接 Nostr 签名器",
-    "connectHint": "评论使用你自己的 Nostr 密钥通过浏览器扩展签名 — 你的密钥不会进入 Yantr。",
-    "connectedAs": "以 {key} 的身份签名",
-    "developerBadge": "开发者",
-    "developerBadgeHint": "这条评论由该应用在目录条目中署名的密钥签名。",
-    "empty": "还没有评论。连接签名器，留下第一条吧。",
-    "emptyComment": "请先写点什么。",
-    "expiryNote": "评论带有 NIP-40 的五年有效期，任何读取这些中继的人都能看到。",
-    "loadFailed": "无法连接任何中继，因此没有评论可显示。请检查网络后重试。",
     "loading": "正在询问中继…",
-    "noSigner": "未找到 Nostr 签名器。请安装 Alby 或 nos2x 等 NIP-07 扩展后重试。",
-    "placeholder": "这个应用在你这里跑得怎么样？",
-    "post": "发表评论",
-    "posting": "发布中…",
-    "postingAsDeveloper": "你正以该应用开发者的身份发言 — 评论会带上标记。",
-    "publishFailed": "没有中继接受这条评论。请稍后重试。",
-    "published": "已发布。在所有中继上出现可能需要一点时间。",
     "refresh": "刷新",
-    "relayStatus": "{total} 个中继中有 {reached} 个已响应",
-    "signCancelled": "签名在扩展中被取消。",
-    "signerError": "签名器拒绝了请求。请重新连接后再试。",
-    "subtitle": "在 Nostr 上签名并标记了 {tag} 的社区笔记。它们位于公共中继上，而不是这台主机。",
-    "title": "评价与评论",
-    "tooLong": "请控制在 {max} 个字符以内。"
+    "relayStatus": "{total} 个中继中有 {reached} 个已响应"
   }
 }
