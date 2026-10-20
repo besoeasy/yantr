@@ -3384,6 +3384,10 @@ p code, li code, td code, .spec-sub code {
   .hero-install { width: 100%; margin-top: 1.5rem; }
   .install-line { padding: 0.65rem 0.85rem; gap: 0.5rem; max-width: 100%; }
   .install-line .cmd { font-size: 0.8rem; gap: 0.45rem; }
+  /* Even the short command cannot fit one line on a phone screen; wrap it
+     (breaking inside the URL only when a whole token cannot fit) instead of
+     scrolling, so the whole command stays visible while reading. */
+  .install-line .cmd code { white-space: normal; overflow-wrap: anywhere; }
   .copy-btn-sm { padding: 0.4rem 0.7rem; font-size: 0.72rem; }
   .hero-install-note { font-size: 0.74rem; }
   /* Cards: reclaim horizontal space on narrow screens */

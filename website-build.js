@@ -11,6 +11,11 @@ const __dirname = path.dirname(__filename);
 
 const websiteDir = path.join(__dirname, 'website');
 const templatesDir = path.join(websiteDir, 'templates');
+// The hero one-liner is `curl -fsSL https://yantr.org/install.sh | bash`. Serving
+// the installer from the site's own domain keeps the command ~45 characters, which
+// fits one line in the hero install box even on phones, where the full jsdelivr
+// URL truncated past the visible area.
+const installerOutputPath = path.join(websiteDir, 'install.sh');
 const appsJsonPath = path.join(websiteDir, 'apps.json');
 const appsOutputDir = path.join(websiteDir, 'apps');
 const appsDir = path.join(__dirname, 'apps');
@@ -198,6 +203,11 @@ function buildAppsJson() {
   console.log(`📁 Output: ${appsJsonPath}`);
   console.log(`📦 Total apps: ${apps.length}`);
   console.log(`🏷️  Tags: ${output.meta.tags.length}`);
+
+  // `curl -fsSL https://yantr.org/install.sh | bash` — the hero one-liner needs
+  // the installer served by the same Pages site. Copy the root script in so the
+  // served copy can never drift from the repo one.
+  fs.copyFileSync(path.join(__dirname, 'install.sh'), installerOutputPath);
 }
 
 function fallbackLogoUrl(app) {
