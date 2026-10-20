@@ -57,7 +57,6 @@ const CACHE_VERSION = 1;
 // set of author names from ever colliding on the same key.
 export const NOSTR_SCOPE = {
   appComments: "app-comments",
-  developerComments: "developer-comments",
   reviewFeed: "review-feed",
   authorProfile: "author-profile",
   relaySet: "relay-set",

@@ -246,11 +246,6 @@
     "nostrCopy": "复制公钥",
     "nostrCopied": "已复制",
     "nostrQrLabel": "用于在 Nostr 上给 {name} 发私信的二维码",
-    "activity": "应用商店动态",
-    "activityHint": "该开发者在目录中应用下留下的评论，已在 Nostr 上签名。",
-    "activityEmpty": "暂无评论——在可达的中继上没有此账户签名的记录。",
-    "activityLoadFailed": "无法连接任何中继，因此没有动态可显示。请检查网络后重试。",
-    "activityUnknownApp": "不在此主机的目录中",
     "payments": {
       "title": "支持",
       "hint": "用钱包扫码，或复制地址。闪电通过 Lightning 地址支付，链上则直接付到比特币地址。",
@@ -798,11 +793,5 @@
     "title": "未找到页面",
     "hint": "{path} 处没有任何内容。",
     "backToDashboard": "返回仪表板"
-  },
-  "appComments": {
-    "anonymous": "匿名",
-    "loading": "正在询问中继…",
-    "refresh": "刷新",
-    "relayStatus": "{total} 个中继中有 {reached} 个已响应"
   }
 }

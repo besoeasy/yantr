@@ -246,11 +246,6 @@
     "nostrCopy": "Copiar clave pública",
     "nostrCopied": "Copiada",
     "nostrQrLabel": "Código QR que abre un mensaje directo con {name} en Nostr",
-    "activity": "Actividad en la tienda",
-    "activityHint": "Comentarios que este desarrollador ha dejado en las apps del catálogo, firmados en Nostr.",
-    "activityEmpty": "No hay comentarios registrados: nada firmado por esta cuenta en los relays que pudimos alcanzar.",
-    "activityLoadFailed": "No se pudo contactar ningún relay, así que no hay actividad que mostrar. Revisa tu red e inténtalo de nuevo.",
-    "activityUnknownApp": "No está en el catálogo de este host",
     "payments": {
       "title": "Apoyar",
       "hint": "Escanea con tu monedero o copia la dirección. Lightning pasa por una dirección Lightning; on-chain paga directamente a la dirección de Bitcoin.",
@@ -798,11 +793,5 @@
     "title": "Página no encontrada",
     "hint": "No hay nada en {path}.",
     "backToDashboard": "Volver al panel"
-  },
-  "appComments": {
-    "anonymous": "anónimo",
-    "loading": "Preguntando a los relays…",
-    "refresh": "Actualizar",
-    "relayStatus": "{reached} de {total} relays respondieron"
   }
 }
