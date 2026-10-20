@@ -120,7 +120,14 @@ watch(pickedKey, (next) => {
           {{ t("home.dailyDeveloper.title") }}
         </p>
 
-        <div class="mt-3 flex items-center gap-4">
+        <!-- The whole identity row is one control into the local developer
+             page: name, avatar and npub are the same target, so none of them
+             should be a dead end. The external client link stays a separate
+             affordance at the bottom of the card. -->
+        <button
+          @click="viewDeveloper"
+          class="mt-3 flex w-full items-center gap-4 text-left"
+        >
           <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
             <img
               v-if="avatarUrl"
@@ -134,17 +141,14 @@ watch(pickedKey, (next) => {
             </span>
           </div>
           <div class="min-w-0">
-            <button
-              @click="viewDeveloper"
-              class="block max-w-full truncate text-left text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70 yantra-text-primary"
-            >
+            <span class="block max-w-full truncate text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70">
               {{ displayName }}
-            </button>
+            </span>
             <p :title="pickedKey" class="mt-0.5 truncate font-mono text-[11px] yantra-text-secondary">
               {{ npubShort }}
             </p>
           </div>
-        </div>
+        </button>
 
         <div class="mt-3 flex items-baseline gap-1.5">
           <span class="text-xl font-bold tabular-nums yantra-text-primary">
