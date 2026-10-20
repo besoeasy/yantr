@@ -203,15 +203,57 @@ volumes:
 
 ## 7. Validation
 
-### Automated
+### `check.js`
 
-`node check.js` checks every app folder in sorted order and stops at the first
-error. It covers the recipe shape, metadata lengths, developers, env
-generators, ports, and the compose rules in §5. Use `--app <name>` (repeatable)
-for one app, `--changed` for apps touched by uncommitted work, or
-`--since <ref>` for a branch diff. `node check.js --strict` also fails on
-catalog debt the current apps predate (pinned images, an unquoted port, a
-hand-supplied token); new apps should pass strict mode.
+`check.js` is the fast, static app validator. It does not start Podman or pull
+images: it reads the recipe and checks it against this file. Apps are visited
+one at a time in sorted order, and the first hard error stops the run with the
+app name, the broken rule and the compose path.
+
+Run it from the repository root:
+
+| Command | Scope |
+| --- | --- |
+| `node check.js` | every app folder, sorted |
+| `node check.js --app my-app` | only `apps/my-app`; repeatable |
+| `node check.js --changed` | apps touched by staged, unstaged or untracked files |
+| `node check.js --since origin/main` | apps changed since a Git ref |
+| `node check.js --strict` | the same scope, with warnings treated as errors |
+
+The same modes are available as `npm run check`,
+`npm run check:app -- my-app`, `npm run check:changed` and
+`npm run check:strict`. Exit status is `0` when everything passed, `1` when an
+app fails, and `2` for a bad flag or an unusable Git selection.
+
+What it enforces:
+
+- **Folder** — `compose.yml` exists and the folder contains nothing else except
+  the optional `logo.svg`.
+- **Recipe** — YAML parses; `x-yantr.name` is present; `tags` has 3–5 unique
+  entries; `short_description` is 50–100 characters; `description` is 200–300;
+  `usecases` has at least two entries; `website` is an http(s) URL.
+- **Developers** — every entry is a real `npub1…` key, including the bech32
+  checksum.
+- **Env generators** — every rule has a positive length and a known charset.
+- **Ports** — each entry has a valid port, protocol, label and an existing
+  `service`; `show: true` is only allowed on `HTTP` / `HTTPS`; an app that
+  publishes ports must show at least one, except the allow-listed apps with no
+  UI (`mariadb`, `mongodb`, `samba`); diagnostic labels stay work ports.
+- **Compose** — a service may not use `build:`; volumes are named (the
+  `${HOST_PODMAN_SOCKET}` socket is the one exception); ports may not be fixed
+  mappings (`"8080:80"`), they use auto assignment like `"8080"`; no `yantr.*`
+  labels are written by hand.
+
+Warnings cover rules the current catalog predates. They do not fail a normal
+run: a pinned or non-`:latest` image, an unquoted numeric compose port, a
+`${VAR}` with no default and no generator (for example a token the user must
+supply), or an unused generator. `--strict` turns each into an error, so a new
+app should pass that mode.
+
+`check.js` is the quick fail-fast pass. The Go tests below run catalog-wide;
+both must pass before an app is added.
+
+### Go catalog tests
 
 `core/apps/catalog_test.go` reads the real `apps/` tree and fails on:
 
