@@ -26,10 +26,12 @@ format, the rules for writing one, and §8 — nothing else.
 ```
 apps/<app-name>/
 ├── compose.yml   # required — the whole app definition
-└── logo.svg      # optional — square, ≥256×256, auto-detected
+└── logo.svg      # optional — square SVG with a viewBox, auto-detected
 ```
 
 Not allowed: `info.json`, `Dockerfile`, `entrypoint.sh`, or any build context.
+A logo with no `viewBox`/`width`/`height` or a non-square shape still renders,
+so `check.js` warns about it rather than failing the app.
 
 ---
 
@@ -39,33 +41,33 @@ Not allowed: `info.json`, `Dockerfile`, `entrypoint.sh`, or any build context.
 
 | Key | Type | Rule |
 | --- | --- | --- |
-| `name` | string | App name. |
-| `tags` | list | 3–5 tags. |
+| `name` | string | Display name, free-form (`Open WebUI`); the folder is the id. |
+| `tags` | list | 3–5 tags; prefer ones the catalog already uses. |
 | `short_description` | string | 50–100 chars. |
 | `description` | string | 200–300 chars, written as a YAML `>` block. |
-| `usecases` | list | At least 2. |
+| `usecases` | list | 2–5 entries. |
 | `website` | string | Prefer the project's source code repo; second preference is its website. |
 
 ### Optional
 
 | Key | Type | Rule |
 | --- | --- | --- |
-| `notes` | list | Post-deploy hints shown to the user. |
+| `notes` | list | Post-deploy hints shown to the user; at most 6. |
 | `developers` | list | Nostr `npub1…` public keys — see below. |
 | `env_generators` | map | `VAR: {length, charset}`, charset ∈ `alnum` `hex` `numeric` `alpha` `base64url` `alnum_symbols`. |
-| `ports` | list | `{port, protocol, show, label, service}`, protocol ∈ `HTTP` `HTTPS` `TCP` `UDP`. |
+| `ports` | list | `{port, protocol, show, label, service}`; `protocol` ∈ `HTTP` `HTTPS` `TCP` `UDP` and is required. |
 
-Flat arrays (`tags`, `usecases`, `notes`, `developers`) always use flow
-sequences, never block sequences:
-
-```yaml
-tags: [tools, utility, self-hosted, homelab, podman]
-```
+Lists may be written as flow sequences (`[a, b]`) or block sequences; pick
+whichever reads better for the entry length.
 
 ### `env_generators`
 
-Every `${VAR}` in the compose file that has no default must have a matching
-`env_generators` entry — otherwise it deploys empty.
+Every `${VAR}` in the compose file that has no default should have a matching
+`env_generators` entry, or the deploy form has to supply the value. `check.js`
+warns rather than fails, because some values are deliberately typed by the
+user (`TUNNEL_TOKEN`) while a secret that must not be blank (`ADMIN_PASSWORD`)
+needs a generator. An entry that is never referenced is warned about too, so a
+renamed variable does not leave a generator behind.
 
 ### `ports`
 
@@ -78,7 +80,13 @@ x-yantr:
 ```
 
 `service` must name a service that exists in the same file; a dangling one is
-dropped at parse time.
+dropped at parse time. `protocol` is required on every entry — it does not
+default to TCP.
+
+The list is display metadata, not derived from the compose file: `check.js`
+does not compare the two, so keep a declared port and its `ports:` entry in
+step by hand. An entry repeated for the same port, protocol and service is
+rejected.
 
 ### `developers` — crediting an app's author
 
@@ -92,8 +100,12 @@ x-yantr:
 
 - An entry is strictly an `npub1…` key.
 - Never an `nsec1…` private key, a `note1…` event id, an `nprofile1…`, or a
-  `nostr:` prefix.
-- Anything that is not a valid key is dropped when the catalog loads.
+  `nostr:` prefix. The loader still tolerates a legacy `nprofile1…` or
+  `nostr:`-prefixed entry when it reads an older record, but a recipe must not
+  use either form.
+- Anything that is not a valid key is dropped when the catalog loads;
+  `check.js` rejects it outright, so a typo does not silently uncredit someone.
+- The same key twice in one recipe is rejected; list one entry per account.
 - Entries are deduplicated on the **decoded** pubkey, not the spelling — the
   same key written in two cases is one developer.
 - Credit the **upstream author of the software**, not whoever wrote the recipe.
@@ -149,7 +161,9 @@ such apps are allow-listed there deliberately.
 
 1. **Named Podman volumes only** — never bind mounts (rootless SELinux labeling
    requires it).
-2. **`:latest` only** — never pin a version tag.
+2. **Any maintained tag** — `:latest` or a pinned release. Pinning a database's
+   major version (`postgres:16-alpine`) is a data-compatibility decision, not
+   debt; `check.js` requires an image but does not judge its tag.
 3. **Prebuilt images only** — never `build:`.
 4. **Auto port assignment only** (`"8080"`) — never explicit mapping
    (`"8080:8080"`), even when the app normally wants a fixed host port.
@@ -230,25 +244,31 @@ What it enforces:
 - **Folder** — `compose.yml` exists and the folder contains nothing else except
   the optional `logo.svg`.
 - **Recipe** — YAML parses; `x-yantr.name` is present; `tags` has 3–5 unique
-  entries; `short_description` is 50–100 characters; `description` is 200–300;
-  `usecases` has at least two entries; `website` is an http(s) URL.
-- **Developers** — every entry is a real `npub1…` key, including the bech32
-  checksum.
+  entries; `short_description` is 50–100 characters; `description` is 200–300
+  characters and a folded `>` block; `usecases` has 2–5 entries; `notes` has at
+  most 6; `website` is an http(s) URL.
+- **Unknown keys** — any key outside the `x-yantr` vocabulary is reported, so a
+  typo such as `short_desc:` or `env_generator:` does not silently disappear.
+- **Developers** — every entry is a real `npub1…` key with a valid bech32
+  checksum, and the same account is not listed twice.
 - **Env generators** — every rule has a positive length and a known charset.
-- **Ports** — each entry has a valid port, protocol, label and an existing
-  `service`; `show: true` is only allowed on `HTTP` / `HTTPS`; an app that
-  publishes ports must show at least one, except the allow-listed apps with no
-  UI (`mariadb`, `mongodb`, `samba`); diagnostic labels stay work ports.
-- **Compose** — a service may not use `build:`; volumes are named (the
-  `${HOST_PODMAN_SOCKET}` socket is the one exception); ports may not be fixed
-  mappings (`"8080:80"`), they use auto assignment like `"8080"`; no `yantr.*`
-  labels are written by hand.
+- **Ports** — each entry has a valid port, a required protocol, a label and an
+  existing `service`; the same port/protocol/service is not listed twice;
+  `show: true` is only allowed on `HTTP` / `HTTPS`; an app that publishes ports
+  must show at least one, except the allow-listed apps with no UI (`mariadb`,
+  `mongodb`, `samba`); diagnostic labels stay work ports.
+- **Compose** — a service has an image and may not use `build:`; volumes are
+  named (the `${HOST_PODMAN_SOCKET}` socket is the one exception); ports may not
+  be fixed mappings (`"8080:80"`), they use auto assignment like `"8080"`; no
+  `yantr.*` labels are written by hand.
 
-Warnings cover rules the current catalog predates. They do not fail a normal
-run: a pinned or non-`:latest` image, an unquoted numeric compose port, a
-`${VAR}` with no default and no generator (for example a token the user must
-supply), or an unused generator. `--strict` turns each into an error, so a new
-app should pass that mode.
+Warnings cover rules the current catalog still misses. They do not fail a
+normal run: a tag used by no other app (a one-off category or a near-synonym),
+a key outside the `x-yantr` vocabulary, a `${VAR}` with no default and no
+generator (for example a token the user must supply), an unused generator, an
+unquoted numeric compose port, or a logo that declares no dimensions or a
+non-square shape. `--strict` turns each into an error, so a new app should pass
+that mode.
 
 `check.js` is the quick fail-fast pass. The Go tests below run catalog-wide;
 both must pass before an app is added.
@@ -266,10 +286,16 @@ both must pass before an app is added.
 Databases and file shares are allow-listed as legitimately having no access
 port. A new one must be added there deliberately, not by accident.
 
+The Go tests inspect structure only (ports, developers, `build:`). Recipe text
+— tags, lengths, the `>` block, unknown keys — is `check.js`'s job.
+
 ### Manual
 
-- Flat arrays use flow sequences, not block sequences.
 - `notes` read well in the deploy form.
+- `usecases` stay short enough to scan.
+- A one-off tag is sometimes right (a genuinely new category); when it is not,
+  reuse an existing spelling instead of adding a synonym (`downloads`, not
+  `download`).
 
 ---
 

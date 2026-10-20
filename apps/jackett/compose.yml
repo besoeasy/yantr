@@ -3,10 +3,11 @@ x-yantr:
   tags: [ media, tools, utility, torrent, download ]
   short_description: API bridge that provides torrent indexer functionality to PVR
     apps like Sonarr and Radarr.
-  description: Jackett is an API bridge for PVR apps (Sonarr, Radarr) that queries
+  description: >
+    Jackett is an API bridge for PVR apps (Sonarr, Radarr) that queries
     multiple torrent trackers and returns standardized results. It supports
-    hundreds of public and private trackers, handles authentication, and exposes
-    Torznab endpoints so your apps need only one integration.
+    hundreds of public and private trackers, handles authentication, and
+    exposes Torznab endpoints so your apps need only one integration.
   usecases:
     [
       Enable automated media downloading by connecting Jackett to

@@ -3,10 +3,11 @@ x-yantr:
   tags: [ feed, productivity, rss, news, reader ]
   short_description: Self-hosted RSS/Atom feed aggregator with multi-user support
     and powerful filtering.
-  description: FreshRSS is a self-hosted RSS/Atom aggregator for reading and
-    organizing news. It supports multiple users, filtering and search, OPML
-    import/export, media playback for podcasts/videos, and extensions—offering a
-    privacy-friendly replacement for hosted feed services.
+  description: >
+    FreshRSS is a self-hosted RSS/Atom aggregator for reading and organizing
+    news. It supports multiple users, filtering and search, OPML
+    import/export, media playback for podcasts/videos, and extensions—offering
+    a privacy-friendly replacement for hosted feed services.
   usecases:
     [
       Aggregate all your favorite blogs and news sources into one private

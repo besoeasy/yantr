@@ -2,10 +2,11 @@ x-yantr:
   name: Plex
   tags: [ media, streaming, movies, tv, entertainment ]
   short_description: Organize and stream personal media libraries to Plex clients at home or remotely.
-  description: Plex Media Server organizes your video, music, and photo
-    collections and streams them to all of your screens (mobile, TV, web). It
-    supports rich metadata, automatic fetching of posters, summaries, and
-    subtitles. A Plex account may be required for some premium features.
+  description: >
+    Plex Media Server organizes your video, music, and photo collections and
+    streams them to all of your screens (mobile, TV, web). It supports rich
+    metadata, automatic fetching of posters, summaries, and subtitles. A Plex
+    account may be required for some premium features.
   usecases:
     [
       Stream your movie and TV show collection.,

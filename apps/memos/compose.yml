@@ -3,10 +3,11 @@ x-yantr:
   tags: [ productivity, tools, notes, social, self-hosted ]
   short_description: Lightweight, self-hosted note-taking app with a clean
     social-media-style interface.
-  description: Memos is a lightweight, self-hosted note-taking app with a
-    feed-style interface. It supports Markdown, tagging, search, file
-    attachments, and public sharing—ideal for journaling, quick notes, and
-    minimal-setup personal knowledge capture.
+  description: >
+    Memos is a lightweight, self-hosted note-taking app with a feed-style
+    interface. It supports Markdown, tagging, search, file attachments, and
+    public sharing—ideal for journaling, quick notes, and minimal-setup
+    personal knowledge capture.
   usecases:
     [
       "Daily journaling with a clean, distraction-free interface.",

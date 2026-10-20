@@ -3,8 +3,9 @@ x-yantr:
   tags: [ utility, tools, storage, files, self-hosted ]
   short_description: High-performance S3-compatible object storage for building
     scalable storage solutions.
-  description: MinIO is a high-performance, S3-compatible object storage server
-    for private cloud, backups, and datasets. It supports distributed erasure
+  description: >
+    MinIO is a high-performance, S3-compatible object storage server for
+    private cloud, backups, and datasets. It supports distributed erasure
     coding, IAM, replication, versioning, encryption, and an administrative
     console—compatible with S3 clients and Kubernetes deployments.
   usecases:

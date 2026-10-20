@@ -3,10 +3,11 @@ x-yantr:
   tags: [ storage, sync, files, productivity, self-hosted ]
   short_description: Fast, reliable file syncing and sharing platform for
     self-hosted team collaboration.
-  description: Seafile is a self-hosted file sync and share platform with
-    efficient storage, versioning, and user permissions. It supports desktop and
-    mobile sync clients, team libraries, and built-in web previews while keeping
-    all data private on your infrastructure.
+  description: >
+    Seafile is a self-hosted file sync and share platform with efficient
+    storage, versioning, and user permissions. It supports desktop and mobile
+    sync clients, team libraries, and built-in web previews while keeping all
+    data private on your infrastructure.
   usecases:
     [
       "Sync documents and media across devices using Seafile's efficient delta

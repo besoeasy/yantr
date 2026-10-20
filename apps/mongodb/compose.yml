@@ -3,10 +3,11 @@ x-yantr:
   tags: [ database, nosql, documents, backend, self-hosted ]
   short_description: Popular NoSQL document database with flexible JSON-like
     documents and powerful querying.
-  description: MongoDB is a NoSQL document database using flexible JSON-like
-    documents and dynamic schemas. It supports ad-hoc queries, indexing,
-    aggregation, replication, and sharding—making it suitable for modern web
-    apps, mobile backends, and analytics that require flexible data models.
+  description: >
+    MongoDB is a NoSQL document database using flexible JSON-like documents
+    and dynamic schemas. It supports ad-hoc queries, indexing, aggregation,
+    replication, and sharding—making it suitable for modern web apps, mobile
+    backends, and analytics that require flexible data models.
   usecases:
     [
       "Store application data for Node.js, Python, or other modern

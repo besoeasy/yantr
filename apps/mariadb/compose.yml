@@ -3,10 +3,11 @@ x-yantr:
   tags: [ database, storage, utility, self-hosted, homelab ]
   short_description: Fast, open-source MySQL-compatible database with enhanced
     features and better performance.
-  description: MariaDB is an open-source, MySQL-compatible relational database
-    server. It supports multiple storage engines, JSON and GIS features, and
-    offers improved performance and additional features used by apps like
-    WordPress and Nextcloud—serving as a drop-in MySQL replacement.
+  description: >
+    MariaDB is an open-source, MySQL-compatible relational database server. It
+    supports multiple storage engines, JSON and GIS features, and offers
+    improved performance and additional features used by apps like WordPress
+    and Nextcloud—serving as a drop-in MySQL replacement.
   usecases:
     [
       "Run the database backend for Nextcloud, WordPress, or other PHP

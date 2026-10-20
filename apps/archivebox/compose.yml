@@ -3,10 +3,11 @@ x-yantr:
   tags: [ tools, archiving, bookmarks, web, utility ]
   short_description: Self-hosted internet archiving solution for saving web pages,
     bookmarks, and content.
-  description: ArchiveBox is a self-hosted internet archiving solution to save web
-    pages, bookmarks, and content offline. Supports HTML, PDF, screenshots,
-    WARC, and text formats. Import from browsers, Pocket, Pinboard or RSS feeds
-    then browse your archive through the web UI.
+  description: >
+    ArchiveBox is a self-hosted internet archiving solution to save web pages,
+    bookmarks, and content offline. Supports HTML, PDF, screenshots, WARC, and
+    text formats. Import from browsers, Pocket, Pinboard or RSS feeds then
+    browse your archive through the web UI.
   usecases:
     [
       Archive bookmarks and web pages to preserve content before it disappears

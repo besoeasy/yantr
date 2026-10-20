@@ -3,10 +3,11 @@ x-yantr:
   tags: [ productivity, tools, automation, workflow, self-hosted ]
   short_description: Powerful workflow automation platform with 400+ integrations
     and no-code automation builder.
-  description: n8n is a self-hosted workflow automation platform with a visual
-    no-code builder and 400+ integrations. It supports webhooks, scheduled
-    triggers, error handling, and complex logic—useful for automating
-    notifications, data sync, backups, reporting, and AI-enhanced workflows.
+  description: >
+    n8n is a self-hosted workflow automation platform with a visual no-code
+    builder and 400+ integrations. It supports webhooks, scheduled triggers,
+    error handling, and complex logic—useful for automating notifications,
+    data sync, backups, reporting, and AI-enhanced workflows.
   usecases:
     [
       Automate notifications by connecting services - get Slack alerts when

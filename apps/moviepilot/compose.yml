@@ -3,8 +3,9 @@ x-yantr:
   tags: [ media, automation, downloader, nas, self-hosted ]
   short_description: NAS media automation for subscribing, downloading, and
     organizing movies and TV shows.
-  description: MoviePilot is a NAS-focused media automation tool for subscribing
-    to and automatically downloading movies and TV shows. It handles search,
+  description: >
+    MoviePilot is a NAS-focused media automation tool for subscribing to and
+    automatically downloading movies and TV shows. It handles search,
     downloading via qBittorrent/Transmission/rTorrent, renaming and organizing
     media, and syncing with media servers like Jellyfin and Plex.
   usecases:

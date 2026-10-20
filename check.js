@@ -88,6 +88,25 @@ const APP_FILES = new Set(['compose.yml', 'logo.svg']);
 const HOST_SOCKET = '${HOST_PODMAN_SOCKET}';
 const CONTAINER_SOCKET = '/var/run/docker.sock';
 
+// The whole x-yantr vocabulary. Anything else is a typo that the loader
+// would silently ignore, so it is reported instead of deploying without it.
+const X_YANTR_KEYS = new Set([
+  'name',
+  'tags',
+  'short_description',
+  'description',
+  'usecases',
+  'website',
+  'notes',
+  'developers',
+  'env_generators',
+  'ports',
+]);
+
+const TAG_RANGE = { min: 3, max: 5 };
+const MAX_USECASES = 5;
+const MAX_NOTES = 6;
+
 // Apps that genuinely publish no browser-reachable surface. Mirrors the
 // allow-list in core/apps/catalog_test.go; add to both deliberately.
 const NO_ACCESS_APPS = new Set(['mariadb', 'mongodb', 'samba']);
@@ -120,9 +139,10 @@ function fail(appId, message) {
 
 // A soft issue is a contract violation the existing catalog still carries.
 // Default mode records it; --strict makes it stop the run like any other error.
-function warn(appId, message) {
+// `extra` tags the warning so the summary can group a whole class of them.
+function warn(appId, message, extra = {}) {
   if (STRICT) fail(appId, message);
-  warnings.push({ appId, message });
+  warnings.push({ appId, message, ...extra });
 }
 
 // ─── App folder ──────────────────────────────────────────────────────────────
@@ -144,9 +164,70 @@ function checkFiles(appId, appDir) {
   }
 }
 
+// ─── Logo ────────────────────────────────────────────────────────────────────
+
+// An SVG scales, so its viewBox decides the shape the dashboard renders. A
+// missing viewBox/width/height or a non-square pair is warning-level: the logo
+// still displays, but stretched or cropped.
+function checkLogo(appId, appDir) {
+  const logoPath = path.join(appDir, 'logo.svg');
+  if (!fs.existsSync(logoPath)) return;
+
+  let source;
+  try {
+    source = fs.readFileSync(logoPath, 'utf8');
+  } catch (error) {
+    fail(appId, `cannot read logo.svg: ${error.message}`);
+  }
+
+  const root = source.match(/<svg\b[^>]*>/i);
+  if (!root) {
+    fail(appId, 'logo.svg has no <svg> root element');
+  }
+
+  const attribute = (name) => {
+    const match = root[0].match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i'));
+    return match ? match[1].trim() : null;
+  };
+
+  const sizes = [];
+  const viewBox = attribute('viewBox');
+  if (viewBox !== null) {
+    const parts = viewBox.split(/[\s,]+/).map(Number);
+    if (parts.length !== 4 || parts.some((part) => !Number.isFinite(part))) {
+      warn(appId, `logo.svg viewBox "${viewBox}" is not four numbers; its shape cannot be read`);
+    } else {
+      sizes.push({ source: 'viewBox', width: parts[2], height: parts[3] });
+    }
+  }
+
+  const width = attribute('width');
+  const height = attribute('height');
+  if (width !== null && height !== null) {
+    const parsedWidth = parseFloat(width);
+    const parsedHeight = parseFloat(height);
+    if (Number.isFinite(parsedWidth) && Number.isFinite(parsedHeight)) {
+      sizes.push({ source: 'width/height', width: parsedWidth, height: parsedHeight });
+    }
+  }
+
+  if (sizes.length === 0) {
+    warn(appId, 'logo.svg declares no viewBox or width/height; its shape cannot be checked');
+    return;
+  }
+
+  for (const size of sizes) {
+    if (size.width <= 0 || size.height <= 0) {
+      warn(appId, `logo.svg ${size.source} is not a positive size (${size.width}×${size.height})`);
+    } else if (Math.abs(size.width - size.height) > 0.5) {
+      warn(appId, `logo.svg ${size.source} is ${size.width}×${size.height}; logos are square`);
+    }
+  }
+}
+
 // ─── x-yantr metadata ────────────────────────────────────────────────────────
 
-function checkMetadata(appId, meta) {
+function checkMetadata(appId, meta, tagCounts) {
   if (!isObject(meta)) {
     fail(appId, 'compose.yml has no x-yantr block');
   }
@@ -154,16 +235,31 @@ function checkMetadata(appId, meta) {
     fail(appId, 'x-yantr.name is required');
   }
 
-  if (!Array.isArray(meta.tags) || meta.tags.length < 3 || meta.tags.length > 5) {
-    fail(appId, `x-yantr.tags must contain 3–5 tags (got ${Array.isArray(meta.tags) ? meta.tags.length : 'none'})`);
+  for (const key of Object.keys(meta)) {
+    if (!X_YANTR_KEYS.has(key)) {
+      warn(appId, `x-yantr.${key} is not a known key; it is ignored at deploy time`);
+    }
+  }
+
+  if (!Array.isArray(meta.tags) || meta.tags.length < TAG_RANGE.min || meta.tags.length > TAG_RANGE.max) {
+    fail(appId, `x-yantr.tags must contain ${TAG_RANGE.min}–${TAG_RANGE.max} tags (got ${Array.isArray(meta.tags) ? meta.tags.length : 'none'})`);
   }
   for (const tag of meta.tags) {
     if (typeof tag !== 'string' || text(tag) === '') {
       fail(appId, 'x-yantr.tags contains an empty or non-string entry');
     }
   }
-  if (new Set(meta.tags.map((tag) => tag.trim())).size !== meta.tags.length) {
+  const uniqueTags = new Set(meta.tags.map((tag) => tag.trim()));
+  if (uniqueTags.size !== meta.tags.length) {
     fail(appId, 'x-yantr.tags contains a duplicate');
+  }
+  // A tag nobody else uses is usually a near-synonym of an existing one
+  // ("download" next to "downloads"). It is not fatal, so the catalog can
+  // settle its vocabulary over time, but every run surfaces it.
+  for (const tag of uniqueTags) {
+    if (tagCounts.get(tag) === 1) {
+      warn(appId, `tag "${tag}" is used by no other app; prefer a shared tag unless the category is deliberate`, { kind: 'tag', tag });
+    }
   }
 
   const shortDescription = text(meta.short_description);
@@ -176,8 +272,8 @@ function checkMetadata(appId, meta) {
     fail(appId, `x-yantr.description must be a 200–300 character string (got ${description.length})`);
   }
 
-  if (!Array.isArray(meta.usecases) || meta.usecases.length < 2) {
-    fail(appId, 'x-yantr.usecases must contain at least 2 entries');
+  if (!Array.isArray(meta.usecases) || meta.usecases.length < 2 || meta.usecases.length > MAX_USECASES) {
+    fail(appId, `x-yantr.usecases must contain 2–${MAX_USECASES} entries (got ${Array.isArray(meta.usecases) ? meta.usecases.length : 'none'})`);
   }
   for (const usecase of meta.usecases) {
     if (typeof usecase !== 'string' || text(usecase) === '') {
@@ -193,11 +289,42 @@ function checkMetadata(appId, meta) {
     if (!Array.isArray(meta.notes)) {
       fail(appId, 'x-yantr.notes must be a list');
     }
+    if (meta.notes.length > MAX_NOTES) {
+      fail(appId, `x-yantr.notes must contain at most ${MAX_NOTES} entries (got ${meta.notes.length})`);
+    }
     for (const note of meta.notes) {
       if (typeof note !== 'string' || text(note) === '') {
         fail(appId, 'x-yantr.notes contains an empty or non-string entry');
       }
     }
+  }
+}
+
+// ─── Description style ───────────────────────────────────────────────────────
+
+// metaSource returns the lines indented under the top-level x-yantr key, so a
+// style rule can be checked against the recipe's source and not only its
+// parsed value (which no longer remembers whether it was plain or folded).
+function metaSource(source) {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => /^x-yantr:\s*(?:#.*)?$/.test(line));
+  if (start === -1) return '';
+
+  const block = [];
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (line.trim() !== '' && !line.startsWith(' ')) break;
+    block.push(line);
+  }
+  return block.join('\n');
+}
+
+// A folded block is required because the description is one paragraph that
+// the UI renders as one; a plain scalar or a literal block makes the wrapping
+// show up as newlines in some clients.
+function checkDescriptionStyle(appId, source) {
+  if (!/^\s{2}description:[ \t]*>[-+]?[ \t]*$/m.test(metaSource(source))) {
+    fail(appId, 'x-yantr.description must be a folded > block, not a plain string or | block');
   }
 }
 
@@ -224,23 +351,24 @@ function bech32HrpExpand(hrp) {
   return [...high, 0, ...low];
 }
 
-// decodeNpub mirrors the part of core/nip19 that x-yantr.developers relies on:
+// decodeNpub returns the canonical lowercase key when value is a valid npub,
+// or null. It mirrors the part of core/nip19 that x-yantr.developers relies on:
 // a bech32 checksum, a 32-byte payload, and nothing else. A typo is an error,
 // not a key the catalog silently drops.
 function decodeNpub(value) {
-  if (typeof value !== 'string') return false;
+  if (typeof value !== 'string') return null;
 
   const key = value.trim();
   const lower = key.toLowerCase();
-  if (lower !== key && lower.toUpperCase() !== key) return false;
+  if (lower !== key && lower.toUpperCase() !== key) return null;
 
   const separator = lower.lastIndexOf('1');
-  if (separator < 1 || lower.slice(0, separator) !== 'npub') return false;
-  if (separator + 7 > lower.length) return false;
+  if (separator < 1 || lower.slice(0, separator) !== 'npub') return null;
+  if (separator + 7 > lower.length) return null;
 
   const data = [...lower.slice(separator + 1)].map((char) => BECH32_CHARSET.indexOf(char));
-  if (data.some((valueIndex) => valueIndex === -1)) return false;
-  if (bech32Polymod([...bech32HrpExpand('npub'), ...data]) !== 1) return false;
+  if (data.some((valueIndex) => valueIndex === -1)) return null;
+  if (bech32Polymod([...bech32HrpExpand('npub'), ...data]) !== 1) return null;
 
   const words = data.slice(0, -6);
   let accumulator = 0;
@@ -254,8 +382,8 @@ function decodeNpub(value) {
       bytes.push((accumulator >> bits) & 0xff);
     }
   }
-  if (bits >= 5 || ((accumulator << (8 - bits)) & 0xff) !== 0) return false;
-  return bytes.length === 32;
+  if (bits >= 5 || ((accumulator << (8 - bits)) & 0xff) !== 0) return null;
+  return bytes.length === 32 ? lower : null;
 }
 
 function checkDevelopers(appId, developers) {
@@ -263,10 +391,17 @@ function checkDevelopers(appId, developers) {
   if (!Array.isArray(developers)) {
     fail(appId, 'x-yantr.developers must be a list of npub keys');
   }
-  for (const developer of developers) {
-    if (typeof developer !== 'string' || !decodeNpub(developer)) {
+
+  const seen = new Map();
+  for (const [index, developer] of developers.entries()) {
+    const key = decodeNpub(developer);
+    if (key === null) {
       fail(appId, `x-yantr.developers entry ${JSON.stringify(developer)} is not a valid npub key`);
     }
+    if (seen.has(key)) {
+      fail(appId, `x-yantr.developers entries ${seen.get(key) + 1} and ${index + 1} are the same account; credit it once`);
+    }
+    seen.set(key, index);
   }
 }
 
@@ -332,6 +467,7 @@ function checkPorts(appId, ports, services) {
   }
 
   let shown = 0;
+  const seenPorts = new Map();
   for (const [index, port] of ports.entries()) {
     const at = `x-yantr.ports[${index}]`;
 
@@ -342,7 +478,10 @@ function checkPorts(appId, ports, services) {
       fail(appId, `${at}.port must be an integer between 1 and 65535`);
     }
 
-    const protocol = text(port.protocol).toUpperCase() || 'TCP';
+    const protocol = text(port.protocol).toUpperCase();
+    if (protocol === '') {
+      fail(appId, `${at}.protocol is required (${[...PORT_PROTOCOLS].join(', ')})`);
+    }
     if (!PORT_PROTOCOLS.has(protocol)) {
       fail(appId, `${at}.protocol must be one of ${[...PORT_PROTOCOLS].join(', ')} (got ${JSON.stringify(port.protocol)})`);
     }
@@ -359,6 +498,12 @@ function checkPorts(appId, ports, services) {
     if (!Object.hasOwn(services, service)) {
       fail(appId, `${at} references service "${service}", which does not exist in compose.yml`);
     }
+
+    const identity = `${port.port}/${protocol}/${service}`;
+    if (seenPorts.has(identity)) {
+      fail(appId, `${at} duplicates x-yantr.ports[${seenPorts.get(identity)}] (${identity})`);
+    }
+    seenPorts.set(identity, index);
 
     if (port.show !== undefined && typeof port.show !== 'boolean') {
       fail(appId, `${at}.show must be true or false`);
@@ -382,30 +527,12 @@ function checkPorts(appId, ports, services) {
 
 // ─── Compose services ────────────────────────────────────────────────────────
 
-// imageTag returns the explicit tag, or null when the reference has none
-// (Docker then implies :latest). A registry host:port is not a tag.
-function imageTag(image) {
-  if (image.includes('@')) return null;
-  const lastSlash = image.lastIndexOf('/');
-  const lastColon = image.lastIndexOf(':');
-  return lastColon > lastSlash ? image.slice(lastColon + 1) : null;
-}
-
+// The tag is deliberately not judged: `:latest` and a pinned release are both
+// legitimate (a database pin is usually a data-compatibility decision). Only a
+// missing image is an error.
 function checkImage(appId, serviceName, image) {
   if (typeof image !== 'string' || image.trim() === '') {
     fail(appId, `service "${serviceName}" has no image`);
-  }
-
-  if (image.includes('@')) {
-    warn(appId, `service "${serviceName}" pins image ${image}; the catalog uses :latest`);
-    return;
-  }
-
-  const tag = imageTag(image);
-  if (tag === null) {
-    warn(appId, `service "${serviceName}" image ${image} has no explicit tag; add :latest`);
-  } else if (tag !== 'latest') {
-    warn(appId, `service "${serviceName}" image ${image} uses :${tag}; the catalog uses :latest`);
   }
 }
 
@@ -620,9 +747,36 @@ function changedAppIds(since, knownAppIds) {
   return [...touched].sort();
 }
 
+// ─── Catalog-wide tag frequency ──────────────────────────────────────────────
+
+// One-off tags are judged against the whole catalog, so the frequency map is
+// built before any single app is checked. A recipe that cannot be read is
+// skipped here: it fails its own check with a better message.
+function catalogTagCounts(appIds) {
+  const counts = new Map();
+
+  for (const appId of appIds) {
+    let meta;
+    try {
+      const compose = parse(fs.readFileSync(path.join(APPS_DIR, appId, 'compose.yml'), 'utf8'));
+      meta = isObject(compose) ? compose['x-yantr'] : null;
+    } catch {
+      continue;
+    }
+    if (!isObject(meta) || !Array.isArray(meta.tags)) continue;
+
+    const tags = new Set(meta.tags.filter((tag) => typeof tag === 'string').map((tag) => tag.trim()));
+    for (const tag of tags) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+
+  return counts;
+}
+
 // ─── One app ─────────────────────────────────────────────────────────────────
 
-function checkApp(appId) {
+function checkApp(appId, tagCounts) {
   const appDir = path.join(APPS_DIR, appId);
   const composePath = path.join(appDir, 'compose.yml');
 
@@ -646,11 +800,13 @@ function checkApp(appId) {
   }
 
   const meta = compose['x-yantr'];
-  checkMetadata(appId, meta);
+  checkMetadata(appId, meta, tagCounts);
+  checkDescriptionStyle(appId, source);
   checkServices(appId, compose.services);
   checkPorts(appId, meta.ports, compose.services);
   checkDevelopers(appId, meta.developers);
   checkEnvGenerators(appId, meta.env_generators, source);
+  checkLogo(appId, appDir);
 }
 
 // ─── Runner ──────────────────────────────────────────────────────────────────
@@ -720,10 +876,12 @@ function main() {
   const scope = fullRun ? `${appIds.length} app(s)` : `${appIds.length} selected app(s)`;
   console.log(`Checking ${scope} in ${APPS_DIR}${STRICT ? ' (strict)' : ''}\n`);
 
+  const tagCounts = catalogTagCounts(knownAppIds);
+
   for (const [index, appId] of appIds.entries()) {
     const warningsBefore = warnings.length;
     try {
-      checkApp(appId);
+      checkApp(appId, tagCounts);
     } catch (error) {
       console.error(`\n✖ ${formatError(error)}`);
       process.exit(1);
@@ -736,10 +894,25 @@ function main() {
   console.log(`\nAll ${appIds.length} app(s) passed.`);
 
   if (warnings.length > 0) {
+    const general = warnings.filter((warning) => warning.kind !== 'tag');
+    const oneOffTags = warnings.filter((warning) => warning.kind === 'tag');
+
     console.log(`\n${warnings.length} warning(s) — existing catalog debt, not hard failures:`);
-    for (const warning of warnings) {
+    for (const warning of general) {
       console.log(`  ! ${warning.appId}: ${warning.message}`);
     }
+
+    // Tags are one warning each and there are many, so they are listed as a
+    // vocabulary to trim rather than one line per app.
+    if (oneOffTags.length > 0) {
+      console.log(`\n  One-off tags (${oneOffTags.length}) — each used by exactly one app;`);
+      console.log('  reuse an existing tag, or keep it when the category is deliberate:');
+      const pairs = oneOffTags.map((warning) => `${warning.tag} (${warning.appId})`);
+      for (let index = 0; index < pairs.length; index += 3) {
+        console.log(`    ${pairs.slice(index, index + 3).join(' · ')}`);
+      }
+    }
+
     console.log('\nRun with --strict to treat warnings as errors.');
   }
 }

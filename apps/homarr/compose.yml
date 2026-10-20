@@ -3,10 +3,11 @@ x-yantr:
   tags: [ dashboard, tools, monitoring, utility, homepage ]
   short_description: Customizable dashboard for self-hosted services with
     drag-and-drop widgets and integrations.
-  description: Homarr is a modern dashboard for self-hosted services with a
-    drag-and-drop layout, built-in integrations for many apps, and a large icon
-    library. It shows service status, quick access links, and optional system
-    metrics for a polished homelab start page.
+  description: >
+    Homarr is a modern dashboard for self-hosted services with a drag-and-drop
+    layout, built-in integrations for many apps, and a large icon library. It
+    shows service status, quick access links, and optional system metrics for
+    a polished homelab start page.
   usecases:
     [
       Create a unified homepage showing all your self-hosted apps with live

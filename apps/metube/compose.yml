@@ -2,10 +2,11 @@ x-yantr:
   name: MeTube
   tags: [ video, downloads, yt-dlp, media, self-hosted ]
   short_description: Web UI for yt-dlp to download videos and audio from supported sites.
-  description: MeTube is a web frontend for yt-dlp that lets you download videos
-    and audio from YouTube and many other sites. It offers a URL queue, format
-    selection, playlist support, download progress, and simple queue management
-    via a clean web UI.
+  description: >
+    MeTube is a web frontend for yt-dlp that lets you download videos and
+    audio from YouTube and many other sites. It offers a URL queue, format
+    selection, playlist support, download progress, and simple queue
+    management via a clean web UI.
   usecases:
     [
       Download YouTube videos for offline viewing.,

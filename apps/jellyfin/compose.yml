@@ -3,10 +3,11 @@ x-yantr:
   tags: [ media, entertainment, streaming, video, music ]
   short_description: Free and open-source media server for streaming movies, TV
     shows, music, and photos to any device.
-  description: Jellyfin is a free, open-source media server for streaming and
-    organizing movies, TV, music, and photos. It supports automatic metadata,
-    subtitles, live TV/DVR, hardware transcoding, user management, and broad
-    client support—fully local with no premium tiers or telemetry.
+  description: >
+    Jellyfin is a free, open-source media server for streaming and organizing
+    movies, TV, music, and photos. It supports automatic metadata, subtitles,
+    live TV/DVR, hardware transcoding, user management, and broad client
+    support—fully local with no premium tiers or telemetry.
   usecases:
     [
       Create a personal Netflix-like streaming service for your movie and TV

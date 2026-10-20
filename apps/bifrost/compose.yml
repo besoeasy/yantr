@@ -2,9 +2,10 @@ x-yantr:
   name: Bifrost
   tags: [ai, llm, gateway, self-hosted, podman]
   short_description: High-performance AI gateway with a web UI and OpenAI-compatible API.
-  description: Bifrost is a self-hosted AI gateway that routes requests across
-    many model providers through a single OpenAI-compatible API. It includes a
-    built-in web UI for configuration, monitoring, failover, load balancing, and
+  description: >
+    Bifrost is a self-hosted AI gateway that routes requests across many model
+    providers through a single OpenAI-compatible API. It includes a built-in
+    web UI for configuration, monitoring, failover, load balancing, and
     caching so teams can manage LLM traffic from one place.
   usecases:
     [

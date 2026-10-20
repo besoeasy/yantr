@@ -3,10 +3,11 @@ x-yantr:
   tags: [ monitoring, tools, dashboard, utility, self-hosted ]
   short_description: Cross-platform system monitoring tool showing CPU, memory,
     disk, network, and Docker stats.
-  description: Glances is a cross-platform system monitor that shows real-time
-    CPU, memory, disk, network, process list, Docker stats, and hardware
-    sensors. It includes a web UI, alerts, InfluxDB export for historical data,
-    and auto-discovery for container metrics.
+  description: >
+    Glances is a cross-platform system monitor that shows real-time CPU,
+    memory, disk, network, process list, Docker stats, and hardware sensors.
+    It includes a web UI, alerts, InfluxDB export for historical data, and
+    auto-discovery for container metrics.
   usecases:
     [
       Monitor server performance in real-time through the web interface.,
