@@ -122,12 +122,6 @@
       "noAddress": "No hay dirección Lightning publicada — síguelo y envíale en su lugar un agradecimiento en Nostr.",
       "follow": "Seguir en Nostr"
     },
-    "latestReview": {
-      "title": "Últimas reseñas",
-      "empty": "Aún no hay reseñas. Abre una app del catálogo y deja la primera.",
-      "byAuthor": "Ver el perfil de Nostr del autor o de la autora",
-      "by": "por"
-    },
     "systemToolsCard": {
       "management": "Gestión",
       "systemOverview": "Resumen del sistema",

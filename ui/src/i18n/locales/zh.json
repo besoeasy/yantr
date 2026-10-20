@@ -122,12 +122,6 @@
       "noAddress": "未公开 Lightning 地址——不妨在 Nostr 上关注该账号，并送上一句感谢。",
       "follow": "在 Nostr 上关注"
     },
-    "latestReview": {
-      "title": "最新评价",
-      "empty": "还没有任何评价。打开目录中的应用，留下第一条吧。",
-      "byAuthor": "查看作者的 Nostr 主页",
-      "by": "由"
-    },
     "systemToolsCard": {
       "management": "管理",
       "systemOverview": "系统概览",
