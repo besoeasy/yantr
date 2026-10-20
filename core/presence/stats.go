@@ -207,14 +207,13 @@ func ParseEvent(raw string) (Event, bool) {
 // website_mirror_test.go fails when the two drift apart.
 const fleetListLimit = 12
 
-// Aggregate reduces events into dashboard stats. Latest presence wins per node.
+// Aggregate reduces presence events into dashboard stats. Latest presence wins per node.
 func Aggregate(events []Event) *FleetStats {
 	type nodeSnap struct {
 		evt Event
 		ts  int64
 	}
 	nodes := map[string]nodeSnap{}
-	installs := map[string]int{}
 
 	for _, evt := range events {
 		switch evt.Event {
@@ -226,10 +225,6 @@ func Aggregate(events []Event) *FleetStats {
 			prev, ok := nodes[id]
 			if !ok || evt.TS >= prev.ts {
 				nodes[id] = nodeSnap{evt: evt, ts: evt.TS}
-			}
-		case "install":
-			if evt.App != "" {
-				installs[evt.App]++
 			}
 		}
 	}
@@ -263,12 +258,7 @@ func Aggregate(events []Event) *FleetStats {
 		}
 	}
 
-	// Install pings still count when a node has not sent presence yet.
-	for app, n := range installs {
-		if appCounts[app] == 0 {
-			appCounts[app] = n
-		}
-	}
+
 
 	ram := RAMStats{Unit: "GB"}
 	if len(ramValues) > 0 {

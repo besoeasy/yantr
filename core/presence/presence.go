@@ -161,52 +161,6 @@ func Ping(event string, fields map[string]interface{}) {
 	}()
 }
 
-// TrackInstall sends an install event.
-func TrackInstall(appID string) {
-	shared.Log("info", fmt.Sprintf("[presence] tracking install: app=%s", appID))
-	Ping("install", map[string]interface{}{"app": appID})
-}
-
-// TrackUpdatesForContainers tracks update events for specific container names.
-func TrackUpdatesForContainers(containerNames []string) {
-	if !isEnabled || len(containerNames) == 0 {
-		return
-	}
-	go func() {
-		wanted := map[string]bool{}
-		for _, name := range containerNames {
-			wanted[strings.TrimPrefix(name, "/")] = true
-		}
-
-		ctrs, err := podman.ContainerList(context.Background(), container.ListOptions{All: true})
-		if err != nil {
-			shared.Log("warn", "[presence] TrackUpdatesForContainers: failed to list containers: "+err.Error())
-			return
-		}
-
-		appIDs := map[string]bool{}
-		for _, c := range ctrs {
-			var name string
-			if len(c.Names) > 0 {
-				name = strings.TrimPrefix(c.Names[0], "/")
-			}
-			// Identity: native compose project -> base app ID.
-			appID := ""
-			if proj := compose.ComposeProjectLabel(c.Labels); proj != "" {
-				appID = shared.GetBaseAppID(proj)
-			}
-			if name != "" && wanted[name] && appID != "" {
-				appIDs[appID] = true
-			}
-		}
-
-		for appID := range appIDs {
-			shared.Log("info", fmt.Sprintf("[presence] tracking update: app=%s", appID))
-			Ping("update", map[string]interface{}{"app": appID})
-		}
-	}()
-}
-
 // SendPresence sends a daily presence event containing system info.
 func SendPresence(version string) {
 	if !isEnabled {

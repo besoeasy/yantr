@@ -180,8 +180,7 @@ function sortedList(counts, limit, toEntry) {
   return limit > 0 ? out.slice(0, limit) : out;
 }
 
-// Mirrors Aggregate in core/presence/stats.go: latest presence wins per node,
-// and an install ping still counts when its node has not reported yet.
+// Mirrors Aggregate in core/presence/stats.go: latest presence wins per node.
 //
 // appNames maps an app id to the name to show for it; an id it does not cover
 // keeps the id as its name. Both callers pass a name map, never catalog
@@ -189,7 +188,6 @@ function sortedList(counts, limit, toEntry) {
 // one before calling.
 export function aggregateFleet(events, appNames) {
   const nodes = new Map();
-  const installs = {};
   for (const evt of events) {
     if (evt.event === 'presence') {
       const id =
@@ -197,8 +195,6 @@ export function aggregateFleet(events, appNames) {
         `fp:${evt.country || ''}|${evt.os || ''}|${evt.arch || ''}|${evt.cores || 0}|${evt.ram_gb || 0}|${evt.v || ''}`;
       const prev = nodes.get(id);
       if (!prev || (evt.ts || 0) >= prev.ts) nodes.set(id, { evt, ts: evt.ts || 0 });
-    } else if (evt.event === 'install' && evt.app) {
-      installs[evt.app] = (installs[evt.app] || 0) + 1;
     }
   }
 
@@ -215,9 +211,6 @@ export function aggregateFleet(events, appNames) {
     for (const app of evt.apps || []) {
       if (app) appCounts[app] = (appCounts[app] || 0) + 1;
     }
-  }
-  for (const [app, n] of Object.entries(installs)) {
-    if (!appCounts[app]) appCounts[app] = n;
   }
 
   const ram = { min: 0, max: 0, avg: 0, unit: 'GB', count: ramValues.length };

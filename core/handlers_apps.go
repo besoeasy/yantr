@@ -5,7 +5,6 @@ import (
 	"core/apps"
 	"core/compose"
 	"core/podman"
-	"core/presence"
 	"core/shared"
 	"core/supervisor"
 	"fmt"
@@ -219,6 +218,4 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 		"appId":   body.AppID, "output": stdout, "warnings": stderr,
 		"temporary": body.ExpiresIn > 0,
 	})
-
-	presence.TrackInstall(body.AppID)
 }

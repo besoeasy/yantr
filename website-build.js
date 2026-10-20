@@ -430,7 +430,7 @@ async function fetchGitHubData() {
 
 // ── Fleet presence snapshot ──────────────────────────────────────
 // Same feed the app UI shows on its Fleet page (core/presence/stats.go):
-// anonymous presence/install pings aggregated from the public ntfy topic.
+// anonymous presence pings aggregated from the public ntfy topic.
 // The snapshot is written to website/presence.json so yantr.org renders
 // instantly; the page then refreshes live from ntfy in the browser.
 //

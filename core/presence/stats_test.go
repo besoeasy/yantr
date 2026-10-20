@@ -24,7 +24,6 @@ func TestAggregateLatestPresenceWins(t *testing.T) {
 		{Event: "presence", Node: "n1", TS: 1, Country: "US", OS: "Debian", RAMGB: 8, Apps: []string{"jellyfin"}},
 		{Event: "presence", Node: "n1", TS: 2, Country: "DE", OS: "Debian", RAMGB: 32, Apps: []string{"immich", "jellyfin"}},
 		{Event: "presence", Node: "n2", TS: 2, Country: "DE", OS: "Unraid", RAMGB: 16, Apps: []string{"nextcloud"}},
-		{Event: "install", App: "paperless-ngx"},
 	}
 	stats := Aggregate(events)
 	if stats.Nodes != 2 {
@@ -40,7 +39,7 @@ func TestAggregateLatestPresenceWins(t *testing.T) {
 	for _, app := range stats.Apps {
 		found[app.ID] = app.Count
 	}
-	if found["jellyfin"] != 1 || found["immich"] != 1 || found["nextcloud"] != 1 || found["paperless-ngx"] != 1 {
+	if found["jellyfin"] != 1 || found["immich"] != 1 || found["nextcloud"] != 1 {
 		t.Fatalf("apps=%+v", stats.Apps)
 	}
 	body, _ := json.Marshal(stats)
