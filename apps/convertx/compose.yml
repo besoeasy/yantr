@@ -8,11 +8,9 @@ x-yantr:
     offering a simple web interface for uploads and conversions and supporting
     common codecs and formats without external services.
   usecases:
-    [
-      Convert video, audio, and images between supported formats.,
-      Extract audio from video files for offline listening.,
-      Process documents and archives locally through the web interface.
-    ]
+    - Convert video, audio, and images between supported formats.
+    - Extract audio from video files for offline listening.
+    - Process documents and archives locally through the web interface.
   website: https://github.com/C4illin/ConvertX
   notes: [ Multiple format support, Local processing only, Web interface for easy use ]
 

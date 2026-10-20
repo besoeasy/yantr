@@ -8,13 +8,9 @@ x-yantr:
     pastebins, and custom apps through REST. Local CIDs may disappear after
     garbage collection; use pinning or external retention when durability matters.
   usecases:
-    [
-      Use as a self-hosted image and file host for your apps without relying
-        on third-party cloud storage.,
-      Host and retrieve IPFS-addressed files through a self-hosted node, while
-        accounting for unpinned local content.,
-      Drop it into any tool or platform via the simple REST API in minutes.
-    ]
+    - Use as a self-hosted image and file host for your apps without relying on third-party cloud storage.
+    - Host and retrieve IPFS-addressed files through a self-hosted node, while accounting for unpinned local content.
+    - Drop it into any tool or platform via the simple REST API in minutes.
   website: https://github.com/besoeasy/Originless
   developers: ["npub1hznmntyj254kqhr079a5gt2wvhyll6rz6q67pyjres4lfkql22kq5ml6zh"]
   notes:

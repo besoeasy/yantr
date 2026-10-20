@@ -8,11 +8,9 @@ x-yantr:
     over time so users can compare connections, spot recurring degradation, and
     keep performance history on their own infrastructure.
   usecases:
-    [
-      Compare speed-test results over a 30-day period.,
-      Track changes in download, upload, and latency.,
-      Keep ISP performance history on a self-hosted server.
-    ]
+    - Compare speed-test results over a 30-day period.
+    - Track changes in download, upload, and latency.
+    - Keep ISP performance history on a self-hosted server.
   website: https://myspeed.dev
 
   ports:

@@ -10,11 +10,9 @@ x-yantr:
     PromQL query language, providing reliable observability for servers and
     stacks.
   usecases:
-    [
-      Collect and store metrics from servers, containers, and applications.,
-      Create alerts with Alertmanager for threshold-based notifications.,
-      Use PromQL to build dashboards and analyze system performance.
-    ]
+    - Collect and store metrics from servers, containers, and applications.
+    - Create alerts with Alertmanager for threshold-based notifications.
+    - Use PromQL to build dashboards and analyze system performance.
   website: https://prometheus.io
   notes:
     [

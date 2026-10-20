@@ -9,11 +9,9 @@ x-yantr:
     spreadsheets, and presentations through a web interface. Integrates with
     Nextcloud, ownCloud, and other platforms for seamless document management.
   usecases:
-    [
-      Collaboratively edit Word, Excel, and PowerPoint files in real time.,
-      Replace Google Docs or Microsoft 365 with a self-hosted alternative.,
-      Integrate with Nextcloud for seamless document management.
-    ]
+    - Collaboratively edit Word, Excel, and PowerPoint files in real time.
+    - Replace Google Docs or Microsoft 365 with a self-hosted alternative.
+    - Integrate with Nextcloud for seamless document management.
   website: https://www.onlyoffice.com
   notes:
     [
