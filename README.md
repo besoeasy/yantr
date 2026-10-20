@@ -15,6 +15,8 @@
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
 
+[![Star History Rank](https://api.star-history.com/badge?repo=besoeasy/yantr&type=rank)](https://www.star-history.com/besoeasy/yantr)
+
 [Why Podman?](#️-rootless-by-design-why-podman-over-docker) · [Quick Start](#-quick-start) · [App Catalog](#-app-catalog) · [Community](#-community) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
 
 </div>
