@@ -115,6 +115,12 @@ const NO_ACCESS_APPS = new Set(['mariadb', 'mongodb', 'samba']);
 // even when they speak HTTP, so they must stay work ports.
 const DIAGNOSTIC_LABELS = new Set(['Metrics / pprof', 'Postgres client', 'gRPC service']);
 
+// Variables the deploy form asks the user to paste: a tunnel token, a licence
+// key, an API key from a third-party dashboard. They intentionally have no
+// default and no generator — a random value would be wrong — so the
+// missing-generator warning skips them. Add to this list deliberately.
+const USER_PROVIDED_ENV = new Set(['TUNNEL_TOKEN']);
+
 const warnings = [];
 
 class AppError extends Error {
@@ -431,7 +437,8 @@ function checkEnvGenerators(appId, generators, composeSource) {
   }
 
   // Every ${VAR} with no default would deploy empty without a generator.
-  // HOST_PODMAN_SOCKET is injected by the backend and is never generated.
+  // HOST_PODMAN_SOCKET is injected by the backend and is never generated;
+  // user-provided values are pasted into the deploy form instead.
   const referenced = new Set();
   const missingGenerators = new Set();
   const envRefPattern = /(?<!\$)\$\{([A-Za-z_][A-Za-z0-9_]*)([^}]*)\}/g;
@@ -443,7 +450,7 @@ function checkEnvGenerators(appId, generators, composeSource) {
     // ${VAR}, ${VAR:?err}, ${VAR?err} and ${VAR:+x} do not.
     const hasDefault = rest.startsWith(':-') || rest.startsWith('-') || rest.startsWith(':=') || rest.startsWith('=');
     referenced.add(name);
-    if (!hasDefault && !Object.hasOwn(generators, name)) {
+    if (!hasDefault && !Object.hasOwn(generators, name) && !USER_PROVIDED_ENV.has(name)) {
       missingGenerators.add(name);
     }
   }

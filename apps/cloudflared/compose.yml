@@ -21,6 +21,8 @@ x-yantr:
   notes:
     [
       Requires a Cloudflare account and tunnel token,
+      "Paste the token from the Cloudflare dashboard; it is a long base64
+        string beginning with eyJ.",
       No ports need to be opened on your firewall,
       Traffic routed through Cloudflare for DDoS protection,
       "To expose any Docker app, use the Docker host gateway IP (172.17.0.1)

@@ -66,7 +66,9 @@ Every `${VAR}` in the compose file that has no default should have a matching
 `env_generators` entry, or the deploy form has to supply the value. `check.js`
 warns rather than fails, because some values are deliberately typed by the
 user (`TUNNEL_TOKEN`) while a secret that must not be blank (`ADMIN_PASSWORD`)
-needs a generator. An entry that is never referenced is warned about too, so a
+needs a generator. A pasted credential is exempt from that warning only when
+the variable is listed in `check.js`'s `USER_PROVIDED_ENV`; add a new one there
+deliberately. An entry that is never referenced is warned about too, so a
 renamed variable does not leave a generator behind.
 
 ### `ports`
@@ -264,11 +266,10 @@ What it enforces:
 
 Warnings cover rules the current catalog still misses. They do not fail a
 normal run: a tag used by no other app (a one-off category or a near-synonym),
-a key outside the `x-yantr` vocabulary, a `${VAR}` with no default and no
-generator (for example a token the user must supply), an unused generator, an
-unquoted numeric compose port, or a logo that declares no dimensions or a
-non-square shape. `--strict` turns each into an error, so a new app should pass
-that mode.
+a key outside the `x-yantr` vocabulary, a `${VAR}` with no default, no
+generator and no user-provided exemption, an unused generator, an unquoted
+numeric compose port, or a logo that declares no dimensions or a non-square
+shape. `--strict` turns each into an error, so a new app should pass that mode.
 
 `check.js` is the quick fail-fast pass. The Go tests below run catalog-wide;
 both must pass before an app is added.

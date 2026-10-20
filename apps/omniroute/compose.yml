@@ -39,7 +39,7 @@ services:
     environment:
       DATA_DIR: /app/data
       PORT: 20128
-      REDIS_URL: redis://omniroute-redis:6379
+      REDIS_URL: redis://:${REDIS_PASSWORD}@omniroute-redis:6379
     volumes:
       - omniroute_data:/app/data
     depends_on:
@@ -49,6 +49,7 @@ services:
 
   omniroute-redis:
     image: docker.io/redis:7-alpine
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - omniroute_redis_data:/data
     restart: unless-stopped

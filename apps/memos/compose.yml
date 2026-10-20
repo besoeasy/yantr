@@ -32,7 +32,7 @@ services:
     volumes:
       - memos_data:/var/opt/memos
     ports:
-      - 5230
+      - "5230"
 
 volumes:
   memos_data: null
