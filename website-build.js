@@ -218,12 +218,19 @@ function toAppViewModel(app) {
   const primaryTag = tags[0] || 'self-hosted';
   const summary = app?.short_description || app?.description || 'No description available.';
   const appUrl = `${siteUrl}/apps/${id}/`;
+  const ports = Array.isArray(app?.ports) ? app.ports : [];
+  const primaryPort =
+    ports.find((port) => port?.protocol === 'HTTP' || port?.protocol === 'HTTPS') ||
+    ports[0] ||
+    null;
 
   return {
     ...app,
     id,
     name,
     tags,
+    ports,
+    primaryPort,
     notes: Array.isArray(app?.notes) ? app.notes : [],
     developers: Array.isArray(app?.developers) ? app.developers : [],
     hasDevelopers: Array.isArray(app?.developers) && app.developers.length > 0,

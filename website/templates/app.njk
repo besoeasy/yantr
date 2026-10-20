@@ -115,57 +115,69 @@
         All apps
       </a>
 
-      <!-- Hero -->
+      <!-- Hero: the app's identity, the two ways out, and the deploy facts. -->
       <div class="app-hero">
-        <img class="app-hero-logo" src="{{ app.logoUrl }}" alt="{{ app.name }} logo" loading="eager" />
-        <div class="app-hero-body">
-          <p class="kicker">Self-host with Podman · Yantr</p>
-          <h1>{{ app.name }}</h1>
-          {% if app.short_description %}
-            <p class="short">{{ app.short_description }}</p>
-          {% endif %}
-          {% if app.tags.length %}
-            <div class="app-tags">
-              {% for tag in app.tags %}
-                <span>{{ tag }}</span>
-              {% endfor %}
+        <div class="app-hero-main">
+          <img class="app-hero-logo{% if not app.hasLogo %} app-hero-logo-fallback{% endif %}" src="{{ app.logoUrl }}" alt="{{ app.name }} logo" loading="eager" />
+          <div class="app-hero-body">
+            <p class="app-hero-kicker"><span class="app-hero-pulse" aria-hidden="true"></span>Self-host with Podman · Yantr</p>
+            <h1>{{ app.name }}</h1>
+            {% if app.short_description %}
+              <p class="short">{{ app.short_description }}</p>
+            {% endif %}
+            {% if app.tags.length %}
+              <div class="app-tags">
+                {% for tag in app.tags %}
+                  <span>{{ tag }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="app-hero-actions">
+              {% if app.website %}
+                <a href="{{ app.website }}" target="_blank" rel="noopener noreferrer"
+                  class="btn btn-dark">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  Official Website
+                </a>
+              {% endif %}
+              <a href="{{ app.sourceAppFolderUrl }}" target="_blank" rel="noopener noreferrer"
+                class="btn {% if app.website %}btn-light{% else %}btn-dark{% endif %}">
+                <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                View on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-deploy" aria-label="Deployment details">
+          {% if app.image %}
+            <div class="app-deploy-fact app-deploy-image">
+              <p class="app-deploy-label">Image</p>
+              <p class="app-deploy-value app-deploy-mono" title="{{ app.image }}">{{ app.image }}</p>
             </div>
           {% endif %}
+          {% if app.primaryPort %}
+            <div class="app-deploy-fact app-deploy-port">
+              <p class="app-deploy-label">Port{% if app.primaryPort.label %} · {{ app.primaryPort.label }}{% endif %}</p>
+              <p class="app-deploy-value">
+                <span class="app-port"><b>{{ app.primaryPort.port }}</b><span>{{ app.primaryPort.protocol }}</span></span>{% if app.ports.length > 1 %}<span class="app-port-more">+{{ app.ports.length - 1 }}</span>{% endif %}
+              </p>
+            </div>
+          {% endif %}
+          {% if app.serviceName %}
+            <div class="app-deploy-fact app-deploy-service">
+              <p class="app-deploy-label">Service</p>
+              <p class="app-deploy-value app-deploy-mono">{{ app.serviceName }}</p>
+            </div>
+          {% endif %}
+          <div class="app-deploy-fact app-deploy-source">
+            <p class="app-deploy-label">Recipe</p>
+            <a class="app-deploy-link" href="{{ app.sourceComposeUrl }}" target="_blank" rel="noopener noreferrer">
+              View compose
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </a>
+          </div>
         </div>
-      </div>
-
-      <!-- Stats row -->
-      <div class="app-stats">
-        <div>
-          <p class="num">{{ app.ports.length }}</p>
-          <p class="lbl">Ports</p>
-        </div>
-        <div class="vsep"></div>
-        <div>
-          <p class="num">{{ app.notes.length }}</p>
-          <p class="lbl">Notes</p>
-        </div>
-        <div class="vsep"></div>
-        <div>
-          <p class="num">{{ app.usecases.length }}</p>
-          <p class="lbl">Use Cases</p>
-        </div>
-      </div>
-
-      <!-- CTAs -->
-      <div class="app-ctas">
-        {% if app.website %}
-          <a href="{{ app.website }}" target="_blank" rel="noopener noreferrer"
-            class="btn btn-dark">
-            <svg  fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            Official Website
-          </a>
-        {% endif %}
-        <a href="{{ app.sourceAppFolderUrl }}" target="_blank" rel="noopener noreferrer"
-          class="btn btn-light">
-          <svg  fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub
-        </a>
       </div>
 
       <!-- Who writes it. Links to the developer page so the credit is a route

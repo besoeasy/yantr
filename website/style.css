@@ -2154,43 +2154,152 @@ p code, li code, td code, .spec-sub code {
 }
 .crumb svg { width: 1rem; height: 1rem; }
 
+/* App hero: open on the page, no enclosing card. The deploy facts sit on a
+   hairline rail below the intro so the data is visible without a box. */
 .app-hero {
+  margin-bottom: 3.5rem;
+}
+.app-hero-main {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2.5rem;
+  gap: 1.35rem;
+  min-width: 0;
 }
-.app-hero img {
-  width: 5.5rem;
-  height: 5.5rem;
-  border-radius: var(--radius-2xl);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  object-fit: cover;
+.app-hero-logo {
+  width: 5rem;
+  height: 5rem;
+  padding: 0.6rem;
   flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 1.35rem;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  box-shadow: 0 10px 20px -12px rgba(0, 0, 0, 0.25);
 }
-.app-hero .kicker {
-  font-size: 0.72rem;
+.app-hero-logo-fallback {
+  padding: 0;
+  object-fit: cover;
+}
+.app-hero-body { min-width: 0; }
+.app-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--gray-400);
-  font-weight: 700;
-  margin-bottom: 0.4rem;
+  color: var(--emerald-700);
+}
+.app-hero-pulse {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: var(--radius-full);
+  background: var(--emerald-500);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 .app-hero h1 {
-  font-size: 2.75rem;
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   color: var(--black);
-  line-height: 1.05;
+  text-wrap: balance;
 }
 .app-hero .short {
-  margin-top: 0.85rem;
-  font-size: 1.05rem;
-  color: var(--gray-600);
-  line-height: 1.6;
+  margin-top: 0.95rem;
   max-width: 44rem;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--gray-600);
 }
+.app-hero .app-tags { margin-top: 1.2rem; }
+.app-hero .app-tags span {
+  border-color: var(--gray-200);
+  background: var(--white);
+  color: var(--gray-600);
+}
+.app-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.6rem;
+}
+.app-hero-actions .btn { padding: 0.72rem 1.3rem; }
+
+/* Deploy facts sit on one rail at the bottom of the hero. */
+.app-deploy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1.15rem 2rem;
+  margin-top: 1.9rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--gray-200);
+}
+.app-deploy-fact { min-width: 0; }
+.app-deploy-image { flex: 1 1 14rem; }
+.app-deploy-port { flex: 0 1 7rem; }
+.app-deploy-service { flex: 0 1 9rem; }
+.app-deploy-source { flex: 0 0 auto; }
+.app-deploy-label {
+  margin-bottom: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+.app-deploy-value {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--gray-700);
+  overflow-wrap: anywhere;
+}
+.app-deploy-mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--gray-600);
+}
+.app-port { display: inline-flex; align-items: baseline; gap: 0.4rem; }
+.app-port b {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+.app-port span {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--emerald-700);
+}
+.app-port-more {
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--gray-500);
+}
+.app-deploy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--black);
+  transition: color 0.2s ease;
+}
+.app-deploy-link:hover { color: var(--emerald-700); }
+.app-deploy-link svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  transition: transform 0.2s ease;
+}
+.app-deploy-link:hover svg { transform: translateX(2px); }
 .app-tags {
   margin-top: 1rem;
   display: flex;
@@ -2929,7 +3038,8 @@ p code, li code, td code, .spec-sub code {
   .pillars { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .arch-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .manage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .app-hero { flex-direction: row; align-items: flex-start; }
+  .app-hero-main { flex-direction: row; align-items: flex-start; }
+  .app-hero-logo { width: 5.5rem; height: 5.5rem; }
   .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .related-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .install-hero-card { padding: 2.25rem 2.5rem; }
@@ -3027,7 +3137,11 @@ p code, li code, td code, .spec-sub code {
   .install-hero-card .glow { display: none; }
   .spec-card { padding: 1.5rem 1.25rem; }
   .install-header h1 { font-size: 2.25rem; }
+  .app-hero { margin-bottom: 2.5rem; }
+  .app-hero-main { gap: 1.15rem; }
+  .app-hero-logo { width: 4.5rem; height: 4.5rem; padding: 0.5rem; border-radius: 1.1rem; }
   .app-hero h1 { font-size: 2.1rem; }
+  .app-deploy { gap: 1rem 1.5rem; margin-top: 1.5rem; padding-top: 1.15rem; }
   /* Stats + spec rows: wrap instead of squeezing */
   .app-stats { flex-wrap: wrap; gap: 1rem 1.5rem; width: 100%; }
   .spec-row { flex-wrap: wrap; gap: 0.15rem; }
@@ -3039,6 +3153,8 @@ p code, li code, td code, .spec-sub code {
 /* Very small screens: 2-column contributors keeps avatars legible */
 @media (max-width: 479px) {
   .contrib-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-hero-actions { flex-direction: column; }
+  .app-hero-actions .btn { width: 100%; }
 }
 
 /* ── Scroll reveal ───────────────────────────────── */
