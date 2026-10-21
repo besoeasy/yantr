@@ -614,6 +614,7 @@
       "volume": "Том",
       "remaining": "Осталось",
       "reclaimable": "Можно освободить",
+      "nextUp": "Далее",
       "delete": "Освободить",
       "freeSize": "Освободить {size}",
       "deleting": "Освобождение...",

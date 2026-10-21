@@ -614,6 +614,7 @@
       "volume": "卷",
       "remaining": "剩余",
       "reclaimable": "可回收",
+      "nextUp": "接下来",
       "delete": "释放",
       "freeSize": "释放 {size}",
       "deleting": "释放中...",

@@ -612,6 +612,7 @@
       "volume": "Volume",
       "remaining": "Left",
       "reclaimable": "Reclaimable",
+      "nextUp": "Next up",
       "delete": "Free it",
       "freeSize": "Free {size}",
       "deleting": "Freeing...",

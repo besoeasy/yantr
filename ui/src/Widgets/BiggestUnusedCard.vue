@@ -58,10 +58,13 @@ const queue = computed(() => {
 
 const current = computed(() => queue.value[0] ?? null);
 const remaining = computed(() => queue.value.length);
+// Two is what fits under the header without pushing the headline off its
+// baseline; the count in the header says how many are behind them.
+const nextUp = computed(() => queue.value.slice(1, 3));
 
-function goToManage() {
-  if (!current.value) return;
-  router.push(storageTab(current.value.kind === "image" ? "images-unused" : "volumes-unused"));
+function goToManage(item = current.value) {
+  if (!item) return;
+  router.push(storageTab(item.kind === "image" ? "images-unused" : "volumes-unused"));
 }
 
 async function freeCurrent() {
@@ -144,6 +147,31 @@ async function freeCurrent() {
       </span>
     </div>
 
+    <!-- What is behind the headline. Without this the card is a headline at
+         the bottom and 190px of nothing above it; the list says the queue is
+         real, and each row is a shortcut to that kind's unused tab. -->
+    <div v-if="nextUp.length" class="mt-6 min-w-0">
+      <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+        {{ t("quickMetrics.biggestUnused.nextUp") }}
+      </div>
+      <ul class="flex flex-col gap-1">
+        <li v-for="item in nextUp" :key="`${item.kind}-${item.id}`">
+          <button
+            type="button"
+            class="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+            :title="item.name"
+            @click.stop="goToManage(item)"
+          >
+            <component :is="item.kind === 'image' ? Layers : HardDrive" class="h-3.5 w-3.5 shrink-0 text-zinc-400" />
+            <span class="min-w-0 flex-1 truncate text-xs font-medium yantra-text-secondary">{{ item.name }}</span>
+            <span class="shrink-0 tabular-nums text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+              {{ formatBytes(item.sizeBytes) }}
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+
     <!-- Two zones: the reclaimable headline on the left, the action on the
          right, so neither queues behind the other's height. -->
     <div class="mt-auto flex flex-col gap-6 pt-6 sm:flex-row sm:items-end sm:gap-6">
@@ -162,7 +190,7 @@ async function freeCurrent() {
           type="button"
           class="flex min-w-0 max-w-full cursor-pointer items-center gap-1.5 text-left text-xs font-semibold yantra-text-secondary transition-colors hover:text-black dark:hover:text-white"
           :title="current.name"
-          @click.stop="goToManage"
+          @click.stop="goToManage()"
         >
           <component :is="current.kind === 'image' ? Layers : HardDrive" class="h-3.5 w-3.5 shrink-0" />
           <span class="truncate">{{ current.name }}</span>
@@ -191,7 +219,7 @@ async function freeCurrent() {
         <button
           type="button"
           class="group/link flex h-9 w-full cursor-pointer items-center justify-between gap-2 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary transition-colors hover:bg-zinc-50 hover:text-black dark:hover:bg-zinc-900/50 dark:hover:text-white"
-          @click.stop="goToManage"
+          @click.stop="goToManage()"
         >
           {{ t("quickMetrics.biggestUnused.viewAll") }}
           <ArrowUpRight class="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover/link:translate-x-0.5" />

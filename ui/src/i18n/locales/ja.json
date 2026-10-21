@@ -614,6 +614,7 @@
       "volume": "ボリューム",
       "remaining": "残り",
       "reclaimable": "回収可能",
+      "nextUp": "次の候補",
       "delete": "解放する",
       "freeSize": "{size} を解放",
       "deleting": "解放中...",
