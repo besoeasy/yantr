@@ -95,8 +95,8 @@
       "copy": "Copy address",
       "copied": "Copied",
       "noAddress": "No Lightning address published — follow the account and send a thank-you on Nostr instead.",
-      "follow": "Follow on Nostr"
-    },
+      "follow": "Follow on Nostr",
+    "viewProfile": "View developer profile"    },
     "toolsNavCard": {
       "systemTools": "System Tools",
       "managementLogs": "Management & Logs",
