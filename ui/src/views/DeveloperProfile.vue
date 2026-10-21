@@ -75,6 +75,10 @@ const { rails: paymentRails, copiedRail, copyAddress } = usePaymentRails(
   "developer.payments"
 );
 
+const hasSupport = computed(
+  () => Boolean(nostrDm.value) || paymentRails.value.length > 0
+);
+
 async function copyNostrKey() {
   try {
     await navigator.clipboard.writeText(key.value);
@@ -199,7 +203,7 @@ watch(developerRef, (next) => {
       </div>
 
       <template v-else>
-        <!-- Identity -->
+        <!-- Identity header -->
         <div class="flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
           <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <img v-if="avatarUrl" :src="avatarUrl" :alt="displayName" class="h-full w-full object-cover" />
@@ -220,19 +224,13 @@ watch(developerRef, (next) => {
               {{ t('developer.appsBy', { name: displayName }) }}
             </p>
 
-            <!-- Profile facts, when the account published any -->
             <div v-if="profile" class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-zinc-500">
-              <!-- NIP-05 is the Nostr equivalent of a verified handle, so it is
-                   shown as written rather than linked: verifying it means asking
-                   the domain, which is not this page's job. -->
               <span v-if="profile.nip05" class="inline-flex items-center gap-1.5">
                 <AtSign :size="13" /> {{ profile.nip05 }}
               </span>
               <span v-if="profile.lud16" class="inline-flex items-center gap-1.5">
                 <Zap :size="13" /> {{ profile.lud16 }}
               </span>
-              <!-- The on-chain rail, when the account published a Bitcoin
-                   address — checksum-validated in the parser, like lud16. -->
               <span v-if="profile.bitcoin" class="inline-flex items-center gap-1.5">
                 <Bitcoin :size="13" /> {{ profile.bitcoin }}
               </span>
@@ -268,7 +266,6 @@ watch(developerRef, (next) => {
           </div>
         </div>
 
-        <!-- Profile enrichment unavailable: the page keeps working, and says why -->
         <p
           v-if="profileUnavailable"
           class="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-zinc-500"
@@ -277,96 +274,111 @@ watch(developerRef, (next) => {
           {{ t('developer.profileUnavailable') }}
         </p>
 
-        <!-- Direct message on Nostr. The code is built from the catalog's own
-             key, so it is on screen as soon as the page is and stays there when
-             the relay is unreachable — which is the common case for a rootless
-             host on a network that blocks it. -->
-        <section
-          v-if="nostrDm"
-          class="mt-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
-        >
-          <div class="flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center">
-            <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
-              <!-- 180px over a 45-module drawing is four pixels per module, which
-                   is what keeps it readable off a screen at arm's length. -->
-              <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
-            </div>
-
-            <div class="min-w-0 flex-1">
-              <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
-              <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
-
-              <p class="mt-3 break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ key }}</p>
-
-              <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <!-- The non-scanning path, for anyone reading this on a desktop:
-                     njump offers the reader's own client and a message link. -->
-                <a
-                  v-if="profileUrl"
-                  :href="profileUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                >
-                  <ExternalLink :size="14" /> {{ t('developer.nostrOpen') }}
-                </a>
-                <button
-                  @click="copyNostrKey"
-                  class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                >
-                  <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
-                </button>
+        <div v-if="hasSupport" class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 items-start">
+          <!-- Apps -->
+          <section class="min-w-0">
+            <div class="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.appsInYantr') }}</h2>
+                <p class="mt-1.5 text-xs text-zinc-500">{{ t('developer.appsInYantrHint') }}</p>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Payment rails the account published: Lightning and on-chain, each
-             with its own scannable code. Same composable the Developer of the
-             day card renders, so what validates here validates there. -->
-        <section
-          v-if="paymentRails.length"
-          class="mt-6 overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
-        >
-          <div class="flex flex-col items-start gap-6 p-6">
-            <div>
-              <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                {{ t('developer.payments.title') }}
-              </h2>
-              <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">
-                {{ t('developer.payments.hint') }}
-              </p>
+              <span class="shrink-0 rounded border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[10px] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">{{ developerApps.length }}</span>
             </div>
 
-            <div class="flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
-              <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
-                <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                  {{ rail.label }}
-                </span>
+            <p v-if="developerApps.length === 0" class="text-sm text-zinc-500">{{ t('developer.noApps') }}</p>
+            <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 anim-stagger">
+              <AppCard
+                v-for="app in developerApps"
+                :key="app.id"
+                :app="app"
+                :instance-count="appInstanceCounts[app.id] || 0"
+                @select="viewAppDetail(app.id)"
+              />
+            </div>
+          </section>
 
+          <!-- Support rail -->
+          <aside class="flex flex-col gap-6">
+            <section
+              v-if="nostrDm"
+              class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
+            >
+              <div class="flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center">
                 <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
-                  <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="168" />
+                  <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
                 </div>
 
-                <p class="mt-3 max-w-64 break-all font-mono text-[11px] leading-relaxed text-zinc-500">
-                  {{ rail.address }}
-                </p>
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
+                  <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
 
-                <button
-                  @click="copyAddress(rail)"
-                  class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                >
-                  <Check v-if="copiedRail === rail.kind" :size="14" />
-                  <Copy v-else :size="14" />
-                  {{ copiedRail === rail.kind ? t('developer.payments.copied') : t('developer.payments.copy') }}
-                </button>
+                  <p class="mt-3 break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ key }}</p>
+
+                  <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                    <a
+                      v-if="profileUrl"
+                      :href="profileUrl"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                    >
+                      <ExternalLink :size="14" /> {{ t('developer.nostrOpen') }}
+                    </a>
+                    <button
+                      @click="copyNostrKey"
+                      class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                    >
+                      <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </section>
+            </section>
 
-        <!-- Apps in Yantr -->
-        <section class="mt-10">
+            <section
+              v-if="paymentRails.length"
+              class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
+            >
+              <div class="flex flex-col items-start gap-6 p-6">
+                <div>
+                  <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                    {{ t('developer.payments.title') }}
+                  </h2>
+                  <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">
+                    {{ t('developer.payments.hint') }}
+                  </p>
+                </div>
+
+                <div class="flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
+                  <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
+                    <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
+                      {{ rail.label }}
+                    </span>
+
+                    <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
+                      <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="168" />
+                    </div>
+
+                    <p class="mt-3 max-w-64 break-all font-mono text-[11px] leading-relaxed text-zinc-500">
+                      {{ rail.address }}
+                    </p>
+
+                    <button
+                      @click="copyAddress(rail)"
+                      class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
+                    >
+                      <Check v-if="copiedRail === rail.kind" :size="14" />
+                      <Copy v-else :size="14" />
+                      {{ copiedRail === rail.kind ? t('developer.payments.copied') : t('developer.payments.copy') }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <section v-else class="mt-10">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
               <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.appsInYantr') }}</h2>
