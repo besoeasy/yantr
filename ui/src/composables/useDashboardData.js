@@ -1,11 +1,11 @@
-import { onUnmounted, ref } from "vue";
+import { computed, onUnmounted, ref } from "vue";
 import { useApiUrl } from "./useApiUrl";
 import { expectApiSuccess } from "./useApiResponse";
 
 // Shared dashboard data.
 //
-// Four cards want the container list, three want the catalog, one wants image
-// and volume counts — and each used to fetch its own copy. On the dashboard
+// Four cards want the container list, three want the catalog, two want the
+// storage tree — and each used to fetch its own copy. On the dashboard
 // that meant four identical requests at mount and three independent 15-second
 // pollers all asking the same question, on a host where every request is real
 // socket work. Three of those pollers also disagreed about failure: one card
@@ -149,11 +149,18 @@ const catalog = createResource({
   pick: (body) => (Array.isArray(body?.apps) ? body.apps : []),
 });
 
-const storageCounts = createResource({
-  key: "storage counts",
-  empty: { imageCount: null, volumeCount: null },
-  // Both counts come from two endpoints; this resource reads the pair so the
-  // card that shows them makes one logical fetch instead of two lifecycles.
+const storage = createResource({
+  key: "storage",
+  empty: {
+    imageCount: null,
+    volumeCount: null,
+    unusedImages: [],
+    unusedVolumes: [],
+  },
+  // Both counts and both reclaim lists come from the same pair of endpoints.
+  // One resource reads them together, so the tools card and the reclaim card
+  // make one logical fetch and share one ticker instead of racing two copies
+  // of the same two requests.
   read: async (apiUrl) => {
     const [imagesRes, volumesRes] = await Promise.all([
       fetch(`${apiUrl}/api/images`),
@@ -166,6 +173,10 @@ const storageCounts = createResource({
     return {
       imageCount: Array.isArray(images?.images) ? images.images.length : null,
       volumeCount: Array.isArray(volumes?.volumes) ? volumes.volumes.length : null,
+      // Kept as the API's own objects: the reclaim card reads `sizeBytes` and
+      // the ids it deletes by, and reshaping here would only lose fields.
+      unusedImages: Array.isArray(images?.unusedImages) ? images.unusedImages : [],
+      unusedVolumes: Array.isArray(volumes?.unusedVolumes) ? volumes.unusedVolumes : [],
     };
   },
   interval: 30000,
@@ -197,12 +208,29 @@ export function useCatalog({ live = false } = {}) {
 
 /** How many images and volumes this host holds. */
 export function useStorageCounts({ live = false } = {}) {
-  storageCounts.use(live);
+  storage.use(live);
   return {
-    counts: storageCounts.data,
-    countsLoaded: storageCounts.loaded,
-    countsLoading: storageCounts.loading,
-    countsLoadFailed: storageCounts.loadFailed,
-    refreshCounts: storageCounts.refresh,
+    counts: storage.data,
+    countsLoaded: storage.loaded,
+    countsLoading: storage.loading,
+    countsLoadFailed: storage.loadFailed,
+    refreshCounts: storage.refresh,
+  };
+}
+
+/**
+ * The unused images and volumes, newest size first is the card's job — this
+ * hands back the API's lists as-is. Shared with useStorageCounts: same
+ * resource, same ticker, same failure flag.
+ */
+export function useReclaimable({ live = false } = {}) {
+  storage.use(live);
+  return {
+    unusedImages: computed(() => storage.data.value.unusedImages ?? []),
+    unusedVolumes: computed(() => storage.data.value.unusedVolumes ?? []),
+    reclaimableLoaded: storage.loaded,
+    reclaimableLoading: storage.loading,
+    reclaimableLoadFailed: storage.loadFailed,
+    refreshReclaimable: storage.refresh,
   };
 }
