@@ -415,25 +415,33 @@ async function fetchGitHubData() {
   console.log('\n🐙 Fetching GitHub data...');
 
   try {
-    const [repoData, allContributors] = await Promise.all([
+    const [repoData, allContributors, ghcrData] = await Promise.all([
       httpsGet('https://api.github.com/repos/besoeasy/yantr'),
       fetchAllContributors(),
+      httpsGet('https://ghcr-badge.elias.eu.org/api/besoeasy/yantr').catch(() => null),
     ]);
+
+    const containerDownloads = Number(ghcrData?.downloadCountRaw) || 0;
 
     const output = {
       fetchedAt: new Date().toISOString(),
       stars: repoData.stargazers_count || 0,
       forks: repoData.forks_count || 0,
       contributors: normalizeContributors(allContributors),
+      downloads: containerDownloads,
+      downloadCount: containerDownloads,
+      downloadCountRaw: containerDownloads,
+      downloadCountFormatted: ghcrData?.downloadCount || (containerDownloads > 1000 ? (containerDownloads / 1000).toFixed(1) + 'K' : String(containerDownloads)),
+      ghcr: ghcrData || null,
     };
 
     fs.writeFileSync(githubDataPath, JSON.stringify(output, null, 2), 'utf8');
-    console.log(`✅ GitHub data saved (${output.stars} stars, ${output.contributors.length} contributors)`);
+    console.log(`✅ GitHub data saved (${output.stars} stars, ${output.contributors.length} contributors, ${output.downloadCountRaw} container pulls)`);
   } catch (error) {
     console.warn(`⚠️  Could not fetch GitHub data: ${error.message}`);
     // Write empty fallback so the page doesn't break
     if (!fs.existsSync(githubDataPath)) {
-      fs.writeFileSync(githubDataPath, JSON.stringify({ fetchedAt: new Date().toISOString(), stars: 0, forks: 0, contributors: [] }, null, 2), 'utf8');
+      fs.writeFileSync(githubDataPath, JSON.stringify({ fetchedAt: new Date().toISOString(), stars: 0, forks: 0, contributors: [], downloads: 0, downloadCount: 0, downloadCountRaw: 0, downloadCountFormatted: '0', ghcr: null }, null, 2), 'utf8');
     }
   }
 }
