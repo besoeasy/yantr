@@ -454,6 +454,7 @@ code, pre { font-family: var(--font-mono); }
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
+  margin-top: 1.75rem;
 }
 .hero-install {
   margin-top: 2rem;
