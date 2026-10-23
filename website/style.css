@@ -285,6 +285,86 @@ code, pre { font-family: var(--font-mono); }
   text-align: center;
   padding: 1.5rem 1rem;
   box-sizing: border-box;
+  position: relative;
+  z-index: 2;
+}
+
+/* Wave hero background: app chips drift in from both edges and fade in the middle */
+.hero-wave {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  contain: layout paint;
+}
+.hero-wave-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 40px;
+}
+.hero-wave-chip {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-full);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap;
+  will-change: left, right, opacity;
+  animation-duration: 7s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.hero-wave-chip.from-left {
+  left: -12%;
+  animation-name: heroWaveLeft;
+}
+.hero-wave-chip.from-right {
+  right: -12%;
+  animation-name: heroWaveRight;
+}
+.hero-wave-chip-logo {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 4px;
+  object-fit: contain;
+}
+.hero-wave-chip-label {
+  line-height: 1;
+}
+@keyframes heroWaveLeft {
+  0%   { left: -12%; opacity: 0; }
+  15%  { opacity: 1; }
+  45%  { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { left: 50%; opacity: 0; }
+}
+@keyframes heroWaveRight {
+  0%   { right: -12%; opacity: 0; }
+  15%  { opacity: 1; }
+  45%  { opacity: 1; }
+  55%  { opacity: 0; }
+  100% { right: 50%; opacity: 0; }
+}
+
+.hero-note {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gray-500);
+  letter-spacing: 0.01em;
 }
 .hero-pill {
   display: inline-flex;

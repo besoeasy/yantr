@@ -118,124 +118,64 @@
     <main class="page">
       <!-- Hero -->
       <div class="hero">
-        <!-- Hero Background Animation Container -->
-        <div id="hero-stars" class="hero-bg"></div>
-        <!-- Radial fade so orbiting chips don't overlap the text -->
-        <div class="hero-fade" style="background:radial-gradient(ellipse 55% 55% at 50% 50%, rgba(255,255,255,1) 30%, rgba(255,255,255,0.7) 60%, transparent 100%)"></div>
+        <!-- Wave background: app chips drift in from both edges and fade in the middle -->
+        <div id="hero-wave" class="hero-wave" aria-hidden="true"></div>
         <div class="hero-inner">
-          <span
-            class="hero-pill animate-fade-in-up"
-         >
-              <span class="dot animate-pulse"></span>
-              Lightweight container manager · Rootless Podman
-            </span>
-            <h1
-              id="hero-title"
-              class="hero-title animate-fade-in-up delay-100"
-           >
-              <span class="sr-only">YANTR</span>
-              <span aria-hidden="true">
-                <span class="hero-letter hero-letter-1">Y</span><span class="hero-letter hero-letter-2">A</span><span class="hero-letter hero-letter-3">N</span
-               ><span class="hero-letter hero-letter-4">T</span><span class="hero-letter hero-letter-5">R</span>
-              </span>
-            </h1>
-            <p class="hero-subtitle animate-fade-in-up delay-150">
-              Run apps on your Linux. Keep your Linux.
-            </p>
-            <p id="hero-desc" class="hero-desc animate-fade-in-up delay-200">
-              Yantr is a lightweight container manager that sets up a completely isolated, self-contained app ecosystem on the machine you already use — desktop, laptop, NAS, or SBC. Rootless by default, no admin permissions, ~140 MB RAM at idle. Run AI, edit videos, watch movies: your computer stays a computer.
-            </p>
+          <span class="hero-pill animate-fade-in-up">
+            <span class="dot animate-pulse"></span>
+            Lightweight container manager · Rootless Podman
+          </span>
+          <h1 id="hero-title" class="hero-title animate-fade-in-up delay-100">
+            <span class="sr-only">YANTR</span>
+            <span aria-hidden="true">YANTR</span>
+          </h1>
+          <p class="hero-subtitle animate-fade-in-up delay-150">
+            Run apps on your Linux. Keep your Linux.
+          </p>
+          <p id="hero-desc" class="hero-desc animate-fade-in-up delay-200">
+            Yantr is a lightweight container manager that sets up a completely isolated, self-contained app ecosystem on the machine you already use — desktop, laptop, NAS, or SBC. Rootless by default, no admin permissions, ~140 MB RAM at idle. Run AI, edit videos, watch movies: your computer stays a computer.
+          </p>
 
-            <!-- Stats strip -->
-            <div class="hero-stats animate-fade-in-up delay-300">
-              <span class="stat">
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <span id="hero-app-count">129+</span> apps
-              </span>
-              <span class="sep" aria-hidden="true">|</span>
-              <span class="stat">
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                <span id="hero-download-count">--</span> container pulls
-              </span>
-              <span class="sep" aria-hidden="true">|</span>
-              <span class="stat">
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Open source
-              </span>
-              <span class="sep" aria-hidden="true">|</span>
-              <span class="stat">
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Rootless &amp; Daemonless
-              </span>
-              <span class="sep" aria-hidden="true">|</span>
-              <span class="stat">
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                Podman-native
-              </span>
-            </div>
-
-            <!-- CTAs -->
-            <div class="hero-ctas animate-fade-in-up delay-300">
-              <a
-                href="https://github.com/besoeasy/yantr"
-                target="_blank"
-                class="btn btn-dark"
-             >
-                <svg  fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    fill-rule="evenodd"
-                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                GitHub <span class="github-stars" id="stars-nav"></span>
-              </a>
-              <a
-                href="https://discord.gg/YZG5NVUcAt"
-                target="_blank"
-                rel="noopener"
-                class="btn btn-discord"
-              >
-                <svg  viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path
-                    d="M20.317 4.3698a19.7913 19.7913 0 0 0-4.8851-1.5152.0741.0741 0 0 0-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 0 0-.0785-.037 19.7363 19.7363 0 0 0-4.8852 1.515.0699.0699 0 0 0-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 0 0 .0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 0 0 .0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 0 0-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 0 1-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 0 1 .0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 0 1 .0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 0 1-.0066.1276 12.2986 12.2986 0 0 1-1.873.8914.0766.0766 0 0 0-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 0 0 .0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 0 0 .0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 0 0-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"
-                  />
-                </svg>
-                Discord
-              </a>
-              <a
-                href="https://github.com/besoeasy/yantr/pkgs/container/yantr"
-                target="_blank"
-                rel="noopener"
-                class="btn btn-light"
-              >
-                <svg  fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                </svg>
-                <span id="pulls-cta">Container image</span>
-              </a>
-            </div>
-
-            <!-- Hero Install One-Liner -->
-            <div class="hero-install animate-fade-in-up delay-300">
-              <div class="install-line">
-                <div class="cmd">
-                  <span class="prompt">$</span>
-                  <code>curl -fsSL https://yantr.org/install.sh | bash</code>
-                </div>
-                <button
-                  class="copy-btn-sm"
-                  onclick="navigator.clipboard.writeText('curl -fsSL https://yantr.org/install.sh | bash'); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000)"
-               >
-                  Copy
-                </button>
+          <!-- Hero Install One-Liner -->
+          <div class="hero-install animate-fade-in-up delay-300">
+            <div class="install-line">
+              <div class="cmd">
+                <span class="prompt">$</span>
+                <code>curl -fsSL https://yantr.org/install.sh | bash</code>
               </div>
-              <p class="hero-install-note">
-                Native Linux · Rootless Podman + Quadlet systemd · <a href="https://github.com/besoeasy/yantr#-quick-start" target="_blank" rel="noopener">Manual install →</a> · <a href="https://github.com/besoeasy/yantr/pkgs/container/yantr" target="_blank" rel="noopener">Container image →</a> · <span id="downloads-nav"></span>
-              </p>
+              <button
+                class="copy-btn-sm"
+                onclick="navigator.clipboard.writeText('curl -fsSL https://yantr.org/install.sh | bash'); this.innerText='Copied!'; setTimeout(() => this.innerText='Copy', 2000)"
+             >
+                Copy
+              </button>
             </div>
+            <p class="hero-install-note">
+              Native Linux · Rootless Podman + Quadlet systemd · <a href="https://github.com/besoeasy/yantr#-quick-start" target="_blank" rel="noopener">Manual install →</a> · <a href="https://github.com/besoeasy/yantr/pkgs/container/yantr" target="_blank" rel="noopener">Container image →</a> · <span id="downloads-nav"></span>
+            </p>
           </div>
+
+          <!-- CTAs -->
+          <div class="hero-ctas animate-fade-in-up delay-300">
+            <a href="https://github.com/besoeasy/yantr" target="_blank" class="btn btn-dark">
+              <svg fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+              </svg>
+              GitHub <span class="github-stars" id="stars-nav"></span>
+            </a>
+            <a href="https://github.com/besoeasy/yantr/pkgs/container/yantr" target="_blank" rel="noopener" class="btn btn-light">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+              </svg>
+              <span id="pulls-cta">Container image</span>
+            </a>
+          </div>
+
+          <p class="hero-note animate-fade-in-up delay-300">
+            <span id="hero-app-count">129+</span> apps · ~140 MB idle · Open source · Daemonless
+          </p>
         </div>
+      </div>
 
       <!-- App marquee — seamless continuation of the hero, full-bleed -->
       <div class="full-bleed marquee-section" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
@@ -1537,7 +1477,7 @@
       }
 
       async function initHeroAnimation() {
-        const container = document.getElementById("hero-stars");
+        const container = document.getElementById("hero-wave");
         if (!container) return;
 
         container.replaceChildren();
@@ -1552,56 +1492,31 @@
           const apps = data.apps;
           if (!apps || !apps.length) return;
 
-          // Scale orbit radii to viewport — smaller on mobile
-          const minDim = Math.min(window.innerWidth, window.innerHeight);
-          const scale = Math.max(0.45, Math.min(1, minDim / 700));
-
-          // A single ring. Every ring added since the first started crossing the
-          // title or the description, and the radial fade over the copy is
-          // only there to soften that overlap. One wide ring keeps the hero
-          // feeling alive without anything sitting on the words.
-          const rings = [
-            { r: Math.round(460 * scale), count: 16, dur: 100, dir: "CW" },
-          ];
-
-          const totalNeeded = rings.reduce((s, ring) => s + ring.count, 0);
+          const rows = 5;
+          const perRow = 2; // one from each side
+          const totalNeeded = rows * perRow;
           const selectedApps = getRandomUniqueItems(apps, totalNeeded);
 
-          // Subtle orbit guide circles
-          for (const ring of rings) {
-            const guide = document.createElement("div");
-            guide.style.cssText = `position:absolute;top:50%;left:50%;width:${ring.r * 2}px;height:${ring.r * 2}px;margin-left:-${ring.r}px;margin-top:-${ring.r}px;border-radius:50%;border:1px dashed rgba(0,0,0,0.035);pointer-events:none;`;
-            container.appendChild(guide);
-          }
-
           let appIdx = 0;
-          for (const ring of rings) {
-            for (let i = 0; i < ring.count; i++) {
-              const app = selectedApps[appIdx++];
-              if (!app) break;
-              const logoUrl = getLogoUrl(app);
+          for (let r = 0; r < rows; r++) {
+            const row = document.createElement("div");
+            row.className = "hero-wave-row";
+            row.style.top = (14 + r * 16) + "%";
+            container.appendChild(row);
 
-              const delay = -((i / ring.count) * ring.dur).toFixed(2);
-              const fadeDur  = (3.5 + Math.random() * 3).toFixed(1);
-              const fadeDelay = (Math.random() * 6).toFixed(1);
-              const pulseDur = (4.8 + Math.random() * 2.4).toFixed(1);
-              const pulseDelay = (Math.random() * 4).toFixed(1);
-
-              const arm = document.createElement("div");
-              arm.className = "orbit-arm";
-              arm.style.cssText = `--orbit-r:${ring.r}px;animation:orbit${ring.dir} ${ring.dur}s linear infinite ${delay}s;`;
-
+            const makeChip = (app, side, delay) => {
               const chip = document.createElement("div");
-              chip.className = "orbit-chip";
-              chip.style.setProperty("--fade-dur",   fadeDur  + "s");
-              chip.style.setProperty("--fade-delay", fadeDelay + "s");
-              chip.style.setProperty("--pulse-dur", pulseDur + "s");
-              chip.style.setProperty("--pulse-delay", pulseDelay + "s");
-              chip.innerHTML = `<img src="${logoUrl}" class="orbit-chip-logo" alt="${app.name}"><span class="orbit-chip-label">${app.name}</span>`;
+              chip.className = "hero-wave-chip " + side;
+              chip.style.animationDelay = delay + "s";
+              const logoUrl = getLogoUrl(app);
+              chip.innerHTML = `<img src="${logoUrl}" class="hero-wave-chip-logo" alt="${app.name}"><span class="hero-wave-chip-label">${app.name}</span>`;
+              return chip;
+            };
 
-              arm.appendChild(chip);
-              container.appendChild(arm);
-            }
+            const leftApp = selectedApps[appIdx++];
+            const rightApp = selectedApps[appIdx++];
+            if (leftApp) row.appendChild(makeChip(leftApp, "from-left", -(r * 1.1)));
+            if (rightApp) row.appendChild(makeChip(rightApp, "from-right", -(r * 1.1 + 0.55)));
           }
         } catch (e) {
           console.error("Hero animation failed:", e);
