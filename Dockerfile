@@ -68,6 +68,7 @@ RUN set -eux; \
       --initdb \
       --no-cache \
       --no-progress \
+      --no-scripts \
       alpine-base podman podman-compose wget; \
     # Podman inside the container is a pure remote client driving the socket
     # mounted from the host (same config the former RUN wrote, without exec).
