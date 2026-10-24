@@ -16,7 +16,7 @@
 
 [![Star History Rank](https://api.star-history.com/badge?repo=besoeasy/yantr&type=rank)](https://www.star-history.com/besoeasy/yantr)
 
-[Why Podman?](#️-rootless-by-design-why-podman-over-docker) · [Quick Start](#-quick-start) · [App Catalog](#-app-catalog) · [Community](#-community) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
+[Why Podman?](#️-rootless-by-design-why-podman-over-docker) · [Quick Start](#-quick-start) · [Community](#-community) · [yantr.org](https://yantr.org) · [Report a Bug](https://github.com/besoeasy/yantr/issues)
 
 </div>
 
