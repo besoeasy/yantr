@@ -152,26 +152,6 @@ Open **http://localhost:5252** and create your operator account on first visit.
 
 ---
 
-## 📦 App Catalog
-
-A curated app catalog, one-click deploy.
-
-| Category | Apps |
-|---|---|
-| 🤖 AI & Agents | Open WebUI, Perplexica, Agent Zero, Kokoro |
-| 🎬 Media | Jellyfin, Emby, Stremio, Swingmusic, Metube |
-| 📥 Downloads | qBittorrent, Radarr, Sonarr, Jackett, Prowlarr |
-| ☁️ Cloud & Files | Nextcloud, Seafile, Syncthing, MinIO |
-| 🔐 Security | Vaultwarden, AdGuard Home, Pi-hole, WireGuard |
-| 🛠️ Dev Tools | Supabase, PostgreSQL, MongoDB, n8n, Gitea |
-| 📡 Networking | Cloudflare Tunnel, Glances |
-| 📝 Productivity | Memos, Wiki.js, Linkwarden, FreshRSS |
-| 💰 Finance | Actual Budget, Ghostfolio, Rotki |
-| ⛓️ Bitcoin | Bitcoin Knots, Monerod, Cashu.me |
-
-> Browse all in [`apps/`](apps/) · Add your own via the [authoring guide](AGENTS.md)
-
----
 
 ## ✨ What Makes It Different
 
