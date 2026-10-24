@@ -106,7 +106,7 @@ One-line installation on Linux (automatically configures rootless Podman and sys
 curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
 ```
 
-The script is also in the repo root as [`install.sh`](install.sh). The one-liner above resolves `@latest` to the newest tagged release via jsDelivr, so users always get a released installer — never whatever is sitting on `main`.
+Resolves `@latest` to the newest tagged release via jsDelivr (never `main`). The script is also in the repo root as [`install.sh`](install.sh).
 
 <div align="center">
 
@@ -118,17 +118,17 @@ The script is also in the repo root as [`install.sh`](install.sh). The one-liner
 
 </div>
 
-The installer detects your package manager (`dnf`, `apt`, `pacman`, `zypper`) and sets up rootless Podman and the systemd Quadlet service automatically. Any other Linux with Podman and systemd installed works via the manual command below. Alpine is deliberately not listed: the installer can install Podman there, but the whole service model rides on systemd Quadlet, which Alpine does not ship.
+Detects your package manager (`dnf`, `apt`, `pacman`, `zypper`), sets up rootless Podman + systemd Quadlet. Any Linux with Podman + systemd works via the manual command below (Alpine excluded — no systemd Quadlet).
 
-The container image is published on the **GitHub Container Registry** — [github.com/besoeasy/yantr/pkgs/container/yantr](https://github.com/besoeasy/yantr/pkgs/container/yantr):
+Image on GHCR ([besoeasy/yantr](https://github.com/besoeasy/yantr/pkgs/container/yantr)):
 
 ```bash
 podman pull ghcr.io/besoeasy/yantr:latest
 ```
 
-Every release image is multi-arch (`amd64` + `arm64`) and [cosign-signed](https://github.com/sigstore/cosign) in CI, and the image you pull yourself is the same `ghcr.io/besoeasy/yantr:latest` artifact the installer registers as the Quadlet. A rolling `:dev` tag follows `main`, if you want what CI built rather than what a release packaged.
+Multi-arch (`amd64`/`arm64`), cosign-signed. `:dev` tracks `main`.
 
-> **Run as your normal user — never with `sudo`.** Yantr is rootless-only by design. Installed as root it would attach to a rootful Podman service, so every app it deploys would hold full host root — exactly what the architecture above exists to prevent. The installer refuses to run as root.
+> **Run as your normal user — never `sudo`.** Rootless-only by design; the installer refuses root.
 
 Or run manually with rootless Podman:
 
