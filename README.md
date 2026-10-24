@@ -1,6 +1,5 @@
 <img width="2072" height="1505" alt="yantr" src="https://github.com/user-attachments/assets/c8a4f811-294e-4db5-9eb8-ce38dcbf0a33" />
 
-
 <div align="center">
 
 # ⚡ Yantr
@@ -10,7 +9,7 @@
 [![Podman](https://img.shields.io/badge/Podman-ghcr.io-892ca0?style=flat-square&logo=podman&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
 [![Rootless](https://img.shields.io/badge/Security-100%25%20Rootless-emerald?style=flat-square)](https://yantr.org)
 [![Daemonless](https://img.shields.io/badge/Architecture-Daemonless-blueviolet?style=flat-square)](https://yantr.org)
-[![Go](https://img.shields.io/badge/Go-1.23+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev)
+[![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-PolyForm%20Noncommercial-blue?style=flat-square)](LICENSE)
 [![Vue 3](https://img.shields.io/badge/Vue-3-42b883?style=flat-square&logo=vue.js&logoColor=white)](https://vuejs.org)
 [![Website](https://img.shields.io/badge/Website-yantr.org-5c6bc0?style=flat-square)](https://yantr.org)
@@ -153,23 +152,6 @@ Open **http://localhost:5252** and create your operator account on first visit.
 ---
 
 
-## ✨ What Makes It Different
-
-**Zero OS footprint** — Yantr never writes to your host. Every app is a Podman Compose stack with named volumes. Uninstall and nothing is left behind.
-
-**Automatic Docker socket translation** — Apps requesting `/var/run/docker.sock` (such as Glances, Beszel, Arcane, or Portainer) are automatically routed to your rootless Podman socket with zero configuration.
-
-**Full environment control** — Edit env vars per deployment. No fixed presets, no platform lock-in. Deploy the same app twice for testing, family, or clients.
-
-**No dependency hell** — Python, Node, CUDA, whatever — each app brings its own runtime inside its container. Nothing conflicts.
-
-**Built-in networking** — Port conflict detection and Cloudflare Tunnel for public exposure.
-
-**Volume browser** — Inspect and manage your app data directly from the browser.
-
-**REST API** — Every action (installing, updating, removing, logging) is a JSON endpoint. Scriptable and CLI-friendly.
-
----
 
 ## 💬 Community
 
