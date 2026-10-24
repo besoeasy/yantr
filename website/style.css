@@ -1260,7 +1260,6 @@ p code, li code, td code, .spec-sub code {
 .ram-bar {
   height: 0.75rem;
   width: 100%;
-  overflow: hidden;
   border-radius: var(--radius-full);
   background: var(--gray-200);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -1269,10 +1268,41 @@ p code, li code, td code, .spec-sub code {
   display: flex;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+  border-radius: inherit;
 }
 .ram-track .requirement-fill:nth-child(1) { background: var(--gray-900); }
 .ram-track .requirement-fill:nth-child(2) { background: var(--gray-500); }
 .ram-track .requirement-fill:nth-child(3) { background: var(--gray-300); }
+
+/* Per-segment MB label on hover */
+.ram-track .requirement-fill {
+  position: relative;
+  min-width: 2px;
+}
+.ram-track .requirement-fill::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.4rem);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: var(--black);
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  z-index: 5;
+}
+.ram-track .requirement-fill:hover::after {
+  opacity: 1;
+}
 
 .ram-legend {
   margin-top: 0.75rem;
