@@ -145,9 +145,8 @@ podman run -d \
   ghcr.io/besoeasy/yantr:latest
 ```
 
-`HOST_PODMAN_SOCKET` tells Yantr where the socket lives **on the host**, which is the path it hands to apps mounting `/var/run/docker.sock` (Portainer, Homarr, Glances). Without it Yantr has to ask the Podman API at runtime, and apps that need the socket can fail to deploy.
-
-The two read-only `/host` and `/sys` binds are what back the host dashboard: filesystem usage and hardware temperatures. CPU, memory, load, uptime, disk I/O and per-interface network are read straight from `/proc`, which needs no mount because those files are not PID- or network-namespaced. Skip the binds and everything still works — those two tiles just report as unavailable.
+- `HOST_PODMAN_SOCKET` — host path to the Podman socket handed to apps mounting `/var/run/docker.sock` (Portainer, Homarr, Glances). Without it Yantr queries the API at runtime and socket-needing apps may fail to deploy.
+- `/host` and `/sys` (read-only) — back the host dashboard's filesystem-usage and temperature tiles. CPU, memory, load, uptime, disk I/O and network come from `/proc` and need no mount. Skip the binds and those two tiles just report unavailable.
 
 Open **http://localhost:5252** and create your operator account on first visit.
 
