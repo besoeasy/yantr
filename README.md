@@ -64,37 +64,6 @@ Most homelab platforms and container managers rely on Docker running as a root-l
 | **Idle Memory Overhead** | Always-on background daemon consuming RAM & CPU 24/7 | **Zero daemon overhead** — only your running apps consume resources |
 | **Docker Socket Safety** | Exposing `/var/run/docker.sock` gives complete host root takeover | **Safe user socket translation** — apps get Docker API without host root |
 
-### Key Architectural Advantages
-
-#### 1. True Rootless Isolation (Zero Host Root Privileges)
-Under standard Docker, the container engine runs as `root`. Granting a user access to the Docker socket or `docker` group is practically identical to granting passwordless `sudo`. If any web app or container has a zero-day exploit or escape vulnerability, the attacker gains root control of the physical host.
-
-Under rootless Podman, Yantr runs entirely inside Linux **user namespaces** (`subuid` and `subgid`). Even if an app runs as "root" (UID 0) inside its container, the Linux kernel maps that UID to an unprivileged user ID on the host. If an attacker breaches the container sandbox, they have zero host root permissions: they cannot read `/etc/shadow`, cannot overwrite host binaries, and cannot install system-wide rootkits.
-
-#### 2. Daemonless Architecture (No Single Point of Failure)
-Docker requires `dockerd` running continuously in the background. If the Docker daemon crashes, hangs, or restarts during a package update, all running containers can be killed or lose network connectivity. Furthermore, the idle daemon constantly consumes memory.
-
-Podman is **daemonless**. It uses a direct fork/exec model managed by lightweight `conmon` (container monitor) processes. There is no central daemon to crash. If Yantr itself is stopped, restarted, or updated, all of your background applications (Nextcloud, Jellyfin, Vaultwarden, AI models) continue running uninterrupted.
-
-#### 3. Native Linux systemd Integration (Quadlet)
-Docker fights your operating system with its own restart policies and proprietary supervisors.
-
-Yantr embraces the native Linux init system using **systemd Quadlet** (`.container` declarations in `~/.config/containers/systemd/`):
-- **Auto-starts on boot** via standard Linux user lingering (`loginctl enable-linger`).
-- **Native administration**: Control Yantr using standard `systemctl --user {status,restart,stop} yantr`.
-- **Unified system logging**: Stream live container logs directly with `journalctl --user -u yantr -f`.
-- **Native cgroups v2**: Clean per-service resource limits and process tracking managed directly by the kernel.
-
-#### 4. Untouched Host Networking & Firewall Safety
-Docker notoriously rewrites host `iptables` and `nftables` rules directly. On Linux distros like Ubuntu or Debian, Docker often punches holes right through UFW (Uncomplicated Firewall) without warning, accidentally exposing internal database ports or admin panels to the public internet.
-
-Rootless Podman executes network routing strictly within an isolated user network namespace (via `pasta` or `slirp4netns`). It **never modifies host firewall rules**. Your host firewall configuration stays 100% intact and trustworthy.
-
-#### 5. Transparent Docker Socket Emulation Without Root Risk
-Many popular homelab tools (such as Glances, Beszel, Portainer, or Arcane) expect `/var/run/docker.sock`. On Docker, mounting this socket hands the container keys to the kingdom.
-
-Yantr automatically detects and routes Docker socket requests to Podman's unprivileged user socket (`/run/user/$UID/podman/podman.sock`). The apps function with complete Docker compatibility, but without giving them root privileges on your host machine.
-
 ---
 
 ## 🚀 Quick Start
@@ -152,7 +121,6 @@ Open **http://localhost:5252** and create your operator account on first visit.
 ---
 
 
-
 ## 💬 Community
 
 Issues and bug reports belong on [GitHub](https://github.com/besoeasy/yantr/issues) so they stay searchable and trackable — that is where they get fixed.
@@ -163,17 +131,6 @@ Issues and bug reports belong on [GitHub](https://github.com/besoeasy/yantr/issu
 
 ---
 
-## Star History
-
-<a href="https://www.star-history.com/?repos=besoeasy%2Fyantr&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&legend=top-left" />
- </picture>
-</a>
-
----
 
 ## License
 
