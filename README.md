@@ -5,7 +5,7 @@
 
 # ⚡ Yantr
 
-**A self-hosted app store that runs alongside your OS — not instead of it.**
+**A self-hosted app store that never touches your host.**
 
 [![Podman](https://img.shields.io/badge/Podman-ghcr.io-892ca0?style=flat-square&logo=podman&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
 [![Rootless](https://img.shields.io/badge/Security-100%25%20Rootless-emerald?style=flat-square)](https://yantr.org)
