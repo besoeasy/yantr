@@ -194,7 +194,7 @@
       <!-- App marquee — full-bleed -->
       <div class="full-bleed marquee-section" style="background-image:radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);background-size:24px 24px;">
         <div class="marquee-row">
-          <div class="app-marquee-track app-marquee-left" id="hero-app-marquee-1"></div>
+          <div class="app-marquee-track app-marquee-left" id="app-marquee-1"></div>
         </div>
         <div class="marquee-center">
           <a
@@ -1305,7 +1305,7 @@
           const appCountEl = document.getElementById("hero-app-count");
           if (appCountEl) appCountEl.textContent = apps.length + "+";
 
-          const rowOne = document.getElementById("hero-app-marquee-1");
+          const rowOne = document.getElementById("app-marquee-1");
           if (!rowOne) return;
 
           const shuffled = [...apps];
