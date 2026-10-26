@@ -132,6 +132,10 @@ Issues and bug reports belong on [GitHub](https://github.com/besoeasy/yantr/issu
 ---
 
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/chart?repos=besoeasy/yantr&type=date&legend=top-left)](https://www.star-history.com/?repos=besoeasy%2Fyantr&type=date&legend=top-left)
+
 ## License
 
 Yantr is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE).
