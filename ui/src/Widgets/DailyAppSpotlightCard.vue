@@ -1,8 +1,9 @@
 <script>
-// One column of the desktop grid. A single app a day wants a single column:
-// the earlier full-width band existed to hold three apps, and with one pick
-// that width became mostly empty space around a name.
-export const meta = { cols: 1 };
+// Two columns: the logo becomes a poster rail on the left and the app's
+// story (name, description, tags, CTA) sits to its right. The earlier
+// single-column band existed to hold one pick, and at one column most of
+// the 320px height was empty space around a name.
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { computed } from "vue";
@@ -71,12 +72,6 @@ const appState = computed(() => {
   return "available";
 });
 
-const primaryTag = computed(() => {
-  const tags = dailyApp.value?.tags;
-  if (!Array.isArray(tags) || tags.length === 0) return null;
-  return tags[0];
-});
-
 const stateLabel = computed(() => {
   if (appState.value === "running") return t("home.dailyAppCard.running", { count: instanceCount.value });
   if (appState.value === "installed") return t("home.dailyAppCard.installed");
@@ -129,39 +124,58 @@ function handleSelect(appId) {
       </div>
     </div>
 
-    <!-- The app. The whole body is the click target: at one column there is
-         no room for the affordance to live anywhere but the bottom. -->
+    <!-- The app. The whole body is the click target: at two columns the
+         logo becomes a poster rail and the story (name, description, tags,
+         CTA) sits to its right. -->
     <button
       type="button"
       @click="handleSelect(dailyApp.id)"
-      class="group/app mt-6 flex flex-1 flex-col text-left"
+      class="group/app mt-6 flex flex-1 flex-row items-start gap-6 text-left"
     >
-      <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
-        <AppLogo
-          :logo="dailyApp?.logo"
-          :name="dailyApp?.name"
-          :seed="dailyApp?.id || dailyApp?.name"
-          img-class="h-full w-full object-contain"
-          icon-class="h-11 w-11 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
-        />
+      <!-- Poster rail: logo with the app's tags stacked beneath it. -->
+      <div class="flex w-48 shrink-0 flex-col items-center gap-3">
+        <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+          <AppLogo
+            :logo="dailyApp?.logo"
+            :name="dailyApp?.name"
+            :seed="dailyApp?.id || dailyApp?.name"
+            img-class="h-full w-full object-contain"
+            icon-class="h-20 w-20 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
+          />
+        </div>
+
+        <div class="flex flex-col items-center gap-2">
+          <span
+            v-for="tag in (dailyApp?.tags || []).slice(0, 3)"
+            :key="tag"
+            class="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300"
+          >
+            {{ tag }}
+          </span>
+          <span
+            v-if="(dailyApp?.tags?.length || 0) > 3"
+            class="text-[11px] font-medium yantra-text-secondary"
+          >
+            +{{ (dailyApp?.tags?.length || 0) - 3 }} more
+          </span>
+        </div>
       </div>
 
-      <div class="mt-4 text-3xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px] yantra-text-primary">
-        {{ dailyApp?.name }}
+      <!-- Story rail: name, description, and the affordance. -->
+      <div class="flex min-w-0 flex-1 flex-col">
+        <div class="text-2xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
+          {{ dailyApp?.name }}
+        </div>
+
+        <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3">
+          {{ dailyApp.short_description }}
+        </p>
+
+        <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
+          {{ t("home.dailyAppCard.viewApp") }}
+          <ArrowUpRight :size="14" />
+        </span>
       </div>
-
-      <div class="mt-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-        {{ primaryTag || "App" }}
-      </div>
-
-      <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3 yantra-text-secondary">
-        {{ dailyApp.short_description }}
-      </p>
-
-      <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
-        {{ t("home.dailyAppCard.viewApp") }}
-        <ArrowUpRight :size="14" />
-      </span>
     </button>
   </section>
 
