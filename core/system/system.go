@@ -13,22 +13,22 @@ import (
 	"core/shared"
 )
 
-// IPIdentity holds information about the public IP address.
+// IPIdentity holds information about the public IP address. Only the fields
+// MachineIdentityCard.vue renders are kept: ip, city, region, country, isp/org
+// — plus Source and FetchedAt, which say which provider answered and when, and
+// CacheTTLMs, which states the server-side cache contract. Provider extras the
+// card never showed (lat/lng, ASN, timezone, country code) were dropped with
+// the presence feed.
 type IPIdentity struct {
-	IP          string  `json:"ip"`
-	City        string  `json:"city,omitempty"`
-	Region      string  `json:"region,omitempty"`
-	Country     string  `json:"country,omitempty"`
-	CountryCode string  `json:"countryCode,omitempty"`
-	ISP         string  `json:"isp,omitempty"`
-	Org         string  `json:"org,omitempty"`
-	ASN         string  `json:"asn,omitempty"`
-	Timezone    string  `json:"timezone,omitempty"`
-	Latitude    float64 `json:"latitude,omitempty"`
-	Longitude   float64 `json:"longitude,omitempty"`
-	Source      string  `json:"source"`
-	FetchedAt   string  `json:"fetchedAt"`
-	CacheTTLMs  int64   `json:"cacheTtlMs"`
+	IP         string `json:"ip"`
+	City       string `json:"city,omitempty"`
+	Region     string `json:"region,omitempty"`
+	Country    string `json:"country,omitempty"`
+	ISP        string `json:"isp,omitempty"`
+	Org        string `json:"org,omitempty"`
+	Source     string `json:"source"`
+	FetchedAt  string `json:"fetchedAt"`
+	CacheTTLMs int64  `json:"cacheTtlMs"`
 }
 
 const ipCacheTTL = 5 * time.Minute
@@ -115,14 +115,6 @@ func normalizeIPResponse(source string, raw map[string]interface{}, fetchedAt st
 		}
 		return ""
 	}
-	getFloat := func(key string) float64 {
-		if v, ok := raw[key]; ok {
-			if f, ok := v.(float64); ok {
-				return f
-			}
-		}
-		return 0
-	}
 
 	id := &IPIdentity{
 		Source:     source,
@@ -139,17 +131,6 @@ func normalizeIPResponse(source string, raw map[string]interface{}, fetchedAt st
 		id.City = getString("city")
 		id.Region = getString("region")
 		id.Country = getString("country")
-		id.CountryCode = getString("country_code")
-		id.Timezone = func() string {
-			if tz, ok := raw["timezone"].(map[string]interface{}); ok {
-				if id, ok := tz["id"].(string); ok {
-					return id
-				}
-			}
-			return ""
-		}()
-		id.Latitude = getFloat("latitude")
-		id.Longitude = getFloat("longitude")
 		if conn, ok := raw["connection"].(map[string]interface{}); ok {
 			if isp, ok := conn["isp"].(string); ok {
 				id.ISP = isp
@@ -167,36 +148,24 @@ func normalizeIPResponse(source string, raw map[string]interface{}, fetchedAt st
 		id.City = getString("city")
 		id.Region = getString("region")
 		id.Country = getString("country_name")
-		id.CountryCode = getString("country_code")
 		id.ISP = getString("org")
 		id.Org = getString("org")
-		id.ASN = getString("asn")
-		id.Timezone = getString("timezone")
-		id.Latitude = getFloat("latitude")
-		id.Longitude = getFloat("longitude")
 
 	case "ipinfo.io":
 		id.IP = getString("ip")
 		id.City = getString("city")
 		id.Region = getString("region")
 		id.Country = getString("country")
-		id.CountryCode = getString("country")
 		id.ISP = getString("org")
 		id.Org = getString("org")
-		id.Timezone = getString("timezone")
 
 	case "ifconfig.co":
 		id.IP = getString("ip")
 		id.City = getString("city")
 		id.Region = shared.Coalesce(getString("region_name"), getString("region"))
 		id.Country = getString("country")
-		id.CountryCode = shared.Coalesce(getString("country_iso"), getString("country_code"))
 		id.ISP = shared.Coalesce(getString("asn_org"), getString("organization"))
 		id.Org = shared.Coalesce(getString("asn_org"), getString("organization"))
-		id.ASN = getString("asn")
-		id.Timezone = shared.Coalesce(getString("time_zone"), getString("timezone"))
-		id.Latitude = getFloat("latitude")
-		id.Longitude = getFloat("longitude")
 	}
 
 	return id
