@@ -54,6 +54,10 @@ Thumbs.db
 # Agent session artifacts (screenshots and scratch files written by coding agents)
 .openchamber
 
+# Go toolchain caches (created when building via the golang container)
+core/.cache/
+core/.config/
+
 # Temp files
 tmp
 check_output*.txt
