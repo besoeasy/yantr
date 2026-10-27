@@ -1,0 +1,44 @@
+x-yantr:
+  name: Dufs
+  tags: [files, sharing, api, self-hosted, tools]
+  short_description: "Lightweight file server with browser uploads, search, and WebDAV."
+  description: >
+    Dufs is a lightweight file server for browsing, uploading, and managing files
+    from any browser. It supports drag-and-drop uploads, search, zip downloads,
+    and serves the same files over WebDAV and plain HTTP. One account protects
+    every path, so nothing is public by default.
+  usecases:
+    [
+      Serve files from your server with browser uploads and downloads.,
+      Mount the same share from any WebDAV client with one login.,
+      Upload and download with curl or scripts over plain HTTP.
+    ]
+  website: https://github.com/sigoden/dufs
+  env_generators:
+    DUFS_PASSWORD: {length: 20, charset: alnum}
+  notes:
+    [
+      "Every request needs the account, including WebDAV — same address, same login.",
+      "The password must not contain : @ , or | — those break the auth rule.",
+      "Files persist in the dufs_data volume.",
+    ]
+  ports:
+    - {port: 5000, protocol: HTTP, show: true, label: "Web UI", service: dufs}
+
+services:
+  dufs:
+    image: docker.io/sigoden/dufs:latest
+    command: ["/data"]
+    environment:
+      DUFS_ALLOW_ALL: "true"
+      DUFS_USERNAME: ${DUFS_USERNAME:-admin}
+      DUFS_PASSWORD: ${DUFS_PASSWORD}
+      DUFS_AUTH: ${DUFS_USERNAME:-admin}:${DUFS_PASSWORD}@/:rw
+    ports:
+      - "5000"
+    volumes:
+      - dufs_data:/data
+    restart: unless-stopped
+
+volumes:
+  dufs_data: null
