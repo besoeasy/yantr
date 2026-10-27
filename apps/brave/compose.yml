@@ -1,0 +1,42 @@
+x-yantr:
+  name: "Brave"
+  tags: [privacy, security, tools, self-hosted]
+  short_description: "Brave browser in your browser: privacy-first desktop GUI streamed over the web."
+  description: >
+    A fast, private and secure Brave browser running in a container and streamed
+    to your web browser through Selkies. Keep browsing isolated from your host,
+    with persistent profiles, HTTPS access and optional GPU acceleration.
+  usecases:
+    - "Browse the web in an isolated, privacy-first browser."
+    - "Keep browser profiles and sessions on your own hardware."
+    - "Access a persistent desktop browser from any device."
+  website: "https://github.com/linuxserver/docker-brave"
+  notes:
+    - "HTTPS access uses a self-signed certificate; accept the warning when opening."
+    - "Optional HTTP basic auth: set CUSTOM_USER and PASSWORD in the deploy form."
+    - "Set your timezone with TZ (e.g. Europe/Madrid) and file ownership with PUID/PGID."
+    - "Web interface includes passwordless sudo - do not expose it to the Internet unsecured."
+    - "Optional GPU: mount /dev/dri for Intel/AMD acceleration (set AUTO_GPU=false to disable)."
+  ports:
+    - {port: 3001, protocol: HTTPS, show: true, label: "Web GUI", service: brave}
+    - {port: 3000, protocol: HTTP, label: "HTTP GUI (reverse proxy only)", service: brave}
+
+services:
+  brave:
+    image: ghcr.io/linuxserver/brave:latest
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      TZ: ${TZ:-Etc/UTC}
+      CUSTOM_USER: ${CUSTOM_USER:-}
+      PASSWORD: ${PASSWORD:-}
+    ports:
+      - "3000"
+      - "3001"
+    volumes:
+      - brave_config:/config
+    shm_size: "1gb"
+    restart: unless-stopped
+
+volumes:
+  brave_config:
