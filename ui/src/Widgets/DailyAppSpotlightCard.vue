@@ -72,6 +72,14 @@ const appState = computed(() => {
   return "available";
 });
 
+const ctaLabel = computed(() => {
+  // The whole card still routes to the app page (where a running stack is
+  // actually opened), but the label reflects the state so an already-running
+  // pick reads as an action rather than a catalog link.
+  if (appState.value === "running") return t("home.dailyAppCard.openOverview");
+  return t("home.dailyAppCard.viewApp");
+});
+
 const stateLabel = computed(() => {
   if (appState.value === "running") return t("home.dailyAppCard.running", { count: instanceCount.value });
   if (appState.value === "installed") return t("home.dailyAppCard.installed");
@@ -134,7 +142,7 @@ function handleSelect(appId) {
     >
       <!-- Poster rail: logo with the app's tags stacked beneath it. -->
       <div class="flex w-48 shrink-0 flex-col items-center gap-3">
-        <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+        <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
           <AppLogo
             :logo="dailyApp?.logo"
             :name="dailyApp?.name"
@@ -172,7 +180,7 @@ function handleSelect(appId) {
         </p>
 
         <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
-          {{ t("home.dailyAppCard.viewApp") }}
+          {{ ctaLabel }}
           <ArrowUpRight :size="14" />
         </span>
       </div>
