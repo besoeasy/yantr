@@ -62,7 +62,7 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 		}
 
 		baseID := getBaseAppID(project)
-		appID := coalesce(lbl.App, baseID)
+		appID := shared.Coalesce(lbl.App, baseID)
 		if appID == "" && len(c.Names) > 0 {
 			appID = strings.TrimPrefix(c.Names[0], "/")
 		}
@@ -77,9 +77,9 @@ func handleContainers(w http.ResponseWriter, r *http.Request) {
 			"state": c.State, "status": c.Status, "created": c.Created,
 			"ports": c.Ports, "labels": c.Labels, "appLabels": lbl,
 			"app": map[string]interface{}{
-				"id": appID, "projectId": coalesce(project, name, "unknown"),
-				"service":           coalesce(lbl.Service, name, "unknown"),
-				"name":              coalesce(entryStr(entry, "name"), lbl.Service, name),
+				"id": appID, "projectId": shared.Coalesce(project, name, "unknown"),
+				"service":           shared.Coalesce(lbl.Service, name, "unknown"),
+				"name":              shared.Coalesce(entryStr(entry, "name"), lbl.Service, name),
 				"logo":              entryStr(entry, "logo"),
 				"tags":              entrySlice(entry, "tags"),
 				"ports":             entryPorts(entry),
@@ -106,7 +106,7 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 
 	lbl := parseAppLabels(info.Config.Labels)
 	project := compose.ComposeProjectLabel(info.Config.Labels)
-	appID := coalesce(lbl.App, getBaseAppID(project), strings.TrimPrefix(info.Name, "/"))
+	appID := shared.Coalesce(lbl.App, getBaseAppID(project), strings.TrimPrefix(info.Name, "/"))
 	entry := apps.GetCatalogIndex()[appID]
 	name := strings.TrimPrefix(info.Name, "/")
 
@@ -119,8 +119,8 @@ func handleContainerDetail(w http.ResponseWriter, r *http.Request) {
 			"mounts": info.Mounts, "env": info.Config.Env, "labels": lbl,
 			"expireAt": info.Config.Labels["yantr.expireAt"],
 			"app": map[string]interface{}{
-				"id": appID, "projectId": coalesce(project, name),
-				"service": coalesce(lbl.Service, name), "name": coalesce(entryStr(entry, "name"), lbl.Service, name),
+				"id": appID, "projectId": shared.Coalesce(project, name),
+				"service": shared.Coalesce(lbl.Service, name), "name": shared.Coalesce(entryStr(entry, "name"), lbl.Service, name),
 				"logo": entryStr(entry, "logo"), "tags": entrySlice(entry, "tags"),
 				"ports": entryPorts(entry), "short_description": entryStr(entry, "short_description"),
 				"description": entryStr(entry, "description"), "usecases": entrySlice(entry, "usecases"),
@@ -411,7 +411,7 @@ func handleContainerDelete(w http.ResponseWriter, r *http.Request) {
 					})
 					return
 				}
-				job.Fail(fmt.Errorf("compose down failed: %s", coalesce(errStr, out)), exitCode)
+				job.Fail(fmt.Errorf("compose down failed: %s", shared.Coalesce(errStr, out)), exitCode)
 				shared.Log("error", fmt.Sprintf("[container] compose down failed: project=%s exit=%d", project, exitCode))
 			}
 		}

@@ -95,7 +95,7 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 			for netName, netCfgRaw := range networks {
 				if netCfg, ok := netCfgRaw.(map[string]interface{}); ok {
 					if ext, _ := netCfg["external"].(bool); ext {
-						name := coalesce(func() string {
+						name := shared.Coalesce(func() string {
 							if n, ok := netCfg["name"].(string); ok {
 								return n
 							}
@@ -199,8 +199,8 @@ func handleDeploy(w http.ResponseWriter, r *http.Request) {
 	stdout, stderr, exitCode, _ := spawnExecJob(deployCtx, job, cmdName, args, composeEnv, appPath)
 	if exitCode != 0 {
 		shared.Log("error", fmt.Sprintf("[deploy] FAILED: app=%s exit=%d", body.AppID, exitCode))
-		job.Fail(fmt.Errorf("%s", coalesce(stderr, stdout)), exitCode)
-		jsonErr(w, 500, "DEPLOYMENT_FAILED", coalesce(stderr, stdout))
+		job.Fail(fmt.Errorf("%s", shared.Coalesce(stderr, stdout)), exitCode)
+		jsonErr(w, 500, "DEPLOYMENT_FAILED", shared.Coalesce(stderr, stdout))
 		return
 	}
 	shared.Log("info", fmt.Sprintf("[deploy] SUCCESS: app=%s project=%s", body.AppID, projectName))

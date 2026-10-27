@@ -4,6 +4,7 @@ package shared
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -21,6 +22,18 @@ var (
 	logMu sync.Mutex
 	Logs  []LogEntry
 )
+
+// Coalesce returns the first value whose trimmed content is not empty, or "".
+// The same helper lived, copied, in three packages after the presence package
+// came with its own; it lives here now.
+func Coalesce(vals ...string) string {
+	for _, v := range vals {
+		if strings.TrimSpace(v) != "" {
+			return v
+		}
+	}
+	return ""
+}
 
 // Log appends a log entry to the circular buffer and prints to stdout/stderr.
 func Log(level, message string) {

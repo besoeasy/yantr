@@ -88,15 +88,6 @@ func parseJSON(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	return true
 }
 
-func coalesce(vals ...string) string {
-	for _, v := range vals {
-		if strings.TrimSpace(v) != "" {
-			return v
-		}
-	}
-	return ""
-}
-
 // ─── Directory helpers ────────────────────────────────────────────────────────
 
 func getAppsDir() string {
@@ -512,7 +503,7 @@ func main() {
 	r.Get("/api/jobs/{id}", handleJobDetail)
 
 	distDir := getDistDir()
-	uiBase := coalesce(os.Getenv("UI_BASE_PATH"), "/")
+	uiBase := shared.Coalesce(os.Getenv("UI_BASE_PATH"), "/")
 	if _, err := os.Stat(distDir); err == nil {
 		shared.Log("info", "📦 Serving Vue.js UI from: "+distDir)
 		fs := http.FileServer(http.Dir(distDir))

@@ -161,7 +161,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 			meta := lookupMeta(p.PrivatePort, composeService)
 			svc := meta.service
 			if svc == "" {
-				svc = coalesce(composeService, strings.TrimPrefix(c.Names[0], "/"), "unknown")
+				svc = shared.Coalesce(composeService, strings.TrimPrefix(c.Names[0], "/"), "unknown")
 			}
 			key := fmt.Sprintf("%d:%d:%s:%s", p.PublicPort, p.PrivatePort, p.Type, svc)
 			if _, ok := portMap[key]; !ok {
@@ -224,7 +224,7 @@ func handleStackDetail(w http.ResponseWriter, r *http.Request) {
 			"id": c.ID, "name": name, "composeService": composeService,
 			"image": c.Image, "state": c.State, "status": c.Status, "created": c.Created,
 			"rawPorts": c.Ports, "mounts": mounts, "networks": networks,
-			"service":       coalesce(composeService, lbl.Service, name),
+			"service":       shared.Coalesce(composeService, lbl.Service, name),
 			"hasYantrLabel": isPrimary,
 		})
 	}
@@ -416,7 +416,7 @@ func handleStackDelete(w http.ResponseWriter, r *http.Request) {
 				})
 				return
 			}
-			job.Fail(fmt.Errorf("compose down failed: %s", coalesce(errStr, out)), exitCode)
+			job.Fail(fmt.Errorf("compose down failed: %s", shared.Coalesce(errStr, out)), exitCode)
 			shared.Log("error", fmt.Sprintf("[stack] compose down failed: project=%s exit=%d err=%v", projectID, exitCode, err))
 			jsonErr(w, 500, "STACK_REMOVE_FAILED", fmt.Sprintf("podman compose down failed (exit %d)", exitCode))
 			return
@@ -496,7 +496,7 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	job.Fail(fmt.Errorf("compose restart failed: %s", coalesce(errStr, out)), exitCode)
+	job.Fail(fmt.Errorf("compose restart failed: %s", shared.Coalesce(errStr, out)), exitCode)
 	shared.Log("error", fmt.Sprintf("[stack] compose restart failed: project=%s exit=%d err=%v", projectID, exitCode, err))
 	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("podman compose restart failed (exit %d)", exitCode))
 }

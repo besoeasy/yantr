@@ -9,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"core/shared"
 )
 
 // IPIdentity holds information about the public IP address.
@@ -186,25 +188,16 @@ func normalizeIPResponse(source string, raw map[string]interface{}, fetchedAt st
 	case "ifconfig.co":
 		id.IP = getString("ip")
 		id.City = getString("city")
-		id.Region = coalesce(getString("region_name"), getString("region"))
+		id.Region = shared.Coalesce(getString("region_name"), getString("region"))
 		id.Country = getString("country")
-		id.CountryCode = coalesce(getString("country_iso"), getString("country_code"))
-		id.ISP = coalesce(getString("asn_org"), getString("organization"))
-		id.Org = coalesce(getString("asn_org"), getString("organization"))
+		id.CountryCode = shared.Coalesce(getString("country_iso"), getString("country_code"))
+		id.ISP = shared.Coalesce(getString("asn_org"), getString("organization"))
+		id.Org = shared.Coalesce(getString("asn_org"), getString("organization"))
 		id.ASN = getString("asn")
-		id.Timezone = coalesce(getString("time_zone"), getString("timezone"))
+		id.Timezone = shared.Coalesce(getString("time_zone"), getString("timezone"))
 		id.Latitude = getFloat("latitude")
 		id.Longitude = getFloat("longitude")
 	}
 
 	return id
-}
-
-func coalesce(vals ...string) string {
-	for _, v := range vals {
-		if strings.TrimSpace(v) != "" {
-			return v
-		}
-	}
-	return ""
 }

@@ -292,7 +292,7 @@ func loadCatalog() (*Catalog, error) {
 				Tags:             tags,
 				Ports:            ports,
 				ShortDescription: meta.ShortDescription,
-				Description:      coalesce(meta.Description, meta.ShortDescription),
+				Description:      shared.Coalesce(meta.Description, meta.ShortDescription),
 				Usecases:         usecases,
 			Website:          meta.Website,
 			Notes:            meta.Notes,
