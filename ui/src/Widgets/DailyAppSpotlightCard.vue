@@ -64,12 +64,19 @@ const dailyApp = computed(() => {
   };
 });
 
-const instanceCount = computed(() => dailyApp.value?.instanceCount ?? 0);
-
 const appState = computed(() => {
-  if (instanceCount.value > 0) return "running";
+  const count = dailyApp.value?.instanceCount ?? 0;
+  if (count > 0) return "running";
   if (dailyApp.value?.isInstalled) return "installed";
   return "available";
+});
+
+const stateLabel = computed(() => {
+  if (appState.value === "running") {
+    return t("home.dailyAppCard.running", { count: dailyApp.value?.instanceCount ?? 0 });
+  }
+  if (appState.value === "installed") return t("home.dailyAppCard.installed");
+  return t("home.dailyAppCard.available");
 });
 
 const ctaLabel = computed(() => {
@@ -78,12 +85,6 @@ const ctaLabel = computed(() => {
   // pick reads as an action rather than a catalog link.
   if (appState.value === "running") return t("home.dailyAppCard.openOverview");
   return t("home.dailyAppCard.viewApp");
-});
-
-const stateLabel = computed(() => {
-  if (appState.value === "running") return t("home.dailyAppCard.running", { count: instanceCount.value });
-  if (appState.value === "installed") return t("home.dailyAppCard.installed");
-  return t("home.dailyAppCard.available");
 });
 
 function handleSelect(appId) {
