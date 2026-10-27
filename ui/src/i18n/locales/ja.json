@@ -5,24 +5,8 @@
     "darkMode": "ダークモード",
     "dashboard": "ホーム",
     "apps": "アプリ",
-    "fleet": "フリート",
     "storage": "ストレージ",
     "logs": "ログ"
-  },
-  "fleet": {
-    "eyebrow": "ネットワーク",
-    "title": "フリート",
-    "subtitle": "国・OS・RAM・インストール済みアプリを報告する匿名ノード。",
-    "nodes": "ノード",
-    "ramLow": "RAM 最小",
-    "ramHigh": "RAM 最大",
-    "ramAvg": "RAM 平均",
-    "countries": "国",
-    "os": "OS",
-    "apps": "よく入っているアプリ",
-    "empty": "ntfy キャッシュに最近の ping がまだありません。",
-    "loadFailed": "フリート統計を読み込めませんでした",
-    "footnote": "期間: {window}。{events} 件のイベント。"
   },
   "common": {
     "loading": "読み込み中...",

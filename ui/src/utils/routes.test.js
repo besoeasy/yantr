@@ -17,7 +17,6 @@ import {
   containerDetail,
   dashboard,
   developerDetail,
-  fleet,
   logs,
   routes,
   stackDetail,
@@ -105,7 +104,6 @@ describe("route table", () => {
     );
     expect(redirecting.has("/")).toBe(true);
     expect(redirecting.has("/home")).toBe(true);
-    expect(redirecting.has("/presence")).toBe(true);
     expect(redirecting.has("/stacks")).toBe(true);
     expect(redirecting.has("/developer/:npub")).toBe(true);
   });
@@ -144,7 +142,6 @@ describe("builders", () => {
     { label: "dashboard", build: dashboard, name: ROUTE.DASHBOARD },
     { label: "apps", build: apps, name: ROUTE.APPS },
     { label: "logs", build: logs, name: ROUTE.LOGS },
-    { label: "fleet", build: fleet, name: ROUTE.FLEET },
   ];
 
   it.each(plain)("$label targets a declared pathless route", ({ build, name }) => {

@@ -2,7 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { 
   Box, Home, Moon, Sun, Check,
-  HardDrive, Terminal, Lock, Globe
+  HardDrive, Terminal, Lock
 } from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
@@ -67,7 +67,6 @@ const communityLinks = [
 const NAV_ICONS = {
   [NAV.DASHBOARD]: Home,
   [NAV.APPS]: Box,
-  [NAV.FLEET]: Globe,
   [NAV.STORAGE]: HardDrive,
   [NAV.LOGS]: Terminal,
 };

@@ -31,7 +31,6 @@ export const ROUTE = Object.freeze({
   DEVELOPER_DETAIL: "developer-detail",
   STORAGE: "storage",
   LOGS: "logs",
-  FLEET: "fleet",
   NOT_FOUND: "not-found",
 });
 
@@ -47,7 +46,6 @@ export const NAV = Object.freeze({
   APPS: "apps",
   STORAGE: "storage",
   LOGS: "logs",
-  FLEET: "fleet",
 });
 
 /**
@@ -59,7 +57,6 @@ export const NAV = Object.freeze({
 export const NAV_ITEMS = [
   { id: NAV.DASHBOARD, labelKey: "nav.dashboard" },
   { id: NAV.APPS, labelKey: "nav.apps" },
-  { id: NAV.FLEET, labelKey: "nav.fleet" },
   { id: NAV.STORAGE, labelKey: "nav.storage" },
   { id: NAV.LOGS, labelKey: "nav.logs" },
 ];
@@ -108,11 +105,6 @@ export function logs() {
   return { name: ROUTE.LOGS };
 }
 
-/** The fleet overview. */
-export function fleet() {
-  return { name: ROUTE.FLEET };
-}
-
 // ─── Table ──────────────────────────────────────────────────────────────────
 //
 // Entries are lazy so each view stays its own chunk. There are no
@@ -129,7 +121,6 @@ export const routes = [
   // now — but the bookmark must survive, and stack detail lives on at
   // /stacks/:projectId below.
   { path: "/home", redirect: { name: ROUTE.DASHBOARD } },
-  { path: "/presence", redirect: { name: ROUTE.FLEET } },
   { path: "/stacks", redirect: { name: ROUTE.DASHBOARD } },
   { path: "/developer/:npub", redirect: (to) => developerDetail(to.params.npub) },
 
@@ -184,12 +175,6 @@ export const routes = [
     name: ROUTE.LOGS,
     component: () => import("../views/Logs.vue"),
     meta: { title: "Logs", nav: NAV.LOGS },
-  },
-  {
-    path: "/fleet",
-    name: ROUTE.FLEET,
-    component: () => import("../views/Fleet.vue"),
-    meta: { title: "Fleet", nav: NAV.FLEET },
   },
 
   // Last: anything unmatched. Without this an unknown hash rendered an empty

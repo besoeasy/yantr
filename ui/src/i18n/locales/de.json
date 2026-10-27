@@ -5,24 +5,8 @@
     "darkMode": "Dunkelmodus",
     "dashboard": "Start",
     "apps": "Apps",
-    "fleet": "Flotte",
     "storage": "Speicher",
     "logs": "Protokolle"
-  },
-  "fleet": {
-    "eyebrow": "Netzwerk",
-    "title": "Flotte",
-    "subtitle": "Anonyme Knoten, die Land, OS, RAM und installierte Apps melden.",
-    "nodes": "Knoten",
-    "ramLow": "RAM niedrigst",
-    "ramHigh": "RAM höchst",
-    "ramAvg": "RAM durchschnitt",
-    "countries": "Länder",
-    "os": "Betriebssysteme",
-    "apps": "Meistinstallierte Apps",
-    "empty": "Noch keine aktuellen Pings im ntfy-Cache.",
-    "loadFailed": "Flottenstatistik konnte nicht geladen werden",
-    "footnote": "Fenster: {window}. {events} Ereignisse gelesen."
   },
   "common": {
     "loading": "Laden...",

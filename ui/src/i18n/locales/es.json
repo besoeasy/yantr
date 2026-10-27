@@ -5,24 +5,8 @@
     "darkMode": "Modo oscuro",
     "dashboard": "Inicio",
     "apps": "Aplicaciones",
-    "fleet": "Flota",
     "storage": "Almacenamiento",
     "logs": "Registros"
-  },
-  "fleet": {
-    "eyebrow": "Red",
-    "title": "Flota",
-    "subtitle": "Nodos anónimos que reportan su país, SO, RAM y apps instaladas.",
-    "nodes": "Nodos",
-    "ramLow": "RAM mínima",
-    "ramHigh": "RAM máxima",
-    "ramAvg": "RAM media",
-    "countries": "Países",
-    "os": "Sistemas operativos",
-    "apps": "Apps más instaladas",
-    "empty": "Aún no hay pings recientes en la caché de ntfy.",
-    "loadFailed": "No se pudieron cargar las estadísticas",
-    "footnote": "Ventana: {window}. {events} eventos leídos."
   },
   "common": {
     "loading": "Cargando...",

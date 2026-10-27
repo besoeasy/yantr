@@ -22,7 +22,6 @@ describe("redirects", () => {
   it.each([
     ["/", "/dashboard", ROUTE.DASHBOARD],
     ["/home", "/dashboard", ROUTE.DASHBOARD],
-    ["/presence", "/fleet", ROUTE.FLEET],
     ["/stacks", "/dashboard", ROUTE.DASHBOARD],
     ["/developer/npub1abc", "/developers/npub1abc", ROUTE.DEVELOPER_DETAIL],
   ])("%s lands on %s", async (from, path, name) => {

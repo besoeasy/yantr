@@ -5,24 +5,8 @@
     "darkMode": "深色模式",
     "dashboard": "首页",
     "apps": "应用",
-    "fleet": "集群",
     "storage": "存储",
     "logs": "日志"
-  },
-  "fleet": {
-    "eyebrow": "网络",
-    "title": "集群",
-    "subtitle": "匿名节点上报的国家/地区、系统、内存和已安装应用。",
-    "nodes": "节点",
-    "ramLow": "内存最低",
-    "ramHigh": "内存最高",
-    "ramAvg": "内存平均",
-    "countries": "国家",
-    "os": "操作系统",
-    "apps": "安装最多的应用",
-    "empty": "ntfy 缓存里还没有最近的心跳。",
-    "loadFailed": "无法加载集群统计",
-    "footnote": "窗口：{window}。已解析 {events} 条事件。"
   },
   "common": {
     "loading": "加载中...",

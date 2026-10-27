@@ -24,7 +24,6 @@ import (
 	"core/apps"
 	"core/auth"
 	"core/podman"
-	"core/presence"
 	"core/shared"
 	"core/supervisor"
 )
@@ -448,8 +447,6 @@ func main() {
 	shared.Log("info", "📂 Apps directory: "+appsPath)
 	shared.Log("info", fmt.Sprintf("🏗️  Architecture: %s/%s", runtime.GOOS, runtime.GOARCH))
 
-	presence.StartPresenceScheduler(version)
-
 	supervisor.Init(appsPath)
 	go supervisor.Resuscitate(appsPath, getComposeCommand)
 	go supervisor.StartWatchdog(context.Background())
@@ -510,7 +507,6 @@ func main() {
 	r.Get("/api/developers/{handle}", handleDeveloperApps)
 	r.Get("/api/nostr/relays", handleNostrRelays)
 	r.With(withWriteTimeout(spawnTimeoutLong)).Post("/api/autoupdate/run", handleAutoupdateRun)
-	r.Get("/api/fleet/stats", handleFleetStats)
 	r.Get("/api/jobs", handleJobsList)
 	r.Get("/api/jobs/active", handleJobsActive)
 	r.Get("/api/jobs/{id}", handleJobDetail)

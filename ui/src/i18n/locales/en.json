@@ -5,24 +5,8 @@
     "darkMode": "Dark mode",
     "dashboard": "Home",
     "apps": "Apps",
-    "fleet": "Fleet",
     "storage": "Storage",
     "logs": "Logs"
-  },
-  "fleet": {
-    "eyebrow": "Network",
-    "title": "Fleet",
-    "subtitle": "Anonymous nodes reporting their country, OS, RAM, and the apps they run.",
-    "nodes": "Nodes",
-    "ramLow": "RAM lowest",
-    "ramHigh": "RAM highest",
-    "ramAvg": "RAM average",
-    "countries": "Countries",
-    "os": "Operating systems",
-    "apps": "Most installed apps",
-    "empty": "No recent pings in the ntfy cache yet.",
-    "loadFailed": "Failed to load fleet stats",
-    "footnote": "Window: {window}. Parsed {events} events."
   },
   "common": {
     "loading": "Loading...",
@@ -96,7 +80,8 @@
       "copied": "Copied",
       "noAddress": "No Lightning address published — follow the account and send a thank-you on Nostr instead.",
       "follow": "Follow on Nostr",
-    "viewProfile": "View developer profile"    },
+      "viewProfile": "View developer profile"
+    },
     "toolsNavCard": {
       "systemTools": "System Tools",
       "managementLogs": "Management & Logs",

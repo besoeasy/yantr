@@ -4,7 +4,6 @@ import path from 'path';
 import nunjucks from 'nunjucks';
 import { parse } from 'yaml';
 import { fileURLToPath } from 'url';
-import { parseFleetEvents, aggregateFleet, emptyFleetStats } from './website/fleet.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -446,74 +445,9 @@ async function fetchGitHubData() {
   }
 }
 
-// ── Fleet presence snapshot ──────────────────────────────────────
-// Same feed the app UI shows on its Fleet page (core/presence/stats.go):
-// anonymous presence pings aggregated from the public ntfy topic.
-// The snapshot is written to website/presence.json so yantr.org renders
-// instantly; the page then refreshes live from ntfy in the browser.
-//
-// The aggregation itself is in website/fleet.js, which the page imports too.
-const presenceJsonPath = path.join(websiteDir, 'presence.json');
-const PRESENCE_TOPIC = (
-  process.env.YANTR_PRESENCE_TOPIC ||
-  'https://ntfy.sh/yantr'
-).replace(/\/+$/, '');
-
-function httpsGetText(url, timeoutMs = 15000) {
-  return new Promise((resolve, reject) => {
-    const req = https.get(
-      url,
-      { headers: { 'User-Agent': 'yantr-website-builder', Accept: 'application/x-ndjson' }, timeout: timeoutMs },
-      (res) => {
-        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          httpsGetText(res.headers.location, timeoutMs).then(resolve, reject);
-          res.resume();
-          return;
-        }
-        let body = '';
-        res.on('data', (chunk) => (body += chunk));
-        res.on('end', () => {
-          if (res.statusCode >= 400) reject(new Error(`ntfy status ${res.statusCode}`));
-          else resolve(body);
-        });
-      }
-    );
-    req.on('error', reject);
-    req.on('timeout', () => req.destroy(new Error('ntfy fetch timed out')));
-  });
-}
-
-async function fetchPresenceSnapshot() {
-  console.log('\n📡 Fetching fleet presence snapshot...');
-  let appNames = {};
-  try {
-    const catalog = JSON.parse(fs.readFileSync(appsJsonPath, 'utf8'));
-    for (const app of catalog?.apps || []) {
-      if (app?.id) appNames[app.id] = app.name || app.id;
-    }
-  } catch (error) {
-    console.warn(`⚠️  Could not read apps.json for presence names: ${error.message}`);
-  }
-
-  try {
-    const ndjson = await httpsGetText(`${PRESENCE_TOPIC}/json?poll=1&since=all`);
-    const stats = aggregateFleet(parseFleetEvents(ndjson), appNames);
-    fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
-    console.log(`✅ Presence snapshot saved (${stats.nodes} nodes, ${stats.events} events)`);
-  } catch (error) {
-    console.warn(`⚠️  Could not fetch presence: ${error.message}`);
-    // Snapshot fallback so the Fleet section still renders its empty state.
-    if (!fs.existsSync(presenceJsonPath)) {
-      const stats = emptyFleetStats();
-      fs.writeFileSync(presenceJsonPath, JSON.stringify({ fetchedAt: stats.fetchedAt, stats }, null, 2), 'utf8');
-    }
-  }
-}
-
 try {
   await fetchGitHubData();
   buildPages();
-  await fetchPresenceSnapshot();
 } catch (error) {
   console.error('❌ Failed to generate app pages:', error.message);
   process.exit(1);
