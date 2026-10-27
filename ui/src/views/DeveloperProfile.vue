@@ -200,7 +200,7 @@ watch(developerRef, (next) => {
 
       <template v-else>
         <!-- Identity header -->
-        <div class="flex flex-col gap-6 rounded-2xl border border-zinc-200 bg-white p-6 transition-[border-color,box-shadow] duration-200 hover:border-zinc-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:border-zinc-800 dark:bg-(--page-bg) dark:hover:border-zinc-700 dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
+        <div class="yantra-card group relative flex flex-col gap-6 overflow-hidden p-6 transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:flex-row dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
           <div class="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <img v-if="avatarUrl" :src="avatarUrl" :alt="displayName" class="h-full w-full object-cover" />
             <span v-else class="text-2xl font-black tracking-tight text-zinc-900 dark:text-zinc-100">{{ initials }}</span>
@@ -250,8 +250,14 @@ watch(developerRef, (next) => {
           {{ t('developer.profileUnavailable') }}
         </p>
 
+        <nav class="sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b border-zinc-200 bg-white py-3 backdrop-blur-md dark:border-zinc-800 dark:bg-(--page-bg)">
+          <a href="#apps" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">{{ t('developer.appsInYantr') }}</a>
+          <a v-if="nostrDm" href="#message" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">{{ t('developer.nostrDm') }}</a>
+          <a v-if="paymentRails.length" href="#support" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">{{ t('developer.payments.title') }}</a>
+        </nav>
+
         <!-- Apps -->
-        <section class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+        <section id="apps" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
               <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.appsInYantr') }}</h2>
@@ -260,7 +266,12 @@ watch(developerRef, (next) => {
             <span class="shrink-0 rounded border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[10px] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">{{ developerApps.length }}</span>
           </div>
 
-          <p v-if="developerApps.length === 0" class="text-sm text-zinc-500">{{ t('developer.noApps') }}</p>
+          <div v-if="developerApps.length === 0" class="flex flex-col items-center gap-4 rounded-xl border border-zinc-200 bg-zinc-50 p-6 text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+            <p class="text-sm text-zinc-500">{{ t('developer.noApps') }}</p>
+            <button @click="router.push(appsRoute())" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
+              <Package :size="14" /> {{ t('developer.browseCatalog') }}
+            </button>
+          </div>
           <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 anim-stagger">
             <AppCard
               v-for="app in developerApps"
@@ -273,11 +284,11 @@ watch(developerRef, (next) => {
         </section>
 
         <!-- Nostr DM -->
-        <section v-if="nostrDm" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+        <section v-if="nostrDm" id="message" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
           <p class="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
 
-          <div class="mt-6 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+          <div class="mt-6 flex flex-wrap items-start gap-6 sm:flex-row sm:items-center">
             <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
               <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
             </div>
@@ -298,12 +309,12 @@ watch(developerRef, (next) => {
         </section>
 
         <!-- Payments -->
-        <section v-if="paymentRails.length" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+        <section v-if="paymentRails.length" id="support" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.payments.title') }}</h2>
           <p class="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-500">{{ t('developer.payments.hint') }}</p>
 
-          <div class="mt-6 flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
-            <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
+          <div class="mt-6 flex flex-wrap items-start gap-8 sm:gap-10">
+            <div v-for="rail in paymentRails" :key="rail.kind" class="flex min-w-44 flex-col items-start">
               <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ rail.label }}</span>
 
               <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
