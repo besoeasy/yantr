@@ -75,10 +75,6 @@ const { rails: paymentRails, copiedRail, copyAddress } = usePaymentRails(
   "developer.payments"
 );
 
-const hasSupport = computed(
-  () => Boolean(nostrDm.value) || paymentRails.value.length > 0
-);
-
 async function copyNostrKey() {
   try {
     await navigator.clipboard.writeText(key.value);
@@ -166,7 +162,7 @@ watch(developerRef, (next) => {
 </script>
 
 <template>
-  <AppLayout width="narrow" gap="none">
+  <AppLayout width="narrow" gap="loose">
       <!-- Back -->
       <button
         @click="router.push(appsRoute())"
@@ -178,28 +174,28 @@ watch(developerRef, (next) => {
 
       <!-- Loading -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-32">
-        <div class="mb-6 h-8 w-8 animate-spin rounded-full border-[3px] border-gray-200 border-t-blue-500 dark:border-zinc-800"></div>
+        <div class="mb-6 h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-blue-500 dark:border-zinc-800"></div>
         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('developer.loading') }}</div>
       </div>
 
       <!-- Unknown developer -->
       <div v-else-if="notFound" class="flex flex-col items-center justify-center py-32 text-center">
-        <div class="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <AlertCircle :size="28" class="text-gray-400 dark:text-zinc-500" />
+        <div class="mb-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <AlertCircle :size="28" class="text-zinc-400 dark:text-zinc-500" />
         </div>
-        <h3 class="text-base font-semibold tracking-tight text-gray-900 dark:text-white">{{ key }}</h3>
-        <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-zinc-400">{{ t('developer.notFound') }}</p>
-        <button @click="router.push(appsRoute())" class="mt-6 text-xs font-bold uppercase tracking-wider text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+        <h3 class="text-base font-semibold tracking-tight text-zinc-900 dark:text-white">{{ key }}</h3>
+        <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">{{ t('developer.notFound') }}</p>
+        <button @click="router.push(appsRoute())" class="mt-6 text-xs font-bold uppercase tracking-wider text-sky-600 transition-colors hover:text-zinc-900 dark:text-sky-400 dark:hover:text-zinc-300">
           {{ t('developer.backToApps') }}
         </button>
       </div>
 
       <!-- Request failed -->
       <div v-else-if="failed" class="flex flex-col items-center justify-center py-32 text-center">
-        <div class="mb-5 rounded-2xl border border-gray-200 bg-gray-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <AlertCircle :size="28" class="text-gray-400 dark:text-zinc-500" />
+        <div class="mb-5 rounded-2xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/50">
+          <AlertCircle :size="28" class="text-zinc-400 dark:text-zinc-500" />
         </div>
-        <p class="text-sm text-gray-500 dark:text-zinc-400">{{ t('developer.loadFailed') }}</p>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ t('developer.loadFailed') }}</p>
       </div>
 
       <template v-else>
@@ -225,18 +221,10 @@ watch(developerRef, (next) => {
             </p>
 
             <div v-if="profile" class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-zinc-500">
-              <span v-if="profile.nip05" class="inline-flex items-center gap-1.5">
-                <AtSign :size="13" /> {{ profile.nip05 }}
-              </span>
-              <span v-if="profile.lud16" class="inline-flex items-center gap-1.5">
-                <Zap :size="13" /> {{ profile.lud16 }}
-              </span>
-              <span v-if="profile.bitcoin" class="inline-flex items-center gap-1.5">
-                <Bitcoin :size="13" /> {{ profile.bitcoin }}
-              </span>
-              <a v-if="blogUrl" :href="blogUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200">
-                <Link2 :size="13" /> {{ profile.blog }}
-              </a>
+              <span v-if="profile.nip05" class="inline-flex items-center gap-1.5"><AtSign :size="13" /> {{ profile.nip05 }}</span>
+              <span v-if="profile.lud16" class="inline-flex items-center gap-1.5"><Zap :size="13" /> {{ profile.lud16 }}</span>
+              <span v-if="profile.bitcoin" class="inline-flex items-center gap-1.5"><Bitcoin :size="13" /> {{ profile.bitcoin }}</span>
+              <a v-if="blogUrl" :href="blogUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 transition-colors hover:text-zinc-900 dark:hover:text-zinc-200"><Link2 :size="13" /> {{ profile.blog }}</a>
             </div>
 
             <div class="mt-5 flex flex-wrap gap-x-8 gap-y-3">
@@ -247,138 +235,23 @@ watch(developerRef, (next) => {
             </div>
 
             <div class="mt-auto flex flex-wrap gap-3 pt-6">
-              <a
-                v-if="profileUrl"
-                :href="profileUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-              >
+              <a v-if="profileUrl" :href="profileUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
                 <ExternalLink :size="14" /> {{ t('developer.viewOn') }}
               </a>
-              <button
-                @click="router.push(appsRoute())"
-                class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-              >
+              <button @click="router.push(appsRoute())" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
                 <Package :size="14" /> {{ t('developer.browseCatalog') }}
               </button>
             </div>
           </div>
         </div>
 
-        <p
-          v-if="profileUnavailable"
-          class="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-zinc-500"
-        >
+        <p v-if="profileUnavailable" class="flex items-start gap-2 text-[11px] leading-relaxed text-zinc-500">
           <AlertCircle :size="13" class="mt-0.5 shrink-0" />
           {{ t('developer.profileUnavailable') }}
         </p>
 
-        <div v-if="hasSupport" class="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 items-start">
-          <!-- Apps -->
-          <section class="min-w-0">
-            <div class="mb-4 flex items-end justify-between gap-4">
-              <div>
-                <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.appsInYantr') }}</h2>
-                <p class="mt-1.5 text-xs text-zinc-500">{{ t('developer.appsInYantrHint') }}</p>
-              </div>
-              <span class="shrink-0 rounded border border-zinc-200 bg-zinc-50 px-2 py-0.5 font-mono text-[10px] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900/50">{{ developerApps.length }}</span>
-            </div>
-
-            <p v-if="developerApps.length === 0" class="text-sm text-zinc-500">{{ t('developer.noApps') }}</p>
-            <div v-else class="grid grid-cols-1 gap-4 sm:grid-cols-2 anim-stagger">
-              <AppCard
-                v-for="app in developerApps"
-                :key="app.id"
-                :app="app"
-                :instance-count="appInstanceCounts[app.id] || 0"
-                @select="viewAppDetail(app.id)"
-              />
-            </div>
-          </section>
-
-          <!-- Support rail -->
-          <aside class="flex flex-col gap-6">
-            <section
-              v-if="nostrDm"
-              class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
-            >
-              <div class="flex flex-col items-start gap-6 p-6 sm:flex-row sm:items-center">
-                <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
-                  <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
-                </div>
-
-                <div class="min-w-0 flex-1">
-                  <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
-                  <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
-
-                  <p class="mt-3 break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ key }}</p>
-
-                  <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
-                    <a
-                      v-if="profileUrl"
-                      :href="profileUrl"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                    >
-                      <ExternalLink :size="14" /> {{ t('developer.nostrOpen') }}
-                    </a>
-                    <button
-                      @click="copyNostrKey"
-                      class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                    >
-                      <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section
-              v-if="paymentRails.length"
-              class="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-(--page-bg)"
-            >
-              <div class="flex flex-col items-start gap-6 p-6">
-                <div>
-                  <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                    {{ t('developer.payments.title') }}
-                  </h2>
-                  <p class="mt-2 max-w-md text-sm leading-relaxed text-zinc-500">
-                    {{ t('developer.payments.hint') }}
-                  </p>
-                </div>
-
-                <div class="flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
-                  <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
-                    <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">
-                      {{ rail.label }}
-                    </span>
-
-                    <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800">
-                      <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="168" />
-                    </div>
-
-                    <p class="mt-3 max-w-64 break-all font-mono text-[11px] leading-relaxed text-zinc-500">
-                      {{ rail.address }}
-                    </p>
-
-                    <button
-                      @click="copyAddress(rail)"
-                      class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300"
-                    >
-                      <Check v-if="copiedRail === rail.kind" :size="14" />
-                      <Copy v-else :size="14" />
-                      {{ copiedRail === rail.kind ? t('developer.payments.copied') : t('developer.payments.copy') }}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </aside>
-        </div>
-
-        <section v-else class="mt-10">
+        <!-- Apps -->
+        <section class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <div class="mb-4 flex items-end justify-between gap-4">
             <div>
               <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.appsInYantr') }}</h2>
@@ -396,6 +269,55 @@ watch(developerRef, (next) => {
               :instance-count="appInstanceCounts[app.id] || 0"
               @select="viewAppDetail(app.id)"
             />
+          </div>
+        </section>
+
+        <!-- Nostr DM -->
+        <section v-if="nostrDm" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.nostrDm') }}</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-500">{{ t('developer.nostrDmHint') }}</p>
+
+          <div class="mt-6 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+            <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
+              <NostrQrCode :value="nostrDm" :label="nostrQrLabel" :size="180" />
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <p class="break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ key }}</p>
+
+              <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <a v-if="profileUrl" :href="profileUrl" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
+                  <ExternalLink :size="14" /> {{ t('developer.nostrOpen') }}
+                </a>
+                <button @click="copyNostrKey" class="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
+                  <Copy :size="14" /> {{ copied ? t('developer.nostrCopied') : t('developer.nostrCopy') }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Payments -->
+        <section v-if="paymentRails.length" class="border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          <h2 class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ t('developer.payments.title') }}</h2>
+          <p class="mt-2 max-w-2xl text-sm leading-relaxed text-zinc-500">{{ t('developer.payments.hint') }}</p>
+
+          <div class="mt-6 flex flex-col items-start gap-8 sm:flex-row sm:gap-10">
+            <div v-for="rail in paymentRails" :key="rail.kind" class="flex flex-col items-start">
+              <span class="mb-3 text-[10px] font-bold uppercase tracking-widest text-zinc-500">{{ rail.label }}</span>
+
+              <div class="shrink-0 rounded-xl border border-zinc-200 bg-white p-2 dark:border-zinc-800 dark:bg-zinc-900">
+                <NostrQrCode :value="rail.payload" :label="rail.qrLabel" :size="168" />
+              </div>
+
+              <p class="mt-3 max-w-64 break-all font-mono text-[11px] leading-relaxed text-zinc-500">{{ rail.address }}</p>
+
+              <button @click="copyAddress(rail)" class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-zinc-300">
+                <Check v-if="copiedRail === rail.kind" :size="14" />
+                <Copy v-else :size="14" />
+                {{ copiedRail === rail.kind ? t('developer.payments.copied') : t('developer.payments.copy') }}
+              </button>
+            </div>
           </div>
         </section>
       </template>
