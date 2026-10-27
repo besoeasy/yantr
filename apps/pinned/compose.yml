@@ -1,0 +1,33 @@
+x-yantr:
+  name: "Pinned"
+  tags: [bookmarks, homelab, dashboard, productivity, self-hosted]
+  short_description: "Bookmark manager and start page for the services on your server."
+  description: >
+    Pinned is a self-hosted bookmark manager and start page for the services
+    you run at home. Folders instead of tags, one user, one SQLite file,
+    browser import and export, a save API for scripts, and a nightly HTML
+    export for backups.
+  usecases: ["Organize every link in nested folders with fast search.", "Start your day from a pinned row of homelab services.", "Save pages from any browser with a bookmarklet or API token."]
+  website: "https://github.com/pinned-cc/pinned"
+  env_generators:
+    APP_PASSWORD: {length: 20, charset: alnum_symbols}
+  notes: ["Login password is auto-generated on install.", "Bookmarks persist in a named volume; a browser-format export lands in data/export nightly at 03:00.", "Only fetches icons of sites you save; no telemetry or external scripts.", "Behind a reverse proxy, set BASE_URL and TRUSTED_PROXIES in the deploy form."]
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: pinned}
+
+services:
+  pinned:
+    image: ghcr.io/pinned-cc/pinned:latest
+    environment:
+      APP_PASSWORD: ${APP_PASSWORD}
+      TZ: ${TZ:-UTC}
+      BASE_URL: ${BASE_URL:-}
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+    ports:
+      - "8080"
+    volumes:
+      - pinned_data:/data
+    restart: unless-stopped
+
+volumes:
+  pinned_data:
