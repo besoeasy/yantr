@@ -379,12 +379,58 @@ code, pre { font-family: var(--font-mono); }
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
 }
 .hero-title {
-  font-size: 2.75rem;
+  font-size: clamp(4rem, 13vw, 8.5rem);
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 0.95;
   color: var(--black);
   margin-bottom: 0.65rem;
+}
+.hero-title .h-letter {
+  display: inline-block;
+  background: linear-gradient(
+    110deg,
+    var(--gray-950) 0%,
+    var(--gray-950) 42%,
+    var(--gray-400) 50%,
+    var(--gray-950) 58%,
+    var(--gray-950) 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    hero-letter-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both,
+    hero-letter-shimmer 7s ease-in-out 1.5s infinite alternate;
+}
+.hero-title .h-letter:nth-child(1) { animation-delay: 0.05s, 1.5s; }
+.hero-title .h-letter:nth-child(2) { animation-delay: 0.15s, 1.85s; }
+.hero-title .h-letter:nth-child(3) { animation-delay: 0.25s, 2.2s; }
+.hero-title .h-letter:nth-child(4) { animation-delay: 0.35s, 2.55s; }
+.hero-title .h-letter:nth-child(5) { animation-delay: 0.45s, 2.9s; }
+@keyframes hero-letter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.1rem) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes hero-letter-shimmer {
+  from { background-position: 120% 0; }
+  to { background-position: -120% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-title .h-letter {
+    animation: none;
+    color: var(--black);
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+  }
 }
 .hero-subtitle {
   font-size: 1.25rem;
@@ -3008,7 +3054,6 @@ p code, li code, td code, .spec-sub code {
   .contrib-head h2 { font-size: 3rem; }
   .br-sm { display: block; }
   .wrap, .wrap-narrow { padding-left: 1.5rem; padding-right: 1.5rem; }
-  .hero-title { font-size: 3.5rem; }
   .hero-subtitle { font-size: 1.5rem; }
   .card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -3042,7 +3087,6 @@ p code, li code, td code, .spec-sub code {
 }
 
 @media (min-width: 1024px) {
-  .hero-title { font-size: 4.75rem; }
   .split { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 3.5rem; }
   .split-sticky { position: sticky; top: 2.5rem; }
   .feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
