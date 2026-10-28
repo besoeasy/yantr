@@ -209,66 +209,92 @@ func TestRateBits(t *testing.T) {
 	}
 }
 
-// mountsFixture writes a /proc/mounts into a fake host root and returns the
-// two mountpoint dirs to statfs against. tmpfs is removed from the skip list so
-// the temp dir's own filesystem passes the type filter like a real disk would.
-func mountsFixture(t *testing.T) (sources, string, string) {
+// mountsFixture writes a mount table shaped like the one readDisks consumes:
+// targets are paths that exist right now (temp dirs), because readDisks stats
+// targets verbatim — the container's own table is exactly this, with bind
+// targets already rewritten. tmpfs is removed from the skip list so the temp
+// dir's own filesystem passes the type filter like a real disk would.
+func mountsFixture(t *testing.T) (string, string) {
 	t.Helper()
 	skipFSTypes["tmpfs"] = false
 	t.Cleanup(func() { skipFSTypes["tmpfs"] = true })
 
-	host := t.TempDir()
-	procDir := filepath.Join(host, "proc")
-	if err := os.MkdirAll(procDir, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	rootDir := filepath.Join(host, "mnt-a")
-	dataDir := filepath.Join(host, "mnt-b")
-	nfsDir := filepath.Join(host, "mnt-nfs")
-	for _, d := range []string{rootDir, dataDir, nfsDir} {
+	root := t.TempDir()
+	dirA := filepath.Join(root, "mnt-a")
+	dirB := filepath.Join(root, "mnt-b")
+	dirC := filepath.Join(root, "mnt-c")
+	nfsDir := filepath.Join(root, "mnt-nfs")
+	for _, d := range []string{dirA, dirB, dirC, nfsDir} {
 		if err := os.MkdirAll(d, 0o755); err != nil {
 			t.Fatal(err)
 		}
 	}
-	// One store mounted twice (dedupe), one real second store, a pseudo-fs and
-	// a network filesystem with a device that is not a block node.
+	// One store mounted twice, a second store name that is physically the same
+	// filesystem (the dedupe's real-world case: LVM subvolumes), and a pseudo-fs
+	// plus a network filesystem with a device that is not a block node.
 	mounts := fmt.Sprintf(
-		"/dev/vda1 / ext4 rw 0 0\n/dev/vda1 %s ext4 rw 0 0\n/dev/vdb1 %s xfs rw 0 0\ntmpfs %s tmpfs rw 0 0\nfreenas:/export %s nfs4 rw 0 0\nportal %s fuse.portal rw 0 0\n",
-		rootDir, dataDir, filepath.Join(host, "run"), nfsDir, filepath.Join(host, "doc"))
-	if err := os.WriteFile(filepath.Join(procDir, "mounts"), []byte(mounts), 0o600); err != nil {
+		"/dev/vda1 %s ext4 rw 0 0\n/dev/vda1 %s ext4 rw 0 0\n/dev/vdb1 %s xfs rw 0 0\ntmpfs %s tmpfs rw 0 0\nfreenas:/export %s nfs4 rw 0 0\nportal %s fuse.portal rw 0 0\n",
+		dirA, dirB, dirC, filepath.Join(root, "run"), nfsDir, filepath.Join(root, "doc"))
+	path := filepath.Join(root, "mounts")
+	if err := os.WriteFile(path, []byte(mounts), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	return sources{hostRoot: host}, rootDir, dataDir
+	return path, dirA
 }
 
 func TestReadDisks(t *testing.T) {
-	s, rootDir, dataDir := mountsFixture(t)
-	got, err := readDisks(s)
+	mountsPath, dirA := mountsFixture(t)
+	got, err := readDisks(mountsPath, "")
 	if err != nil {
 		t.Fatalf("readDisks: %v", err)
 	}
 	// Every fixture mountpoint lives on the caller's filesystem, so by st_dev
-	// they are ONE store: the double-mount of vda1 must dedupe and the fake
-	// second disk folds into it. The assertions therefore target what the
-	// dedupe itself guarantees, while type filtering and device heuristics are
-	// pinned separately on reportableMount.
+	// they are ONE store: the double-mount of vda1 and the nfs line fold into
+	// whichever entry statfs'd first, while the tmpfs and portal lines drop on
+	// reportableMount. Type filtering and device heuristics are pinned
+	// separately on reportableMount.
 	if len(got) != 1 {
-		t.Fatalf("got %+v, want the deduped single filesystem", got)
+		t.Fatalf("got %+v, want one entry per distinct store (dedupe applied)", got)
 	}
-	if got[0].Mount != "/" {
-		t.Errorf("sort put %q first, want /", got[0].Mount)
+	// dirA is the first statfs-able line, so it wins the dedupe against the
+	// vda1 remount, the differently-named vdb1 line and the nfs line — all of
+	// which live on the caller's filesystem here and share its st_dev.
+	if got[0].Mount != dirA {
+		t.Errorf("mount = %q, want %q (first statfs-able line wins the dedupe)", got[0].Mount, dirA)
 	}
 	if got[0].FSType != "ext4" {
 		t.Errorf("FSType = %q, want ext4 straight from the mounts file", got[0].FSType)
 	}
-	if got[0].TotalBytes == 0 {
-		t.Errorf("TotalBytes = 0, want a real size")
+	for _, d := range got {
+		if d.TotalBytes == 0 {
+			t.Errorf("%s: TotalBytes = 0, want a real size", d.Mount)
+		}
+		if d.UsedPct < 0 || d.UsedPct > 100 {
+			t.Errorf("%s: UsedPct = %v, want a percentage", d.Mount, d.UsedPct)
+		}
 	}
-	if got[0].UsedPct < 0 || got[0].UsedPct > 100 {
-		t.Errorf("UsedPct = %v, want a percentage", got[0].UsedPct)
+}
+
+func TestMountLabel(t *testing.T) {
+	cases := []struct{ target, hostRoot, want string }{
+		{"/host", "/host", "/"},
+		{"/host/boot", "/host", "/boot"},
+		{"/srv", "/host", "/srv"},
+		{"/var", "", "/var"},
+		{"/hostish", "/host", "/hostish"},
 	}
-	_ = rootDir
-	_ = dataDir
+	for _, tc := range cases {
+		if got := mountLabel(tc.target, tc.hostRoot); got != tc.want {
+			t.Errorf("mountLabel(%q, %q) = %q, want %q", tc.target, tc.hostRoot, got, tc.want)
+		}
+	}
+}
+
+func TestReadDisksMissingMountsFile(t *testing.T) {
+	got, err := readDisks(filepath.Join(t.TempDir(), "not-mounted"), "")
+	if err == nil || got != nil {
+		t.Errorf("readDisks on a missing table = %+v, %v; want an error so the snapshot can degrade", got, err)
+	}
 }
 
 func TestReportableMount(t *testing.T) {
@@ -357,7 +383,7 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	c := &collector{sources: sources{
 		stat: missing, meminfo: missing, loadavg: missing,
 		uptime: missing, netDev: missing,
-		hostRoot: missing, sysRoot: missing,
+		mounts: missing, hostRoot: missing, sysRoot: missing,
 	}}
 
 	got := c.snapshot()

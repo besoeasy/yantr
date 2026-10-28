@@ -258,6 +258,10 @@ type sources struct {
 	netDev    string
 	cpuinfo   string
 	diskstats string
+	// mounts is the mount table the disk enumeration reads. It is the
+	// CONTAINER's own /proc/mounts on purpose — see readDisks for why the
+	// host bind's copy is exactly the wrong file to prefix targets from.
+	mounts    string
 	sysRoot   string // /sys, or the host bind when there is one
 	hostRoot  string // prefix that makes host paths visible, "" when not bound
 }
@@ -278,6 +282,7 @@ func detectSources() sources {
 		netDev:    "/proc/net/dev",
 		cpuinfo:   "/proc/cpuinfo",
 		diskstats: "/proc/diskstats",
+		mounts:    "/proc/mounts",
 	}
 	for _, root := range hostRootCandidates {
 		if root == "" || isDir(filepath.Join(root, "proc")) {
@@ -442,7 +447,7 @@ func (c *collector) snapshot() HostMetrics {
 		c.mu.Unlock()
 	}
 
-	if disks, err := readDisks(s); err == nil && len(disks) > 0 {
+	if disks, err := readDisks(s.mounts, s.hostRoot); err == nil && len(disks) > 0 {
 		out.Disk = disks
 	} else {
 		out.Degraded = append(out.Degraded, "disk")
@@ -800,6 +805,24 @@ func isSkipFSType(fsType string) bool {
 	return strings.HasPrefix(fsType, "fuse.")
 }
 
+// mountLabel is display-only: under the /:/host:ro bind the container's mount
+// table lists the host's filesystems at their bind paths, and "/host" is the
+// host's "/" wearing the bind's name. Stripping the prefix restores the label
+// the operator knows, without changing what is statfs'd — the numbers stay
+// read from the real filesystem; only the name is translated.
+func mountLabel(target, hostRoot string) string {
+	if hostRoot == "" {
+		return target
+	}
+	if rel := strings.TrimPrefix(target, hostRoot); rel != target && (rel == "" || strings.HasPrefix(rel, "/")) {
+		if rel == "" {
+			return "/"
+		}
+		return rel
+	}
+	return target
+}
+
 // maxReportedDisks bounds the payload the same way maxDiskDevices does: a NAS
 // with a NFS map imports the world, and a card reads a handful at most.
 const maxReportedDisks = 6
@@ -848,15 +871,22 @@ func readMounts(path string) ([]mountEntry, error) {
 	return out, nil
 }
 
-// readDisks enumerates the host's real filesystems from /proc/mounts, instead
-// of the hardcoded candidate list it used to stat. The candidate list could
-// not see beyond "/" plus four conventional paths, so a NAS's /srv/export or a
-// dedicated /media disk was invisible no matter how full it ran. The mounts
-// file sees everything; the filtering here decides what a dashboard can act on:
-// pseudo-filesystems and boot noise skip, everything else stats, and dedupe
-// collapses two paths onto one store so the same bytes never double-report.
-func readDisks(s sources) ([]DiskStats, error) {
-	mounts, err := readMounts(s.hostPath("/proc/mounts"))
+// readDisks enumerates the filesystems visible to the reader, from the mount
+// table at mountsPath — which is the container's OWN /proc/mounts, never the
+// host bind's copy. The two are the same table under the installer's binds
+// (the bind's /proc is a symlink farm: /host/proc/mounts → self/mounts, and
+// "self" resolves to whoever reads it, so the host copy answers with the
+// container's view anyway), but only the direct read has usable targets: the
+// container's table already lists the host's filesystems at their bind paths
+// (/host, /host/boot) because the `/:/host:ro` bind rewrote them for us.
+// Prefixing those targets AGAIN through hostPath stats /host/host, which
+// exists nowhere, and the disk card goes blank — the bug this signature
+// exists to make untestable-free. Without the bind (direct dev run) the table
+// is the host's own and targets are already correct. labelPrefix (the host
+// root) is display-only: it turns "/host" back into "/" for the card label
+// without touching what gets statfs'd.
+func readDisks(mountsPath, labelPrefix string) ([]DiskStats, error) {
+	mounts, err := readMounts(mountsPath)
 	if err != nil {
 		return nil, err
 	}
@@ -868,7 +898,7 @@ func readDisks(s sources) ([]DiskStats, error) {
 		if !reportableMount(minfo) {
 			continue
 		}
-		path := s.hostPath(minfo.target)
+		path := minfo.target
 		var st syscall.Statfs_t
 		if err := syscall.Statfs(path, &st); err != nil {
 			continue
@@ -901,7 +931,7 @@ func readDisks(s sources) ([]DiskStats, error) {
 			used = total - free
 		}
 		out = append(out, DiskStats{
-			Mount:      minfo.target,
+			Mount:      mountLabel(minfo.target, labelPrefix),
 			FSType:     minfo.fsType,
 			UsedPct:    float64(used) / float64(total) * 100,
 			TotalBytes: total,
