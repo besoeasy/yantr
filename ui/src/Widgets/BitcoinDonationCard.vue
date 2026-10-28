@@ -7,6 +7,7 @@ export const meta = { cols: 1 };
 import { ref, onMounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Bitcoin, ArrowUpRight } from "@lucide/vue";
+import NostrQrCode from "../components/NostrQrCode.vue";
 
 const { t } = useI18n();
 
@@ -83,11 +84,17 @@ const shortBtc = computed(() => {
       <div class="mt-4 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
         <div v-if="btcLoading" class="text-[11px] yantra-text-secondary">{{ t("sponsorCard.btcLoading") }}</div>
         <div v-else-if="btcError" class="text-[11px] text-red-500">{{ btcError }}</div>
-        <div v-else class="flex flex-col gap-1">
-          <code class="break-all font-mono text-[11px] yantra-text-primary" :title="btcAddress">{{ shortBtc }}</code>
+        <div v-else class="flex flex-col items-center gap-2">
+          <NostrQrCode
+            v-if="btcAddress"
+            :value="`bitcoin:${btcAddress}`"
+            :size="128"
+            :label="btcAddress"
+          />
+          <code class="break-all text-center font-mono text-[10px] yantra-text-secondary" :title="btcAddress">{{ shortBtc }}</code>
           <button
             type="button"
-            class="mt-2 text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400"
+            class="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400"
             @click="navigator.clipboard?.writeText(btcAddress)"
           >
             {{ t("sponsorCard.btcCopy") }}
