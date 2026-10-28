@@ -1,6 +1,7 @@
 <script>
-// Dashboard engine: one column — the daily pick reads as a compact tile in
-// the grid, with the logo on top and the story stacked beneath it.
+// Dashboard engine: one column — the daily pick as a "station" card: a soft
+// sky-to-indigo wash behind an eyebrow + big name, a logo + story row, and a
+// bordered CTA that spans the card.
 export const meta = { cols: 1 };
 </script>
 <script setup>
@@ -85,86 +86,83 @@ function handleSelect(appId) {
 
   <section
     v-else-if="dailyApp"
-    class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
+    class="spotlight-card yantra-card yantra-card-min flex h-full w-full flex-col overflow-hidden p-7 text-left"
   >
-    <!-- Header -->
+    <!-- Eyebrow row: what this is, and whether the pick is live here. -->
     <div class="flex w-full items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
-          <Sparkles class="h-4 w-4 text-sky-600 dark:text-sky-400" />
-        </div>
-        <h3 class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
-          {{ t("home.dailyAppCard.featuredToday") }}
-        </h3>
+      <div class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+        <Sparkles class="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
+        {{ t("home.dailyAppCard.featuredToday") }}
       </div>
 
       <div
         :class="[
-          'flex shrink-0 items-center gap-2',
+          'flex shrink-0 items-center gap-1.5',
           appState === 'running'
-            ? 'yantra-text-primary'
-            : appState === 'installed'
-              ? 'text-zinc-700 dark:text-zinc-300'
-              : 'yantra-text-secondary'
+            ? 'text-emerald-600 dark:text-emerald-400'
+            : 'yantra-text-secondary'
         ]"
       >
         <span v-if="appState === 'running'" class="relative flex h-2 w-2">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
         </span>
-        <span v-else-if="appState === 'installed'" class="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
-        <span v-else class="h-2 w-2 rounded-full bg-zinc-200 dark:bg-zinc-800"></span>
-        <span class="text-[10px] font-semibold uppercase tracking-widest">{{ stateLabel }}</span>
+        <span v-else class="h-2 w-2 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
+        <span class="text-[9px] font-semibold uppercase tracking-widest">{{ stateLabel }}</span>
       </div>
     </div>
 
-    <!-- Logo (centered, larger) -->
     <button
       type="button"
       @click="handleSelect(dailyApp.id)"
-      class="group/app mt-5 flex flex-1 flex-col items-center text-center"
+      class="group/app mt-4 flex flex-1 flex-col text-left"
     >
-      <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
-        <AppLogo
-          :logo="dailyApp?.logo"
-          :name="dailyApp?.name"
-          :seed="dailyApp?.id || dailyApp?.name"
-          img-class="h-full w-full object-contain"
-          icon-class="h-16 w-16 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
-        />
+      <div class="text-2xl font-black leading-[1.05] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
+        {{ dailyApp?.name }}
       </div>
 
-      <!-- Story -->
-      <div class="mt-4 flex w-full flex-col">
-        <div class="text-xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
-          {{ dailyApp?.name }}
+      <div class="mt-3 flex items-start gap-3">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900">
+          <AppLogo
+            :logo="dailyApp?.logo"
+            :name="dailyApp?.name"
+            :seed="dailyApp?.id || dailyApp?.name"
+            img-class="h-full w-full object-contain"
+            icon-class="h-8 w-8 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
+          />
         </div>
 
-        <p v-if="dailyApp?.short_description" class="mt-2 text-xs leading-relaxed yantra-text-secondary line-clamp-3">
-          {{ dailyApp.short_description }}
-        </p>
-
-        <div class="mt-3 flex flex-wrap justify-center gap-2">
-          <span
-            v-for="tag in (dailyApp?.tags || []).slice(0, 3)"
-            :key="tag"
-            class="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300"
-          >
-            {{ tag }}
-          </span>
-          <span
-            v-if="(dailyApp?.tags?.length || 0) > 3"
-            class="text-[10px] font-medium yantra-text-secondary"
-          >
-            +{{ (dailyApp?.tags?.length || 0) - 3 }}
-          </span>
+        <div class="flex min-w-0 flex-1 flex-col">
+          <p v-if="dailyApp?.short_description" class="text-[11px] leading-relaxed yantra-text-secondary line-clamp-2">
+            {{ dailyApp.short_description }}
+          </p>
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            <span
+              v-for="tag in (dailyApp?.tags || []).slice(0, 2)"
+              :key="tag"
+              class="rounded-full border border-zinc-200 px-2 py-0.5 text-[9px] font-medium text-zinc-700 dark:border-zinc-800 dark:text-zinc-300"
+            >
+              {{ tag }}
+            </span>
+            <span
+              v-if="(dailyApp?.tags?.length || 0) > 2"
+              class="text-[9px] font-medium yantra-text-secondary"
+            >
+              +{{ (dailyApp?.tags?.length || 0) - 2 }}
+            </span>
+          </div>
         </div>
-
-        <span class="mt-4 inline-flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
-          {{ ctaLabel }}
-          <ArrowUpRight :size="12" />
-        </span>
       </div>
+    </button>
+
+    <!-- CTA: full-width, bordered so it reads as an affordance over the wash. -->
+    <button
+      type="button"
+      @click="handleSelect(dailyApp.id)"
+      class="group/cta mt-5 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 text-[10px] font-bold uppercase tracking-widest yantra-text-primary transition-colors duration-200 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900 active:scale-[0.98]"
+    >
+      {{ ctaLabel }}
+      <ArrowUpRight :size="12" class="transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1" />
     </button>
   </section>
 
@@ -192,3 +190,25 @@ function handleSelect(appId) {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Instance styling: the wash behind this card is this card's own look —
+   main.css keeps what a card *is*; the gradient is what this one is. */
+.spotlight-card {
+  --card-inset: var(--color-zinc-50);
+  background:
+    linear-gradient(180deg, rgb(2 132 199 / 0.10), rgb(99 102 241 / 0.05) 55%, transparent),
+    var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  transition: box-shadow var(--yantra-dur) var(--yantra-ease);
+}
+.spotlight-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+:root.dark .spotlight-card {
+  background:
+    linear-gradient(180deg, rgb(2 132 199 / 0.16), rgb(99 102 241 / 0.08) 55%, transparent),
+    var(--card-bg);
+}
+</style>
