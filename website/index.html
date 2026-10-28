@@ -6,7 +6,7 @@
     <title>Yantr — Self-hosted apps on the Linux you already use</title>
     <meta
       name="description"
-      content="A lightweight rootless container manager for the Linux machine you already use — desktop, laptop, NAS or SBC. Isolated from your host, no admin permissions, ~24 MB RAM at idle. Run AI, media, sync and more while your computer stays a computer."
+      content="A self-hosted app store for the Linux you already have — desktop, laptop, NAS or SBC. 170+ apps, one click each, running as your user in rootless containers. No sudo, no root daemon, no cloud account. The same one-line script installs it and removes it."
     />
     <meta
       name="keywords"
@@ -122,17 +122,20 @@
         <div class="hero-inner">
           <span class="hero-pill animate-fade-in-up">
             <span class="dot animate-pulse"></span>
-            Lightweight container manager · Rootless Podman
+            Self-hosted app store · Rootless by default
           </span>
           <h1 id="hero-title" class="hero-title animate-fade-in-up delay-100">
             <span class="sr-only">YANTR</span>
             <span aria-hidden="true">YANTR</span>
           </h1>
           <p class="hero-subtitle animate-fade-in-up delay-150">
+            One command, and you're self-hosting.
+          </p>
+          <p class="hero-slogan animate-fade-in-up delay-150">
             Run apps on your Linux. Keep your Linux.
           </p>
           <p id="hero-desc" class="hero-desc animate-fade-in-up delay-200">
-            Yantr is a lightweight container manager that sets up a completely isolated, self-contained app ecosystem on the machine you already use — desktop, laptop, NAS, or SBC. Rootless by default, no admin permissions, ~24 MB RAM at idle. Run AI, edit videos, watch movies: your computer stays a computer.
+            Yantr is a self-hosted app store for the Linux you already have — desktop, laptop, NAS. 170+ apps, one click each: Jellyfin, Nextcloud, Ollama, Pi-hole. Everything runs as your user, in rootless containers — no sudo, no root daemon, no cloud account. And the same one-line script installs it and removes it.
           </p>
 
           <!-- Hero Install One-Liner -->
@@ -148,6 +151,9 @@
              >
                 Copy
               </button>
+            </div>
+            <div class="hero-uninstall animate-fade-in-up delay-300">
+              <code># gone again: the same command with --uninstall</code>
             </div>
 
           </div>
@@ -169,7 +175,7 @@
           </div>
 
           <p class="hero-note animate-fade-in-up delay-300">
-            <span id="hero-app-count">129+</span> apps · ~24 MB idle · Open source · Daemonless
+            <span id="hero-app-count">170+</span> apps · ~24 MB idle · No sudo · No account · Corporate-free
           </p>
         </div>
       </div>
@@ -207,8 +213,8 @@
             <div class="split-sticky">
               <p class="eyebrow">Yantr vs Umbrel</p>
               <h2 class="h2">
-                Your machine stays yours.
-                <span class="muted">Yantr is just the app layer.</span>
+                The app store for people who don't own a spare computer.
+                <span class="muted">No appliance. No re-imaging. No root.</span>
               </h2>
               <p class="lead">
                 Umbrel-style platforms are great when you want a dedicated appliance. Yantr is for the machines you already use: a laptop, Raspberry Pi, old PC, new workstation, or home server running its normal OS.
@@ -337,10 +343,10 @@
             <p class="eyebrow eyebrow-green">Security &amp; Architecture · Podman vs Docker</p>
             <h2 class="h2">
               Rootless by design.
-              <span class="muted">Why Podman beats Docker for homelabs.</span>
+              <span class="muted">No sudo. No daemon. No host changes.</span>
             </h2>
             <p class="lead">
-              Most container managers run Docker with a monolithic root daemon. While convenient, giving Docker root means any container breach can compromise your entire host. Yantr is built from the ground up on 100% rootless Podman — eliminating root privileges, daemon crashes, and host firewall tampering.
+              Most container managers run Docker with a monolithic root daemon. While convenient, giving Docker root means any container breach can compromise your entire host. Yantr is built from the ground up on 100% rootless Podman — eliminating root privileges, daemon crashes, and host firewall tampering. Every step of the installer prints itself, timed: receipts, not promises.
             </p>
           </div>
 
@@ -873,6 +879,13 @@
           </div>
 
           <div class="faq-grid">
+            <div class="faq-card">
+              <h3>Tried self-hosting before and gave up?</h3>
+              <p>
+                The old tools asked you to become a different person first: dedicate a machine, hand a root daemon your password, learn port maps and compose files. Yantr asks for one shell command. If it works, you have Jellyfin running in minutes; if it doesn't, the same script with <code>--uninstall</code> puts your machine back.
+              </p>
+            </div>
+
             <div class="faq-card">
               <h3>Why does Yantr use Podman instead of Docker?</h3>
               <p>

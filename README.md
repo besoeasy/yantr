@@ -4,7 +4,17 @@
 
 # ⚡ Yantr
 
-**A self-hosted app store that never touches your host.**
+**One command, and you're self-hosting.**
+
+*Run apps on your Linux. Keep your Linux.*
+
+**Rootless** · **No sudo** · **No account** · **Corporate-free**
+
+Jellyfin · Nextcloud · Ollama · Pi-hole · n8n · **[+170 more](https://yantr.org/#all-apps)**
+
+```bash
+curl -fsSL https://yantr.org/install.sh | bash
+```
 
 [![Podman](https://img.shields.io/badge/Podman-ghcr.io-892ca0?style=flat-square&logo=podman&logoColor=white)](https://github.com/besoeasy/yantr/pkgs/container/yantr)
 [![Rootless](https://img.shields.io/badge/Security-100%25%20Rootless-emerald?style=flat-square)](https://yantr.org)
@@ -21,6 +31,8 @@
 </div>
 
 ---
+
+**An app, not an OS.** Umbrel wants your whole machine. Docker wants your root. Yantr takes neither — it installs as your user, runs everything in rootless Podman, and the installer prints every step it takes on your host, timed: receipts, not promises.
 
 ## The Problem with Umbrel & Friends
 
@@ -46,7 +58,7 @@ Platforms like Umbrel want to **be your OS**. Dedicate a machine, surrender the 
 
 ---
 
-## 🛡️ Rootless by Design: Why Podman Over Docker
+## 🛡️ Rootless by Design: No Sudo, No Daemon, No Host Changes
 
 Most homelab platforms and container managers rely on Docker running as a root-level daemon. While popular, Docker's monolithic architecture introduces critical security vulnerabilities, host filesystem modifications, and single-point-of-failure risks.
 
@@ -73,6 +85,8 @@ One-line installation on Linux (automatically configures rootless Podman and sys
 ```bash
 curl -fsSL https://cdn.jsdelivr.net/gh/besoeasy/yantr@latest/install.sh | bash
 ```
+
+Removing Yantr is the same one-liner with `--uninstall`. Install, update, repair, uninstall — one script, and every step prints itself with a timer as it runs.
 
 Resolves `@latest` to the newest tagged release via jsDelivr (never `main`). The script is also in the repo root as [`install.sh`](install.sh).
 

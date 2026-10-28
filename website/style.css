@@ -391,7 +391,21 @@ code, pre { font-family: var(--font-mono); }
   font-weight: 600;
   color: var(--gray-500);
   letter-spacing: -0.015em;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.1rem;
+}
+.hero-slogan {
+  font-size: 0.95rem;
+  color: var(--gray-500);
+  font-style: italic;
+  margin-bottom: 1.15rem;
+}
+.hero-uninstall {
+  margin-top: 0.45rem;
+}
+.hero-uninstall code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--gray-500);
 }
 .hero-desc {
   font-size: 1.05rem;
