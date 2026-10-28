@@ -1,8 +1,8 @@
 <script>
-// Dashboard engine: one column — the memory bar and its four where-the-bytes-
-// went rows stack into a single readable rail; wider would only stretch the
-// bar. Split out of HostStorageCard, which keeps the fill-up story for disks
-// alone. See Home.vue for how meta.cols is consumed.
+// Dashboard engine: one column — the memory bar and its where-the-bytes-went
+// legend stack into a single readable rail; wider would only stretch the bar.
+// The bar is stacked (used · buffers · slab · cached) so "near-full but mostly
+// cache" needs no prose. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
@@ -10,41 +10,112 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { MemoryStick } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
+import { formatBytes } from "../utils/metrics";
 
 const { t } = useI18n();
 
 const {
+  metrics,
   metricsStale,
   isDegraded,
   memPct,
   memText,
-  swapText,
   cachedText,
   buffersText,
   slabText,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+const mem = computed(() => metrics.value?.mem ?? null);
 
-// Swap answers the question the other rows don't: is the box pressed against
-// its backstop? A machine that never configured swap is telling the truth, so
-// that renders a word — an em-dash would claim the reading was missing, and
-// 0 / 0 would claim a sensor that does not exist.
+const isHot = computed(() => (memPct.value ?? 0) >= 90);
+
+// The stacked segments: everything the kernel holds beyond the working set is
+// a slice of the same bar, not a row of prose. Cached/buffers/slab are
+// accounted subsets of used on most kernels, so the working set is whatever
+// used has left after them; cumulative clamping keeps a kernel that disagrees
+// from pushing later segments past 100%.
+const segments = computed(() => {
+  const m = mem.value;
+  if (!m?.ready || !m.totalBytes) return null;
+  const total = m.totalBytes;
+  const share = (bytes) => Math.max(0, Math.min(100, (Number(bytes) / total) * 100));
+  const buffersPct = share(m.buffersBytes);
+  const slabPct = share(m.slabBytes);
+  const cachedPct = share(m.cachedBytes);
+  const workingPct = Math.max(
+    0,
+    (memPct.value ?? 0) - buffersPct - slabPct - cachedPct
+  );
+  const segments = [
+    {
+      key: "working",
+      pct: workingPct,
+      color: isHot.value ? "var(--color-rose-500)" : "var(--color-sky-500)",
+      label: t("quickMetrics.hostMetrics.memoryUsed"),
+      value: null,
+    },
+    {
+      key: "buffers",
+      pct: buffersPct,
+      color: "var(--color-emerald-500)",
+      label: t("quickMetrics.hostMetrics.memoryBuffers"),
+      value: buffersText.value ?? "—",
+    },
+    {
+      key: "slab",
+      pct: slabPct,
+      color: "var(--color-zinc-500)",
+      label: t("quickMetrics.hostMetrics.memorySlab"),
+      value: slabText.value ?? "—",
+    },
+    {
+      key: "cached",
+      pct: cachedPct,
+      color: "color-mix(in srgb, var(--color-emerald-500) 35%, transparent)",
+      label: t("quickMetrics.hostMetrics.memoryCached"),
+      value: cachedText.value ?? "—",
+    },
+  ];
+  // Clamp cumulatively so a kernel whose accounting overlaps still leaves the
+  // bar a bar: earlier segments win the space they claim.
+  let usedWidth = 0;
+  const out = segments
+    .filter((s) => s.pct > 0.4)
+    .map((s) => {
+      const width = Math.max(0, Math.min(100 - usedWidth, s.pct));
+      usedWidth += width;
+      return { ...s, pct: width };
+    })
+    .filter((s) => s.pct > 0.4);
+  return out.length ? out : null;
+});
+
 const swapValue = computed(() => {
   if (isDegraded("memory")) return unavailable;
-  return swapText.value ?? t("quickMetrics.hostMetrics.noSwap");
+  return t("quickMetrics.hostMetrics.noSwap");
+});
+
+const swapPct = computed(() => {
+  const m = mem.value;
+  if (!m?.ready || !m.swapTotalBytes) return null;
+  return Math.min(100, (m.swapUsedBytes / m.swapTotalBytes) * 100);
+});
+
+const swapValueText = computed(() => {
+  const m = mem.value;
+  if (!m?.swapTotalBytes) return null;
+  return `${formatBytes(m.swapUsedBytes)} / ${formatBytes(m.swapTotalBytes)}`;
 });
 
 // The non-working-set pages the kernel holds: reclaimable in a pinch, and the
-// reason a near-full bar is usually fine. Each row degrades to an em-dash —
+// reason a near-full bar is usually fine. Each value degrades to an em-dash —
 // "unknown" — because a breakdown row reading 0 could just mean an old kernel
 // line was absent, and a fake zero here would look like reclaimed memory.
-const detailRows = computed(() => [
-  { key: "swap", label: t("quickMetrics.hostMetrics.memorySwap"), value: swapValue.value },
-  { key: "cached", label: t("quickMetrics.hostMetrics.memoryCached"), value: isDegraded("memory") ? "—" : (cachedText.value ?? "—") },
-  { key: "buffers", label: t("quickMetrics.hostMetrics.memoryBuffers"), value: isDegraded("memory") ? "—" : (buffersText.value ?? "—") },
-  { key: "slab", label: t("quickMetrics.hostMetrics.memorySlab"), value: isDegraded("memory") ? "—" : (slabText.value ?? "—") },
-]);
+const legendItems = computed(() => {
+  if (isDegraded("memory") || !segments.value) return [];
+  return segments.value.filter((s) => s.key !== "working");
+});
 </script>
 
 <template>
@@ -71,42 +142,87 @@ const detailRows = computed(() => [
     </div>
 
     <div class="relative z-10 mt-auto flex flex-col pt-6 transition-opacity duration-200" :class="metricsStale ? 'opacity-50' : ''">
-      <!-- Headline: the same number the storage card carried when memory lived
-           there, so the move does not change what a glance takes in. -->
-      <div class="mb-1 flex items-baseline justify-between gap-3">
-        <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("quickMetrics.hostMetrics.memory") }}</span>
-        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
-          {{ !isDegraded("memory") && memPct !== null ? `${Math.round(memPct)}%` : "—" }}
-        </span>
-      </div>
+      <template v-if="!isDegraded('memory') && memPct !== null && segments">
+        <!-- Headline: the number on the left, the bytes on the right. -->
+        <div class="flex items-baseline justify-between gap-3">
+          <span
+            class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl"
+            :class="isHot ? 'text-rose-600 dark:text-rose-400' : ''"
+          >
+            {{ Math.round(memPct) }}%
+          </span>
+          <span class="truncate text-[9px] font-semibold tabular-nums yantra-text-secondary">
+            {{ memText ?? "" }}
+          </span>
+        </div>
 
-      <div v-if="!isDegraded('memory') && memPct !== null" class="mb-1 h-1.5 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+        <!-- Stacked bar: working set · buffers · slab · cached share one rail. -->
+        <div class="mb-1.5 mt-2 flex h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <div
+            v-for="seg in segments"
+            :key="seg.key"
+            class="h-full transition-[width] duration-200"
+            :style="{ width: seg.pct + '%', backgroundColor: seg.color }"
+          ></div>
+        </div>
+
+        <!-- Legend: the dots carry the colours the bar just used. -->
+        <div class="mb-4 flex flex-wrap gap-x-4 gap-y-1">
+          <span
+            v-for="item in legendItems"
+            :key="item.key"
+            class="flex items-center gap-1.5 text-[9px] font-semibold yantra-text-secondary"
+          >
+            <span
+              class="h-1.5 w-1.5 shrink-0 rounded-full"
+              :style="{ backgroundColor: item.color }"
+            ></span>
+            {{ item.label }} {{ item.value }}
+          </span>
+        </div>
+
+        <!-- Swap: a bar-shaped question gets a bar-shaped answer. A machine
+             with no swap configured is telling the truth, not missing it. -->
+        <div class="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-900/50">
+          <span class="w-9 shrink-0 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+            {{ t("quickMetrics.hostMetrics.memorySwap") }}
+          </span>
+          <span v-if="swapPct !== null" class="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+            <span
+              class="block h-full rounded-full bg-violet-500 transition-[width] duration-200"
+              :style="{ width: swapPct + '%' }"
+            ></span>
+          </span>
+          <span class="shrink-0 text-[11px] font-black tabular-nums tracking-tight yantra-text-primary">
+            {{ swapValueText ?? swapValue }}
+          </span>
+        </div>
+      </template>
+
+      <!-- Degraded: the old text rows, because "unknown" must stay legible. -->
+      <template v-else>
+        <div class="mb-1 flex items-baseline justify-between gap-3">
+          <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary sm:text-5xl">—</span>
+        </div>
         <div
-          class="h-full rounded-full bg-rose-500 transition-[width] duration-200 dark:bg-rose-400"
-          :style="{ width: `${memPct}%` }"
-        ></div>
-      </div>
-
-      <div class="mb-5 truncate text-[9px] font-semibold tabular-nums yantra-text-secondary">
-        {{ isDegraded("memory") ? "" : (memText ?? "") }}
-      </div>
-
-      <!-- Breakdown rows: swap first, because it is the one that says the box
-           is truly out of room; cache, buffers and slab follow as the "relaxed,
-           not really used" half of the picture. -->
-      <div
-        v-for="(row, i) in detailRows"
-        :key="row.key"
-        class="flex items-baseline justify-between gap-2 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50"
-        :class="i < detailRows.length - 1 ? 'mb-2' : ''"
-      >
-        <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
-          {{ row.label }}
-        </span>
-        <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
-          {{ row.value }}
-        </span>
-      </div>
+          v-for="(item, i) in [
+            { key: 'swap', label: t('quickMetrics.hostMetrics.memorySwap'), value: swapValue },
+            { key: 'cached', label: t('quickMetrics.hostMetrics.memoryCached'), value: isDegraded('memory') ? '—' : (cachedText.value ?? '—') },
+            { key: 'buffers', label: t('quickMetrics.hostMetrics.memoryBuffers'), value: isDegraded('memory') ? '—' : (buffersText.value ?? '—') },
+            { key: 'slab', label: t('quickMetrics.hostMetrics.memorySlab'), value: isDegraded('memory') ? '—' : (slabText.value ?? '—') },
+          ]"
+          :key="item.key"
+          class="flex items-baseline justify-between gap-2 rounded-xl bg-zinc-50 p-3"
+          :class="i < 3 ? 'mb-2' : ''"
+        >
+          <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+            {{ item.label }}
+          </span>
+          <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+            {{ item.value }}
+          </span>
+        </div>
+      </template>
     </div>
   </div>
 </template>
