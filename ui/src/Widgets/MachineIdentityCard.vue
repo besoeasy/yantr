@@ -143,7 +143,7 @@ const displayLocation = computed(() => {
          <!-- Half-width body: the masked endpoint keeps its own space on the
               left; the location and provider tiles stack on the right instead
               of sitting under a giant IP as they did in the narrow card. -->
-         <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,14rem)]">
+         <div class="flex flex-col gap-4">
           <!-- IP Address -->
           <!-- A toggle control, so a <button>: it gets native focus, keyboard
                activation and correct semantics for free. As a div with mouse
@@ -165,12 +165,12 @@ const displayLocation = computed(() => {
             </div>
 
             <div v-if="loading && !identity" class="h-10 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800"></div>
-            <div v-else class="font-mono text-4xl font-black tracking-tighter yantra-text-primary transition-colors duration-200 group-hover/ip:text-black yantra-text-primary dark:group-hover/ip:text-zinc-200 break-all">
+            <div v-else class="font-mono text-3xl font-black tracking-tighter yantra-text-primary transition-colors duration-200 group-hover/ip:text-black yantra-text-primary dark:group-hover/ip:text-zinc-200 break-all">
               {{ displayIp }}
             </div>
           </button>
 
-          <div class="grid grid-cols-2 gap-2 sm:grid-cols-1">
+          <div class="grid grid-cols-2 gap-2">
             <!-- Location Card -->
             <button
               type="button"
