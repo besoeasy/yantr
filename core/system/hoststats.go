@@ -38,8 +38,8 @@ type HostMetrics struct {
 	Mem       MemStats    `json:"mem"`
 	Load      LoadStats   `json:"load"`
 	UptimeSec float64     `json:"uptimeSec"`
-	Net      []NetStats    `json:"net"`
-	Disk     []DiskStats   `json:"disk"`
+	Net       []NetStats  `json:"net"`
+	Disk      []DiskStats `json:"disk"`
 	// DiskIO is a per-device I/O rate, reported like Net: empty until the
 	// second sample, because a rate derived from cumulative sector counters
 	// cannot exist from one reading.
@@ -51,7 +51,12 @@ type HostMetrics struct {
 	Sensors []SensorStats `json:"sensors"`
 	TempC   *float64      `json:"tempC"`
 	FanRPM  *float64      `json:"fanRPM"`
-	Degraded []string     `json:"degraded"`
+	// Pressure is the kernel's PSI (pressure stall information) for CPU,
+	// memory and IO. Point-in-time, so it is valid from the first sample.
+	Pressure PressureStats `json:"pressure"`
+	// Board is the DMI identity of the machine (vendor/board/product).
+	Board    BoardInfo `json:"board"`
+	Degraded []string  `json:"degraded"`
 }
 
 // SensorStats is one slot on one hwmon chip: fan i and temperature i under the
@@ -116,6 +121,44 @@ type NetStats struct {
 	Iface string  `json:"iface"`
 	RxBps float64 `json:"rxBps"`
 	TxBps float64 `json:"txBps"`
+	// Link is the physical-layer state read from sysfs: negotiated speed in
+	// Mbps (0 when the driver does not report one, e.g. virtual interfaces),
+	// duplex ("full"/"half"/"unknown"), and operstate ("up"/"down"/...).
+	SpeedMbps int    `json:"speedMbps"`
+	Duplex    string `json:"duplex,omitempty"`
+	OperState string `json:"operState,omitempty"`
+}
+
+// PressureEntry is one row of a /proc/pressure/* file: "some" (at least one
+// task stalled) and "full" (all tasks stalled) averages plus the cumulative
+// stall counter in microseconds.
+type PressureEntry struct {
+	SomeAvg10  float64 `json:"someAvg10"`
+	SomeAvg60  float64 `json:"someAvg60"`
+	SomeAvg300 float64 `json:"someAvg300"`
+	SomeTotal  uint64  `json:"someTotal"`
+	FullAvg10  float64 `json:"fullAvg10"`
+	FullAvg60  float64 `json:"fullAvg60"`
+	FullAvg300 float64 `json:"fullAvg300"`
+	FullTotal  uint64  `json:"fullTotal"`
+}
+
+// PressureStats aggregates the three PSI resources the kernel exposes.
+type PressureStats struct {
+	Ready bool          `json:"ready"`
+	CPU   PressureEntry `json:"cpu"`
+	Mem   PressureEntry `json:"mem"`
+	IO    PressureEntry `json:"io"`
+}
+
+// BoardInfo is the machine identity read from DMI under /sys. Fields are
+// empty (and the widget renders unavailable) on boards without DMI or when
+// the sys bind is missing.
+type BoardInfo struct {
+	Vendor  string `json:"vendor,omitempty"`
+	Board   string `json:"board,omitempty"`
+	Product string `json:"product,omitempty"`
+	Chassis string `json:"chassis,omitempty"`
 }
 
 type DiskStats struct {
@@ -153,6 +196,7 @@ type sources struct {
 	loadavg   string
 	uptime    string
 	netDev    string
+	cpuinfo   string
 	diskstats string
 	sysRoot   string // /sys, or the host bind when there is one
 	hostRoot  string // prefix that makes host paths visible, "" when not bound
@@ -172,6 +216,7 @@ func detectSources() sources {
 		loadavg:   "/proc/loadavg",
 		uptime:    "/proc/uptime",
 		netDev:    "/proc/net/dev",
+		cpuinfo:   "/proc/cpuinfo",
 		diskstats: "/proc/diskstats",
 	}
 	for _, root := range hostRootCandidates {
@@ -319,7 +364,8 @@ func (c *collector) snapshot() HostMetrics {
 				if rx < 0 || tx < 0 {
 					continue // counter reset (interface bounced); a negative rate is a lie
 				}
-				ifaces = append(ifaces, NetStats{Iface: name, RxBps: rx, TxBps: tx})
+				speed, duplex, operState := readNetLink(s, name)
+				ifaces = append(ifaces, NetStats{Iface: name, RxBps: rx, TxBps: tx, SpeedMbps: speed, Duplex: duplex, OperState: operState})
 			}
 			sort.Slice(ifaces, func(i, j int) bool { return ifaces[i].Iface < ifaces[j].Iface })
 			out.Net = ifaces
@@ -364,6 +410,25 @@ func (c *collector) snapshot() HostMetrics {
 	// No degraded key here on purpose: the aggregates above already degrade
 	// with the same missing-/sys condition, and an empty sensor list is a
 	// display question the card answers with its existing em-dash rows.
+
+	// CPU model name is static but cheap to re-read; missing file just leaves
+	// the field empty rather than degrading the whole CPU card.
+	if model := readCPUModelName(s.hostPath("/proc/cpuinfo")); model != "" {
+		out.CPU.ModelName = model
+	}
+
+	if pressure, err := readPressure(s); err == nil {
+		out.Pressure = pressure
+		out.Pressure.Ready = true
+	} else {
+		out.Degraded = append(out.Degraded, "pressure")
+	}
+
+	if board, err := readBoard(s); err == nil {
+		out.Board = board
+	} else {
+		out.Degraded = append(out.Degraded, "board")
+	}
 
 	return out
 }

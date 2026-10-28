@@ -642,7 +642,14 @@
       "diskIOHistory": "Disk I/O over the last 4 minutes",
       "netHistory": "Network traffic over the last 4 minutes",
       "environment": "Environment",
-      "live": "Live"
+      "live": "Live",
+      "linkStatus": "Link Status",
+      "pressure": "Pressure (PSI)",
+      "hardware": "Hardware",
+      "boardVendor": "Vendor",
+      "boardName": "Board",
+      "boardProduct": "Product",
+      "chassis": "Chassis"
     },
     "topConsumers": {
       "title": "Top Consumers",

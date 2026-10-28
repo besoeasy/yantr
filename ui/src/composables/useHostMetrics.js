@@ -262,6 +262,28 @@ const primaryNet = computed(() => {
   return [...net].sort((a, b) => b.rxBps + b.txBps - (a.rxBps + a.txBps))[0];
 });
 
+// Every interface the backend reported, with its link-layer attributes. The
+// Link Status card renders this list; throughput-only consumers keep using
+// primaryNet above.
+const netInterfaces = computed(() => {
+  const net = metrics.value?.net;
+  return Array.isArray(net) ? net : [];
+});
+
+const primaryNetSpeed = computed(() => {
+  const n = primaryNet.value;
+  return Number.isFinite(n?.speedMbps) ? n.speedMbps : null;
+});
+
+const primaryNetDuplex = computed(() => primaryNet.value?.duplex || null);
+const primaryNetState = computed(() => primaryNet.value?.operState || null);
+
+const cpuModel = computed(() => metrics.value?.cpu?.modelName || null);
+
+const pressure = computed(() => metrics.value?.pressure ?? null);
+
+const board = computed(() => metrics.value?.board ?? null);
+
 const netText = computed(() => {
   const net = primaryNet.value;
   if (!net) return null;
@@ -370,6 +392,10 @@ export function useHostMetrics() {
     loadText,
     uptimeText,
     primaryNet,
+    netInterfaces,
+    primaryNetSpeed,
+    primaryNetDuplex,
+    primaryNetState,
     netText,
     primaryDisk,
     diskText,
@@ -379,5 +405,8 @@ export function useHostMetrics() {
     tempText,
     fanText,
     sensors,
+    cpuModel,
+    pressure,
+    board,
   };
 }
