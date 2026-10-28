@@ -84,54 +84,35 @@ const issueUrl = computed(() =>
 </script>
 
 <template>
-  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left">
-    <!-- Header: identity only. The ask lives with the CTA below it. -->
-    <div class="flex w-full items-start justify-between">
-      <div class="flex items-center gap-4">
-        <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-200 group-hover:scale-105">
-          <Bug class="h-5 w-5" />
-        </div>
-        <div>
-          <h3 class="yantra-text-primary text-lg font-bold leading-none tracking-tight">
-            {{ t("issueCard.label") }}
-          </h3>
-          <p class="yantra-text-secondary mt-2 text-[10px] font-semibold uppercase tracking-widest">
-            {{ t("issueCard.subtitle") }}
-          </p>
-        </div>
-      </div>
+  <div class="yantra-card yantra-card-min group relative flex h-full w-full flex-col items-center overflow-hidden p-7 text-center">
+    <!-- A quiet ask: one icon, one line, one action. The facts the report
+         carries ride in the button's href, so nothing else earns pixels. -->
+    <div class="yantra-tile yantra-tile--accent h-12 w-12 transition-transform duration-200 group-hover:scale-105">
+      <Bug class="h-5 w-5" />
     </div>
 
-    <!-- Body: the ask, then the CTA under it. One column is one reading
-         order, so the button spans the card rather than competing with the
-         title for the same row. -->
-    <div class="relative z-10 mt-auto flex flex-col pt-5">
-      <h3 class="yantra-text-primary mb-1.5 text-2xl font-black leading-[1.2] tracking-tight transition-transform duration-200 group-hover:-translate-y-[3px]">
-        {{ t("issueCard.title") }}
-      </h3>
-      <p class="yantra-text-secondary line-clamp-3 text-xs leading-relaxed">
-        {{ t("issueCard.description") }}
-      </p>
+    <h3 class="yantra-text-primary mt-4 text-xl font-black leading-tight tracking-tight">
+      {{ t("issueCard.title") }}
+    </h3>
+    <p class="yantra-text-secondary mt-2 max-w-[250px] text-[11px] leading-relaxed line-clamp-2">
+      {{ t("issueCard.description") }}
+    </p>
 
-      <a
-        :href="issueUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="report-cta group/cta relative mt-5 flex h-11 w-full items-center justify-between gap-3 rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
-      >
-        <div class="relative z-10 flex items-center gap-2.5">
-          <Bug class="h-4 w-4" />
-          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
-        </div>
-        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
-      </a>
+    <!-- CTA spans the card: the one action, no competing button. -->
+    <a
+      :href="issueUrl"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="report-cta group/cta relative mt-5 mt-auto flex h-10 w-full items-center justify-center gap-2 rounded-xl px-5 transition-[border-color,box-shadow,transform] duration-200 active:scale-[0.98]"
+    >
+      <Bug class="h-4 w-4" />
+      <span class="text-[10px] font-bold uppercase tracking-widest">{{ t("issueCard.cta") }}</span>
+      <ArrowUpRight class="h-4 w-4 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+    </a>
 
-      <div class="report-foot yantra-text-secondary flex items-center gap-4 pt-3 text-[10px] leading-relaxed">
-        <span class="flex min-w-0 items-center gap-2">
-          <ShieldCheck class="h-3 w-3 shrink-0" />
-          <span class="truncate">{{ t("issueCard.footnote") }}</span>
-        </span>
-      </div>
+    <div class="report-foot yantra-text-secondary mt-4 flex items-center justify-center gap-2 text-[9px] uppercase tracking-widest">
+      <ShieldCheck class="h-3 w-3 shrink-0" />
+      <span>{{ t("issueCard.footnote") }}</span>
     </div>
   </div>
 </template>
