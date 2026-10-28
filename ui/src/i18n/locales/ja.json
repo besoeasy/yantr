@@ -457,9 +457,7 @@
     },
     "hostMetrics": {
       "connectionFailed": "接続に失敗しました",
-      "hostSystem": "ホストシステム",
       "online": "オンライン",
-      "processors": "プロセッサ",
       "cores": "コア",
       "memory": "メモリ",
       "memorySwap": "スワップ",

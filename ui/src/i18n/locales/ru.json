@@ -457,9 +457,7 @@
     },
     "hostMetrics": {
       "connectionFailed": "Ошибка подключения",
-      "hostSystem": "Хост-система",
       "online": "Онлайн",
-      "processors": "Процессоры",
       "cores": "Ядра",
       "memory": "Память",
       "memorySwap": "Своп",

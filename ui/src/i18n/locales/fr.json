@@ -457,9 +457,7 @@
     },
     "hostMetrics": {
       "connectionFailed": "Connexion échouée",
-      "hostSystem": "Système hôte",
       "online": "En ligne",
-      "processors": "Processeurs",
       "cores": "Cœurs",
       "memory": "Mémoire",
       "memorySwap": "Swap",

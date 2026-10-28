@@ -57,7 +57,12 @@
       "volumeBrowser": "Volume Browser"
     },
     "yantraContainersGrid": {},
-    "systemToolsCard": {}
+    "systemToolsCard": {},
+    "hostCard": {
+      "host": "Host",
+      "hardware": "Hardware",
+      "stack": "Stack"
+    }
   },
   "apps": {
     "categories": "Categories",
@@ -458,9 +463,7 @@
     },
     "hostMetrics": {
       "connectionFailed": "Connection Failed",
-      "hostSystem": "Host System",
       "online": "Online",
-      "processors": "Processors",
       "cores": "Cores",
       "memory": "Memory",
       "memoryUsed": "Used",

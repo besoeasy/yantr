@@ -457,9 +457,7 @@
     },
     "hostMetrics": {
       "connectionFailed": "连接失败",
-      "hostSystem": "主机系统",
       "online": "在线",
-      "processors": "处理器",
       "cores": "核心",
       "memory": "内存",
       "memorySwap": "交换",

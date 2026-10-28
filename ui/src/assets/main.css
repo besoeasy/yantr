@@ -1962,6 +1962,22 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .via-zinc-300\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-300) 40%,transparent);}
 .dark\:via-zinc-700\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-700) 40%,transparent);}
 .dark\:via-fuchsia-500\/40{--yantr-via:color-mix(in srgb,var(--color-fuchsia-500) 40%,transparent);}
+.via-red-500\/30{--yantr-via:color-mix(in srgb,var(--color-red-500) 30%,transparent);}
+.via-teal-500\/30{--yantr-via:color-mix(in srgb,var(--color-teal-500) 30%,transparent);}
+.dark\:via-red-500\/40{--yantr-via:color-mix(in srgb,var(--color-red-500) 40%,transparent);}
+.dark\:via-teal-500\/40{--yantr-via:color-mix(in srgb,var(--color-teal-500) 40%,transparent);}
+
+/* ─── Teal family ────────────────────────────────────────────────────────────
+   The Hardware card — the host's silicon. Every other family was taken when
+   the Host System card split, so the silicon gets its own, like fuchsia got
+   its own for the spotlight. Stops follow the same only-what's-needed rule. */
+:host{--color-teal-50:oklch(98.4% .014 180.72);--color-teal-200:oklch(91.2% .096 183.973);--color-teal-400:oklch(77.7% .152 181.912);--color-teal-600:oklch(60% .104 180.187);--color-teal-900:oklch(38.6% .063 188.416);}
+.border-teal-200{border-color:var(--color-teal-200);}
+.bg-teal-50{background-color:var(--color-teal-50);}
+.text-teal-600{color:var(--color-teal-600);}
+.dark\:border-teal-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-teal-900) 50%,transparent);}
+.dark\:bg-teal-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-teal-900) 20%,transparent);}
+.dark\:text-teal-400:is(.dark *){color:var(--color-teal-400);}
 
 /* ─── Fuchsia family ─────────────────────────────────────────────────────────
    The Daily app spotlight card. Every other card's accent was already taken
