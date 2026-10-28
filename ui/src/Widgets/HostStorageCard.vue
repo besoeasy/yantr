@@ -23,12 +23,19 @@ const {
   isDegraded,
   primaryDisk,
   diskFreeText,
+  disks,
   primaryDiskIO,
   diskIOText,
   diskIOHistory,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+
+// The filesystems beyond the headline one, root-first already sorted by the
+// backend. Every mount the host's real mounts table reports lands here — the
+// old hardcoded candidate list could only ever see "/" plus four conventional
+// paths, so a dedicated data disk wore invisibility as its failure mode.
+const otherDisks = computed(() => disks.value.slice(1));
 
 // Split the combined "read · write" string so each direction gets its own
 // arrow and colour — the same split the network card makes on rx · tx, and
@@ -142,6 +149,31 @@ const sparkLabel = computed(() => t("quickMetrics.hostMetrics.diskIOHistory"));
             </span>
             <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
               {{ isDegraded("diskio") ? unavailable : writeText }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- The rest of the host's filesystems: mount, its own fill bar and its
+           percentage. A dedicated data disk that runs full is exactly as much
+           of an event as the root filesystem running full. -->
+      <div v-if="otherDisks.length > 0 && !isDegraded('disk')" class="mt-4 border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+          {{ t("quickMetrics.hostMetrics.otherDisks") }}
+        </div>
+        <div class="flex flex-col gap-2">
+          <div
+            v-for="d in otherDisks"
+            :key="d.mount"
+            class="flex items-center gap-2 rounded-xl bg-zinc-50 p-2 dark:bg-zinc-900/50"
+          >
+            <span class="min-w-0 flex-1 truncate text-[11px] font-bold tracking-tight yantra-text-primary" :title="d.mount">{{ d.mount }}</span>
+            <span class="shrink-0 text-[9px] font-semibold yantra-text-secondary">{{ d.fsType }}</span>
+            <span class="h-1 w-14 shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+              <span class="block h-full rounded-full bg-emerald-500" :style="{ width: `${d.usedPct}%` }"></span>
+            </span>
+            <span class="w-10 shrink-0 text-right text-[9px] font-black tabular-nums tracking-tight yantra-text-primary">
+              {{ Math.round(d.usedPct) }}%
             </span>
           </div>
         </div>

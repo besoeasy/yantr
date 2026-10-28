@@ -15,6 +15,7 @@ import { useHostMetrics } from "../composables/useHostMetrics";
 const { t } = useI18n();
 
 const {
+  metrics,
   metricsStale,
   isDegraded,
   tempText,
@@ -35,16 +36,32 @@ const pairedSensors = computed(() =>
     .slice(0, 2)
 );
 
-// 75°C is where most board guides start saying "check your cooling"; the
-// exact number is less important than the fact that a hot slot looks hot.
-const isHot = (celsius) => celsius >= 75;
+// Heat is judged against the chip's own trip when the board ships one (85%
+// of the threshold is where the margin starts feeling thin); the fixed 75°C
+// stays as the stand-alone baseline for chips that ship no threshold, like
+// k10temp does on many boards. The exact number matters less than a hot slot
+// looking hot.
+const isHot = (celsius, tripC) => (tripC ? celsius >= tripC * 0.85 : celsius >= 75);
 
 const fmtTemp = (celsius) => `${Math.round(celsius)}°C`;
 
+// The headline value reads the aggregate TempC, which carries no trip of its
+// own; the strictest threshold it races is the hottest chip trip the snapshot
+// saw. A null threshold falls back to the fixed 75°C baseline.
+const headlineHot = computed(() => {
+  const celsius = metrics.value?.tempC;
+  if (!Number.isFinite(celsius)) return false;
+  let trip = null;
+  for (const s of sensors.value) {
+    if (Number.isFinite(s?.tripC) && (trip === null || s.tripC > trip)) trip = s.tripC;
+  }
+  return isHot(celsius, trip);
+});
+
 // Temperature is the card's headline: it is the one live number here and the
-// usual reason to look on a homelab box — uptime barely moves. The value came
-// out of readTemperature filtered through the plausibility window, so a dead
-// sensor renders the unavailable state instead of a convincing zero.
+// usual reason to look on a homelab box. The value came out of
+// readTemperature filtered through the plausibility window, so a dead sensor
+// renders the unavailable state instead of a convincing zero.
 const headline = computed(() => (isDegraded("temperature") ? unavailable : (tempText.value ?? unavailable)));
 </script>
 
@@ -72,13 +89,17 @@ const headline = computed(() => (isDegraded("temperature") ? unavailable : (temp
     </div>
 
     <div class="relative z-10 mt-auto flex flex-col pt-6 transition-opacity duration-200" :class="metricsStale ? 'opacity-50' : ''">
-      <!-- Temperature headline: a live reading first, identity second. -->
+      <!-- Temperature headline: a live reading first, identity second. The
+           value turns rose once some chip's threshold margin thins. -->
       <div class="mb-5 flex items-baseline justify-between gap-3">
         <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <Thermometer class="h-3 w-3 shrink-0 text-indigo-600" />
           {{ t("quickMetrics.hostMetrics.temperature") }}
         </span>
-        <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
+        <span
+          class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl"
+          :class="headlineHot ? 'text-rose-600 dark:text-rose-400' : ''"
+        >
           {{ headline }}
         </span>
       </div>
@@ -101,18 +122,21 @@ const headline = computed(() => (isDegraded("temperature") ? unavailable : (temp
       </div>
 
       <!-- Paired slots: chip name left, its own temperature and fan right.
-           The hot tint rides on the temperature, so a burning NVMe reads hot
-           even when its slot's fan is dutifully spinning. -->
+           The hot tint rides on the temperature against the chip's own trip
+           when it ships one, so a burning NVMe reads hot no matter how cool
+           the CPU headline sits. The title exposes the threshold a hover
+           answers honestly: what number is this 52°C racing? -->
       <div
         v-for="sensor in pairedSensors"
         :key="sensor.chip + (sensor.label ?? '')"
         class="mb-2 flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 last:mb-0 dark:border-zinc-800 dark:bg-zinc-900/50"
+        :title="sensor.tripC ? t('quickMetrics.hostMetrics.tempTripsAt', { trip: Math.round(sensor.tripC) }) : undefined"
       >
         <span class="flex min-w-0 items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
           <Fan class="h-3 w-3 shrink-0 text-sky-500" />
           <span class="truncate">{{ sensor.label || sensor.chip }}</span>
         </span>
-        <span class="shrink-0 text-sm font-black tabular-nums tracking-tight" :class="isHot(sensor.tempC) ? 'text-rose-600 dark:text-rose-400' : 'yantra-text-primary'">
+        <span class="shrink-0 text-sm font-black tabular-nums tracking-tight" :class="isHot(sensor.tempC, sensor.tripC) ? 'text-rose-600 dark:text-rose-400' : 'yantra-text-primary'">
           {{ fmtTemp(sensor.tempC) }} · {{ Math.round(sensor.fanRPM) }} RPM
         </span>
       </div>

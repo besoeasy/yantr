@@ -284,6 +284,26 @@ const pressure = computed(() => metrics.value?.pressure ?? null);
 
 const board = computed(() => metrics.value?.board ?? null);
 
+// One entry per GPU the kernel exposes statistics for. Point-in-time, valid
+// from the first sample; an empty list means "no card exposes these files",
+// which the GPU card answers with a quiet not-exposed state rather than an
+// error — an Intel iGPU or a headless server is a normal machine, not a
+// broken one.
+const gpus = computed(() => {
+  const list = metrics.value?.gpu;
+  return Array.isArray(list) ? list : [];
+});
+
+const primaryGpu = computed(() => gpus.value[0] ?? null);
+
+// Every filesystem the collector reported, root first. The Storage card
+// headlines disks[0] and lists the rest; consumers with no interest in the
+// tail keep using primaryDisk.
+const disks = computed(() => {
+  const list = metrics.value?.disk;
+  return Array.isArray(list) ? list : [];
+});
+
 const netText = computed(() => {
   const net = primaryNet.value;
   if (!net) return null;
@@ -408,5 +428,8 @@ export function useHostMetrics() {
     cpuModel,
     pressure,
     board,
+    gpus,
+    primaryGpu,
+    disks,
   };
 }
