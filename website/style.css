@@ -444,28 +444,6 @@ code, pre { font-family: var(--font-mono); }
 .hero-uninstall {
   margin-top: 0.45rem;
 }
-.hero-bits {
-  width: min(30rem, 88%);
-  margin: -0.4rem auto 0.9rem;
-  font-family: var(--font-mono);
-  font-size: clamp(10px, 1.7vw, 17px);
-  line-height: 1.12;
-  text-align: center;
-  user-select: none;
-  white-space: pre;
-}
-.hero-bits .on {
-  color: var(--gray-800);
-  animation: bit-pulse 3.6s ease-in-out infinite;
-}
-.hero-bits .off {
-  color: var(--gray-300);
-  opacity: 0.4;
-}
-@keyframes bit-pulse {
-  0%, 100% { color: var(--gray-800); opacity: 0.85; }
-  50% { color: var(--gray-950); opacity: 1; }
-}
 .hero-binary {
   display: flex;
   flex-wrap: wrap;
