@@ -1,9 +1,7 @@
 <script>
-// Two columns: the logo becomes a poster rail on the left and the app's
-// story (name, description, tags, CTA) sits to its right. The earlier
-// single-column band existed to hold one pick, and at one column most of
-// the 320px height was empty space around a name.
-export const meta = { cols: 2 };
+// Dashboard engine: one column — the daily pick reads as a compact tile in
+// the grid, with the logo on top and the story stacked beneath it.
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
@@ -16,17 +14,9 @@ import { appOfDay } from "../utils/spotlight";
 import { useCatalog, useContainers } from "../composables/useDashboardData";
 import WidgetSkeleton from "../components/WidgetSkeleton.vue";
 
-// One card, one app, one day. Nothing about the choice is server-driven or
-// personalised: the catalog answers what exists, containers answer whether the
-// pick is already running here, and the date picks which app it is. The same
-// day reads the same on every host, and a reload never reshuffles it.
-
 const { t } = useI18n();
 const router = useRouter();
 
-// Both lists are shared with the other dashboard cards that read them, so
-// mounting costs no request of its own and the pick stays in step with the
-// rest of the page.
 const { apps, appsLoaded, appsLoadFailed } = useCatalog();
 const { containers, containersLoadFailed } = useContainers({ live: true });
 
@@ -80,9 +70,6 @@ const stateLabel = computed(() => {
 });
 
 const ctaLabel = computed(() => {
-  // The whole card still routes to the app page (where a running stack is
-  // actually opened), but the label reflects the state so an already-running
-  // pick reads as an action rather than a catalog link.
   if (appState.value === "running") return t("home.dailyAppCard.openOverview");
   return t("home.dailyAppCard.viewApp");
 });
@@ -91,7 +78,6 @@ function handleSelect(appId) {
   if (!appId) return;
   router.push(appDetail(appId));
 }
-
 </script>
 
 <template>
@@ -101,8 +87,7 @@ function handleSelect(appId) {
     v-else-if="dailyApp"
     class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow] duration-200 hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]"
   >
-    <!-- Header: what this card is, and whether today's app is already
-         running on this host. -->
+    <!-- Header -->
     <div class="flex w-full items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
@@ -133,56 +118,51 @@ function handleSelect(appId) {
       </div>
     </div>
 
-    <!-- The app. The whole body is the click target: at two columns the
-         logo becomes a poster rail and the story (name, description, tags,
-         CTA) sits to its right. -->
+    <!-- Logo (centered, larger) -->
     <button
       type="button"
       @click="handleSelect(dailyApp.id)"
-      class="group/app mt-6 flex flex-1 flex-row items-start gap-8 text-left"
+      class="group/app mt-5 flex flex-1 flex-col items-center text-center"
     >
-      <!-- Poster rail: a much larger logo so the pick reads as a hero. -->
-      <div class="flex w-60 shrink-0 flex-col items-center gap-4">
-        <div class="flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <AppLogo
-            :logo="dailyApp?.logo"
-            :name="dailyApp?.name"
-            :seed="dailyApp?.id || dailyApp?.name"
-            img-class="h-full w-full object-contain"
-            icon-class="h-24 w-24 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
-          />
+      <div class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
+        <AppLogo
+          :logo="dailyApp?.logo"
+          :name="dailyApp?.name"
+          :seed="dailyApp?.id || dailyApp?.name"
+          img-class="h-full w-full object-contain"
+          icon-class="h-16 w-16 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
+        />
+      </div>
+
+      <!-- Story -->
+      <div class="mt-4 flex w-full flex-col">
+        <div class="text-xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
+          {{ dailyApp?.name }}
         </div>
 
-        <div class="flex flex-col items-center gap-2">
+        <p v-if="dailyApp?.short_description" class="mt-2 text-xs leading-relaxed yantra-text-secondary line-clamp-3">
+          {{ dailyApp.short_description }}
+        </p>
+
+        <div class="mt-3 flex flex-wrap justify-center gap-2">
           <span
             v-for="tag in (dailyApp?.tags || []).slice(0, 3)"
             :key="tag"
-            class="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300"
+            class="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[10px] font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300"
           >
             {{ tag }}
           </span>
           <span
             v-if="(dailyApp?.tags?.length || 0) > 3"
-            class="text-[11px] font-medium yantra-text-secondary"
+            class="text-[10px] font-medium yantra-text-secondary"
           >
-            +{{ (dailyApp?.tags?.length || 0) - 3 }} more
+            +{{ (dailyApp?.tags?.length || 0) - 3 }}
           </span>
         </div>
-      </div>
 
-      <!-- Story rail: name, description, and the affordance. -->
-      <div class="flex min-w-0 flex-1 flex-col">
-        <div class="text-3xl font-black leading-[1.05] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
-          {{ dailyApp?.name }}
-        </div>
-
-        <p v-if="dailyApp?.short_description" class="mt-3 text-sm leading-relaxed yantra-text-secondary line-clamp-3">
-          {{ dailyApp.short_description }}
-        </p>
-
-        <span class="mt-auto inline-flex items-center gap-2 pt-5 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
+        <span class="mt-4 inline-flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors group-hover/app:text-zinc-900 dark:group-hover/app:text-zinc-100">
           {{ ctaLabel }}
-          <ArrowUpRight :size="14" />
+          <ArrowUpRight :size="12" />
         </span>
       </div>
     </button>
