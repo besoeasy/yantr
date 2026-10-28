@@ -2,7 +2,7 @@
 // Dashboard engine: two of the desktop grid's four columns — the masked
 // endpoint gets its own space on the left and the location/provider tiles
 // stack on the right. See Home.vue for how meta.cols is consumed.
-export const meta = { cols: 2 };
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
