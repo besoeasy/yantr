@@ -361,7 +361,7 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	}}
 
 	got := c.snapshot()
-	for _, want := range []string{"cpu", "memory", "load", "network", "disk", "temperature", "gpu"} {
+	for _, want := range []string{"cpu", "memory", "load", "network", "disk", "temperature", "gpu", "vmstat"} {
 		found := false
 		for _, d := range got.Degraded {
 			if d == want {
