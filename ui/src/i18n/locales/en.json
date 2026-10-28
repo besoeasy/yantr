@@ -630,6 +630,7 @@
       "disk": "Disk",
       "free": "{size} free",
       "network": "Network",
+    "netOther": "Other interfaces",
       "rxTx": "rx · tx",
       "temperature": "Temperature",
       "fans": "Fans",

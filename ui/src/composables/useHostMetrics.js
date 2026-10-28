@@ -263,8 +263,8 @@ const primaryNet = computed(() => {
 });
 
 // Every interface the backend reported, with its link-layer attributes. The
-// Link Status card renders this list; throughput-only consumers keep using
-// primaryNet above.
+// Network card renders this list under the headline; throughput-only
+// consumers keep using primaryNet above.
 const netInterfaces = computed(() => {
   const net = metrics.value?.net;
   return Array.isArray(net) ? net : [];
