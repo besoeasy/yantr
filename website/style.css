@@ -1209,8 +1209,8 @@ p code, li code, td code, .spec-sub code {
   transform: translateY(-2px);
 }
 .contrib-card img {
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 5rem;
+  height: 5rem;
   border-radius: var(--radius-full);
   border: 2px solid rgba(255, 255, 255, 0.15);
   object-fit: cover;
@@ -3124,7 +3124,7 @@ p code, li code, td code, .spec-sub code {
 }
 
 @media (min-width: 1280px) {
-  .contrib-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .contrib-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); width: min(60rem, 100%); margin: 0 auto; }
 }
 
 @media (max-width: 639px) {
