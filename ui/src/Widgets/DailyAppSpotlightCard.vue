@@ -139,17 +139,17 @@ function handleSelect(appId) {
     <button
       type="button"
       @click="handleSelect(dailyApp.id)"
-      class="group/app mt-6 flex flex-1 flex-row items-start gap-6 text-left"
+      class="group/app mt-6 flex flex-1 flex-row items-start gap-8 text-left"
     >
-      <!-- Poster rail: logo with the app's tags stacked beneath it. -->
-      <div class="flex w-48 shrink-0 flex-col items-center gap-3">
-        <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <!-- Poster rail: a much larger logo so the pick reads as a hero. -->
+      <div class="flex w-60 shrink-0 flex-col items-center gap-4">
+        <div class="flex h-40 w-40 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
           <AppLogo
             :logo="dailyApp?.logo"
             :name="dailyApp?.name"
             :seed="dailyApp?.id || dailyApp?.name"
             img-class="h-full w-full object-contain"
-            icon-class="h-20 w-20 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
+            icon-class="h-24 w-24 text-zinc-300 transition-colors duration-200 group-hover/app:text-zinc-400 dark:text-zinc-700 dark:group-hover/app:text-zinc-600"
           />
         </div>
 
@@ -172,7 +172,7 @@ function handleSelect(appId) {
 
       <!-- Story rail: name, description, and the affordance. -->
       <div class="flex min-w-0 flex-1 flex-col">
-        <div class="text-2xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
+        <div class="text-3xl font-black leading-[1.05] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover/app:-translate-y-[3px]">
           {{ dailyApp?.name }}
         </div>
 
