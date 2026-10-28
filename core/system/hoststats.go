@@ -17,6 +17,7 @@ package system
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -60,9 +61,27 @@ type HostMetrics struct {
 	// iGPU or a headless server exposes none of these files — so it degrades
 	// nothing; only a missing sysfs bind adds the "gpu" degraded key.
 	Gpu []GpuStats `json:"gpu"`
+	// VM is the kernel's page & swap activity from /proc/vmstat. Swap
+	// occupancy (in Mem) tells where the box stands; swap TRAFFIC tells when
+	// it is thrashing — that rate is the event this payload carries.
+	VM VMStats `json:"vm"`
 	// Board is the DMI identity of the machine (vendor/board/product).
 	Board    BoardInfo `json:"board"`
 	Degraded []string  `json:"degraded"`
+}
+
+// VMStats is one sample of the kernel's page/swap movement. The swap rates are
+// two-sample rates like CPU and IO, and Ready mirrors that contract; the dirty
+// and writeback byte counts are point-in-time and valid from the first one.
+type VMStats struct {
+	Ready      bool    `json:"ready"`
+	SwapInBps  float64 `json:"swapInBps"`
+	SwapOutBps float64 `json:"swapOutBps"`
+	DirtyBytes uint64  `json:"dirtyBytes"`
+	// WritebackBytes are pages the kernel has queued for disk (dirty and
+	// under writeback): the only "an app is writing a lot" signal a
+	// rootless container can read without owning a cgroup.
+	WritebackBytes uint64 `json:"writebackBytes"`
 }
 
 // GpuStats is one GPU the kernel exposes statistics for. Every dynamic field
@@ -80,6 +99,10 @@ type GpuStats struct {
 	BusyPct        *float64 `json:"busyPct"`
 	VramUsedBytes  uint64   `json:"vramUsedBytes"`
 	VramTotalBytes uint64   `json:"vramTotalBytes"`
+	// PowerW is the driver's averaged power draw (amdgpu's power1_average in
+	// microwatts); null when the driver ships none of the power files. The
+	// only watt meter a rootless run can reach.
+	PowerW *float64 `json:"powerW,omitempty"`
 	// TempC and TripC ride along from the driver's hwmon chip when it has one.
 	TempC *float64 `json:"tempC"`
 	TripC *float64 `json:"tripC,omitempty"`
@@ -212,6 +235,14 @@ type DiskIOStats struct {
 	// doing many small reads does not hide behind a headline of bytes.
 	ReadsPerSec  float64 `json:"readsPerSec"`
 	WritesPerSec float64 `json:"writesPerSec"`
+	// UtilPct is the share of the window the device was busy (io_ticks delta
+	// over elapsed time), the saturation signal byte rates hide: 30 MB/s can
+	// be an idle HDD or a full pipe. It is zero for the first tick, like the
+	// rates it rides with.
+	UtilPct float64 `json:"utilPct"`
+	// InFlight is the kernel's instantaneous queue depth at read time — a
+	// point-in-time fact, so it is present from the first tick.
+	InFlight uint64 `json:"inFlight,omitempty"`
 }
 
 // --------------------------------------------------------------- path sources
@@ -292,12 +323,15 @@ type netCounters struct {
 	rx, tx uint64
 }
 
-// diskIOCounters holds the four counters a rate needs from one /proc/diskstats
-// line: completed operation counts (for IOPS) and sector counts (for bytes).
+// diskIOCounters holds the six counters a rate needs from one /proc/diskstats
+// line: completed operation counts (for IOPS), sector counts (for bytes), and
+// the io_ticks/in-flight pair that turns into utilization and queue depth.
 type diskIOCounters struct {
 	reads, writes uint64
 	readSectors   uint64
 	writeSectors  uint64
+	ioTicks       uint64
+	inFlight      uint64
 }
 
 // collector holds the previous reading, because CPU and network rates are
@@ -315,6 +349,10 @@ type collector struct {
 	// one tick rather than reported against an unknown baseline.
 	prevDiskIO   map[string]diskIOCounters
 	prevDiskIOAt time.Time
+	// prevVM is the vmstat rate baseline; at zero it defers one tick like
+	// every other two-sample rate in this file.
+	prevVM   vmCounters
+	prevVMAt time.Time
 }
 
 var hostCollector = &collector{sources: detectSources()}
@@ -419,6 +457,30 @@ func (c *collector) snapshot() HostMetrics {
 			out.DiskIO = diskIORates(c.prevDiskIO, diskCounters, now.Sub(c.prevDiskIOAt).Seconds())
 		}
 		c.prevDiskIO, c.prevDiskIOAt = diskCounters, now
+		c.mu.Unlock()
+	}
+
+	// VM activity is the last two-sample rate: swap traffic is the thrash
+	// alarm (occupancy, in Mem, is where the box stands, not what it is
+	// doing), and dirty/writeback ride along as point-in-time page counts.
+	// A missing vmstat file is a degradation, not an empty payload — the same
+	// way a missing diskstats marks diskio.
+	if vm, vmErr := readVMStat(s); vmErr != nil {
+		out.Degraded = append(out.Degraded, "vmstat")
+	} else {
+		c.mu.Lock()
+		if c.prevVMAt.IsZero() {
+			out.VM.DirtyBytes = vm.dirty
+			out.VM.WritebackBytes = vm.writeback
+		} else if elapsed := now.Sub(c.prevVMAt).Seconds(); elapsed > 0 {
+			in, outRate := vmRates(c.prevVM, vm, elapsed)
+			out.VM.Ready = true
+			out.VM.SwapInBps = in
+			out.VM.SwapOutBps = outRate
+			out.VM.DirtyBytes = vm.dirty
+			out.VM.WritebackBytes = vm.writeback
+		}
+		c.prevVM, c.prevVMAt = vm, now
 		c.mu.Unlock()
 	}
 
@@ -891,7 +953,8 @@ func readDiskstats(path string) (map[string]diskIOCounters, error) {
 		fields := strings.Fields(sc.Text())
 		// "major minor name reads merged sectors ms ..." — 14 fields before
 		// the extra discard/flush columns modern kernels append; 13 is the
-		// minimum that reaches sectors_written (index 9  after reads_merged).
+		// minimum that reaches io_ticks (index 12), the utilization counter
+		// diskIORates diffs.
 		if len(fields) < 13 {
 			continue
 		}
@@ -902,7 +965,9 @@ func readDiskstats(path string) (map[string]diskIOCounters, error) {
 		readSectors, err2 := strconv.ParseUint(fields[5], 10, 64)
 		writes, err3 := strconv.ParseUint(fields[7], 10, 64)
 		writeSectors, err4 := strconv.ParseUint(fields[9], 10, 64)
-		if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		ioTicks, err5 := strconv.ParseUint(fields[12], 10, 64)
+		inFlight, err6 := strconv.ParseUint(fields[11], 10, 64)
+		if err1 != nil || err2 != nil || err3 != nil || err4 != nil || err5 != nil || err6 != nil {
 			continue
 		}
 		out[fields[2]] = diskIOCounters{
@@ -910,6 +975,8 @@ func readDiskstats(path string) (map[string]diskIOCounters, error) {
 			readSectors:  readSectors,
 			writes:       writes,
 			writeSectors: writeSectors,
+			ioTicks:      ioTicks,
+			inFlight:     inFlight,
 		}
 	}
 	if err := sc.Err(); err != nil {
@@ -949,8 +1016,18 @@ func diskIORates(prev, cur map[string]diskIOCounters, elapsedSec float64) []Disk
 		dWrite := int64(c.writeSectors) - int64(p.writeSectors)
 		dReads := int64(c.reads) - int64(p.reads)
 		dWrites := int64(c.writes) - int64(p.writes)
-		if dRead < 0 || dWrite < 0 || dReads < 0 || dWrites < 0 {
+		dTicks := int64(c.ioTicks) - int64(p.ioTicks)
+		if dRead < 0 || dWrite < 0 || dReads < 0 || dWrites < 0 || dTicks < 0 {
 			continue
+		}
+		// io_ticks is milliseconds the device spent busy, so the share of a
+		// window is ticks over elapsed time in the same unit. It cannot
+		// honestly exceed 100, but a counter reset racing the elapsed clock
+		// would print 120% — clamped, because every percentage on the card
+		// means "share of something".
+		utilPct := 0.0
+		if elapsedMs := elapsedSec * 1000; elapsedMs > 0 && dTicks > 0 {
+			utilPct = math.Min(float64(dTicks)/elapsedMs*100, 100)
 		}
 		out = append(out, DiskIOStats{
 			Device:       name,
@@ -958,6 +1035,9 @@ func diskIORates(prev, cur map[string]diskIOCounters, elapsedSec float64) []Disk
 			WriteBps:     float64(dWrite) * sectorBytes / elapsedSec,
 			ReadsPerSec:  float64(dReads) / elapsedSec,
 			WritesPerSec: float64(dWrites) / elapsedSec,
+			// In flight is instantaneous, so it rides on the tick that read it.
+			InFlight: c.inFlight,
+			UtilPct:  utilPct,
 		})
 	}
 	// Busiest first, so a card that shows the top device finds it at index 0

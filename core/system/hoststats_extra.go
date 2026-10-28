@@ -289,12 +289,13 @@ func readGpus(s sources) []GpuStats {
 		busy := readBusyPct(filepath.Join(devDir, "gpu_busy_percent"))
 		vramUsed, _ := readUintFile(filepath.Join(devDir, "mem_info_vram_used"))
 		vramTotal, _ := readUintFile(filepath.Join(devDir, "mem_info_vram_total"))
+		powerW := readGpuPower(devDir)
 
 		// A card that exposes no readings at all contributes nothing to the
 		// card — but a card that exposes SOME (vram with no busy on a variant
 		// kernel) is still worth listing, with a null busy the UI renders as
 		// an em-dash.
-		if busy == nil && vramUsed == 0 && vramTotal == 0 && driver == "" {
+		if busy == nil && vramUsed == 0 && vramTotal == 0 && driver == "" && powerW == nil {
 			continue
 		}
 		tempC, tripC := readGpuTemp(s, devDir, driver)
@@ -304,6 +305,7 @@ func readGpus(s sources) []GpuStats {
 			BusyPct:        busy,
 			VramUsedBytes:  vramUsed,
 			VramTotalBytes: vramTotal,
+			PowerW:         powerW,
 			TempC:          tempC,
 			TripC:          tripC,
 		})
@@ -312,4 +314,84 @@ func readGpus(s sources) []GpuStats {
 		}
 	}
 	return out
+}
+
+// readGpuPower parses the driver's averaged power file into watts. amdgpu
+// reports power1_average in microwatts (37000000 is a 37 W idle draw), older
+// kernels named the same number power1_input; both are tried, best-effort.
+// The plausibility band is wide on purpose — a zero-draw GPU is a real reading
+// on some cards — but a value that would need the panel's circuit breaker to
+// exceed does not parse. Null when the driver ships no power files.
+func readGpuPower(devDir string) *float64 {
+	for _, name := range []string{"power1_average", "power1_input"} {
+		v, ok := readUintFile(filepath.Join(devDir, name))
+		if !ok {
+			continue
+		}
+		watts := float64(v) / 1e6
+		if watts < 0 || watts > 2000 {
+			return nil
+		}
+		return &watts
+	}
+	return nil
+}
+
+// pageSize is the kernel's accounting unit for the page counters below. It is
+// a constant, not a syscall, because /proc/vmstat itself hardcodes the same
+// assumption on every platform yantr ships for, and pretending to detect it
+// would only add a failure mode to a number that is otherwise exact.
+const pageSize = 4096
+
+// vmCounters is the slice of /proc/vmstat the VM card reads.
+type vmCounters struct {
+	pswpin, pswpout  uint64
+	dirty, writeback uint64
+}
+
+// readVMStat pulls the swap-in/out and page-state counters. A missing file
+// degrades the section rather than reporting convincing zeroes.
+func readVMStat(s sources) (vmCounters, error) {
+	var out vmCounters
+	raw, err := os.ReadFile(s.hostPath("/proc/vmstat"))
+	if err != nil {
+		return out, err
+	}
+	fields := map[string]uint64{}
+	for _, line := range strings.Split(string(raw), "\n") {
+		parts := strings.Fields(line)
+		if len(parts) != 2 {
+			continue
+		}
+		if v, err := strconv.ParseUint(parts[1], 10, 64); err == nil {
+			fields[parts[0]] = v
+		}
+	}
+	out.pswpin = fields["pswpin"]
+	out.pswpout = fields["pswpout"]
+	out.dirty = fields["nr_dirty"] * pageSize
+	out.writeback = fields["nr_writeback"] * pageSize
+	// A file that parsed but does not carry the swap keys is a kernel too
+	// different from the expected shape to trust — refuse rather than report
+	// a flat zero line.
+	if _, ok := fields["pswpin"]; !ok {
+		return out, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// vmRates turns two vmstat samples into swap byte rates. Pure, so the
+// arithmetic is pinned by tests; a counter going backwards means the kernel
+// restarted the accounting (or the container view reset) and a negative rate
+// is a lie, so the window is dropped.
+func vmRates(prev, cur vmCounters, elapsedSec float64) (inBps, outBps float64) {
+	if elapsedSec <= 0 {
+		return 0, 0
+	}
+	dIn := int64(cur.pswpin) - int64(prev.pswpin)
+	dOut := int64(cur.pswpout) - int64(prev.pswpout)
+	if dIn < 0 || dOut < 0 {
+		return 0, 0
+	}
+	return float64(dIn) * pageSize / elapsedSec, float64(dOut) * pageSize / elapsedSec
 }

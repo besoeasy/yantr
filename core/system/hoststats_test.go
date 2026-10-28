@@ -606,6 +606,7 @@ func TestReadGpusKeepsCardsThatExposeReadings(t *testing.T) {
 		"gpu_busy_percent":    "0\n",
 		"mem_info_vram_used":  "1673891840",
 		"mem_info_vram_total": "8573157376",
+		"power1_average":      "37000000",
 	} {
 		if err := os.WriteFile(filepath.Join(cardDev, item), []byte(content), 0o600); err != nil {
 			t.Fatal(err)
@@ -630,12 +631,80 @@ func TestReadGpusKeepsCardsThatExposeReadings(t *testing.T) {
 	if g.TempC == nil || math.Abs(*g.TempC-41) > 0.001 || g.TripC == nil || *g.TripC != 120 {
 		t.Errorf("temp = %v/%v, want 41°C against a 120°C trip", g.TempC, g.TripC)
 	}
+	// amdgpu reports microwatts; 37000000 is a 37 W idle draw.
+	if g.PowerW == nil || math.Abs(*g.PowerW-37) > 0.001 {
+		t.Errorf("power = %v, want 37 W from the microwatt file", g.PowerW)
+	}
 }
 
 func TestReadGpusNoSysfsIsNotAnError(t *testing.T) {
 	got := readGpus(sources{sysRoot: t.TempDir()})
 	if len(got) != 0 {
 		t.Errorf("got %+v, want an empty list", got)
+	}
+}
+
+func TestVMRates(t *testing.T) {
+	prev := vmCounters{pswpin: 1000, pswpout: 500}
+	cur := vmCounters{pswpin: 2512, pswpout: 2000}
+	in, outBps := vmRates(prev, cur, 2)
+	// 1512 pages in over 2 s at the 4 KiB page size: 3.072 MiB/s.
+	if math.Abs(in-1512*4096/2) > 0.001 {
+		t.Errorf("swap-in = %v, want %v", in, 1512*4096/2)
+	}
+	if math.Abs(outBps-1500*4096/2) > 0.001 {
+		t.Errorf("swap-out = %v, want %v", outBps, 1500*4096/2)
+	}
+
+	// A backwards counter (accounting restarted) drops the whole window: a
+	// negative rate would print megabytes flying backwards in time.
+	if in, outBps := vmRates(vmCounters{pswpin: 5000}, cur, 2); in != 0 || outBps != 0 {
+		t.Errorf("backwards counter = %v/%v, want 0/0 for the dropped window", in, outBps)
+	}
+	if in, outBps := vmRates(prev, cur, 0); in != 0 || outBps != 0 {
+		t.Errorf("zero elapsed = %v/%v, want 0/0", in, outBps)
+	}
+}
+
+func TestReadVMStatRejectsWrongShape(t *testing.T) {
+	// A vmstat missing the swap keys is a kernel we do not know how to read;
+	// it must degrade rather than report a flat zero line.
+	if _, err := readVMStat(sources{hostRoot: t.TempDir()}); err == nil {
+		t.Fatal("expected an error when vmstat does not exist")
+	}
+	dir := t.TempDir()
+	procDir := filepath.Join(dir, "proc")
+	if err := os.MkdirAll(procDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(procDir, "vmstat"), []byte("nr_free_pages 1000\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readVMStat(sources{hostRoot: dir}); err == nil {
+		t.Fatal("expected an error when no swap key is present")
+	}
+}
+
+func TestReadVMStatParsesCounters(t *testing.T) {
+	dir := t.TempDir()
+	procDir := filepath.Join(dir, "proc")
+	if err := os.MkdirAll(procDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	body := "pgpgin 100\npswpin 12\npswpout 3\nnr_dirty 20\nnr_writeback 5\nother_key 9\n"
+	if err := os.WriteFile(filepath.Join(procDir, "vmstat"), []byte(body), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	got, err := readVMStat(sources{hostRoot: dir})
+	if err != nil {
+		t.Fatalf("readVMStat: %v", err)
+	}
+	if got.pswpin != 12 || got.pswpout != 3 {
+		t.Errorf("swap counters = %d/%d, want 12/3", got.pswpin, got.pswpout)
+	}
+	// Page counts convert to bytes at the kernel's page size.
+	if got.dirty != 20*4096 || got.writeback != 5*4096 {
+		t.Errorf("dirty/writeback = %d/%d, want byte-converted page counts", got.dirty, got.writeback)
 	}
 }
 
@@ -685,7 +754,7 @@ const diskstatsFixture = `   8       0 nvme0n1 2821 0 625244 301 189 214 13994 3
    9       0 md0 412 0 100000 200 88 0 2000 40 0 0 0 0 0 0
  253       0 dm-0 9000 0 200000 400 1000 0 50000 60 0 0 0 0 0 0
    1       0 ram0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-   8      16 sda 10 0 100 1 5 0 40 2 0 0 0 0 0 0
+   8      16 sda 10 0 100 1 5 0 40 2 7 350 0 0 0
 `
 
 func TestReadDiskstatsFiltersToDeviceNames(t *testing.T) {
@@ -709,6 +778,11 @@ func TestReadDiskstatsFiltersToDeviceNames(t *testing.T) {
 		got["nvme0n1"].writes != 189 || got["nvme0n1"].writeSectors != 13994 {
 		t.Errorf("nvme0n1 = %+v", got["nvme0n1"])
 	}
+	// The utilization pair rides on the same line: 7 ops in flight, 350 ms
+	// of accumulated busy time on sda.
+	if got["sda"].inFlight != 7 || got["sda"].ioTicks != 350 {
+		t.Errorf("sda = %+v, want inFlight 7 / ioTicks 350", got["sda"])
+	}
 }
 
 func TestReadDiskstatsRejectsGarbage(t *testing.T) {
@@ -719,11 +793,11 @@ func TestReadDiskstatsRejectsGarbage(t *testing.T) {
 
 func TestDiskIORates(t *testing.T) {
 	prev := map[string]diskIOCounters{
-		"nvme0n1": {reads: 1000, readSectors: 20000, writes: 100, writeSectors: 2000},
+		"nvme0n1": {reads: 1000, readSectors: 20000, writes: 100, writeSectors: 2000, ioTicks: 40000, inFlight: 4},
 		"seen":    {reads: 50, readSectors: 100, writes: 0, writeSectors: 0},
 	}
 	cur := map[string]diskIOCounters{
-		"nvme0n1":   {reads: 2000, readSectors: 30512, writes: 160, writeSectors: 4000},
+		"nvme0n1":   {reads: 2000, readSectors: 30512, writes: 160, writeSectors: 4000, ioTicks: 41600, inFlight: 0},
 		"seen":      {reads: 60, readSectors: 120, writes: 0, writeSectors: 0},
 		"reset":     {reads: 10, readSectors: 99999, writes: 0, writeSectors: 0},
 		"midwindow": {reads: 70, readSectors: 140, writes: 0, writeSectors: 0},
@@ -755,6 +829,15 @@ func TestDiskIORates(t *testing.T) {
 	}
 	if math.Abs(d.ReadsPerSec-500) > 0.001 || math.Abs(d.WritesPerSec-30) > 0.001 {
 		t.Errorf("IOPS = %v/%v, want 500/30", d.ReadsPerSec, d.WritesPerSec)
+	}
+	// 1600 ms busy across a 2000 ms window: 80% of the window the device was
+	// doing work — the saturation signal the byte rates cannot carry.
+	if d.UtilPct != 80 {
+		t.Errorf("UtilPct = %v, want 80 (1600ms busy in a 2000ms window)", d.UtilPct)
+	}
+	// Queue depth is instantaneous at read time.
+	if d.InFlight != 0 {
+		t.Errorf("InFlight = %d, want the current tick's queue depth", d.InFlight)
 	}
 	// The busiest device sorts first: 2.69 MB total against seen's 5 KB/s.
 	if got[0].Device != "nvme0n1" {
