@@ -9,16 +9,10 @@
     "logs": "Journaux"
   },
   "common": {
-    "loading": "Chargement...",
     "error": "Erreur",
     "refresh": "Actualiser"
   },
   "home": {
-    "title": "Accueil",
-    "overview": "Aperçu",
-    "quickMetrics": "Métriques rapides",
-    "otherContainers": "Autres conteneurs",
-    "tools": "Outils",
     "syncing": "Synchronisation de l'environnement...",
     "all": "Tous",
     "yantrApps": "Apps Yantr",
@@ -29,96 +23,42 @@
     "dashboardEmpty": "Votre tableau de bord est vide. Visitez l'App Store pour commencer.",
     "browseAppStore": "Parcourir l'App Store",
     "externalLinks": {
-      "resources": "Source",
-      "buildData": "Données de build",
-      "github": "GitHub",
-      "reportIssue": "Signaler un problème",
-      "buildInfo": "Infos de build",
-      "telegram": "Telegram"
+      "reportIssue": "Signaler un problème"
     },
-    "otherContainersGrid": {
-      "inspect": "Inspecter",
-      "image": "Image"
-    },
+    "otherContainersGrid": {},
     "overviewPulseCard": {
-      "systemOnline": "Système en ligne",
-      "lateNightCoding": "Coder tard le soir ?",
-      "goodMorning": "Bonjour",
-      "goodAfternoon": "Bon après-midi",
-      "goodEvening": "Bonsoir",
-      "stackRunningSmoothly": "Votre stack fonctionne bien. Voici votre aperçu de performance en direct.",
-      "healthy": "Sain",
-      "active": "Actif",
       "apps": "Apps",
       "volumes": "Volumes",
       "images": "Images",
       "stopped": "Arrêtés"
     },
-    "toolsNavCard": {
-      "systemTools": "Outils système",
-      "managementLogs": "Gestion & Journaux",
-      "images": "Images",
-      "imagesDesc": "Gérer les images de conteneurs locales",
-      "volumes": "Volumes",
-      "volumesDesc": "Afficher et gérer les volumes nommés",
-      "logs": "Journaux",
-      "logsDesc": "Lire la sortie du conteneur"
-    },
+    "toolsNavCard": {},
     "volumeContainersGrid": {
       "browse": "Parcourir",
       "stop": "Arrêter",
-      "temp": "Temp",
       "expiresIn": "Expire dans :",
       "status": "Statut :",
       "active": "Actif",
       "volumeBrowser": "Explorateur de volume"
     },
-    "yantraContainersGrid": {
-      "stackView": "Vue de stack",
-      "open": "Ouvrir",
-      "services": "services",
-      "service": "service"
-    },
+    "yantraContainersGrid": {},
     "dailyAppCard": {
       "featuredToday": "En vedette aujourd'hui",
-      "subtitle": "Une sélection quotidienne de votre catalogue",
-      "noDescription": "Aucune description disponible pour cette application.",
-      "rotatesDaily": "Actualisé chaque jour",
       "viewApp": "Voir l'application",
       "openOverview": "Ouvrir l'application",
       "installed": "Installé",
       "available": "Disponible",
-      "running": "Actif ({count})",
-      "loadFailed": "Échec du chargement"
+      "running": "Actif ({count})"
     },
     "dailyDeveloper": {
       "title": "Développeur du jour",
       "pitch": "Les apps open source sont construites par des gens comme vous. Chaque jour, Yantr met en avant un développeur et les apps qu'il a construites pour ce catalogue.",
       "appsCount": "Apps dans Yantr",
-      "appsMore": "+{count} autres",
-      "zap": "Vous aimez les apps, ou simplement l'ambiance ? Un zap garde l'open source en vie.",
-      "qrLabel": "Code QR de paiement Lightning pour {name}",
-      "lightning": "Lightning",
-      "onchain": "On-chain",
-      "onchainQrLabel": "QR code de paiement Bitcoin on-chain pour {name}",
-      "copy": "Copier l'adresse",
-      "copied": "Copié",
-      "noAddress": "Aucune adresse Lightning publiée — suivez le compte et envoyez plutôt un merci sur Nostr.",
-      "follow": "Suivre sur Nostr"
+      "appsMore": "+{count} autres"
     },
-    "systemToolsCard": {
-      "management": "Gestion",
-      "systemOverview": "Aperçu du système",
-      "active": "Actif",
-      "live": "En direct"
-    }
+    "systemToolsCard": {}
   },
   "apps": {
-    "title": "Applications",
-    "allApps": "Toutes les apps",
-    "install": "Installer",
-    "installed": "Installée",
-    "search": "Rechercher des apps...",
     "categories": "Catégories",
     "totalApps": "apps au total",
     "allAppsLabel": "Toutes les apps",
@@ -132,8 +72,6 @@
     "clearSearch": "Effacer la recherche"
   },
   "appDetail": {
-    "catalog": "Catalogue",
-    "installed": "Installée",
     "retrievingManifest": "Récupération du manifeste...",
     "website": "Site web",
     "source": "Source",
@@ -149,7 +87,6 @@
     "created": "Créée",
     "digest": "Digest",
     "configuration": "Configuration",
-    "autofillEnv": "Remplissage auto Env",
     "value": "Valeur",
     "temporaryInstall": "Installation temporaire",
     "temporaryInstallDesc": "Expire et se supprime automatiquement.",
@@ -166,7 +103,6 @@
     "internal": "INTERNE",
     "portConflict": "Conflit de port",
     "portAvailable": "Disponible",
-    "portWarning": "Avertissement",
     "initializing": "Initialisation...",
     "deployAnother": "Déployer une autre instance",
     "installApp": "Installer l'application",
@@ -181,7 +117,6 @@
     "varName": "NOM",
     "varValue": "valeur",
     "customVarsHint": "Aucune variable supplémentaire. Cliquez sur \"Ajouter une variable\" pour injecter des variables d'environnement au déploiement.",
-    "deploymentCancelled": "Déploiement annulé. Démarrez d'abord les apps requises.",
     "portConflictsDetected": "Conflits de port détectés :\n{conflicts}",
     "deployingApp": "Déploiement de {name}{suffix}... Cela peut prendre quelques minutes.",
     "deployedAsTemporary": "{name} déployée temporairement (expire dans {hours}h) ! 🎉",
@@ -190,9 +125,7 @@
     "deploymentTimeout": "Délai de déploiement dépassé - {name} prend plus de temps que prévu",
     "deploymentFailedMessage": "Échec du déploiement : {message}",
     "generate": "Générer",
-    "generateSecure": "Générer Sécurisé",
     "generatedValue": "Valeur générée pour {envVar}",
-    "generatedValuesCount": "{count} valeur(s) sécurisée(s) générée(s)",
     "generationFailed": "Impossible de générer une valeur correspondant à cette règle",
     "invalidGeneratorRule": "Règle regex de générateur invalide",
     "noGeneratorForVariable": "Aucune règle de générateur trouvée pour cette application",
@@ -242,14 +175,9 @@
     }
   },
   "container": {
-    "status": "Statut",
-    "running": "En cours d'exécution",
-    "stopped": "Arrêté",
     "restart": "Redémarrer",
     "start": "Démarrer",
     "stop": "Arrêter",
-    "logs": "Journaux",
-    "details": "Détails",
     "serviceHeader": "{name} — basculer les détails du service",
     "starting": "Démarrage…",
     "stopping": "Arrêt…",
@@ -262,9 +190,7 @@
     "descriptionNotAvailable": "Description d'utilisation du conteneur non disponible.",
     "id": "ID",
     "networkAccess": "Accès réseau",
-    "internalAddressesHint": "Utilisez ces IP par réseau si vous voulez relier des apps manuellement.",
     "allPorts": "Tous les ports",
-    "described": "Décrits",
     "networkPort": "Port réseau",
     "hostPort": "Port hôte",
     "containerPort": "Port conteneur",
@@ -322,22 +248,14 @@
     "workPortHint": "Publié uniquement pour le trafic protocolaire — aucune interface utilisateur."
   },
   "volumes": {
-    "title": "Volumes",
-    "subtitle": "Gérer les données persistantes",
-    "searchPlaceholder": "Rechercher des volumes...",
     "totalVolumes": "Total des volumes",
-    "inUse": "En utilisation",
     "unused": "Inutilisé",
-    "browsing": "Navigation",
-    "volumeSizeDistribution": "Distribution de taille des volumes",
     "activeSessions": "Sessions actives",
     "browsingLabel": "Navigation",
     "stop": "Arrêter",
     "openFinder": "Ouvrir le Finder",
     "activeVolumes": "Volumes actifs",
     "unusedVolumes": "Volumes inutilisés",
-    "pruneAll": "Supprimer tout",
-    "cleaning": "Nettoyage...",
     "name": "Nom",
     "driver": "Pilote",
     "size": "Taille",
@@ -358,33 +276,18 @@
     "deleteAllUnused": "Supprimer les {count} volumes inutilisés ?",
     "mb": "Mo",
     "notAvailable": "N/D",
-    "refresh": "Actualiser les volumes",
     "export": "Sauvegarder",
     "exportFailed": "Échec de la sauvegarde du volume : {message}",
     "exportSuccess": "Sauvegarde du volume '{name}' téléchargée",
     "exporting": "Sauvegarde..."
   },
   "appOverview": {
-    "back": "Retour",
-    "runningInstances": "Instances en cours d'exécution",
-    "noRunningInstances": "Aucune instance en cours d'exécution. Déployez depuis la page de l'app.",
-    "services": "services",
-    "service": "service",
-    "expiresIn": "Expire dans",
-    "expired": "Expiré",
-    "justStarted": "Vient de démarrer",
-    "appDetails": "Détails & Installation de l'app",
-    "appDetailsDesc": "Documentation, variables d'environnement, exigences de ports, options de déploiement",
-    "deploy": "Déployer"
+    "expiresIn": "Expire dans"
   },
   "images": {
-    "title": "Images",
-    "subtitle": "Gérer les images de conteneurs locales",
-    "searchPlaceholder": "Rechercher des images...",
     "totalImages": "Total des images",
     "inUse": "En utilisation",
     "unused": "Inutilisée",
-    "reclaimable": "Récupérable",
     "mb": "Mo",
     "storageDistribution": "Distribution du stockage",
     "activeImages": "Images actives",
@@ -406,8 +309,7 @@
     "cleanedUp": "{count} images nettoyées",
     "cleanupInterrupted": "Nettoyage interrompu : {error}",
     "deletionFailed": "Échec de la suppression : {message}",
-    "imageDeleted": "Image supprimée avec succès",
-    "refresh": "Actualiser les images"
+    "imageDeleted": "Image supprimée avec succès"
   },
   "storage": {
     "title": "Stockage",
@@ -440,7 +342,6 @@
     "removing": "Suppression…",
     "networkAccess": "Accès réseau",
     "allPorts": "Tous les ports",
-    "described": "Décrits",
     "open": "Ouvrir",
     "noPortsPublished": "Aucun port publié sur l'hôte — tous les services communiquent en interne.",
     "noInternalAddresses": "Aucune adresse réseau interne disponible pour cette stack.",
@@ -474,21 +375,6 @@
     "updateAlreadyLatest": "Déjà à jour — aucune nouvelle image trouvée",
     "updateFailed": "Échec de la mise à jour",
     "updateTimedOut": "Mise à jour expirée — le téléchargement de l'image a pris trop de temps",
-    "caddyAuthTargetPort": "Port du Conteneur",
-    "caddyAuthTargetHint": "Le port sur lequel cette application est actuellement en cours d'exécution.",
-    "caddyAuthServePort": "Port Protégé",
-    "caddyAuthServeHint": "Nouveau port sur lequel Caddy écoutera (protégé par mot de passe).",
-    "caddyAuthUser": "Nom d'utilisateur",
-    "caddyAuthPass": "Mot de passe",
-    "caddyAuthPassHint": "Laissez vide pour ignorer l'authentification.",
-    "caddyAuthDeploy": "Activer le Proxy Auth",
-    "caddyAuthDeploying": "Activation…",
-    "caddyAuthDeployed": "Proxy auth activé !",
-    "caddyAuthFailed": "Échec de la configuration du proxy auth",
-    "caddyAuthDisable": "Désactiver",
-    "caddyAuthDisabled": "Proxy auth désactivé",
-    "caddyAuthServePortRequired": "Entrez un port protégé avant d'activer.",
-    "caddyAuthTargetPortRequired": "Entrez le port de l'application avant d'activer.",
     "loadFailedTitle": "Impossible de charger ce stack",
     "loadFailedHint": "Le serveur n'a pas répondu pour {id}. Il réessaiera toutes les quelques secondes, ou vous pouvez réessayer maintenant.",
     "retry": "Réessayer",
@@ -523,59 +409,21 @@
   "appCard": {
     "active": "Actif ({count})",
     "ready": "Prêt",
-    "notRunning": "Non en cours d'exécution",
-    "manage": "Gérer",
     "unknownApp": "App inconnue",
     "noDescription": "Aucune description disponible. Cliquez pour voir la configuration et les détails.",
     "application": "Application"
   },
-  "systemCleaner": {
-    "title": "Nettoyage système",
-    "optimizationNeeded": "Optimisation nécessaire",
-    "systemHealthy": "Système sain",
-    "cleanupComplete": "Nettoyage terminé",
-    "cleanupCompleteDesc": "Espace récupéré du système avec succès.",
-    "reclaimableStorage": "Stockage récupérable",
-    "unusedImages": "Images inutilisées",
-    "danglingVolumes": "Volumes orphelins",
-    "detectedItems": "{count} éléments détectés",
-    "executingPurge": "Purge en cours...",
-    "systemOptimized": "Système optimisé",
-    "executeCleanup": "Exécuter le nettoyage",
-    "confirmCleanup": "Êtes-vous sûr de vouloir récupérer {size} ?",
-    "willDelete": "Cela supprimera définitivement :",
-    "systemCleaned": "Système nettoyé ! Récupéré",
-    "cleanFailed": "Échec du nettoyage"
-  },
+  "systemCleaner": {},
   "notificationBanner": {
     "dismiss": "Ignorer"
   },
-  "watchtowerAlert": {
-    "title": "Mise à jour de sécurité",
-    "watchtowerMissing": "Watchtower manquant",
-    "description": "Automatisez vos mises à jour de conteneurs pour garder votre système sécurisé et à jour.",
-    "recommended": "Recommandé",
-    "installNow": "Installer maintenant",
-    "security": "Sécurité",
-    "autoUpdates": "Mises à jour automatiques",
-    "notifications": "Notifications",
-    "imageCleanup": "Nettoyage d'images",
-    "deployed": "Watchtower déployé",
-    "containerStarting": "Conteneur en démarrage…",
-    "notInstalled": "Non installé",
-    "deploying": "Déploiement…",
-    "deployWatchtower": "Déployer Watchtower",
-    "viewApp": "Voir l'app"
-  },
+  "watchtowerAlert": {},
   "quickMetrics": {
     "averageUptime": {
       "title": "Disponibilité moy.",
       "systemStability": "Stabilité du système",
       "timeActive": "Temps actif",
-      "acrossContainers": "Sur {count} conteneurs",
-      "systemIdle": "Système inactif",
-      "active": "Actif",
-      "apps": "Apps"
+      "systemIdle": "Système inactif"
     },
     "expiringContainers": {
       "title": "Expirations",
@@ -599,7 +447,6 @@
       "remaining": "Restants",
       "reclaimable": "Récupérable",
       "nextUp": "À suivre",
-      "delete": "Libérer",
       "freeSize": "Libérer {size}",
       "deleting": "Libération...",
       "confirmImage": "Supprimer l'image inutilisée {name} ? Cette action est irréversible.",
@@ -609,7 +456,6 @@
       "viewAll": "Tout voir"
     },
     "hostMetrics": {
-      "scanningHost": "Analyse de l'hôte...",
       "connectionFailed": "Connexion échouée",
       "hostSystem": "Système hôte",
       "online": "En ligne",
@@ -621,7 +467,6 @@
       "memoryBuffers": "Tampons",
       "memorySlab": "Slab",
       "noSwap": "Sans swap",
-      "kernel": "Noyau {kernel}",
       "podman": "Podman",
       "cpu": "CPU",
       "cpuHistory": "Utilisation du CPU sur les 4 dernières minutes",
@@ -630,13 +475,11 @@
       "disk": "Disque",
       "free": "{size} libres",
       "network": "Réseau",
-      "rxTx": "rx · tx",
       "temperature": "Température",
       "fans": "Ventilateurs",
       "unavailable": "Indisponible",
       "performance": "Performances",
       "storage": "Stockage",
-      "storageNetwork": "Stockage et réseau",
       "diskIO": "E/S disque",
       "diskRead": "Lecture",
       "diskWrite": "Écriture",
@@ -674,42 +517,18 @@
       "location": "Emplacement",
       "provider": "Fournisseur"
     },
-    "rotatingDiskUsage": {
-      "title": "Stockage",
-      "containerImages": "Images de conteneur",
-      "dataVolumes": "Volumes de données",
-      "usedSpace": "Espace utilisé",
-      "total": "Total"
-    },
-    "watchtowerNextCheck": {
-      "title": "Watchtower",
-      "missing": "Manquant",
-      "paused": "En pause",
-      "active": "Actif",
-      "nextRunIn": "Prochaine exécution dans",
-      "at": "à",
-      "actionRequired": "Action requise",
-      "setupUpdates": "Configurer les mises à jour",
-      "updatesPaused": "Mises à jour en pause",
-      "interval": "Intervalle"
-    }
+    "rotatingDiskUsage": {},
+    "watchtowerNextCheck": {}
   },
   "sponsorCard": {
-    "label": "Sponsor",
-    "title": "Financez Yantr. Gratuit pour toujours.",
-    "description": "Soutenez Yantr via GitHub Sponsors — gardez le projet gratuit et influencez directement sa direction.",
     "cta": "Sponsoriser sur GitHub"
   },
   "authGate": {
     "bootingTitle": "Préparation",
-    "bootingSubtitle": "Vérification de la configuration…",
     "bootingState": "Restauration de la session…",
     "setupTitle": "Configurer Yantr",
-    "setupSubtitle": "Définissez un mot de passe et un code PIN pour commencer.",
     "loginTitle": "Se connecter",
     "loginSubtitle": "Entrez votre mot de passe et code PIN pour déverrouiller.",
-    "username": "Nom d'utilisateur",
-    "usernamePlaceholder": "utilisateur",
     "seedNote": "Clé stockée localement. Connectez-vous depuis cet appareil.",
     "setupAction": "Créer un compte",
     "loginAction": "Se connecter",
@@ -720,13 +539,8 @@
       "publicKeyCopied": "Clé publique copiée."
     },
     "errors": {
-      "usernameRequired": "Nom d'utilisateur requis.",
-      "passwordLength": "Le mot de passe doit comporter au moins 8 caractères.",
-      "generic": "Échoué.",
-      "copyFailed": "Échec de la copie."
+      "generic": "Échoué."
     },
-    "setupNote": "Une clé sécurisée sera générée et stockée dans votre navigateur.",
-    "loginNote": "Votre clé est stockée dans ce navigateur.",
     "password": "Mot de passe principal",
     "passwordConfirm": "Confirmer le mot de passe",
     "pin": "PIN numérique",
@@ -748,15 +562,12 @@
     "starCta": "Mettre une étoile"
   },
   "issueCard": {
-    "label": "Rapport de bug",
-    "subtitle": "Assistance",
     "title": "Un truc ne marche pas ?",
     "description": "Un rapport qui indique la version, l’hôte et le nombre de stacks en cours est exploitable. Tout est déjà rempli.",
     "cta": "Signaler un problème",
     "footnote": "Rien n’est envoyé tant que vous ne signalez pas."
   },
   "cloudflaredCard": {
-    "secureTunnel": "Secure Tunnel",
     "notInstalled": "Not Installed",
     "tunnelDeployed": "Tunnel Deployed",
     "containerStarting": "Container starting…",
@@ -766,7 +577,6 @@
     "deploying": "Deploying…",
     "online": "Online",
     "offline": "Offline",
-    "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",

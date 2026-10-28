@@ -9,16 +9,10 @@
     "logs": "ログ"
   },
   "common": {
-    "loading": "読み込み中...",
     "error": "エラー",
     "refresh": "更新"
   },
   "home": {
-    "title": "ホーム",
-    "overview": "概要",
-    "quickMetrics": "クイックメトリクス",
-    "otherContainers": "その他のコンテナ",
-    "tools": "ツール",
     "syncing": "環境を同期中...",
     "all": "すべて",
     "yantrApps": "Yantr アプリ",
@@ -29,96 +23,42 @@
     "dashboardEmpty": "ダッシュボードが空です。アプリストアにアクセスして始めましょう。",
     "browseAppStore": "アプリストアを見る",
     "externalLinks": {
-      "resources": "Source",
-      "buildData": "ビルドデータ",
-      "github": "GitHub",
-      "reportIssue": "問題を報告",
-      "buildInfo": "ビルド情報",
-      "telegram": "Telegram"
+      "reportIssue": "問題を報告"
     },
-    "otherContainersGrid": {
-      "inspect": "検査",
-      "image": "イメージ"
-    },
+    "otherContainersGrid": {},
     "overviewPulseCard": {
-      "systemOnline": "システムオンライン",
-      "lateNightCoding": "深夜のコーディング？",
-      "goodMorning": "おはようございます",
-      "goodAfternoon": "こんにちは",
-      "goodEvening": "こんばんは",
-      "stackRunningSmoothly": "スタックは正常に稼働中です。ライブパフォーマンスの概要をご覧ください。",
-      "healthy": "正常",
-      "active": "アクティブ",
       "apps": "アプリ",
       "volumes": "ボリューム",
       "images": "イメージ",
       "stopped": "停止中"
     },
-    "toolsNavCard": {
-      "systemTools": "システムツール",
-      "managementLogs": "管理 & ログ",
-      "images": "イメージ",
-      "imagesDesc": "ローカルコンテナイメージを管理",
-      "volumes": "ボリューム",
-      "volumesDesc": "名前付きボリュームを表示・管理",
-      "logs": "ログ",
-      "logsDesc": "コンテナの出力を読む"
-    },
+    "toolsNavCard": {},
     "volumeContainersGrid": {
       "browse": "参照",
       "stop": "停止",
-      "temp": "一時",
       "expiresIn": "有効期限：",
       "status": "ステータス：",
       "active": "アクティブ",
       "volumeBrowser": "ボリュームブラウザ"
     },
-    "yantraContainersGrid": {
-      "stackView": "スタックビュー",
-      "open": "開く",
-      "services": "サービス",
-      "service": "サービス"
-    },
+    "yantraContainersGrid": {},
     "dailyAppCard": {
       "featuredToday": "今日のおすすめ",
-      "subtitle": "カタログからの毎日のピックアップ",
-      "noDescription": "このアプリの説明はありません。",
-      "rotatesDaily": "毎日更新",
       "viewApp": "アプリを見る",
       "openOverview": "アプリを開く",
       "installed": "インストール済み",
       "available": "利用可能",
-      "running": "実行中 ({count})",
-      "loadFailed": "読み込みに失敗しました"
+      "running": "実行中 ({count})"
     },
     "dailyDeveloper": {
       "title": "今日の開発者",
       "pitch": "オープンソースアプリは、あなたのような人の手で作られています。Yantr は毎日、このカタログのためにアプリを開発してくれた一人の開発者を紹介します。",
       "appsCount": "Yantr のアプリ",
-      "appsMore": "他 {count} 件",
-      "zap": "アプリが気に入ったら、あるいは雰囲気が好きなら——zap で応援しよう。それがオープンソースを生かし続けます。",
-      "qrLabel": "{name} への Lightning 支払い QR コード",
-      "lightning": "ライトニング",
-      "onchain": "オンチェーン",
-      "onchainQrLabel": "{name} への Bitcoin オンチェーン支払い用 QR コード",
-      "copy": "アドレスをコピー",
-      "copied": "コピーしました",
-      "noAddress": "Lightning アドレスが未公開です。代わりに Nostr でフォローするか、お礼のメッセージを送りましょう。",
-      "follow": "Nostr でフォロー"
+      "appsMore": "他 {count} 件"
     },
-    "systemToolsCard": {
-      "management": "管理",
-      "systemOverview": "システム概要",
-      "active": "稼働中",
-      "live": "ライブ"
-    }
+    "systemToolsCard": {}
   },
   "apps": {
-    "title": "アプリ",
-    "allApps": "すべてのアプリ",
-    "install": "インストール",
-    "installed": "インストール済み",
-    "search": "アプリを検索...",
     "categories": "カテゴリ",
     "totalApps": "アプリ合計",
     "allAppsLabel": "すべてのアプリ",
@@ -132,8 +72,6 @@
     "clearSearch": "検索をクリア"
   },
   "appDetail": {
-    "catalog": "カタログ",
-    "installed": "インストール済み",
     "retrievingManifest": "マニフェストを取得中...",
     "website": "ウェブサイト",
     "source": "ソース",
@@ -149,7 +87,6 @@
     "created": "作成日",
     "digest": "ダイジェスト",
     "configuration": "設定",
-    "autofillEnv": "Env自動入力",
     "value": "値",
     "temporaryInstall": "一時インストール",
     "temporaryInstallDesc": "有効期限後に自動削除されます。",
@@ -166,7 +103,6 @@
     "internal": "内部",
     "portConflict": "ポート競合",
     "portAvailable": "利用可能",
-    "portWarning": "警告",
     "initializing": "初期化中...",
     "deployAnother": "別のインスタンスをデプロイ",
     "installApp": "アプリケーションをインストール",
@@ -181,7 +117,6 @@
     "varName": "名前",
     "varValue": "値",
     "customVarsHint": "追加変数はありません。\"変数を追加\"をクリックしてデプロイ時にカスタム環境変数を注入できます。",
-    "deploymentCancelled": "デプロイがキャンセルされました。先に必要なアプリを起動してください。",
     "portConflictsDetected": "ポート競合が検出されました:\n{conflicts}",
     "deployingApp": "{name}{suffix}をデプロイ中... 数分かかる場合があります。",
     "deployedAsTemporary": "{name}を一時的にデプロイしました（{hours}時間後に有効期限切れ）！🎉",
@@ -190,9 +125,7 @@
     "deploymentTimeout": "デプロイタイムアウト - {name}の処理に予想以上の時間がかかっています",
     "deploymentFailedMessage": "デプロイに失敗しました: {message}",
     "generate": "生成",
-    "generateSecure": "安全に生成",
     "generatedValue": "{envVar}の生成値",
-    "generatedValuesCount": "{count}個の安全な値を生成しました",
     "generationFailed": "値の生成に失敗しました",
     "invalidGeneratorRule": "無効な正規表現ルール",
     "noGeneratorForVariable": "このアプリに安全なジェネレータールールが見つかりません",
@@ -242,14 +175,9 @@
     }
   },
   "container": {
-    "status": "ステータス",
-    "running": "実行中",
-    "stopped": "停止",
     "restart": "再起動",
     "start": "起動",
     "stop": "停止",
-    "logs": "ログ",
-    "details": "詳細",
     "serviceHeader": "{name} — サービスの詳細を切り替え",
     "starting": "開始中…",
     "stopping": "停止中…",
@@ -262,9 +190,7 @@
     "descriptionNotAvailable": "コンテナの使用説明はありません。",
     "id": "ID",
     "networkAccess": "ネットワークアクセス",
-    "internalAddressesHint": "アプリ同士を手動で接続したいときは、このネットワークごとの IP を使います。",
     "allPorts": "すべてのポート",
-    "described": "説明済み",
     "networkPort": "ネットワークポート",
     "hostPort": "ホストポート",
     "containerPort": "コンテナポート",
@@ -322,22 +248,14 @@
     "workPortHint": "プロトコル通信専用に公開されています。ユーザー向け画面はありません。"
   },
   "volumes": {
-    "title": "ボリューム",
-    "subtitle": "永続データを管理",
-    "searchPlaceholder": "ボリュームを検索...",
     "totalVolumes": "ボリューム合計",
-    "inUse": "使用中",
     "unused": "未使用",
-    "browsing": "参照中",
-    "volumeSizeDistribution": "ボリュームサイズ分布",
     "activeSessions": "アクティブセッション",
     "browsingLabel": "参照中",
     "stop": "停止",
     "openFinder": "Finderを開く",
     "activeVolumes": "アクティブボリューム",
     "unusedVolumes": "未使用ボリューム",
-    "pruneAll": "すべて削除",
-    "cleaning": "削除中...",
     "name": "名前",
     "driver": "ドライバー",
     "size": "サイズ",
@@ -358,33 +276,18 @@
     "deleteAllUnused": "{count}件の未使用ボリュームをすべて削除しますか？",
     "mb": "MB",
     "notAvailable": "N/A",
-    "refresh": "ボリュームを更新",
     "export": "バックアップ",
     "exportFailed": "ボリュームのバックアップに失敗しました: {message}",
     "exportSuccess": "ボリューム '{name}' のバックアップをダウンロードしました",
     "exporting": "バックアップ中…"
   },
   "appOverview": {
-    "back": "戻る",
-    "runningInstances": "実行中のインスタンス",
-    "noRunningInstances": "実行中のインスタンスはありません。アプリページからデプロイしてください。",
-    "services": "サービス",
-    "service": "サービス",
-    "expiresIn": "有効期限まで",
-    "expired": "期限切れ",
-    "justStarted": "起動したばかり",
-    "appDetails": "アプリの詳細とインストール",
-    "appDetailsDesc": "ドキュメント、環境変数、ポート要件、デプロイオプション",
-    "deploy": "デプロイ"
+    "expiresIn": "有効期限まで"
   },
   "images": {
-    "title": "イメージ",
-    "subtitle": "ローカルコンテナイメージを管理",
-    "searchPlaceholder": "イメージを検索...",
     "totalImages": "イメージ合計",
     "inUse": "使用中",
     "unused": "未使用",
-    "reclaimable": "回収可能",
     "mb": "MB",
     "storageDistribution": "ストレージ分布",
     "activeImages": "アクティブイメージ",
@@ -406,8 +309,7 @@
     "cleanedUp": "{count}件のイメージをクリーンアップしました",
     "cleanupInterrupted": "クリーンアップが中断されました: {error}",
     "deletionFailed": "削除に失敗しました: {message}",
-    "imageDeleted": "イメージを正常に削除しました",
-    "refresh": "を更新"
+    "imageDeleted": "イメージを正常に削除しました"
   },
   "storage": {
     "title": "ストレージ",
@@ -440,7 +342,6 @@
     "removing": "削除中…",
     "networkAccess": "ネットワークアクセス",
     "allPorts": "すべてのポート",
-    "described": "説明済み",
     "open": "開く",
     "noPortsPublished": "ホストにポートが公開されていません — すべてのサービスは内部通信のみです。",
     "noInternalAddresses": "このスタックで利用できる内部ネットワークアドレスはありません。",
@@ -474,21 +375,6 @@
     "updateAlreadyLatest": "最新の状態です — 新しいイメージは見つかりませんでした",
     "updateFailed": "更新失敗",
     "updateTimedOut": "更新がタイムアウトしました — イメージの取得に時間がかかりすぎました",
-    "caddyAuthTargetPort": "コンテナポート",
-    "caddyAuthTargetHint": "このアプリが現在実行されているポート。",
-    "caddyAuthServePort": "保護されたポート",
-    "caddyAuthServeHint": "Caddyがリッスンする新しいポート（パスワード保護付き）。",
-    "caddyAuthUser": "ユーザー名",
-    "caddyAuthPass": "パスワード",
-    "caddyAuthPassHint": "認証をスキップするには空白のままにします。",
-    "caddyAuthDeploy": "Authプロキシを有効にする",
-    "caddyAuthDeploying": "有効にしています…",
-    "caddyAuthDeployed": "Authプロキシが有効になりました！",
-    "caddyAuthFailed": "Authプロキシの構成に失敗しました",
-    "caddyAuthDisable": "無効にする",
-    "caddyAuthDisabled": "Authプロキシを無効にしました",
-    "caddyAuthServePortRequired": "有効にする前に保護されたポートを入力してください。",
-    "caddyAuthTargetPortRequired": "有効にする前にアプリのポートを入力してください。",
     "loadFailedTitle": "スタックを読み込めませんでした",
     "loadFailedHint": "{id} に対してサーバーが応答しませんでした。数秒ごとに再試行します。今すぐ再試行することもできます。",
     "retry": "再試行",
@@ -523,59 +409,21 @@
   "appCard": {
     "active": "アクティブ ({count})",
     "ready": "準備完了",
-    "notRunning": "実行されていません",
-    "manage": "管理",
     "unknownApp": "不明なアプリ",
     "noDescription": "説明がありません。クリックして設定と詳細を表示。",
     "application": "アプリケーション"
   },
-  "systemCleaner": {
-    "title": "システムクリーンアップ",
-    "optimizationNeeded": "最適化が必要",
-    "systemHealthy": "システム正常",
-    "cleanupComplete": "クリーンアップ完了",
-    "cleanupCompleteDesc": "システムからストレージを正常に回収しました。",
-    "reclaimableStorage": "回収可能なストレージ",
-    "unusedImages": "未使用イメージ",
-    "danglingVolumes": "孤立ボリューム",
-    "detectedItems": "{count}件のアイテムを検出",
-    "executingPurge": "パージを実行中...",
-    "systemOptimized": "システムが最適化されました",
-    "executeCleanup": "クリーンアップを実行",
-    "confirmCleanup": "{size}を回収してよろしいですか？",
-    "willDelete": "以下が完全に削除されます:",
-    "systemCleaned": "システムをクリーンアップしました！回収:",
-    "cleanFailed": "クリーンアップに失敗しました"
-  },
+  "systemCleaner": {},
   "notificationBanner": {
     "dismiss": "閉じる"
   },
-  "watchtowerAlert": {
-    "title": "セキュリティアップデート",
-    "watchtowerMissing": "Watchtowerが未インストール",
-    "description": "コンテナの更新を自動化してシステムを安全に保ってください。",
-    "recommended": "推奨",
-    "installNow": "今すぐインストール",
-    "security": "セキュリティ",
-    "autoUpdates": "自動更新",
-    "notifications": "通知",
-    "imageCleanup": "イメージクリーンアップ",
-    "deployed": "Watchtowerをデプロイしました",
-    "containerStarting": "コンテナを起動中…",
-    "notInstalled": "未インストール",
-    "deploying": "デプロイ中…",
-    "deployWatchtower": "Watchtowerをデプロイ",
-    "viewApp": "アプリを見る"
-  },
+  "watchtowerAlert": {},
   "quickMetrics": {
     "averageUptime": {
       "title": "平均稼働時間",
       "systemStability": "システム安定性",
       "timeActive": "アクティブ時間",
-      "acrossContainers": "{count}個のコンテナにわたって",
-      "systemIdle": "システムアイドル",
-      "active": "稼働中",
-      "apps": "アプリ"
+      "systemIdle": "システムアイドル"
     },
     "expiringContainers": {
       "title": "有効期限",
@@ -599,7 +447,6 @@
       "remaining": "残り",
       "reclaimable": "回収可能",
       "nextUp": "次の候補",
-      "delete": "解放する",
       "freeSize": "{size} を解放",
       "deleting": "解放中...",
       "confirmImage": "未使用イメージ {name} を削除しますか？この操作は元に戻せません。",
@@ -609,7 +456,6 @@
       "viewAll": "すべて表示"
     },
     "hostMetrics": {
-      "scanningHost": "ホストをスキャン中...",
       "connectionFailed": "接続に失敗しました",
       "hostSystem": "ホストシステム",
       "online": "オンライン",
@@ -621,7 +467,6 @@
       "memoryBuffers": "バッファ",
       "memorySlab": "スラブ",
       "noSwap": "スワップなし",
-      "kernel": "カーネル {kernel}",
       "podman": "Podman",
       "cpu": "CPU",
       "cpuHistory": "過去4分間のCPU使用率",
@@ -630,13 +475,11 @@
       "disk": "ディスク",
       "free": "{size} 空き",
       "network": "ネットワーク",
-      "rxTx": "受信 · 送信",
       "temperature": "温度",
       "fans": "ファン",
       "unavailable": "利用不可",
       "performance": "パフォーマンス",
       "storage": "ストレージ",
-      "storageNetwork": "ストレージとネットワーク",
       "diskIO": "ディスク I/O",
       "diskRead": "読み取り",
       "diskWrite": "書き込み",
@@ -674,42 +517,18 @@
       "location": "場所",
       "provider": "プロバイダー"
     },
-    "rotatingDiskUsage": {
-      "title": "ストレージ",
-      "containerImages": "コンテナイメージ",
-      "dataVolumes": "データボリューム",
-      "usedSpace": "使用済みスペース",
-      "total": "合計"
-    },
-    "watchtowerNextCheck": {
-      "title": "Watchtower",
-      "missing": "未設定",
-      "paused": "一時停止",
-      "active": "アクティブ",
-      "nextRunIn": "次の実行まで",
-      "at": "に",
-      "actionRequired": "操作が必要",
-      "setupUpdates": "更新を設定",
-      "updatesPaused": "更新が一時停止されています",
-      "interval": "間隔"
-    }
+    "rotatingDiskUsage": {},
+    "watchtowerNextCheck": {}
   },
   "sponsorCard": {
-    "label": "スポンサー",
-    "title": "Yantr を支援して、永遠に無料で。",
-    "description": "GitHub Sponsors で Yantr を支援 — プロジェクトを無料に保ち、その方向性に直接影響を与えましょう。",
     "cta": "GitHub でスポンサーになる"
   },
   "authGate": {
     "bootingTitle": "準備中",
-    "bootingSubtitle": "構成を確認しています…",
     "bootingState": "セッションを復元しています…",
     "setupTitle": "Yantrのセットアップ",
-    "setupSubtitle": "パスワードとPINを設定して開始します。",
     "loginTitle": "サインイン",
     "loginSubtitle": "パスワードとPINを入力してロックを解除します。",
-    "username": "ユーザー名",
-    "usernamePlaceholder": "ユーザー名",
     "seedNote": "キーはローカルに保存されます。このデバイスからサインインしてください。",
     "setupAction": "アカウント作成",
     "loginAction": "サインイン",
@@ -720,13 +539,8 @@
       "publicKeyCopied": "公開鍵がコピーされました。"
     },
     "errors": {
-      "usernameRequired": "ユーザー名が必要です。",
-      "passwordLength": "パスワードは8文字以上である必要があります。",
-      "generic": "失敗しました。",
-      "copyFailed": "コピーに失敗しました。"
+      "generic": "失敗しました。"
     },
-    "setupNote": "安全なキーが生成され、ブラウザに保存されます。",
-    "loginNote": "キーはこのブラウザに保存されています。",
     "password": "マスターパスワード",
     "passwordConfirm": "パスワードの確認",
     "pin": "数字PIN",
@@ -748,15 +562,12 @@
     "starCta": "スターする"
   },
   "issueCard": {
-    "label": "不具合報告",
-    "subtitle": "サポート",
     "title": "何か不具合はありますか？",
     "description": "バージョン、ホスト、動作中のスタック数が書かれたレポートのほうが扱いやすいです。それらはもう入っています。",
     "cta": "問題を報告",
     "footnote": "報告するまで何も送信されません。"
   },
   "cloudflaredCard": {
-    "secureTunnel": "Secure Tunnel",
     "notInstalled": "Not Installed",
     "tunnelDeployed": "Tunnel Deployed",
     "containerStarting": "Container starting…",
@@ -766,7 +577,6 @@
     "deploying": "Deploying…",
     "online": "Online",
     "offline": "Offline",
-    "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",

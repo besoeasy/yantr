@@ -9,16 +9,10 @@
     "logs": "Журналы"
   },
   "common": {
-    "loading": "Загрузка...",
     "error": "Ошибка",
     "refresh": "Обновить"
   },
   "home": {
-    "title": "Главная",
-    "overview": "Обзор",
-    "quickMetrics": "Быстрые метрики",
-    "otherContainers": "Другие контейнеры",
-    "tools": "Инструменты",
     "syncing": "Синхронизация среды...",
     "all": "Все",
     "yantrApps": "Приложения Yantr",
@@ -29,96 +23,42 @@
     "dashboardEmpty": "Панель управления пуста. Посетите магазин приложений, чтобы начать.",
     "browseAppStore": "Открыть магазин приложений",
     "externalLinks": {
-      "resources": "Source",
-      "buildData": "Данные сборки",
-      "github": "GitHub",
-      "reportIssue": "Сообщить о проблеме",
-      "buildInfo": "Информация о сборке",
-      "telegram": "Telegram"
+      "reportIssue": "Сообщить о проблеме"
     },
-    "otherContainersGrid": {
-      "inspect": "Просмотр",
-      "image": "Образ"
-    },
+    "otherContainersGrid": {},
     "overviewPulseCard": {
-      "systemOnline": "Система онлайн",
-      "lateNightCoding": "Поздно программируете?",
-      "goodMorning": "Доброе утро",
-      "goodAfternoon": "Добрый день",
-      "goodEvening": "Добрый вечер",
-      "stackRunningSmoothly": "Стек работает нормально. Вот ваш обзор производительности в реальном времени.",
-      "healthy": "Исправно",
-      "active": "Активно",
       "apps": "Приложения",
       "volumes": "Тома",
       "images": "Образы",
       "stopped": "Остановлены"
     },
-    "toolsNavCard": {
-      "systemTools": "Системные инструменты",
-      "managementLogs": "Управление и журналы",
-      "images": "Образы",
-      "imagesDesc": "Управление локальными образами контейнеров",
-      "volumes": "Тома",
-      "volumesDesc": "Просмотр и управление именованными томами",
-      "logs": "Журналы",
-      "logsDesc": "Чтение вывода контейнера"
-    },
+    "toolsNavCard": {},
     "volumeContainersGrid": {
       "browse": "Обзор",
       "stop": "Стоп",
-      "temp": "Temp",
       "expiresIn": "Истекает через:",
       "status": "Статус:",
       "active": "Активно",
       "volumeBrowser": "Браузер томов"
     },
-    "yantraContainersGrid": {
-      "stackView": "Просмотр стека",
-      "open": "Открыть",
-      "services": "сервисы",
-      "service": "сервис"
-    },
+    "yantraContainersGrid": {},
     "dailyAppCard": {
       "featuredToday": "Приложение дня",
-      "subtitle": "Ежедневная подборка из вашего каталога",
-      "noDescription": "Описание недоступно.",
-      "rotatesDaily": "Обновляется каждый день",
       "viewApp": "Смотреть приложение",
       "openOverview": "Открыть приложение",
       "installed": "Установлено",
       "available": "Доступно",
-      "running": "Активно ({count})",
-      "loadFailed": "Не удалось загрузить"
+      "running": "Активно ({count})"
     },
     "dailyDeveloper": {
       "title": "Разработчик дня",
       "pitch": "Приложения с открытым кодом создают такие люди, как вы. Каждый день Yantr знакомит вас с одним разработчиком и приложениями, которые он сделал для этого каталога.",
       "appsCount": "Приложений в Yantr",
-      "appsMore": "+{count} ещё",
-      "zap": "Нравятся приложения — или просто вайб? Зап держит open source живым.",
-      "qrLabel": "QR-код для оплаты через Lightning: {name}",
-      "lightning": "Лайтнинг",
-      "onchain": "Ончейн",
-      "onchainQrLabel": "QR-код для ончейн-платежа Bitcoin для {name}",
-      "copy": "Скопировать адрес",
-      "copied": "Скопировано",
-      "noAddress": "Lightning-адрес не опубликован — подпишитесь на аккаунт и поблагодарите его вместо этого в Nostr.",
-      "follow": "Подписаться в Nostr"
+      "appsMore": "+{count} ещё"
     },
-    "systemToolsCard": {
-      "management": "Управление",
-      "systemOverview": "Обзор системы",
-      "active": "Активно",
-      "live": "В сети"
-    }
+    "systemToolsCard": {}
   },
   "apps": {
-    "title": "Приложения",
-    "allApps": "Все приложения",
-    "install": "Установить",
-    "installed": "Установлено",
-    "search": "Поиск приложений...",
     "categories": "Категории",
     "totalApps": "всего приложений",
     "allAppsLabel": "Все приложения",
@@ -132,8 +72,6 @@
     "clearSearch": "Очистить поиск"
   },
   "appDetail": {
-    "catalog": "Каталог",
-    "installed": "Установлено",
     "retrievingManifest": "Получение манифеста...",
     "website": "Веб-сайт",
     "source": "Источник",
@@ -149,7 +87,6 @@
     "created": "Создано",
     "digest": "Дайджест",
     "configuration": "Конфигурация",
-    "autofillEnv": "Автозаполнение Env",
     "value": "Значение",
     "temporaryInstall": "Временная установка",
     "temporaryInstallDesc": "Истекает и удаляется автоматически.",
@@ -166,7 +103,6 @@
     "internal": "ВНУТРЕННИЙ",
     "portConflict": "Конфликт портов",
     "portAvailable": "Доступен",
-    "portWarning": "Предупреждение",
     "initializing": "Инициализация...",
     "deployAnother": "Развернуть ещё один экземпляр",
     "installApp": "Установить приложение",
@@ -181,7 +117,6 @@
     "varName": "ИМЯ",
     "varValue": "значение",
     "customVarsHint": "Нет дополнительных переменных. Нажмите \"Добавить переменную\" чтобы задать переменные окружения при развёртывании.",
-    "deploymentCancelled": "Развёртывание отменено. Сначала запустите необходимые приложения.",
     "portConflictsDetected": "Обнаружены конфликты портов:\n{conflicts}",
     "deployingApp": "Развёртывание {name}{suffix}... Это может занять несколько минут.",
     "deployedAsTemporary": "{name} развёрнуто временно (истекает через {hours}ч)! 🎉",
@@ -190,9 +125,7 @@
     "deploymentTimeout": "Тайм-аут развёртывания — {name} занимает больше времени, чем ожидалось",
     "deploymentFailedMessage": "Ошибка развёртывания: {message}",
     "generate": "Сгенерировать",
-    "generateSecure": "Сгенерировать безопасно",
     "generatedValue": "Сгенерировано значение для {envVar}",
-    "generatedValuesCount": "Сгенерировано {count} безопасных значений",
     "generationFailed": "Не удалось сгенерировать значение",
     "invalidGeneratorRule": "Недопустимое правило генератора",
     "noGeneratorForVariable": "Правило безопасной генерации не найдено",
@@ -242,14 +175,9 @@
     }
   },
   "container": {
-    "status": "Статус",
-    "running": "Запущен",
-    "stopped": "Остановлен",
     "restart": "Перезапустить",
     "start": "Запустить",
     "stop": "Остановить",
-    "logs": "Журналы",
-    "details": "Подробности",
     "serviceHeader": "{name} — показать или скрыть детали службы",
     "starting": "Запуск…",
     "stopping": "Остановка…",
@@ -262,9 +190,7 @@
     "descriptionNotAvailable": "Описание использования контейнера недоступно.",
     "id": "ID",
     "networkAccess": "Сетевой доступ",
-    "internalAddressesHint": "Используйте эти IP в сети, если хотите связать приложения вручную.",
     "allPorts": "Все порты",
-    "described": "Описанные",
     "networkPort": "Сетевой порт",
     "hostPort": "Порт хоста",
     "containerPort": "Порт контейнера",
@@ -322,22 +248,14 @@
     "workPortHint": "Опубликовано только для протокольного трафика — без пользовательского интерфейса."
   },
   "volumes": {
-    "title": "Тома",
-    "subtitle": "Управление постоянными данными",
-    "searchPlaceholder": "Поиск томов...",
     "totalVolumes": "Всего томов",
-    "inUse": "Используется",
     "unused": "Не используется",
-    "browsing": "Просмотр",
-    "volumeSizeDistribution": "Распределение размеров томов",
     "activeSessions": "Активные сессии",
     "browsingLabel": "Просмотр",
     "stop": "Стоп",
     "openFinder": "Открыть Finder",
     "activeVolumes": "Активные тома",
     "unusedVolumes": "Неиспользуемые тома",
-    "pruneAll": "Удалить все",
-    "cleaning": "Очистка...",
     "name": "Имя",
     "driver": "Драйвер",
     "size": "Размер",
@@ -358,33 +276,18 @@
     "deleteAllUnused": "Удалить все {count} неиспользуемых тома?",
     "mb": "МБ",
     "notAvailable": "Н/Д",
-    "refresh": "Обновить тома",
     "export": "Резервная копия",
     "exportFailed": "Не удалось создать резервную копию тома: {message}",
     "exportSuccess": "Резервная копия тома '{name}' загружена",
     "exporting": "Резервная копия..."
   },
   "appOverview": {
-    "back": "Назад",
-    "runningInstances": "Запущенные экземпляры",
-    "noRunningInstances": "Нет запущенных экземпляров. Разверните со страницы приложения.",
-    "services": "сервисы",
-    "service": "сервис",
-    "expiresIn": "Истекает через",
-    "expired": "Истёк",
-    "justStarted": "Только что запущен",
-    "appDetails": "Детали и установка приложения",
-    "appDetailsDesc": "Документация, переменные окружения, требования к портам, параметры развёртывания",
-    "deploy": "Развернуть"
+    "expiresIn": "Истекает через"
   },
   "images": {
-    "title": "Образы",
-    "subtitle": "Управление локальными образами контейнеров",
-    "searchPlaceholder": "Поиск образов...",
     "totalImages": "Всего образов",
     "inUse": "Используется",
     "unused": "Не используется",
-    "reclaimable": "Можно освободить",
     "mb": "МБ",
     "storageDistribution": "Распределение хранилища",
     "activeImages": "Активные образы",
@@ -406,8 +309,7 @@
     "cleanedUp": "Очищено {count} образов",
     "cleanupInterrupted": "Очистка прервана: {error}",
     "deletionFailed": "Ошибка удаления: {message}",
-    "imageDeleted": "Образ успешно удалён",
-    "refresh": "Обновить образы"
+    "imageDeleted": "Образ успешно удалён"
   },
   "storage": {
     "title": "Хранилище",
@@ -440,7 +342,6 @@
     "removing": "Удаление…",
     "networkAccess": "Сетевой доступ",
     "allPorts": "Все порты",
-    "described": "Описанные",
     "open": "Открыть",
     "noPortsPublished": "Порты не публикуются на хост — все сервисы общаются внутри.",
     "noInternalAddresses": "Для этого стека нет доступных внутренних сетевых адресов.",
@@ -474,21 +375,6 @@
     "updateAlreadyLatest": "Уже актуально — новых образов не найдено",
     "updateFailed": "Ошибка обновления",
     "updateTimedOut": "Тайм-аут обновления — загрузка образа заняла слишком много времени",
-    "caddyAuthTargetPort": "Порт контейнера",
-    "caddyAuthTargetHint": "Порт, на котором работает приложение.",
-    "caddyAuthServePort": "Защищенный порт",
-    "caddyAuthServeHint": "Новый порт для прокси с паролем.",
-    "caddyAuthUser": "Пользователь",
-    "caddyAuthPass": "Пароль",
-    "caddyAuthPassHint": "Оставьте пустым, чтобы пропустить.",
-    "caddyAuthDeploy": "Включить Auth Proxy",
-    "caddyAuthDeploying": "Включение…",
-    "caddyAuthDeployed": "Auth Proxy включен!",
-    "caddyAuthFailed": "Ошибка при включении Auth Proxy",
-    "caddyAuthDisable": "Выключить",
-    "caddyAuthDisabled": "Auth Proxy выключен",
-    "caddyAuthServePortRequired": "Введите защищенный порт.",
-    "caddyAuthTargetPortRequired": "Введите порт приложения.",
     "loadFailedTitle": "Не удалось загрузить стек",
     "loadFailedHint": "Сервер не ответил для {id}. Повторные попытки будут каждые несколько секунд, либо попробуйте сейчас.",
     "retry": "Повторить",
@@ -523,59 +409,21 @@
   "appCard": {
     "active": "Активно ({count})",
     "ready": "Готово",
-    "notRunning": "Не запущено",
-    "manage": "Управлять",
     "unknownApp": "Неизвестное приложение",
     "noDescription": "Описание недоступно. Нажмите, чтобы просмотреть конфигурацию и детали.",
     "application": "Приложение"
   },
-  "systemCleaner": {
-    "title": "Очистка системы",
-    "optimizationNeeded": "Требуется оптимизация",
-    "systemHealthy": "Система в норме",
-    "cleanupComplete": "Очистка завершена",
-    "cleanupCompleteDesc": "Пространство в системе успешно освобождено.",
-    "reclaimableStorage": "Освобождаемое хранилище",
-    "unusedImages": "Неиспользуемые образы",
-    "danglingVolumes": "Висячие тома",
-    "detectedItems": "Обнаружено {count} элементов",
-    "executingPurge": "Выполнение очистки...",
-    "systemOptimized": "Система оптимизирована",
-    "executeCleanup": "Выполнить очистку",
-    "confirmCleanup": "Вы уверены, что хотите освободить {size}?",
-    "willDelete": "Это безвозвратно удалит:",
-    "systemCleaned": "Система очищена! Освобождено",
-    "cleanFailed": "Ошибка очистки"
-  },
+  "systemCleaner": {},
   "notificationBanner": {
     "dismiss": "Закрыть"
   },
-  "watchtowerAlert": {
-    "title": "Обновление безопасности",
-    "watchtowerMissing": "Watchtower не установлен",
-    "description": "Автоматизируйте обновления контейнеров, чтобы система оставалась защищённой и актуальной.",
-    "recommended": "Рекомендуется",
-    "installNow": "Установить сейчас",
-    "security": "Безопасность",
-    "autoUpdates": "Автообновления",
-    "notifications": "Уведомления",
-    "imageCleanup": "Очистка образов",
-    "deployed": "Watchtower развёрнут",
-    "containerStarting": "Контейнер запускается…",
-    "notInstalled": "Не установлен",
-    "deploying": "Развёртывание…",
-    "deployWatchtower": "Развернуть Watchtower",
-    "viewApp": "Просмотр приложения"
-  },
+  "watchtowerAlert": {},
   "quickMetrics": {
     "averageUptime": {
       "title": "Ср. время работы",
       "systemStability": "Стабильность системы",
       "timeActive": "Время активности",
-      "acrossContainers": "По {count} контейнерам",
-      "systemIdle": "Система простаивает",
-      "active": "Активно",
-      "apps": "Приложения"
+      "systemIdle": "Система простаивает"
     },
     "expiringContainers": {
       "title": "Истечения",
@@ -599,7 +447,6 @@
       "remaining": "Осталось",
       "reclaimable": "Можно освободить",
       "nextUp": "Далее",
-      "delete": "Освободить",
       "freeSize": "Освободить {size}",
       "deleting": "Освобождение...",
       "confirmImage": "Удалить неиспользуемый образ {name}? Это нельзя отменить.",
@@ -609,7 +456,6 @@
       "viewAll": "Смотреть все"
     },
     "hostMetrics": {
-      "scanningHost": "Сканирование хоста...",
       "connectionFailed": "Ошибка подключения",
       "hostSystem": "Хост-система",
       "online": "Онлайн",
@@ -621,7 +467,6 @@
       "memoryBuffers": "Буферы",
       "memorySlab": "Slab",
       "noSwap": "Нет свопа",
-      "kernel": "Ядро {kernel}",
       "podman": "Podman",
       "cpu": "CPU",
       "cpuHistory": "Загрузка CPU за последние 4 минуты",
@@ -630,13 +475,11 @@
       "disk": "Диск",
       "free": "{size} свободно",
       "network": "Сеть",
-      "rxTx": "приём · передача",
       "temperature": "Температура",
       "fans": "Вентиляторы",
       "unavailable": "Недоступно",
       "performance": "Производительность",
       "storage": "Хранилище",
-      "storageNetwork": "Хранилище и сеть",
       "diskIO": "I/O диска",
       "diskRead": "Чтение",
       "diskWrite": "Запись",
@@ -674,42 +517,18 @@
       "location": "Местоположение",
       "provider": "Провайдер"
     },
-    "rotatingDiskUsage": {
-      "title": "Хранилище",
-      "containerImages": "Образы контейнеров",
-      "dataVolumes": "Тома данных",
-      "usedSpace": "Используемое пространство",
-      "total": "Всего"
-    },
-    "watchtowerNextCheck": {
-      "title": "Watchtower",
-      "missing": "Отсутствует",
-      "paused": "Приостановлен",
-      "active": "Активен",
-      "nextRunIn": "Следующий запуск через",
-      "at": "в",
-      "actionRequired": "Требуется действие",
-      "setupUpdates": "Настроить обновления",
-      "updatesPaused": "Обновления приостановлены",
-      "interval": "Интервал"
-    }
+    "rotatingDiskUsage": {},
+    "watchtowerNextCheck": {}
   },
   "sponsorCard": {
-    "label": "Спонсор",
-    "title": "Поддержи Yantr. Свободный навсегда.",
-    "description": "Поддержите Yantr через GitHub Sponsors — проект остаётся бесплатным, а вы напрямую влияете на его развитие.",
     "cta": "Стать спонсором на GitHub"
   },
   "authGate": {
     "bootingTitle": "Подготовка",
-    "bootingSubtitle": "Проверка конфигурации…",
     "bootingState": "Восстановление сеанса…",
     "setupTitle": "Настроить Yantr",
-    "setupSubtitle": "Задайте пароль и PIN для начала.",
     "loginTitle": "Войти",
     "loginSubtitle": "Введите пароль и PIN для разблокировки.",
-    "username": "Имя пользователя",
-    "usernamePlaceholder": "пользователь",
     "seedNote": "Ключ хранится локально. Войдите с этого устройства.",
     "setupAction": "Создать",
     "loginAction": "Войти",
@@ -720,13 +539,8 @@
       "publicKeyCopied": "Открытый ключ скопирован."
     },
     "errors": {
-      "usernameRequired": "Имя пользователя обязательно.",
-      "passwordLength": "Пароль не менее 8 символов.",
-      "generic": "Ошибка.",
-      "copyFailed": "Не удалось скопировать."
+      "generic": "Ошибка."
     },
-    "setupNote": "Ключ будет сгенерирован и сохранен в вашем браузере.",
-    "loginNote": "Ваш ключ сохранен в этом браузере.",
     "password": "Мастер-пароль",
     "passwordConfirm": "Подтвердите пароль",
     "pin": "Цифровой PIN",
@@ -748,15 +562,12 @@
     "starCta": "Поставить звезду"
   },
   "issueCard": {
-    "label": "Отчёт об ошибке",
-    "subtitle": "Поддержка",
     "title": "Что-то не работает?",
     "description": "Отчёт с версией, хостом и числом работающих стеков можно сразу взять в работу. Всё это уже подставлено.",
     "cta": "Сообщить об ошибке",
     "footnote": "Ничего не отправляется, пока вы не сообщите."
   },
   "cloudflaredCard": {
-    "secureTunnel": "Secure Tunnel",
     "notInstalled": "Not Installed",
     "tunnelDeployed": "Tunnel Deployed",
     "containerStarting": "Container starting…",
@@ -766,7 +577,6 @@
     "deploying": "Deploying…",
     "online": "Online",
     "offline": "Offline",
-    "connectionStatus": "Connection Status",
     "uptime": "Uptime",
     "status": "Status",
     "version": "Version",
