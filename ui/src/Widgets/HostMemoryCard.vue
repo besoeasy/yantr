@@ -2,7 +2,8 @@
 // Dashboard engine: one column — the memory bar and its where-the-bytes-went
 // legend stack into a single readable rail; wider would only stretch the bar.
 // The bar is stacked (used · buffers · slab · cached) so "near-full but mostly
-// cache" needs no prose. See Home.vue for how meta.cols is consumed.
+// cache" needs no prose. Swap occupancy is its own card now: a separate
+// device, a separate question. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
@@ -10,7 +11,6 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { MemoryStick } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
-import { formatBytes } from "../utils/metrics";
 
 const { t } = useI18n();
 
@@ -25,7 +25,6 @@ const {
   slabText,
 } = useHostMetrics();
 
-const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
 const mem = computed(() => metrics.value?.mem ?? null);
 
 const isHot = computed(() => (memPct.value ?? 0) >= 90);
@@ -89,23 +88,6 @@ const segments = computed(() => {
     })
     .filter((s) => s.pct > 0.4);
   return out.length ? out : null;
-});
-
-const swapValue = computed(() => {
-  if (isDegraded("memory")) return unavailable;
-  return t("quickMetrics.hostMetrics.noSwap");
-});
-
-const swapPct = computed(() => {
-  const m = mem.value;
-  if (!m?.ready || !m.swapTotalBytes) return null;
-  return Math.min(100, (m.swapUsedBytes / m.swapTotalBytes) * 100);
-});
-
-const swapValueText = computed(() => {
-  const m = mem.value;
-  if (!m?.swapTotalBytes) return null;
-  return `${formatBytes(m.swapUsedBytes)} / ${formatBytes(m.swapTotalBytes)}`;
 });
 
 // The non-working-set pages the kernel holds: reclaimable in a pinch, and the
@@ -180,23 +162,6 @@ const legendItems = computed(() => {
             {{ item.label }} {{ item.value }}
           </span>
         </div>
-
-        <!-- Swap: a bar-shaped question gets a bar-shaped answer. A machine
-             with no swap configured is telling the truth, not missing it. -->
-        <div class="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-900/50">
-          <span class="w-9 shrink-0 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
-            {{ t("quickMetrics.hostMetrics.memorySwap") }}
-          </span>
-          <span v-if="swapPct !== null" class="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-            <span
-              class="block h-full rounded-full bg-violet-500 transition-[width] duration-200"
-              :style="{ width: swapPct + '%' }"
-            ></span>
-          </span>
-          <span class="shrink-0 text-[11px] font-black tabular-nums tracking-tight yantra-text-primary">
-            {{ swapValueText ?? swapValue }}
-          </span>
-        </div>
       </template>
 
       <!-- Degraded: the old text rows, because "unknown" must stay legible. -->
@@ -206,14 +171,13 @@ const legendItems = computed(() => {
         </div>
         <div
           v-for="(item, i) in [
-            { key: 'swap', label: t('quickMetrics.hostMetrics.memorySwap'), value: swapValue },
             { key: 'cached', label: t('quickMetrics.hostMetrics.memoryCached'), value: isDegraded('memory') ? '—' : (cachedText.value ?? '—') },
             { key: 'buffers', label: t('quickMetrics.hostMetrics.memoryBuffers'), value: isDegraded('memory') ? '—' : (buffersText.value ?? '—') },
             { key: 'slab', label: t('quickMetrics.hostMetrics.memorySlab'), value: isDegraded('memory') ? '—' : (slabText.value ?? '—') },
           ]"
           :key="item.key"
           class="flex items-baseline justify-between gap-2 rounded-xl bg-zinc-50 p-3"
-          :class="i < 3 ? 'mb-2' : ''"
+          :class="i < 2 ? 'mb-2' : ''"
         >
           <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
             {{ item.label }}
