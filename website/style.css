@@ -444,6 +444,28 @@ code, pre { font-family: var(--font-mono); }
 .hero-uninstall {
   margin-top: 0.45rem;
 }
+.hero-binary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 0.5rem;
+  width: min(56rem, 92%);
+  margin: 2.4rem auto 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--gray-300);
+  user-select: none;
+}
+.hero-binary span {
+  animation: binary-pulse 4s ease-in-out infinite;
+}
+@keyframes binary-pulse {
+  0%, 100% { color: var(--gray-300); opacity: 0.5; }
+  50% { color: var(--gray-900); opacity: 1; }
+}
+/* march a bright pulse across the line like traffic on a wire */
+.hero-binary span:nth-child(8n+3) { animation-duration: 3.4s; }
+.hero-binary span:nth-child(8n+6) { animation-duration: 4.6s; }
 .hero-uninstall code {
   font-family: var(--font-mono);
   font-size: 0.78rem;

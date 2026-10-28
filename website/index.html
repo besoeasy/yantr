@@ -166,6 +166,9 @@
               <span id="pulls-cta">Container image</span>
             </a>
           </div>
+
+          <!-- Binary stream: machine pulse under the CTAs -->
+          <div id="hero-binary" class="hero-binary animate-fade-in-up delay-300" aria-hidden="true"></div>
         </div>
       </div>
 
@@ -1448,6 +1451,24 @@
         loadStars();
         loadContributors();
         initHeroAnimation();
+        (function heroBinary() {
+          const el = document.getElementById("hero-binary");
+          if (!el) return;
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            el.style.display = "none";
+            return;
+          }
+          const n = window.innerWidth < 720 ? 60 : 110;
+          el.innerHTML = Array.from(
+            { length: n },
+            () => (Math.random() < 0.5 ? "0" : "1")
+          )
+            .map(
+              (c, i) =>
+                `<span style="animation-delay:${(-Math.random() * 4).toFixed(2)}s">${c}</span>`
+            )
+            .join("");
+        })();
 
         let heroResizeTimer;
         window.addEventListener("resize", () => {
