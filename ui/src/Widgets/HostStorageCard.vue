@@ -1,14 +1,19 @@
 <script>
-// Dashboard engine: one column — the disk headline was tuned for a single
-// cell; wider would only stretch the bar. Memory moved to its own card so the
-// breakdown rows it gained would fit; this one stays the fill-up story for
-// disks alone. See Home.vue for how meta.cols is consumed.
+// Dashboard engine: one column — the fill-up story and the traffic story for
+// the same disk now share one tile, the way the network card absorbed Link
+// Status: size and speed answer each other, and on their own each was half a
+// card. The disk percentage keeps the headline slot: it is the metric that
+// fills up and eventually stops an app from running. Absorbed
+// HostDiskIOCard, whose trend line had been silently missing — the template
+// named Sparkline without ever importing it. See Home.vue for how meta.cols
+// is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { HardDrive } from "@lucide/vue";
+import { HardDrive, ArrowDownUp, ArrowDown, ArrowUp } from "@lucide/vue";
+import Sparkline from "../components/Sparkline.vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
 const { t } = useI18n();
@@ -18,9 +23,36 @@ const {
   isDegraded,
   primaryDisk,
   diskFreeText,
+  primaryDiskIO,
+  diskIOText,
+  diskIOHistory,
 } = useHostMetrics();
 
 const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
+
+// Split the combined "read · write" string so each direction gets its own
+// arrow and colour — the same split the network card makes on rx · tx, and
+// for the same reason: destructuring at setup would freeze the first reading.
+const readText = computed(() => diskIOText.value?.split("·")[0]?.trim() || "—");
+const writeText = computed(() => diskIOText.value?.split("·")[1]?.trim() || "—");
+
+// The small-IO story the byte headline hides. A device moving one MB in 4k
+// chunks and one moving a GB in one block read the same on the headline and
+// mean very different things to the disk.
+const iopsText = computed(() => {
+  const io = primaryDiskIO.value;
+  if (!io) return "—";
+  const fmt = (v) => (v >= 1000 ? `${(v / 1000).toFixed(1)}k` : Math.round(v).toString());
+  return `${fmt(io.readsPerSec)} r/s · ${fmt(io.writesPerSec)} w/s`;
+});
+
+// The sparkline scales itself: byte rates have no natural ceiling to pin to
+// 100 like a CPU percentage does, so the max is the busiest moment in the
+// window — the shape is the information, the absolute scale lives in the
+// read/write rows. The 1 MB/s floor keeps an all-zero window from producing a
+// 0 ceiling, which would divide the next real sample into a spike to the top.
+const sparkMax = computed(() => Math.max(...diskIOHistory.value, 1024 * 1024) * 1.15);
+const sparkLabel = computed(() => t("quickMetrics.hostMetrics.diskIOHistory"));
 </script>
 
 <template>
@@ -67,8 +99,52 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
         ></div>
       </div>
 
-      <div class="mb-5 truncate text-[9px] font-semibold yantra-text-secondary">
+      <div class="mb-4 truncate text-[9px] font-semibold yantra-text-secondary">
         {{ isDegraded("disk") ? unavailable : (diskFreeText ? t("quickMetrics.hostMetrics.free", { size: diskFreeText }) : "") }}
+      </div>
+
+      <!-- The same disk's traffic, under a hairline. Degrade independently:
+           a disk whose IO counters are missing still reports its capacity. -->
+      <div class="border-t border-zinc-200 pt-3 dark:border-zinc-800">
+        <div class="mb-2 flex items-center gap-1.5 text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary">
+          <ArrowDownUp class="h-3 w-3 shrink-0" />
+          <span class="truncate">{{ primaryDiskIO?.device ?? "—" }}</span>
+          <span class="ml-auto shrink-0 tabular-nums">
+            {{ isDegraded("diskio") ? unavailable : iopsText }}
+          </span>
+        </div>
+
+        <!-- 4-minute trend of the top device, read+write combined, autoscaled
+             to the busiest moment in the window — the same shape-over-scale
+             deal the CPU sparkline makes, minus the fixed percent ceiling. -->
+        <div class="mb-3 h-16 w-full">
+          <Sparkline :points="diskIOHistory" :max="sparkMax" :tone="'amber'" :label="sparkLabel" />
+        </div>
+
+        <!-- read / write: two rows rather than a second headline. The same
+             two arrows the network card uses for rx / tx, amber here so the
+             disk's accent stays distinct from the network's sky. -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+              <ArrowDown class="h-3 w-3 shrink-0 text-amber-500" />
+              {{ t("quickMetrics.hostMetrics.diskRead") }}
+            </span>
+            <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+              {{ isDegraded("diskio") ? unavailable : readText }}
+            </span>
+          </div>
+
+          <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+              <ArrowUp class="h-3 w-3 shrink-0 text-violet-500" />
+              {{ t("quickMetrics.hostMetrics.diskWrite") }}
+            </span>
+            <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+              {{ isDegraded("diskio") ? unavailable : writeText }}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
