@@ -241,7 +241,9 @@ code, pre { font-family: var(--font-mono); }
   padding: 4rem 0 3rem;
   overflow: clip;
   contain: paint;
-  max-width: 100%;
+}
+.hero.full-bleed {
+  max-width: none;
 }
 .hero-bg {
   position: absolute;
