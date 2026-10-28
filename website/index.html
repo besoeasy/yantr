@@ -558,7 +558,7 @@
               Runs on the box you already own.
               <span class="muted">Scales when you outgrow it.</span>
             </h2>
-          </div>
+           </div>
 
           <!-- Minimal Animated RAM Block -->
           <div class="ram-panel">
@@ -859,83 +859,6 @@
         </div>
       </section>
 
-      <!-- FAQ Section -->
-      <section class="full-bleed section-dark" id="faq">
-        <!-- Dot-grid decoration matching community section -->
-        <div class="dot-grid" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
-        <div class="wrap">
-          <div class="contrib-head">
-            <p class="eyebrow eyebrow-green">FAQ</p>
-            <h2>Frequently asked questions</h2>
-            <p class="sub">Quick answers about safety, compatibility, and day-to-day use.</p>
-          </div>
-
-          <div class="faq-grid">
-            <div class="faq-card">
-              <h3>Tried self-hosting before and gave up?</h3>
-              <p>
-                The old tools asked you to become a different person first: dedicate a machine, hand a root daemon your password, learn port maps and compose files. Yantr asks for one shell command. If it works, you have Jellyfin running in minutes; if it doesn't, the same script with <code>--uninstall</code> puts your machine back.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Why does Yantr use Podman instead of Docker?</h3>
-              <p>
-                Docker runs as a monolithic root daemon (<code>dockerd</code>). Anyone with access to the Docker group effectively has passwordless root control over your host. Podman runs completely rootless in unprivileged user namespaces without any background daemon. It integrates directly with Linux systemd (via Quadlet), doesn't tamper with host firewall rules, and leaves zero footprint on your host OS.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>What is 'rootless' and why is it better for my homelab?</h3>
-              <p>
-                Rootless means Yantr and all deployed containers run under your standard, unprivileged user account without <code>sudo</code>. The Linux kernel maps container UID 0 to an unprivileged host UID. Even in the worst-case scenario of a container escape vulnerability, the attacker is trapped inside an unprivileged sandbox and cannot access host system files, read credentials, or install rootkits.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Does Yantr replace my operating system?</h3>
-              <p>
-                No. Yantr runs on top of your existing Linux setup using rootless Podman and systemd Quadlet. Your host OS remains unchanged.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Why use Yantr instead of manual Podman Compose?</h3>
-              <p>
-                Yantr applies Compose changes atomically: every step succeeds together, or nothing is changed. That reduces broken deployments and partial updates.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Do I need Podman experience to use Yantr?</h3>
-              <p>
-                Not much. Yantr handles app installation, updates, and compose management through a simple interface while still using standard Podman and named volumes under the hood.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Where is my data stored?</h3>
-              <p>
-                Your app data stays in standard named Podman volumes on your own machine or server. This keeps ownership clear and migration straightforward.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Can I access apps remotely?</h3>
-              <p>
-                Yes. Yantr is local-first, and you can securely expose apps with tools like Cloudflare Tunnel when you need remote access.
-              </p>
-            </div>
-
-            <div class="faq-card">
-              <h3>Is Yantr free? Can I see the source?</h3>
-              <p>
-                Yes. The source is public on GitHub. Personal and homelab use is free. Commercial use is not allowed — see the PolyForm Noncommercial License.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <!-- All Apps Section -->
       <section class="apps-section" id="all-apps">
@@ -1082,6 +1005,85 @@
               <span class="mono">32.52&deg; N, 75.11&deg; E &middot; sketch, not to scale</span>
             </figcaption>
           </figure>
+        </div>
+      </section>
+
+
+      <!-- FAQ Section -->
+      <section class="full-bleed section-dark" id="faq">
+        <!-- Dot-grid decoration matching community section -->
+        <div class="dot-grid" style="background-image:radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);background-size:28px 28px;"></div>
+        <div class="wrap">
+          <div class="contrib-head">
+            <p class="eyebrow eyebrow-green">FAQ</p>
+            <h2>Frequently asked questions</h2>
+            <p class="sub">Quick answers about safety, compatibility, and day-to-day use.</p>
+          </div>
+
+          <div class="faq-grid">
+            <div class="faq-card">
+              <h3>Tried self-hosting before and gave up?</h3>
+              <p>
+                The old tools asked you to become a different person first: dedicate a machine, hand a root daemon your password, learn port maps and compose files. Yantr asks for one shell command. If it works, you have Jellyfin running in minutes; if it doesn't, the same script with <code>--uninstall</code> puts your machine back.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Why does Yantr use Podman instead of Docker?</h3>
+              <p>
+                Docker runs as a monolithic root daemon (<code>dockerd</code>). Anyone with access to the Docker group effectively has passwordless root control over your host. Podman runs completely rootless in unprivileged user namespaces without any background daemon. It integrates directly with Linux systemd (via Quadlet), doesn't tamper with host firewall rules, and leaves zero footprint on your host OS.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>What is 'rootless' and why is it better for my homelab?</h3>
+              <p>
+                Rootless means Yantr and all deployed containers run under your standard, unprivileged user account without <code>sudo</code>. The Linux kernel maps container UID 0 to an unprivileged host UID. Even in the worst-case scenario of a container escape vulnerability, the attacker is trapped inside an unprivileged sandbox and cannot access host system files, read credentials, or install rootkits.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Does Yantr replace my operating system?</h3>
+              <p>
+                No. Yantr runs on top of your existing Linux setup using rootless Podman and systemd Quadlet. Your host OS remains unchanged.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Why use Yantr instead of manual Podman Compose?</h3>
+              <p>
+                Yantr applies Compose changes atomically: every step succeeds together, or nothing is changed. That reduces broken deployments and partial updates.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Do I need Podman experience to use Yantr?</h3>
+              <p>
+                Not much. Yantr handles app installation, updates, and compose management through a simple interface while still using standard Podman and named volumes under the hood.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Where is my data stored?</h3>
+              <p>
+                Your app data stays in standard named Podman volumes on your own machine or server. This keeps ownership clear and migration straightforward.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Can I access apps remotely?</h3>
+              <p>
+                Yes. Yantr is local-first, and you can securely expose apps with tools like Cloudflare Tunnel when you need remote access.
+              </p>
+            </div>
+
+            <div class="faq-card">
+              <h3>Is Yantr free? Can I see the source?</h3>
+              <p>
+                Yes. The source is public on GitHub. Personal and homelab use is free. Commercial use is not allowed — see the PolyForm Noncommercial License.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
