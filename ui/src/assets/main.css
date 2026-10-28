@@ -1958,8 +1958,27 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
    accent the bands use. */
 .bg-gradient-to-r{background-image:linear-gradient(to right,transparent,var(--yantr-via,transparent) 50%,transparent);}
 .via-sky-500\/30{--yantr-via:color-mix(in srgb,var(--color-sky-500) 30%,transparent);}
+.via-fuchsia-500\/30{--yantr-via:color-mix(in srgb,var(--color-fuchsia-500) 30%,transparent);}
 .via-zinc-300\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-300) 40%,transparent);}
 .dark\:via-zinc-700\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-700) 40%,transparent);}
+.dark\:via-fuchsia-500\/40{--yantr-via:color-mix(in srgb,var(--color-fuchsia-500) 40%,transparent);}
+
+/* ─── Fuchsia family ─────────────────────────────────────────────────────────
+   The Daily app spotlight card. Every other card's accent was already taken
+   (sky belongs to Network), so the spotlight gets its own family rather than
+   borrowing one — the accent IS the card's identity here. Stops follow the
+   same only-what's-needed rule as the rest of the palette. */
+:host{--color-fuchsia-50:oklch(97.7% .017 320.058);--color-fuchsia-100:oklch(95.2% .037 318.852);--color-fuchsia-200:oklch(90.3% .076 319.406);--color-fuchsia-400:oklch(74% .238 322.16);--color-fuchsia-500:oklch(66.7% .295 322.15);--color-fuchsia-600:oklch(59.1% .293 322.896);--color-fuchsia-700:oklch(51.8% .273 323.662);--color-fuchsia-900:oklch(40.1% .17 325.269);}
+.border-fuchsia-200{border-color:var(--color-fuchsia-200);}
+.bg-fuchsia-50{background-color:var(--color-fuchsia-50);}
+.bg-fuchsia-100{background-color:var(--color-fuchsia-100);}
+.text-fuchsia-600{color:var(--color-fuchsia-600);}
+.text-fuchsia-700{color:var(--color-fuchsia-700);}
+.hover\:bg-fuchsia-100:hover{background-color:var(--color-fuchsia-100);}
+.dark\:border-fuchsia-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-fuchsia-900) 50%,transparent);}
+.dark\:bg-fuchsia-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-fuchsia-900) 20%,transparent);}
+.dark\:hover\:bg-fuchsia-900\/30:is(.dark *):hover{background-color:color-mix(in oklab,var(--color-fuchsia-900) 30%,transparent);}
+.dark\:text-fuchsia-400:is(.dark *){color:var(--color-fuchsia-400);}
 .h-px{height:1px;}
 .inset-x-0{left:0;right:0;}
 

@@ -77,7 +77,7 @@ watch(pickedKey, (next) => {
   >
     <div
       aria-hidden="true"
-      class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-500/30 to-transparent"
+      class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-fuchsia-500/30 to-transparent dark:via-fuchsia-500/40"
     ></div>
 
     <div class="flex flex-1 flex-col gap-5">
@@ -87,7 +87,7 @@ watch(pickedKey, (next) => {
           @click="viewDeveloper"
           class="flex min-w-0 items-center gap-4 text-left"
         >
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl yantra-tile">
+          <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border-fuchsia-200 bg-fuchsia-50 transition-transform duration-200 group-hover:scale-105 dark:border-fuchsia-900/50 dark:bg-fuchsia-900/20">
             <img
               v-if="avatarUrl"
               :src="avatarUrl"
@@ -95,7 +95,7 @@ watch(pickedKey, (next) => {
               referrerpolicy="no-referrer"
               class="h-full w-full object-cover"
             />
-            <span v-else class="text-lg font-black tracking-tight yantra-text-primary dark:text-zinc-100">
+            <span v-else class="text-lg font-black tracking-tight text-fuchsia-600 dark:text-fuchsia-400">
               {{ initials }}
             </span>
           </div>
@@ -150,7 +150,7 @@ watch(pickedKey, (next) => {
         </button>
         <span
           v-if="hiddenAppCount > 0"
-          class="rounded-full border-dashed px-3 py-1 text-xs font-medium yantra-text-secondary dark:border-zinc-800"
+          class="rounded-full border border-dashed border-zinc-200 px-3 py-1 text-xs font-medium yantra-text-secondary dark:border-zinc-800"
         >
           {{ t("home.dailyDeveloper.appsMore", { count: hiddenAppCount }) }}
         </span>
@@ -159,7 +159,7 @@ watch(pickedKey, (next) => {
       <!-- CTA -->
       <button
         @click="viewDeveloper"
-        class="mt-auto inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-zinc-900 px-3.5 py-2.5 text-[11px] font-semibold text-white transition-opacity hover:opacity-90 dark:bg-zinc-100 dark:text-zinc-900"
+        class="mt-auto inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-fuchsia-200 bg-fuchsia-50 px-3.5 py-2.5 text-[11px] font-semibold text-fuchsia-700 transition-colors hover:bg-fuchsia-100 dark:border-fuchsia-900/50 dark:bg-fuchsia-900/20 dark:text-fuchsia-400 dark:hover:bg-fuchsia-900/30"
       >
         {{ t("home.dailyDeveloper.viewProfile") }}
         <ArrowUpRight :size="13" />
