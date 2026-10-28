@@ -16,6 +16,7 @@ package system
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -54,9 +55,34 @@ type HostMetrics struct {
 	// Pressure is the kernel's PSI (pressure stall information) for CPU,
 	// memory and IO. Point-in-time, so it is valid from the first sample.
 	Pressure PressureStats `json:"pressure"`
+	// Gpu is one entry per DRM card whose driver exposes the sysfs files a
+	// rootless container can read. An empty list is a normal state — an Intel
+	// iGPU or a headless server exposes none of these files — so it degrades
+	// nothing; only a missing sysfs bind adds the "gpu" degraded key.
+	Gpu []GpuStats `json:"gpu"`
 	// Board is the DMI identity of the machine (vendor/board/product).
 	Board    BoardInfo `json:"board"`
 	Degraded []string  `json:"degraded"`
+}
+
+// GpuStats is one GPU the kernel exposes statistics for. Every dynamic field
+// is a pointer so "driver present, valuation missing" stays null rather than
+// collapsing into a healthy-looking zero — amdgpu writes gpu_busy_percent and
+// the mem_info_vram pair; the proprietary and i915 drivers write none of them.
+type GpuStats struct {
+	// Card is the DRM node name ("card0"), the one stable identifier /sys gives.
+	Card string `json:"card"`
+	// Driver is the uevent DRIVER= value ("amdgpu"), cheap but unambiguous.
+	Driver string `json:"driver,omitempty"`
+	// BusyPct is the driver's own utilization estimate; null when the file
+	// does not exist rather than 0, because a zero and an absent reading are
+	// different facts.
+	BusyPct        *float64 `json:"busyPct"`
+	VramUsedBytes  uint64   `json:"vramUsedBytes"`
+	VramTotalBytes uint64   `json:"vramTotalBytes"`
+	// TempC and TripC ride along from the driver's hwmon chip when it has one.
+	TempC *float64 `json:"tempC"`
+	TripC *float64 `json:"tripC,omitempty"`
 }
 
 // SensorStats is one slot on one hwmon chip: fan i and temperature i under the
@@ -73,6 +99,10 @@ type SensorStats struct {
 	// that only spins reports a null temperature.
 	TempC  *float64 `json:"tempC"`
 	FanRPM *float64 `json:"fanRPM"`
+	// TripC is the chip's own threshold for this slot (tempN_crit, falling
+	// back to tempN_max, or the zone's trip point). Pointers, not numbers:
+	// a board that ships no threshold must not look like one tripping at 0°C.
+	TripC *float64 `json:"tripC,omitempty"`
 }
 
 type CPUStats struct {
@@ -163,10 +193,9 @@ type BoardInfo struct {
 
 type DiskStats struct {
 	Mount string `json:"mount"`
-	// FSType is the hexadecimal filesystem magic (0x9123683e is btrfs), not a
-	// device node: a named-volume rootless container has no /dev entry worth
-	// showing, and this is enough to tell btrfs from ext4 from zfs in a bug
-	// report.
+	// FSType is the filesystem's own name from /proc/mounts ("ext4", "xfs",
+	// "btrfs"): enough to tell filesystems apart in a bug report, without
+	// leaning on a device node a rootless container cannot honor.
 	FSType     string  `json:"fsType"`
 	UsedPct    float64 `json:"usedPct"`
 	TotalBytes uint64  `json:"totalBytes"`
@@ -303,6 +332,7 @@ func (c *collector) snapshot() HostMetrics {
 		Disk:     []DiskStats{},
 		DiskIO:   []DiskIOStats{},
 		Sensors:  []SensorStats{},
+		Gpu:      []GpuStats{},
 		Degraded: []string{},
 	}
 
@@ -428,6 +458,16 @@ func (c *collector) snapshot() HostMetrics {
 		out.Board = board
 	} else {
 		out.Degraded = append(out.Degraded, "board")
+	}
+
+	// GPU stats are a sysfs read, so a host without the bind reads nothing at
+	// all — that is a degradation (the machine may have a GPU it would be
+	// lying quietly about), not the same as "no card exposes these files",
+	// which is a normal desktop and degrades nothing.
+	if _, err := os.Stat(s.sysPath("/class/drm")); err == nil {
+		out.Gpu = readGpus(s)
+	} else {
+		out.Degraded = append(out.Degraded, "gpu")
 	}
 
 	return out
@@ -671,33 +711,104 @@ func readKVFile(path string) (map[string]uint64, error) {
 
 // -------------------------------------------------------------- disk and temp
 
-// diskCandidates are the filesystems reported on the card. Mount enumeration
-// is deliberately not used: /proc/mounts inside a container is the CONTAINER's
-// mount namespace, so it would only ever list the overlay and our own binds.
-// These are the paths a homelab user actually cares about seeing fill up.
-var diskCandidates = []string{"/", "/home", "/var", "/data", "/srv", "/opt", "/mnt"}
-
 // skipFSTypes never carry user data and would only add noise to the card.
+// The keys are the filesystem TYPE NAMES /proc/mounts writes — matching them
+// against statfs's hex magic (the old lookup) matches nothing, which is a bug
+// only deactivated code can survive.
 var skipFSTypes = map[string]bool{
 	"tmpfs": true, "devtmpfs": true, "devfs": true, "proc": true, "sysfs": true,
 	"cgroup": true, "cgroup2": true, "overlay": true, "squashfs": true,
 	"securityfs": true, "pstore": true, "debugfs": true, "tracefs": true,
 	"configfs": true, "fusectl": true, "mqueue": true, "hugetlbfs": true,
 	"bpf": true, "autofs": true, "binfmt_misc": true, "nsfs": true,
+	// Boot partitions and ephemeral plumbing: real filesystems, not facts a
+	// dashboard can act on. fuse.* is matched by prefix below (every fuse
+	// mount names an accessory: fuse.portal, fusectl aside).
+	"vfat": true, "msdos": true, "devpts": true, "efivarfs": true,
+	"ramfs": true, "rpc_pipefs": true, "selinuxfs": true, "swap": true,
+	"9p": true, "udf": true, "iso9660": true, "binder": true,
 }
 
-func readDisks(s sources) ([]DiskStats, error) {
-	out := make([]DiskStats, 0, len(diskCandidates))
-	seenDevice := map[uint64]bool{}
+// isSkipFSType matches a filesystem type against the skip list, with the "fuse."
+// family handled by prefix so fuse.portal variants never squeak through.
+func isSkipFSType(fsType string) bool {
+	if skipFSTypes[fsType] {
+		return true
+	}
+	return strings.HasPrefix(fsType, "fuse.")
+}
 
-	for _, mount := range diskCandidates {
-		path := s.hostPath(mount)
-		var st syscall.Statfs_t
-		if err := syscall.Statfs(path, &st); err != nil {
+// maxReportedDisks bounds the payload the same way maxDiskDevices does: a NAS
+// with a NFS map imports the world, and a card reads a handful at most.
+const maxReportedDisks = 6
+
+// mountEntry is one parsed /proc/mounts line.
+type mountEntry struct {
+	device string
+	target string
+	fsType string
+}
+
+// reportableMount is the filter readDisks runs before spending a statfs call:
+// pseudo filesystems and boot noise skip; a device that names a block node, a
+// network store ("server:/export") or a zfs dataset stays on. Pure, so the
+// rules are pinned by tests without a live mount table.
+func reportableMount(e mountEntry) bool {
+	if isSkipFSType(e.fsType) {
+		return false
+	}
+	dev := e.device
+	return strings.HasPrefix(dev, "/dev/") || strings.Contains(dev, "/") || e.fsType == "zfs"
+}
+
+// readMounts parses the host's /proc/mounts (the bind makes it the HOST's view;
+// without the bind it is the container's own, which is still a self-honest
+// list — it simply has less to show).
+func readMounts(path string) ([]mountEntry, error) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	out := []mountEntry{}
+	for _, line := range strings.Split(string(raw), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) < 3 {
 			continue
 		}
-		fsType := strconv.FormatInt(int64(st.Type), 16)
-		if skipFSTypes[fsType] {
+		// Octal escapes (spaces in mount targets) are rare and typically
+		// system-owned paths a card skips anyway; a target with escapes is
+		// not worth missing the real ones over.
+		out = append(out, mountEntry{device: fields[0], target: fields[1], fsType: fields[2]})
+	}
+	if len(out) == 0 {
+		return nil, os.ErrNotExist
+	}
+	return out, nil
+}
+
+// readDisks enumerates the host's real filesystems from /proc/mounts, instead
+// of the hardcoded candidate list it used to stat. The candidate list could
+// not see beyond "/" plus four conventional paths, so a NAS's /srv/export or a
+// dedicated /media disk was invisible no matter how full it ran. The mounts
+// file sees everything; the filtering here decides what a dashboard can act on:
+// pseudo-filesystems and boot noise skip, everything else stats, and dedupe
+// collapses two paths onto one store so the same bytes never double-report.
+func readDisks(s sources) ([]DiskStats, error) {
+	mounts, err := readMounts(s.hostPath("/proc/mounts"))
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]DiskStats, 0, 4)
+	seenDevice := map[uint64]bool{}
+
+	for _, minfo := range mounts {
+		if !reportableMount(minfo) {
+			continue
+		}
+		path := s.hostPath(minfo.target)
+		var st syscall.Statfs_t
+		if err := syscall.Statfs(path, &st); err != nil {
 			continue
 		}
 		total := st.Blocks * uint64(st.Bsize)
@@ -705,13 +816,14 @@ func readDisks(s sources) ([]DiskStats, error) {
 		if total == 0 {
 			continue
 		}
-		// / and /home are frequently two paths into one filesystem; reporting
-		// both would double the same bytes on the card. stat(2)'s device id is
-		// the conservative key — it never merges two real filesystems, so the
-		// failure mode is a redundant tile rather than a full data disk going
-		// invisible. Note that btrfs gives each subvolume its own st_dev, so a
-		// btrfs host legitimately reports / and /home separately even when the
-		// numbers match, because filling one subvolume does not fill the other.
+		// root and, say, /var are frequently two paths into one filesystem;
+		// reporting both would double the same bytes on the card. stat(2)'s
+		// device id is the conservative key — it never merges two real
+		// filesystems, so the failure mode is a redundant tile rather than a
+		// full data disk going invisible. Note that btrfs gives each subvolume
+		// its own st_dev, so a btrfs host legitimately reports subvolumes
+		// separately even when the numbers match, because filling one does not
+		// fill the other.
 		fi, err := os.Stat(path)
 		if err != nil {
 			continue
@@ -727,12 +839,24 @@ func readDisks(s sources) ([]DiskStats, error) {
 			used = total - free
 		}
 		out = append(out, DiskStats{
-			Mount:      mount,
-			FSType:     fsType,
+			Mount:      minfo.target,
+			FSType:     minfo.fsType,
 			UsedPct:    float64(used) / float64(total) * 100,
 			TotalBytes: total,
 			FreeBytes:  free,
 		})
+	}
+
+	// Root first: the filesystem "everything else fills up when it fails".
+	// The rest by size, big stores before dot-partitions.
+	sort.SliceStable(out, func(i, j int) bool {
+		if (out[i].Mount == "/" || out[j].Mount == "/") && out[i].Mount != out[j].Mount {
+			return out[i].Mount == "/"
+		}
+		return out[i].TotalBytes > out[j].TotalBytes
+	})
+	if len(out) > maxReportedDisks {
+		out = out[:maxReportedDisks]
 	}
 	if len(out) == 0 {
 		return nil, os.ErrNotExist
@@ -969,6 +1093,7 @@ func readSensors(s sources) ([]SensorStats, error) {
 		temps := map[int]*float64{}
 		labels := map[int]string{}
 		fans := map[int]*float64{}
+		trips := map[int]*float64{}
 		for _, path := range globSlotPaths(chipDir, "temp*_input") {
 			n := slotIndex(path)
 			if c, ok := readCelsius(path); ok {
@@ -977,6 +1102,16 @@ func readSensors(s sources) ([]SensorStats, error) {
 			// The path itself ends in _input; the label is its sibling file.
 			if label, ok := readLabel(strings.TrimSuffix(path, "_input") + "_label"); ok {
 				labels[n] = label
+			}
+			// The chip's own trip for this slot: tempN_crit first (the number
+			// the kernel throttles at) then tempN_max (the advisory warning).
+			// A threshold is a number the BOARD shipped, so it may be higher
+			// than the plausibility band a live reading must fit; it gets its
+			// own parser rather than the reading one.
+			if trip, ok := readThresholdC(filepath.Join(chipDir, fmt.Sprintf("temp%d_crit", n))); ok {
+				trips[n] = trip
+			} else if trip, ok := readThresholdC(filepath.Join(chipDir, fmt.Sprintf("temp%d_max", n))); ok {
+				trips[n] = trip
 			}
 		}
 		for _, path := range globSlotPaths(chipDir, "fan*_input") {
@@ -993,7 +1128,7 @@ func readSensors(s sources) ([]SensorStats, error) {
 		}
 
 		for n, rpm := range fans {
-			entry := SensorStats{Chip: chip, FanRPM: rpm}
+			entry := SensorStats{Chip: chip, FanRPM: rpm, TripC: trips[n]}
 			if temp, ok := temps[n]; ok {
 				entry.TempC = temp
 				entry.Label = labels[n]
@@ -1004,12 +1139,14 @@ func readSensors(s sources) ([]SensorStats, error) {
 			if _, paired := fans[n]; paired {
 				continue
 			}
-			out = append(out, SensorStats{Chip: chip, Label: labels[n], TempC: temp})
+			out = append(out, SensorStats{Chip: chip, Label: labels[n], TempC: temp, TripC: trips[n]})
 		}
 	}
 
 	// ACPI zones have no fans of their own; they project as temperature-only
-	// entries so "acpitz" still shows where its heat sits.
+	// entries so "acpitz" still shows where its heat sits. A zone ships its
+	// thresholds as trip_point_N_temp files; the hottest trip is the one the
+	// temperature is racing.
 	if zones, err := filepath.Glob(s.sysPath("/class/thermal/thermal_zone*")); err == nil {
 		for _, zoneDir := range zones {
 			temp, ok := readCelsius(filepath.Join(zoneDir, "temp"))
@@ -1020,7 +1157,13 @@ func readSensors(s sources) ([]SensorStats, error) {
 			if raw, err := os.ReadFile(filepath.Join(zoneDir, "type")); err == nil && strings.TrimSpace(string(raw)) != "" {
 				name = strings.TrimSpace(string(raw))
 			}
-			out = append(out, SensorStats{Chip: name, TempC: temp})
+			entry := SensorStats{Chip: name, TempC: temp}
+			for _, tripPath := range globSlotPaths(zoneDir, "trip_point_*_temp") {
+				if trip, ok := readThresholdC(tripPath); ok && (entry.TripC == nil || *trip > *entry.TripC) {
+					entry.TripC = trip
+				}
+			}
+			out = append(out, entry)
 		}
 	}
 

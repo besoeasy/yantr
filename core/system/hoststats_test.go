@@ -209,28 +209,57 @@ func TestRateBits(t *testing.T) {
 	}
 }
 
-func TestReadDisks(t *testing.T) {
-	// The temp dir is on a tmpfs, which readDisks skips as noise — remove that
-	// entry so the arithmetic and dedup are actually exercised here.
+// mountsFixture writes a /proc/mounts into a fake host root and returns the
+// two mountpoint dirs to statfs against. tmpfs is removed from the skip list so
+// the temp dir's own filesystem passes the type filter like a real disk would.
+func mountsFixture(t *testing.T) (sources, string, string) {
+	t.Helper()
 	skipFSTypes["tmpfs"] = false
 	t.Cleanup(func() { skipFSTypes["tmpfs"] = true })
 
-	original := diskCandidates
-	diskCandidates = []string{t.TempDir(), t.TempDir()}
-	t.Cleanup(func() { diskCandidates = original })
+	host := t.TempDir()
+	procDir := filepath.Join(host, "proc")
+	if err := os.MkdirAll(procDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	rootDir := filepath.Join(host, "mnt-a")
+	dataDir := filepath.Join(host, "mnt-b")
+	nfsDir := filepath.Join(host, "mnt-nfs")
+	for _, d := range []string{rootDir, dataDir, nfsDir} {
+		if err := os.MkdirAll(d, 0o755); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// One store mounted twice (dedupe), one real second store, a pseudo-fs and
+	// a network filesystem with a device that is not a block node.
+	mounts := fmt.Sprintf(
+		"/dev/vda1 / ext4 rw 0 0\n/dev/vda1 %s ext4 rw 0 0\n/dev/vdb1 %s xfs rw 0 0\ntmpfs %s tmpfs rw 0 0\nfreenas:/export %s nfs4 rw 0 0\nportal %s fuse.portal rw 0 0\n",
+		rootDir, dataDir, filepath.Join(host, "run"), nfsDir, filepath.Join(host, "doc"))
+	if err := os.WriteFile(filepath.Join(procDir, "mounts"), []byte(mounts), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return sources{hostRoot: host}, rootDir, dataDir
+}
 
-	got, err := readDisks(sources{})
+func TestReadDisks(t *testing.T) {
+	s, rootDir, dataDir := mountsFixture(t)
+	got, err := readDisks(s)
 	if err != nil {
 		t.Fatalf("readDisks: %v", err)
 	}
-	// Both candidates live on the same filesystem (two dirs under one tmpfs),
-	// so deduping by st_dev must collapse them into a single entry — the same
-	// thing / and /home do on an ext4 host.
+	// Every fixture mountpoint lives on the caller's filesystem, so by st_dev
+	// they are ONE store: the double-mount of vda1 must dedupe and the fake
+	// second disk folds into it. The assertions therefore target what the
+	// dedupe itself guarantees, while type filtering and device heuristics are
+	// pinned separately on reportableMount.
 	if len(got) != 1 {
-		t.Fatalf("got %d disks, want 1 after deduping one filesystem", len(got))
+		t.Fatalf("got %+v, want the deduped single filesystem", got)
 	}
-	if got[0].FSType == "" {
-		t.Error("FSType is empty, want the hexadecimal filesystem magic")
+	if got[0].Mount != "/" {
+		t.Errorf("sort put %q first, want /", got[0].Mount)
+	}
+	if got[0].FSType != "ext4" {
+		t.Errorf("FSType = %q, want ext4 straight from the mounts file", got[0].FSType)
 	}
 	if got[0].TotalBytes == 0 {
 		t.Errorf("TotalBytes = 0, want a real size")
@@ -238,14 +267,38 @@ func TestReadDisks(t *testing.T) {
 	if got[0].UsedPct < 0 || got[0].UsedPct > 100 {
 		t.Errorf("UsedPct = %v, want a percentage", got[0].UsedPct)
 	}
+	_ = rootDir
+	_ = dataDir
 }
 
-func TestReadDisksWithoutHostBind(t *testing.T) {
-	// No /host bind on an existing install: the candidate paths do not exist
-	// and the section must degrade, not report a made-up 0%.
-	got, err := readDisks(sources{hostRoot: filepath.Join(t.TempDir(), "not-bound")})
-	if err == nil {
-		t.Fatalf("readDisks returned %+v, want an error when nothing resolves", got)
+func TestReportableMount(t *testing.T) {
+	cases := []struct {
+		name string
+		in   mountEntry
+		want bool
+	}{
+		{"block", mountEntry{"/dev/vda1", "/", "ext4"}, true},
+		{"second store", mountEntry{"/dev/vdb1", "/var", "xfs"}, true},
+		{"nfs names its server", mountEntry{"freenas:/export", "/mnt", "nfs4"}, true},
+		{"zfs datasets have no block node", mountEntry{"tank/media", "/media", "zfs"}, true},
+		{"fuse portal is noise", mountEntry{"portal", "/run/doc", "fuse.portal"}, false},
+		{"efi boot partition is noise", mountEntry{"/dev/nvme0n1p1", "/boot/efi", "vfat"}, false},
+		{"overlay is the container's own", mountEntry{"overlay", "/", "overlay"}, false},
+		{"pipe device with no path", mountEntry{"shm", "/dev/shm", "tmpfs"}, false},
+	}
+	for _, tc := range cases {
+		if got := reportableMount(tc.in); got != tc.want {
+			t.Errorf("%s: reportableMount(%+v) = %v, want %v", tc.name, tc.in, got, tc.want)
+		}
+	}
+}
+
+func TestIsSkipFSTypeMatchesFuseVariants(t *testing.T) {
+	if !isSkipFSType("fuse.portal") || !isSkipFSType("fuse.gvfs-fuse-daemon") {
+		t.Error("fuse. variants must skip; they carry no dashboard-relevant data")
+	}
+	if isSkipFSType("ext4") || isSkipFSType("zfs") {
+		t.Error("real data filesystems must not skip")
 	}
 }
 
@@ -308,7 +361,7 @@ func TestSnapshotDegradesWhenHostSourcesMissing(t *testing.T) {
 	}}
 
 	got := c.snapshot()
-	for _, want := range []string{"cpu", "memory", "load", "network", "disk", "temperature"} {
+	for _, want := range []string{"cpu", "memory", "load", "network", "disk", "temperature", "gpu"} {
 		found := false
 		for _, d := range got.Degraded {
 			if d == want {
@@ -347,8 +400,8 @@ func hwmonFan(t *testing.T, dir, chip, file string, rpm int) {
 
 func TestReadFanSpeedPicksTheFastestPlausibleFan(t *testing.T) {
 	dir := t.TempDir()
-	hwmonFan(t, dir, "hwmon1", "fan1_input", 3036) // acpi_fan, the faster of the two real ones
-	hwmonFan(t, dir, "hwmon2", "fan1_input", 0)    // a stopped fan is a real observation, not a dead sensor
+	hwmonFan(t, dir, "hwmon1", "fan1_input", 3036)  // acpi_fan, the faster of the two real ones
+	hwmonFan(t, dir, "hwmon2", "fan1_input", 0)     // a stopped fan is a real observation, not a dead sensor
 	hwmonFan(t, dir, "hwmon3", "fan1_input", 15000) // above the ceiling: an unconnected pin, skipped
 
 	got, err := readFanSpeed(sources{sysRoot: dir})
@@ -476,6 +529,113 @@ func TestReadSensorsIncludesThermalZonesAndKeepsOrder(t *testing.T) {
 func TestReadSensorsNoSensorsIsAnError(t *testing.T) {
 	if _, err := readSensors(sources{sysRoot: t.TempDir()}); err == nil {
 		t.Fatal("expected an error when no chip or zone is readable")
+	}
+}
+
+func TestReadSensorsCarriesChipTripPoints(t *testing.T) {
+	dir := t.TempDir()
+	hwmonFile(t, dir, "hwmon1", "name", "nvme\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_input", "52500\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_crit", "85000\n")
+	hwmonFile(t, dir, "hwmon2", "name", "k10temp\n")
+	// k10temp ships no threshold on many boards, so TripC must stay null there
+	// rather than inherit a neighbour's number.
+	hwmonFile(t, dir, "hwmon2", "temp1_input", "42500\n")
+
+	got, err := readSensors(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readSensors: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("got %+v, want 2 entries", got)
+	}
+	if got[0].Chip != "nvme" || got[0].TripC == nil || *got[0].TripC != 85 {
+		t.Errorf("nvme = %+v, want 52.5°C with the chip's own 85°C trip", got[0])
+	}
+	if got[1].Chip != "k10temp" || got[1].TripC != nil {
+		t.Errorf("k10temp = %+v, want a null trip: no threshold shipped", got[1])
+	}
+}
+
+func TestReadSensorsZoneTripPointsFallOutHottest(t *testing.T) {
+	dir := t.TempDir()
+	zone := filepath.Join(dir, "class", "thermal", "thermal_zone0")
+	if err := os.MkdirAll(zone, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "temp"), []byte("52000\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "type"), []byte("acpitz\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "trip_point_0_temp"), []byte("90000\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(zone, "trip_point_1_temp"), []byte("125000\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+
+	got, err := readSensors(sources{sysRoot: dir})
+	if err != nil {
+		t.Fatalf("readSensors: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("got %+v, want the acpitz entry only", got)
+	}
+	if got[0].TripC == nil || *got[0].TripC != 125 {
+		t.Errorf("zone trip = %v, want 125 (the hottest threshold is the one it races)", got[0].TripC)
+	}
+}
+
+func TestReadGpusKeepsCardsThatExposeReadings(t *testing.T) {
+	dir := t.TempDir()
+	cardDev := filepath.Join(dir, "class", "drm", "card0", "device")
+	// A DRm node the kernel filled in but whose driver exposes none of the
+	// utilization files (i915 looks like this): it must fold out of the list.
+	if err := os.MkdirAll(filepath.Join(dir, "class", "drm", "card7", "device"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(cardDev, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cardDev, "uevent"), []byte("DRIVER=amdgpu\nVERSION=1\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	for item, content := range map[string]string{
+		"gpu_busy_percent":    "0\n",
+		"mem_info_vram_used":  "1673891840",
+		"mem_info_vram_total": "8573157376",
+	} {
+		if err := os.WriteFile(filepath.Join(cardDev, item), []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// The driver's temp rides along from a hwmon chip that names itself amdgpu.
+	hwmonFile(t, dir, "hwmon1", "name", "amdgpu\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_input", "41000\n")
+	hwmonFile(t, dir, "hwmon1", "temp1_crit", "120000\n")
+
+	got := readGpus(sources{sysRoot: dir})
+	if len(got) != 1 {
+		t.Fatalf("got %+v, want only card0 (card7 exposed nothing)", got)
+	}
+	g := got[0]
+	if g.Card != "card0" || g.Driver != "amdgpu" || g.BusyPct == nil || *g.BusyPct != 0 {
+		t.Errorf("gpu = %+v, want card0 amdgpu busy 0 (an idle GPU is a real reading)", g)
+	}
+	if g.VramUsedBytes != 1673891840 || g.VramTotalBytes != 8573157376 {
+		t.Errorf("vram = %d/%d, want the fixture values", g.VramUsedBytes, g.VramTotalBytes)
+	}
+	if g.TempC == nil || math.Abs(*g.TempC-41) > 0.001 || g.TripC == nil || *g.TripC != 120 {
+		t.Errorf("temp = %v/%v, want 41°C against a 120°C trip", g.TempC, g.TripC)
+	}
+}
+
+func TestReadGpusNoSysfsIsNotAnError(t *testing.T) {
+	got := readGpus(sources{sysRoot: t.TempDir()})
+	if len(got) != 0 {
+		t.Errorf("got %+v, want an empty list", got)
 	}
 }
 

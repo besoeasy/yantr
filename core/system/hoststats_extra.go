@@ -3,6 +3,8 @@ package system
 import (
 	"bufio"
 	"os"
+	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -176,4 +178,138 @@ func readNetLink(s sources, iface string) (int, string, string) {
 		operState = strings.TrimSpace(string(raw))
 	}
 	return speed, duplex, operState
+}
+
+// readUintFile parses a plain decimal file ("123456\n") into an unsigned raw
+// value. The boolean, not a pointer, is the contract: a missing file and a
+// real 0 both concern the caller, and each is a different fact.
+func readUintFile(path string) (uint64, bool) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return 0, false
+	}
+	v, err := strconv.ParseUint(strings.TrimSpace(string(raw)), 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return v, true
+}
+
+// readThresholdC parses a hwmon threshold file (tempN_crit / tempN_max /
+// trip_point_N_temp) into Celsius. Thresholds are numbers the BOARD shipped:
+// they must be plausible hardware numbers, but unlike live readings they
+// routinely sit above 100°C (GPU thermal shells settle at 120), so they get a
+// wider window than readCelsius's live band instead of being dropped into it.
+func readThresholdC(path string) (*float64, bool) {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil, false
+	}
+	milli, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+	if err != nil {
+		return nil, false
+	}
+	c := milli / 1000
+	if c <= 0 || c > 250 {
+		return nil, false
+	}
+	return &c, true
+}
+
+// readBusyPct parses the driver-authored utilization file. A real "0" is an
+// honest idle reading (the file is runtime-generated, unlike a static 0), so a
+// parseable zero IS reported; only a missing or garbage file yields nil.
+func readBusyPct(path string) *float64 {
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	v, err := strconv.ParseFloat(strings.TrimSpace(string(raw)), 64)
+	if err != nil || v < 0 || v > 100 {
+		return nil
+	}
+	return &v
+}
+
+// readGpuTemp hunts the driver's hwmon chip for its edge temperature and the
+// trip it throttles at. Two chip layouts exist in the wild: amdgpu hangs an
+// hwmon child off the device itself, and drivers that share the global hwmon
+// tree register under their own name — this checks both, in that order.
+func readGpuTemp(s sources, devDir, driver string) (*float64, *float64) {
+	temps, _ := filepath.Glob(filepath.Join(devDir, "hwmon", "hwmon*", "temp1_input"))
+	if len(temps) == 0 && driver != "" {
+		for _, chipDir := range globSlotPaths(s.sysPath("/class/hwmon"), "hwmon*") {
+			if raw, err := os.ReadFile(filepath.Join(chipDir, "name")); err == nil &&
+				strings.TrimSpace(string(raw)) == driver {
+				temps, _ = filepath.Glob(filepath.Join(chipDir, "temp1_input"))
+				break
+			}
+		}
+	}
+	if len(temps) == 0 {
+		return nil, nil
+	}
+	dir := filepath.Dir(temps[0])
+	temp, _ := readCelsius(temps[0])
+	var trip *float64
+	if t, ok := readThresholdC(filepath.Join(dir, "temp1_crit")); ok {
+		trip = t
+	} else if t, ok := readThresholdC(filepath.Join(dir, "temp1_max")); ok {
+		trip = t
+	}
+	return temp, trip
+}
+
+// maxReportedGpus bounds the payload: a workstation with five GPUs of which
+// one matters to a homelab dashboard should not write a page of JSON per tick.
+const maxReportedGpus = 2
+
+// readGpus enumerates the DRM cards and keeps the ones whose driver exposes
+// utilization or VRAM files. Intel's i915 and the proprietary NVIDIA driver
+// expose none of these sysfs files rootless, and those cards fold out of the
+// list — an empty list is "the kernel exposes nothing", which the widget
+// renders as a quiet not-exposed state rather than an error.
+func readGpus(s sources) []GpuStats {
+	out := []GpuStats{}
+	cards, _ := filepath.Glob(s.sysPath("/class/drm/card[0-9]*"))
+	sort.Strings(cards)
+	for _, cardDir := range cards {
+		devDir := filepath.Join(cardDir, "device")
+		driver := ""
+		if raw, err := os.ReadFile(filepath.Join(devDir, "uevent")); err == nil {
+			for _, line := range strings.Split(string(raw), "\n") {
+				if !strings.HasPrefix(line, "DRIVER=") {
+					continue
+				}
+				if v := strings.TrimSpace(line[len("DRIVER="):]); v != "" && v != "unknown" {
+					driver = v
+				}
+			}
+		}
+		busy := readBusyPct(filepath.Join(devDir, "gpu_busy_percent"))
+		vramUsed, _ := readUintFile(filepath.Join(devDir, "mem_info_vram_used"))
+		vramTotal, _ := readUintFile(filepath.Join(devDir, "mem_info_vram_total"))
+
+		// A card that exposes no readings at all contributes nothing to the
+		// card — but a card that exposes SOME (vram with no busy on a variant
+		// kernel) is still worth listing, with a null busy the UI renders as
+		// an em-dash.
+		if busy == nil && vramUsed == 0 && vramTotal == 0 && driver == "" {
+			continue
+		}
+		tempC, tripC := readGpuTemp(s, devDir, driver)
+		out = append(out, GpuStats{
+			Card:           filepath.Base(cardDir),
+			Driver:         driver,
+			BusyPct:        busy,
+			VramUsedBytes:  vramUsed,
+			VramTotalBytes: vramTotal,
+			TempC:          tempC,
+			TripC:          tripC,
+		})
+		if len(out) == maxReportedGpus {
+			break
+		}
+	}
+	return out
 }
