@@ -1,9 +1,8 @@
 <script>
 // Two columns: the host identity and its counters in one readable column, the
 // way a machine's spec sheet reads — header row, identity, workload facts,
-// then the versioned details. The full-row band had room to sit side by side;
-// at half the row the same data reads better stacked, which is why this is a
-// redesign rather than a resize.
+// then the versioned details. Absorbed the Hardware card (CPU model, board)
+// so the OS headline, kernel line and core count render exactly once.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -24,6 +23,8 @@ const {
   totalVolumes,
   osInfo,
   coreCount,
+  cpuModel,
+  board,
   loadText,
   uptimeText,
 } = useHostMetrics();
@@ -59,10 +60,22 @@ const workloadStats = computed(() => [
   { key: "stopped", label: t("home.overviewPulseCard.stopped"), value: stoppedCount.value, muted: true },
 ]);
 
+// The board as one spec line — "ASUSTeK · ProArt X670E". Product and board
+// name are near-duplicates on most boards, so the row prefers the product and
+// falls back to the board string only when there is no product slot.
+const boardText = computed(() => {
+  const b = board.value || {};
+  const parts = [b.vendor, b.product || b.board].filter(Boolean);
+  return parts.length ? parts.join(" · ") : null;
+});
+
 // The spec rows: label in small caps, value in tabular or mono — a spec
-// sheet, not a card. Uptime and load render only when the metrics poll has
-// real numbers; undefined values would print "undefined", which is worse than
-// a shorter list.
+// sheet, not a card. This sheet is the dashboard's single identity home since
+// the Hardware card folded into it; CPU model and the board line live here
+// now. Uptime and load render only when the metrics poll has real numbers;
+// undefined values would print "undefined", which is worse than a shorter
+// list. (Load kept here for now; the Performance card and this row are the
+// remaining duplication to settle.)
 const factRows = computed(() => [
   {
     key: "processors",
@@ -70,6 +83,12 @@ const factRows = computed(() => [
     value: `${displayCores.value} ${t("quickMetrics.hostMetrics.cores")}`,
     mono: false,
   },
+  ...(cpuModel.value
+    ? [{ key: "cpu", label: t("quickMetrics.hostMetrics.cpu"), value: cpuModel.value, mono: false }]
+    : []),
+  ...(boardText.value
+    ? [{ key: "board", label: t("quickMetrics.hostMetrics.boardName"), value: boardText.value, mono: false }]
+    : []),
   {
     key: "podman",
     label: t("quickMetrics.hostMetrics.podman"),
