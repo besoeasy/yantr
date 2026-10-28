@@ -2132,6 +2132,16 @@ to{opacity:1;transform:translateY(0);}
 to{opacity:0;transform:scale(2);}
 }
 
+/* ─── Fluid sizing utilities ─────────────────────────────────────────────────
+   For media that scales with its container instead of owning a fixed box.
+   The QR plate in the Donate card is the consumer: the SVG is live (a real
+   viewBox), so h-auto lets the browser keep its intrinsic ratio while w-full
+   tracks the column, and max-w-44 caps it where a phone camera still scans
+   comfortably. */
+.h-auto{height:auto;}
+.aspect-square{aspect-ratio:1/1;}
+.max-w-44{max-width:11rem;}
+
 /* ─── Accessibility utilities ────────────────────────────────────────────────
    There is no Tailwind runtime: main.css is a hand-curated set of only the
    utility classes this SPA actually uses, so a utility has to exist here to be

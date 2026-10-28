@@ -79,14 +79,16 @@ async function copyAddress() {
       </h3>
     </div>
 
-    <!-- QR plate -->
+    <!-- QR plate: fluid — the SVG is live, so it tracks the column width and
+         scales with whatever the grid grants, capped at phone-scan size
+         instead of owning a fixed 116px box. -->
     <div class="mt-5 flex flex-1 items-center justify-center">
-      <div v-if="btcLoading" class="h-32 w-32 animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-800"></div>
-      <div v-else-if="btcError" class="flex h-32 w-32 items-center justify-center rounded-xl border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20">
+      <div v-if="btcLoading" class="aspect-square w-full max-w-44 animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-800"></div>
+      <div v-else-if="btcError" class="flex aspect-square w-full max-w-44 items-center justify-center rounded-xl border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20">
         <AlertCircle class="h-5 w-5 text-red-500" />
       </div>
-      <div v-else class="rounded-xl bg-white p-2 dark:bg-white">
-        <NostrQrCode :value="`bitcoin:${btcAddress}`" :size="116" :label="btcAddress" />
+      <div v-else class="w-full max-w-44 rounded-xl bg-white p-2 dark:bg-white">
+        <NostrQrCode :value="`bitcoin:${btcAddress}`" :size="116" :label="btcAddress" class="h-auto w-full" />
       </div>
     </div>
 
