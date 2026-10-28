@@ -544,14 +544,6 @@
     "pin": "Цифровой PIN",
     "pinConfirm": "Подтвердите PIN"
   },
-  "discordCard": {
-    "label": "Сообщество",
-    "subtitle": "Discord",
-    "title": "Спрашивай. Делись. Создавай вместе.",
-    "description": "Присоединяйся к Discord Yantr: запросы приложений, помощь с развёртыванием и советы от людей, которые запускают Yantr на реальном железе.",
-    "cta": "Вступить в Discord",
-    "footer": "Открыто сейчас"
-  },
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Репозиторий",

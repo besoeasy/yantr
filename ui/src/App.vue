@@ -47,13 +47,10 @@ const brandIcon = (path, extra) => (props) => {
 
 const GithubIcon = brandIcon(GITHUB_PATH, { "fill-rule": "evenodd", "clip-rule": "evenodd" });
 
-// GitHub only, and that asymmetry is the point. GitHub is the project's source,
-// its licence and its issue tracker: it belongs beside the app's own controls
-// because it is part of what this thing is. Discord is a link to a different
-// application, and the Home dashboard's Discord card is its discovery path —
-// which is the right place for it. This cluster is where a user looks for
-// app-level controls, and every off-product destination dilutes the ones next
-// to it.
+// GitHub, and only GitHub. It is the project's source, its licence and its
+// issue tracker: it belongs beside the app's own controls because it is part
+// of what this thing is. This cluster is where a user looks for app-level
+// controls, and every off-product destination dilutes the ones next to it.
 //
 // Both names are proper nouns, identical in every locale, so they are not
 // routed through i18n — unlike the nav labels, which now are. Same reasoning as

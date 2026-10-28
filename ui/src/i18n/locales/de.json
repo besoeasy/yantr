@@ -544,14 +544,6 @@
     "pin": "Numerische PIN",
     "pinConfirm": "PIN bestätigen"
   },
-  "discordCard": {
-    "label": "Community",
-    "subtitle": "Discord",
-    "title": "Fragen. Teilen. Gemeinsam umsetzen.",
-    "description": "Tritt dem Yantr-Discord bei — App-Wünsche, Fehlersuche bei Deployments und Setup-Hilfe von Leuten, die Yantr auf echter Hardware betreiben.",
-    "cta": "Discord beitreten",
-    "footer": "Jetzt offen"
-  },
   "githubCard": {
     "label": "GitHub",
     "subtitle": "Repository",

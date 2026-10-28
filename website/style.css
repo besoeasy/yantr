@@ -42,10 +42,6 @@
   --blue-100: #dbeafe;
   --blue-600: #2563eb;
 
-  /* Discord brand (blurple) */
-  --discord-blurple: #5865f2;
-  --discord-blurple-hover: #4752c4;
-
   /* Border radii */
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -233,17 +229,6 @@ code, pre { font-family: var(--font-mono); }
   box-shadow: var(--shadow-xl);
   transform: translateY(-2px);
 }
-.btn-discord {
-  background: var(--discord-blurple);
-  color: var(--white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-.btn-discord:hover {
-  background: var(--discord-blurple-hover);
-  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-  transform: translateY(-1px);
-}
-
 /* ── Hero ───────────────────────────────────────────── */
 .hero {
   min-height: clamp(650px, calc(100vh - 2rem), 900px);
@@ -1211,18 +1196,6 @@ p code, li code, td code, .spec-sub code {
   transform: translateY(-2px);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
 }
-/* The dark community section overrides .btn to white, so the Discord CTA
-   needs its blurple restored at equal-or-higher specificity. */
-.contrib-cta .btn-discord {
-  background: var(--discord-blurple);
-  color: var(--white);
-  box-shadow: 0 12px 32px rgba(88, 101, 242, 0.35);
-}
-.contrib-cta .btn-discord:hover {
-  background: var(--discord-blurple-hover);
-  box-shadow: 0 16px 40px rgba(88, 101, 242, 0.5);
-}
-
 /* ── System Requirements ───────────────────────────── */
 .ram-panel {
   margin-bottom: 3.5rem;

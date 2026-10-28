@@ -544,14 +544,6 @@
     "pin": "数字 PIN",
     "pinConfirm": "确认 PIN"
   },
-  "discordCard": {
-    "label": "社区",
-    "subtitle": "Discord",
-    "title": "提问 · 分享 · 共同创造",
-    "description": "加入 Yantr Discord，提出应用需求、排查部署问题，并向在真实硬件上运行 Yantr 的用户寻求帮助。",
-    "cta": "加入 Discord",
-    "footer": "现已开放"
-  },
   "githubCard": {
     "label": "GitHub",
     "subtitle": "仓库",

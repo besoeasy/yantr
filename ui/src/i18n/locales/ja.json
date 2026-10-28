@@ -544,14 +544,6 @@
     "pin": "数字PIN",
     "pinConfirm": "PINの確認"
   },
-  "discordCard": {
-    "label": "コミュニティ",
-    "subtitle": "Discord",
-    "title": "質問。共有。共に作成。",
-    "description": "Yantr の Discord に参加して、アプリの要望、デプロイのトラブルシューティング、実際のマシンで運用している人からのサポートを受けましょう。",
-    "cta": "Discord に参加",
-    "footer": "今すぐ参加可能"
-  },
   "githubCard": {
     "label": "GitHub",
     "subtitle": "リポジトリ",
