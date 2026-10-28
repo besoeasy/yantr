@@ -1,8 +1,8 @@
 <script>
-// Dashboard engine: one column — the traffic, its trend and the health of
-// every link on the box share one tile, because "how fast is the data moving"
-// and "is the link negotiating down" answer each other. Merged with the
-// former HostLinkStatusCard; see Home.vue for how meta.cols is consumed.
+// Dashboard engine: one column — traffic only. Rates, their trend, and what
+// every link is moving. Whether a link is up or negotiated slow is the Link
+// Status card's question; mixing the two into one tile made a headline that
+// explained nothing. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
@@ -20,8 +20,6 @@ const {
   isDegraded,
   primaryNet,
   netInterfaces,
-  primaryNetSpeed,
-  primaryNetState,
   netText,
   netHistory,
 } = useHostMetrics();
@@ -42,56 +40,19 @@ const sparkLabel = computed(() => t("quickMetrics.hostMetrics.netHistory"));
 const rxText = computed(() => netText.value?.split("·")[0]?.trim() || "—");
 const txText = computed(() => netText.value?.split("·")[1]?.trim() || "—");
 
-// The link the headline rides on: negotiated speed and state are the why
-// behind the rx number — a gigabit link sitting at 100 Mbps explains a slow
-// dashboard better than any retry log would. Muted, not rose, for the states
-// that are merely unknown: the card should not cry danger over a question.
-const linkBadge = computed(() => {
-  if (!primaryNet.value) return null;
-  const state = primaryNetState.value;
-  return {
-    iface: primaryNet.value.iface,
-    speed: primaryNetSpeed.value !== null ? `${primaryNetSpeed.value} Mbps` : "—",
-    state: state || "—",
-    stateClass:
-      state === "up"
-        ? "text-emerald-600 dark:text-emerald-400"
-        : state === "down"
-          ? "text-rose-600 dark:text-rose-400"
-          : "yantra-text-secondary",
-    dotColor:
-      state === "up"
-        ? "var(--color-emerald-500)"
-        : state === "down"
-          ? "var(--color-rose-500)"
-          : "var(--color-zinc-500)",
-  };
-});
-
 // Everything except the headline interface: tunnels and bridges have a story
-// (state changes, unexpected flows) but no reason to claim the headline.
+// (unexpected flows) but no reason to claim the headline. Each row keeps the
+// rate only — link state and speed live on the Link Status card.
 const secondaryNets = computed(() => {
   const primary = primaryNet.value?.iface;
   return netInterfaces.value.filter((iface) => iface.iface !== primary);
 });
-
-function speedLabel(iface) {
-  return iface.speedMbps ? `${iface.speedMbps} Mbps` : "—";
-}
-
-function stateColor(state) {
-  return state === "up"
-    ? "var(--color-emerald-500)"
-    : state === "down"
-      ? "var(--color-rose-500)"
-      : "var(--color-zinc-500)";
-}
 </script>
 
 <template>
   <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
-    <!-- Header, with the link state riding as a badge on the right. -->
-    <div class="flex items-start justify-between gap-3">
+    <!-- Header -->
+    <div class="flex items-start justify-between">
       <div class="flex items-center gap-4">
         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-sky-200 bg-sky-50 transition-transform duration-200 group-hover:scale-105 dark:border-sky-900/50 dark:bg-sky-900/20">
           <Network class="h-5 w-5 text-sky-600 dark:text-sky-400" />
@@ -108,19 +69,6 @@ function stateColor(state) {
             <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-600 dark:text-emerald-500">{{ t("quickMetrics.hostMetrics.live") }}</span>
           </div>
         </div>
-      </div>
-
-      <!-- The negotiated link: iface · speed · state. min-w-0 keeps a long
-           name from shoving the title out of the row. -->
-      <div
-        v-if="linkBadge && !isDegraded('network')"
-        class="flex min-w-0 items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-1 dark:bg-zinc-900/50"
-      >
-        <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: linkBadge.dotColor }"></span>
-        <span class="min-w-0 truncate text-[9px] font-bold tracking-tight yantra-text-primary">{{ linkBadge.iface }}</span>
-        <span class="shrink-0 text-[9px] font-bold tabular-nums" :class="linkBadge.stateClass">
-          {{ linkBadge.speed }} · {{ linkBadge.state }}
-        </span>
       </div>
     </div>
 
@@ -149,6 +97,12 @@ function stateColor(state) {
           </span>
         </div>
 
+        <!-- Which link this traffic is on: identity, not health — the state
+             of this same link is the Link Status card's fact. -->
+        <div class="mb-3 truncate text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary">
+          {{ primaryNet?.iface ?? "" }}
+        </div>
+
         <!-- 4-minute trend of the busiest interface, rx+tx combined. Sky stays
              this card's own accent so the four host tiles read as four tones —
              line classes and gradient stops already exist in main.css for it. -->
@@ -167,8 +121,10 @@ function stateColor(state) {
           </span>
         </div>
 
-        <!-- The rest of the box's links: a dot for state, the negotiated
-             speed, and what is actually flowing on it. -->
+        <!-- The rest of the box's links: what is actually flowing on each.
+             No state dots, no speeds — those are link facts, on the Link
+             Status card, where a slow negotiation is diagnosable instead of
+             decoration. -->
         <div v-if="secondaryNets.length > 0" class="mt-4 border-t border-zinc-200 pt-3 dark:border-zinc-800">
           <div class="mb-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
             {{ t("quickMetrics.hostMetrics.netOther") }}
@@ -179,9 +135,7 @@ function stateColor(state) {
               :key="iface.iface"
               class="flex items-center gap-2 rounded-xl bg-zinc-50 p-2 dark:bg-zinc-900/50"
             >
-              <span class="h-1.5 w-1.5 shrink-0 rounded-full" :style="{ backgroundColor: stateColor(iface.operState) }"></span>
               <span class="min-w-0 truncate text-[11px] font-bold tracking-tight yantra-text-primary">{{ iface.iface }}</span>
-              <span class="shrink-0 text-[9px] font-semibold yantra-text-secondary">{{ speedLabel(iface) }}</span>
               <span class="ml-auto flex shrink-0 items-center gap-2 text-[9px] font-semibold yantra-text-secondary">
                 <span class="flex items-center gap-1"><ArrowDown class="h-3 w-3 shrink-0 text-sky-500" />{{ formatBitRate(iface.rxBps) }}</span>
                 <span class="flex items-center gap-1"><ArrowUp class="h-3 w-3 shrink-0 text-violet-500" />{{ formatBitRate(iface.txBps) }}</span>
