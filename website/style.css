@@ -231,14 +231,13 @@ code, pre { font-family: var(--font-mono); }
 }
 /* ── Hero ───────────────────────────────────────────── */
 .hero {
-  min-height: clamp(650px, calc(100vh - 2rem), 900px);
   margin-bottom: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   z-index: 10;
-  padding: 4rem 0 3rem;
+  padding: 5rem 0 4.5rem;
   overflow: clip;
   contain: paint;
 }
@@ -446,13 +445,14 @@ code, pre { font-family: var(--font-mono); }
 }
 .hero-binary {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 0.3rem 0.5rem;
-  width: min(56rem, 92%);
-  margin: 2.4rem auto 0;
+  gap: 0 0.15rem;
+  overflow: hidden;
+  width: min(52rem, 92%);
+  margin: 2rem auto 0;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--gray-300);
   user-select: none;
 }
