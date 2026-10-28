@@ -1,8 +1,9 @@
 <script>
-// Dashboard engine: two columns. Bitcoin donation and the GitHub Sponsors ask
-// share one card (Donate … or … Sponsor), so the two ways to support Yantr
-// stay together instead of being shuffled apart in the daily grid.
-export const meta = { cols: 2 };
+// Dashboard engine: one column. The support ask is one concern read top to
+// bottom — QR, address, wallet, then the sponsor button — and nothing in it
+// wanted to sit beside anything else. Keeping it to one column also keeps the
+// two ways to support Yantr on the same tile in the daily grid shuffle.
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { ref, onMounted, computed } from "vue";
@@ -67,13 +68,13 @@ async function copyAddress() {
 </script>
 
 <template>
-  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-center transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)] sm:border sm:border-zinc-200 dark:sm:border-zinc-800">
+  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-center transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)]">
     <!-- Header -->
     <div class="flex w-full items-center justify-center gap-3">
       <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
         <Bitcoin class="h-5 w-5 text-amber-600 dark:text-amber-400" />
       </div>
-      <h3 class="text-2xl font-black leading-none tracking-tight yantra-text-primary">
+      <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary">
         Donate
       </h3>
     </div>

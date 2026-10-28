@@ -1,8 +1,9 @@
 <script>
-// Dashboard engine: two of the desktop grid's four columns — the tunnel
-// status keeps its reading on the left while the token form earns a column
-// rather than a squeezed stack. See Home.vue for how meta.cols is consumed.
-export const meta = { cols: 2 };
+// Dashboard engine: one column. The tunnel is one concern — status when it
+// exists, token entry when it does not — and neither half needs a second
+// column to breathe: the reading, the ops facts and the form stack. See
+// Home.vue for how meta.cols is consumed.
+export const meta = { cols: 1 };
 </script>
 <script setup>
 import { ref, computed } from "vue";
@@ -128,46 +129,36 @@ async function deploy() {
       </transition>
 
       <!-- Header -->
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-4">
-          <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
-            <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
-            <div class="mt-2 flex items-center gap-1.5">
-              <span class="text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</span>
-            </div>
-          </div>
+      <div class="flex items-start gap-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+          <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
-        <div class="flex items-center gap-2 rounded-full bg-zinc-50 px-3 py-1.5 dark:border-zinc-800 dark:bg-zinc-900/50">
-           <div class="relative h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500"></div>
-           <span class="text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t('cloudflaredCard.notInstalled') }}</span>
+        <div>
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
+          <div class="mt-2 flex items-center gap-1.5">
+            <div class="relative h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500"></div>
+            <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('cloudflaredCard.notInstalled') }}</span>
+          </div>
         </div>
       </div>
 
-      <!-- Half-width content: context and token entry get their own columns. -->
-      <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
-        <div>
-          <div class="mb-2 text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px] yantra-text-primary">
-            {{ t('cloudflaredCard.secureTunnel') }}
-          </div>
-          <div class="text-xs font-medium leading-relaxed yantra-text-secondary">
-            {{ t('cloudflaredCard.description') }}
-          </div>
+      <!-- Narrow stack: context, token link, token entry and the deploy
+           button each get the full width, top to bottom. -->
+      <div class="relative z-10 mt-auto flex flex-col gap-4 pt-6">
+        <p class="text-xs font-medium leading-relaxed yantra-text-secondary">
+          {{ t('cloudflaredCard.description') }}
+        </p>
 
-          <a
-            href="https://one.dash.cloudflare.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group/link mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-zinc-50 yantra-text-secondary transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
-          >
-            <Key class="h-3.5 w-3.5" />
-            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
-            <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover/link:translate-x-0.5" />
-          </a>
-        </div>
+        <a
+          href="https://one.dash.cloudflare.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="group/link flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-zinc-50 yantra-text-secondary transition-[border-color,box-shadow,transform] duration-200 hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-800 dark:hover:text-white"
+        >
+          <Key class="h-3.5 w-3.5" />
+          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('cloudflaredCard.getToken') }}</span>
+          <ArrowRight class="h-3.5 w-3.5 opacity-60 transition-transform duration-200 group-hover/link:translate-x-0.5" />
+        </a>
 
         <div>
           <div class="relative">
@@ -233,63 +224,46 @@ async function deploy() {
     <!-- Status state: cloudflared container exists -->
     <div v-else class="relative z-10 flex h-full flex-col gap-4">
       <!-- Header -->
-      <div class="flex items-start justify-between">
-        <div class="flex items-center gap-4">
-          <!-- Minimal Icon Block -->
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
-            <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
-            <p class="mt-2 text-[10px] font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-500">{{ t('cloudflaredCard.secureTunnel') }}</p>
-          </div>
+      <div class="flex items-start gap-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-violet-200 bg-violet-50 transition-transform duration-200 group-hover:scale-105 dark:border-violet-900/50 dark:bg-violet-900/20">
+          <Cloud class="h-5 w-5 text-violet-600 dark:text-violet-400" />
         </div>
-        
-        <!-- Status Pill -->
-        <div class="flex items-center gap-2 rounded-full px-3 py-1.5 transition-colors duration-200" :class="isRunning ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900/30 dark:bg-emerald-900/20' : 'border-red-200 bg-red-50 dark:border-red-900/30 dark:bg-red-900/20'">
-           <div class="relative h-2 w-2 rounded-full">
+        <div>
+          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">{{ t('cloudflaredCard.title') }}</h3>
+          <!-- Status pill rides under the title, the way the narrow cards'
+               live badge does — a right-hand pill has no room here. -->
+          <div class="mt-2 flex items-center gap-1.5">
+            <div class="relative h-2 w-2">
               <div class="absolute inset-0 rounded-full animate-ping opacity-75" :class="isRunning ? 'bg-emerald-400' : 'bg-red-400'"></div>
               <div class="relative h-full w-full rounded-full" :class="isRunning ? 'bg-emerald-500' : 'bg-red-500'"></div>
-           </div>
-           <span class="text-[9px] font-bold uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'">
-             {{ isRunning ? t('cloudflaredCard.online') : t('cloudflaredCard.offline') }}
-           </span>
+            </div>
+            <span class="text-[10px] font-semibold uppercase tracking-widest" :class="isRunning ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-700 dark:text-red-400'">
+              {{ isRunning ? t('cloudflaredCard.online') : t('cloudflaredCard.offline') }}
+            </span>
+          </div>
         </div>
       </div>
 
-      <!-- Half-width body: the reading stays left, the ops facts stack right. -->
-      <div class="relative z-10 mt-auto grid gap-5 pt-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,15rem)] sm:items-start">
+      <!-- Narrow stack: the uptime is the headline reading; the version and
+           connection state follow as rows. -->
+      <div class="relative z-10 mt-auto flex flex-col gap-3 pt-6">
         <div>
-          <div class="mb-1 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-            {{ t('cloudflaredCard.connectionStatus') }}
+          <div class="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
+            <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
+            <CloudOff v-else class="h-3.5 w-3.5 text-red-500" />
+            {{ isRunning ? t('cloudflaredCard.uptime') : t('cloudflaredCard.status') }}
           </div>
-          <div class="text-4xl font-black tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px] yantra-text-primary">
-            {{ t('cloudflaredCard.secureTunnel') }}
+          <div class="tabular-nums text-4xl font-black leading-[1.1] tracking-tighter yantra-text-primary transition-transform duration-200 group-hover:-translate-y-[3px]">
+            {{ isRunning ? formatUptime(uptimeMs) : t('cloudflaredCard.offline') }}
           </div>
         </div>
 
-        <!-- Ops facts: uptime and image version share one column, stacked. -->
-        <div class="flex flex-col gap-2">
-          <div class="flex flex-col gap-1.5 rounded-xl bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
-            <div class="flex items-center gap-2 yantra-text-secondary">
-              <Cloud v-if="isRunning" class="h-3.5 w-3.5 text-emerald-500" />
-              <CloudOff v-else class="h-3.5 w-3.5 text-red-500" />
-              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ isRunning ? t('cloudflaredCard.uptime') : t('cloudflaredCard.status') }}</span>
-            </div>
-            <div class="tabular-nums text-sm font-black tracking-tight yantra-text-primary">
-               {{ isRunning ? formatUptime(uptimeMs) : t('cloudflaredCard.offline') }}
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-1.5 rounded-xl bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
-            <div class="flex items-center gap-2 yantra-text-secondary">
-              <Globe class="h-3.5 w-3.5" />
-              <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('cloudflaredCard.version') }}</span>
-            </div>
-            <div class="truncate font-mono text-sm font-black tracking-tight yantra-text-primary">
-               {{ imageVersion }}
-            </div>
-          </div>
+        <div class="flex items-center gap-2 rounded-xl bg-zinc-50 p-3.5 transition-colors duration-200 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:bg-zinc-900">
+          <Globe class="h-3.5 w-3.5 shrink-0 yantra-text-secondary" />
+          <span class="text-[9px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('cloudflaredCard.version') }}</span>
+          <span class="ml-auto truncate font-mono text-sm font-black tracking-tight yantra-text-primary">
+            {{ imageVersion }}
+          </span>
         </div>
       </div>
     </div>
