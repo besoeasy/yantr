@@ -704,7 +704,13 @@
     "label": "Sponsor",
     "title": "Fund Yantr. Keep it free forever.",
     "description": "Support Yantr on GitHub Sponsors — keeps the project free and gives you direct influence over its direction.",
-    "cta": "Sponsor on GitHub"
+    "cta": "Sponsor on GitHub",
+    "btcTitle": "Bitcoin",
+    "btcHeading": "Donate in Bitcoin",
+    "btcDescription": "Send sats to the address below. Every contribution keeps Yantr free and independent.",
+    "btcLoading": "Loading address…",
+    "btcCopy": "Copy address",
+    "btcCta": "Open in wallet"
   },
   "authGate": {
     "bootingTitle": "Preparing",
