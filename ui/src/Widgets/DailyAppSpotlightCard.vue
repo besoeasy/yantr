@@ -124,7 +124,7 @@ function handleSelect(appId) {
       @click="handleSelect(dailyApp.id)"
       class="group/app mt-5 flex flex-1 flex-col items-center text-center"
     >
-      <div class="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
+      <div class="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-zinc-50 transition-transform duration-200 group-hover/app:scale-105 dark:border-zinc-800 dark:bg-zinc-900/50">
         <AppLogo
           :logo="dailyApp?.logo"
           :name="dailyApp?.name"
