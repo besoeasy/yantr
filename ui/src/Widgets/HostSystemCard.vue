@@ -25,7 +25,6 @@ const {
   coreCount,
   cpuModel,
   board,
-  loadText,
   uptimeText,
 } = useHostMetrics();
 
@@ -72,10 +71,11 @@ const boardText = computed(() => {
 // The spec rows: label in small caps, value in tabular or mono — a spec
 // sheet, not a card. This sheet is the dashboard's single identity home since
 // the Hardware card folded into it; CPU model and the board line live here
-// now. Uptime and load render only when the metrics poll has real numbers;
-// undefined values would print "undefined", which is worse than a shorter
-// list. (Load kept here for now; the Performance card and this row are the
-// remaining duplication to settle.)
+// now. Load was dropped from this sheet — the Performance card renders it
+// beside the CPU number it qualifies, which is where the fact is answered;
+// duplicating it here read as filler. Uptime renders only when the metrics
+// poll has real numbers; undefined values would print "undefined", which is
+// worse than a shorter list.
 const factRows = computed(() => [
   {
     key: "processors",
@@ -97,9 +97,6 @@ const factRows = computed(() => [
   },
   ...(uptimeText.value
     ? [{ key: "uptime", label: t("quickMetrics.hostMetrics.uptime"), value: uptimeText.value, mono: true }]
-    : []),
-  ...(loadText.value
-    ? [{ key: "load", label: t("quickMetrics.hostMetrics.load"), value: loadText.value, mono: true }]
     : []),
 ]);
 </script>

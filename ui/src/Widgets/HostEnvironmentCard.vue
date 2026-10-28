@@ -1,15 +1,15 @@
 <script>
-// Dashboard engine: one column — temperature as the live headline with
-// uptime and fan speed as rows beneath it. Uptime barely moves and fan speed
-// is one short number each; widening the card would only stretch strings.
-// Split out of HostPerformanceCard, where all three were cramped tiles. See
-// Home.vue for how meta.cols is consumed.
+// Dashboard engine: one column — temperature as the live headline, fan speed
+// and paired sensor rows beneath it. Uptime used to ride along as a row; it
+// was dropped because the Host System spec sheet already renders it, and a
+// barely-moving number does not need two homes. Widening the card would only
+// stretch strings. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Timer, Thermometer, Fan } from "@lucide/vue";
+import { Thermometer, Fan } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
 const { t } = useI18n();
@@ -17,7 +17,6 @@ const { t } = useI18n();
 const {
   metricsStale,
   isDegraded,
-  uptimeText,
   tempText,
   fanText,
   sensors,
@@ -82,15 +81,6 @@ const headline = computed(() => (isDegraded("temperature") ? unavailable : (temp
         <span class="text-4xl font-black tabular-nums leading-[1.1] tracking-tighter yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary sm:text-5xl">
           {{ headline }}
         </span>
-      </div>
-
-      <!-- Uptime: the slow counter, a row rather than a second headline. -->
-      <div class="mb-2 flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-        <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
-          <Timer class="h-3 w-3 shrink-0 text-slate-500" />
-          {{ t("quickMetrics.hostMetrics.uptime") }}
-        </span>
-        <span class="text-sm font-black tracking-tight yantra-text-primary">{{ uptimeText ?? "—" }}</span>
       </div>
 
       <!-- Fans: the physical response to the temperature above. A card that
