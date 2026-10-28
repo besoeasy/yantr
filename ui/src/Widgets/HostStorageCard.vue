@@ -12,7 +12,7 @@ export const meta = { cols: 1 };
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { HardDrive, ArrowDownUp, ArrowDown, ArrowUp } from "@lucide/vue";
+import { HardDrive, ArrowDownUp, ArrowDown, ArrowUp, Gauge } from "@lucide/vue";
 import Sparkline from "../components/Sparkline.vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 
@@ -36,6 +36,14 @@ const unavailable = computed(() => t("quickMetrics.hostMetrics.unavailable"));
 // old hardcoded candidate list could only ever see "/" plus four conventional
 // paths, so a dedicated data disk wore invisibility as its failure mode.
 const otherDisks = computed(() => disks.value.slice(1));
+
+// Device saturation: share of the last window the disk spent busy. Zero for
+// the first tick (no baseline yet), and 90%+ is the full-pipe state worth a
+// rose tint — the byte rows above cannot distinguish that from a quiet disk.
+const utilPct = computed(() => {
+  const util = primaryDiskIO.value?.utilPct;
+  return Number.isFinite(util) ? util : 0;
+});
 
 // Split the combined "read · write" string so each direction gets its own
 // arrow and colour — the same split the network card makes on rx · tx, and
@@ -149,6 +157,32 @@ const sparkLabel = computed(() => t("quickMetrics.hostMetrics.diskIOHistory"));
             </span>
             <span class="truncate text-sm font-black tabular-nums tracking-tight yantra-text-primary">
               {{ isDegraded("diskio") ? unavailable : writeText }}
+            </span>
+          </div>
+
+          <!-- Saturation: the share of the window the device was busy. The
+               honest full-pipe signal — 30 MB/s of small random IOPS saturates
+               a spinning disk while it barely registers on this card's byte
+               rows. First tick reads 0 (no window yet), like every rate. -->
+          <div class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
+            <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+              <Gauge class="h-3 w-3 shrink-0 text-amber-500" />
+              {{ t("quickMetrics.hostMetrics.diskUtil") }}
+            </span>
+            <span class="flex items-center gap-2">
+              <span class="h-1 w-14 shrink-0 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+                <span
+                  class="block h-full rounded-full transition-[width] duration-200"
+                  :class="utilPct >= 90 ? 'bg-rose-500' : 'bg-emerald-500'"
+                  :style="{ width: `${utilPct}%` }"
+                ></span>
+              </span>
+              <span
+                class="w-10 shrink-0 text-right text-sm font-black tabular-nums tracking-tight"
+                :class="utilPct >= 90 ? 'text-rose-600 dark:text-rose-400' : 'yantra-text-primary'"
+              >
+                {{ Math.round(utilPct) }}%
+              </span>
             </span>
           </div>
         </div>

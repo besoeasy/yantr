@@ -1571,6 +1571,7 @@ input:where([type=button],[type=reset],[type=submit]){-webkit-appearance:button;
 .dark\:text-sky-400:is(.dark *){color:var(--color-sky-400);}
 .dark\:text-sky-500:is(.dark *){color:var(--color-sky-500);}
 .dark\:text-slate-900:is(.dark *){color:var(--color-slate-900);}
+.dark\:text-slate-400:is(.dark *){color:var(--color-slate-400);}
 .dark\:text-violet-400:is(.dark *){color:var(--color-violet-400);}
 .dark\:text-violet-500:is(.dark *){color:var(--color-violet-500);}
 .dark\:text-white:is(.dark *){color:var(--color-white);}
@@ -1675,6 +1676,8 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .dark\:border-rose-900\/40:is(.dark *){border-color:color-mix(in oklab,var(--color-rose-900) 40%,transparent);}
 .dark\:border-rose-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-rose-900) 50%,transparent);}
 .dark\:border-indigo-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-indigo-900) 50%,transparent);}
+.dark\:border-green-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-green-900) 50%,transparent);}
+.dark\:border-slate-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-slate-900) 50%,transparent);}
 .dark\:border-sky-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-sky-900) 50%,transparent);}
 .dark\:border-violet-900\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-violet-900) 50%,transparent);}
 .dark\:border-zinc-800\/50:is(.dark *){border-color:color-mix(in oklab,var(--color-zinc-800) 50%,transparent);}
@@ -1695,6 +1698,8 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .dark\:bg-emerald-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-emerald-900) 20%,transparent);}
 .dark\:bg-emerald-900\/60:is(.dark *){background-color:color-mix(in oklab,var(--color-emerald-900) 60%,transparent);}
 .dark\:bg-green-500\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-green-500) 10%,transparent);}
+.dark\:bg-green-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-green-900) 20%,transparent);}
+.dark\:bg-slate-900\/20:is(.dark *){background-color:color-mix(in oklab,var(--color-slate-900) 20%,transparent);}
 .dark\:bg-purple-500\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-purple-500) 10%,transparent);}
 .dark\:bg-red-500\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-red-500) 10%,transparent);}
 .dark\:bg-red-900\/10:is(.dark *){background-color:color-mix(in oklab,var(--color-red-900) 10%,transparent);}

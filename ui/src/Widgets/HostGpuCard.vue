@@ -11,7 +11,7 @@ export const meta = { cols: 1 };
 <script setup>
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import { Gpu, Thermometer } from "@lucide/vue";
+import { Gpu, Thermometer, Zap } from "@lucide/vue";
 import { useHostMetrics } from "../composables/useHostMetrics";
 import { formatBytes } from "../utils/metrics";
 
@@ -62,6 +62,14 @@ const isHot = computed(() => {
   const tripC = Number.isFinite(g?.tripC) ? g.tripC : null;
   return tripC ? temp >= tripC * 0.85 : temp >= 80;
 });
+
+// Watts, one decimal below 10 (small cards idle under a watt) and rounded
+// above it — precision a dashboard cannot act on either way.
+const powerText = computed(() => {
+  const watts = primaryGpu.value?.powerW;
+  if (!Number.isFinite(watts)) return null;
+  return watts < 10 ? `${watts.toFixed(1)} W` : `${Math.round(watts)} W`;
+});
 </script>
 
 <template>
@@ -69,8 +77,8 @@ const isHot = computed(() => {
     <!-- Header -->
     <div class="flex items-start justify-between">
       <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
-          <Gpu class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-green-200 bg-green-50 transition-transform duration-200 group-hover:scale-105 dark:border-green-900/50 dark:bg-green-900/20">
+          <Gpu class="h-5 w-5 text-green-600 dark:text-green-400" />
         </div>
         <div>
           <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
@@ -134,7 +142,7 @@ const isHot = computed(() => {
           </div>
           <div class="mb-3 h-2 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
             <div
-              class="h-full rounded-full bg-amber-500 transition-[width] duration-200"
+              class="h-full rounded-full bg-green-500 transition-[width] duration-200"
               :style="{ width: `${vramPct}%` }"
             ></div>
           </div>
@@ -145,10 +153,10 @@ const isHot = computed(() => {
         <div
           v-if="Number.isFinite(primaryGpu.tempC)"
           class="flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50"
-          :title="Number.isFinite(primaryGpu.tripC) ? `${t('quickMetrics.hostMetrics.temperature')} · ${t('quickMetrics.hostMetrics.memoryUsed')} ${Math.round(primaryGpu.tripC)}°C` : undefined"
+          :title="Number.isFinite(primaryGpu.tripC) ? t('quickMetrics.hostMetrics.tempTripsAt', { trip: Math.round(primaryGpu.tripC) }) : undefined"
         >
           <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
-            <Thermometer class="h-3 w-3 shrink-0 text-amber-500" />
+            <Thermometer class="h-3 w-3 shrink-0 text-green-500" />
             {{ t("quickMetrics.hostMetrics.temperature") }}
           </span>
           <span
@@ -156,6 +164,22 @@ const isHot = computed(() => {
             :class="isHot ? 'text-rose-600 dark:text-rose-400' : 'yantra-text-primary'"
           >
             {{ Math.round(primaryGpu.tempC) }}°C
+          </span>
+        </div>
+
+        <!-- Power draw: the only watt meter a rootless run can reach. Not a
+             headline — a homelab looks at watts twice a year — but the row
+             costs nothing to read. -->
+        <div
+          v-if="Number.isFinite(primaryGpu.powerW)"
+          class="mt-2 flex items-center justify-between gap-3 rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50"
+        >
+          <span class="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+            <Zap class="h-3 w-3 shrink-0 text-green-500" />
+            {{ t("quickMetrics.hostMetrics.gpuPower") }}
+          </span>
+          <span class="text-sm font-black tabular-nums tracking-tight yantra-text-primary">
+            {{ powerText }}
           </span>
         </div>
       </template>

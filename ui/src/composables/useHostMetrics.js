@@ -304,6 +304,11 @@ const disks = computed(() => {
   return Array.isArray(list) ? list : [];
 });
 
+// Swap traffic and page-state activity, two samples apart. Null until the
+// first rate lands — the same contract CPU keeps — while dirty/writeback are
+// point-in-time and ride inside the object from the first tick.
+const vm = computed(() => metrics.value?.vm ?? null);
+
 const netText = computed(() => {
   const net = primaryNet.value;
   if (!net) return null;
@@ -431,5 +436,6 @@ export function useHostMetrics() {
     gpus,
     primaryGpu,
     disks,
+    vm,
   };
 }
