@@ -1276,6 +1276,7 @@ p code, li code, td code, .spec-sub code {
 }
 /* ── System Requirements ───────────────────────────── */
 .ram-panel {
+  margin-top: 2.75rem;
   margin-bottom: 3.5rem;
   border-radius: var(--radius-2xl);
   background: var(--gray-50);
