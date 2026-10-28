@@ -1,13 +1,15 @@
 <script>
-// Dashboard engine: one column — the uptime number, the active-apps stat and
-// the mini bar chart were arranged for a single cell. See Home.vue for how
-// meta.cols is consumed.
+// Dashboard engine: one column — the average uptime headline and one bar per
+// running app, height proportional to how long each has been up. The count
+// lives on the Host System workload grid (which was rendering it twice here);
+// the decorative overview curve was removed with it — bars a browser invented
+// are not a fact. See Home.vue for how meta.cols is consumed.
 export const meta = { cols: 1 };
 </script>
 <script setup>
 import { computed } from "vue";
 import { useI18n } from 'vue-i18n'
-import { Clock, Activity, Zap } from '@lucide/vue'
+import { Clock } from '@lucide/vue'
 import { formatDuration } from '../utils/metrics'
 import { useCurrentTime } from '../composables/useCurrentTime'
 import { useContainers } from '../composables/useDashboardData'
@@ -41,8 +43,24 @@ const stats = computed(() => {
   return { formatted, count, rawAvg: avgUptime }
 })
 
-// Generate random bar heights for visualization
-const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
+// One bar per running app, height proportional to its uptime relative to the
+// oldest: a just-restarted stack reads as short bars beside tall ones, which
+// is the story behind the average and is real — derived from the same
+// createdAt ticks the average itself uses. Ten bounds the paint so a busy box
+// stays legible.
+const liveBars = computed(() => {
+  const running = containers.value.filter(c => c.state === 'running' && c.created)
+  if (!running.length) return []
+  const uptimes = running.map(c => ({
+    id: c.id,
+    up: Math.max(1, currentTime.value - c.created * 1000),
+  }))
+  const max = Math.max(...uptimes.map(u => u.up))
+  return uptimes
+    .sort((a, b) => b.up - a.up)
+    .slice(0, 10)
+    .map(u => ({ id: u.id, height: Math.max(4, Math.round((u.up / max) * 100)) }))
+})
 </script>
 
 <template>
@@ -78,42 +96,28 @@ const bars = [0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.3, 0.7, 0.5, 0.8]
         {{ stats.formatted }}
       </div>
 
-      <!-- Nested Minimal Container for details -->
-      <div class="grid grid-cols-5 gap-3">
-        <!-- Stats Card -->
-        <div class="col-span-2 flex flex-col justify-center gap-2 rounded-xl bg-zinc-50 p-4 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <div class="flex items-center gap-1.5 yantra-text-secondary">
-            <Zap class="h-3.5 w-3.5" />
-            <span class="text-[9px] font-semibold uppercase tracking-widest">{{ t('quickMetrics.averageUptime.active') }}</span>
-          </div>
-          <div class="text-2xl font-black leading-none tracking-tight yantra-text-primary tabular-nums yantra-text-primary">
-             {{ stats.count }} <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">{{ t('quickMetrics.averageUptime.apps') }}</span>
-          </div>
+      <!-- The distribution behind the average: real bars, one per running
+           app, longest up on the left. A machine whose apps were all restarted
+           five minutes ago reads very differently from one that has been
+           undisturbed, and this is where that story shows. -->
+      <div
+        v-if="liveBars.length"
+        class="relative flex h-[72px] flex-col items-end justify-end overflow-hidden rounded-xl bg-zinc-50 px-4 pb-2 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50"
+      >
+        <div class="flex w-full items-end justify-between gap-1">
+          <div
+            v-for="bar in liveBars"
+            :key="bar.id"
+            class="flex-1 rounded-t-md bg-emerald-200 transition-[border-color,box-shadow,transform,opacity] duration-200 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
+            :style="{ height: `${bar.height}%` }"
+          ></div>
         </div>
-        
-        <!-- Mini Bar Chart -->
-        <div class="col-span-3 relative flex h-[72px] flex-col items-center justify-end overflow-hidden rounded-xl bg-zinc-50 transition-[border-color,box-shadow,transform] duration-200 dark:border-zinc-800 dark:bg-zinc-900/50">
-           <div class="absolute inset-0 flex items-end justify-between px-4 pb-2">
-              <div
-                v-for="(h, i) in bars"
-                :key="i"
-                class="w-2.5 rounded-t-md bg-emerald-200 transition-[border-color,box-shadow,transform,opacity] duration-200 ease-out group-hover:bg-emerald-500 dark:bg-emerald-900/60 dark:group-hover:bg-emerald-400"
-                :style="{ 
-                  height: `${h * 100}%`, 
-                  transitionDelay: `${i * 30}ms` 
-                }"
-              ></div>
-              <svg class="absolute inset-0 h-full w-full pointer-events-none opacity-10 dark:opacity-20" viewBox="0 0 100 64" preserveAspectRatio="none">
-                 <path 
-                   d="M0 50 C 20 50, 20 10, 40 30 S 60 50, 80 20 L 100 40" 
-                   fill="none" 
-                   stroke="currentColor" 
-                   stroke-width="2" 
-                   class="yantra-text-primary"
-                 />
-              </svg>
-           </div>
-        </div>
+      </div>
+      <div
+        v-else
+        class="flex h-[72px] items-center justify-center rounded-xl bg-zinc-50 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary dark:bg-zinc-900/50"
+      >
+        {{ t('quickMetrics.averageUptime.systemIdle') }}
       </div>
     </div>
   </div>
