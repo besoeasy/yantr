@@ -1,7 +1,7 @@
 <script>
-// Dashboard engine: two columns. GitHub Sponsors and the Bitcoin donation
-// address live on one card now, so the two ways to support Yantr stay next to
-// each other instead of being shuffled apart in the daily grid.
+// Dashboard engine: two columns. Bitcoin donation and the GitHub Sponsors ask
+// share one card (Donate … or … Sponsor), so the two ways to support Yantr
+// stay together instead of being shuffled apart in the daily grid.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -67,70 +67,18 @@ async function copyAddress() {
 </script>
 
 <template>
-  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-left transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)] sm:border sm:border-zinc-200 dark:sm:border-zinc-800">
-    <!-- GitHub Sponsors -->
-    <div class="flex w-full items-start justify-between">
-      <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-rose-200 bg-rose-50 transition-transform duration-200 group-hover:scale-105 dark:border-rose-900/50 dark:bg-rose-900/20">
-          <Heart class="h-5 w-5 fill-current text-rose-500" />
-        </div>
-        <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
-            {{ t("sponsorCard.label") }}
-          </h3>
-          <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-              {{ t("home.externalLinks.resources") }}
-            </span>
-          </div>
-        </div>
+  <div class="yantra-card group relative flex h-full w-full yantra-card-min flex-col overflow-hidden p-7 text-center transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-[3px] hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:hover:shadow-[0_8px_30px_rgb(255,255,255,0.02)] sm:border sm:border-zinc-200 dark:sm:border-zinc-800">
+    <!-- Header -->
+    <div class="flex w-full items-center justify-center gap-3">
+      <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
+        <Bitcoin class="h-5 w-5 text-amber-600 dark:text-amber-400" />
       </div>
+      <h3 class="text-2xl font-black leading-none tracking-tight yantra-text-primary">
+        Donate
+      </h3>
     </div>
 
-    <div class="relative z-10 mt-auto flex flex-col pt-5">
-      <div class="mb-1.5 text-2xl font-black leading-[1.2] tracking-tight yantra-text-primary transition-colors duration-200 group-hover:-translate-y-[3px] yantra-text-primary">
-        {{ t("sponsorCard.title") }}
-      </div>
-      <div class="line-clamp-3 text-xs leading-relaxed yantra-text-secondary">
-        {{ t("sponsorCard.description") }}
-      </div>
-
-      <a
-        href="https://github.com/sponsors/besoeasy"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="group/cta relative mt-5 flex h-11 w-full items-center justify-between gap-3 overflow-hidden rounded-xl bg-rose-500 px-5 yantra-text-primary transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98]"
-      >
-        <div class="relative z-10 flex items-center gap-2.5">
-          <Heart class="h-4 w-4 shrink-0 fill-current" />
-          <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('sponsorCard.cta') }}</span>
-        </div>
-        <ArrowUpRight class="relative z-10 h-4.5 w-4.5 shrink-0 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
-      </a>
-    </div>
-
-    <!-- Divider -->
-    <div class="mt-6 mb-6 border-t border-zinc-100 dark:border-zinc-900"></div>
-
-    <!-- Bitcoin donation -->
-    <div class="flex w-full items-start justify-between">
-      <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
-          <Bitcoin class="h-5 w-5 text-amber-600 dark:text-amber-400" />
-        </div>
-        <div>
-          <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary transition-colors group-hover:text-black yantra-text-primary dark:group-hover:text-white">
-            {{ t("sponsorCard.btcBadge") }}
-          </h3>
-          <div class="mt-2 flex items-center gap-1.5">
-            <span class="text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-              {{ t("home.externalLinks.resources") }}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- QR plate -->
     <div class="mt-5 flex flex-1 items-center justify-center">
       <div v-if="btcLoading" class="h-32 w-32 animate-pulse rounded-xl bg-zinc-100 dark:bg-zinc-800"></div>
       <div v-else-if="btcError" class="flex h-32 w-32 items-center justify-center rounded-xl border-red-200 bg-red-50 p-3 dark:border-red-900/50 dark:bg-red-900/20">
@@ -141,12 +89,14 @@ async function copyAddress() {
       </div>
     </div>
 
+    <!-- Address -->
     <div class="mt-5">
-      <div v-if="btcLoading" class="h-3 w-40 animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800"></div>
+      <div v-if="btcLoading" class="h-3 w-40 mx-auto animate-pulse rounded-full bg-zinc-100 dark:bg-zinc-800"></div>
       <div v-else-if="btcError" class="text-[11px] text-red-500">{{ btcError }}</div>
       <code v-else class="block font-mono text-[10px] yantra-text-secondary" :title="btcAddress">{{ shortBtc }}</code>
     </div>
 
+    <!-- Actions -->
     <div class="mt-4 grid grid-cols-2 gap-2">
       <button
         type="button"
@@ -166,5 +116,26 @@ async function copyAddress() {
         {{ t("sponsorCard.btcWallet") }}
       </a>
     </div>
+
+    <!-- or divider -->
+    <div class="mt-6 mb-6 flex items-center gap-3">
+      <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+      <span class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">or</span>
+      <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+    </div>
+
+    <!-- Sponsor on GitHub -->
+    <a
+      href="https://github.com/sponsors/besoeasy"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group/cta relative flex h-11 w-full items-center justify-between gap-3 overflow-hidden rounded-xl bg-rose-500 px-5 yantra-text-primary transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98]"
+    >
+      <div class="relative z-10 flex items-center gap-2.5">
+        <Heart class="h-4 w-4 shrink-0 fill-current" />
+        <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('sponsorCard.cta') }}</span>
+      </div>
+      <ArrowUpRight class="relative z-10 h-4.5 w-4.5 shrink-0 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+    </a>
   </div>
 </template>
