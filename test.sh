@@ -8,7 +8,23 @@
 set -euo pipefail
 
 RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+export XDG_RUNTIME_DIR="$RUNTIME_DIR"
+export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=$RUNTIME_DIR/bus}"
+
 HOST_SOCK="$RUNTIME_DIR/podman/podman.sock"
+
+# Ensure the rootless Podman user socket exists — mirrors install.sh. Without it
+# the bind mount below fails with "statfs .../podman.sock: no such file".
+if [ ! -S "$HOST_SOCK" ]; then
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user --no-ask-password enable --now podman.socket >/dev/null 2>&1 || true
+  fi
+fi
+if [ ! -S "$HOST_SOCK" ]; then
+  echo "Error: Podman socket not found at $HOST_SOCK" >&2
+  echo "       Enable it with: systemctl --user enable --now podman.socket" >&2
+  exit 1
+fi
 
 podman rm -f yantr 2>/dev/null || true
 podman rmi -f yantr:dev 2>/dev/null || true
