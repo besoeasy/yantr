@@ -124,6 +124,7 @@
             <span class="sr-only">YANTR</span>
             <span aria-hidden="true"><span class="h-letter">Y</span><span class="h-letter">A</span><span class="h-letter">N</span><span class="h-letter">T</span><span class="h-letter">R</span></span>
           </h1>
+          <div id="hero-bits" class="hero-bits" aria-hidden="true"></div>
           <p class="hero-subtitle animate-fade-in-up delay-150">
             One command, and you're self-hosting.
           </p>
@@ -1451,6 +1452,40 @@
         loadStars();
         loadContributors();
         initHeroAnimation();
+        (function heroBits() {
+          const el = document.getElementById("hero-bits");
+          if (!el) return;
+          // each glyph: 7 rows x 5 cols, a field of bits with the letter lit
+          const GLYPHS = {
+            Y: ["10001", "01010", "00100", "00100", "00100", "00100", "00100"],
+            A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+            N: ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
+            T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+            R: ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+          };
+          const rowHTML = [];
+          for (let r = 0; r < 7; r++) {
+            let line = "";
+            "YANTR".split("").forEach((ch, li) => {
+              const glyph = GLYPHS[ch][r];
+              if (li > 0) line += "   "; // 3-space gap between letters
+              line += glyph
+                .split("")
+                .map((b) => `${b === "1" ? `<span class="on">${Math.random() < 0.5 ? "0" : "1"}</span>` : `<span class="off">${Math.random() < 0.5 ? "0" : "1"}</span>`}`)
+                .join("");
+            });
+            rowHTML.push(line);
+          }
+          el.innerHTML = rowHTML.join("\n").replace(/\n/g, "<br>");
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            el.querySelectorAll(".on").forEach((s) => (s.style.animation = "none"));
+          } else {
+            el.querySelectorAll(".on").forEach((s) => {
+              s.style.animationDelay = `${(-Math.random() * 3.6).toFixed(2)}s`;
+              s.style.animationDuration = `${(2.8 + Math.random() * 2.4).toFixed(2)}s`;
+            });
+          }
+        })();
         (function heroBinary() {
           const el = document.getElementById("hero-binary");
           if (!el) return;
