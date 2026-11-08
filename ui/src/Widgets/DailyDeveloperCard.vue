@@ -7,15 +7,13 @@
 export const meta = { cols: 2 };
 </script>
 <script setup>
-import { computed, onUnmounted, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import {
   AlertCircle,
   ArrowUpRight,
   AtSign,
-  Check,
-  Copy,
   Sparkles,
   Zap,
 } from "@lucide/vue";
@@ -42,8 +40,6 @@ const { apps, appsLoaded, appsLoadFailed } = useCatalog();
 const { containers } = useContainers({ live: true });
 
 const avatarError = ref(false);
-const copied = ref(false);
-let copiedTimer = null;
 
 const pickedKey = computed(() => {
   if (!appsLoaded.value || appsLoadFailed.value) return "";
@@ -92,20 +88,6 @@ function viewDeveloper() {
   router.push(developerDetail(pickedKey.value));
 }
 
-async function copyNostrKey() {
-  if (!pickedKey.value) return;
-  try {
-    await navigator.clipboard.writeText(pickedKey.value);
-    copied.value = true;
-    if (copiedTimer) clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  } catch {
-    // Clipboard access might fail in insecure contexts
-  }
-}
-
 watch(
   pickedKey,
   (next) => {
@@ -114,10 +96,6 @@ watch(
   },
   { immediate: true }
 );
-
-onUnmounted(() => {
-  if (copiedTimer) clearTimeout(copiedTimer);
-});
 </script>
 
 <template>
@@ -248,26 +226,15 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <!-- CTA and Actions -->
-      <div class="mt-auto flex items-center gap-2.5 pt-2">
+      <!-- CTA -->
+      <div class="mt-auto pt-2">
         <button
           type="button"
           @click="viewDeveloper"
-          class="group/cta flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50 text-[10px] font-bold uppercase tracking-widest text-fuchsia-700 transition-colors duration-200 hover:bg-fuchsia-100 dark:border-fuchsia-900/50 dark:bg-fuchsia-900/20 dark:text-fuchsia-400 dark:hover:bg-fuchsia-900/30 active:scale-[0.98]"
+          class="group/cta flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-fuchsia-200 bg-fuchsia-50 text-[10px] font-bold uppercase tracking-widest text-fuchsia-700 transition-colors duration-200 hover:bg-fuchsia-100 dark:border-fuchsia-900/50 dark:bg-fuchsia-900/20 dark:text-fuchsia-400 dark:hover:bg-fuchsia-900/30 active:scale-[0.98]"
         >
           <span>{{ t("home.dailyDeveloper.viewProfile") }}</span>
           <ArrowUpRight :size="13" class="transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1" />
-        </button>
-
-        <button
-          type="button"
-          @click="copyNostrKey"
-          :title="t('developer.nostrCopy')"
-          class="flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 px-3 text-[10px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700 dark:hover:bg-zinc-900 dark:hover:text-zinc-100 active:scale-[0.98]"
-        >
-          <Check v-if="copied" :size="13" class="text-emerald-600 dark:text-emerald-400" />
-          <Copy v-else :size="13" />
-          <span>{{ copied ? t("developer.nostrCopied") : t("developer.nostrCopy") }}</span>
         </button>
       </div>
     </div>
