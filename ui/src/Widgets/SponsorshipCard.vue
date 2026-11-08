@@ -98,7 +98,7 @@ onUnmounted(() => {
 
         <div
           v-else
-          class="flex aspect-square w-full max-w-64 items-center justify-center rounded-2xl border border-zinc-200 bg-white p-3.5 shadow-sm dark:border-zinc-800 dark:bg-white"
+          class="flex aspect-square w-full max-w-64 items-center justify-center rounded-2xl bg-white p-3.5 shadow-sm dark:bg-white"
         >
           <NostrQrCode
             :value="`bitcoin:${btcAddress}`"
