@@ -1961,6 +1961,8 @@ textarea:focus{border-color:#3b82f6;outline:none;box-shadow:0 0 0 4px #3b82f633;
 .via-sky-500\/30{--yantr-via:color-mix(in srgb,var(--color-sky-500) 30%,transparent);}
 .via-amber-500\/30{--yantr-via:color-mix(in srgb,var(--color-amber-500) 30%,transparent);}
 .dark\:via-amber-500\/40{--yantr-via:color-mix(in srgb,var(--color-amber-500) 40%,transparent);}
+.via-indigo-500\/30{--yantr-via:color-mix(in srgb,var(--color-indigo-500) 30%,transparent);}
+.dark\:via-indigo-500\/40{--yantr-via:color-mix(in srgb,var(--color-indigo-500) 40%,transparent);}
 .via-fuchsia-500\/30{--yantr-via:color-mix(in srgb,var(--color-fuchsia-500) 30%,transparent);}
 .via-zinc-300\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-300) 40%,transparent);}
 .dark\:via-zinc-700\/40{--yantr-via:color-mix(in srgb,var(--color-zinc-700) 40%,transparent);}
