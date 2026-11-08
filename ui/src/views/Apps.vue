@@ -222,8 +222,8 @@ onUnmounted(() => {
        flex layout rides on the shell itself. -->
   <AppLayout width="bare" class="flex flex-col lg:flex-row">
     
-    <!-- Sidebar / Filters — appears ABOVE main content on mobile, right panel on desktop -->
-    <aside class="w-full lg:w-72 shrink-0 border-b lg:border-b-0 lg:border-l border-gray-200/80 dark:border-zinc-800/80 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-1 lg:order-2 scrollbar-none">
+    <!-- Sidebar / Filters — hidden on mobile to show apps first, right panel on desktop -->
+    <aside class="hidden lg:block w-full lg:w-72 shrink-0 border-b lg:border-b-0 lg:border-l border-gray-200/80 dark:border-zinc-800/80 lg:h-screen lg:sticky lg:top-0 overflow-y-auto order-1 lg:order-2 scrollbar-none">
       <div class="px-4 py-5 lg:px-6 lg:py-8">
 
         <!-- Header -->
