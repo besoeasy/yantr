@@ -33,6 +33,8 @@ services:
       OPENCODE_CONFIG_CONTENT: '{"permission":"allow"}'
     ports:
       - "4096"
+      - "4097"
+      - "4098"
     stdin_open: true
     tty: true
     volumes:
