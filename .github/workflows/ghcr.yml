@@ -1,17 +1,12 @@
 name: ghcr
 
 # Manual release: Actions tab -> Publish Container Image -> Run workflow.
-# Optionally pass a custom tag (default: YYYY.MM.DD, bare CalVer like airlock).
+# The tag is always the current date (YYYY.MM.DD, bare CalVer like airlock).
 # The same tag versions the container image and the GitHub release.
 # Retention: only the newest 100 releases are kept, oldest pruned first.
 
 on:
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Custom release tag (default: YYYY.MM.DD)"
-        required: false
-        default: ""
 
 env:
   REGISTRY: ghcr.io
@@ -54,15 +49,9 @@ jobs:
 
       - name: Resolve release tag
         id: tag
-        env:
-          INPUT_TAG: ${{ inputs.tag }}
         run: |
           set -e
-          if [ -n "$INPUT_TAG" ]; then
-            TAG="$INPUT_TAG"
-          else
-            TAG="$(date -u +%Y.%m.%d)"
-          fi
+          TAG="$(date -u +%Y.%m.%d)"
           base="$TAG"
           n=1
           while git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; do
