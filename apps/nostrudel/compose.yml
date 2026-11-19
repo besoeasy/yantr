@@ -1,0 +1,45 @@
+x-yantr:
+  name: Nostrudel
+  tags: [ nostr, social, network, self-hosted ]
+  short_description: Fast Nostr web client for notes, threads, DMs, and Lightning zaps.
+  description: >
+    Nostrudel is a fast, feature-rich Nostr web client for reading and
+    publishing notes, following threads, managing lists, direct messages, and
+    Lightning zaps. Relays, keys, and account security stay under your control,
+    and a bundled CORS proxy lets the browser reach relays without an external
+    service.
+  usecases:
+    [
+      "Read and publish notes on the decentralized Nostr network.",
+      "Follow threads, conversations, and accounts in a clean web interface.",
+      "Send direct messages and zap posts with Lightning.",
+      "Switch between relays and manage lists without installing a native app."
+    ]
+  website: https://github.com/hzrd149/nostrudel
+  notes:
+    [
+      Works with any Nostr relay.,
+      Includes a bundled CORS proxy for browser relay access.,
+      Keys are stored in the browser - back up your nsec.
+    ]
+
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "Web UI", service: nostrudel-web}
+
+services:
+  nostrudel-web:
+    image: ghcr.io/hzrd149/nostrudel:1.1.0@sha256:f07c931e1a1d264fe70e3377796f35828ab7be8b78236b6ed37459ffd1d6661f
+    environment:
+      REQUEST_PROXY: cors:8080
+    ports:
+      - "80"
+    depends_on:
+      - cors
+    init: true
+    restart: unless-stopped
+
+  cors:
+    image: ghcr.io/hzrd149/docker-cors-anywhere:0.4.5@sha256:641f5ea3265acbc339a03a72b79cd942c4bedab9b1c8b3fc13e5f3f087f649e6
+    environment:
+      CORSANYWHERE_REQUIRE_HEADERS: "host"
+    restart: unless-stopped
