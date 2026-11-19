@@ -16,6 +16,7 @@ x-yantr:
       "Switch between relays and manage lists without installing a native app."
     ]
   website: https://github.com/hzrd149/nostrudel
+  developers: ["npub1ye5ptcxfyyxl5vjvdjar2ua3f0hynkjzpx552mu5snj3qmx5pzjscpknpr"]
   notes:
     [
       Works with any Nostr relay.,
