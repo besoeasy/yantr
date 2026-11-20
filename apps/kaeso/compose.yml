@@ -13,17 +13,17 @@ x-yantr:
     - Route models with fallbacks and connect AI agents through the MCP portal.
   website: https://github.com/logicplanes/kaeso
   env_generators:
-    KAESO_MASTER_KEY: {length: 42, charset: alnum}
+    MASTER_KEY: {length: 42, charset: alnum}
     POSTGRES_PASSWORD: {length: 32, charset: alnum}
     CLICKHOUSE_PASSWORD: {length: 32, charset: alnum}
     VALKEY_PASSWORD: {length: 32, charset: alnum}
   notes:
-    - "KAESO_PUBLIC_URL is the address you open Kaeso at; it must be https, e.g. through a reverse proxy or a tunnel to the Web UI port."
-    - "Only for a first look on this machine: http://localhost:<the Web UI port>."
-    - "To set it up, open a shell in the gateway container and run: kaeso setup-link. Open the link it prints (it works once, for 24 hours)."
-    - "Provider keys are added in the console after setup."
-    - "Keep the generated KAESO_MASTER_KEY: it encrypts the stored provider keys."
-    - "Docs: https://docs.kaeso.app/self-hosting"
+    - "KAESO_PUBLIC_URL is the https address you will open Kaeso at, e.g. a reverse proxy or a tunnel to the Web UI port."
+    - "To try it on this machine first, give the Web UI port 8080 in the deploy form and enter http://localhost:8080."
+    - "Then open a shell in the gateway container, run kaeso setup-link and open the link it prints (once, within 24 hours)."
+    - "Add provider keys under Providers in the console; apps call the Web UI address with a Kaeso key. Docs: https://docs.kaeso.app"
+    - "Save the generated values, MASTER_KEY above all: removing the app keeps its volumes, so a later deploy needs the same values."
+    - "Use the stack's Update action for new Kaeso releases; it keeps your settings and data."
   ports:
     - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: edge}
 
@@ -53,9 +53,17 @@ services:
     image: ghcr.io/logicplanes/kaeso-gateway:latest
     read_only: true
     stop_grace_period: 75s
+    healthcheck:
+      test: ["CMD", "kaeso", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
     environment:
       KAESO_PUBLIC_URL: ${KAESO_PUBLIC_URL}
-      KAESO_MASTER_KEYS: k1:${KAESO_MASTER_KEY}A=
+      # Listed on its own so the deploy form generates it; Kaeso reads it through KAESO_MASTER_KEYS.
+      MASTER_KEY: ${MASTER_KEY}
+      KAESO_MASTER_KEYS: k1:${MASTER_KEY}A=
       KAESO_POSTGRES_URL: postgres://kaeso:${POSTGRES_PASSWORD}@postgres:5432/kaeso
       KAESO_CLICKHOUSE_URL: http://kaeso:${CLICKHOUSE_PASSWORD}@clickhouse:8123
       KAESO_VALKEY_URL: redis://:${VALKEY_PASSWORD}@valkey:6379
@@ -72,6 +80,11 @@ services:
     image: ghcr.io/logicplanes/kaeso-console:latest
     read_only: true
     tmpfs: ["/tmp:mode=1777", "/var/lib/console/data:mode=1777", "/var/lib/console/config:mode=1777"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
     restart: unless-stopped
 
   postgres:
@@ -80,6 +93,11 @@ services:
       POSTGRES_USER: kaeso
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kaeso
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "kaeso", "-d", "kaeso"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     volumes:
       - kaeso_postgres:/var/lib/postgresql
     restart: unless-stopped
@@ -90,6 +108,11 @@ services:
       CLICKHOUSE_USER: kaeso
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
       CLICKHOUSE_DB: kaeso
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8123/ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     volumes:
       - kaeso_clickhouse:/var/lib/clickhouse
     restart: unless-stopped
@@ -97,6 +120,14 @@ services:
   valkey:
     image: docker.io/valkey/valkey:9-alpine
     command: ["valkey-server", "--appendonly", "yes", "--requirepass", "${VALKEY_PASSWORD}", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD}
+      VALKEYCLI_AUTH: ${VALKEY_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli ping | grep -qx PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
     volumes:
       - kaeso_valkey:/data
     restart: unless-stopped
