@@ -1,0 +1,107 @@
+x-yantr:
+  name: Kaeso
+  tags: [ai, llm, gateway, self-hosted, podman]
+  short_description: Self-hosted AI gateway with one API for OpenAI, Anthropic and Gemini apps.
+  description: >
+    Kaeso is a self-hosted AI gateway written in Rust. Apps keep speaking
+    OpenAI, Anthropic or Gemini while Kaeso translates between providers,
+    with keys per project, budgets and limits, request logs, alias routes
+    with fallbacks, a playground, an MCP portal and a web console.
+  usecases:
+    - Give every app one endpoint for OpenAI, Anthropic, Gemini and dozens of other providers.
+    - Set budgets, rate limits and keys per project, and see each request's cost in the logs.
+    - Route models with fallbacks and connect AI agents through the MCP portal.
+  website: https://github.com/logicplanes/kaeso
+  env_generators:
+    KAESO_MASTER_KEY: {length: 42, charset: alnum}
+    POSTGRES_PASSWORD: {length: 32, charset: alnum}
+    CLICKHOUSE_PASSWORD: {length: 32, charset: alnum}
+    VALKEY_PASSWORD: {length: 32, charset: alnum}
+  notes:
+    - "KAESO_PUBLIC_URL is the address you open Kaeso at; it must be https, e.g. through a reverse proxy or a tunnel to the Web UI port."
+    - "Only for a first look on this machine: http://localhost:<the Web UI port>."
+    - "To set it up, open a shell in the gateway container and run: kaeso setup-link. Open the link it prints (it works once, for 24 hours)."
+    - "Provider keys are added in the console after setup."
+    - "Keep the generated KAESO_MASTER_KEY: it encrypts the stored provider keys."
+    - "Docs: https://docs.kaeso.app/self-hosting"
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: edge}
+
+services:
+  edge:
+    image: ghcr.io/logicplanes/kaeso-console:latest
+    command: ["kaeso-edge"]
+    read_only: true
+    tmpfs: ["/tmp:mode=1777", "/var/lib/console/data:mode=1777", "/var/lib/console/config:mode=1777"]
+    environment:
+      KAESO_GATEWAY_UPSTREAM: gateway:8080
+      KAESO_CONSOLE_UPSTREAM: console:3000
+    ports:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/kaeso-edge/healthz"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 6
+    depends_on:
+      - gateway
+      - console
+    restart: unless-stopped
+
+  gateway:
+    image: ghcr.io/logicplanes/kaeso-gateway:latest
+    read_only: true
+    stop_grace_period: 75s
+    environment:
+      KAESO_PUBLIC_URL: ${KAESO_PUBLIC_URL}
+      KAESO_MASTER_KEYS: k1:${KAESO_MASTER_KEY}A=
+      KAESO_POSTGRES_URL: postgres://kaeso:${POSTGRES_PASSWORD}@postgres:5432/kaeso
+      KAESO_CLICKHOUSE_URL: http://kaeso:${CLICKHOUSE_PASSWORD}@clickhouse:8123
+      KAESO_VALKEY_URL: redis://:${VALKEY_PASSWORD}@valkey:6379
+      KAESO_MAIL_TRANSPORT: log
+      KAESO_TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7,127.0.0.0/8,::1/128
+      KAESO_LOG_FORMAT: json
+    depends_on:
+      - postgres
+      - valkey
+      - clickhouse
+    restart: unless-stopped
+
+  console:
+    image: ghcr.io/logicplanes/kaeso-console:latest
+    read_only: true
+    tmpfs: ["/tmp:mode=1777", "/var/lib/console/data:mode=1777", "/var/lib/console/config:mode=1777"]
+    restart: unless-stopped
+
+  postgres:
+    image: docker.io/library/postgres:18-alpine
+    environment:
+      POSTGRES_USER: kaeso
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: kaeso
+    volumes:
+      - kaeso_postgres:/var/lib/postgresql
+    restart: unless-stopped
+
+  clickhouse:
+    image: docker.io/clickhouse/clickhouse-server:26.3-alpine
+    environment:
+      CLICKHOUSE_USER: kaeso
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: kaeso
+    volumes:
+      - kaeso_clickhouse:/var/lib/clickhouse
+    restart: unless-stopped
+
+  valkey:
+    image: docker.io/valkey/valkey:9-alpine
+    command: ["valkey-server", "--appendonly", "yes", "--requirepass", "${VALKEY_PASSWORD}", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - kaeso_valkey:/data
+    restart: unless-stopped
+
+volumes:
+  kaeso_postgres: null
+  kaeso_clickhouse: null
+  kaeso_valkey: null
