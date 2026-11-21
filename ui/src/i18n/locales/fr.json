@@ -51,8 +51,8 @@
       "running": "Actif ({count})"
     },
     "dailyDeveloper": {
-      "title": "Développeur du jour",
-      "pitch": "Les apps open source sont construites par des gens comme vous. Chaque jour, Yantr met en avant un développeur et les apps qu'il a construites pour ce catalogue.",
+      "title": "Développeur à l'honneur",
+      "pitch": "Les apps open source sont construites par des gens comme vous. À chaque visite, Yantr met en avant un développeur et les apps qu'il a construites pour ce catalogue.",
       "appsCount": "Apps dans Yantr",
       "appsMore": "+{count} autres"
     },

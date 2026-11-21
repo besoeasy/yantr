@@ -51,8 +51,8 @@
       "running": "运行中 ({count})"
     },
     "dailyDeveloper": {
-      "title": "今日开发者",
-      "pitch": "开源应用是由像你这样的人开发的。Yantr 每天介绍一位开发者，以及他为这个目录构建的应用。",
+      "title": "开发者聚焦",
+      "pitch": "开源应用是由像你这样的人开发的。Yantr 每次都会介绍一位开发者，以及他为这个目录构建的应用。",
       "appsCount": "Yantr 中的应用",
       "appsMore": "还有 {count} 个"
     },

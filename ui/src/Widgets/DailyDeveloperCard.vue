@@ -25,7 +25,7 @@ import { appDetail, developerDetail } from "../utils/routes.js";
 import {
   DEVELOPER_LABEL,
   appsByDeveloper,
-  dailyDeveloperPick,
+  randomDeveloperPick,
   developerInitials,
   developerKeysFromApps,
   developerShortKey,
@@ -41,10 +41,20 @@ const { containers } = useContainers({ live: true });
 
 const avatarError = ref(false);
 
-const pickedKey = computed(() => {
-  if (!appsLoaded.value || appsLoadFailed.value) return "";
-  return dailyDeveloperPick(developerKeysFromApps(apps.value));
-});
+// Per-refresh spotlight: pick once per page load so every refresh can show a
+// different developer, then keep it stable for this view. A computed calling
+// Math.random() would re-roll on any reactive trigger (live container polls),
+// so the ref is set once when the catalog lands and never again this mount.
+const pickedKey = ref("");
+
+watch(
+  () => ({ loaded: appsLoaded.value, failed: appsLoadFailed.value, list: apps.value }),
+  ({ loaded, failed, list }) => {
+    if (!loaded || failed || pickedKey.value) return;
+    pickedKey.value = randomDeveloperPick(developerKeysFromApps(list));
+  },
+  { immediate: true }
+);
 
 const developerApps = computed(() => appsByDeveloper(apps.value, pickedKey.value));
 

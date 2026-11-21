@@ -41,8 +41,8 @@
       "running": "Active ({count})"
     },
     "dailyDeveloper": {
-      "title": "Developer of the day",
-      "pitch": "Open-source apps are built by people like you. Every day Yantr features one developer and the apps they built for this catalog.",
+      "title": "Developer spotlight",
+      "pitch": "Open-source apps are built by people like you. Each visit Yantr features one developer and the apps they built for this catalog.",
       "appsCount": "Apps in Yantr",
       "appsMore": "+{count} more",
       "viewProfile": "View developer profile"

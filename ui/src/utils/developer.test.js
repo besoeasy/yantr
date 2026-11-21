@@ -4,6 +4,7 @@ import {
   buildIssueReportUrl,
   buildYantrIssueReportUrl,
   dailyDeveloperPick,
+  randomDeveloperPick,
   DEVELOPER_LABEL,
   developerInitials,
   developerKeysFromApps,
@@ -314,5 +315,25 @@ describe("dailyDeveloperPick", () => {
     expect(
       dailyDeveloperPick(three, -1)
     ).not.toBe("");
+  });
+});
+
+describe("randomDeveloperPick", () => {
+  it("returns empty for an empty pool, never a crash", () => {
+    expect(randomDeveloperPick([])).toBe("");
+    expect(randomDeveloperPick(["", "  "])).toBe("");
+    expect(randomDeveloperPick()).toBe("");
+  });
+
+  it("returns a member of the pool", () => {
+    const three = ["a", "b", "c"];
+    expect(three).toContain(randomDeveloperPick(three, () => 0));
+    expect(three).toContain(randomDeveloperPick(three, () => 0.99));
+  });
+
+  it("can return different members — that is the point of per-refresh", () => {
+    const three = ["a", "b", "c"];
+    const picks = new Set([0, 0.34, 0.67].map((v) => randomDeveloperPick(three, () => v)));
+    expect(picks.size).toBeGreaterThan(1);
   });
 });

@@ -160,6 +160,23 @@ export function dailyDeveloperPick(
   return order[((dayIndex % order.length) + order.length) % order.length];
 }
 
+// randomDeveloperPick names the account the spotlight widget showcases on this
+// page load: a uniform pick from the developer set, so every refresh can show
+// a different account. Unlike dailyDeveloperPick above it carries no date or
+// rotation — the caller picks once per mount and keeps it for that view.
+export function randomDeveloperPick(keys, rand = Math.random) {
+  const unique = [
+    ...new Set(
+      (Array.isArray(keys) ? keys : [])
+        .map((key) => String(key ?? "").trim().toLowerCase())
+        .filter(Boolean)
+    ),
+  ];
+  if (unique.length === 0) return "";
+  const i = Math.floor(rand() * unique.length) % unique.length;
+  return unique[i];
+}
+
 // ISSUE_BASE is the repository every in-app report is filed against. Yantr's
 // own issue tracker, not the app's upstream — the catalog recipe is what the
 // report is about.

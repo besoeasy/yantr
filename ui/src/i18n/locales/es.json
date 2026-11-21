@@ -51,8 +51,8 @@
       "running": "Activo ({count})"
     },
     "dailyDeveloper": {
-      "title": "Desarrollador del día",
-      "pitch": "Las apps de código abierto las construye gente como tú. Cada día Yantr destaca a un desarrollador y las apps que ha construido para este catálogo.",
+      "title": "Desarrollador destacado",
+      "pitch": "Las apps de código abierto las construye gente como tú. En cada visita Yantr destaca a un desarrollador y las apps que ha construido para este catálogo.",
       "appsCount": "Apps en Yantr",
       "appsMore": "+{count} más"
     },
