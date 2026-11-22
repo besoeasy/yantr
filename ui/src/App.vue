@@ -6,7 +6,7 @@ import {
 } from "@lucide/vue";
 import NotificationBanner from './components/NotificationBanner.vue';
 import AuthGate from './components/AuthGate.vue';
-import { onMounted, onUnmounted, ref, computed, h } from "vue";
+import { onMounted, onUnmounted, ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { useYantrAuth } from './composables/useYantrAuth';
 import { NAV, NAV_ITEMS, dashboard } from './utils/routes.js';
@@ -18,46 +18,6 @@ const { authState, bootstrapYantrAuth, logoutYantr } = useYantrAuth();
 const theme = ref("dark");
 const showLanguageMenu = ref(false);
 const languageMenuRef = ref(null);
-
-// @lucide/vue dropped brand icons, which is why the widgets inline their own
-// GitHub mark. Same reason here: both sidebar links are brand marks.
-const GITHUB_PATH = "M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z";
-
-
-// A functional component so each link can carry its own `size` the way the
-// lucide icons do, instead of a fixed 24px box sitting in a 40px button.
-// fill defaults to currentColor so a brand glyph takes the link's own colour
-// and follows the theme. Without it an SVG paints black, which is invisible on
-// the dark chrome — and it is invisible only there, so it reads as a light-mode
-// pass until someone switches.
-const brandIcon = (path, extra) => (props) => {
-  const attrs = { ...(props || {}) };
-  const size = Number(attrs.size) || 18;
-  delete attrs.size;
-  return h("svg", {
-    xmlns: "http://www.w3.org/2000/svg",
-    viewBox: "0 0 24 24",
-    width: size,
-    height: size,
-    fill: "currentColor",
-    "aria-hidden": "true",
-    ...attrs,
-  }, [h("path", { fill: "currentColor", ...extra, d: path })]);
-};
-
-const GithubIcon = brandIcon(GITHUB_PATH, { "fill-rule": "evenodd", "clip-rule": "evenodd" });
-
-// GitHub, and only GitHub. It is the project's source, its licence and its
-// issue tracker: it belongs beside the app's own controls because it is part
-// of what this thing is. This cluster is where a user looks for app-level
-// controls, and every off-product destination dilutes the ones next to it.
-//
-// Both names are proper nouns, identical in every locale, so they are not
-// routed through i18n — unlike the nav labels, which now are. Same reasoning as
-// the hardcoded "Lock Session" below.
-const communityLinks = [
-  { name: "GitHub", href: "https://github.com/besoeasy/yantr", icon: GithubIcon },
-];
 
 // Icons live here, not in the route table: routes.js holds what a page is and
 // which nav item owns it, the shell holds what that item looks like.
@@ -184,23 +144,6 @@ onUnmounted(() => {
 
       <!-- Bottom Actions -->
       <div class="flex flex-col items-center gap-3.5" ref="languageMenuRef">
-
-        <!-- Community Links -->
-        <a
-          v-for="link in communityLinks"
-          :key="link.name"
-          :href="link.href"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group relative w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800/60 hover:text-slate-900 dark:hover:text-white transition-[border-color,box-shadow,transform,opacity] duration-200"
-          :title="link.name"
-          @click="showLanguageMenu = false"
-        >
-          <component :is="link.icon" :size="18" class="transition-transform duration-200 group-hover:scale-110" />
-          <span class="absolute left-full ml-3 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 pointer-events-none transition-[border-color,box-shadow,transform,opacity] duration-200 shadow-xl whitespace-nowrap z-50">
-            {{ link.name }}
-          </span>
-        </a>
 
         <!-- Language Picker -->
         <div class="relative">
