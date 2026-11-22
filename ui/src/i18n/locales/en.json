@@ -431,8 +431,7 @@
     "averageUptime": {
       "title": "Avg. Uptime",
       "systemStability": "System Stability",
-      "timeActive": "Time Active",
-      "systemIdle": "System Idle"
+      "timeActive": "Time Active"
     },
     "expiringContainers": {
       "title": "Expirations",

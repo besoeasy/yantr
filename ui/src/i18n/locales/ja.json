@@ -422,8 +422,7 @@
     "averageUptime": {
       "title": "平均稼働時間",
       "systemStability": "システム安定性",
-      "timeActive": "アクティブ時間",
-      "systemIdle": "システムアイドル"
+      "timeActive": "アクティブ時間"
     },
     "expiringContainers": {
       "title": "有効期限",

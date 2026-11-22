@@ -422,8 +422,7 @@
     "averageUptime": {
       "title": "平均运行时间",
       "systemStability": "系统稳定性",
-      "timeActive": "活跃时间",
-      "systemIdle": "系统空闲"
+      "timeActive": "活跃时间"
     },
     "expiringContainers": {
       "title": "到期容器",

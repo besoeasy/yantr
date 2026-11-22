@@ -422,8 +422,7 @@
     "averageUptime": {
       "title": "Tiempo activo prom.",
       "systemStability": "Estabilidad del sistema",
-      "timeActive": "Tiempo activo",
-      "systemIdle": "Sistema inactivo"
+      "timeActive": "Tiempo activo"
     },
     "expiringContainers": {
       "title": "Expiraciones",

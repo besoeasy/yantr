@@ -422,8 +422,7 @@
     "averageUptime": {
       "title": "Ø Betriebszeit",
       "systemStability": "Systemstabilität",
-      "timeActive": "Aktive Zeit",
-      "systemIdle": "System inaktiv"
+      "timeActive": "Aktive Zeit"
     },
     "expiringContainers": {
       "title": "Ablaufdaten",

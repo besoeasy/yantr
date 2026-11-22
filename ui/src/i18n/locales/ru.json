@@ -422,8 +422,7 @@
     "averageUptime": {
       "title": "Ср. время работы",
       "systemStability": "Стабильность системы",
-      "timeActive": "Время активности",
-      "systemIdle": "Система простаивает"
+      "timeActive": "Время активности"
     },
     "expiringContainers": {
       "title": "Истечения",
