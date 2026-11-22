@@ -56,7 +56,10 @@
       "active": "Active",
       "volumeBrowser": "Volume Browser"
     },
-    "yantraContainersGrid": {},
+    "yantraContainersGrid": {
+      "serviceCount": "{count} services",
+      "internalOnly": "Internal only"
+    },
     "systemToolsCard": {},
     "hostCard": {
       "host": "Host",
