@@ -1,8 +1,10 @@
 <script>
-// Dashboard engine: one column — the daily featured app: an eyebrow with live
-// status, app logo and identity, short description, category tags, and a CTA
-// aligned with Yantr's dashboard theme.
-export const meta = { cols: 1 };
+// Dashboard engine: two columns. The daily featured app is a poster on the
+// left — logo, name and its lead category on a tinted plate — and a reading
+// column on the right: description, tag pills, CTA. Below `md` the card is a
+// single dashboard column, so the two halves stack; the side-by-side form only
+// appears once the card itself spans two columns (AGENTS.md §8).
+export const meta = { cols: 2 };
 </script>
 <script setup>
 import { computed } from "vue";
@@ -131,72 +133,73 @@ function handleSelect(appId) {
         </div>
       </div>
 
-      <!-- Identity: Logo + Name + Category -->
-      <button
-        type="button"
-        @click="handleSelect(dailyApp.id)"
-        class="flex min-w-0 items-center gap-4 text-left"
-      >
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
-          <AppLogo
-            :logo="dailyApp?.logo"
-            :name="dailyApp?.name"
-            :seed="dailyApp?.id || dailyApp?.name"
-            img-class="h-full w-full object-contain"
-            icon-class="h-6 w-6 text-amber-600 dark:text-amber-400"
-          />
-        </div>
-
-        <div class="min-w-0 flex-1">
-          <div class="flex items-center gap-2">
-            <span class="block max-w-full truncate text-xl font-bold tracking-tight yantra-text-primary transition-opacity hover:opacity-70">
-              {{ dailyApp?.name }}
-            </span>
-          </div>
-
-          <div v-if="dailyApp?.tags?.length" class="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] yantra-text-secondary">
-            <span class="truncate font-medium text-amber-700 dark:text-amber-400">
-              #{{ dailyApp.tags[0] }}
-            </span>
-            <span v-if="dailyApp.tags.length > 1" class="text-zinc-400 dark:text-zinc-600">
-              +{{ dailyApp.tags.length - 1 }}
-            </span>
-          </div>
-        </div>
-      </button>
-
-      <!-- Description -->
-      <p class="line-clamp-2 text-sm leading-relaxed yantra-text-secondary">
-        {{ dailyApp?.short_description || dailyApp?.description || t('appCard.noDescription') }}
-      </p>
-
-      <!-- Tags -->
-      <div v-if="dailyApp?.tags?.length" class="flex flex-wrap items-center gap-1.5">
-        <span
-          v-for="tag in dailyApp.tags.slice(0, 3)"
-          :key="tag"
-          class="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[10px] font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400"
-        >
-          {{ tag }}
-        </span>
-        <span
-          v-if="dailyApp.tags.length > 3"
-          class="text-[10px] font-medium yantra-text-secondary"
-        >
-          +{{ dailyApp.tags.length - 3 }}
-        </span>
-      </div>
-
-      <!-- CTA -->
-      <div class="mt-auto pt-2">
+      <!-- Body: poster plate on the left, reading column on the right -->
+      <div class="grid flex-1 grid-cols-1 gap-5 md:grid-cols-2">
+        <!-- Poster: logo, name, lead category -->
         <button
           type="button"
           @click="handleSelect(dailyApp.id)"
-          class="group/cta flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 text-[10px] font-bold uppercase tracking-widest text-amber-700 transition-colors duration-200 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30 active:scale-[0.98]"
+          class="flex min-w-0 flex-col justify-center gap-5 rounded-2xl border border-amber-200 bg-amber-50/50 p-5 text-left transition-colors duration-200 hover:bg-amber-100 dark:border-amber-900/40 dark:bg-amber-900/20 dark:hover:bg-amber-900/30"
         >
-          <span>{{ ctaLabel }}</span>
-          <ArrowUpRight :size="13" class="transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1" />
+          <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-zinc-900">
+            <AppLogo
+              :logo="dailyApp?.logo"
+              :name="dailyApp?.name"
+              :seed="dailyApp?.id || dailyApp?.name"
+              img-class="h-full w-full object-contain p-1.5"
+              icon-class="h-7 w-7 text-amber-600 dark:text-amber-400"
+            />
+          </div>
+
+          <div class="min-w-0">
+            <span class="block max-w-full truncate text-2xl font-bold leading-tight tracking-tight yantra-text-primary transition-opacity hover:opacity-70">
+              {{ dailyApp?.name }}
+            </span>
+
+            <div v-if="dailyApp?.tags?.length" class="mt-1 flex items-center gap-1.5 text-[11px] yantra-text-secondary">
+              <span class="truncate font-medium text-amber-700 dark:text-amber-400">
+                #{{ dailyApp.tags[0] }}
+              </span>
+              <span v-if="dailyApp.tags.length > 1" class="text-zinc-400 dark:text-zinc-600">
+                +{{ dailyApp.tags.length - 1 }}
+              </span>
+            </div>
+          </div>
         </button>
+
+        <!-- Reading column: description, tags, CTA -->
+        <div class="flex min-w-0 flex-col gap-4">
+          <p class="line-clamp-3 text-sm leading-relaxed yantra-text-secondary">
+            {{ dailyApp?.short_description || dailyApp?.description || t('appCard.noDescription') }}
+          </p>
+
+          <div v-if="dailyApp?.tags?.length" class="flex flex-wrap items-center gap-1.5">
+            <span
+              v-for="tag in dailyApp.tags.slice(0, 3)"
+              :key="tag"
+              class="rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-0.5 text-[10px] font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-400"
+            >
+              {{ tag }}
+            </span>
+            <span
+              v-if="dailyApp.tags.length > 3"
+              class="text-[10px] font-medium yantra-text-secondary"
+            >
+              +{{ dailyApp.tags.length - 3 }}
+            </span>
+          </div>
+
+          <div class="mt-auto pt-1">
+            <button
+              type="button"
+              @click="handleSelect(dailyApp.id)"
+              class="group/cta flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 text-[10px] font-bold uppercase tracking-widest text-amber-700 transition-colors duration-200 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/30 active:scale-[0.98]"
+            >
+              <span>{{ ctaLabel }}</span>
+              <ArrowUpRight :size="13" class="transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
