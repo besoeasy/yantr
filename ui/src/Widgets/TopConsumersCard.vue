@@ -1,8 +1,9 @@
 <script>
-// Dashboard engine: two columns — six ranked cells read as three across by
-// two rows; one column would either stack them into a page or squeeze a name,
-// a percentage and a bar into 130px. Width honours the two-column ceiling
-// every widget lives by; see Home.vue for how meta.cols is consumed.
+// Dashboard engine: two columns — a donut of the sampled CPU split sits beside
+// the legend that names each slice, so the card reads at half the grid without
+// turning six containers into six boxes. Width honours the two-column ceiling
+// every widget lives by (AGENTS.md §8); see Home.vue for how meta.cols is
+// consumed.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -112,11 +113,10 @@ onUnmounted(() => clearInterval(timer));
 // version in the dependency chain makes rows recompute after mutations of the
 // plain (non-reactive) maps, without making those maps reactive themselves.
 //
-// The bar is an absolute meter: 100% is one fully used core, not the busiest
-// container of this sample. Scaling to the leader made every leader read full
-// however small its number, which told the eye nothing about the figure beside
-// it; a container over a core saturates the bar and lets the percentage say
-// the rest. The list is still ranked by usage.
+// Ranked by usage. The old per-row bar was an absolute meter (100% = one core);
+// the donut below is the other reading — each slice is that container's share
+// of the sampled total — so the absolute percentage stays in the legend, where
+// a number can carry it and an angle cannot.
 const rows = computed(() => {
   void version.value;
   const ranked = [...samples.values()]
@@ -128,8 +128,34 @@ const rows = computed(() => {
     name: s.name,
     pct: s.pct,
     memUsage: s.memUsage,
-    bar: Math.min(s.pct, 100),
   }));
+});
+
+// Slice colours are literal hex, not utilities: the palette is data on an SVG
+// attribute, and a class would only exist to be spelled again in main.css.
+const SLICE_COLORS = ["#f43f5e", "#0ea5e9", "#10b981", "#f59e0b", "#8b5cf6", "#a1a1aa"];
+const DONUT_R = 70;
+const DONUT_C = 2 * Math.PI * DONUT_R;
+
+const totalPct = computed(() => rows.value.reduce((sum, row) => sum + row.pct, 0));
+
+// A dash offset of -cumulative share lays each slice after the previous one;
+// the template rotates the whole ring so the first slice starts at twelve.
+const slices = computed(() => {
+  const total = totalPct.value;
+  if (!(total > 0)) return [];
+  let offset = 0;
+  return rows.value.map((row, i) => {
+    const share = row.pct / total;
+    const slice = {
+      ...row,
+      color: SLICE_COLORS[i % SLICE_COLORS.length],
+      dash: share * DONUT_C,
+      offset: -offset * DONUT_C,
+    };
+    offset += share;
+    return slice;
+  });
 });
 
 const waiting = computed(
@@ -161,24 +187,60 @@ const hasLoad = computed(() => rows.value.length > 0);
       </div>
     </div>
 
-    <!-- Rows: a 3×2 board. The name gets its own line so it can use the full
-         cell width; percentage and memory share the second, the bar closes. -->
+    <!-- Split: the donut is the share of the sampled CPU, the legend is the
+         absolute percentage and memory per container. -->
     <div class="relative z-10 mt-auto pt-6">
-      <div v-if="hasLoad" class="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-        <div v-for="row in rows" :key="row.key" class="flex min-w-0 flex-col rounded-xl bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/50">
-          <span class="truncate text-sm font-bold yantra-text-primary">{{ row.name }}</span>
-          <div class="mt-1 flex items-baseline justify-between gap-2">
-            <span class="text-lg font-black tabular-nums tracking-tight text-rose-600 dark:text-rose-400">
-              {{ row.pct.toFixed(1) }}%
+      <div v-if="hasLoad" class="flex flex-col gap-5 sm:flex-row sm:items-center">
+        <div class="relative flex shrink-0 justify-center">
+          <svg viewBox="0 0 200 200" class="h-40 w-40" aria-hidden="true">
+            <circle
+              cx="100"
+              cy="100"
+              :r="DONUT_R"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="24"
+              class="text-zinc-200 dark:text-zinc-800"
+            />
+            <circle
+              v-for="slice in slices"
+              :key="slice.key"
+              cx="100"
+              cy="100"
+              :r="DONUT_R"
+              fill="none"
+              :stroke="slice.color"
+              stroke-width="24"
+              :stroke-dasharray="`${slice.dash} ${DONUT_C - slice.dash}`"
+              :stroke-dashoffset="slice.offset"
+              transform="rotate(-90 100 100)"
+            />
+          </svg>
+
+          <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+            <span class="text-2xl font-black tabular-nums leading-none tracking-tighter yantra-text-primary">
+              {{ totalPct.toFixed(1) }}%
             </span>
-            <span class="shrink-0 text-[10px] font-semibold uppercase tracking-widest yantra-text-secondary">
-              {{ formatBytes(row.memUsage) }}
+            <span class="mt-1 text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+              {{ t("quickMetrics.topConsumers.total") }}
             </span>
-          </div>
-          <div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
-            <div class="h-full rounded-full bg-rose-500 transition-[width] duration-500" :style="{ width: `${row.bar}%` }"></div>
           </div>
         </div>
+
+        <ul class="flex min-w-0 flex-1 flex-col gap-2">
+          <li v-for="slice in slices" :key="slice.key" class="flex min-w-0 items-center gap-2.5">
+            <span class="h-2 w-2 shrink-0 rounded-full" :style="{ backgroundColor: slice.color }"></span>
+            <span class="min-w-0 flex-1 truncate text-xs font-bold yantra-text-primary">
+              {{ slice.name }}
+            </span>
+            <span class="shrink-0 text-sm font-black tabular-nums text-rose-600 dark:text-rose-400">
+              {{ slice.pct.toFixed(1) }}%
+            </span>
+            <span class="w-16 shrink-0 text-right text-[10px] font-semibold uppercase tracking-wider yantra-text-secondary">
+              {{ formatBytes(slice.memUsage) }}
+            </span>
+          </li>
+        </ul>
       </div>
 
       <!-- Empty states: a dashboard claims nothing it has not measured. No

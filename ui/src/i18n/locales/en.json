@@ -517,12 +517,16 @@
     "topConsumers": {
       "title": "Top Consumers",
       "subtitle": "Busiest containers",
+      "total": "Total",
       "none": "No running containers",
       "sampling": "Sampling containers..."
     },
     "events": {
       "label": "Activity",
       "subtitle": "Container events",
+      "colContainer": "Container",
+      "colAction": "Action",
+      "colAge": "Age",
       "empty": "No container events in the last hour",
       "more": "+{count} more",
       "repeat": "{count} events merged",

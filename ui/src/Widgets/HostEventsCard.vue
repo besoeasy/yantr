@@ -1,8 +1,9 @@
 <script>
-// Dashboard engine: two columns — a feed reads like a ledger: each row wants
-// name, verb and age spread across the width, and one column would clip the
-// names the moment a stack gets a long one. Width honours the two-column
-// ceiling every widget lives by; see Home.vue for how meta.cols is consumed.
+// Dashboard engine: two columns — the feed is a ledger table, not a grid of
+// chips: Container / Action / Age line up down the card, so a burst of events
+// reads as one column of names and one of verbs instead of six scattered
+// boxes. Two columns is the ceiling every widget lives by (AGENTS.md §8); see
+// Home.vue for how meta.cols is consumed.
 export const meta = { cols: 2 };
 </script>
 <script setup>
@@ -267,46 +268,67 @@ const hiddenRows = computed(() => Math.max(0, rows.value.length - MAX_ROWS));
       :class="degraded ? 'opacity-50' : ''"
     >
       <template v-if="rows.length">
-        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-          <div
-            v-for="row in visibleRows"
-            :key="row.key"
-            class="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2.5 transition-colors duration-200 hover:border-zinc-300 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
-          >
-            <div class="flex min-w-0 items-center gap-2.5">
-              <span class="relative flex h-2 w-2 shrink-0">
-                <span class="h-2 w-2 rounded-full" :class="row.tone"></span>
-              </span>
+        <table class="w-full table-fixed">
+          <colgroup>
+            <col />
+            <col class="w-28" />
+            <col class="w-12" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="pb-2 text-left text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+                {{ t("quickMetrics.events.colContainer") }}
+              </th>
+              <th class="pb-2 text-left text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+                {{ t("quickMetrics.events.colAction") }}
+              </th>
+              <th class="pb-2 text-right text-[9px] font-bold uppercase tracking-widest yantra-text-secondary">
+                {{ t("quickMetrics.events.colAge") }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in visibleRows"
+              :key="row.key"
+              class="transition-colors duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+            >
+              <td class="border-t border-zinc-100 py-2.5 pr-3 dark:border-zinc-800">
+                <div class="flex min-w-0 items-center gap-2">
+                  <span class="h-2 w-2 shrink-0 rounded-full" :class="row.tone"></span>
+                  <span class="truncate text-xs font-bold yantra-text-primary">
+                    {{ row.name }}
+                  </span>
+                </div>
+              </td>
 
-              <div class="flex min-w-0 items-center gap-2">
-                <span class="truncate text-xs font-bold yantra-text-primary">
-                  {{ row.name }}
-                </span>
+              <td class="border-t border-zinc-100 py-2.5 dark:border-zinc-800">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
+                    :class="badgeClassFor(row.kind)"
+                  >
+                    {{ row.verb }}
+                  </span>
 
-                <span
-                  class="shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider"
-                  :class="badgeClassFor(row.kind)"
-                >
-                  {{ row.verb }}
-                </span>
+                  <span
+                    v-if="row.count > 1"
+                    class="shrink-0 text-[9px] font-black tabular-nums yantra-text-secondary"
+                    :title="row.restartLoop
+                      ? t('quickMetrics.events.restartBurst', { count: row.count })
+                      : t('quickMetrics.events.repeat', { count: row.count })"
+                  >
+                    ×{{ row.count }}
+                  </span>
+                </div>
+              </td>
 
-                <span
-                  v-if="row.count > 1"
-                  class="shrink-0 rounded-full border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 text-[9px] font-black tabular-nums yantra-text-secondary dark:border-zinc-700 dark:bg-zinc-800"
-                  :title="row.restartLoop
-                    ? t('quickMetrics.events.restartBurst', { count: row.count })
-                    : t('quickMetrics.events.repeat', { count: row.count })"
-                >
-                  ×{{ row.count }}
-                </span>
-              </div>
-            </div>
-
-            <span class="shrink-0 font-mono text-[11px] font-medium tabular-nums yantra-text-secondary">
-              {{ row.age }}
-            </span>
-          </div>
-        </div>
+              <td class="border-t border-zinc-100 py-2.5 text-right font-mono text-[11px] font-medium tabular-nums yantra-text-secondary dark:border-zinc-800">
+                {{ row.age }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
         <div
           v-if="hiddenRows > 0"
