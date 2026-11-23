@@ -362,3 +362,27 @@ A utility class that is not defined in `main.css` fails
 references fails `i18nKeys.test.js`. Both are worth running before a commit;
 the other locales lag `en` and fall back to it, so a new key is added there
 only.
+
+---
+
+## 10. The sign-in screen
+
+`AuthGate` is the one screen outside the shell, and it is full-bleed: one
+viewport split into the host on the left and the door on the right. The 440px
+card centred over a particle field it replaced read as a dialog over an empty
+page, not as the front door of the app.
+
+- **Left half** — the pitch, drawn as the stack it is: nodes drifting, edges
+  fading between neighbours, a packet crossing one now and then. It is the same
+  deep navy in both themes. A title page does not follow the reader's theme, and
+  a brand panel that turns white in light mode stops being a brand panel.
+- **Right half** — the form, and it follows the theme, because that is where
+  the user types. One column, 336px, one primary action.
+- **The graph's palette** is canvas-drawn, so it lives in `main.css` as channel
+  triples (`--canvas-node`, `--canvas-particle`, `--canvas-thread`,
+  `--canvas-pulse`) and is read once; hex belongs in neither the SFC nor a
+  `rgba()` literal. The channels do not change under `:root.dark`.
+- **Reduced motion** — the graph draws one frame and stops. The field is
+  decoration; nothing depends on its drift.
+- **Below 900px** the brand half drops away, the form takes the screen, and the
+  wordmark moves above it.

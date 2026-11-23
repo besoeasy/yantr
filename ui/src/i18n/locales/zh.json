@@ -519,8 +519,6 @@
   "authGate": {
     "bootingTitle": "准备中",
     "bootingState": "正在恢复会话…",
-    "setupTitle": "设置 Yantr",
-    "loginTitle": "登录",
     "loginSubtitle": "输入您的密码和 PIN 以解锁。",
     "seedNote": "密钥存储在本地。请从此设备登录。",
     "setupAction": "创建账户",

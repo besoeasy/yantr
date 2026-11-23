@@ -1,9 +1,9 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { 
+import {
   Copy, Check, LoaderCircle, LockKeyhole, Eye, EyeOff, AlertTriangle,
-  ShieldCheck, Sparkles, KeyRound, Download, CheckCircle2,
+  ShieldCheck, Sparkles, Download, CheckCircle2,
   ArrowRight, ArrowLeft, Shield
 } from '@lucide/vue'
 import { useNotification } from '../composables/useNotification'
@@ -25,36 +25,40 @@ const localError = ref('')
 const passwordInput = ref(null)
 const confirmPasswordInput = ref(null)
 
+const isSetup = computed(() => !authState.configured)
+
 // ─── Strength indicator ──────────────────────────────────────────────────────
 const strengthCriteria = computed(() => {
   const pw = password.value
   const p = pin.value
   return [
-    { label: 'Min 8 characters', met: pw.length >= 8 },
-    { label: 'Uppercase & number', met: /[A-Z]/.test(pw) && /[0-9]/.test(pw) },
-    { label: 'Special character', met: /[^A-Za-z0-9]/.test(pw) },
-    { label: 'PIN (min 4 digits)', met: p.length >= 4 },
+    { label: t('authGate.criterionLength'), met: pw.length >= 8 },
+    { label: t('authGate.criterionMix'), met: /[A-Z]/.test(pw) && /[0-9]/.test(pw) },
+    { label: t('authGate.criterionSpecial'), met: /[^A-Za-z0-9]/.test(pw) },
+    { label: t('authGate.criterionPin'), met: p.length >= 4 },
   ]
 })
 
 const strength = computed(() => {
   const pw = password.value
   const p = pin.value
-  if (!pw || !p) return { label: 'Empty', score: 0, color: 'bg-(--card-inset)', textColor: 'yantra-text-secondary' }
+  if (!pw || !p) {
+    return { label: t('authGate.strengthEmpty'), score: 0, bar: '', textColor: 'yantra-text-secondary' }
+  }
   let score = 0
   if (pw.length >= 8) score += 1
   if (pw.length >= 12) score += 1
   if (/[A-Z]/.test(pw) && /[0-9]/.test(pw)) score += 1
   if (/[^A-Za-z0-9]/.test(pw)) score += 1
   if (p.length >= 4) score += 1
-  
-  if (score <= 2) return { label: 'Weak', score: 1, color: 'bg-rose-500', textColor: 'yantra-text-danger' }
-  if (score <= 3) return { label: 'Fair', score: 2, color: 'bg-amber-500', textColor: 'yantra-text-warn' }
-  if (score <= 4) return { label: 'Good', score: 3, color: 'bg-blue-500', textColor: 'yantra-text-accent' }
-  return { label: 'Strong', score: 4, color: 'bg-emerald-500', textColor: 'yantra-text-ok' }
+
+  if (score <= 2) return { label: t('authGate.strengthWeak'), score: 1, bar: 'yantra-auth__bar--weak', textColor: 'yantra-text-danger' }
+  if (score <= 3) return { label: t('authGate.strengthFair'), score: 2, bar: 'yantra-auth__bar--fair', textColor: 'yantra-text-warn' }
+  if (score <= 4) return { label: t('authGate.strengthGood'), score: 3, bar: 'yantra-auth__bar--good', textColor: 'yantra-text-accent' }
+  return { label: t('authGate.strengthStrong'), score: 4, bar: 'yantra-auth__bar--strong', textColor: 'yantra-text-ok' }
 })
 
-// ─── Random Key Generator ───────────────────────────────────────────────────
+// ─── Random key generator ───────────────────────────────────────────────────
 function generateRandomSecret() {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
   let pw = ''
@@ -75,7 +79,7 @@ function generateRandomSecret() {
   pinConfirm.value = p
   showPassword.value = true
   showPin.value = true
-  toast.success('Generated strong credentials')
+  toast.success(t('authGate.messages.generated'))
 }
 
 // ─── Live public key derivation ───────────────────────────────────────────────
@@ -119,7 +123,11 @@ const keyAvatarGradient = computed(() => {
 
 async function copyPublicKey() {
   if (!derivedPublicKey.value) return
-  await navigator.clipboard.writeText(derivedPublicKey.value)
+  try {
+    await navigator.clipboard.writeText(derivedPublicKey.value)
+  } catch {
+    return
+  }
   copied.value = true
   toast.success(t('authGate.messages.publicKeyCopied'))
   setTimeout(() => { copied.value = false }, 2000)
@@ -151,53 +159,213 @@ on the server or database. If lost, your account cannot be recovered.
   a.download = `yantr-admin-key-${derivedPublicKey.value.slice(0, 8)}.txt`
   a.click()
   URL.revokeObjectURL(url)
-  toast.success('Backup file downloaded')
+  toast.success(t('authGate.messages.backupDownloaded'))
 }
 
-// ─── Mouse Follow Canvas Animation (Pure White Theme) ─────────────────────────
-const bgCanvas = ref(null)
-let canvasCtx = null
-let particles = []
-const mouse = { x: -500, y: -500, targetX: -500, targetY: -500, active: false }
-let raf = null
+// ─── The graph on the brand half ─────────────────────────────────────────────
+// The left half is the stack itself: nodes drift, edges fade in and out between
+// neighbours, and a packet crosses an edge now and then. It is drawn in script,
+// so its palette lives in main.css as channel triples and is read once — the
+// panel is the same deep navy in both themes, so the palette never changes.
+const brandCanvas = ref(null)
+const brandInner = ref(null)
+const host = ref('')
 
-// The particle field is drawn in script, so it cannot use var(--accent) the way
-// the rest of the app does: canvas needs concrete channels to build rgba()
-// from, and --accent resolves to oklch(). The channel triples live in main.css
-// next to the rest of the palette, and are read on every resize/paint so the
-// field follows the theme instead of freezing in whichever mode booted first.
-function themeChannels() {
+let frame = null
+let ctx = null
+let palette = null
+let observer = null
+let lastTick = 0
+let spawnClock = 0
+let width = 0
+let height = 0
+
+const nodes = []
+let pulses = []
+const pointer = { x: 0, y: 0, tx: 0, ty: 0, on: false }
+
+function readPalette() {
   const cs = getComputedStyle(document.documentElement)
-  const chan = (name) => (cs.getPropertyValue(name) || '2 132 199').trim()
+  const chan = (name, fallback) => (cs.getPropertyValue(name) || fallback).trim()
   return {
-    particle: chan('--canvas-particle'),
-    particle2: chan('--canvas-particle-2'),
-    thread: chan('--canvas-thread'),
-    page: (cs.getPropertyValue('--canvas-page') || '#ffffff').trim(),
+    node: chan('--canvas-node', '125 211 252'),
+    particle: chan('--canvas-particle', '148 163 184'),
+    thread: chan('--canvas-thread', '56 189 248'),
+    pulse: chan('--canvas-pulse', '186 230 253'),
   }
 }
 
-const isSetup = computed(() => !authState.configured)
-const title = computed(() => authState.booting
-  ? t('authGate.bootingTitle')
-  : isSetup.value ? t('authGate.setupTitle') : t('authGate.loginTitle'))
+function seedNodes() {
+  nodes.length = 0
+  pulses = []
+  const count = Math.round(Math.min(44, (width * height) / 9000))
+  for (let i = 0; i < count; i++) {
+    nodes.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.18,
+      vy: (Math.random() - 0.5) * 0.18,
+      r: 1.1 + Math.random() * 1.5,
+      service: Math.random() > 0.74,
+    })
+  }
+}
 
+function sizeGraph() {
+  const canvas = brandCanvas.value
+  const box = canvas?.parentElement?.getBoundingClientRect()
+  if (!canvas || !box) return
+  const dpr = Math.min(2, window.devicePixelRatio || 1)
+  width = Math.max(1, Math.round(box.width))
+  height = Math.max(1, Math.round(box.height))
+  canvas.width = Math.round(width * dpr)
+  canvas.height = Math.round(height * dpr)
+  ctx = canvas.getContext('2d')
+  if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  seedNodes()
+  drawGraph()
+}
+
+function spawnPulse() {
+  if (nodes.length < 2) return
+  const a = nodes[Math.floor(Math.random() * nodes.length)]
+  const near = nodes.filter((n) => n !== a && Math.hypot(n.x - a.x, n.y - a.y) < 130)
+  if (!near.length) return
+  pulses.push({ a, b: near[Math.floor(Math.random() * near.length)], t: 0, speed: 0.006 + Math.random() * 0.006 })
+}
+
+function drawGraph() {
+  if (!ctx || !palette) return
+  ctx.clearRect(0, 0, width, height)
+  const ox = pointer.on ? (pointer.tx - width / 2) * 0.012 : 0
+  const oy = pointer.on ? (pointer.ty - height / 2) * 0.012 : 0
+
+  for (let i = 0; i < nodes.length; i++) {
+    const a = nodes[i]
+    for (let j = i + 1; j < nodes.length; j++) {
+      const b = nodes[j]
+      const d = Math.hypot(a.x - b.x, a.y - b.y)
+      if (d >= 132) continue
+      ctx.strokeStyle = `rgba(${palette.thread}, ${(0.16 * (1 - d / 132)).toFixed(3)})`
+      ctx.lineWidth = 0.7
+      ctx.beginPath()
+      ctx.moveTo(a.x + ox, a.y + oy)
+      ctx.lineTo(b.x + ox, b.y + oy)
+      ctx.stroke()
+    }
+  }
+
+  for (const p of pulses) {
+    const x = p.a.x + (p.b.x - p.a.x) * p.t + ox
+    const y = p.a.y + (p.b.y - p.a.y) * p.t + oy
+    const glow = ctx.createRadialGradient(x, y, 0, x, y, 7)
+    glow.addColorStop(0, `rgba(${palette.pulse}, 0.9)`)
+    glow.addColorStop(1, `rgba(${palette.pulse}, 0)`)
+    ctx.fillStyle = glow
+    ctx.beginPath()
+    ctx.arc(x, y, 7, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  for (const n of nodes) {
+    const x = n.x + ox
+    const y = n.y + oy
+    if (n.service) {
+      const s = 9
+      ctx.strokeStyle = `rgba(${palette.node}, 0.42)`
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      if (ctx.roundRect) ctx.roundRect(x - s / 2, y - s / 2, s, s, 2.5)
+      else ctx.rect(x - s / 2, y - s / 2, s, s)
+      ctx.stroke()
+      ctx.fillStyle = `rgba(${palette.node}, 0.85)`
+      ctx.beginPath()
+      ctx.arc(x, y, 1.6, 0, Math.PI * 2)
+      ctx.fill()
+    } else {
+      ctx.fillStyle = `rgba(${palette.particle}, 0.42)`
+      ctx.beginPath()
+      ctx.arc(x, y, n.r, 0, Math.PI * 2)
+      ctx.fill()
+    }
+  }
+}
+
+function tick(now) {
+  if (lastTick) {
+    const step = Math.min(48, now - lastTick) / 16.67
+    for (const n of nodes) {
+      n.x += n.vx * step
+      n.y += n.vy * step
+      if (n.x < -20 || n.x > width + 20) n.vx *= -1
+      if (n.y < -20 || n.y > height + 20) n.vy *= -1
+    }
+    for (const p of pulses) p.t += p.speed * step
+    pulses = pulses.filter((p) => p.t < 1)
+    spawnClock += now - lastTick
+    if (spawnClock > 900) {
+      spawnClock = 0
+      spawnPulse()
+    }
+  }
+  lastTick = now
+  drawGraph()
+  frame = requestAnimationFrame(tick)
+}
+
+function trackPointer(event) {
+  const canvas = brandCanvas.value
+  if (!canvas || !width) return
+  const box = canvas.getBoundingClientRect()
+  pointer.x = event.clientX - box.left
+  pointer.y = event.clientY - box.top
+  if (!pointer.on) {
+    pointer.tx = pointer.x
+    pointer.ty = pointer.y
+  }
+  pointer.on = true
+  if (brandInner.value) {
+    const dx = ((pointer.x - width / 2) * 0.008).toFixed(2)
+    const dy = ((pointer.y - height / 2) * 0.008).toFixed(2)
+    brandInner.value.style.transform = `translate(${dx}px, ${dy}px)`
+  }
+}
+
+function releasePointer() {
+  pointer.on = false
+  if (brandInner.value) brandInner.value.style.transform = ''
+}
+
+// ─── Steps ───────────────────────────────────────────────────────────────────
 const activeTab = ref(0)
+
 const steps = computed(() => [
-  { id: 0, title: 'Credentials', icon: LockKeyhole },
-  { id: 1, title: 'Confirm', icon: ShieldCheck },
-  { id: 2, title: 'Identity Key', icon: KeyRound }
+  { id: 0, title: t('authGate.stepCredentials') },
+  { id: 1, title: t('authGate.stepConfirm') },
+  { id: 2, title: t('authGate.stepKey') },
 ])
+
+const stepHeading = computed(() => [
+  t('authGate.setupHeading'),
+  t('authGate.confirmHeading'),
+  t('authGate.keyHeading'),
+][activeTab.value])
+
+const stepSubtitle = computed(() => [
+  t('authGate.setupSubtitle'),
+  t('authGate.confirmSubtitle'),
+  t('authGate.keySubtitle'),
+][activeTab.value])
 
 function goToStep(stepIndex) {
   if (!isSetup.value) return
   if (stepIndex === 1) {
     if (!password.value || !pin.value) {
-      localError.value = 'Please fill in Password and PIN'
+      localError.value = t('authGate.errors.fillBoth')
       return
     }
     if (password.value.length < 8) {
-      localError.value = 'Password must be at least 8 characters'
+      localError.value = t('authGate.errors.passwordTooShort')
       return
     }
     localError.value = ''
@@ -205,11 +373,11 @@ function goToStep(stepIndex) {
     nextTick(() => confirmPasswordInput.value?.focus())
   } else if (stepIndex === 2) {
     if (password.value !== passwordConfirm.value) {
-      localError.value = 'Passwords do not match'
+      localError.value = t('authGate.errors.passwordMismatch')
       return
     }
     if (pin.value !== pinConfirm.value) {
-      localError.value = 'PINs do not match'
+      localError.value = t('authGate.errors.pinMismatch')
       return
     }
     localError.value = ''
@@ -235,11 +403,11 @@ function handleFormSubmit() {
 }
 
 function validate() {
-  if (!String(password.value).trim()) return 'Password is required'
-  if (!String(pin.value).trim()) return 'PIN is required'
+  if (!String(password.value).trim()) return t('authGate.errors.passwordRequired')
+  if (!String(pin.value).trim()) return t('authGate.errors.pinRequired')
   if (isSetup.value) {
-    if (password.value !== passwordConfirm.value) return 'Passwords do not match'
-    if (pin.value !== pinConfirm.value) return 'PINs do not match'
+    if (password.value !== passwordConfirm.value) return t('authGate.errors.passwordMismatch')
+    if (pin.value !== pinConfirm.value) return t('authGate.errors.pinMismatch')
   }
   return ''
 }
@@ -255,9 +423,9 @@ async function submit() {
   localError.value = ''
 
   try {
-    const payload = { 
-      password: password.value, 
-      pin: pin.value 
+    const payload = {
+      password: password.value,
+      pin: pin.value,
     }
     if (isSetup.value) {
       await setupYantrAdmin(payload)
@@ -274,510 +442,515 @@ async function submit() {
 }
 
 onMounted(() => {
+  host.value = window.location.host || 'localhost'
   nextTick(() => passwordInput.value?.focus())
-  requestAnimationFrame(() => { initBackground() })
+  requestAnimationFrame(() => {
+    palette = readPalette()
+    sizeGraph()
+    const brand = brandCanvas.value?.parentElement
+    if (brand && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(() => sizeGraph())
+      observer.observe(brand)
+    }
+    // A still graph is the reduced-motion version: the same picture, one frame
+    // of it, because the field is decoration and nothing depends on its drift.
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      drawGraph()
+      return
+    }
+    // The parallax follows the pointer over the brand half only: the form is a
+    // place to type, and a background that drifts under the cursor there is a
+    // distraction, not a flourish.
+    if (brand) {
+      brand.addEventListener('mousemove', trackPointer)
+      brand.addEventListener('mouseleave', releasePointer)
+    }
+    frame = requestAnimationFrame(tick)
+  })
 })
 
-function initBackground() {
-  const canvas = bgCanvas.value
-  if (!canvas) return
-  canvasCtx = canvas.getContext('2d', { alpha: true })
-
-  function resize() {
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-  }
-  resize()
-  window.addEventListener('resize', resize)
-
-  const theme = themeChannels()
-  particles = []
-  const count = Math.min(100, Math.floor((canvas.width * canvas.height) / 15000))
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: 1.5 + Math.random() * 2.5,
-      baseX: Math.random() * canvas.width,
-      baseY: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      color: Math.random() > 0.5
-        ? `rgba(${theme.particle}, 0.25)`
-        : `rgba(${theme.particle2}, 0.2)`
-    })
-  }
-
-  window.addEventListener('mousemove', handleMouse)
-  window.addEventListener('mouseleave', handleMouseLeave)
-  animateBackground()
-}
-
-function handleMouse(e) {
-  mouse.x = e.clientX
-  mouse.y = e.clientY
-  if (!mouse.active) {
-    mouse.targetX = e.clientX
-    mouse.targetY = e.clientY
-  }
-  mouse.active = true
-}
-
-function handleMouseLeave() {
-  mouse.active = false
-}
-
-function animateBackground() {
-  const canvas = bgCanvas.value
-  const ctx = canvasCtx
-  if (!ctx || !canvas) return
-
-  // Smooth lerp mouse coordinates for organic follow feel
-  if (mouse.active) {
-    mouse.targetX += (mouse.x - mouse.targetX) * 0.1
-    mouse.targetY += (mouse.y - mouse.targetY) * 0.1
-  }
-
-  // Clear to the page colour: a white clear is what made the field flash white
-  // behind the card on a dark install.
-  ctx.fillStyle = themeChannels().page
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  // 1. Mouse Spotlight Gradient Glow (Interactive white theme aura)
-  if (mouse.active) {
-    const radius = 450
-    const grad = ctx.createRadialGradient(
-      mouse.targetX, mouse.targetY, 0,
-      mouse.targetX, mouse.targetY, radius
-    )
-    const t = themeChannels()
-    grad.addColorStop(0, `rgba(${t.thread}, 0.09)`)
-    grad.addColorStop(0.4, `rgba(${t.particle2}, 0.04)`)
-    grad.addColorStop(1, `rgba(${t.page}, 0)`)
-    ctx.fillStyle = grad
-    ctx.beginPath()
-    ctx.arc(mouse.targetX, mouse.targetY, radius, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // 2. Interactive Particles & Follow filaments
-  const mx = mouse.targetX
-  const my = mouse.targetY
-  const influenceRadius = 140
-
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i]
-
-    // Particle motion
-    p.x += p.vx
-    p.y += p.vy
-
-    if (p.x < 0 || p.x > canvas.width) p.vx *= -1
-    if (p.y < 0 || p.y > canvas.height) p.vy *= -1
-
-    // Magnetic interaction with cursor follow
-    if (mouse.active) {
-      const dx = mx - p.x
-      const dy = my - p.y
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      if (dist < influenceRadius) {
-        const force = (influenceRadius - dist) / influenceRadius
-        p.x -= (dx / dist) * force * 1.5
-        p.y -= (dy / dist) * force * 1.5
-
-        // Draw connecting light line to mouse
-        ctx.strokeStyle = `rgba(${themeChannels().thread}, ${0.25 * force})`
-        ctx.lineWidth = 0.8
-        ctx.beginPath()
-        ctx.moveTo(p.x, p.y)
-        ctx.lineTo(mx, my)
-        ctx.stroke()
-      }
-    }
-
-    // Draw particle node
-    ctx.fillStyle = p.color
-    ctx.beginPath()
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // 3. Smooth Glowing Cursor Ring Follower
-  if (mouse.active) {
-    const t = themeChannels()
-    ctx.lineWidth = 1.5
-    ctx.strokeStyle = `rgba(${t.thread}, 0.35)`
-    ctx.beginPath()
-    ctx.arc(mouse.targetX, mouse.targetY, 18, 0, Math.PI * 2)
-    ctx.stroke()
-
-    ctx.fillStyle = `rgba(${t.thread}, 0.6)`
-    ctx.beginPath()
-    ctx.arc(mouse.targetX, mouse.targetY, 3, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  raf = requestAnimationFrame(animateBackground)
-}
-
 onUnmounted(() => {
-  if (raf) cancelAnimationFrame(raf)
-  window.removeEventListener('mousemove', handleMouse)
-  window.removeEventListener('mouseleave', handleMouseLeave)
+  if (frame) cancelAnimationFrame(frame)
+  observer?.disconnect()
+  const brand = brandCanvas.value?.parentElement
+  if (brand) {
+    brand.removeEventListener('mousemove', trackPointer)
+    brand.removeEventListener('mouseleave', releasePointer)
+  }
+  clearTimeout(deriveTimer)
 })
 </script>
 
 <template>
-  <div class="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-    <!-- Interactive Mouse Follow Canvas -->
-    <canvas
-      ref="bgCanvas"
-      class="fixed inset-0 z-0 pointer-events-none"
-    />
+  <div class="yantra-auth">
+    <!-- The host: the stack as a graph, the pitch, and what the key is. -->
+    <section class="yantra-auth__brand">
+      <div class="yantra-auth__glow yantra-auth__glow--one" />
+      <div class="yantra-auth__glow yantra-auth__glow--two" />
+      <div class="yantra-auth__glow yantra-auth__glow--three" />
+      <canvas ref="brandCanvas" class="yantra-auth__canvas" aria-hidden="true" />
+      <div class="yantra-auth__grid" aria-hidden="true" />
 
-    <div class="anim-enter relative z-10 w-full max-w-[440px]">
-      <!-- Brand Header -->
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full yantra-chip text-xs font-bold tracking-[2.5px] uppercase select-none shadow-xs">
-          <Shield class="h-3.5 w-3.5 yantra-text-accent" />
-          <span>YANTR IDENTITY</span>
+      <div ref="brandInner" class="yantra-auth__brand-inner">
+        <div class="yantra-auth__wordmark">
+          YANTR <span>{{ t('authGate.brandKicker') }}</span>
         </div>
-        <h1 class="mt-4 text-3xl sm:text-4xl font-black tracking-tight yantra-text-primary">
-          {{ title }}
-        </h1>
-        <p class="mt-2 text-xs sm:text-sm yantra-text-secondary max-w-sm mx-auto font-medium">
-          {{ isSetup ? 'Derive your stateless Ed25519 cryptographic key pair.' : t('authGate.loginSubtitle') }}
-        </p>
-      </div>
 
-      <!-- Main Card: Pure White with Soft Elevation & No Harsh Borders -->
-      <div
-        class="yantra-surface authgate-card relative rounded-3xl p-7 sm:p-8 transition-[border-color,box-shadow,transform,opacity] duration-200"
-        :class="{ 'opacity-60 pointer-events-none': authState.booting }"
-      >
-        <!-- Booting Spinner -->
-        <div v-if="authState.booting" class="flex items-center justify-center min-h-[180px]">
-          <div class="flex items-center gap-3 text-sm font-semibold yantra-text-secondary">
-            <LoaderCircle class="h-5 w-5 animate-spin yantra-text-accent" />
+        <div class="yantra-auth__copy">
+          <span class="yantra-auth__kicker">{{ t('authGate.brandBadge') }}</span>
+          <h1 class="yantra-auth__headline">
+            {{ t('authGate.brandTitle') }}<br />
+            <em>{{ t('authGate.brandTitleAccent') }}</em>
+          </h1>
+          <p class="yantra-auth__lead">{{ t('authGate.brandLead') }}</p>
+
+          <ul class="yantra-auth__proof">
+            <li>
+              <ShieldCheck class="yantra-auth__icon" />
+              <span>{{ t('authGate.proofIdentity') }}</span>
+            </li>
+            <li>
+              <LockKeyhole class="yantra-auth__icon" />
+              <span>{{ t('authGate.proofLocal') }}</span>
+            </li>
+            <li>
+              <Shield class="yantra-auth__icon" />
+              <span>{{ t('authGate.proofPodman') }}</span>
+            </li>
+          </ul>
+
+          <div class="yantra-auth__status">
+            <span class="yantra-auth__host">{{ host }}</span>
+            <span class="yantra-auth__status-right">
+              Ed25519 <span class="yantra-auth__sep">·</span> Podman
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The door. -->
+    <section class="yantra-auth__form">
+      <div class="yantra-auth__panel">
+        <div class="yantra-auth__mobilebrand">YANTR</div>
+
+        <div v-if="authState.booting" class="anim-stagger">
+          <span class="yantra-auth__eyebrow">{{ t('authGate.bootingTitle') }}</span>
+          <div class="yantra-auth__booting">
+            <LoaderCircle class="yantra-auth__spinner yantra-text-accent" />
             <span>{{ t('authGate.bootingState') }}</span>
           </div>
         </div>
 
-        <form v-else @submit.prevent="handleFormSubmit" class="space-y-6">
-          <!-- Step Wizard Nav (Setup Mode) -->
-          <div v-if="isSetup" class="space-y-3">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider yantra-text-secondary">
-                Step {{ activeTab + 1 }} of 3: {{ steps[activeTab].title }}
-              </span>
-              <button 
-                type="button" 
-                @click="generateRandomSecret" 
-                class="inline-flex items-center gap-1.5 text-xs font-bold yantra-text-accent hover:yantra-text-accent transition-colors"
-              >
-                <Sparkles class="h-3.5 w-3.5" />
-                <span>Auto-Generate</span>
-              </button>
+        <form v-else @submit.prevent="handleFormSubmit">
+          <!-- Sign in -->
+          <div v-if="!isSetup" key="login" class="anim-stagger">
+            <span class="yantra-auth__eyebrow">{{ t('authGate.loginEyebrow') }}</span>
+            <h2 class="yantra-auth__title">{{ t('authGate.loginHeading') }}</h2>
+            <p class="yantra-auth__sub">{{ t('authGate.loginSubtitle') }}</p>
+
+            <div class="yantra-auth__field">
+              <label class="yantra-auth__label" for="yantr-password">{{ t('authGate.password') }}</label>
+              <div class="yantra-auth__control">
+                <input
+                  id="yantr-password"
+                  ref="passwordInput"
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  :placeholder="t('authGate.passwordPlaceholder')"
+                  class="yantra-input"
+                />
+                <button
+                  type="button"
+                  class="yantra-auth__eye"
+                  tabindex="-1"
+                  :aria-label="showPassword ? t('authGate.hidePassword') : t('authGate.showPassword')"
+                  @click="showPassword = !showPassword"
+                >
+                  <EyeOff v-if="showPassword" class="yantra-auth__icon" />
+                  <Eye v-else class="yantra-auth__icon" />
+                </button>
+              </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div class="grid grid-cols-3 gap-2">
+            <div class="yantra-auth__field">
+              <div class="yantra-auth__label">
+                <label for="yantr-pin">{{ t('authGate.pin') }}</label>
+                <span class="yantra-auth__hint">{{ t('authGate.pinHint') }}</span>
+              </div>
+              <div class="yantra-auth__control">
+                <input
+                  id="yantr-pin"
+                  v-model="pin"
+                  :type="showPin ? 'text' : 'password'"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  :placeholder="t('authGate.pinPlaceholder')"
+                  class="yantra-input"
+                />
+                <button
+                  type="button"
+                  class="yantra-auth__eye"
+                  tabindex="-1"
+                  :aria-label="showPin ? t('authGate.hidePin') : t('authGate.showPin')"
+                  @click="showPin = !showPin"
+                >
+                  <EyeOff v-if="showPin" class="yantra-auth__icon" />
+                  <Eye v-else class="yantra-auth__icon" />
+                </button>
+              </div>
+            </div>
+
+            <div
+              v-if="localError || authState.error"
+              class="yantra-chip--danger yantra-auth__error"
+              role="alert"
+            >
+              <AlertTriangle class="yantra-auth__icon yantra-text-danger" />
+              <span>{{ localError || authState.error }}</span>
+            </div>
+
+            <button
+              type="submit"
+              :disabled="submitting || !password || !pin"
+              class="yantra-cta yantra-auth__submit"
+            >
+              <LoaderCircle v-if="submitting" class="yantra-auth__spinner" />
+              <LockKeyhole v-else class="yantra-auth__icon" />
+              <span>{{ submitting ? t('authGate.working') : t('authGate.loginAction') }}</span>
+            </button>
+
+            <div class="yantra-auth__key">
+              <span
+                class="yantra-auth__fingerprint"
+                :class="{ 'yantra-auth__fingerprint--live': derivingKey }"
+                :style="{ background: keyAvatarGradient }"
+              />
+              <span class="yantra-auth__keytext">
+                <span class="yantra-auth__keylabel">{{ t('authGate.identityKey') }}</span>
+                <span class="yantra-auth__keysub">
+                  {{
+                    derivedPublicKey
+                      ? t('authGate.fingerprint', { key: derivedPublicKey.slice(0, 8) })
+                      : t('authGate.awaitingLoginKey')
+                  }}
+                </span>
+              </span>
+              <span class="yantra-auth__keytag">Ed25519</span>
+            </div>
+
+            <p class="yantra-auth__foot">
+              <ShieldCheck class="yantra-auth__icon" />
+              <span>{{ t('authGate.seedNote') }}</span>
+            </p>
+          </div>
+
+          <!-- First run: credentials → confirm → key -->
+          <div v-else :key="`setup-${activeTab}`" class="anim-stagger">
+            <span class="yantra-auth__eyebrow">
+              {{ t('authGate.setupEyebrow') }} · {{ t('authGate.stepOf', { n: activeTab + 1 }) }}
+            </span>
+            <h2 class="yantra-auth__title">{{ stepHeading }}</h2>
+            <p class="yantra-auth__sub">{{ stepSubtitle }}</p>
+
+            <div class="yantra-auth__steps">
               <button
                 v-for="step in steps"
                 :key="step.id"
                 type="button"
+                class="yantra-auth__step"
+                :class="{ 'yantra-auth__step--done': activeTab > step.id, 'yantra-auth__step--now': activeTab === step.id }"
+                :aria-label="step.title"
                 @click="goToStep(step.id)"
-                class="h-2 rounded-full transition-[border-color,box-shadow,transform,opacity] duration-200"
-                :class="activeTab >= step.id ? 'yantra-cta' : 'yantra-chip'"
               />
             </div>
-          </div>
-
-          <!-- STEP 0: Credentials (Setup or Login) -->
-          <template v-if="!isSetup || activeTab === 0">
-            <!-- Password Input -->
-            <div>
-              <div class="text-xs font-bold tracking-wider uppercase yantra-text-secondary mb-2 flex items-center justify-between">
-                <span class="flex items-center gap-1.5">
-                  <LockKeyhole class="h-3.5 w-3.5 yantra-text-accent" />
-                  <span>PASSWORD</span>
-                </span>
-                <span v-if="isSetup && password" class="text-xs font-bold" :class="strength.textColor">
-                  {{ strength.label }}
-                </span>
-              </div>
-              <div class="relative">
-                <input
-                  ref="passwordInput"
-                  v-model="password"
-                  :aria-label="t('authGate.password')"
-                  :type="showPassword ? 'text' : 'password'"
-                  autocomplete="current-password"
-                  placeholder="Enter secure master password"
-                  class="w-full yantra-input yantra-text-primary rounded-2xl px-4 py-3.5 pr-11 text-sm font-semibold placeholder:yantra-text-secondary focus:outline-none focus:ring-2  transition-all"
-                />
-                <button
-                  type="button"
-                  @click="showPassword = !showPassword"
-                  class="absolute right-3.5 top-1/2 -translate-y-1/2 yantra-text-secondary hover:yantra-text-primary transition-colors p-1"
-                  tabindex="-1"
-                >
-                  <Eye v-if="showPassword" class="h-4 w-4" />
-                  <EyeOff v-else class="h-4 w-4" />
-                </button>
-              </div>
+            <div class="yantra-auth__steplabels">
+              <span
+                v-for="step in steps"
+                :key="step.id"
+                :class="{ 'yantra-auth__steplabel--on': activeTab === step.id }"
+              >
+                {{ step.title }}
+              </span>
             </div>
 
-            <!-- PIN Input -->
-            <div>
-              <div class="text-xs font-bold tracking-wider uppercase yantra-text-secondary mb-2 flex items-center gap-1.5">
-                <LockKeyhole class="h-3.5 w-3.5 yantra-text-accent" />
-                <span>PIN CODE</span>
+            <!-- Step 1 · credentials -->
+            <template v-if="activeTab === 0">
+              <div class="yantra-auth__field">
+                <div class="yantra-auth__label">
+                  <label for="yantr-password">{{ t('authGate.password') }}</label>
+                  <span
+                    v-if="password"
+                    class="yantra-auth__hint"
+                    :class="strength.textColor"
+                  >
+                    {{ strength.label }}
+                  </span>
+                </div>
+                <div class="yantra-auth__control">
+                  <input
+                    id="yantr-password"
+                    ref="passwordInput"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    autocomplete="new-password"
+                    :placeholder="t('authGate.passwordPlaceholder')"
+                    class="yantra-input"
+                  />
+                  <button
+                    type="button"
+                    class="yantra-auth__eye"
+                    tabindex="-1"
+                    :aria-label="showPassword ? t('authGate.hidePassword') : t('authGate.showPassword')"
+                    @click="showPassword = !showPassword"
+                  >
+                    <EyeOff v-if="showPassword" class="yantra-auth__icon" />
+                    <Eye v-else class="yantra-auth__icon" />
+                  </button>
+                </div>
               </div>
-              <div class="relative">
+
+              <div class="yantra-auth__field">
+                <div class="yantra-auth__label">
+                  <label for="yantr-pin">{{ t('authGate.pin') }}</label>
+                  <span class="yantra-auth__hint">{{ t('authGate.pinHint') }}</span>
+                </div>
+                <div class="yantra-auth__control">
+                  <input
+                    id="yantr-pin"
+                    v-model="pin"
+                    :type="showPin ? 'text' : 'password'"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    :placeholder="t('authGate.pinPlaceholder')"
+                    class="yantra-input"
+                  />
+                  <button
+                    type="button"
+                    class="yantra-auth__eye"
+                    tabindex="-1"
+                    :aria-label="showPin ? t('authGate.hidePin') : t('authGate.showPin')"
+                    @click="showPin = !showPin"
+                  >
+                    <EyeOff v-if="showPin" class="yantra-auth__icon" />
+                    <Eye v-else class="yantra-auth__icon" />
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="password || pin" class="yantra-surface-muted yantra-auth__strength">
+                <div class="yantra-auth__strength-head">
+                  <span>{{ t('authGate.strengthTitle') }}</span>
+                  <span class="yantra-auth__bars">
+                    <span
+                      v-for="i in 4"
+                      :key="i"
+                      class="yantra-auth__bar"
+                      :class="i <= strength.score ? strength.bar : ''"
+                    />
+                  </span>
+                </div>
+                <div class="yantra-auth__criteria">
+                  <span
+                    v-for="(item, idx) in strengthCriteria"
+                    :key="idx"
+                    class="yantra-auth__criterion"
+                    :class="{ 'yantra-auth__criterion--met': item.met }"
+                  >
+                    <CheckCircle2 v-if="item.met" class="yantra-auth__icon" />
+                    <span v-else class="yantra-auth__dot" />
+                    <span>{{ item.label }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div
+                v-if="localError || authState.error"
+                class="yantra-chip--danger yantra-auth__error"
+                role="alert"
+              >
+                <AlertTriangle class="yantra-auth__icon yantra-text-danger" />
+                <span>{{ localError || authState.error }}</span>
+              </div>
+
+              <button
+                type="button"
+                class="yantra-auth__ghost"
+                @click="generateRandomSecret"
+              >
+                <Sparkles class="yantra-auth__icon" />
+                <span>{{ t('authGate.autoGenerate') }}</span>
+              </button>
+
+              <button type="submit" class="yantra-cta yantra-auth__submit">
+                <span>{{ t('authGate.continueAction') }}</span>
+                <ArrowRight class="yantra-auth__icon" />
+              </button>
+            </template>
+
+            <!-- Step 2 · confirm -->
+            <template v-else-if="activeTab === 1">
+              <div class="yantra-chip--warn yantra-auth__error">
+                <AlertTriangle class="yantra-auth__icon yantra-text-warn" />
+                <span>{{ t('authGate.confirmWarning') }}</span>
+              </div>
+
+              <div class="yantra-auth__field">
+                <div class="yantra-auth__label">
+                  <label for="yantr-password-confirm">{{ t('authGate.passwordConfirm') }}</label>
+                  <span
+                    v-if="passwordConfirm && password === passwordConfirm"
+                    class="yantra-auth__hint yantra-auth__hint--ok"
+                  >
+                    {{ t('authGate.matches') }}
+                  </span>
+                </div>
                 <input
-                  v-model="pin"
-                  :aria-label="t('authGate.pin')"
-                  :type="showPin ? 'text' : 'password'"
+                  id="yantr-password-confirm"
+                  ref="confirmPasswordInput"
+                  v-model="passwordConfirm"
+                  type="password"
+                  autocomplete="off"
+                  :placeholder="t('authGate.passwordConfirmPlaceholder')"
+                  class="yantra-input yantra-auth__bare"
+                />
+              </div>
+
+              <div class="yantra-auth__field">
+                <div class="yantra-auth__label">
+                  <label for="yantr-pin-confirm">{{ t('authGate.pinConfirm') }}</label>
+                  <span
+                    v-if="pinConfirm && pin === pinConfirm"
+                    class="yantra-auth__hint yantra-auth__hint--ok"
+                  >
+                    {{ t('authGate.matches') }}
+                  </span>
+                </div>
+                <input
+                  id="yantr-pin-confirm"
+                  v-model="pinConfirm"
+                  type="password"
                   inputmode="numeric"
                   autocomplete="off"
-                  placeholder="Enter numeric PIN (e.g. 1234)"
-                  class="w-full yantra-input yantra-text-primary rounded-2xl px-4 py-3.5 pr-11 text-sm font-semibold placeholder:yantra-text-secondary focus:outline-none focus:ring-2  transition-all"
+                  :placeholder="t('authGate.pinConfirmPlaceholder')"
+                  class="yantra-input yantra-auth__bare"
                 />
+              </div>
+
+              <div
+                v-if="localError"
+                class="yantra-chip--danger yantra-auth__error"
+                role="alert"
+              >
+                <AlertTriangle class="yantra-auth__icon yantra-text-danger" />
+                <span>{{ localError }}</span>
+              </div>
+
+              <div class="yantra-auth__actions">
+                <button type="button" class="yantra-btn yantra-auth__back" @click="goToStep(0)">
+                  <ArrowLeft class="yantra-auth__icon" />
+                  <span>{{ t('authGate.backAction') }}</span>
+                </button>
                 <button
-                  type="button"
-                  @click="showPin = !showPin"
-                  class="absolute right-3.5 top-1/2 -translate-y-1/2 yantra-text-secondary hover:yantra-text-primary transition-colors p-1"
-                  tabindex="-1"
+                  type="submit"
+                  :disabled="!passwordConfirm || !pinConfirm || password !== passwordConfirm || pin !== pinConfirm"
+                  class="yantra-cta yantra-auth__submit"
                 >
-                  <Eye v-if="showPin" class="h-4 w-4" />
-                  <EyeOff v-else class="h-4 w-4" />
+                  <span>{{ t('authGate.reviewAction') }}</span>
+                  <ArrowRight class="yantra-auth__icon" />
                 </button>
               </div>
-            </div>
+            </template>
 
-            <!-- Strength Criteria checklist (Setup mode) -->
-            <div v-if="isSetup && (password || pin)" class="p-4 rounded-2xl yantra-surface-muted">
-              <div class="flex items-center justify-between text-xs font-bold mb-2">
-                <span class="yantra-text-secondary">Credential Strength</span>
-                <div class="flex gap-1.5">
-                  <div 
-                    v-for="i in 4" 
-                    :key="i"
-                    class="h-1.5 w-5 rounded-full transition-colors"
-                    :class="i <= strength.score ? strength.color : 'bg-(--card-inset)'"
-                  />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-2 text-xs">
-                <div 
-                  v-for="(item, idx) in strengthCriteria" 
-                  :key="idx" 
-                  class="flex items-center gap-1.5"
-                  :class="item.met ? 'yantra-text-ok font-semibold' : 'yantra-text-secondary'"
-                >
-                  <CheckCircle2 v-if="item.met" class="h-3.5 w-3.5 shrink-0" />
-                  <div v-else class="h-3.5 w-3.5 rounded-full bg-(--card-inset) shrink-0" />
-                  <span>{{ item.label }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Continue Button (Setup Mode Step 0) -->
-            <button
-              v-if="isSetup"
-              type="button"
-              @click="goToStep(1)"
-              class="w-full flex h-12 items-center justify-center gap-2 rounded-2xl yantra-cta active:scale-[0.985] text-sm font-bold tracking-wide transition-all"
-            >
-              <span>Continue to Confirmation</span>
-              <ArrowRight class="h-4 w-4" />
-            </button>
-          </template>
-
-          <!-- STEP 1: Confirmation (Setup Mode Only) -->
-          <template v-if="isSetup && activeTab === 1">
-            <div class="yantra-chip--warn p-4 rounded-2xl text-xs font-medium flex items-start gap-2.5">
-              <AlertTriangle class="h-4 w-4 shrink-0 mt-0.5 yantra-text-warn" />
-              <span>Confirm both credentials carefully. Your Ed25519 identity key is derived directly from them.</span>
-            </div>
-
-            <!-- Confirm Password -->
-            <div>
-              <div class="text-xs font-bold tracking-wider uppercase yantra-text-secondary mb-2 flex items-center justify-between">
-                <span class="flex items-center gap-1.5">
-                  <ShieldCheck class="h-3.5 w-3.5 yantra-text-accent" />
-                  <span>CONFIRM PASSWORD</span>
+            <!-- Step 3 · the key -->
+            <template v-else>
+              <div class="yantra-auth__key">
+                <span
+                  class="yantra-auth__fingerprint"
+                  :class="{ 'yantra-auth__fingerprint--live': derivingKey }"
+                  :style="{ background: keyAvatarGradient }"
+                />
+                <span class="yantra-auth__keytext">
+                  <span class="yantra-auth__keylabel">{{ t('authGate.generatedKey') }}</span>
+                  <span class="yantra-auth__keysub">
+                    {{
+                      derivedPublicKey
+                        ? t('authGate.fingerprint', { key: derivedPublicKey.slice(0, 8) })
+                        : t('authGate.awaitingCredentials')
+                    }}
+                  </span>
                 </span>
-                <span v-if="passwordConfirm && password === passwordConfirm" class="text-xs yantra-text-ok font-bold flex items-center gap-1">
-                  <Check class="h-3.5 w-3.5" /> Matches
-                </span>
-              </div>
-              <input
-                ref="confirmPasswordInput"
-                v-model="passwordConfirm"
-                :aria-label="t('authGate.passwordConfirm')"
-                type="password"
-                autocomplete="off"
-                placeholder="Re-enter master password"
-                class="w-full yantra-input yantra-text-primary rounded-2xl px-4 py-3.5 text-sm font-semibold placeholder:yantra-text-secondary focus:outline-none focus:ring-2  transition-all"
-              />
-            </div>
-
-            <!-- Confirm PIN -->
-            <div>
-              <div class="text-xs font-bold tracking-wider uppercase yantra-text-secondary mb-2 flex items-center justify-between">
-                <span class="flex items-center gap-1.5">
-                  <ShieldCheck class="h-3.5 w-3.5 yantra-text-accent" />
-                  <span>CONFIRM PIN</span>
-                </span>
-                <span v-if="pinConfirm && pin === pinConfirm" class="text-xs yantra-text-ok font-bold flex items-center gap-1">
-                  <Check class="h-3.5 w-3.5" /> Matches
-                </span>
-              </div>
-              <input
-                v-model="pinConfirm"
-                :aria-label="t('authGate.pinConfirm')"
-                type="password"
-                inputmode="numeric"
-                autocomplete="off"
-                placeholder="Re-enter PIN"
-                class="w-full yantra-input yantra-text-primary rounded-2xl px-4 py-3.5 text-sm font-semibold placeholder:yantra-text-secondary focus:outline-none focus:ring-2  transition-all"
-              />
-            </div>
-
-            <!-- Actions Step 1 -->
-            <div class="flex gap-2.5 pt-1">
-              <button
-                type="button"
-                @click="goToStep(0)"
-                class="flex-1 h-12 flex items-center justify-center gap-1.5 yantra-btn--lg text-sm font-bold transition-all"
-              >
-                <ArrowLeft class="h-4 w-4" />
-                <span>Back</span>
-              </button>
-              <button
-                type="button"
-                @click="goToStep(2)"
-                :disabled="!passwordConfirm || !pinConfirm || password !== passwordConfirm || pin !== pinConfirm"
-                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl yantra-cta disabled:opacity-40 text-sm font-bold transition-all disabled:cursor-not-allowed"
-              >
-                <span>Review Key</span>
-                <ArrowRight class="h-4 w-4" />
-              </button>
-            </div>
-          </template>
-
-          <!-- STEP 2: Identity Key Review (Setup) / Key Badge (Login) -->
-          <template v-if="(!isSetup) || (isSetup && activeTab === 2)">
-            <!-- Key Card Component -->
-            <div class="rounded-2xl yantra-surface-muted space-y-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div 
-                    class="h-9 w-9 rounded-xl shadow-xs transition-[border-color,box-shadow,transform,opacity] duration-200" 
-                    :style="{ background: keyAvatarGradient }"
-                  />
-                  <div>
-                    <div class="text-xs font-extrabold tracking-wide uppercase yantra-text-primary">
-                      {{ isSetup ? 'Generated Ed25519 Public Key' : 'Session Public Key' }}
-                    </div>
-                    <div class="text-[11px] yantra-text-secondary font-medium">
-                      {{ derivedPublicKey ? `Identity Fingerprint: ${derivedPublicKey.slice(0, 8)}...` : 'Enter credentials above' }}
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="derivedPublicKey" class="flex gap-1.5">
+                <span v-if="derivedPublicKey" class="yantra-auth__keyactions">
                   <button
                     type="button"
+                    class="yantra-btn-icon yantra-auth__keybtn"
+                    :title="t('authGate.copyKey')"
                     @click="copyPublicKey"
-                    class="p-2 rounded-xl yantra-btn-icon hover:yantra-text-primary transition-colors"
-                    title="Copy Public Key"
                   >
-                    <Check v-if="copied" class="h-4 w-4 yantra-text-ok" />
-                    <Copy v-else class="h-4 w-4" />
+                    <Check v-if="copied" class="yantra-auth__icon yantra-text-ok" />
+                    <Copy v-else class="yantra-auth__icon" />
                   </button>
                   <button
-                    v-if="isSetup"
                     type="button"
+                    class="yantra-btn-icon yantra-auth__keybtn"
+                    :title="t('authGate.downloadKey')"
                     @click="downloadKeyBackup"
-                    class="p-2 rounded-xl yantra-btn-icon hover:yantra-text-primary transition-colors"
-                    title="Download Key Backup"
                   >
-                    <Download class="h-4 w-4" />
+                    <Download class="yantra-auth__icon" />
                   </button>
-                </div>
+                </span>
+                <span v-else class="yantra-auth__keytag">Ed25519</span>
               </div>
 
-              <!-- Key Code Box -->
-              <div v-if="derivingKey" class="flex items-center justify-center py-4 text-xs font-medium yantra-text-secondary gap-2">
-                <LoaderCircle class="h-4 w-4 animate-spin yantra-text-accent" />
-                <span>Computing cryptographic Ed25519 key...</span>
+              <div v-if="derivingKey" class="yantra-auth__booting">
+                <LoaderCircle class="yantra-auth__spinner yantra-text-accent" />
+                <span>{{ t('authGate.computingKey') }}</span>
               </div>
-              <div v-else-if="derivedPublicKey" class="yantra-keywell rounded-2xl p-3.5 font-mono text-[11px] break-all leading-relaxed">
+              <div v-else-if="derivedPublicKey" class="yantra-keywell yantra-auth__well">
                 {{ formattedPublicKey }}
               </div>
-              <div v-else class="text-xs yantra-text-secondary italic py-2 text-center">
-                Key will be derived when Password and PIN are entered.
+              <p v-else class="yantra-auth__keynote">{{ t('authGate.keyPending') }}</p>
+
+              <p v-if="derivedPublicKey" class="yantra-auth__keynote">
+                <strong>{{ t('authGate.backupLead') }}</strong>
+                <code class="yantra-inline-code">{{ t('authGate.backupVariable') }}</code>
+                {{ t('authGate.backupTail') }}
+              </p>
+
+              <div
+                v-if="localError || authState.error"
+                class="yantra-chip--danger yantra-auth__error"
+                role="alert"
+              >
+                <AlertTriangle class="yantra-auth__icon yantra-text-danger" />
+                <span>{{ localError || authState.error }}</span>
               </div>
 
-              <!-- Backup Notice -->
-              <p v-if="isSetup && derivedPublicKey" class="text-[11px] yantra-text-secondary leading-snug font-medium">
-                💡 <span class="font-bold yantra-text-primary">Save this key:</span> Pass it as <code class="yantra-inline-code px-1.5 py-0.5 rounded yantra-text-accent font-mono text-[10px] font-bold">YANTR_ADMIN_PUBLIC_KEY</code> to enforce server-side identity verification.
+              <p class="yantra-auth__foot">
+                <AlertTriangle class="yantra-auth__icon" />
+                <span>{{ t('authGate.noRecovery') }}</span>
               </p>
-            </div>
 
-            <!-- Error Banner -->
-            <div
-              v-if="localError || authState.error"
-              class="yantra-chip--danger p-4 rounded-2xl text-xs font-semibold flex items-center gap-2.5"
-            >
-              <AlertTriangle class="h-4 w-4 shrink-0 yantra-text-danger" />
-              <span>{{ localError || authState.error }}</span>
-            </div>
-
-            <!-- Final Submit Actions -->
-            <div v-if="isSetup" class="flex gap-2.5 pt-1">
-              <button
-                type="button"
-                @click="goToStep(1)"
-                class="flex-1 h-12 flex items-center justify-center gap-1.5 yantra-btn--lg text-sm font-bold transition-all"
-              >
-                <ArrowLeft class="h-4 w-4" />
-                <span>Back</span>
-              </button>
-              <button
-                type="submit"
-                :disabled="submitting || !derivedPublicKey"
-                class="flex-1 h-12 flex items-center justify-center gap-2 rounded-2xl yantra-cta active:scale-[0.985] disabled:opacity-60 text-sm font-bold tracking-wide transition-all disabled:cursor-not-allowed"
-              >
-                <LoaderCircle v-if="submitting" class="h-4 w-4 animate-spin" />
-                <Sparkles v-else class="h-4 w-4" />
-                <span>{{ submitting ? t('authGate.working') : t('authGate.setupAction') }}</span>
-              </button>
-            </div>
-
-            <!-- Login Submit Action -->
-            <button
-              v-else
-              type="submit"
-              :disabled="submitting || !password || !pin"
-              class="group w-full flex h-12 items-center justify-center gap-2 rounded-2xl yantra-cta active:scale-[0.985] disabled:opacity-60 text-sm font-bold tracking-wide transition-all disabled:cursor-not-allowed"
-            >
-              <LoaderCircle v-if="submitting" class="h-4 w-4 animate-spin" />
-              <LockKeyhole v-else class="h-4 w-4 transition-transform group-hover:-translate-y-[3px]" />
-              <span>{{ submitting ? t('authGate.working') : t('authGate.loginAction') }}</span>
-            </button>
-          </template>
+              <div class="yantra-auth__actions">
+                <button type="button" class="yantra-btn yantra-auth__back" @click="goToStep(1)">
+                  <ArrowLeft class="yantra-auth__icon" />
+                  <span>{{ t('authGate.backAction') }}</span>
+                </button>
+                <button
+                  type="submit"
+                  :disabled="submitting || !derivedPublicKey"
+                  class="yantra-cta yantra-auth__submit"
+                >
+                  <LoaderCircle v-if="submitting" class="yantra-auth__spinner" />
+                  <Sparkles v-else class="yantra-auth__icon" />
+                  <span>{{ submitting ? t('authGate.working') : t('authGate.setupAction') }}</span>
+                </button>
+              </div>
+            </template>
+          </div>
         </form>
       </div>
-
-      <!-- Footer Note -->
-      <div class="mt-6 text-center text-xs tracking-wide font-medium yantra-text-secondary flex items-center justify-center gap-1.5">
-        <ShieldCheck class="h-3.5 w-3.5 yantra-text-accent" />
-        <span>{{ t('authGate.seedNote') }}</span>
-      </div>
-    </div>
+    </section>
   </div>
 </template>

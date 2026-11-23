@@ -519,8 +519,6 @@
   "authGate": {
     "bootingTitle": "準備中",
     "bootingState": "セッションを復元しています…",
-    "setupTitle": "Yantrのセットアップ",
-    "loginTitle": "サインイン",
     "loginSubtitle": "パスワードとPINを入力してロックを解除します。",
     "seedNote": "キーはローカルに保存されます。このデバイスからサインインしてください。",
     "setupAction": "アカウント作成",

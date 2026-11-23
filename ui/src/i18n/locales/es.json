@@ -519,8 +519,6 @@
   "authGate": {
     "bootingTitle": "Preparando",
     "bootingState": "Restaurando sesión…",
-    "setupTitle": "Configurar Yantr",
-    "loginTitle": "Iniciar sesión",
     "loginSubtitle": "Ingresa tu contraseña y PIN para desbloquear.",
     "seedNote": "Clave almacenada localmente. Inicia sesión desde este dispositivo.",
     "setupAction": "Crear cuenta",

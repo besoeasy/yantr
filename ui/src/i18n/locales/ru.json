@@ -519,8 +519,6 @@
   "authGate": {
     "bootingTitle": "Подготовка",
     "bootingState": "Восстановление сеанса…",
-    "setupTitle": "Настроить Yantr",
-    "loginTitle": "Войти",
     "loginSubtitle": "Введите пароль и PIN для разблокировки.",
     "seedNote": "Ключ хранится локально. Войдите с этого устройства.",
     "setupAction": "Создать",

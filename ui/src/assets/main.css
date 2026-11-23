@@ -81,14 +81,15 @@
     --cta-bg-hover: var(--color-sky-400);
     --cta-text: var(--color-zinc-900);
 
-    /* The sign-in canvas. Channels, not colours: AuthGate's particle field is
-       drawn in script and needs rgba(), and a var() that resolves to oklch()
-       cannot be given an alpha in code. Two accents so the field is not one
-       flat hue — the second is the violet the sign-in card already used. */
-    --canvas-particle: 2 132 199;   /* sky-600, the light accent */
-    --canvas-particle-2: 124 58 237; /* violet-600 */
-    --canvas-thread: 2 132 199;     /* the filaments drawn to the cursor */
-    --canvas-page: #ffffff;         /* == --bg-body in light */
+    /* The sign-in graph. Channels, not colours: AuthGate's canvas is drawn in
+       script and needs rgba(), and a var() that resolves to oklch() cannot be
+       given an alpha in code. These do not change under :root.dark — the brand
+       half of the screen is the same deep navy in both themes, the way a title
+       page is, so its palette is not a theme channel. */
+    --canvas-node: 125 211 252;     /* sky-300, a service node */
+    --canvas-particle: 148 163 184; /* slate-400, a quiet node */
+    --canvas-thread: 56 189 248;    /* sky-400, an edge between two nodes */
+    --canvas-pulse: 186 230 253;    /* sky-200, a packet crossing an edge */
 }
 
 /* The page's own canvas — a card's --card-bg against it, not a second card
@@ -98,10 +99,6 @@
    hex to mean "the dark background" any more. */
 :root.dark {
     --page-bg: #0a0a0a;
-    --canvas-particle: 56 189 248;   /* sky-400, the dark accent */
-    --canvas-particle-2: 167 139 250; /* violet-400 */
-    --canvas-thread: 56 189 248;
-    --canvas-page: #0b1220;          /* == --bg-body in dark */
     /* The shell chrome — sidebar, mobile header — sits under a backdrop blur,
        so it wants its own near-black rather than the page's. */
     --chrome-bg: #09090b;
@@ -294,13 +291,12 @@ body {
     color: var(--danger-text);
 }
 
-/* ── The sign-in surface's vocabulary ─────────────────────────────────────────
-   AuthGate was the last screen outside this language: 51 hand-written
-   slate/indigo utilities and zero dark: variants, so a dark install opened on
-   a bright white panel with an indigo gradient. These are the pieces the gate
-   needs, expressed in the tokens the rest of the app already uses. They live
-   here rather than in the SFC because they are a vocabulary, not a layout:
-   the same "a primary action" and "a quiet input" recur on every screen. */
+/* ── The sign-in vocabulary ───────────────────────────────────────────────────
+   The pieces the gate shares with the rest of the app: a primary action, a
+   quiet input, an inset surface, a key well. They live here rather than in the
+   SFC because they are a vocabulary, not a layout — the same "a primary
+   action" and "a quiet input" recur on every screen. What is specific to the
+   sign-in screen itself is further down, under "The sign-in screen". */
 
 .yantra-cta {
     background-color: var(--cta-bg);
@@ -309,17 +305,6 @@ body {
 }
 .yantra-cta:hover {
     background-color: var(--cta-bg-hover);
-}
-
-.yantra-btn--lg {
-    min-height: 3rem;
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
-    letter-spacing: 0.025em;
-    text-transform: none;
-}
-.yantra-btn--lg:hover {
-    background-color: var(--surface-muted);
 }
 
 .yantra-btn-icon {
@@ -387,18 +372,752 @@ body {
     color: var(--text-primary);
 }
 
-/* The gate's card lifts out of the particle field on hover, like every other
-   surface in the app — it is the one interactive object on the screen. */
-.authgate-card {
-    box-shadow: 0 8px 30px rgb(0 0 0 / 0.04);
-    transition:
-        border-color var(--yantra-dur) var(--yantra-ease),
-        box-shadow var(--yantra-dur) var(--yantra-ease),
-        transform var(--yantra-dur) var(--yantra-ease);
+/* ── The sign-in screen ──────────────────────────────────────────────────────
+   One viewport, split: the host on the left, the door on the right. The left
+   half is the product's own pitch, drawn as the stack it is — nodes drifting,
+   edges fading between them, a packet crossing an edge now and then — and it
+   stays the same deep navy in both themes, the way a title page does. The
+   right half follows the theme, because that is where the user types.
+
+   Both halves are full-bleed. The screen this replaced was a 440px card
+   floating in a particle field, which read as a dialog over an empty page
+   rather than the front door of the app. */
+.yantra-auth {
+    display: grid;
+    grid-template-columns: minmax(0, 1.24fr) minmax(0, 1fr);
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--surface);
+    color: var(--text-primary);
 }
-.authgate-card:hover {
-    box-shadow: var(--card-shadow-hover);
-    transform: var(--yantra-lift);
+
+/* ── Left: the brand half ───────────────────────────────────────────────── */
+.yantra-auth__brand {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: clamp(1.75rem, 3vw, 2.875rem) clamp(1.75rem, 3.4vw, 3.375rem)
+        clamp(1.5rem, 2.4vw, 2.375rem);
+    background: radial-gradient(120% 90% at 8% 0%, #0d1a2f 0%, #070b14 55%, #05080f 100%);
+    color: #f8fafc;
+}
+
+.yantra-auth__canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 100%);
+}
+
+.yantra-auth__grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    background-image: radial-gradient(rgb(148 163 184 / 0.16) 1px, transparent 1px);
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(90% 80% at 40% 45%, #000 20%, transparent 100%);
+    mask-image: radial-gradient(90% 80% at 40% 45%, #000 20%, transparent 100%);
+}
+
+.yantra-auth__glow {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(64px);
+    pointer-events: none;
+}
+.yantra-auth__glow--one {
+    width: 26rem;
+    height: 26rem;
+    left: -7.5rem;
+    top: -8.75rem;
+    background: radial-gradient(circle, rgb(2 132 199 / 0.68), transparent 65%);
+    animation: yantra-auth-drift-a 26s ease-in-out infinite;
+}
+.yantra-auth__glow--two {
+    width: 28.75rem;
+    height: 28.75rem;
+    right: -10rem;
+    bottom: -11.25rem;
+    background: radial-gradient(circle, rgb(124 58 237 / 0.5), transparent 65%);
+    animation: yantra-auth-drift-b 32s ease-in-out infinite;
+}
+.yantra-auth__glow--three {
+    width: 20rem;
+    height: 20rem;
+    left: 38%;
+    top: 52%;
+    background: radial-gradient(circle, rgb(16 185 129 / 0.22), transparent 68%);
+    animation: yantra-auth-drift-c 22s ease-in-out infinite;
+}
+@keyframes yantra-auth-drift-a {
+    50% {
+        transform: translate(60px, 40px) scale(1.12);
+    }
+}
+@keyframes yantra-auth-drift-b {
+    50% {
+        transform: translate(-50px, -30px) scale(1.08);
+    }
+}
+@keyframes yantra-auth-drift-c {
+    0%,
+    100% {
+        transform: scale(0.95);
+    }
+    50% {
+        transform: translate(-30px, 50px) scale(1.1);
+    }
+}
+
+.yantra-auth__brand-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: transform 0.5s var(--yantra-ease);
+}
+
+/* The product's own wordmark — the same uppercase mark the shell header uses,
+   so the door and the room behind it say the same name. */
+.yantra-auth__wordmark {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 900;
+    letter-spacing: 0.24em;
+    color: #f8fafc;
+}
+.yantra-auth__wordmark::after {
+    content: "";
+    width: 1.125rem;
+    height: 1px;
+    background-color: rgb(148 163 184 / 0.4);
+}
+.yantra-auth__wordmark span {
+    font-size: 0.5625rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(148 163 184 / 0.7);
+}
+
+.yantra-auth__copy {
+    margin-top: auto;
+    padding-bottom: 0.375rem;
+}
+
+.yantra-auth__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    padding: 0.25rem 0.5625rem;
+    border: 1px solid rgb(56 189 248 / 0.28);
+    border-radius: 9999px;
+    background-color: rgb(56 189 248 / 0.08);
+    color: #7dd3fc;
+    font-size: 0.59375rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+.yantra-auth__kicker::before {
+    content: "";
+    width: 0.3125rem;
+    height: 0.3125rem;
+    border-radius: 9999px;
+    background-color: #38bdf8;
+    animation: yantra-auth-ring 2.6s ease-out infinite;
+}
+@keyframes yantra-auth-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgb(56 189 248 / 0.55);
+    }
+    70% {
+        box-shadow: 0 0 0 7px rgb(56 189 248 / 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgb(56 189 248 / 0);
+    }
+}
+
+.yantra-auth__headline {
+    margin: 1rem 0 0;
+    font-size: clamp(2.125rem, 3.4vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    color: #f8fafc;
+}
+.yantra-auth__headline em {
+    font-style: normal;
+    background: linear-gradient(92deg, #7dd3fc, #a78bfa 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.yantra-auth__lead {
+    margin: 0.8125rem 0 0;
+    max-width: 36ch;
+    font-size: clamp(0.78125rem, 1.05vw, 0.90625rem);
+    line-height: 1.65;
+    color: rgb(203 213 225 / 0.78);
+}
+
+.yantra-auth__proof {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+.yantra-auth__proof li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: clamp(0.71875rem, 0.92vw, 0.8125rem);
+    color: rgb(203 213 225 / 0.8);
+}
+.yantra-auth__proof .yantra-auth__icon {
+    color: #38bdf8;
+}
+
+.yantra-auth__status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.625rem;
+    margin-top: 1.625rem;
+    padding-top: 0.9375rem;
+    border-top: 1px solid rgb(148 163 184 / 0.14);
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    color: rgb(148 163 184 / 0.62);
+}
+.yantra-auth__host {
+    font-family: var(--font-mono);
+    letter-spacing: 0;
+    color: rgb(203 213 225 / 0.8);
+}
+.yantra-auth__status-right {
+    display: flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.yantra-auth__sep {
+    opacity: 0.4;
+}
+
+/* ── Right: the form half ───────────────────────────────────────────────── */
+.yantra-auth__form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.75rem, 3vw, 2.5rem) clamp(1.5rem, 3.4vw, 3.25rem);
+    background-color: var(--surface);
+    border-left: 1px solid var(--card-border);
+}
+.yantra-auth__panel {
+    width: 100%;
+    max-width: 21rem;
+}
+.yantra-auth__mobilebrand {
+    display: none;
+    align-items: center;
+    margin-bottom: 1.75rem;
+    font-size: 0.8125rem;
+    font-weight: 900;
+    letter-spacing: 0.24em;
+    color: var(--text-primary);
+}
+
+.yantra-auth__booting {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.yantra-auth__eyebrow {
+    display: block;
+    font-size: 0.59375rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.yantra-auth__title {
+    margin: 0.5625rem 0 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+}
+.yantra-auth__sub {
+    margin: 0.5rem 0 0;
+    font-size: 0.71875rem;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.yantra-auth__field {
+    margin-top: 1.125rem;
+}
+.yantra-auth__label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.4375rem;
+    font-size: 0.59375rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.yantra-auth__hint {
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--text-secondary);
+}
+.yantra-auth__hint--ok {
+    color: var(--ok-text);
+}
+
+.yantra-auth__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.yantra-auth__control .yantra-input {
+    height: 2.75rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+}
+.yantra-auth__eye {
+    position: absolute;
+    right: 0.3125rem;
+    display: grid;
+    place-items: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.4375rem;
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color var(--yantra-dur-fast) var(--yantra-ease),
+        color var(--yantra-dur-fast) var(--yantra-ease);
+}
+.yantra-auth__eye:hover {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.yantra-auth__icon {
+    width: 0.9375rem;
+    height: 0.9375rem;
+    flex-shrink: 0;
+}
+.yantra-auth__spinner {
+    width: 1rem;
+    height: 1rem;
+    animation: var(--animate-spin);
+}
+
+/* The one primary action. A slow sheen crosses it: the screen is otherwise
+   still, and this is the thing the user is meant to press. */
+.yantra-auth__submit {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 2.875rem;
+    margin-top: 1.25rem;
+    border: 0;
+    border-radius: 0.625rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition:
+        background-color var(--yantra-dur-fast) var(--yantra-ease),
+        box-shadow var(--yantra-dur-fast) var(--yantra-ease),
+        transform var(--yantra-dur-fast) var(--yantra-ease);
+}
+.yantra-auth__submit:active:not(:disabled) {
+    transform: scale(0.985);
+}
+.yantra-auth__submit:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.yantra-auth__submit::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.28), transparent);
+    transform: skewX(-18deg);
+    animation: yantra-auth-sheen 4.4s ease-in-out infinite;
+}
+@keyframes yantra-auth-sheen {
+    0%,
+    62% {
+        left: -60%;
+    }
+    88%,
+    100% {
+        left: 130%;
+    }
+}
+
+/* The identity, as one row: a fingerprint that is the key's own colour, the
+   key's first octets, and what kind of key it is. */
+.yantra-auth__key {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: 1.125rem;
+    padding: 0.625rem 0.6875rem;
+    border: 1px solid var(--card-border);
+    border-radius: 0.625rem;
+    background-color: var(--card-inset);
+}
+.yantra-auth__fingerprint {
+    position: relative;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    border-radius: 0.5625rem;
+    background: conic-gradient(from 0deg, #38bdf8, #7c3aed, #10b981, #38bdf8);
+}
+.yantra-auth__fingerprint::after {
+    content: "";
+    position: absolute;
+    inset: 0.375rem;
+    border-radius: 0.25rem;
+    background-color: var(--card-inset);
+    opacity: 0.92;
+}
+.yantra-auth__fingerprint--live {
+    animation: yantra-auth-spin 6s linear infinite;
+}
+@keyframes yantra-auth-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.yantra-auth__keytext {
+    min-width: 0;
+    flex: 1;
+}
+.yantra-auth__keylabel {
+    display: block;
+    font-size: 0.625rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+.yantra-auth__keysub {
+    display: block;
+    margin-top: 0.125rem;
+    overflow: hidden;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.yantra-auth__keytag {
+    flex-shrink: 0;
+    padding: 0.1875rem 0.375rem;
+    border: 1px solid rgb(16 185 129 / 0.3);
+    border-radius: 0.3125rem;
+    background-color: rgb(16 185 129 / 0.1);
+    color: var(--ok-text);
+    font-size: 0.53125rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+/* The one action that is not the primary: inventing the credentials. A link,
+   not a button, so it cannot compete with the submit under it. */
+.yantra-auth__ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.875rem;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity var(--yantra-dur-fast) var(--yantra-ease);
+}
+.yantra-auth__ghost:hover {
+    opacity: 0.75;
+}
+
+/* A field outside a .yantra-auth__control — the confirm step has no reveal
+   button, so it needs the same height without the extra right padding. */
+.yantra-auth__bare {
+    height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+}
+
+.yantra-auth__keyactions {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+.yantra-auth__keybtn {
+    display: grid;
+    place-items: center;
+    width: 1.875rem;
+    height: 1.875rem;
+    padding: 0;
+    border-radius: 0.4375rem;
+    cursor: pointer;
+}
+
+.yantra-auth__well {
+    margin-top: 0.75rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.6;
+    word-break: break-all;
+}
+.yantra-auth__keynote {
+    margin: 0.75rem 0 0;
+    font-size: 0.6875rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.yantra-auth__keynote strong {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.yantra-auth__foot {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4375rem;
+    margin: 0.875rem 0 0;
+    font-size: 0.625rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+.yantra-auth__foot .yantra-auth__icon {
+    margin-top: 0.0625rem;
+    color: var(--accent);
+}
+
+/* Three steps, drawn as the progress they are. The current one sweeps. */
+.yantra-auth__steps {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 1.25rem;
+}
+.yantra-auth__step {
+    position: relative;
+    flex: 1;
+    height: 0.1875rem;
+    padding: 0;
+    border: 0;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: var(--card-border);
+    cursor: pointer;
+}
+.yantra-auth__step--done {
+    background-color: var(--accent);
+}
+.yantra-auth__step--now::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 55%;
+    border-radius: 9999px;
+    background-color: var(--accent);
+    animation: yantra-auth-sweep 2.4s var(--yantra-ease) infinite;
+}
+@keyframes yantra-auth-sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+    60%,
+    100% {
+        transform: translateX(180%);
+    }
+}
+.yantra-auth__steplabels {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.4375rem;
+    font-size: 0.53125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+.yantra-auth__steplabels > * {
+    flex: 1;
+}
+.yantra-auth__steplabels > :nth-child(2) {
+    text-align: center;
+}
+.yantra-auth__steplabels > :last-child {
+    text-align: right;
+}
+.yantra-auth__steplabel--on {
+    color: var(--accent);
+}
+
+/* The strength panel: four bars for the score, four lines for why. */
+.yantra-auth__strength {
+    margin-top: 1rem;
+    padding: 0.75rem 0.875rem;
+}
+.yantra-auth__strength-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+.yantra-auth__bars {
+    display: flex;
+    gap: 0.375rem;
+}
+.yantra-auth__bar {
+    width: 1.125rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: var(--card-border);
+}
+.yantra-auth__bar--weak {
+    background-color: var(--color-rose-500);
+}
+.yantra-auth__bar--fair {
+    background-color: var(--color-amber-500);
+}
+.yantra-auth__bar--good {
+    background-color: var(--color-sky-500);
+}
+.yantra-auth__bar--strong {
+    background-color: var(--color-emerald-500);
+}
+.yantra-auth__criteria {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.625rem;
+    font-size: 0.625rem;
+}
+.yantra-auth__criterion {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--text-secondary);
+}
+.yantra-auth__criterion--met {
+    font-weight: 600;
+    color: var(--ok-text);
+}
+.yantra-auth__dot {
+    width: 0.3125rem;
+    height: 0.3125rem;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    background-color: var(--card-border);
+}
+
+.yantra-auth__error {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-top: 1rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+.yantra-auth__actions {
+    display: flex;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+}
+.yantra-auth__back {
+    flex: 1;
+    min-height: 2.875rem;
+    font-size: 0.625rem;
+}
+.yantra-auth__actions .yantra-auth__submit {
+    flex: 1;
+    margin-top: 0;
+}
+
+@media (max-width: 900px) {
+    .yantra-auth {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .yantra-auth__brand {
+        display: none;
+    }
+    .yantra-auth__form {
+        border-left: 0;
+        padding: 2rem 1.375rem 2.5rem;
+        background-image: radial-gradient(120% 60% at 50% -10%, var(--accent-soft), transparent 70%);
+    }
+    .yantra-auth__mobilebrand {
+        display: flex;
+    }
+}
+@media (max-width: 380px) {
+    .yantra-auth__criteria {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ── The page idiom ──────────────────────────────────────────────────────────
