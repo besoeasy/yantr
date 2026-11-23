@@ -1,0 +1,138 @@
+x-yantr:
+  name: Kaeso
+  tags: [ai, llm, gateway, self-hosted, podman]
+  short_description: Self-hosted AI gateway with one API for OpenAI, Anthropic and Gemini apps.
+  description: >
+    Kaeso is a self-hosted AI gateway written in Rust. Apps keep speaking
+    OpenAI, Anthropic or Gemini while Kaeso translates between providers,
+    with keys per project, budgets and limits, request logs, alias routes
+    with fallbacks, a playground, an MCP portal and a web console.
+  usecases:
+    - Give every app one endpoint for OpenAI, Anthropic, Gemini and dozens of other providers.
+    - Set budgets, rate limits and keys per project, and see each request's cost in the logs.
+    - Route models with fallbacks and connect AI agents through the MCP portal.
+  website: https://github.com/logicplanes/kaeso
+  env_generators:
+    MASTER_KEY: {length: 42, charset: alnum}
+    POSTGRES_PASSWORD: {length: 32, charset: alnum}
+    CLICKHOUSE_PASSWORD: {length: 32, charset: alnum}
+    VALKEY_PASSWORD: {length: 32, charset: alnum}
+  notes:
+    - "KAESO_PUBLIC_URL is the https address you will open Kaeso at, e.g. a reverse proxy or a tunnel to the Web UI port."
+    - "To try it on this machine first, give the Web UI port 8080 in the deploy form and enter http://localhost:8080."
+    - "Then open a shell in the gateway container, run kaeso setup-link and open the link it prints (once, within 24 hours)."
+    - "Add provider keys under Providers in the console; apps call the Web UI address with a Kaeso key. Docs: https://docs.kaeso.app"
+    - "Save the generated values, MASTER_KEY above all: removing the app keeps its volumes, so a later deploy needs the same values."
+    - "Use the stack's Update action for new Kaeso releases; it keeps your settings and data."
+  ports:
+    - {port: 8080, protocol: HTTP, show: true, label: "Web UI", service: edge}
+
+services:
+  edge:
+    image: ghcr.io/logicplanes/kaeso-console:latest
+    command: ["kaeso-edge"]
+    read_only: true
+    tmpfs: ["/tmp:mode=1777", "/var/lib/console/data:mode=1777", "/var/lib/console/config:mode=1777"]
+    environment:
+      KAESO_GATEWAY_UPSTREAM: gateway:8080
+      KAESO_CONSOLE_UPSTREAM: console:3000
+    ports:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/kaeso-edge/healthz"]
+      interval: 10s
+      timeout: 3s
+      start_period: 10s
+      retries: 6
+    depends_on:
+      - gateway
+      - console
+    restart: unless-stopped
+
+  gateway:
+    image: ghcr.io/logicplanes/kaeso-gateway:latest
+    read_only: true
+    stop_grace_period: 75s
+    healthcheck:
+      test: ["CMD", "kaeso", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+    environment:
+      KAESO_PUBLIC_URL: ${KAESO_PUBLIC_URL}
+      # Listed on its own so the deploy form generates it; Kaeso reads it through KAESO_MASTER_KEYS.
+      MASTER_KEY: ${MASTER_KEY}
+      KAESO_MASTER_KEYS: k1:${MASTER_KEY}A=
+      KAESO_POSTGRES_URL: postgres://kaeso:${POSTGRES_PASSWORD}@postgres:5432/kaeso
+      KAESO_CLICKHOUSE_URL: http://kaeso:${CLICKHOUSE_PASSWORD}@clickhouse:8123
+      KAESO_VALKEY_URL: redis://:${VALKEY_PASSWORD}@valkey:6379
+      KAESO_MAIL_TRANSPORT: log
+      KAESO_TRUSTED_PROXIES: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,fc00::/7,127.0.0.0/8,::1/128
+      KAESO_LOG_FORMAT: json
+    depends_on:
+      - postgres
+      - valkey
+      - clickhouse
+    restart: unless-stopped
+
+  console:
+    image: ghcr.io/logicplanes/kaeso-console:latest
+    read_only: true
+    tmpfs: ["/tmp:mode=1777", "/var/lib/console/data:mode=1777", "/var/lib/console/config:mode=1777"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    restart: unless-stopped
+
+  postgres:
+    image: docker.io/library/postgres:18-alpine
+    environment:
+      POSTGRES_USER: kaeso
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: kaeso
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "kaeso", "-d", "kaeso"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - kaeso_postgres:/var/lib/postgresql
+    restart: unless-stopped
+
+  clickhouse:
+    image: docker.io/clickhouse/clickhouse-server:26.3-alpine
+    environment:
+      CLICKHOUSE_USER: kaeso
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: kaeso
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8123/ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - kaeso_clickhouse:/var/lib/clickhouse
+    restart: unless-stopped
+
+  valkey:
+    image: docker.io/valkey/valkey:9-alpine
+    command: ["valkey-server", "--appendonly", "yes", "--requirepass", "${VALKEY_PASSWORD}", "--maxmemory", "512mb", "--maxmemory-policy", "noeviction"]
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD}
+      VALKEYCLI_AUTH: ${VALKEY_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli ping | grep -qx PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - kaeso_valkey:/data
+    restart: unless-stopped
+
+volumes:
+  kaeso_postgres: null
+  kaeso_clickhouse: null
+  kaeso_valkey: null
