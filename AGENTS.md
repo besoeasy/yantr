@@ -331,3 +331,33 @@ Run the UI checks with any widget change:
 ```sh
 cd ui && npm test && npm run lint && npm run build
 ```
+
+---
+
+## 9. Detail pages
+
+`StackView` and `ContainerDetail` are the same page in two subjects, so they
+share one order: breadcrumb → hero → facts strip → two-column body →
+full-width sections. `ContainerDetail` is built on it; `StackView` still
+predates it and is the next one to move.
+
+- **Hero** — one surface with the logo, the name, a state chip, the id/image
+  chips and the actions. The everyday action is the one primary button, the
+  rest are ghosts, and links out plus anything destructive go behind a kebab
+  (`<details>`, so it needs no state).
+- **Facts strip** — `.yantra-facts`: three headline numbers in one surface with
+  hairlines between the cells. Not three cards; a card reads as something to
+  click.
+- **Body** — two columns for the two ways in (network access, shell), then
+  storage, then diagnostics as one surface with tabs.
+
+Why the order: the page used to stack six bordered cards of equal weight, so
+the name, the shell and the terminate button all looked equally important. The
+order is the question a user arrives with — what is this, is it healthy, how do
+I get in.
+
+A utility class that is not defined in `main.css` fails
+`ui/src/utils/cssClasses.test.js`, and a key in `en.json` that no component
+references fails `i18nKeys.test.js`. Both are worth running before a commit;
+the other locales lag `en` and fall back to it, so a new key is added there
+only.
