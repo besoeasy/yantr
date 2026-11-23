@@ -348,8 +348,9 @@ predates it and is the next one to move.
 - **Facts strip** — `.yantra-facts`: three headline numbers in one surface with
   hairlines between the cells. Not three cards; a card reads as something to
   click.
-- **Body** — two columns for the two ways in (network access, shell), then
-  storage, then diagnostics as one surface with tabs.
+- **Body** — one full row per section: network access, shell, storage, then
+  diagnostics as one surface with tabs. The cards inside a row go two or three
+  across; a section is never squeezed into a column of its own.
 
 Why the order: the page used to stack six bordered cards of equal weight, so
 the name, the shell and the terminate button all looked equally important. The

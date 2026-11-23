@@ -582,8 +582,10 @@ watch(activeTab, (tab) => {
           </div>
         </div>
 
-        <!-- Network and shell: the two ways into a container, side by side. -->
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <!-- Network and shell: the two ways into a container, each a full row.
+             Side by side they were narrow — a port card lost its panels and a
+             command line wrapped — and the taller of the two left a gap. -->
+        <div class="space-y-8">
           <section class="space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-2">
@@ -608,7 +610,7 @@ watch(activeTab, (tab) => {
               </div>
             </div>
 
-            <div v-if="filteredPortMappings.length > 0" class="grid grid-cols-1 gap-4">
+            <div v-if="filteredPortMappings.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               <div v-for="(p, i) in filteredPortMappings" :key="i" class="yantra-surface flex h-full flex-col p-5">
                 <div class="mb-4 flex items-start gap-4">
                   <div class="yantra-tile h-10 w-10">
@@ -727,7 +729,7 @@ watch(activeTab, (tab) => {
             <span class="yantra-chip">{{ containerVolumes.length }}</span>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div v-for="volume in containerVolumes" :key="volume.name" class="yantra-surface flex h-full flex-col p-5">
               <div class="mb-4 flex items-start gap-4">
                 <div class="yantra-tile h-10 w-10">
