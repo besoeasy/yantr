@@ -14,11 +14,9 @@
   },
   "home": {
     "syncing": "Sincronizando entorno...",
-    "all": "Todos",
     "yantrApps": "Apps de Yantr",
     "dockerApps": "Contenedores",
     "volumeBrowsers": "Exploradores de volumen",
-    "metrics": "Métricas",
     "noAppsRunning": "No hay apps en ejecución",
     "dashboardEmpty": "Tu panel está vacío. Visita la tienda de aplicaciones para comenzar.",
     "browseAppStore": "Explorar tienda",

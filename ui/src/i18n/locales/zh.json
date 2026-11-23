@@ -14,11 +14,9 @@
   },
   "home": {
     "syncing": "正在同步环境...",
-    "all": "全部",
     "yantrApps": "Yantr 应用",
     "dockerApps": "容器",
     "volumeBrowsers": "卷浏览器",
-    "metrics": "指标",
     "noAppsRunning": "没有运行的应用",
     "dashboardEmpty": "您的仪表板看起来是空的。访问应用商店开始使用。",
     "browseAppStore": "浏览应用商店",

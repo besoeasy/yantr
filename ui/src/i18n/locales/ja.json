@@ -14,11 +14,9 @@
   },
   "home": {
     "syncing": "環境を同期中...",
-    "all": "すべて",
     "yantrApps": "Yantr アプリ",
     "dockerApps": "コンテナ",
     "volumeBrowsers": "ボリュームブラウザ",
-    "metrics": "メトリクス",
     "noAppsRunning": "実行中のアプリなし",
     "dashboardEmpty": "ダッシュボードが空です。アプリストアにアクセスして始めましょう。",
     "browseAppStore": "アプリストアを見る",

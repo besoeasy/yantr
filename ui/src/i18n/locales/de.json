@@ -14,11 +14,9 @@
   },
   "home": {
     "syncing": "Umgebung wird synchronisiert...",
-    "all": "Alle",
     "yantrApps": "Yantr-Apps",
     "dockerApps": "Container",
     "volumeBrowsers": "Volume-Browser",
-    "metrics": "Metriken",
     "noAppsRunning": "Keine Apps laufen",
     "dashboardEmpty": "Ihr Dashboard ist leer. Besuchen Sie den App-Store, um zu beginnen.",
     "browseAppStore": "App-Store durchsuchen",

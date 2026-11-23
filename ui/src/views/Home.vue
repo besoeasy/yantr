@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue";
 import { usePolling } from "../composables/usePolling";
 import { useRouter } from "vue-router";
-import { Store, LayoutGrid, PackageCheck, Container, FolderOpen, Activity } from "@lucide/vue";
+import { Store } from "@lucide/vue";
 
 // Auto-load all widget .vue files from src/Widgets/, shuffle once per day
 const widgetModules = import.meta.glob("../Widgets/*.vue", { eager: true });
@@ -59,7 +59,6 @@ const router = useRouter();
 const containers = ref([]);
 const volumeBrowsers = ref([]);
 const loading = ref(false);
-const activeFilter = ref("all");
 
 const loadErrorState = {
   containers: false,
@@ -86,12 +85,6 @@ const yantrContainers = computed(() => {
 const otherContainers = computed(() => {
   return containers.value.filter((c) => !c.appLabels?.app);
 });
-
-// Filter visibility computed properties
-const showYantrApps = computed(() => activeFilter.value === "all" || activeFilter.value === "yantr");
-const showOtherContainers = computed(() => activeFilter.value === "all" || activeFilter.value === "containers");
-const showVolumeBrowsers = computed(() => activeFilter.value === "all" || activeFilter.value === "volumes");
-const showMetrics = computed(() => activeFilter.value === "all" || activeFilter.value === "metrics");
 
 async function fetchContainers() {
   try {
@@ -155,73 +148,6 @@ onMounted(() => {
 
         <!-- Content -->
         <div v-else class="anim-enter">
-          <!-- Filter Tabs -->
-          <div v-if="containers.length > 0" class="flex flex-wrap items-center gap-2 overflow-x-auto pb-4 mb-4 scrollbar-hide">
-            <button
-              @click="activeFilter = 'all'"
-              :class="[
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'all'
-                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
-              ]"
-            >
-              <LayoutGrid :size="14" />
-              <span>{{ t("home.all") }}</span>
-            </button>
-            <button
-              v-if="yantrContainers.length > 0"
-              @click="activeFilter = 'yantr'"
-              :class="[
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'yantr'
-                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
-              ]"
-            >
-              <PackageCheck :size="14" />
-              <span>{{ t("home.yantrApps") }}</span>
-            </button>
-            <button
-              v-if="otherContainers.length > 0"
-              @click="activeFilter = 'containers'"
-              :class="[
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'containers'
-                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
-              ]"
-            >
-              <Container :size="14" />
-              <span>{{ t("home.dockerApps") }}</span>
-            </button>
-            <button
-              v-if="volumeContainers.length > 0"
-              @click="activeFilter = 'volumes'"
-              :class="[
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'volumes'
-                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
-              ]"
-            >
-              <FolderOpen :size="14" />
-              <span>{{ t("home.volumeBrowsers") }}</span>
-            </button>
-            <button
-              @click="activeFilter = 'metrics'"
-              :class="[
-                'px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2',
-                activeFilter === 'metrics'
-                  ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900 smooth-shadow'
-                  : 'bg-(--surface-muted) text-(--text-secondary) hover:text-(--text-primary) hover:smooth-shadow',
-              ]"
-            >
-              <Activity :size="14" />
-              <span>{{ t("home.metrics") }}</span>
-            </button>
-          </div>
-
           <!-- Empty State -->
           <div
             v-if="containers.length === 0"
@@ -241,25 +167,21 @@ onMounted(() => {
             </router-link>
           </div>
 
-          <!-- Unified grid: all cards are single-column on mobile, 2 columns on medium, 3 on large -->
+          <!-- Unified grid: all cards are single-column on mobile, 2 columns on medium, 4 on large.
+               Each group keeps its own header, which is now the only thing that
+               separates Yantr apps from other containers. -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 grid-flow-dense anim-stagger">
-            <YantraContainersGrid v-if="showYantrApps && yantrContainers.length > 0" :containers="yantrContainers" :show-header="activeFilter !== 'all'" />
-            <VolumeContainersGrid v-if="showVolumeBrowsers && volumeContainers.length > 0" :containers="volumeContainers" :show-header="activeFilter !== 'all'" @stop-browser="stopBrowser" />
-            <OtherContainersGrid v-if="showOtherContainers && otherContainers.length > 0" :containers="otherContainers" :show-header="activeFilter !== 'all'" @select="viewContainerDetail" />
+            <YantraContainersGrid v-if="yantrContainers.length > 0" :containers="yantrContainers" show-header />
+            <VolumeContainersGrid v-if="volumeContainers.length > 0" :containers="volumeContainers" show-header @stop-browser="stopBrowser" />
+            <OtherContainersGrid v-if="otherContainers.length > 0" :containers="otherContainers" show-header @select="viewContainerDetail" />
 
-            <template v-if="showMetrics">
-              <!-- Section header only when metrics filter is active (not "all") -->
-              <div v-if="activeFilter === 'metrics'" class="col-span-full flex items-center gap-2 pb-1">
-                <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-(--text-secondary)">{{ t("home.metrics") }}</span>
-              </div>
-              <component
-                v-for="(widget, i) in widgets"
-                :key="i"
-                :is="widget.component"
-                :class="widgetSpanClass(widget.cols)"
-                class="h-full"
-              />
-            </template>
+            <component
+              v-for="(widget, i) in widgets"
+              :key="i"
+              :is="widget.component"
+              :class="widgetSpanClass(widget.cols)"
+              class="h-full"
+            />
           </div>
         </div>
   </AppLayout>
@@ -277,15 +199,5 @@ onMounted(() => {
     -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
   }
-}
-
-/* Hide scrollbar for filter tabs */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
 }
 </style>
