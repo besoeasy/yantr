@@ -188,7 +188,6 @@
   },
   "containerDetail": {
     "descriptionNotAvailable": "コンテナの使用説明はありません。",
-    "id": "ID",
     "networkAccess": "ネットワークアクセス",
     "allPorts": "すべてのポート",
     "networkPort": "ネットワークポート",
@@ -219,7 +218,6 @@
     "noOutputLogs": "出力ログが見つかりません",
     "environmentVariables": "環境変数",
     "noEnvVars": "環境変数がありません。",
-    "control": "コントロール",
     "terminateContainer": "コンテナを終了",
     "terminating": "終了中...",
     "warning": "コンテナとネットワークが削除されます。名前付きボリュームは保持されるため、再デプロイしてもアプリのデータは残ります。",

@@ -188,7 +188,6 @@
   },
   "containerDetail": {
     "descriptionNotAvailable": "Container-Nutzungsbeschreibung nicht verfügbar.",
-    "id": "ID",
     "networkAccess": "Netzwerkzugang",
     "allPorts": "Alle Ports",
     "access": "Zugang",
@@ -222,7 +221,6 @@
     "noOutputLogs": "Keine Ausgabeprotokolle gefunden",
     "environmentVariables": "Umgebungsvariablen",
     "noEnvVars": "Keine Umgebungsvariablen verfügbar.",
-    "control": "Steuerung",
     "terminateContainer": "Container beenden",
     "terminating": "Wird beendet...",
     "warning": "Der Container und sein Netzwerk werden entfernt. Benannte Volumes bleiben erhalten, damit die Daten bei einer erneuten Installation erhalten bleiben.",

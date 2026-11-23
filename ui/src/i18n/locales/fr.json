@@ -188,7 +188,6 @@
   },
   "containerDetail": {
     "descriptionNotAvailable": "Description d'utilisation du conteneur non disponible.",
-    "id": "ID",
     "networkAccess": "Accès réseau",
     "allPorts": "Tous les ports",
     "networkPort": "Port réseau",
@@ -219,7 +218,6 @@
     "noOutputLogs": "Aucun journal de sortie trouvé",
     "environmentVariables": "Variables d'environnement",
     "noEnvVars": "Aucune variable d'environnement disponible.",
-    "control": "Contrôle",
     "terminateContainer": "Terminer le conteneur",
     "terminating": "Arrêt en cours...",
     "warning": "Le conteneur et son réseau seront supprimés. Les volumes nommés sont conservés, afin que les données de l'application restent disponibles si vous la redéployez.",

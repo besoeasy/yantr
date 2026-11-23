@@ -188,7 +188,6 @@
   },
   "containerDetail": {
     "descriptionNotAvailable": "Descripción del uso del contenedor no disponible.",
-    "id": "ID",
     "networkAccess": "Acceso de red",
     "allPorts": "Todos los puertos",
     "networkPort": "Puerto de red",
@@ -219,7 +218,6 @@
     "noOutputLogs": "No se encontraron registros de salida",
     "environmentVariables": "Variables de entorno",
     "noEnvVars": "No hay variables de entorno disponibles.",
-    "control": "Control",
     "terminateContainer": "Terminar contenedor",
     "terminating": "Terminando...",
     "warning": "Se eliminarán el contenedor y su red. Los volúmenes con nombre se conservan, por lo que los datos de la aplicación se mantienen si la vuelves a desplegar.",

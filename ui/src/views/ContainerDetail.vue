@@ -7,14 +7,16 @@ import { useNotification } from '../composables/useNotification'
 import { useApiUrl } from '../composables/useApiUrl'
 import { expectApiSuccess, getApiErrorMessage, readJsonResponse } from '../composables/useApiResponse'
 import { useYantrAuth } from '../composables/useYantrAuth'
-import { ExternalLink, Trash2, Network, HardDrive, ShieldCheck, Database, Play, Square, RotateCcw, Wrench, Terminal, Copy } from '@lucide/vue'
+import { useCurrentTime } from '../composables/useCurrentTime'
+import { ExternalLink, Trash2, Network, Globe, HardDrive, Play, Square, RotateCcw, Wrench, Terminal, Copy, MoreVertical } from '@lucide/vue'
 import AppLogo from '../components/AppLogo.vue'
 import ContainerResources from '../components/ContainerResources.vue'
 import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
 import AppLayout from '../components/AppLayout.vue'
 import { appUrl, isNavigableProtocol } from '../utils/url'
-import { dashboard } from '../utils/routes.js'
+import { formatUptime } from '../utils/metrics'
+import { dashboard, appDetail, stackDetail } from '../utils/routes.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +24,7 @@ const { t } = useI18n()
 const toast = useNotification()
 const { apiUrl } = useApiUrl()
 const { openVolumeBrowser } = useYantrAuth()
+const { currentTime } = useCurrentTime()
 
 const selectedContainer = ref(null)
 const shellPath = ref('')
@@ -41,6 +44,10 @@ const activeTab = ref('resources')
 // "Access" shows only ports the app marked show: true; "All" also lists work
 // ports — ports that exist for protocol plumbing and have no UI surface.
 const showAccessPorts = ref(true)
+// The actions that are not the everyday one live behind the kebab. It is a
+// <details>, so it opens and closes with no state to keep in sync; this ref
+// only lets an action close it again.
+const menuEl = ref(null)
 const loadErrorState = {
   stats: false,
   logs: false,
@@ -54,6 +61,10 @@ function notifyLoadErrorOnce(key, message) {
 
 function clearLoadError(key) {
   loadErrorState[key] = false
+}
+
+function closeMenu() {
+  if (menuEl.value) menuEl.value.open = false
 }
 
 const containerVolumes = computed(() => {
@@ -152,6 +163,11 @@ const accessPortMappings = computed(() => allPortMappings.value.filter(m => m.sh
 
 const hasAccessPorts = computed(() => accessPortMappings.value.length > 0)
 
+// The one the hero offers to open: a published port the catalog says is a UI.
+const primaryPort = computed(() => accessPortMappings.value.find(
+  (m) => m.hostPort && m.protocol === 'tcp' && isNavigableProtocol(m.labeledProtocol)
+) || null)
+
 const filteredPortMappings = computed(() => {
   if (!showAccessPorts.value) {
     return allPortMappings.value
@@ -164,6 +180,34 @@ const filteredPortMappings = computed(() => {
   }
   return accessPortMappings.value
 })
+
+// The header facts. Uptime comes from the inspect timestamp the container
+// reports, so it is the container's own clock rather than a browser's guess;
+// a stopped container has no uptime to show and says so.
+const startedAt = computed(() => {
+  const raw = selectedContainer.value?.stateDetails?.StartedAt
+  const ms = raw ? Date.parse(raw) : NaN
+  return Number.isFinite(ms) && ms > 0 ? ms : null
+})
+
+const uptime = computed(() => {
+  if (selectedContainer.value?.state !== 'running' || !startedAt.value) {
+    return t('containerDetail.notRunning')
+  }
+  return formatUptime(currentTime.value - startedAt.value)
+})
+
+const stateChipClass = computed(() => {
+  const state = selectedContainer.value?.state
+  if (state === 'running') return 'yantra-chip--ok'
+  if (state === 'restarting' || state === 'paused') return 'yantra-chip--warn'
+  return ''
+})
+
+const appTags = computed(() => (selectedContainer.value?.app?.tags || []).slice(0, 4))
+
+const projectId = computed(() => selectedContainer.value?.app?.projectId || '')
+const appId = computed(() => selectedContainer.value?.app?.id || '')
 
 async function fetchContainerDetail() {
   try {
@@ -286,6 +330,7 @@ async function lifecycleAction(action) {
 }
 
 async function deleteContainer() {
+  closeMenu()
   if (!confirm(`${t('containerDetail.terminateContainer')} ${selectedContainer.value.name}?\n\n${t('containerDetail.warning')}`)) return
 
   deleting.value = true
@@ -364,286 +409,403 @@ watch(activeTab, (tab) => {
 <template>
   <AppLayout width="reading" gap="none">
     <div v-if="!selectedContainer" class="flex justify-center py-32">
-       <div class="w-8 h-8 border-[3px] border-gray-200 dark:border-zinc-800 border-t-blue-500 dark:border-t-blue-500 rounded-full animate-spin"></div>
+       <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-zinc-200 border-t-zinc-900 dark:border-zinc-800 dark:border-t-white"></div>
     </div>
 
-    <main v-else class="space-y-6 anim-stagger">
-        
-        <div class="group relative bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 flex flex-col sm:flex-row gap-6 hover:border-gray-300 dark:hover:border-zinc-700 transition-[border-color,box-shadow,transform,opacity] duration-200">
-           <div class="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-blue-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+    <!-- The page's sections share one rhythm: hero, the facts it answers with,
+         then the body. The old page stacked six bordered cards with no
+         hierarchy, so the name, the shell and the terminate button all read at
+         the same weight. -->
+    <main v-else class="anim-enter space-y-8">
 
-           <div class="w-20 h-20 bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl flex items-center justify-center p-4 shrink-0 shadow-sm transition-transform group-hover:scale-105 duration-200">
-          <AppLogo
-           :logo="selectedContainer.app.logo"
-           :name="selectedContainer.app?.name || selectedContainer.name"
-           :seed="selectedContainer.app?.id || selectedContainer.name"
-           img-class="w-full h-full object-contain filter dark:brightness-90 group-hover:brightness-100 transition-all"
-           icon-class="w-full h-full text-gray-400 dark:text-zinc-600"
-          />
-           </div>
-           
-           <div class="flex-1 space-y-3">
-              <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ selectedContainer.name }}</h1>
-              <p class="text-gray-500 dark:text-zinc-400 text-sm leading-relaxed max-w-2xl">
-                 {{ selectedContainer.app.description || t('containerDetail.descriptionNotAvailable') }}
-              </p>
-              <div class="pt-2 flex flex-wrap gap-2">
-                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-[10px] font-bold tracking-widest text-gray-600 dark:text-zinc-400 rounded-md uppercase">
-                    <Database :size="10" />
-                    {{ selectedContainer.image }}
-                 </div>
-                 <div class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900/50 text-[10px] font-bold tracking-widest text-gray-600 dark:text-zinc-400 rounded-md uppercase">
-                    <span class="opacity-60">{{ t('containerDetail.id') }}:</span> {{ selectedContainer.id.substring(0, 12) }}
-                 </div>
-              </div>
-           </div>
-        </div>
+        <!-- Breadcrumb: where this container sits. The stack is the parent, so
+             that is the hop that is actually useful. -->
+        <nav class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+          <router-link :to="dashboard()" class="transition-colors hover:text-zinc-900 dark:hover:text-white">
+            {{ t('nav.dashboard') }}
+          </router-link>
+          <span class="text-zinc-300 dark:text-zinc-700">/</span>
+          <router-link
+            v-if="projectId && projectId !== selectedContainer.name"
+            :to="stackDetail(projectId)"
+            class="transition-colors hover:text-zinc-900 dark:hover:text-white"
+          >
+            {{ projectId }}
+          </router-link>
+          <span v-if="projectId && projectId !== selectedContainer.name" class="text-zinc-300 dark:text-zinc-700">/</span>
+          <span class="yantra-text-primary">{{ selectedContainer.name }}</span>
+        </nav>
 
-        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-3">
-          <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
-            <Terminal :size="14" />
-            {{ t('containerDetail.shellAccess') }}
-          </div>
-          <p v-if="selectedContainer.state !== 'running'" class="text-xs text-gray-500 dark:text-zinc-400">
-            {{ t('containerDetail.shellStopped') }}
-          </p>
-          <p v-else-if="shellLoading" class="text-xs text-gray-500 dark:text-zinc-400">
-            {{ t('containerDetail.detectingShell') }}
-          </p>
-          <p v-else-if="shellError || !shellCommand" class="text-xs text-gray-500 dark:text-zinc-400">
-            {{ shellError || t('containerDetail.noShell') }}
-          </p>
-          <template v-else>
-            <p class="text-xs text-gray-500 dark:text-zinc-400">{{ t('containerDetail.shellHint') }}</p>
-            <div class="flex items-center gap-2">
-              <code class="min-w-0 flex-1 overflow-x-auto rounded-lg bg-gray-50 dark:bg-zinc-900 px-3 py-2.5 text-xs text-gray-800 dark:text-zinc-200 whitespace-nowrap">{{ shellCommand }}</code>
-              <button
-                type="button"
-                @click="copyShellCommand"
-                :aria-label="t('containerDetail.copyShellCommand')"
-                class="shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-lg bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors"
-              >
-                <Copy :size="14" />{{ t('containerDetail.copyShellCommand') }}
-              </button>
-            </div>
-          </template>
-        </div>
-
-        <div v-if="allPortMappings.length > 0" class="space-y-4">
-           <div class="flex items-center justify-between">
-             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.networkAccess') }}</h3>
-             <div v-if="hasAccessPorts" class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
-               <button
-                 @click="showAccessPorts = false"
-                 :class="!showAccessPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-               >
-                 {{ t('containerDetail.allPorts') }}
-               </button>
-               <button
-                 @click="showAccessPorts = true"
-                 :class="showAccessPorts ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                 class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-               >
-                 {{ t('containerDetail.access') }}
-               </button>
-             </div>
-           </div>
-           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-             <div v-for="(mapping, i) in filteredPortMappings" :key="i" 
-                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-[border-color,box-shadow,transform,opacity] duration-200">
-               
-               <div class="flex items-start justify-between mb-4">
-                 <div class="flex items-start gap-3.5 flex-1 min-w-0">
-                   <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-gray-600 dark:text-zinc-400 shrink-0 shadow-sm group-hover:text-blue-500 transition-colors">
-                     <Network :size="18" />
-                   </div>
-                   <div class="min-w-0 flex-1">
-                     <div class="flex items-center gap-2 mb-1.5">
-                       <span class="font-mono text-[10px] font-bold uppercase text-gray-900 dark:text-white">{{ mapping.protocol }}</span>
-                       <span v-if="mapping.labeledProtocol" class="text-[9px] px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 text-gray-500 dark:text-zinc-400 rounded-md uppercase font-bold tracking-widest border border-gray-200 dark:border-zinc-700">{{ mapping.labeledProtocol }}</span>
-                     </div>
-                     <div class="text-[11px] text-gray-500 dark:text-zinc-400 truncate" :title="mapping.label">
-                       {{ mapping.label || t('containerDetail.networkPort') }}
-                     </div>
-                   </div>
-                 </div>
-               </div>
-
-               <div class="space-y-2 mb-5">
-                 <div class="flex items-center justify-between text-[11px]">
-                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('containerDetail.hostPort') }}</span>
-                   <span v-if="mapping.hostPort" class="font-mono font-bold text-gray-900 dark:text-white">{{ mapping.hostPort }}</span>
-                   <span v-else class="text-gray-400 italic">{{ t('containerDetail.internal') }}</span>
-                 </div>
-                 <div class="flex items-center justify-between text-[11px]">
-                   <span class="text-gray-500 dark:text-zinc-500 uppercase font-bold tracking-wider">{{ t('containerDetail.containerPort') }}</span>
-                   <span class="font-mono font-medium text-gray-700 dark:text-zinc-300">{{ mapping.containerPort }}</span>
-                 </div>
-               </div>
-
-               <a v-if="mapping.show && mapping.hostPort && mapping.protocol === 'tcp' && isNavigableProtocol(mapping.labeledProtocol)"
-                  :href="appUrl(mapping.hostPort, mapping.labeledProtocol)"
-                  target="_blank"
-                  class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all text-[11px] font-bold uppercase tracking-wider"
-               >
-                  <ExternalLink :size="12" />
-                  {{ t('containerDetail.open') }}
-               </a>
-               <div v-else-if="!mapping.show" :title="t('containerDetail.workPortHint')"
-                    class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-50/40 dark:bg-zinc-900/20 border border-dashed border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-600 rounded-lg text-[11px] font-bold uppercase tracking-wider">
-                 <Wrench :size="12" />
-                 {{ t('containerDetail.workPort') }}
-               </div>
-               <div v-else class="w-full flex items-center justify-center px-3 py-2 bg-gray-50 dark:bg-zinc-900/50 border border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-500 rounded-lg text-[11px] font-bold uppercase tracking-wider">
-                 {{ t('containerDetail.internalOnly') }}
-               </div>
-             </div>
-           </div>
-        </div>
-
-        <div v-if="containerVolumes.length > 0" class="space-y-4">
-           <div class="flex items-center justify-between">
-             <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.storageVolumes') }}</h3>
-           </div>
-
-           <div class="grid gap-4">
-               <div v-for="volume in containerVolumes" :key="volume.name" 
-                  class="group bg-white dark:bg-(--page-bg) border border-gray-200 dark:border-zinc-800 rounded-xl p-5 hover:border-gray-300 dark:hover:border-zinc-600 transition-[border-color,box-shadow,transform,opacity] duration-200">
-                   
-                 <div class="flex items-start justify-between gap-4 mb-5">
-                  <div class="flex items-start gap-4 min-w-0 flex-1">
-                    <div class="w-10 h-10 rounded-lg bg-gray-50 dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 flex items-center justify-center text-gray-500 dark:text-zinc-400 shrink-0 shadow-sm group-hover:text-blue-500 transition-colors">
-                      <HardDrive :size="18" />
-                    </div>
-                    <div class="min-w-0 flex-1">
-                      <div class="font-bold text-sm text-gray-900 dark:text-white truncate tracking-tight" :title="volume.name">{{ volume.name }}</div>
-                      <div class="text-[11px] text-gray-500 dark:text-zinc-400 font-mono truncate mt-1">{{ volume.destination }}</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center gap-2 flex-wrap pt-4 border-t border-gray-100 dark:border-zinc-800">
-                  <div v-if="browsingVolume[volume.name]" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 animate-pulse px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-lg">
-                    {{ t('containerDetail.startingWebDAV') }}
-                  </div>
-                  
-                  <button 
-                    v-else-if="!showVolumeMenu[volume.name]"
-                    @click="showVolumeMenu[volume.name] = true"
-                    class="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border border-gray-200 dark:border-zinc-800 bg-gray-50 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
-                  >
-                    {{ t('containerDetail.browseFiles') }}
-                  </button>
-                       
-                  <div v-else class="flex items-center gap-1.5 duration-200">
-                    <button @click="browseVolume(volume.name, 60)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-all" :title="t('containerDetail.oneHourAccess')">
-                      1H
-                    </button>
-                    <button @click="browseVolume(volume.name, 0)" class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider bg-gray-200 dark:bg-zinc-800 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-700 transition-all" :title="t('containerDetail.permanentAccess')">
-                      Perm
-                    </button>
-                  </div>
-                </div>
-
-              </div>
-             </div>
-        </div>
-
-        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-sm">
-          <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-zinc-800">
-            <div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">
-              <ShieldCheck :size="14" />
-              {{ t('containerDetail.systemDiagnostics') }}
-            </div>
-            <div class="flex items-center gap-1 rounded-lg bg-gray-100 dark:bg-zinc-900 p-1">
-              <button
-                @click="activeTab = 'resources'"
-                :class="activeTab === 'resources' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-              >
-                {{ t('containerDetail.resources') }}
-              </button>
-              <button
-                @click="activeTab = 'output'"
-                :class="activeTab === 'output' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-              >
-                {{ t('containerDetail.output') }}
-              </button>
-              <button
-                @click="activeTab = 'env'"
-                :class="activeTab === 'env' ? 'bg-white dark:bg-zinc-800 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-zinc-300'"
-                class="px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all"
-              >
-                {{ t('containerDetail.env') }}
-              </button>
-            </div>
-          </div>
-
-          <div class="p-6">
-            <div v-if="activeTab === 'resources'">
-              <ContainerResources :container-stats="containerStats" />
-            </div>
-
-            <div v-else-if="activeTab === 'output'" class="space-y-4">
-              <ContainerLogs 
-                :logs="containerLogs" 
-                v-model:autoScroll="autoScrollLogs" 
-                :refreshing="refreshingLogs" 
-                @refresh="fetchContainerLogs" 
+        <!-- Identity: what it is, what state it is in, and the four things you
+             can do about it. The everyday action is the one strong button; the
+             rest sit beside it, and the destructive one is behind the kebab. -->
+        <section class="yantra-surface p-6 sm:p-8">
+          <div class="flex flex-col gap-6 sm:flex-row">
+            <div class="yantra-tile h-20 w-20 shrink-0 p-4">
+              <AppLogo
+                :logo="selectedContainer.app?.logo"
+                :name="selectedContainer.app?.name || selectedContainer.name"
+                :seed="selectedContainer.app?.id || selectedContainer.name"
+                img-class="h-full w-full object-contain filter dark:brightness-90"
+                icon-class="h-full w-full yantra-text-primary"
               />
             </div>
 
-            <div v-else class="space-y-4">
-              <ContainerEnv :env="selectedContainer.env" />
+            <div class="min-w-0 flex-1 space-y-4">
+              <div class="flex flex-wrap items-center gap-2">
+                <h1 class="text-3xl font-black tracking-tighter yantra-text-primary">
+                  {{ selectedContainer.name }}
+                </h1>
+                <span class="yantra-chip" :class="stateChipClass">
+                  <span v-if="selectedContainer.state === 'running'" class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                  {{ selectedContainer.state }}
+                </span>
+                <span class="yantra-chip font-mono normal-case tracking-normal">
+                  {{ selectedContainer.id.substring(0, 12) }}
+                </span>
+              </div>
+
+              <p class="max-w-2xl text-sm leading-relaxed yantra-text-secondary">
+                {{ selectedContainer.app?.short_description || selectedContainer.app?.description || t('containerDetail.descriptionNotAvailable') }}
+              </p>
+
+              <div class="flex flex-wrap gap-1.5">
+                <span class="yantra-chip font-mono normal-case tracking-normal" :title="selectedContainer.image">
+                  {{ selectedContainer.image }}
+                </span>
+                <span v-for="tag in appTags" :key="tag" class="yantra-chip">{{ tag }}</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2 pt-1">
+                <a
+                  v-if="primaryPort"
+                  :href="appUrl(primaryPort.hostPort, primaryPort.labeledProtocol)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="yantra-btn yantra-btn--primary"
+                >
+                  <ExternalLink :size="13" />
+                  {{ t('containerDetail.openLabel', { label: primaryPort.label || t('containerDetail.networkPort') }) }}
+                </a>
+
+                <button
+                  v-else-if="selectedContainer.state !== 'running'"
+                  @click="lifecycleAction('start')"
+                  :disabled="busyAction !== null"
+                  class="yantra-btn yantra-btn--primary"
+                >
+                  <Play :size="13" />{{ busyAction === 'start' ? t('container.starting') : t('container.start') }}
+                </button>
+
+                <button
+                  @click="lifecycleAction('restart')"
+                  :disabled="busyAction !== null"
+                  class="yantra-btn"
+                >
+                  <RotateCcw :size="13" :class="busyAction === 'restart' ? 'animate-spin' : ''" />
+                  {{ busyAction === 'restart' ? t('container.restarting') : t('container.restart') }}
+                </button>
+
+                <button
+                  v-if="selectedContainer.state === 'running'"
+                  @click="lifecycleAction('stop')"
+                  :disabled="busyAction !== null"
+                  class="yantra-btn"
+                >
+                  <Square :size="13" />{{ busyAction === 'stop' ? t('container.stopping') : t('container.stop') }}
+                </button>
+                <button
+                  v-else
+                  @click="lifecycleAction('start')"
+                  :disabled="busyAction !== null"
+                  class="yantra-btn"
+                >
+                  <Play :size="13" />{{ busyAction === 'start' ? t('container.starting') : t('container.start') }}
+                </button>
+
+                <!-- The rest: links out, and the one action that cannot be
+                     undone. -->
+                <details ref="menuEl" class="kebab relative sm:ml-auto">
+                  <summary class="yantra-btn cursor-pointer" :aria-label="t('containerDetail.moreActions')" aria-haspopup="menu">
+                    <MoreVertical :size="15" />
+                  </summary>
+                  <div class="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-lg border border-zinc-200 bg-white p-1.5 shadow-lg dark:border-zinc-800 dark:bg-zinc-900">
+                    <router-link
+                      v-if="appId"
+                      :to="appDetail(appId)"
+                      class="flex items-center gap-2 px-2.5 py-2 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    >
+                      <ExternalLink :size="13" />{{ t('stackView.appPage') }}
+                    </router-link>
+                    <router-link
+                      v-if="projectId"
+                      :to="stackDetail(projectId)"
+                      class="flex items-center gap-2 px-2.5 py-2 text-[11px] font-bold uppercase tracking-wider yantra-text-secondary transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    >
+                      <Network :size="13" />{{ t('containerDetail.stackPage') }}
+                    </router-link>
+                    <div class="mt-1 mb-1 h-px bg-zinc-100 dark:bg-zinc-800"></div>
+                    <button
+                      @click="deleteContainer"
+                      :disabled="deleting"
+                      class="flex w-full items-center gap-2 px-2.5 py-2 text-[11px] font-bold uppercase tracking-wider text-red-600 transition-colors hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-500/10"
+                    >
+                      <Trash2 :size="13" />{{ deleting ? t('containerDetail.terminating') : t('containerDetail.terminateContainer') }}
+                    </button>
+                  </div>
+                </details>
+              </div>
             </div>
+          </div>
+        </section>
+
+        <!-- The three numbers the page is asked for first. -->
+        <div class="yantra-facts">
+          <div class="p-5">
+            <div class="yantra-label">{{ t('containerDetail.uptime') }}</div>
+            <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">{{ uptime }}</div>
+            <div class="mt-1 text-[10px] yantra-text-secondary">{{ t('containerDetail.uptimeHint') }}</div>
+          </div>
+          <div class="p-5">
+            <div class="yantra-label">{{ t('containerDetail.accessPorts') }}</div>
+            <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">
+              {{ accessPortMappings.length }} / {{ allPortMappings.length }}
+            </div>
+            <div class="mt-1 text-[10px] yantra-text-secondary">
+              {{ t('containerDetail.portsPublished', { count: accessPortMappings.length }) }}
+            </div>
+          </div>
+          <div class="p-5">
+            <div class="yantra-label">{{ t('containerDetail.volumes') }}</div>
+            <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">{{ containerVolumes.length }}</div>
+            <div class="mt-1 text-[10px] yantra-text-secondary">{{ t('containerDetail.namedVolume') }}</div>
           </div>
         </div>
 
-        <div class="bg-white dark:bg-(--page-bg) rounded-xl border border-gray-200 dark:border-zinc-800 p-6 space-y-4 shadow-sm">
-           <h3 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 dark:text-zinc-500">{{ t('containerDetail.control') }}</h3>
-           
-           <div class="grid grid-cols-3 gap-2">
-              <button
-                @click="lifecycleAction('start')"
-                :disabled="busyAction !== null"
-                :aria-label="t('container.start')"
-                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
-              >
-                <Play :size="13" />{{ t('container.start') }}
-              </button>
-              <button
-                @click="lifecycleAction('stop')"
-                :disabled="busyAction !== null"
-                :aria-label="t('container.stop')"
-                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
-              >
-                <Square :size="13" />{{ t('container.stop') }}
-              </button>
-              <button
-                @click="lifecycleAction('restart')"
-                :disabled="busyAction !== null"
-                :aria-label="t('container.restart')"
-                class="flex items-center justify-center gap-1.5 px-3 py-2.5 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all font-bold text-[11px] uppercase tracking-wider disabled:opacity-50"
-              >
-                <RotateCcw :size="13" />{{ t('container.restart') }}
-              </button>
-           </div>
+        <!-- Network and shell: the two ways into a container, side by side. -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <section class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <h2 class="yantra-label">{{ t('containerDetail.networkAccess') }}</h2>
+                <span v-if="allPortMappings.length > 0" class="yantra-chip">
+                  {{ showAccessPorts && accessPortMappings.length < allPortMappings.length ? `${accessPortMappings.length}/${allPortMappings.length}` : filteredPortMappings.length }}
+                </span>
+              </div>
+              <div v-if="hasAccessPorts" class="yantra-segment">
+                <button
+                  type="button"
+                  class="yantra-chip"
+                  :class="{ 'yantra-chip--active': !showAccessPorts }"
+                  @click="showAccessPorts = false"
+                >{{ t('containerDetail.allPorts') }}</button>
+                <button
+                  type="button"
+                  class="yantra-chip"
+                  :class="{ 'yantra-chip--active': showAccessPorts }"
+                  @click="showAccessPorts = true"
+                >{{ t('containerDetail.access') }}</button>
+              </div>
+            </div>
 
-           <button 
-              @click="deleteContainer"
-              :disabled="deleting"
-              class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-(--page-bg) border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 transition-all font-bold text-[11px] uppercase tracking-wider"
-           >
-              <Trash2 :size="14" />
-              {{ deleting ? t('containerDetail.terminating') : t('containerDetail.terminateContainer') }}
-           </button>
-           
-           <p class="text-[10px] text-gray-500 dark:text-zinc-500 text-center px-4 leading-relaxed font-medium">
-              {{ t('containerDetail.warning') }}
-           </p>
+            <div v-if="filteredPortMappings.length > 0" class="grid grid-cols-1 gap-4">
+              <div v-for="(p, i) in filteredPortMappings" :key="i" class="yantra-surface flex h-full flex-col p-5">
+                <div class="mb-4 flex items-start gap-4">
+                  <div class="yantra-tile h-10 w-10">
+                    <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="17" />
+                    <Network v-else :size="17" />
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="mb-1 flex items-center gap-2">
+                      <span class="font-mono text-[10px] font-bold uppercase yantra-text-primary">{{ p.protocol }}</span>
+                      <span v-if="p.labeledProtocol" class="yantra-chip yantra-chip--accent">{{ p.labeledProtocol }}</span>
+                    </div>
+                    <div class="truncate text-[11px] yantra-text-secondary" :title="p.label || p.service">
+                      {{ p.label || t('containerDetail.networkPort') }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="yantra-panel mb-4">
+                  <div class="yantra-fact">
+                    <span class="yantra-fact__label">{{ t('containerDetail.hostPort') }}</span>
+                    <span v-if="p.hostPort" class="yantra-fact__value">:{{ p.hostPort }}</span>
+                    <span v-else class="yantra-text-secondary italic">{{ t('containerDetail.internal') }}</span>
+                  </div>
+                  <div class="yantra-fact">
+                    <span class="yantra-fact__label">{{ t('containerDetail.containerPort') }}</span>
+                    <span class="yantra-fact__value">{{ p.containerPort }}</span>
+                  </div>
+                </div>
+
+                <div class="mt-auto">
+                  <a
+                    v-if="p.show && p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
+                    :href="appUrl(p.hostPort, p.labeledProtocol)"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="yantra-btn yantra-btn--primary w-full"
+                  >
+                    <ExternalLink :size="12" />{{ t('containerDetail.open') }}
+                  </a>
+                  <!-- A work port is protocol plumbing with nothing to open, so
+                       it says so rather than offering a link that would fail. -->
+                  <div
+                    v-else-if="!p.show"
+                    class="yantra-btn w-full cursor-default justify-between"
+                    :title="t('containerDetail.workPortHint')"
+                  >
+                    <span class="inline-flex items-center gap-2"><Wrench :size="12" />{{ t('containerDetail.workPort') }}</span>
+                  </div>
+                  <div v-else class="yantra-btn w-full cursor-default justify-between">
+                    <span>{{ t('containerDetail.internalOnly') }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div v-else class="yantra-empty">
+              <Network :size="24" />
+              <span>{{ t('containerDetail.noPorts') }}</span>
+            </div>
+          </section>
+
+          <section class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <h2 class="yantra-label">{{ t('containerDetail.shellAccess') }}</h2>
+                <span v-if="shellPath" class="yantra-chip">{{ shellPath }}</span>
+              </div>
+            </div>
+
+            <div class="yantra-surface flex h-full flex-col p-5">
+              <div class="mb-4 flex items-start gap-4">
+                <div class="yantra-tile h-10 w-10">
+                  <Terminal :size="17" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="text-sm font-bold yantra-text-primary">{{ t('containerDetail.shellTitle') }}</div>
+                  <div class="mt-1 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+                    {{ t('containerDetail.shellSubtitle') }}
+                  </div>
+                </div>
+              </div>
+
+              <p v-if="selectedContainer.state !== 'running'" class="text-xs yantra-text-secondary">
+                {{ t('containerDetail.shellStopped') }}
+              </p>
+              <p v-else-if="shellLoading" class="text-xs yantra-text-secondary">
+                {{ t('containerDetail.detectingShell') }}
+              </p>
+              <p v-else-if="shellError || !shellCommand" class="text-xs yantra-text-secondary">
+                {{ shellError || t('containerDetail.noShell') }}
+              </p>
+              <template v-else>
+                <div class="flex items-center gap-2 rounded-lg border border-zinc-200 bg-zinc-50 p-2 dark:border-zinc-800 dark:bg-zinc-900/50">
+                  <code class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap px-1 font-mono text-[11px] yantra-text-primary">{{ shellCommand }}</code>
+                  <button
+                    type="button"
+                    @click="copyShellCommand"
+                    :aria-label="t('containerDetail.copyShellCommand')"
+                    class="yantra-btn shrink-0 px-2"
+                  >
+                    <Copy :size="13" />
+                  </button>
+                </div>
+                <p class="mt-3 text-[10px] leading-relaxed yantra-text-secondary">
+                  {{ t('containerDetail.shellHint') }}
+                </p>
+              </template>
+            </div>
+          </section>
         </div>
+
+        <!-- Storage: a named volume carries actions, so it is a card. -->
+        <section v-if="containerVolumes.length > 0" class="space-y-3">
+          <div class="flex items-center gap-2">
+            <h2 class="yantra-label">{{ t('containerDetail.storageVolumes') }}</h2>
+            <span class="yantra-chip">{{ containerVolumes.length }}</span>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div v-for="volume in containerVolumes" :key="volume.name" class="yantra-surface flex h-full flex-col p-5">
+              <div class="mb-4 flex items-start gap-4">
+                <div class="yantra-tile h-10 w-10">
+                  <HardDrive :size="17" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="truncate text-sm font-bold tracking-tight yantra-text-primary" :title="volume.name">{{ volume.name }}</div>
+                  <div class="mt-1 truncate font-mono text-[11px] yantra-text-secondary" :title="volume.destination">{{ volume.destination }}</div>
+                </div>
+                <span class="yantra-chip shrink-0">{{ t('containerDetail.named') }}</span>
+              </div>
+
+              <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+                <div v-if="browsingVolume[volume.name]" class="yantra-btn cursor-default">
+                  {{ t('containerDetail.startingWebDAV') }}
+                </div>
+                <template v-else-if="!showVolumeMenu[volume.name]">
+                  <button @click="showVolumeMenu[volume.name] = true" class="yantra-btn">
+                    {{ t('containerDetail.browseFiles') }}
+                  </button>
+                </template>
+                <template v-else>
+                  <button
+                    @click="browseVolume(volume.name, 60)"
+                    class="yantra-btn"
+                    :title="t('containerDetail.oneHourAccess')"
+                  >1H</button>
+                  <button
+                    @click="browseVolume(volume.name, 0)"
+                    class="yantra-btn"
+                    :title="t('containerDetail.permanentAccess')"
+                  >{{ t('containerDetail.permanentAccess') }}</button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Diagnostics: three tabs over one surface, not three nested cards. -->
+        <section class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="yantra-label">{{ t('containerDetail.systemDiagnostics') }}</h2>
+            <div class="yantra-segment">
+              <button
+                type="button"
+                class="yantra-chip"
+                :class="{ 'yantra-chip--active': activeTab === 'resources' }"
+                @click="activeTab = 'resources'"
+              >{{ t('containerDetail.resources') }}</button>
+              <button
+                type="button"
+                class="yantra-chip"
+                :class="{ 'yantra-chip--active': activeTab === 'output' }"
+                @click="activeTab = 'output'"
+              >{{ t('containerDetail.output') }}</button>
+              <button
+                type="button"
+                class="yantra-chip"
+                :class="{ 'yantra-chip--active': activeTab === 'env' }"
+                @click="activeTab = 'env'"
+              >{{ t('containerDetail.env') }}</button>
+            </div>
+          </div>
+
+          <div class="yantra-surface p-6">
+            <ContainerResources v-if="activeTab === 'resources'" :container-stats="containerStats" />
+
+            <ContainerLogs
+              v-else-if="activeTab === 'output'"
+              :logs="containerLogs"
+              v-model:autoScroll="autoScrollLogs"
+              :refreshing="refreshingLogs"
+              @refresh="fetchContainerLogs"
+            />
+
+            <ContainerEnv v-else :env="selectedContainer.env" />
+          </div>
+        </section>
 
     </main>
   </AppLayout>
@@ -663,5 +825,13 @@ watch(activeTab, (tab) => {
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: #4f4f4f;
+}
+
+/* The kebab is a native <details>, so it needs its marker hidden by hand. */
+.kebab > summary {
+  list-style: none;
+}
+.kebab > summary::-webkit-details-marker {
+  display: none;
 }
 </style>

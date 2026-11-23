@@ -212,6 +212,33 @@ body {
     border-radius: var(--radius-xl);
 }
 
+/* A strip of headline numbers: one surface, hairlines between the cells. It
+   exists so a page can answer "how long, how many" in a row instead of three
+   cards that each read as something to click. */
+.yantra-facts {
+    display: grid;
+    grid-template-columns: 1fr;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-xl);
+    background-color: var(--card-bg);
+}
+
+.yantra-facts > * + * {
+    border-top: 1px solid var(--card-border);
+}
+
+@media (min-width: 640px) {
+    .yantra-facts {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .yantra-facts > * + * {
+        border-top: 0;
+        border-left: 1px solid var(--card-border);
+    }
+}
+
 .yantra-row {
     display: flex;
     align-items: baseline;
