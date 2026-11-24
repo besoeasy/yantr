@@ -1,0 +1,34 @@
+x-yantr:
+  name: "OpenChamber"
+  tags: [development, ai, productivity, terminal]
+  short_description: "Agentic dev environment in your browser for AI coding with terminals and workspaces."
+  description: >
+    OpenChamber is an agentic development environment for AI coding across
+    browser, desktop, and phone. Run coding agents, review diffs, use the
+    terminal, and preview dev servers from one workspace. Projects persist in a
+    named workspace volume, with extra sequential ports kept free for apps.
+  usecases: ["Run AI coding agents from a browser with diff review and terminal access.", "Develop and preview apps using the extra sequential ports for dev servers.", "Keep projects in a persistent workspace volume across restarts."]
+  website: "https://github.com/openchamber/openchamber"
+  env_generators:
+    OPENCHAMBER_UI_PASSWORD: {length: 20, charset: alnum_symbols}
+  notes: ["The web UI password is auto-generated on install; copy it from the deploy form.", "Workspaces persist in a named volume; settings and keys are ephemeral.", "Run dev servers on ports 3001-3002 with --host so previews stay reachable."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: openchamber}
+    - {port: 3001, protocol: HTTP, label: "Dev server 1", service: openchamber}
+    - {port: 3002, protocol: HTTP, label: "Dev server 2", service: openchamber}
+
+services:
+  openchamber:
+    image: ghcr.io/openchamber/openchamber:latest
+    environment:
+      OPENCHAMBER_UI_PASSWORD: ${OPENCHAMBER_UI_PASSWORD}
+    ports:
+      - "3000"
+      - "3001"
+      - "3002"
+    volumes:
+      - openchamber_workspace:/home/openchamber/workspaces
+    restart: unless-stopped
+
+volumes:
+  openchamber_workspace:
