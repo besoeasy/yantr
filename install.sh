@@ -163,10 +163,17 @@ if [ "$(id -u)" -eq 0 ]; then
   log_error "Yantr must run as your normal user, not root."
   echo "        Root mode gives every deployed app full host root, which"
   echo "        contradicts the rootless isolation Yantr is built on."
+  # Under sudo, $SUDO_USER is the account that invoked it. In a bare root
+  # shell there is nothing to derive from, and $USER would expand to "root" —
+  # the very invocation that just failed — so leave a placeholder instead.
+  RUN_AS_HINT="${SUDO_USER:-}"
+  case "$RUN_AS_HINT" in
+    ""|root) RUN_AS_HINT="<install-user>" ;;
+  esac
   if [ "$MODE" = "uninstall" ]; then
-    echo -e "        Re-run as the user who installed it:  ${BOLD}${CYAN}sudo -u \$USER bash install.sh --uninstall${NC}"
+    echo -e "        Re-run as the user who installed it:  ${BOLD}${CYAN}sudo -u ${RUN_AS_HINT} bash install.sh --uninstall${NC}"
   else
-    echo -e "        Re-run without sudo:  ${BOLD}${CYAN}sudo -u \$USER bash install.sh${NC}"
+    echo -e "        Re-run as your normal user:  ${BOLD}${CYAN}sudo -u ${RUN_AS_HINT} bash install.sh${NC}"
   fi
   exit 1
 fi
@@ -207,17 +214,34 @@ if [ "$MODE" = "uninstall" ]; then
   STEP_TOTAL=3
   log_debug "quadlet file: $QUADLET_FILE"
 
+  # The cleanup below is best-effort in that no single step may abort the
+  # uninstall halfway, but a step that fails leaves Yantr partly removed. Track
+  # it so the run cannot end in a success message and exit 0.
+  CLEANUP_FAILED=0
+  PURGE_FAILED=0
+
   # 1/3 Stop and disable service, remove container if still exists
   log_step "Stopping Yantr service..."
   $SYSTEMCTL stop yantr.service 2>/dev/null || true
   $SYSTEMCTL disable yantr.service 2>/dev/null || true
+  if $SYSTEMCTL is-active --quiet yantr.service; then
+    log_warn "yantr.service is still active after stop."
+    CLEANUP_FAILED=1
+  fi
   if have podman; then
     if podman container exists yantr 2>/dev/null; then
       log_info "Removing container 'yantr'..."
-      podman rm -f yantr >/dev/null 2>&1 || true
+      if ! podman rm -f yantr >/dev/null 2>&1 && podman container exists yantr 2>/dev/null; then
+        log_warn "Could not remove container 'yantr'."
+        CLEANUP_FAILED=1
+      fi
     fi
   fi
-  step_ok "Service stopped and disabled."
+  if [ "$CLEANUP_FAILED" -eq 0 ]; then
+    step_ok "Service stopped and disabled."
+  else
+    log_warn "Service cleanup incomplete — see the warnings above."
+  fi
 
   # 2/3 Remove Quadlet file, reload systemd
   log_step "Removing Quadlet specification..."
@@ -234,14 +258,51 @@ if [ "$MODE" = "uninstall" ]; then
   # 3/3 Purge data if requested
   log_step "Finalizing..."
   if [ "$PURGE" -eq 1 ]; then
+    PURGE_DETAIL=""
     if have podman; then
       log_info "Purging persistent volume 'yantr_data'..."
-      podman volume rm -f yantr_data >/dev/null 2>&1 || true
+      # `-f` succeeds when the volume is already gone, so a failure means it is
+      # still there — in use, or unreachable. Keep podman's own message:
+      # "volume is being used" is actionable in a way "purge failed" is not.
+      if ! PURGE_DETAIL="$(podman volume rm -f yantr_data 2>&1)"; then
+        PURGE_FAILED=1
+      fi
+    else
+      PURGE_FAILED=1
+      PURGE_DETAIL="podman is not installed, so the volume could not be removed"
     fi
-    step_ok "Purge complete."
-    echo -e "\n${BOLD}${GREEN}${TICK} Yantr and all its data have been completely removed.${NC}\n"
+    if [ "$PURGE_FAILED" -eq 0 ]; then
+      step_ok "Purge complete."
+    fi
   else
     step_ok "Uninstall complete."
+  fi
+
+  if [ "$PURGE_FAILED" -eq 1 ]; then
+    log_warn "Persistent volume 'yantr_data' was NOT removed — app data is still on disk."
+    if [ -n "$PURGE_DETAIL" ]; then
+      echo "        ${PURGE_DETAIL}"
+    fi
+    if have podman; then
+      echo "        Retry once nothing is using it:"
+      echo -e "          ${BOLD}${CYAN}podman volume rm -f yantr_data${NC}"
+    else
+      echo "        Reinstall Podman, or delete the volume directory by hand."
+    fi
+    echo -e "\n${BOLD}${RED}${CROSS} Uninstall finished, but data removal failed.${NC}\n"
+    exit 1
+  fi
+
+  if [ "$CLEANUP_FAILED" -eq 1 ]; then
+    echo -e "\n${BOLD}${RED}${CROSS} Uninstall finished, but some cleanup steps failed.${NC}"
+    echo "  Check the warnings above before assuming Yantr is fully removed."
+    echo ""
+    exit 1
+  fi
+
+  if [ "$PURGE" -eq 1 ]; then
+    echo -e "\n${BOLD}${GREEN}${TICK} Yantr and all its data have been completely removed.${NC}\n"
+  else
     echo -e "\n${BOLD}${GREEN}${TICK} Yantr systemd service successfully uninstalled.${NC}"
     echo -e "\n${BOLD}Note on Persistent Data:${NC}"
     echo "  Your app data in Podman volume 'yantr_data' has been preserved."
