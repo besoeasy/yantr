@@ -188,7 +188,13 @@ fi
 # The systemd user bus is often unset over SSH. Resolve the session once here —
 # both the install and the uninstall path need these.
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-export DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=${XDG_RUNTIME_DIR}/bus}"
+# Only point at the bus socket when the socket exists. Exporting a path to one
+# that was never created turns every `systemctl --user` call into "Failed to
+# connect to user scope bus", which reads like a systemd fault rather than
+# "this session has no user manager".
+if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ -S "${XDG_RUNTIME_DIR}/bus" ]; then
+  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+fi
 
 QUADLET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/containers/systemd"
 QUADLET_FILE="$QUADLET_DIR/yantr.container"
@@ -406,6 +412,31 @@ if have loginctl; then
 fi
 
 # Enable and start rootless podman.socket
+#
+# A login session normally has a systemd user manager behind it, and that is
+# what `systemctl --user` talks to. Container consoles (`pct enter`,
+# `lxc-attach`, `podman exec`) skip PAM, so the shell has none — lingering is a
+# boot-time setting and does not start one for the current session. Start it by
+# UID, wait briefly, and only then treat it as a failure.
+if ! systemctl --user show-environment >/dev/null 2>&1; then
+  log_warn "No systemd user manager for ${USER} in this session; starting it..."
+  if [ -n "$SUDO" ]; then
+    $SUDO systemctl start "user@$(id -u).service" >/dev/null 2>&1 || true
+  fi
+  for _ in {1..5}; do
+    systemctl --user show-environment >/dev/null 2>&1 && break
+    sleep 1
+  done
+fi
+
+if ! systemctl --user show-environment >/dev/null 2>&1; then
+  log_error "Cannot reach the systemd user manager for ${USER}, which podman.socket needs."
+  echo "        Inside a container, consoles like 'pct enter' or 'lxc-attach' have no"
+  echo "        login session. Re-run from an SSH login, or start it and retry:"
+  echo -e "          ${BOLD}${CYAN}sudo systemctl start user@$(id -u).service${NC}"
+  exit 1
+fi
+
 log_info "Enabling user Podman socket..."
 systemctl --user --no-ask-password enable --now podman.socket
 
