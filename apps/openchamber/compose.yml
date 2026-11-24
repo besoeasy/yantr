@@ -11,7 +11,7 @@ x-yantr:
   website: "https://github.com/openchamber/openchamber"
   env_generators:
     OPENCHAMBER_UI_PASSWORD: {length: 20, charset: alnum_symbols}
-  notes: ["The web UI password is auto-generated on install; copy it from the deploy form.", "Workspaces persist in a named volume; settings and keys are ephemeral.", "Run dev servers on ports 3001-3002 with --host so previews stay reachable."]
+  notes: ["The web UI password is auto-generated on install; copy it from the deploy form.", "Config, data, SSH keys, and workspaces each persist in their own named volume.", "Run dev servers on ports 3001-3002 with --host so previews stay reachable."]
   ports:
     - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: openchamber}
     - {port: 3001, protocol: HTTP, label: "Dev server 1", service: openchamber}
@@ -27,8 +27,14 @@ services:
       - "3001"
       - "3002"
     volumes:
-      - openchamber_workspace:/home/openchamber/workspaces
+      - openchamber_config:/home/openchamber/.config
+      - openchamber_data:/home/openchamber/.local
+      - openchamber_ssh:/home/openchamber/.ssh
+      - openchamber_workspaces:/home/openchamber/workspaces
     restart: unless-stopped
 
 volumes:
-  openchamber_workspace:
+  openchamber_config:
+  openchamber_data:
+  openchamber_ssh:
+  openchamber_workspaces:
