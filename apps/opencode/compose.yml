@@ -20,6 +20,8 @@ x-yantr:
 
   ports:
     - {port: 4096, protocol: HTTP, show: true, label: "Web UI", service: opencode}
+    - {port: 4097, protocol: HTTP, label: "Dev server 1", service: opencode}
+    - {port: 4098, protocol: HTTP, label: "Dev server 2", service: opencode}
 
 services:
   opencode:
@@ -36,6 +38,8 @@ services:
       OPENCODE_CONFIG_CONTENT: '{"permissions":[{"action":"*","resource":"*","effect":"allow"}]}'
     ports:
       - "4096"
+      - "4097"
+      - "4098"
     stdin_open: true
     tty: true
     working_dir: /home/opencode
