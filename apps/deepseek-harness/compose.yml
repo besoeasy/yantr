@@ -23,7 +23,7 @@ x-yantr:
 
 services:
   deepseek-harness:
-    image: ghcr.io/nilsonpmjr/deepseek-harness-umbrel:0.2.2-rc.5-umbrel.3
+    image: ghcr.io/nilsonpmjr/deepseek-harness-umbrel:latest
     environment:
       DSH_HOME: /data/dsh-home
       DSH_WORKSPACE: /data/workspace
