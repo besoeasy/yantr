@@ -1,0 +1,26 @@
+x-yantr:
+  name: "Rabta"
+  tags: [storage, sync, privacy, p2p, self-hosted]
+  short_description: "Self-healing sync relay for local-first apps with signed events and encrypted blobs."
+  description: >
+    Rabta is an append-only sync relay for local-first apps and peer meshes.
+    Events are Ed25519-signed, blobs stay zero-knowledge encrypted, and nodes
+    self-heal over autonomous P2P sync. One container with embedded SQLite, no
+    external database or message broker to manage.
+  usecases: ["Sync signed events across local-first apps and peer meshes.", "Store zero-knowledge encrypted blobs without holding decryption keys.", "Mesh relays together with one SYNC variable for self-healing replication."]
+  website: "https://github.com/rabta-protocol/rabta"
+  notes: ["Data persists in a named volume at /data.", "Open the dashboard at / or check /api/v1/health to verify the node.", "Set SYNC to a comma-separated peer list to mesh relays together."]
+  ports:
+    - {port: 3232, protocol: HTTP, show: true, label: "Web UI", service: rabta}
+
+services:
+  rabta:
+    image: ghcr.io/rabta-protocol/rabta:latest
+    ports:
+      - "3232"
+    volumes:
+      - rabta_data:/data
+    restart: unless-stopped
+
+volumes:
+  rabta_data:
