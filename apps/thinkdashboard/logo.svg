@@ -1,0 +1,8 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ThinkDashboard logo">
+  <rect width="256" height="256" rx="56" fill="#171A21"/>
+  <polyline points="88,82 130,124 88,166" fill="none" stroke="#4ADE80" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="144" y="148" width="32" height="18" rx="3" fill="#4ADE80"/>
+  <rect x="52" y="198" width="46" height="30" rx="7" fill="none" stroke="#454B58" stroke-width="4"/>
+  <rect x="105" y="198" width="46" height="30" rx="7" fill="none" stroke="#4ADE80" stroke-width="4"/>
+  <rect x="158" y="198" width="46" height="30" rx="7" fill="none" stroke="#454B58" stroke-width="4"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dropgate logo">
+  <defs>
+    <linearGradient id="dg-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A3A3E"/>
+      <stop offset="0.55" stop-color="#17171A"/>
+      <stop offset="1" stop-color="#0A0A0C"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#dg-bg)"/>
+  <path d="M198 46 C128 14 36 62 36 132 C36 202 116 246 202 212" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/>
+  <path d="M212 74 C160 52 96 76 96 132" fill="none" stroke="#8E8E93" stroke-width="7" stroke-linecap="round" opacity="0.8"/>
+  <rect x="104" y="58" width="48" height="82" rx="14" fill="#FFFFFF"/>
+  <path d="M128 208 L62 132 L194 132 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="10" stroke-linejoin="round"/>
+</svg>

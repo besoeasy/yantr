@@ -1,0 +1,28 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ROMarr logo">
+  <rect width="256" height="256" rx="56" fill="#EDF1F7"/>
+  <svg x="24" y="34" width="208" height="188" viewBox="0 0 128 116" fill="none">
+    <path d="M40 12C40 6.5 44.5 2 50 2H102C108.6 2 114 7.4 114 14V58.5C119.8 64.2 123 72.1 123 80.5C123 97.9 108.9 112 91.5 112C84.8 112 78.5 109.9 73.4 106.3L63.8 114.2C60.1 117.2 54.6 116.8 51.3 113.3C48.1 109.8 48.2 104.3 51.6 101L56.2 96.6H29V102C29 105.3 26.3 108 23 108H19C15.7 108 13 105.3 13 102V89.2L4.2 83.2C1.6 81.4 0 78.4 0 75.2V36C0 29.9 4.5 24.8 10.4 24C12.2 18.8 17.1 15 23 15H26.4C29.1 10.3 34.1 7 40 7V12Z" fill="#0E141D" stroke="#2B3D54" stroke-width="2.5"/>
+    <rect x="8" y="31" width="14" height="44" rx="5" fill="#E5E9F0"/>
+    <rect x="13" y="37" width="8" height="38" rx="3" fill="#3B5270"/>
+    <rect x="19" y="22" width="15" height="53" rx="6" fill="#E5E9F0"/>
+    <rect x="25" y="29" width="9" height="46" rx="3" fill="#3B5270"/>
+    <rect x="31" y="15" width="16" height="60" rx="6" fill="#E5E9F0"/>
+    <rect x="37" y="23" width="10" height="52" rx="3" fill="#3B5270"/>
+    <rect x="44" y="8" width="62" height="68" rx="9" fill="#75adff"/>
+    <rect x="42" y="25" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <rect x="42" y="34" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <rect x="42" y="43" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <rect x="100" y="25" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <rect x="100" y="34" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <rect x="100" y="43" width="8" height="4.5" rx="2.2" fill="#0E141D"/>
+    <path d="M53 75V62C53 59.8 54.8 58 57 58H78" stroke="#0E141D" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="54" y="17" width="42" height="36" rx="6" fill="#0E141D"/>
+    <path d="M66 23H69V26H66V23ZM81 23H84V26H81V23ZM69 26H72V29H69V26ZM78 26H81V29H78V26ZM66 29H84V32H66V29ZM63 32H69V35H63V32ZM72 32H78V35H72V32ZM81 32H87V35H81V32ZM60 35H90V41H60V35ZM60 41H63V47H60V41ZM66 41H84V44H66V41ZM87 41H90V47H87V41ZM66 44H69V47H66V44ZM81 44H84V47H81V44ZM69 47H74V50H69V47ZM76 47H81V50H76V47Z" fill="#F8FAFC"/>
+    <path d="M8 71L23 81H68L64 89H25V101H18V85L8 78V71Z" fill="#E5E9F0"/>
+    <circle cx="91" cy="79" r="24" fill="#0E141D" stroke="#2B3D54" stroke-width="2"/>
+    <path d="M74 94L57 109" stroke="#0E141D" stroke-width="15" stroke-linecap="round"/>
+    <path d="M74 94L58 108" stroke="#E5E9F0" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="91" cy="79" r="19.5" fill="#0E141D" stroke="#E5E9F0" stroke-width="5.5"/>
+    <path d="M81.5 79.5L88 86L101 72" stroke="#75adff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</svg>

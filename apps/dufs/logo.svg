@@ -1,0 +1,6 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dufs logo">
+  <rect width="256" height="256" rx="56" fill="#0E7490"/>
+  <path d="M64 118 V108 A12 12 0 0 1 76 96 H108 L124 112 H180 A12 12 0 0 1 192 124 V184 A12 12 0 0 1 180 196 H76 A12 12 0 0 1 64 184 Z" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round"/>
+  <line x1="128" y1="172" x2="128" y2="128" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round"/>
+  <polyline points="104,150 128,126 152,150" fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,14 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rabta logo">
+  <rect width="256" height="256" rx="56" fill="#4C1D95"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="11" stroke-linecap="round">
+    <line x1="128" y1="80" x2="76" y2="172"/>
+    <line x1="128" y1="80" x2="180" y2="172"/>
+    <line x1="76" y1="172" x2="180" y2="172"/>
+  </g>
+  <circle cx="128" cy="72" r="20" fill="#FFFFFF"/>
+  <circle cx="68" cy="180" r="20" fill="#FFFFFF"/>
+  <circle cx="188" cy="180" r="20" fill="#FFFFFF"/>
+  <circle cx="128" cy="72" r="8" fill="#4C1D95"/>
+  <circle cx="68" cy="180" r="8" fill="#4C1D95"/>
+  <circle cx="188" cy="180" r="8" fill="#4C1D95"/>
+</svg>
