@@ -1,0 +1,47 @@
+x-yantr:
+  name: DeepSeek Harness
+  tags: [development, productivity, ai, terminal]
+  short_description: Plugin-driven AI agent workbench in your browser - chat, run tools, and code.
+  description: >
+    DeepSeek Harness is an open-source AI agent workbench on an
+    everything-is-a-plugin architecture powered by Cordis. Chat with agents,
+    execute tools, browse files, and use the terminal from any browser. Sign
+    in with a DeepSeek Account or add your own model API keys.
+  usecases:
+    [
+      Run multi-turn agent workflows from a browser.,
+      Sign in with a DeepSeek Account or configure model API providers.,
+      Execute terminal commands and manage files in persistent workspaces.
+    ]
+  website: https://github.com/deepseek-ai/deepseek-harness
+  notes: ["Opens without a password; anyone on your network can reach it.", "Sign in with a DeepSeek Account or add API keys in Settings - Models.", "Sessions, credentials, and workspaces persist in named volumes."]
+
+  ports:
+    - {port: 3080, protocol: HTTP, show: true, label: "Web UI", service: deepseek-harness}
+    - {port: 3082, protocol: HTTP, label: "Dev server 1", service: deepseek-harness}
+    - {port: 3083, protocol: HTTP, label: "Dev server 2", service: deepseek-harness}
+
+services:
+  deepseek-harness:
+    image: ghcr.io/nilsonpmjr/deepseek-harness-umbrel:0.2.2-rc.5-umbrel.3@sha256:50bc18a7356fbe955db17a75d73457db856bd7758b28ae9bdd92f3a591dc1a45
+    environment:
+      DSH_HOME: /data/dsh-home
+      DSH_WORKSPACE: /data/workspace
+      HOME: /data/home
+      XDG_CONFIG_HOME: /data/home/.config
+      XDG_CACHE_HOME: /data/home/.cache
+      DSH_UMBREL_APP_PROXY_AUTH: "1"
+    ports:
+      - "3080"
+      - "3082"
+      - "3083"
+    volumes:
+      - dsh_home:/data/dsh-home
+      - dsh_workspace:/data/workspace
+      - user_home:/data/home
+    restart: unless-stopped
+
+volumes:
+  dsh_home: null
+  dsh_workspace: null
+  user_home: null
