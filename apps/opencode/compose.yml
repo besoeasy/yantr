@@ -21,7 +21,7 @@ x-yantr:
 
 services:
   opencode:
-    image: ghcr.io/anomalyco/opencode:latest
+    image: ghcr.io/anomalyco/opencode:2.4.1
     command:
       - web
       - --hostname
