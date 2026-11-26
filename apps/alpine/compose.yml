@@ -10,8 +10,6 @@ x-yantr:
   website: "https://alpinelinux.org/"
 
   ports:
-    - {port: 80, protocol: HTTP, show: true, label: "HTTP server", service: alpine}
-    - {port: 443, protocol: HTTPS, show: true, label: "HTTPS server", service: alpine}
     - {port: 3000, protocol: HTTP, show: true, label: "Dev server", service: alpine}
     - {port: 8080, protocol: HTTP, show: true, label: "Web server", service: alpine}
     - {port: 9000, protocol: HTTP, show: true, label: "Alt server", service: alpine}
@@ -23,8 +21,6 @@ services:
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
       - "8080"
-      - "80"
-      - "443"
       - "3000"
       - "9000"
     volumes:
