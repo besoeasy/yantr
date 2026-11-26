@@ -5,28 +5,28 @@ x-yantr:
   description: >
     Yantr Torrent is a lightweight Transmission BitTorrent box with a web
     interface and a Dufs file server for browsing downloads. The shared downloads
-    volume is exposed through Dufs with open read-write access, making it easy to
-    grab or stream completed torrents from browsers, TVs, and other devices.
+    volume is exposed through Dufs behind the same login as Transmission, making
+    it easy to grab or stream completed torrents from browsers and TVs.
   usecases:
     [
       "Run a self-managed torrent client with web access on your Yantr server.",
       "Browse, download, and stream completed torrents from a TV or browser over Dufs.",
-      "Share the downloads folder over HTTP with open read-write access on your local network."
+      "Use one login for both Transmission and the downloads file browser."
     ]
   website: "https://github.com/besoeasy/yantr"
   notes:
     [
       "Transmission Web UI is on port 9091; set the user and password in the deploy form.",
-      "Dufs serves the downloads volume on port 5000 with open read-write access for everyone.",
-      "Because Dufs is open to all, expose it only on trusted networks."
+      "Dufs serves the downloads volume on port 5000 using the same TRANSMISSION_USER and TRANSMISSION_PASS credentials.",
+      "The generated password uses alphanumeric characters to keep Dufs auth compatible."
     ]
   env_generators:
     TRANSMISSION_USER:
       length: 8
       charset: alpha
     TRANSMISSION_PASS:
-      length: 16
-      charset: alnum_symbols
+      length: 20
+      charset: alnum
 
   ports:
     - {port: 9091, protocol: HTTP, show: true, label: "Transmission UI", service: transmission}
@@ -50,7 +50,10 @@ services:
     restart: unless-stopped
   dufs:
     image: docker.io/sigoden/dufs:latest
-    command: ["/downloads", "--allow-all"]
+    command: ["/downloads"]
+    environment:
+      DUFS_ALLOW_ALL: "true"
+      DUFS_AUTH: ${TRANSMISSION_USER}:${TRANSMISSION_PASS}@/:rw
     volumes:
       - yantr_torrent_downloads:/downloads
     ports:
