@@ -9,6 +9,7 @@ x-yantr:
     external database or message broker to manage.
   usecases: ["Sync signed events across local-first apps and peer meshes.", "Store zero-knowledge encrypted blobs without holding decryption keys.", "Mesh relays together with one SYNC variable for self-healing replication."]
   website: "https://github.com/rabta-protocol/rabta"
+  developers: ["npub1hznmntyj254kqhr079a5gt2wvhyll6rz6q67pyjres4lfkql22kq5ml6zh"]
   notes: ["Data persists in a named volume at /data.", "Open the dashboard at / or check /api/v1/health to verify the node.", "Set SYNC to a comma-separated peer list to mesh relays together."]
   ports:
     - {port: 3232, protocol: HTTP, show: true, label: "Web UI", service: rabta}
