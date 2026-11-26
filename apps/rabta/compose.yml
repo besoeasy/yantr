@@ -17,6 +17,8 @@ x-yantr:
 services:
   rabta:
     image: ghcr.io/rabta-protocol/rabta:latest
+    environment:
+      SYNC: ${SYNC:-}
     ports:
       - "3232"
     volumes:
