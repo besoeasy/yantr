@@ -23,14 +23,13 @@ x-yantr:
       Requires a Cloudflare account and tunnel token,
       No ports need to be opened on your firewall,
       Traffic routed through Cloudflare for DDoS protection,
-      "To expose any Docker app, use the Docker host gateway IP (172.17.0.1)
-        instead of 0.0.0.0 or localhost in the tunnel service URL, e.g.
-        http://172.17.0.1:PORT"
+      "Uses host networking, so tunnel service URLs can reach host-published services via localhost, e.g. http://localhost:PORT"
     ]
 
 services:
   cloudflared:
     image: docker.io/cloudflare/cloudflared:latest
+    network_mode: host
     command: tunnel --no-autoupdate --protocol http2 run --token ${TUNNEL_TOKEN}
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN}
