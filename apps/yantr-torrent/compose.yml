@@ -17,14 +17,14 @@ x-yantr:
   notes:
     [
       "Transmission Web UI is on port 9091; set the user and password in the deploy form.",
-      "Dufs serves the downloads volume on port 5000 using the same TRANSMISSION_USER and TRANSMISSION_PASS credentials.",
+      "Dufs serves the downloads volume on port 5000 using the same X_USER and X_PASS credentials.",
       "The generated password uses alphanumeric characters to keep Dufs auth compatible."
     ]
   env_generators:
-    TRANSMISSION_USER:
-      length: 8
+    X_USER:
+      length: 5
       charset: alpha
-    TRANSMISSION_PASS:
+    X_PASS:
       length: 20
       charset: alnum
 
@@ -38,8 +38,8 @@ services:
   transmission:
     image: docker.io/linuxserver/transmission:latest
     environment:
-      USER: ${TRANSMISSION_USER}
-      PASS: ${TRANSMISSION_PASS}
+      USER: ${X_USER}
+      PASS: ${X_PASS}
     volumes:
       - yantr_torrent_config:/config
       - yantr_torrent_downloads:/downloads
@@ -53,7 +53,7 @@ services:
     command: ["/downloads"]
     environment:
       DUFS_ALLOW_ALL: "true"
-      DUFS_AUTH: ${TRANSMISSION_USER}:${TRANSMISSION_PASS}@/:rw
+      DUFS_AUTH: ${X_USER}:${X_PASS}@/:rw
     volumes:
       - yantr_torrent_downloads:/downloads
     ports:
