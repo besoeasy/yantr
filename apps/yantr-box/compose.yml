@@ -12,11 +12,7 @@ x-yantr:
   notes: ["Uses host networking; services bind directly to the host network stack.", "Data persists in the named volume mounted at /data."]
 
   ports:
-    - {port: 80, protocol: HTTP, show: true, label: "HTTP server", service: yantr-box}
-    - {port: 443, protocol: HTTPS, show: true, label: "HTTPS server", service: yantr-box}
-    - {port: 3000, protocol: HTTP, show: true, label: "Dev server", service: yantr-box}
-    - {port: 8080, protocol: HTTP, show: true, label: "Web server", service: yantr-box}
-    - {port: 9000, protocol: HTTP, show: true, label: "Alt server", service: yantr-box}
+    - { port: 5000, protocol: HTTP, show: true, label: "Alt server", service: yantr-box }
 
 services:
   yantr-box:
