@@ -1,11 +1,11 @@
 <svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Yantr Torrent logo">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="yantr-torrent-bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#065F46"/>
       <stop offset="100%" stop-color="#0F766E"/>
     </linearGradient>
   </defs>
-  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect width="256" height="256" rx="56" fill="url(#yantr-torrent-bg)"/>
   <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="128" cy="112" r="52" stroke-width="12" opacity="0.22"/>
     <path d="M128 66 V146" stroke-width="14"/>
