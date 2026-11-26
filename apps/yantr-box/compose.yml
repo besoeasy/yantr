@@ -1,0 +1,31 @@
+x-yantr:
+  name: "Yantr Box"
+  tags: [linux, devbox, self-hosted, tools]
+  short_description: "Debian-based Yantr dev box with host networking for direct local access."
+  description: >
+    Yantr Box is a Debian-based utility container for development, debugging, and
+    running custom workloads alongside your Yantr host. It uses host networking so
+    services inside the container bind directly to the host network stack, making
+    it useful for local tooling, testing, and network-aware tasks.
+  usecases: ["Run Debian tools with direct access to the host network.", "Test and debug network-aware workloads from a persistent dev box."]
+  website: "https://github.com/besoeasy/yantr"
+  notes: ["Uses host networking; services bind directly to the host network stack.", "Data persists in the named volume mounted at /data."]
+
+  ports:
+    - {port: 80, protocol: HTTP, show: true, label: "HTTP server", service: yantr-box}
+    - {port: 443, protocol: HTTPS, show: true, label: "HTTPS server", service: yantr-box}
+    - {port: 3000, protocol: HTTP, show: true, label: "Dev server", service: yantr-box}
+    - {port: 8080, protocol: HTTP, show: true, label: "Web server", service: yantr-box}
+    - {port: 9000, protocol: HTTP, show: true, label: "Alt server", service: yantr-box}
+
+services:
+  yantr-box:
+    image: docker.io/debian:latest
+    network_mode: host
+    command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
+    volumes:
+      - yantr_box_data:/data
+    restart: unless-stopped
+
+volumes:
+  yantr_box_data:
