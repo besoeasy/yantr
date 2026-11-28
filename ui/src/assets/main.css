@@ -373,15 +373,8 @@ body {
 }
 
 /* ── The sign-in screen ──────────────────────────────────────────────────────
-   One viewport, split: the host on the left, the door on the right. The left
-   half is the product's own pitch, drawn as the stack it is — nodes drifting,
-   edges fading between them, a packet crossing an edge now and then — and it
-   stays the same deep navy in both themes, the way a title page does. The
-   right half follows the theme, because that is where the user types.
-
-   Both halves are full-bleed. The screen this replaced was a 440px card
-   floating in a particle field, which read as a dialog over an empty page
-   rather than the front door of the app. */
+   Keep the full-bleed host/form split, but let the words and fields do the
+   work: one short product pitch, one narrow form, no decorative card stack. */
 .yantra-auth {
     display: grid;
     grid-template-columns: minmax(0, 1.24fr) minmax(0, 1fr);
@@ -399,7 +392,7 @@ body {
     overflow: hidden;
     padding: clamp(1.75rem, 3vw, 2.875rem) clamp(1.75rem, 3.4vw, 3.375rem)
         clamp(1.5rem, 2.4vw, 2.375rem);
-    background: radial-gradient(120% 90% at 8% 0%, #0d1a2f 0%, #070b14 55%, #05080f 100%);
+    background: #080d17;
     color: #f8fafc;
 }
 
@@ -412,73 +405,12 @@ body {
     mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 100%);
 }
 
-.yantra-auth__grid {
-    position: absolute;
-    inset: 0;
-    opacity: 0.5;
-    background-image: radial-gradient(rgb(148 163 184 / 0.16) 1px, transparent 1px);
-    background-size: 22px 22px;
-    -webkit-mask-image: radial-gradient(90% 80% at 40% 45%, #000 20%, transparent 100%);
-    mask-image: radial-gradient(90% 80% at 40% 45%, #000 20%, transparent 100%);
-}
-
-.yantra-auth__glow {
-    position: absolute;
-    border-radius: 9999px;
-    filter: blur(64px);
-    pointer-events: none;
-}
-.yantra-auth__glow--one {
-    width: 26rem;
-    height: 26rem;
-    left: -7.5rem;
-    top: -8.75rem;
-    background: radial-gradient(circle, rgb(2 132 199 / 0.68), transparent 65%);
-    animation: yantra-auth-drift-a 26s ease-in-out infinite;
-}
-.yantra-auth__glow--two {
-    width: 28.75rem;
-    height: 28.75rem;
-    right: -10rem;
-    bottom: -11.25rem;
-    background: radial-gradient(circle, rgb(124 58 237 / 0.5), transparent 65%);
-    animation: yantra-auth-drift-b 32s ease-in-out infinite;
-}
-.yantra-auth__glow--three {
-    width: 20rem;
-    height: 20rem;
-    left: 38%;
-    top: 52%;
-    background: radial-gradient(circle, rgb(16 185 129 / 0.22), transparent 68%);
-    animation: yantra-auth-drift-c 22s ease-in-out infinite;
-}
-@keyframes yantra-auth-drift-a {
-    50% {
-        transform: translate(60px, 40px) scale(1.12);
-    }
-}
-@keyframes yantra-auth-drift-b {
-    50% {
-        transform: translate(-50px, -30px) scale(1.08);
-    }
-}
-@keyframes yantra-auth-drift-c {
-    0%,
-    100% {
-        transform: scale(0.95);
-    }
-    50% {
-        transform: translate(-30px, 50px) scale(1.1);
-    }
-}
-
 .yantra-auth__brand-inner {
     position: relative;
     z-index: 2;
     display: flex;
     flex-direction: column;
     height: 100%;
-    transition: transform 0.5s var(--yantra-ease);
 }
 
 /* The product's own wordmark — the same uppercase mark the shell header uses,
@@ -511,46 +443,12 @@ body {
     padding-bottom: 0.375rem;
 }
 
-.yantra-auth__kicker {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4375rem;
-    padding: 0.25rem 0.5625rem;
-    border: 1px solid rgb(56 189 248 / 0.28);
-    border-radius: 9999px;
-    background-color: rgb(56 189 248 / 0.08);
-    color: #7dd3fc;
-    font-size: 0.59375rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-}
-.yantra-auth__kicker::before {
-    content: "";
-    width: 0.3125rem;
-    height: 0.3125rem;
-    border-radius: 9999px;
-    background-color: #38bdf8;
-    animation: yantra-auth-ring 2.6s ease-out infinite;
-}
-@keyframes yantra-auth-ring {
-    0% {
-        box-shadow: 0 0 0 0 rgb(56 189 248 / 0.55);
-    }
-    70% {
-        box-shadow: 0 0 0 7px rgb(56 189 248 / 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgb(56 189 248 / 0);
-    }
-}
-
 .yantra-auth__headline {
-    margin: 1rem 0 0;
-    font-size: clamp(2.125rem, 3.4vw, 3.25rem);
+    margin: 0;
+    font-size: clamp(2.75rem, 5vw, 5rem);
     font-weight: 800;
-    line-height: 1.06;
-    letter-spacing: -0.035em;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
     color: #f8fafc;
 }
 .yantra-auth__headline em {
@@ -562,29 +460,26 @@ body {
 }
 
 .yantra-auth__lead {
-    margin: 0.8125rem 0 0;
+    margin: 1.25rem 0 0;
     max-width: 36ch;
-    font-size: clamp(0.78125rem, 1.05vw, 0.90625rem);
+    font-size: clamp(1rem, 1.25vw, 1.125rem);
     line-height: 1.65;
     color: rgb(203 213 225 / 0.78);
 }
 
-.yantra-auth__proof {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin: 1.25rem 0 0;
-    padding: 0;
-    list-style: none;
-}
-.yantra-auth__proof li {
+.yantra-auth__trust {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: clamp(0.71875rem, 0.92vw, 0.8125rem);
+    gap: 0.625rem;
+    margin: 1.75rem 0 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
     color: rgb(203 213 225 / 0.8);
 }
-.yantra-auth__proof .yantra-auth__icon {
+.yantra-auth__trust .yantra-auth__icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
     color: #38bdf8;
 }
 
@@ -596,7 +491,7 @@ body {
     margin-top: 1.625rem;
     padding-top: 0.9375rem;
     border-top: 1px solid rgb(148 163 184 / 0.14);
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     letter-spacing: 0.06em;
     color: rgb(148 163 184 / 0.62);
 }
@@ -634,8 +529,8 @@ body {
 .yantra-auth__mobilebrand {
     display: none;
     align-items: center;
-    margin-bottom: 1.75rem;
-    font-size: 0.8125rem;
+    margin-bottom: 2.5rem;
+    font-size: 1rem;
     font-weight: 900;
     letter-spacing: 0.24em;
     color: var(--text-primary);
@@ -646,51 +541,51 @@ body {
     align-items: center;
     gap: 0.75rem;
     padding: 2rem 0;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
 
 .yantra-auth__eyebrow {
     display: block;
-    font-size: 0.59375rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--text-secondary);
 }
 .yantra-auth__title {
-    margin: 0.5625rem 0 0;
-    font-size: 1.5rem;
+    margin: 0.625rem 0 0;
+    font-size: clamp(2rem, 2.8vw, 2.75rem);
     font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
     color: var(--text-primary);
 }
 .yantra-auth__sub {
-    margin: 0.5rem 0 0;
-    font-size: 0.71875rem;
+    margin: 0.75rem 0 0;
+    font-size: 0.9375rem;
     line-height: 1.6;
     color: var(--text-secondary);
 }
 
 .yantra-auth__field {
-    margin-top: 1.125rem;
+    margin-top: 1.5rem;
 }
 .yantra-auth__label {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    margin-bottom: 0.4375rem;
-    font-size: 0.59375rem;
+    margin-bottom: 0.625rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--text-secondary);
 }
 .yantra-auth__hint {
-    font-size: 0.625rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0;
     text-transform: none;
@@ -706,19 +601,21 @@ body {
     align-items: center;
 }
 .yantra-auth__control .yantra-input {
-    height: 2.75rem;
+    height: 3.5rem;
     padding-top: 0;
     padding-bottom: 0;
-    border-radius: 0.625rem;
-    font-size: 0.8125rem;
+    border-radius: 0.875rem;
+    padding-left: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
 }
 .yantra-auth__eye {
     position: absolute;
-    right: 0.3125rem;
+    right: 0.5rem;
     display: grid;
     place-items: center;
-    width: 2.125rem;
-    height: 2.125rem;
+    width: 2.5rem;
+    height: 2.5rem;
     padding: 0;
     border: 0;
     border-radius: 0.4375rem;
@@ -735,8 +632,8 @@ body {
 }
 
 .yantra-auth__icon {
-    width: 0.9375rem;
-    height: 0.9375rem;
+    width: 1.125rem;
+    height: 1.125rem;
     flex-shrink: 0;
 }
 .yantra-auth__spinner {
@@ -753,14 +650,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
     width: 100%;
-    height: 2.875rem;
-    margin-top: 1.25rem;
+    min-height: 3.5rem;
+    margin-top: 1.5rem;
     border: 0;
-    border-radius: 0.625rem;
+    border-radius: 0.875rem;
     font: inherit;
-    font-size: 0.8125rem;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.01em;
     cursor: pointer;
@@ -868,19 +765,18 @@ body {
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
-/* The one action that is not the primary: inventing the credentials. A link,
-   not a button, so it cannot compete with the submit under it. */
+/* Secondary to the one primary form action. */
 .yantra-auth__ghost {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    margin-top: 0.875rem;
+    margin-top: 1.25rem;
     padding: 0;
     border: 0;
     background-color: transparent;
     color: var(--accent);
     font: inherit;
-    font-size: 0.625rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -894,10 +790,10 @@ body {
 /* A field outside a .yantra-auth__control — the confirm step has no reveal
    button, so it needs the same height without the extra right padding. */
 .yantra-auth__bare {
-    height: 2.75rem;
+    height: 3.5rem;
     padding: 0 1rem;
-    border-radius: 0.625rem;
-    font-size: 0.8125rem;
+    border-radius: 0.875rem;
+    font-size: 1rem;
 }
 
 .yantra-auth__keyactions {
@@ -920,13 +816,13 @@ body {
     padding: 0.75rem 0.875rem;
     border-radius: 0.5rem;
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     line-height: 1.6;
     word-break: break-all;
 }
 .yantra-auth__keynote {
     margin: 0.75rem 0 0;
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     line-height: 1.55;
     color: var(--text-secondary);
 }
@@ -940,7 +836,7 @@ body {
     align-items: flex-start;
     gap: 0.4375rem;
     margin: 0.875rem 0 0;
-    font-size: 0.625rem;
+    font-size: 0.8125rem;
     line-height: 1.55;
     color: var(--text-secondary);
 }
@@ -953,13 +849,13 @@ body {
 .yantra-auth__steps {
     display: flex;
     align-items: center;
-    gap: 0.375rem;
-    margin-top: 1.25rem;
+    gap: 0.5rem;
+    margin-top: 1.75rem;
 }
 .yantra-auth__step {
     position: relative;
     flex: 1;
-    height: 0.1875rem;
+    height: 0.25rem;
     padding: 0;
     border: 0;
     border-radius: 9999px;
@@ -988,50 +884,30 @@ body {
         transform: translateX(180%);
     }
 }
-.yantra-auth__steplabels {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.4375rem;
-    font-size: 0.53125rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-}
-.yantra-auth__steplabels > * {
-    flex: 1;
-}
-.yantra-auth__steplabels > :nth-child(2) {
-    text-align: center;
-}
-.yantra-auth__steplabels > :last-child {
-    text-align: right;
-}
-.yantra-auth__steplabel--on {
-    color: var(--accent);
-}
-
 /* The strength panel: four bars for the score, four lines for why. */
 .yantra-auth__strength {
-    margin-top: 1rem;
-    padding: 0.75rem 0.875rem;
+    margin-top: 1.25rem;
+    padding: 0.875rem 1rem;
 }
 .yantra-auth__strength-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem;
-    font-size: 0.625rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     color: var(--text-secondary);
+}
+.yantra-auth__strength-head > :first-child {
+    margin-right: auto;
 }
 .yantra-auth__bars {
     display: flex;
     gap: 0.375rem;
 }
 .yantra-auth__bar {
-    width: 1.125rem;
-    height: 0.375rem;
+    width: 1.375rem;
+    height: 0.4375rem;
     border-radius: 9999px;
     background-color: var(--card-border);
 }
@@ -1047,31 +923,6 @@ body {
 .yantra-auth__bar--strong {
     background-color: var(--color-emerald-500);
 }
-.yantra-auth__criteria {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-top: 0.625rem;
-    font-size: 0.625rem;
-}
-.yantra-auth__criterion {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    color: var(--text-secondary);
-}
-.yantra-auth__criterion--met {
-    font-weight: 600;
-    color: var(--ok-text);
-}
-.yantra-auth__dot {
-    width: 0.3125rem;
-    height: 0.3125rem;
-    flex-shrink: 0;
-    border-radius: 9999px;
-    background-color: var(--card-border);
-}
-
 .yantra-auth__error {
     display: flex;
     align-items: center;
@@ -1079,7 +930,7 @@ body {
     margin-top: 1rem;
     padding: 0.75rem 0.875rem;
     border-radius: 0.625rem;
-    font-size: 0.6875rem;
+    font-size: 0.875rem;
     font-weight: 600;
 }
 
@@ -1091,7 +942,8 @@ body {
 .yantra-auth__back {
     flex: 1;
     min-height: 2.875rem;
-    font-size: 0.625rem;
+    min-height: 3.5rem;
+    font-size: 0.875rem;
 }
 .yantra-auth__actions .yantra-auth__submit {
     flex: 1;
@@ -1107,16 +959,25 @@ body {
     }
     .yantra-auth__form {
         border-left: 0;
-        padding: 2rem 1.375rem 2.5rem;
-        background-image: radial-gradient(120% 60% at 50% -10%, var(--accent-soft), transparent 70%);
+        padding: 2.5rem 1.5rem 3rem;
+        background-image: none;
+    }
+    .yantra-auth__panel {
+        max-width: 24rem;
+    }
+    .yantra-auth__title {
+        font-size: clamp(2rem, 7vw, 2.75rem);
     }
     .yantra-auth__mobilebrand {
         display: flex;
     }
 }
-@media (max-width: 380px) {
-    .yantra-auth__criteria {
-        grid-template-columns: 1fr;
+@media (max-width: 480px) {
+    .yantra-auth__form {
+        padding: 1.5rem 1.125rem 2rem;
+    }
+    .yantra-auth__mobilebrand {
+        margin-bottom: 1.75rem;
     }
 }
 

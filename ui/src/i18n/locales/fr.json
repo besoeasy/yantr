@@ -494,7 +494,6 @@
     "bootingTitle": "Préparation",
     "bootingState": "Restauration de la session…",
     "loginSubtitle": "Entrez votre mot de passe et code PIN pour déverrouiller.",
-    "seedNote": "Clé stockée localement. Connectez-vous depuis cet appareil.",
     "setupAction": "Créer un compte",
     "loginAction": "Se connecter",
     "working": "Travail en cours…",

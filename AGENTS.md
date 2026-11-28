@@ -367,21 +367,21 @@ only.
 
 ## 10. The sign-in screen
 
-`AuthGate` is the one screen outside the shell, and it is full-bleed: one
-viewport split into the host on the left and the door on the right. The 440px
-card centred over a particle field it replaced read as a dialog over an empty
-page, not as the front door of the app.
+`AuthGate` is a full-bleed split screen: a quiet host/brand panel on the left
+and the focused sign-in or first-run form on the right. Keep the copy short,
+the typography large, and the controls generously sized; avoid extra badges,
+proof lists and animated decoration that compete with the form.
 
-- **Left half** — the pitch, drawn as the stack it is: nodes drifting, edges
-  fading between neighbours, a packet crossing one now and then. It is the same
-  deep navy in both themes. A title page does not follow the reader's theme, and
-  a brand panel that turns white in light mode stops being a brand panel.
-- **Right half** — the form, and it follows the theme, because that is where
-  the user types. One column, 336px, one primary action.
+- **Left half** — one large product statement, a short description and a
+  concise privacy note over a restrained, slow network field. The panel stays
+  deep navy in both themes.
+- **Right half** — follows the active theme, with one column, readable labels,
+  large inputs and one clear primary action. The first-run credential,
+  confirmation and identity-key steps remain explicit.
 - **The graph's palette** is canvas-drawn, so it lives in `main.css` as channel
   triples (`--canvas-node`, `--canvas-particle`, `--canvas-thread`,
-  `--canvas-pulse`) and is read once; hex belongs in neither the SFC nor a
-  `rgba()` literal. The channels do not change under `:root.dark`.
+  `--canvas-pulse`) and is read once. Convert channels to CSS `rgba()` syntax
+  in the canvas code; do not use raw channel strings as a color.
 - **Reduced motion** — the graph draws one frame and stops. The field is
   decoration; nothing depends on its drift.
 - **Below 900px** the brand half drops away, the form takes the screen, and the

@@ -494,7 +494,6 @@
     "bootingTitle": "Vorbereitung",
     "bootingState": "Sitzung wird wiederhergestellt…",
     "loginSubtitle": "Geben Sie Ihr Passwort und Ihre PIN ein.",
-    "seedNote": "Schlüssel wird lokal gespeichert. Von diesem Gerät aus anmelden.",
     "setupAction": "Konto erstellen",
     "loginAction": "Anmelden",
     "working": "In Bearbeitung…",

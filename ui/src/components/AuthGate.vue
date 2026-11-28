@@ -3,8 +3,8 @@ import { computed, onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   Copy, Check, LoaderCircle, LockKeyhole, Eye, EyeOff, AlertTriangle,
-  ShieldCheck, Sparkles, Download, CheckCircle2,
-  ArrowRight, ArrowLeft, Shield
+  ShieldCheck, Sparkles, Download,
+  ArrowRight, ArrowLeft
 } from '@lucide/vue'
 import { useNotification } from '../composables/useNotification'
 import { useYantrAuth } from '../composables/useYantrAuth'
@@ -29,17 +29,6 @@ const confirmPasswordInput = ref(null)
 const isSetup = computed(() => !authState.configured)
 
 // ─── Strength indicator ──────────────────────────────────────────────────────
-const strengthCriteria = computed(() => {
-  const pw = password.value
-  const p = pin.value
-  return [
-    { label: t('authGate.criterionLength'), met: pw.length >= 8 },
-    { label: t('authGate.criterionMix'), met: /[A-Z]/.test(pw) && /[0-9]/.test(pw) },
-    { label: t('authGate.criterionSpecial'), met: /[^A-Za-z0-9]/.test(pw) },
-    { label: t('authGate.criterionPin'), met: p.length >= 4 },
-  ]
-})
-
 const strength = computed(() => {
   const pw = password.value
   const p = pin.value
@@ -92,7 +81,7 @@ let deriveTimer = null
 watch([password, pin], ([pw, p]) => {
   derivedPublicKey.value = ''
   clearTimeout(deriveTimer)
-  if (!pw || !p) return
+  if (!isSetup.value || !pw || !p) return
   deriveTimer = setTimeout(async () => {
     derivingKey.value = true
     try {
@@ -165,7 +154,6 @@ on the server or database. If lost, your account cannot be recovered.
 // so its palette lives in main.css as channel triples and is read once — the
 // panel is the same deep navy in both themes, so the palette never changes.
 const brandCanvas = ref(null)
-const brandInner = ref(null)
 const host = ref('')
 
 let frame = null
@@ -179,7 +167,10 @@ let height = 0
 
 const nodes = []
 let pulses = []
-const pointer = { x: 0, y: 0, tx: 0, ty: 0, on: false }
+
+function channelColor(channels, alpha) {
+  return `rgba(${channels.trim().split(/\s+/).join(', ')}, ${alpha})`
+}
 
 function readPalette() {
   const cs = getComputedStyle(document.documentElement)
@@ -234,8 +225,6 @@ function spawnPulse() {
 function drawGraph() {
   if (!ctx || !palette) return
   ctx.clearRect(0, 0, width, height)
-  const ox = pointer.on ? (pointer.tx - width / 2) * 0.012 : 0
-  const oy = pointer.on ? (pointer.ty - height / 2) * 0.012 : 0
 
   for (let i = 0; i < nodes.length; i++) {
     const a = nodes[i]
@@ -243,21 +232,21 @@ function drawGraph() {
       const b = nodes[j]
       const d = Math.hypot(a.x - b.x, a.y - b.y)
       if (d >= 132) continue
-      ctx.strokeStyle = `rgba(${palette.thread}, ${(0.16 * (1 - d / 132)).toFixed(3)})`
+      ctx.strokeStyle = channelColor(palette.thread, (0.16 * (1 - d / 132)).toFixed(3))
       ctx.lineWidth = 0.7
       ctx.beginPath()
-      ctx.moveTo(a.x + ox, a.y + oy)
-      ctx.lineTo(b.x + ox, b.y + oy)
+      ctx.moveTo(a.x, a.y)
+      ctx.lineTo(b.x, b.y)
       ctx.stroke()
     }
   }
 
   for (const p of pulses) {
-    const x = p.a.x + (p.b.x - p.a.x) * p.t + ox
-    const y = p.a.y + (p.b.y - p.a.y) * p.t + oy
+    const x = p.a.x + (p.b.x - p.a.x) * p.t
+    const y = p.a.y + (p.b.y - p.a.y) * p.t
     const glow = ctx.createRadialGradient(x, y, 0, x, y, 7)
-    glow.addColorStop(0, `rgba(${palette.pulse}, 0.9)`)
-    glow.addColorStop(1, `rgba(${palette.pulse}, 0)`)
+    glow.addColorStop(0, channelColor(palette.pulse, 0.9))
+    glow.addColorStop(1, channelColor(palette.pulse, 0))
     ctx.fillStyle = glow
     ctx.beginPath()
     ctx.arc(x, y, 7, 0, Math.PI * 2)
@@ -265,22 +254,22 @@ function drawGraph() {
   }
 
   for (const n of nodes) {
-    const x = n.x + ox
-    const y = n.y + oy
+    const x = n.x
+    const y = n.y
     if (n.service) {
       const s = 9
-      ctx.strokeStyle = `rgba(${palette.node}, 0.42)`
+      ctx.strokeStyle = channelColor(palette.node, 0.42)
       ctx.lineWidth = 1
       ctx.beginPath()
       if (ctx.roundRect) ctx.roundRect(x - s / 2, y - s / 2, s, s, 2.5)
       else ctx.rect(x - s / 2, y - s / 2, s, s)
       ctx.stroke()
-      ctx.fillStyle = `rgba(${palette.node}, 0.85)`
+      ctx.fillStyle = channelColor(palette.node, 0.85)
       ctx.beginPath()
       ctx.arc(x, y, 1.6, 0, Math.PI * 2)
       ctx.fill()
     } else {
-      ctx.fillStyle = `rgba(${palette.particle}, 0.42)`
+      ctx.fillStyle = channelColor(palette.particle, 0.42)
       ctx.beginPath()
       ctx.arc(x, y, n.r, 0, Math.PI * 2)
       ctx.fill()
@@ -310,37 +299,10 @@ function tick(now) {
   frame = requestAnimationFrame(tick)
 }
 
-function trackPointer(event) {
-  const canvas = brandCanvas.value
-  if (!canvas || !width) return
-  const box = canvas.getBoundingClientRect()
-  pointer.x = event.clientX - box.left
-  pointer.y = event.clientY - box.top
-  if (!pointer.on) {
-    pointer.tx = pointer.x
-    pointer.ty = pointer.y
-  }
-  pointer.on = true
-  if (brandInner.value) {
-    const dx = ((pointer.x - width / 2) * 0.008).toFixed(2)
-    const dy = ((pointer.y - height / 2) * 0.008).toFixed(2)
-    brandInner.value.style.transform = `translate(${dx}px, ${dy}px)`
-  }
-}
-
-function releasePointer() {
-  pointer.on = false
-  if (brandInner.value) brandInner.value.style.transform = ''
-}
-
 // ─── Steps ───────────────────────────────────────────────────────────────────
 const activeTab = ref(0)
 
-const steps = computed(() => [
-  { id: 0, title: t('authGate.stepCredentials') },
-  { id: 1, title: t('authGate.stepConfirm') },
-  { id: 2, title: t('authGate.stepKey') },
-])
+const steps = [{ id: 0 }, { id: 1 }, { id: 2 }]
 
 const stepHeading = computed(() => [
   t('authGate.setupHeading'),
@@ -455,13 +417,6 @@ onMounted(() => {
       drawGraph()
       return
     }
-    // The parallax follows the pointer over the brand half only: the form is a
-    // place to type, and a background that drifts under the cursor there is a
-    // distraction, not a flourish.
-    if (brand) {
-      brand.addEventListener('mousemove', trackPointer)
-      brand.addEventListener('mouseleave', releasePointer)
-    }
     frame = requestAnimationFrame(tick)
   })
 })
@@ -469,52 +424,31 @@ onMounted(() => {
 onUnmounted(() => {
   if (frame) cancelAnimationFrame(frame)
   observer?.disconnect()
-  const brand = brandCanvas.value?.parentElement
-  if (brand) {
-    brand.removeEventListener('mousemove', trackPointer)
-    brand.removeEventListener('mouseleave', releasePointer)
-  }
   clearTimeout(deriveTimer)
 })
 </script>
 
 <template>
   <div class="yantra-auth">
-    <!-- The host: the stack as a graph, the pitch, and what the key is. -->
+    <!-- The host: a quiet network field behind a short product introduction. -->
     <section class="yantra-auth__brand">
-      <div class="yantra-auth__glow yantra-auth__glow--one" />
-      <div class="yantra-auth__glow yantra-auth__glow--two" />
-      <div class="yantra-auth__glow yantra-auth__glow--three" />
       <canvas ref="brandCanvas" class="yantra-auth__canvas" aria-hidden="true" />
-      <div class="yantra-auth__grid" aria-hidden="true" />
 
-      <div ref="brandInner" class="yantra-auth__brand-inner">
+      <div class="yantra-auth__brand-inner">
         <div class="yantra-auth__wordmark">
           YANTR <span>{{ t('authGate.brandKicker') }}</span>
         </div>
 
         <div class="yantra-auth__copy">
-          <span class="yantra-auth__kicker">{{ t('authGate.brandBadge') }}</span>
           <h1 class="yantra-auth__headline">
             {{ t('authGate.brandTitle') }}<br />
             <em>{{ t('authGate.brandTitleAccent') }}</em>
           </h1>
           <p class="yantra-auth__lead">{{ t('authGate.brandLead') }}</p>
-
-          <ul class="yantra-auth__proof">
-            <li>
-              <ShieldCheck class="yantra-auth__icon" />
-              <span>{{ t('authGate.proofIdentity') }}</span>
-            </li>
-            <li>
-              <LockKeyhole class="yantra-auth__icon" />
-              <span>{{ t('authGate.proofLocal') }}</span>
-            </li>
-            <li>
-              <Shield class="yantra-auth__icon" />
-              <span>{{ t('authGate.proofPodman') }}</span>
-            </li>
-          </ul>
+          <p class="yantra-auth__trust">
+            <ShieldCheck class="yantra-auth__icon" />
+            <span>{{ t('authGate.proofLocal') }}</span>
+          </p>
 
           <div class="yantra-auth__status">
             <span class="yantra-auth__host">{{ host }}</span>
@@ -561,8 +495,8 @@ onUnmounted(() => {
                 <button
                   type="button"
                   class="yantra-auth__eye"
-                  tabindex="-1"
                   :aria-label="showPassword ? t('authGate.hidePassword') : t('authGate.showPassword')"
+                  :aria-pressed="showPassword"
                   @click="showPassword = !showPassword"
                 >
                   <EyeOff v-if="showPassword" class="yantra-auth__icon" />
@@ -589,8 +523,8 @@ onUnmounted(() => {
                 <button
                   type="button"
                   class="yantra-auth__eye"
-                  tabindex="-1"
                   :aria-label="showPin ? t('authGate.hidePin') : t('authGate.showPin')"
+                  :aria-pressed="showPin"
                   @click="showPin = !showPin"
                 >
                   <EyeOff v-if="showPin" class="yantra-auth__icon" />
@@ -618,29 +552,6 @@ onUnmounted(() => {
               <span>{{ submitting ? t('authGate.working') : t('authGate.loginAction') }}</span>
             </button>
 
-            <div class="yantra-auth__key">
-              <span
-                class="yantra-auth__fingerprint"
-                :class="{ 'yantra-auth__fingerprint--live': derivingKey }"
-                :style="{ background: keyAvatarGradient }"
-              />
-              <span class="yantra-auth__keytext">
-                <span class="yantra-auth__keylabel">{{ t('authGate.identityKey') }}</span>
-                <span class="yantra-auth__keysub">
-                  {{
-                    derivedPublicKey
-                      ? t('authGate.fingerprint', { key: derivedPublicKey.slice(0, 8) })
-                      : t('authGate.awaitingLoginKey')
-                  }}
-                </span>
-              </span>
-              <span class="yantra-auth__keytag">Ed25519</span>
-            </div>
-
-            <p class="yantra-auth__foot">
-              <ShieldCheck class="yantra-auth__icon" />
-              <span>{{ t('authGate.seedNote') }}</span>
-            </p>
           </div>
 
           <!-- First run: credentials → confirm → key -->
@@ -651,25 +562,17 @@ onUnmounted(() => {
             <h2 class="yantra-auth__title">{{ stepHeading }}</h2>
             <p class="yantra-auth__sub">{{ stepSubtitle }}</p>
 
-            <div class="yantra-auth__steps">
+            <div class="yantra-auth__steps" role="group" :aria-label="t('authGate.setupEyebrow')">
               <button
                 v-for="step in steps"
                 :key="step.id"
                 type="button"
                 class="yantra-auth__step"
                 :class="{ 'yantra-auth__step--done': activeTab > step.id, 'yantra-auth__step--now': activeTab === step.id }"
-                :aria-label="step.title"
+                :aria-label="t('authGate.stepOf', { n: step.id + 1 })"
+                :aria-current="activeTab === step.id ? 'step' : undefined"
                 @click="goToStep(step.id)"
               />
-            </div>
-            <div class="yantra-auth__steplabels">
-              <span
-                v-for="step in steps"
-                :key="step.id"
-                :class="{ 'yantra-auth__steplabel--on': activeTab === step.id }"
-              >
-                {{ step.title }}
-              </span>
             </div>
 
             <!-- Step 1 · credentials -->
@@ -698,8 +601,8 @@ onUnmounted(() => {
                   <button
                     type="button"
                     class="yantra-auth__eye"
-                    tabindex="-1"
                     :aria-label="showPassword ? t('authGate.hidePassword') : t('authGate.showPassword')"
+                    :aria-pressed="showPassword"
                     @click="showPassword = !showPassword"
                   >
                     <EyeOff v-if="showPassword" class="yantra-auth__icon" />
@@ -726,8 +629,8 @@ onUnmounted(() => {
                   <button
                     type="button"
                     class="yantra-auth__eye"
-                    tabindex="-1"
                     :aria-label="showPin ? t('authGate.hidePin') : t('authGate.showPin')"
+                    :aria-pressed="showPin"
                     @click="showPin = !showPin"
                   >
                     <EyeOff v-if="showPin" class="yantra-auth__icon" />
@@ -739,25 +642,14 @@ onUnmounted(() => {
               <div v-if="password || pin" class="yantra-surface-muted yantra-auth__strength">
                 <div class="yantra-auth__strength-head">
                   <span>{{ t('authGate.strengthTitle') }}</span>
-                  <span class="yantra-auth__bars">
+                  <span :class="strength.textColor">{{ strength.label }}</span>
+                  <span class="yantra-auth__bars" aria-hidden="true">
                     <span
                       v-for="i in 4"
                       :key="i"
                       class="yantra-auth__bar"
                       :class="i <= strength.score ? strength.bar : ''"
                     />
-                  </span>
-                </div>
-                <div class="yantra-auth__criteria">
-                  <span
-                    v-for="(item, idx) in strengthCriteria"
-                    :key="idx"
-                    class="yantra-auth__criterion"
-                    :class="{ 'yantra-auth__criterion--met': item.met }"
-                  >
-                    <CheckCircle2 v-if="item.met" class="yantra-auth__icon" />
-                    <span v-else class="yantra-auth__dot" />
-                    <span>{{ item.label }}</span>
                   </span>
                 </div>
               </div>
