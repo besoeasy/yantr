@@ -30,6 +30,9 @@ website/github-data.json
 website/install.sh
 website/catalog
 
+# Local runtime data
+/data/
+
 # Binaries & test artifacts
 yantr
 core/yantr
