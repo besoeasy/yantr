@@ -8,9 +8,12 @@ import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
 import { buildIssueReportUrl } from "../utils/developer";
 import { appDetail, dashboard } from "../utils/routes.js";
+import { formatDuration } from "../utils/metrics";
+import { isNavigableProtocol } from "../utils/url";
+import { useCurrentTime } from "../composables/useCurrentTime";
 import AppLogo from "../components/AppLogo.vue";
 import DeveloperCredit from "../components/DeveloperCredit.vue";
-import StackServiceList from "../components/StackServiceList.vue";
+import StackServiceTable from "../components/StackServiceTable.vue";
 import AppLayout from "../components/AppLayout.vue";
 import { ExternalLink, Trash2, RotateCcw, Bug, AlertTriangle, Play, Square } from "@lucide/vue";
 
@@ -20,6 +23,7 @@ const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 const toast = useNotification();
 const { fetchActiveJob, pollJobUntilDone } = useJobs();
+const { currentTime } = useCurrentTime();
 
 const projectId = computed(() => route.params.projectId);
 
@@ -118,20 +122,55 @@ const reportIssueUrl = computed(() =>
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 
-const overallState = computed(() => {
+const overallStateKey = computed(() => {
   if (!stack.value) return "unknown";
-  const states = stack.value.services.map((s) => s.state);
-  if (states.every((s) => s === "running")) return t("stackView.running");
-  if (states.some((s) => s === "running")) return t("stackView.partial");
+  const services = stack.value.services ?? [];
+  if (services.length === 0) return "stopped";
+  if (services.every((s) => s.state === "running")) return "running";
+  if (services.some((s) => s.state === "running")) return "partial";
+  return "stopped";
+});
+
+const overallState = computed(() => {
+  if (overallStateKey.value === "unknown") return "unknown";
+  if (overallStateKey.value === "running") return t("stackView.running");
+  if (overallStateKey.value === "partial") return t("stackView.partial");
   return t("stackView.stopped");
 });
 
 // stateClass is a chip modifier rather than a palette: the colours live with the
 // rest of the theme, so a state chip is one class and light and dark follow it.
 const stateClass = computed(() => {
-  if (overallState.value === "running") return "yantra-chip--ok";
-  if (overallState.value === "partial") return "yantra-chip--warn";
+  if (overallStateKey.value === "running") return "yantra-chip--ok";
+  if (overallStateKey.value === "partial") return "yantra-chip--warn";
   return "";
+});
+
+const serviceCount = computed(() => stack.value?.services?.length ?? 0);
+
+const servicesHealthy = computed(() =>
+  (stack.value?.services ?? []).filter((s) => s.state === "running").length
+);
+
+const accessPortCount = computed(() =>
+  (stack.value?.publishedPorts ?? []).filter((port) =>
+    port.show === true &&
+    port.protocol?.toLowerCase() === "tcp" &&
+    port.hostPort &&
+    isNavigableProtocol(port.displayProtocol)
+  ).length
+);
+
+const stackUptime = computed(() => {
+  const running = (stack.value?.services ?? []).filter(
+    (s) => s.state === "running" && Number.isFinite(s.created)
+  );
+  if (running.length === 0) return null;
+
+  const oldestCreatedSeconds = Math.min(...running.map((s) => s.created));
+  const uptimeMs = currentTime.value - oldestCreatedSeconds * 1000;
+  if (uptimeMs <= 0) return t("stackView.justStarted");
+  return formatDuration(uptimeMs);
 });
 
 // ── API ────────────────────────────────────────────────────────────────────────
@@ -321,6 +360,15 @@ onMounted(() => {
 
     <!-- Content -->
     <main v-else-if="stack" class="anim-enter space-y-6">
+      <!-- Breadcrumb: dashboard → stack. Container detail links back to here. -->
+      <nav class="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
+        <router-link :to="dashboard()" class="transition-colors hover:text-zinc-900 dark:hover:text-white">
+          {{ t("nav.dashboard") }}
+        </router-link>
+        <span class="text-zinc-300 dark:text-zinc-700">/</span>
+        <span class="yantra-text-primary">{{ stack.app?.name || stack.appId }}</span>
+      </nav>
+
       <!-- Drift: the catalog definition changed after this stack was deployed.
            Update only refreshes images, so point at the app page for a redeploy. -->
       <div
@@ -399,7 +447,7 @@ onMounted(() => {
                 {{ restarting ? t("stackView.restarting") : t("stackView.restartStack") }}
               </button>
 
-              <button v-if="overallState !== 'running'" @click="setStackServices('running')" class="yantra-btn">
+              <button v-if="overallStateKey !== 'running'" @click="setStackServices('running')" class="yantra-btn">
                 <Play :size="13" />{{ t("stackView.startStack") }}
               </button>
               <button v-else @click="setStackServices('stopped')" class="yantra-btn">
@@ -435,9 +483,30 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Containers are the stack's main content; port and storage details live
-           with each container or on the Storage page. -->
-      <StackServiceList :services="stack.services" :published-ports="stack.publishedPorts" />
+      <!-- The three numbers a stack page is asked for first. -->
+      <div class="yantra-facts">
+        <div class="p-5">
+          <div class="yantra-label">{{ t("stackView.servicesHealthy") }}</div>
+          <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">
+            {{ servicesHealthy }} / {{ serviceCount }}
+          </div>
+          <div class="mt-1 text-[10px] yantra-text-secondary">{{ t("stackView.services") }}</div>
+        </div>
+        <div class="p-5">
+          <div class="yantra-label">{{ t("stackView.accessPorts") }}</div>
+          <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">{{ accessPortCount }}</div>
+          <div class="mt-1 text-[10px] yantra-text-secondary">{{ t("containerDetail.open") }}</div>
+        </div>
+        <div class="p-5">
+          <div class="yantra-label">{{ t("stackView.uptime") }}</div>
+          <div class="mt-2 font-mono text-2xl font-black tracking-tighter yantra-text-primary">{{ stackUptime ?? "—" }}</div>
+          <div class="mt-1 text-[10px] yantra-text-secondary">{{ t("stackView.oldestService") }}</div>
+        </div>
+      </div>
+
+      <!-- Services are the stack's children; container-level diagnostics live
+           on ContainerDetail, not duplicated inline on the stack page. -->
+      <StackServiceTable :services="stack.services" :published-ports="stack.publishedPorts" />
     </main>
   </AppLayout>
 </template>
