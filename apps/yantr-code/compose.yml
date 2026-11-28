@@ -1,0 +1,88 @@
+x-yantr:
+  name: "Yantr Code"
+  tags: [development, ai, terminal, productivity]
+  short_description: "Agentic coding in the browser: OpenCode plus the OpenChamber web UI."
+  description: >
+    An agentic coding environment in the browser. OpenCode CLI and the
+    OpenChamber web UI are installed from npm into a persistent volume on first
+    boot, so agents, terminals and dev servers work from any device. Projects
+    keep their own volume, and the host Podman socket lets the agent run
+    containers.
+  usecases: ["Run AI coding agents from a browser on any device.", "Keep projects in a persistent workspace volume across restarts.", "Let the agent start containers through the host Podman socket.", "Preview dev servers on the two spare ports."]
+  website: "https://github.com/openchamber/openchamber"
+  notes: ["Set the UI password in the deploy form; it is required and not generated.", "First start installs both packages from npm into the home volume, so it needs outbound network and takes a minute.", "OpenChamber is supervised: when it exits it is started again one hour later, and a fresh deploy starts it immediately.", "Projects live in the workspaces volume at /home/yantr/workspaces.", "Dev servers must listen on 3001 or 3002 with --host 0.0.0.0 to be reachable from the Open link.", "The Podman socket mount gives the agent container control as this server's user; drop that volume line to revoke it."]
+  ports:
+    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: yantr-code}
+    - {port: 3001, protocol: HTTP, label: "Dev server 1", service: yantr-code}
+    - {port: 3002, protocol: HTTP, label: "Dev server 2", service: yantr-code}
+
+services:
+  yantr-code:
+    image: docker.io/library/node:lts
+    environment:
+      HOME: /home/yantr
+      NPM_CONFIG_PREFIX: /home/yantr/.npm-global
+      OPENCHAMBER_HOST: 0.0.0.0
+      OPENCHAMBER_UI_PASSWORD: ${OPENCHAMBER_UI_PASSWORD}
+      # git log in the web terminal has no pager installed, and a pager that
+      # exists would block the terminal it was opened from.
+      GIT_PAGER: cat
+    command:
+      - sh
+      - -c
+      - |
+        set -u
+        export HOME=/home/yantr
+        export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+        export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
+        export OPENCHAMBER_HOST=0.0.0.0
+        mkdir -p "$NPM_CONFIG_PREFIX" "$HOME/workspaces" "$HOME/.config" \
+          "$HOME/.local/share/opencode" "$HOME/.ssh"
+        PACKAGES="@opencode/cli@2.4.2 @openchamber/web@2.8.1"
+        CHILD=""
+        STOP=0
+        # `sh` is PID 1 here, so it must forward the stop signal itself or
+        # `podman stop` waits out its grace period and SIGKILLs the agent
+        # mid-write. The sleeps are run in the background for the same reason:
+        # a foreground sleep cannot be interrupted by the trap.
+        shutdown() {
+          STOP=1
+          if [ -n "$CHILD" ]; then kill -TERM "$CHILD" 2>/dev/null; fi
+        }
+        trap shutdown TERM INT
+        cd "$HOME/workspaces" || exit 1
+        while [ "$STOP" = 0 ]; do
+          if [ "$(cat "$HOME/.yantr-code-packages" 2>/dev/null)" != "$PACKAGES" ] \
+             || ! command -v openchamber >/dev/null 2>&1; then
+            # npm blocks lifecycle scripts unless they are allowed by name, and
+            # node-pty needs its prebuild download or the terminal cannot open.
+            if npm install -g --no-audit --no-fund \
+                 --allow-scripts=@opencode/cli,@parcel/watcher,node-pty $PACKAGES; then
+              printf '%s\n' "$PACKAGES" > "$HOME/.yantr-code-packages"
+            else
+              echo "[yantr-code] npm install failed; retrying in an hour" >&2
+              sleep 3600 & wait $! 2>/dev/null
+              continue
+            fi
+          fi
+          openchamber serve --foreground --port 3000 &
+          CHILD=$!
+          wait "$CHILD" 2>/dev/null
+          CHILD=""
+          [ "$STOP" = 1 ] && break
+          echo "[yantr-code] openchamber exited; restarting in an hour" >&2
+          sleep 3600 & wait $! 2>/dev/null
+        done
+    ports:
+      - "3000"
+      - "3001"
+      - "3002"
+    volumes:
+      - yantr_code_home:/home/yantr
+      - yantr_code_workspaces:/home/yantr/workspaces
+      - ${HOST_PODMAN_SOCKET}:/var/run/docker.sock
+    restart: unless-stopped
+
+volumes:
+  yantr_code_home:
+  yantr_code_workspaces:
