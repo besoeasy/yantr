@@ -36,19 +36,19 @@ services:
       - |
         set -u
         export HOME=/home/yantr
-        export NPM_CONFIG_PREFIX="$HOME/.npm-global"
-        export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
+        export NPM_CONFIG_PREFIX="$$HOME/.npm-global"
+        export PATH="$$NPM_CONFIG_PREFIX/bin:$$PATH"
         export OPENCHAMBER_HOST=0.0.0.0
         # Fixed, not a deploy-form field: the catalog entry and the notes both
         # name 18420, so a value the form could change would make them lie.
         PORT=18420
-        mkdir -p "$NPM_CONFIG_PREFIX" "$HOME/workspaces" "$HOME/.config" \
-          "$HOME/.local/share/opencode" "$HOME/.ssh"
+        mkdir -p "$$NPM_CONFIG_PREFIX" "$$HOME/workspaces" "$$HOME/.config" \
+          "$$HOME/.local/share/opencode" "$$HOME/.ssh"
         # The agent's global rules, written once: an edit made inside the
         # container is the user's, so a restart never overwrites it.
-        if [ ! -f "$HOME/.config/opencode/AGENTS.md" ]; then
-          mkdir -p "$HOME/.config/opencode"
-          cat > "$HOME/.config/opencode/AGENTS.md" <<'AGENTS_MD'
+        if [ ! -f "$$HOME/.config/opencode/AGENTS.md" ]; then
+          mkdir -p "$$HOME/.config/opencode"
+          cat > "$$HOME/.config/opencode/AGENTS.md" <<'AGENTS_MD'
         # Global instructions
 
         ## Development
@@ -77,31 +77,31 @@ services:
         # a foreground sleep cannot be interrupted by the trap.
         shutdown() {
           STOP=1
-          if [ -n "$CHILD" ]; then kill -TERM "$CHILD" 2>/dev/null; fi
+          if [ -n "$$CHILD" ]; then kill -TERM "$$CHILD" 2>/dev/null; fi
         }
         trap shutdown TERM INT
-        cd "$HOME/workspaces" || exit 1
-        while [ "$STOP" = 0 ]; do
-          if [ "$(cat "$HOME/.yantr-code-packages" 2>/dev/null)" != "$PACKAGES" ] \
+        cd "$$HOME/workspaces" || exit 1
+        while [ "$$STOP" = 0 ]; do
+          if [ "$$(cat "$$HOME/.yantr-code-packages" 2>/dev/null)" != "$$PACKAGES" ] \
              || ! command -v openchamber >/dev/null 2>&1; then
             # npm blocks lifecycle scripts unless they are allowed by name, and
             # node-pty needs its prebuild download or the terminal cannot open.
             if npm install -g --no-audit --no-fund \
-                 --allow-scripts=@opencode/cli,@parcel/watcher,node-pty $PACKAGES; then
-              printf '%s\n' "$PACKAGES" > "$HOME/.yantr-code-packages"
+                 --allow-scripts=@opencode/cli,@parcel/watcher,node-pty $$PACKAGES; then
+              printf '%s\n' "$$PACKAGES" > "$$HOME/.yantr-code-packages"
             else
-              echo "[yantr-code] npm install failed; retrying in $((RETRY / 60)) min" >&2
-              sleep "$RETRY" & wait $! 2>/dev/null
+              echo "[yantr-code] npm install failed; retrying in $$((RETRY / 60)) min" >&2
+              sleep "$$RETRY" & wait $$! 2>/dev/null
               continue
             fi
           fi
-          openchamber serve --foreground --port "$PORT" &
-          CHILD=$!
-          wait "$CHILD" 2>/dev/null
+          openchamber serve --foreground --port "$$PORT" &
+          CHILD=$$!
+          wait "$$CHILD" 2>/dev/null
           CHILD=""
-          [ "$STOP" = 1 ] && break
-          echo "[yantr-code] openchamber exited; restarting in $((RETRY / 60)) min" >&2
-          sleep "$RETRY" & wait $! 2>/dev/null
+          [ "$$STOP" = 1 ] && break
+          echo "[yantr-code] openchamber exited; restarting in $$((RETRY / 60)) min" >&2
+          sleep "$$RETRY" & wait $$! 2>/dev/null
         done
         # A stop during a wait would otherwise leave the script's status at the
         # wait's 143, and the stack would read as a crash rather than a stop.
