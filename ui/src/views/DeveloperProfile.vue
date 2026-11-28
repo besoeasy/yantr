@@ -30,6 +30,7 @@ import {
 // `apps` is already the list of apps this developer is credited on, so the
 // catalog route builder is aliased rather than shadowing it.
 import { appDetail, apps as appsRoute } from "../utils/routes.js";
+import { copyText } from "../utils/clipboard.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -79,19 +80,17 @@ const { rails: paymentRails, copiedRail, copyAddress } = usePaymentRails(
 );
 
 async function copyNostrKey() {
-  try {
-    await navigator.clipboard.writeText(key.value);
-    copied.value = true;
-    // Reset rather than leaving the label stuck on "Copied"; a second copy of
-    // the same value would otherwise look like nothing happened.
-    if (copiedTimer) clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  } catch {
-    // Clipboard access needs a secure context and can be refused. The key is
-    // printed next to the button, so there is nothing to recover from.
-  }
+  // copyText also handles the plain-HTTP page, where navigator.clipboard is
+  // absent; the key is printed next to the button either way, so a failure
+  // needs no toast.
+  if (!(await copyText(key.value))) return;
+  copied.value = true
+  // Reset rather than leaving the label stuck on "Copied"; a second copy of
+  // the same value would otherwise look like nothing happened.
+  if (copiedTimer) clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => {
+    copied.value = false;
+  }, 2000);
 }
 
 // Blog is free text on GitHub and people write it with and without a scheme.

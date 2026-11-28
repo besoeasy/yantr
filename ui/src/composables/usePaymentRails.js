@@ -2,6 +2,7 @@ import { computed, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { lnurlEncode } from "../utils/nostr";
 import { bip21Uri } from "../utils/bitcoin";
+import { copyText } from "../utils/clipboard";
 
 // The payment rails a Nostr account publishes, ready to render: Lightning
 // (NIP-57 lud16 → LNURL pay-URL) and on-chain (a Bitcoin address → BIP-21
@@ -61,18 +62,16 @@ export function usePaymentRails(profile, prefix) {
   // was — with two rails side by side, "Copied" alone leaves the reader
   // guessing what landed on the clipboard.
   async function copyAddress(rail) {
-    try {
-      await navigator.clipboard.writeText(rail?.address ?? "");
-      copiedRail.value = rail.kind;
-      if (copiedTimer) clearTimeout(copiedTimer);
-      copiedTimer = setTimeout(() => {
-        copiedRail.value = "";
-      }, 2000);
-    } catch {
-      // Clipboard needs a secure context. Nothing on screen changes: the
-      // card's surfaces keep the address on the button's tooltip and in
-      // their own copy, so a failed write is recoverable without a toast.
-    }
+    // copyText covers the plain-HTTP page, where navigator.clipboard does not
+    // exist. Nothing on screen changes on a failure: the card's surfaces keep
+    // the address on the button's tooltip and in their own copy, so a failed
+    // write is recoverable without a toast.
+    if (!(await copyText(rail?.address ?? ""))) return;
+    copiedRail.value = rail.kind;
+    if (copiedTimer) clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => {
+      copiedRail.value = "";
+    }, 2000);
   }
 
   // Firing a timer into an unmounted component shows up as a console warning

@@ -9,6 +9,7 @@ import {
 import { useNotification } from '../composables/useNotification'
 import { useYantrAuth } from '../composables/useYantrAuth'
 import { derivePrivateKey, getPublicKey } from '../utils/crypto.js'
+import { copyText } from '../utils/clipboard.js'
 
 const { t } = useI18n()
 const toast = useNotification()
@@ -123,11 +124,7 @@ const keyAvatarGradient = computed(() => {
 
 async function copyPublicKey() {
   if (!derivedPublicKey.value) return
-  try {
-    await navigator.clipboard.writeText(derivedPublicKey.value)
-  } catch {
-    return
-  }
+  if (!(await copyText(derivedPublicKey.value))) return
   copied.value = true
   toast.success(t('authGate.messages.publicKeyCopied'))
   setTimeout(() => { copied.value = false }, 2000)

@@ -10,6 +10,7 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { ArrowUpRight, Heart, Bitcoin, Copy, Check, Wallet, AlertCircle } from "@lucide/vue";
 import NostrQrCode from "../components/NostrQrCode.vue";
+import { copyText } from "../utils/clipboard";
 
 const { t } = useI18n();
 
@@ -58,14 +59,12 @@ const shortBtc = computed(() => {
 
 async function copyAddress() {
   if (!btcAddress.value) return;
-  try {
-    await navigator.clipboard?.writeText(btcAddress.value);
-    copied.value = true;
-    if (copiedTimer) clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => { copied.value = false; }, 2000);
-  } catch {
-    // clipboard unavailable — the full address stays readable via title
-  }
+  // copyText falls back to the textarea path on a plain-HTTP page, where
+  // navigator.clipboard is undefined.
+  if (!(await copyText(btcAddress.value))) return;
+  copied.value = true;
+  if (copiedTimer) clearTimeout(copiedTimer);
+  copiedTimer = setTimeout(() => { copied.value = false; }, 2000);
 }
 
 onUnmounted(() => {

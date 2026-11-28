@@ -15,6 +15,7 @@ import ContainerLogs from '../components/ContainerLogs.vue'
 import ContainerEnv from '../components/ContainerEnv.vue'
 import AppLayout from '../components/AppLayout.vue'
 import { appUrl, isNavigableProtocol } from '../utils/url'
+import { copyText } from '../utils/clipboard'
 import { formatUptime } from '../utils/metrics'
 import { dashboard, appDetail, stackDetail } from '../utils/routes.js'
 
@@ -241,10 +242,12 @@ async function fetchContainerShell(id) {
 }
 
 async function copyShellCommand() {
-  try {
-    await navigator.clipboard.writeText(shellCommand.value)
+  if (!shellCommand.value) return
+  // A plain HTTP page has no navigator.clipboard; copyText falls back to the
+  // textarea path so the copy still lands there instead of failing.
+  if (await copyText(shellCommand.value)) {
     toast.success(t('containerDetail.shellCopied'))
-  } catch {
+  } else {
     toast.error(t('containerDetail.shellCopyFailed'))
   }
 }
