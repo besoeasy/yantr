@@ -8,21 +8,25 @@ x-yantr:
     boot, so agents, terminals and dev servers work from any device. Projects
     keep their own volume, and the host Podman socket lets the agent run
     containers.
-  usecases: ["Run AI coding agents from a browser on any device.", "Keep projects in a persistent workspace volume across restarts.", "Let the agent start containers through the host Podman socket.", "Preview dev servers on the two spare ports."]
+  usecases: ["Run AI coding agents from a browser on any device.", "Keep projects in a persistent workspace volume across restarts.", "Let the agent start containers through the host Podman socket.", "Open whatever port a dev server picks, with no mapping to declare."]
   website: "https://github.com/openchamber/openchamber"
-  notes: ["Set the UI password in the deploy form; it is required and not generated.", "First start installs both packages from npm into the home volume, so it needs outbound network and takes a minute.", "OpenChamber is supervised: when it exits it is started again one hour later, and a fresh deploy starts it immediately.", "Projects live in the workspaces volume at /home/yantr/workspaces.", "Dev servers must listen on 3001 or 3002 with --host 0.0.0.0 to be reachable from the Open link.", "The Podman socket mount gives the agent container control as this server's user; drop that volume line to revoke it."]
+  notes: ["Set the UI password in the deploy form; it is required and not generated.", "First start installs both packages from npm into the home volume, so it needs outbound network and takes a minute.", "OpenChamber is supervised: when it exits it is started again one hour later, and a fresh deploy starts it immediately.", "Projects live in the workspaces volume at /home/yantr/workspaces.", "Host networking is on: the UI is at http://<server-ip>:18420, and every port the agent binds is reachable directly. Change OPENCHAMBER_PORT in the form if 18420 is taken.", "The Podman socket mount gives the agent container control as this server's user; drop that volume line to revoke it."]
   ports:
-    - {port: 3000, protocol: HTTP, show: true, label: "Web UI", service: yantr-code}
-    - {port: 3001, protocol: HTTP, label: "Dev server 1", service: yantr-code}
-    - {port: 3002, protocol: HTTP, label: "Dev server 2", service: yantr-code}
+    - {port: 18420, protocol: HTTP, show: true, label: "Web UI", service: yantr-code}
 
 services:
   yantr-code:
     image: docker.io/library/node:lts
+    # Host networking: a coding agent starts servers on ports of its own
+    # choosing, and there is no mapping to declare for them. The UI port is
+    # therefore a host port, chosen high to stay clear of 3000/8080 and of the
+    # range Podman hands out for the other apps' published ports.
+    network_mode: host
     environment:
       HOME: /home/yantr
       NPM_CONFIG_PREFIX: /home/yantr/.npm-global
       OPENCHAMBER_HOST: 0.0.0.0
+      OPENCHAMBER_PORT: ${OPENCHAMBER_PORT:-18420}
       OPENCHAMBER_UI_PASSWORD: ${OPENCHAMBER_UI_PASSWORD}
       # git log in the web terminal has no pager installed, and a pager that
       # exists would block the terminal it was opened from.
@@ -36,6 +40,7 @@ services:
         export NPM_CONFIG_PREFIX="$HOME/.npm-global"
         export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
         export OPENCHAMBER_HOST=0.0.0.0
+        export OPENCHAMBER_PORT="${OPENCHAMBER_PORT:-18420}"
         mkdir -p "$NPM_CONFIG_PREFIX" "$HOME/workspaces" "$HOME/.config" \
           "$HOME/.local/share/opencode" "$HOME/.ssh"
         PACKAGES="@opencode/cli@2.4.2 @openchamber/web@2.8.1"
@@ -65,7 +70,7 @@ services:
               continue
             fi
           fi
-          openchamber serve --foreground --port 3000 &
+          openchamber serve --foreground --port "$OPENCHAMBER_PORT" &
           CHILD=$!
           wait "$CHILD" 2>/dev/null
           CHILD=""
@@ -73,10 +78,6 @@ services:
           echo "[yantr-code] openchamber exited; restarting in an hour" >&2
           sleep 3600 & wait $! 2>/dev/null
         done
-    ports:
-      - "3000"
-      - "3001"
-      - "3002"
     volumes:
       - yantr_code_home:/home/yantr
       - yantr_code_workspaces:/home/yantr/workspaces
