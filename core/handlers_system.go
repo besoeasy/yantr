@@ -180,6 +180,13 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func systemInfoCores(ncpu int) int {
+	if ncpu > 0 {
+		return ncpu
+	}
+	return system.HostSnapshot().CPU.Count
+}
+
 func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
 	info, err := podman.Info(context.Background())
 	if err != nil {
@@ -197,7 +204,7 @@ func handleSystemInfo(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{
 		"success": true,
 		"info": map[string]interface{}{
-			"cpu":     map[string]interface{}{"cores": info.NCPU},
+			"cpu":     map[string]interface{}{"cores": systemInfoCores(info.NCPU)},
 			"memory":  map[string]interface{}{"total": info.MemTotal},
 			"storage": map[string]interface{}{"driver": info.Driver},
 			"podman":  podmanMap,

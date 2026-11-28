@@ -188,7 +188,13 @@ const osInfo = computed(() => {
   };
 });
 
-const coreCount = computed(() => systemInfo.value?.cpu?.cores ?? 0);
+const coreCount = computed(() => {
+  const infoCores = Number(systemInfo.value?.cpu?.cores);
+  if (Number.isFinite(infoCores) && infoCores > 0) return infoCores;
+  const metricCores = Number(metrics.value?.cpu?.count);
+  if (Number.isFinite(metricCores) && metricCores > 0) return metricCores;
+  return 0;
+});
 
 const degraded = computed(() => new Set(metrics.value?.degraded ?? []));
 const isDegraded = (name) => degraded.value.has(name);
