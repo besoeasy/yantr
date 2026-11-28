@@ -11,6 +11,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ArrowUpRight, Heart, Bitcoin, Copy, Check, AlertCircle } from "@lucide/vue";
 import { copyText } from "../utils/clipboard";
+import { fetchBitcoinAddress } from "../utils/dnsBitcoin";
 
 const { t } = useI18n();
 
@@ -25,21 +26,7 @@ async function fetchBtc() {
   try {
     btcLoading.value = true;
     btcError.value = null;
-    const res = await fetch(
-      "https://cloudflare-dns.com/dns-query?name=btc.besoeasy.com&type=TXT",
-      { headers: { Accept: "application/dns-json" } }
-    );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const answers = Array.isArray(data?.Answer) ? data.Answer : [];
-    const raw = answers
-      .map((a) => (typeof a?.data === "string" ? a.data : ""))
-      .join("")
-      .replace(/^"|"$/g, "")
-      .replace(/"\s*"/g, "")
-      .trim();
-    if (!raw) throw new Error("No TXT record returned");
-    btcAddress.value = raw;
+    btcAddress.value = await fetchBitcoinAddress();
   } catch (e) {
     btcError.value = e?.message || String(e);
     btcAddress.value = "";
