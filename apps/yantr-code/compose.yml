@@ -10,7 +10,7 @@ x-yantr:
     containers.
   usecases: ["Run AI coding agents from a browser on any device.", "Keep projects in a persistent workspace volume across restarts.", "Let the agent start containers through the host Podman socket.", "Open whatever port a dev server picks, with no mapping to declare."]
   website: "https://github.com/openchamber/openchamber"
-  notes: ["Set the UI password in the deploy form; it is required and not generated.", "First start installs both packages from npm into the home volume, so it needs outbound network and takes a minute.", "OpenChamber is supervised: when it exits it is started again one hour later, and a fresh deploy starts it immediately.", "Projects live in /home/yantr/workspaces, and a starter ~/.config/opencode/AGENTS.md is written once on first start — edit it freely, it is never overwritten.", "Host networking is on: the UI is at http://<server-ip>:18420, and every port the agent binds is reachable directly. Change OPENCHAMBER_PORT in the form if 18420 is taken.", "The Podman socket mount gives the agent container control as this server's user; drop that volume line to revoke it."]
+  notes: ["Set the UI password in the deploy form; it is required and not generated.", "First start installs both packages from npm into the home volume, so it needs outbound network and takes a minute.", "OpenChamber is supervised: when it exits it is started again one hour later, and a fresh deploy starts it immediately.", "Projects live in /home/yantr/workspaces, and a starter ~/.config/opencode/AGENTS.md is written once on first start — edit it freely, it is never overwritten.", "Host networking is on and the UI port is fixed at 18420, so every port the agent binds is reachable at http://<server-ip>:<port>. Free 18420 first if something already listens there.", "The Podman socket mount gives the agent container control as this server's user; drop that volume line to revoke it."]
   ports:
     - {port: 18420, protocol: HTTP, show: true, label: "Web UI", service: yantr-code}
 
@@ -26,7 +26,6 @@ services:
       HOME: /home/yantr
       NPM_CONFIG_PREFIX: /home/yantr/.npm-global
       OPENCHAMBER_HOST: 0.0.0.0
-      OPENCHAMBER_PORT: ${OPENCHAMBER_PORT:-18420}
       OPENCHAMBER_UI_PASSWORD: ${OPENCHAMBER_UI_PASSWORD}
       # git log in the web terminal has no pager installed, and a pager that
       # exists would block the terminal it was opened from.
@@ -40,7 +39,9 @@ services:
         export NPM_CONFIG_PREFIX="$HOME/.npm-global"
         export PATH="$NPM_CONFIG_PREFIX/bin:$PATH"
         export OPENCHAMBER_HOST=0.0.0.0
-        export OPENCHAMBER_PORT="${OPENCHAMBER_PORT:-18420}"
+        # Fixed, not a deploy-form field: the catalog entry and the notes both
+        # name 18420, so a value the form could change would make them lie.
+        PORT=18420
         mkdir -p "$NPM_CONFIG_PREFIX" "$HOME/workspaces" "$HOME/.config" \
           "$HOME/.local/share/opencode" "$HOME/.ssh"
         # The agent's global rules, written once: an edit made inside the
@@ -89,7 +90,7 @@ services:
               continue
             fi
           fi
-          openchamber serve --foreground --port "$OPENCHAMBER_PORT" &
+          openchamber serve --foreground --port "$PORT" &
           CHILD=$!
           wait "$CHILD" 2>/dev/null
           CHILD=""
