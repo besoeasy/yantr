@@ -10,6 +10,7 @@ import { buildIssueReportUrl } from "../utils/developer";
 import { appDetail, dashboard } from "../utils/routes.js";
 import { formatDuration } from "../utils/metrics";
 import { isNavigableProtocol } from "../utils/url";
+import { groupStackServices } from "../utils/stackServices.js";
 import { useCurrentTime } from "../composables/useCurrentTime";
 import AppLogo from "../components/AppLogo.vue";
 import DeveloperCredit from "../components/DeveloperCredit.vue";
@@ -146,10 +147,12 @@ const stateClass = computed(() => {
   return "";
 });
 
-const serviceCount = computed(() => stack.value?.services?.length ?? 0);
+const serviceGroups = computed(() => groupStackServices(stack.value?.services ?? []));
+
+const serviceCount = computed(() => serviceGroups.value.length);
 
 const servicesHealthy = computed(() =>
-  (stack.value?.services ?? []).filter((s) => s.state === "running").length
+  serviceGroups.value.filter((group) => group.state === "running").length
 );
 
 const accessPortCount = computed(() =>

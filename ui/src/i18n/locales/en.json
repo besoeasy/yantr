@@ -405,7 +405,8 @@
     "stackStarted": "All services started",
     "stackStopped": "All services stopped",
     "serviceActionFailed": "{failed} of {total} services did not respond",
-    "serviceDetails": "Details"
+    "serviceDetails": "Details",
+    "containersCount": "{count} containers"
   },
   "appCard": {
     "active": "Active ({count})",
