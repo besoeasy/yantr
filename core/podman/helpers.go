@@ -47,6 +47,11 @@ func ContainerRestart(ctx context.Context, containerID string, options dockerctr
 	return Client.ContainerRestart(ctx, containerID, options)
 }
 
+// ContainerTop returns the running processes inside a container (docker top / podman top).
+func ContainerTop(ctx context.Context, containerID string, arguments []string) (dockerctr.ContainerTopOKBody, error) {
+	return Client.ContainerTop(ctx, containerID, arguments)
+}
+
 func ContainerCreate(ctx context.Context, config *dockerctr.Config, hostConfig *dockerctr.HostConfig, networkingConfig *dockernet.NetworkingConfig, platform *v1.Platform, containerName string) (dockerctr.CreateResponse, error) {
 	return Client.ContainerCreate(ctx, config, hostConfig, networkingConfig, platform, containerName)
 }
@@ -115,6 +120,11 @@ func VolumeInspect(ctx context.Context, volumeID string) (dockervol.Volume, erro
 
 func VolumeRemove(ctx context.Context, volumeID string, force bool) error {
 	return Client.VolumeRemove(ctx, volumeID, force)
+}
+
+// VolumeCreate creates a named volume.
+func VolumeCreate(ctx context.Context, options dockervol.CreateOptions) (dockervol.Volume, error) {
+	return Client.VolumeCreate(ctx, options)
 }
 
 func DiskUsage(ctx context.Context, options dockertypes.DiskUsageOptions) (dockertypes.DiskUsage, error) {

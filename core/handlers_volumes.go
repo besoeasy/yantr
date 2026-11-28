@@ -92,6 +92,42 @@ func handleVolumes(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func handleVolumeCreate(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		Name       string            `json:"name"`
+		Driver     string            `json:"driver"`
+		DriverOpts map[string]string `json:"driverOpts"`
+		Labels     map[string]string `json:"labels"`
+	}
+	if !parseJSON(w, r, &body) {
+		return
+	}
+	name := strings.TrimSpace(body.Name)
+	if !isValidVolumeName(name) {
+		jsonErr(w, 400, "INVALID_VOLUME_NAME", "Invalid volume name")
+		return
+	}
+	driver := strings.TrimSpace(body.Driver)
+	if driver == "" {
+		driver = "local"
+	}
+	vol, err := podman.VolumeCreate(context.Background(), dockervol.CreateOptions{
+		Name:       name,
+		Driver:     driver,
+		DriverOpts: body.DriverOpts,
+		Labels:     body.Labels,
+	})
+	if err != nil {
+		if strings.Contains(err.Error(), "already exists") || strings.Contains(err.Error(), "name is already in use") {
+			jsonErr(w, 409, "VOLUME_EXISTS", fmt.Sprintf("Volume '%s' already exists", name))
+			return
+		}
+		jsonErr(w, 500, "VOLUME_CREATE_FAILED", err.Error())
+		return
+	}
+	jsonResp(w, 201, map[string]interface{}{"success": true, "message": fmt.Sprintf("Volume '%s' created", vol.Name), "volume": vol})
+}
+
 func handleVolumeDelete(w http.ResponseWriter, r *http.Request) {
 	name := chi.URLParam(r, "name")
 	if err := podman.VolumeRemove(context.Background(), name, false); err != nil {

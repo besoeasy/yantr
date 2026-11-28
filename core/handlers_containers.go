@@ -465,6 +465,31 @@ func handleContainerRestart(w http.ResponseWriter, r *http.Request) {
 	jsonResp(w, 200, map[string]interface{}{"success": true, "message": "Container restarted successfully"})
 }
 
+func handleContainerTop(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	// ps_args mirrors `podman top`/`docker top` argument passthrough; empty means the default output.
+	var args []string
+	if raw := strings.TrimSpace(r.URL.Query().Get("ps_args")); raw != "" {
+		args = strings.Fields(raw)
+	}
+	top, err := podman.ContainerTop(context.Background(), id, args)
+	if err != nil {
+		jsonErr(w, 500, "CONTAINER_TOP_FAILED", err.Error())
+		return
+	}
+	if top.Titles == nil {
+		top.Titles = []string{}
+	}
+	if top.Processes == nil {
+		top.Processes = [][]string{}
+	}
+	jsonResp(w, 200, map[string]interface{}{
+		"success":   true,
+		"titles":    top.Titles,
+		"processes": top.Processes,
+	})
+}
+
 // recordContainerServiceStopped marks the stopped container's compose service as
 // intentionally stopped. Standalone containers have no project label and are
 // simply skipped.

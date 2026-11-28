@@ -500,3 +500,112 @@ func handleStackRestart(w http.ResponseWriter, r *http.Request) {
 	shared.Log("error", fmt.Sprintf("[stack] compose restart failed: project=%s exit=%d err=%v", projectID, exitCode, err))
 	jsonErr(w, 500, "STACK_RESTART_FAILED", fmt.Sprintf("podman compose restart failed (exit %d)", exitCode))
 }
+
+// handleStackStop stops a stack's containers without removing them (compose stop).
+// The intentional-stop mark is recorded so the watchdog does not revive services.
+func handleStackStop(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+
+	release, locked := shared.TryLockProject(projectID)
+	if !locked {
+		jsonErr(w, 409, "PROJECT_BUSY",
+			fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", projectID))
+		return
+	}
+	defer release()
+
+	baseID := getBaseAppID(projectID)
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	ref := compose.GetProjectComposeRef(appPath, projectID)
+
+	if _, statErr := os.Stat(ref.ComposePath); statErr != nil {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack compose file not found")
+		return
+	}
+
+	cmdName, cmdArgs, err := getComposeCommand()
+	if err != nil {
+		jsonErr(w, 500, "COMPOSE_NOT_FOUND", "podman compose command not found")
+		return
+	}
+
+	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
+	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "stop")
+	shared.Log("info", fmt.Sprintf("[stack] stopping: project=%s", projectID))
+	job := globalJobs.Create("stack_stop", projectID, fmt.Sprintf("Stop stack %s", projectID))
+	job.SetProgress(fmt.Sprintf("Stopping stack %s...", projectID))
+	stopCtx, stopCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+	out, errStr, exitCode, err := spawnExecJob(stopCtx, job, cmdName, args, env, appPath)
+	stopCancel()
+
+	if exitCode == 0 {
+		// Whole-project intentional stop: disables watchdog revival + boot resuscitation.
+		supervisor.RecordStackStopped(projectID)
+		shared.Log("info", fmt.Sprintf("[stack] stopped: project=%s", projectID))
+		job.Complete(map[string]interface{}{"success": true, "stopped": true})
+		jsonResp(w, 200, map[string]interface{}{
+			"success": true,
+			"jobId":   job.ID,
+			"message": fmt.Sprintf("Stack '%s' stopped successfully", projectID),
+		})
+		return
+	}
+
+	job.Fail(fmt.Errorf("compose stop failed: %s", shared.Coalesce(errStr, out)), exitCode)
+	shared.Log("error", fmt.Sprintf("[stack] compose stop failed: project=%s exit=%d err=%v", projectID, exitCode, err))
+	jsonErr(w, 500, "STACK_STOP_FAILED", fmt.Sprintf("podman compose stop failed (exit %d)", exitCode))
+}
+
+// handleStackStart starts a previously stopped stack's containers (compose start),
+// clearing any intentional-stop marks so the watchdog can revive crashed services.
+func handleStackStart(w http.ResponseWriter, r *http.Request) {
+	projectID := chi.URLParam(r, "projectId")
+
+	release, locked := shared.TryLockProject(projectID)
+	if !locked {
+		jsonErr(w, 409, "PROJECT_BUSY",
+			fmt.Sprintf("Another operation is already in progress for '%s'. Retry shortly.", projectID))
+		return
+	}
+	defer release()
+
+	baseID := getBaseAppID(projectID)
+	appPath := filepath.Join(apps.GetAppsDir(), baseID)
+	ref := compose.GetProjectComposeRef(appPath, projectID)
+
+	if _, statErr := os.Stat(ref.ComposePath); statErr != nil {
+		jsonErr(w, 404, "STACK_NOT_FOUND", "Stack compose file not found")
+		return
+	}
+
+	cmdName, cmdArgs, err := getComposeCommand()
+	if err != nil {
+		jsonErr(w, 500, "COMPOSE_NOT_FOUND", "podman compose command not found")
+		return
+	}
+
+	env, _ := compose.GetComposeProcessEnv(appPath, projectID, podman.SocketPath, podman.HostSocket())
+	args := append(cmdArgs, "-p", projectID, "-f", ref.ComposeFile, "start")
+	shared.Log("info", fmt.Sprintf("[stack] starting: project=%s", projectID))
+	job := globalJobs.Create("stack_start", projectID, fmt.Sprintf("Start stack %s", projectID))
+	job.SetProgress(fmt.Sprintf("Starting stack %s...", projectID))
+	startCtx, startCancel := context.WithTimeout(context.Background(), spawnTimeoutMedium)
+	out, errStr, exitCode, err := spawnExecJob(startCtx, job, cmdName, args, env, appPath)
+	startCancel()
+
+	if exitCode == 0 {
+		supervisor.RecordStackDeployed(projectID, baseID)
+		shared.Log("info", fmt.Sprintf("[stack] started: project=%s", projectID))
+		job.Complete(map[string]interface{}{"success": true, "started": true})
+		jsonResp(w, 200, map[string]interface{}{
+			"success": true,
+			"jobId":   job.ID,
+			"message": fmt.Sprintf("Stack '%s' started successfully", projectID),
+		})
+		return
+	}
+
+	job.Fail(fmt.Errorf("compose start failed: %s", shared.Coalesce(errStr, out)), exitCode)
+	shared.Log("error", fmt.Sprintf("[stack] compose start failed: project=%s exit=%d err=%v", projectID, exitCode, err))
+	jsonErr(w, 500, "STACK_START_FAILED", fmt.Sprintf("podman compose start failed (exit %d)", exitCode))
+}
