@@ -23,9 +23,9 @@ services:
     environment: {}
     command: ["/bin/sh", "-c", "while :; do sleep 3600; done"]
     ports:
+      - "3000"
       - "8080"
       - "9000"
-      - "3000"
       - "9090"
       - "50051"
     volumes:

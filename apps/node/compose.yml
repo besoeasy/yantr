@@ -24,9 +24,9 @@ services:
     ports:
       - "3000"
       - "5173"
+      - "5858"
       - "8080"
       - "9229"
-      - "5858"
     volumes:
       - node_data:/data
     restart: unless-stopped
