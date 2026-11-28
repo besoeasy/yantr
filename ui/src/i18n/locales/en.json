@@ -571,6 +571,13 @@
     "watchtowerNextCheck": {}
   },
   "sponsorCard": {
+    "title": "Support Yantr",
+    "subtitle": "Keep development moving",
+    "bitcoinLabel": "Bitcoin",
+    "bitcoinHint": "Send directly to the project address",
+    "githubLabel": "GitHub Sponsors",
+    "githubHint": "Recurring or one-time support",
+    "githubBody": "Sponsor development on GitHub to help fund maintenance, fixes, and new features.",
     "cta": "Sponsor on GitHub",
     "btcCopy": "Copy address",
     "btcCopied": "Copied",

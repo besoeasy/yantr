@@ -1,15 +1,12 @@
 <script>
-// Dashboard engine: two columns. The card is split into a full-space live QR
-// plate on the left half and identity, address, wallet actions and GitHub
-// sponsorship on the right half. Width honours the two-column ceiling every
-// widget lives by (AGENTS.md §8); see Home.vue.
+// Two columns, no QR plate: Bitcoin support and GitHub sponsorship sit side by
+// side so the card reads as two clear ways to help, not a scan target.
 export const meta = { cols: 2 };
 </script>
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { ArrowUpRight, Heart, Bitcoin, Copy, Check, Wallet, AlertCircle } from "@lucide/vue";
-import NostrQrCode from "../components/NostrQrCode.vue";
 import { copyText } from "../utils/clipboard";
 
 const { t } = useI18n();
@@ -53,8 +50,8 @@ onMounted(fetchBtc);
 const shortBtc = computed(() => {
   const a = btcAddress.value;
   if (!a) return "";
-  if (a.length <= 22) return a;
-  return `${a.slice(0, 10)}…${a.slice(-8)}`;
+  if (a.length <= 34) return a;
+  return `${a.slice(0, 18)}…${a.slice(-12)}`;
 });
 
 async function copyAddress() {
@@ -79,102 +76,89 @@ onUnmounted(() => {
       class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent"
     ></div>
 
-    <div class="grid h-full w-full flex-1 grid-cols-1 md:grid-cols-2 gap-6 items-center">
-      <!-- Left Column: Full-space QR plate -->
-      <div class="flex h-full w-full items-center justify-center">
-        <div
-          v-if="btcLoading"
-          class="aspect-square w-full max-w-64 animate-pulse rounded-2xl bg-zinc-100 dark:bg-zinc-800"
-        ></div>
-
-        <div
-          v-else-if="btcError"
-          class="flex aspect-square w-full max-w-64 flex-col items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 p-4 text-center dark:border-red-900/50 dark:bg-red-900/20"
-        >
-          <AlertCircle class="h-6 w-6 text-red-500" />
-          <span class="text-xs text-red-500">{{ btcError }}</span>
-        </div>
-
-        <div
-          v-else
-          class="flex aspect-square w-full max-w-64 items-center justify-center rounded-2xl bg-white p-3.5 shadow-sm dark:bg-white"
-        >
-          <NostrQrCode
-            :value="`bitcoin:${btcAddress}`"
-            :size="240"
-            :label="btcAddress"
-            class="h-full w-full"
-          />
-        </div>
+    <div class="flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary">{{ t("sponsorCard.title") }}</h3>
+        <p class="mt-1.5 text-[11px] font-medium yantra-text-secondary">{{ t("sponsorCard.subtitle") }}</p>
       </div>
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-500 dark:border-rose-900/50 dark:bg-rose-900/20">
+        <Heart class="h-5 w-5 fill-current" />
+      </div>
+    </div>
 
-      <!-- Right Column: Details & Actions -->
-      <div class="flex h-full w-full flex-col justify-between text-left">
-        <!-- Header -->
-        <div class="flex items-center gap-3">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-amber-200 bg-amber-50 transition-transform duration-200 group-hover:scale-105 dark:border-amber-900/50 dark:bg-amber-900/20">
-            <Bitcoin class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+    <div class="mt-6 grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+      <section class="flex min-w-0 flex-col rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20">
+            <Bitcoin class="h-4 w-4 text-amber-600 dark:text-amber-400" />
           </div>
-          <div>
-            <h3 class="text-lg font-bold leading-none tracking-tight yantra-text-primary">
-              Donate
-            </h3>
-            <p class="mt-1 text-[11px] font-medium yantra-text-secondary">
-              Support Yantr development
-            </p>
-          </div>
-        </div>
-
-        <!-- Address & Quick Copy/Wallet -->
-        <div class="mt-3 flex flex-col gap-2">
-          <div class="flex items-center justify-between gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3.5 py-2 dark:border-zinc-800 dark:bg-zinc-900/50">
-            <div v-if="btcLoading" class="h-3 w-32 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
-            <div v-else-if="btcError" class="text-[11px] text-red-500">{{ btcError }}</div>
-            <code v-else class="truncate font-mono text-[11px] yantra-text-primary" :title="btcAddress">{{ shortBtc }}</code>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              class="flex h-10 items-center justify-center gap-2 rounded-xl border border-zinc-200 text-[10px] font-bold uppercase tracking-widest yantra-text-primary transition-colors dark:border-zinc-800 dark:bg-zinc-900/50 active:scale-[0.98]"
-              :disabled="btcLoading || !!btcError"
-              @click="copyAddress"
-            >
-              <Check class="h-3.5 w-3.5 text-emerald-500" v-if="copied" />
-              <Copy class="h-3.5 w-3.5" v-else />
-              <span>{{ copied ? t("sponsorCard.btcCopied") : t("sponsorCard.btcCopy") }}</span>
-            </button>
-            <a
-              :href="btcAddress ? `bitcoin:${btcAddress}` : '#'"
-              class="flex h-10 items-center justify-center gap-2 rounded-xl bg-amber-500 text-[10px] font-bold uppercase tracking-widest text-zinc-900 active:scale-[0.98]"
-            >
-              <Wallet class="h-3.5 w-3.5" />
-              <span>{{ t("sponsorCard.btcWallet") }}</span>
-            </a>
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("sponsorCard.bitcoinLabel") }}</p>
+            <p class="mt-0.5 text-[11px] yantra-text-secondary">{{ t("sponsorCard.bitcoinHint") }}</p>
           </div>
         </div>
 
-        <!-- or divider -->
-        <div class="my-4 flex items-center gap-3">
-          <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
-          <span class="text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">or</span>
-          <div class="h-px flex-1 bg-zinc-200 dark:bg-zinc-800"></div>
+        <div class="mt-4 flex min-h-[3.25rem] items-center rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 dark:border-zinc-800 dark:bg-zinc-950/60">
+          <div v-if="btcLoading" class="h-3 w-40 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-700"></div>
+          <div v-else-if="btcError" class="flex items-center gap-2 text-[11px] text-red-500">
+            <AlertCircle class="h-4 w-4 shrink-0" />
+            <span class="truncate" :title="btcError">{{ btcError }}</span>
+          </div>
+          <code v-else class="block truncate font-mono text-[11px] yantra-text-primary" :title="btcAddress">{{ shortBtc }}</code>
         </div>
 
-        <!-- Sponsor on GitHub -->
+        <div class="mt-4 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            class="flex h-10 items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white text-[10px] font-bold uppercase tracking-widest yantra-text-primary transition-colors hover:border-zinc-300 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-800 dark:bg-zinc-950/60 dark:hover:border-zinc-700 active:scale-[0.98]"
+            :disabled="btcLoading || !!btcError"
+            @click="copyAddress"
+          >
+            <Check v-if="copied" class="h-3.5 w-3.5 text-emerald-500" />
+            <Copy v-else class="h-3.5 w-3.5" />
+            <span>{{ copied ? t("sponsorCard.btcCopied") : t("sponsorCard.btcCopy") }}</span>
+          </button>
+          <a
+            :href="btcAddress ? `bitcoin:${btcAddress}` : undefined"
+            :aria-disabled="btcLoading || !!btcError ? 'true' : undefined"
+            :tabindex="btcLoading || !!btcError ? -1 : undefined"
+            class="flex h-10 items-center justify-center gap-2 rounded-xl bg-amber-500 text-[10px] font-bold uppercase tracking-widest text-zinc-900 transition-opacity hover:bg-amber-400 active:scale-[0.98]"
+            :class="btcLoading || !!btcError ? 'pointer-events-none opacity-50' : ''"
+          >
+            <Wallet class="h-3.5 w-3.5" />
+            <span>{{ t("sponsorCard.btcWallet") }}</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="flex min-w-0 flex-col rounded-2xl border border-zinc-200 bg-zinc-50/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/40">
+        <div class="flex items-center gap-2">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 dark:border-rose-900/50 dark:bg-rose-900/20">
+            <Heart class="h-4 w-4 text-rose-500" />
+          </div>
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold uppercase tracking-widest yantra-text-secondary">{{ t("sponsorCard.githubLabel") }}</p>
+            <p class="mt-0.5 text-[11px] yantra-text-secondary">{{ t("sponsorCard.githubHint") }}</p>
+          </div>
+        </div>
+
+        <p class="mt-4 flex-1 text-sm leading-relaxed yantra-text-secondary">
+          {{ t("sponsorCard.githubBody") }}
+        </p>
+
         <a
           href="https://github.com/sponsors/besoeasy"
           target="_blank"
           rel="noopener noreferrer"
-          class="group/cta relative flex h-11 w-full items-center justify-between gap-3 overflow-hidden rounded-xl bg-rose-500 px-5 yantra-text-primary transition-[border-color,box-shadow,transform] duration-200 hover:bg-rose-600 active:scale-[0.98]"
+          class="group/cta mt-4 flex h-10 w-full items-center justify-between gap-3 rounded-xl bg-rose-500 px-4 text-zinc-900 transition-colors hover:bg-rose-400 active:scale-[0.98]"
         >
-          <div class="relative z-10 flex items-center gap-2.5">
+          <div class="flex min-w-0 items-center gap-2.5">
             <Heart class="h-4 w-4 shrink-0 fill-current" />
-            <span class="text-[11px] font-bold uppercase tracking-widest">{{ t('sponsorCard.cta') }}</span>
+            <span class="truncate text-[10px] font-bold uppercase tracking-widest">{{ t("sponsorCard.cta") }}</span>
           </div>
-          <ArrowUpRight class="relative z-10 h-4.5 w-4.5 shrink-0 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-1 group-hover/cta:translate-x-1 group-hover/cta:opacity-100" />
+          <ArrowUpRight class="h-4 w-4 shrink-0 opacity-70 transition-transform duration-200 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5 group-hover/cta:opacity-100" />
         </a>
-      </div>
+      </section>
     </div>
   </div>
 </template>
