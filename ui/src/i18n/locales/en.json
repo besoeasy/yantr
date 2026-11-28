@@ -555,7 +555,8 @@
     "cta": "Sponsor on GitHub",
     "btcCopy": "Copy address",
     "btcCopied": "Copied",
-    "btcWallet": "Wallet"
+    "btcError": "Couldn't load the Bitcoin address.",
+    "retry": "Retry"
   },
   "authGate": {
     "bootingTitle": "Preparing",
