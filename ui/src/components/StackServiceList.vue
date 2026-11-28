@@ -11,11 +11,16 @@ import { expectApiSuccess } from '../composables/useApiResponse'
 import ContainerLogs from './ContainerLogs.vue'
 import ContainerResources from './ContainerResources.vue'
 import { containerDetail } from '../utils/routes.js'
+import { appUrl, isNavigableProtocol } from '../utils/url'
 
-defineProps({
+const props = defineProps({
   services: {
     type: Array,
     required: true
+  },
+  publishedPorts: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -29,6 +34,16 @@ function formatUptime(service) {
   const uptime = currentTime.value - service.created * 1000
   if (uptime <= 0) return t('stackView.justStarted')
   return formatDuration(uptime)
+}
+
+function portsForService(service) {
+  const names = new Set([service.service, service.composeService, service.name].filter(Boolean))
+  return props.publishedPorts.filter((port) => names.has(port.service))
+}
+
+function canOpenPort(port) {
+  return port.show === true && port.protocol?.toLowerCase() === 'tcp' &&
+    port.hostPort && isNavigableProtocol(port.displayProtocol)
 }
 
 const expandedServiceId = ref(null)
@@ -203,30 +218,39 @@ function goToContainer(svcId) {
               </div>
             </div>
           </div>
-          <div v-if="svc.rawPorts && svc.rawPorts.length > 0" class="mt-3 flex flex-wrap items-center gap-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-            <template v-if="svc.rawPorts.filter((p) => p.PublicPort).length > 0">
-              <span
-                v-for="p in [...new Map(svc.rawPorts.filter((rp) => rp.PublicPort).map((rp) => [`${rp.PublicPort}:${rp.PrivatePort}:${rp.Type}`, rp])).values()]"
-                :key="`${p.PublicPort}-${p.Type}`"
-                class="yantra-chip yantra-chip--ok font-mono normal-case"
-              >
-                <Network :size="11" />:{{ p.PublicPort }} → {{ p.PrivatePort }}
-              </span>
-            </template>
-            <template v-else>
-              <span
-                v-for="p in [...new Map(svc.rawPorts.map((rp) => [`${rp.PrivatePort}:${rp.Type}`, rp])).values()]"
-                :key="`internal-${p.PrivatePort}-${p.Type}`"
-                class="yantra-chip font-mono normal-case"
-              >
-                <Network :size="11" />{{ p.PrivatePort }}/{{ p.Type }}
-              </span>
-            </template>
+          <div v-if="portsForService(svc).length > 0" class="mt-3 flex flex-wrap items-center gap-1.5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+            <span
+              v-for="port in portsForService(svc)"
+              :key="`${port.hostPort}-${port.containerPort}-${port.protocol}`"
+              class="yantra-chip font-mono normal-case"
+              :class="{ 'yantra-chip--ok': port.show === true }"
+              :title="`${port.label || port.displayProtocol || port.protocol} :${port.hostPort} → ${port.containerPort}`"
+            >
+              <Network :size="11" />:{{ port.hostPort }} → {{ port.containerPort }}
+            </span>
           </div>
         </div>
         
         <!-- Expanded Details -->
         <div v-if="expandedServiceId === svc.id" class="border-t border-zinc-100 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/30">
+          <div v-if="portsForService(svc).length > 0" class="mb-4 flex flex-wrap items-center gap-2">
+            <template v-for="port in portsForService(svc)" :key="`detail-${port.hostPort}-${port.containerPort}-${port.protocol}`">
+              <a
+                v-if="canOpenPort(port)"
+                :href="appUrl(port.hostPort, port.displayProtocol)"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="yantra-btn yantra-btn--primary"
+              >
+                <ExternalLink :size="12" />
+                {{ t('containerDetail.openLabel', { label: port.label || t('containerDetail.networkPort') }) }}
+              </a>
+              <span v-else class="yantra-chip font-mono normal-case">
+                <Network :size="11" />:{{ port.hostPort }} → {{ port.containerPort }}
+              </span>
+            </template>
+          </div>
+
           <div class="mb-4 flex items-center justify-between">
             <div class="yantra-segment">
               <button

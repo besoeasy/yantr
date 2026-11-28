@@ -6,36 +6,19 @@ import { useI18n } from "vue-i18n";
 import { useApiUrl } from "../composables/useApiUrl";
 import { useNotification } from "../composables/useNotification";
 import { useJobs } from "../composables/useJobs";
-import { appUrl, isNavigableProtocol } from "../utils/url";
 import { buildIssueReportUrl } from "../utils/developer";
 import { appDetail, dashboard } from "../utils/routes.js";
-import { useYantrAuth } from "../composables/useYantrAuth";
 import AppLogo from "../components/AppLogo.vue";
 import DeveloperCredit from "../components/DeveloperCredit.vue";
 import StackServiceList from "../components/StackServiceList.vue";
 import AppLayout from "../components/AppLayout.vue";
-import {
-  Globe,
-  ExternalLink,
-  Network,
-  Wrench,
-  Trash2,
-  HardDrive,
-  RotateCcw,
-  Download,
-  Loader2,
-  Bug,
-  AlertTriangle,
-  Play,
-  Square,
-} from "@lucide/vue";
+import { ExternalLink, Trash2, RotateCcw, Bug, AlertTriangle, Play, Square } from "@lucide/vue";
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
 const { apiUrl } = useApiUrl();
 const toast = useNotification();
-const { openVolumeBrowser } = useYantrAuth();
 const { fetchActiveJob, pollJobUntilDone } = useJobs();
 
 const projectId = computed(() => route.params.projectId);
@@ -119,110 +102,6 @@ async function updateStack() {
     updating.value = false;
   }
 }
-// "Access" shows only ports the app marked show: true; "All" also lists work
-// ports — ports that exist for protocol plumbing and have no UI surface.
-const showAccessPorts = ref(true);
-
-// Volume browsing state
-const browsingVolume = ref({});
-const showVolumeMenu = ref({});
-
-// Build a service-aware index from the x-yantr.ports array.
-// Keyed by container port -> list of {protocol, label, service, show}.
-function buildPortLabels(ports) {
-  const byPort = {};
-  if (!Array.isArray(ports)) return byPort;
-  for (const p of ports) {
-    if (p.port == null) continue;
-    const key = String(p.port);
-    if (!byPort[key]) byPort[key] = [];
-    byPort[key].push({
-      protocol: (p.protocol || "").toLowerCase(),
-      label: p.label || null,
-      service: p.service || null,
-      show: p.show === true,
-    });
-  }
-  return byPort;
-}
-
-function lookupPortLabel(cands, service) {
-  if (!cands || cands.length === 0) return null;
-  if (service) {
-    const exact = cands.find((c) => c.service === service);
-    if (exact) return exact;
-  }
-  return cands[0];
-}
-
-// Merge published ports with described labels from x-yantr.ports.
-// Backend already enriches publishedPorts with label/displayProtocol/service/show;
-// the catalog merge is a fallback for older API responses.
-const enrichedPorts = computed(() => {
-  if (!stack.value) return [];
-  const portLabels = buildPortLabels(stack.value.app?.ports);
-  return stack.value.publishedPorts.map((p) => {
-    const match = lookupPortLabel(portLabels[String(p.containerPort)], p.service);
-    return {
-      ...p,
-      label: p.label || match?.label || null,
-      labeledProtocol: (p.displayProtocol || match?.protocol || "").toLowerCase() || null,
-      // The backend is authoritative: it resolves show against the running
-      // service. The catalog entry is the fallback for responses that predate
-      // the field, and `=== true` keeps undefined (old payload) hidden.
-      show: p.show === true || (p.show === undefined && match?.show === true),
-    };
-  });
-});
-
-// Ports the user is meant to reach. A port that is published but not catalogued
-// has no show flag at all, so it is not access — it only appears under "All".
-const accessPorts = computed(() => enrichedPorts.value.filter((p) => p.show));
-
-const visiblePorts = computed(() => {
-  if (!showAccessPorts.value) return enrichedPorts.value;
-  // Fall back to the catalogued ports if nothing is flagged show: true — an
-  // app that has not opted any port in yet would otherwise render an empty
-  // grid and look like it published nothing.
-  return accessPorts.value.length > 0 ? accessPorts.value : enrichedPorts.value.filter((p) => p.label);
-});
-
-const hasAccessPorts = computed(() => accessPorts.value.length > 0);
-
-const servicesWithNetworks = computed(() => {
-  if (!stack.value?.services) return [];
-  return stack.value.services.filter((service) => Array.isArray(service.networks) && service.networks.length > 0);
-});
-
-// Collect all unique mounts across all services
-const allMounts = computed(() => {
-  if (!stack.value) return [];
-  const seen = new Set();
-  const result = [];
-  for (const svc of stack.value.services) {
-    for (const m of svc.mounts || []) {
-      const key = `${m.type}:${m.source}:${m.destination}`;
-      if (!seen.has(key)) {
-        seen.add(key);
-        result.push({ ...m, svcName: svc.service, svcId: svc.id });
-      }
-    }
-  }
-  const order = { volume: 0, bind: 1, tmpfs: 2 };
-  result.sort((a, b) => (order[a.type] ?? 9) - (order[b.type] ?? 9));
-  return result;
-});
-
-// Named Podman volumes only
-const namedVolumes = computed(() => allMounts.value.filter((m) => m.type === "volume" && m.name));
-
-// Bind mounts and tmpfs — shown in a simple compact list
-const otherMounts = computed(() => allMounts.value.filter((m) => m.type !== "volume" || !m.name));
-
-// appUrl is shared with ContainerDetail so both render the same link. The local
-// copy used to emit a bare `2001:db8::1:8080` on IPv6 hosts, which no browser
-// can parse.
-
 // Prefilled GitHub issue URL — the title carries the app name and the body
 // mentions the app's GitHub authors, so a report filed from a running stack
 // reaches the people who can fix it and not just the Yantr maintainer.
@@ -410,59 +289,6 @@ async function setStackServices(desired) {
   await fetchStack();
 }
 
-// ── Volume browsing ──────────────────────────────────────────────────────────
-
-async function browseVolume(volumeName, expiryMinutes = 60) {
-  browsingVolume.value[volumeName] = true;
-  showVolumeMenu.value[volumeName] = false;
-  try {
-    const response = await fetch(`${apiUrl.value}/api/volumes/${volumeName}/browse`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ expiryMinutes }),
-    });
-    const data = await response.json();
-    if (!data.success) {
-      throw new Error(data.message || t("stackView.failedToStartVolumeBrowser"));
-    }
-    const expiryText = expiryMinutes > 0 ? ` (${t("stackView.expiresIn", { minutes: expiryMinutes })})` : ` (${t("stackView.noExpiry")})`;
-    toast.success(t("stackView.volumeBrowserStarted", { expiry: expiryText }));
-    openVolumeBrowser(volumeName);
-  } catch {
-    toast.error(t("stackView.failedToStartVolumeBrowser"));
-  } finally {
-    delete browsingVolume.value[volumeName];
-  }
-}
-
-const exportingVolume = ref({});
-
-async function exportVolume(volumeName) {
-  exportingVolume.value[volumeName] = true;
-  toast.info(t("stackView.backingUp") || "Backing up…");
-  try {
-    const res = await fetch(`${apiUrl.value}/api/volumes/${encodeURIComponent(volumeName)}/export`);
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    const dateStr = new Date().toISOString().slice(0, 10);
-    a.download = `${volumeName}-backup-${dateStr}.tar.gz`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    toast.success(t("stackView.backupSuccess", { name: volumeName }) || "Backup downloaded");
-  } catch (error) {
-    toast.error(t("stackView.backupFailed", { message: error.message }) || "Backup failed");
-  } finally {
-    delete exportingVolume.value[volumeName];
-  }
-}
-
 // usePolling owns the timer, the in-flight guard, the visibility pause and the
 // abort, so slow 8s ticks against an endpoint that re-inspects every container
 // can no longer overlap.
@@ -494,7 +320,7 @@ onMounted(() => {
     </div>
 
     <!-- Content -->
-    <main v-else-if="stack" class="anim-enter space-y-8">
+    <main v-else-if="stack" class="anim-enter space-y-6">
       <!-- Drift: the catalog definition changed after this stack was deployed.
            Update only refreshes images, so point at the app page for a redeploy. -->
       <div
@@ -609,220 +435,9 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- ── Network access ────────────────────────────────────────────────────────
-           The same shape the container page uses for its ports: a label with a
-           count, a filter, and one card per port. -->
-      <div class="space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <h3 class="yantra-label">{{ t("stackView.networkAccess") }}</h3>
-            <span
-              v-if="enrichedPorts.length > 0"
-              class="yantra-chip"
-              :title="accessPorts.length < enrichedPorts.length ? t('stackView.portsWithWorkCount', { access: accessPorts.length, total: enrichedPorts.length }) : ''"
-            >
-              {{ showAccessPorts && accessPorts.length < enrichedPorts.length ? `${accessPorts.length}/${enrichedPorts.length}` : visiblePorts.length }}
-            </span>
-          </div>
-          <div v-if="hasAccessPorts" class="yantra-segment">
-            <button
-              type="button"
-              class="yantra-chip"
-              :class="{ 'yantra-chip--active': !showAccessPorts }"
-              @click="showAccessPorts = false"
-            >{{ t("stackView.allPorts") }}</button>
-            <button
-              type="button"
-              class="yantra-chip"
-              :class="{ 'yantra-chip--active': showAccessPorts }"
-              @click="showAccessPorts = true"
-            >{{ t("stackView.access") }}</button>
-          </div>
-        </div>
-
-        <div v-if="enrichedPorts.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div v-for="(p, i) in visiblePorts" :key="i" class="yantra-surface flex h-full flex-col p-5">
-            <div class="mb-4 flex items-start gap-4">
-              <div class="yantra-tile h-10 w-10">
-                <Globe v-if="p.labeledProtocol === 'http' || p.labeledProtocol === 'https'" :size="17" />
-                <Network v-else :size="17" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="mb-1 flex items-center gap-2">
-                  <span class="font-mono text-[10px] font-bold uppercase yantra-text-primary">{{ p.protocol }}</span>
-                  <span v-if="p.labeledProtocol" class="yantra-chip yantra-chip--accent">{{ p.labeledProtocol }}</span>
-                </div>
-                <div class="truncate text-[11px] yantra-text-secondary" :title="p.label || p.service">
-                  {{ p.label || p.service }}
-                </div>
-              </div>
-            </div>
-
-            <!-- Two facts, on hairlines rather than in a second box. -->
-            <div class="yantra-panel mb-4">
-              <div class="yantra-fact">
-                <span class="yantra-fact__label">{{ t("containerDetail.hostPort") }}</span>
-                <span v-if="p.hostPort" class="yantra-fact__value">:{{ p.hostPort }}</span>
-                <span v-else class="yantra-text-secondary italic">—</span>
-              </div>
-              <div class="yantra-fact">
-                <span class="yantra-fact__label">{{ t("containerDetail.containerPort") }}</span>
-                <span class="yantra-fact__value">{{ p.containerPort }}</span>
-              </div>
-            </div>
-
-            <div class="mt-auto">
-              <a
-                v-if="p.show && p.protocol === 'tcp' && p.hostPort && isNavigableProtocol(p.labeledProtocol)"
-                :href="appUrl(p.hostPort, p.labeledProtocol)"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="yantra-btn yantra-btn--primary w-full"
-              >
-                <ExternalLink :size="12" />{{ t("stackView.open") }}
-              </a>
-              <!-- A work port is protocol plumbing with nothing to open, so it
-                   says so rather than offering a link that would fail. -->
-              <div
-                v-else-if="!p.show"
-                class="yantra-btn w-full cursor-default justify-between opacity-100"
-                :title="t('stackView.workPortHint')"
-              >
-                <span class="inline-flex items-center gap-2"><Wrench :size="12" />{{ t("stackView.workPort") }}</span>
-              </div>
-              <div v-else class="yantra-btn w-full cursor-default justify-between opacity-100">
-                <span>{{ p.protocol.toUpperCase() }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="yantra-empty">
-          <Network :size="24" />
-          <span>{{ t("stackView.noPortsPublished") }}</span>
-        </div>
-      </div>
-
-      <!-- ── Internal addresses ─────────────────────────────────────────────────────
-           One panel per service, one hairline row per network. This used to be a
-           card inside a card inside a card. -->
-      <div class="space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <h3 class="yantra-label">{{ t("stackView.internalAddresses") }}</h3>
-            <span v-if="servicesWithNetworks.length > 0" class="yantra-chip">{{ servicesWithNetworks.length }}</span>
-          </div>
-          <p class="text-[11px] yantra-text-secondary">{{ t("stackView.internalAddressesHint") }}</p>
-        </div>
-
-        <div v-if="servicesWithNetworks.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div v-for="svc in servicesWithNetworks" :key="`${svc.id}-networks`" class="yantra-surface p-5">
-            <div class="mb-3 flex items-center justify-between gap-3">
-              <div class="min-w-0">
-                <div class="truncate text-sm font-bold yantra-text-primary">{{ svc.service }}</div>
-                <div class="mt-1 truncate text-[10px] font-bold uppercase tracking-widest yantra-text-secondary">
-                  {{ svc.composeService || svc.name }}
-                </div>
-              </div>
-              <span class="yantra-chip">{{ svc.networks.length }}</span>
-            </div>
-
-            <div class="yantra-panel">
-              <div v-for="network in svc.networks" :key="`${svc.id}-${network.name}`" class="yantra-fact">
-                <span class="yantra-fact__label">{{ network.name }}</span>
-                <span class="yantra-fact__value" :title="network.aliases?.join(', ')">{{ network.ipAddress }}</span>
-              </div>
-              <div v-if="svc.networks.some((n) => n.aliases?.length)" class="yantra-fact">
-                <span class="yantra-fact__label">{{ t("stackView.networkAliases") }}</span>
-                <span class="truncate yantra-text-secondary">{{ svc.networks.flatMap((n) => n.aliases || []).join(", ") }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="yantra-empty">
-          <Network :size="24" />
-          <span>{{ t("stackView.noInternalAddresses") }}</span>
-        </div>
-      </div>
-
-      <!-- ── Storage ────────────────────────────────────────────────────────────────
-           Named volumes as cards, because they carry actions; the bind and tmpfs
-           mounts as one panel of rows, because they carry nothing but text. -->
-      <div v-if="namedVolumes.length > 0 || otherMounts.length > 0" class="space-y-4">
-        <div class="flex items-center gap-2">
-          <h3 class="yantra-label">{{ t("stackView.storageVolumes") }}</h3>
-          <span v-if="namedVolumes.length > 0" class="yantra-chip yantra-chip--warn">{{ namedVolumes.length }}</span>
-        </div>
-
-        <div v-if="namedVolumes.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div v-for="vol in namedVolumes" :key="vol.name" class="yantra-surface flex h-full flex-col p-5">
-            <div class="mb-4 flex items-start gap-4">
-              <div class="yantra-tile yantra-tile--warn h-10 w-10">
-                <HardDrive :size="17" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="truncate text-sm font-bold tracking-tight yantra-text-primary" :title="vol.name">{{ vol.name }}</div>
-                <div class="mt-1 truncate font-mono text-[11px] yantra-text-secondary" :title="vol.destination">{{ vol.destination }}</div>
-                <div class="mt-2"><span class="yantra-chip">{{ vol.svcName }}</span></div>
-              </div>
-            </div>
-
-            <div class="mt-auto flex flex-wrap items-center gap-2 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-              <div
-                v-if="browsingVolume[vol.name]"
-                class="yantra-btn yantra-btn--warn cursor-default"
-              >
-                {{ t("stackView.startingWebDAV") }}
-              </div>
-              <template v-else-if="!showVolumeMenu[vol.name]">
-                <button @click="showVolumeMenu[vol.name] = true" class="yantra-btn">
-                  {{ t("stackView.browseFiles") }}
-                </button>
-              </template>
-              <template v-else>
-                <button
-                  @click="browseVolume(vol.name, 60)"
-                  class="yantra-btn"
-                  :title="t('stackView.oneHourAccess')"
-                >1H</button>
-                <button
-                  @click="browseVolume(vol.name, 0)"
-                  class="yantra-btn"
-                  :title="t('stackView.permanentAccess')"
-                >{{ t("stackView.permanentAccess") }}</button>
-              </template>
-              <button
-                @click="exportVolume(vol.name)"
-                :disabled="exportingVolume[vol.name]"
-                class="yantra-btn ml-auto"
-                :title="t('stackView.backupVolume')"
-              >
-                <Loader2 v-if="exportingVolume[vol.name]" class="h-3 w-3 animate-spin" />
-                <Download v-else class="h-3 w-3" />
-                {{ t("stackView.backupVolume") }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="otherMounts.length > 0" class="space-y-3">
-          <h4 class="yantra-label">{{ t("stackView.bindMounts") }}</h4>
-          <div class="yantra-panel">
-            <div v-for="(m, i) in otherMounts" :key="i" class="yantra-fact">
-              <span class="yantra-chip shrink-0">{{ m.type }}</span>
-              <span class="min-w-0 truncate yantra-fact__value" :title="`${m.source} → ${m.destination}`">
-                {{ m.source || "—" }} <span class="yantra-text-secondary">→</span> {{ m.destination }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── Containers ──────────────────────────────────────────────────────────────── -->
-      <div class="space-y-4">
-        <StackServiceList :services="stack.services" />
-      </div>
+      <!-- Containers are the stack's main content; port and storage details live
+           with each container or on the Storage page. -->
+      <StackServiceList :services="stack.services" :published-ports="stack.publishedPorts" />
     </main>
   </AppLayout>
 </template>
